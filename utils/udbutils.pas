@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils,
 
-  DK_SQLite3, DK_SQLUtils, DK_Vector, DK_Dialogs, DK_StrUtils;
+  DK_SQLite3, DK_SQLUtils, DK_Vector, DK_Dialogs, DK_StrUtils, DK_Const;
 
 type
 
@@ -29,6 +29,8 @@ type
                            out AStaffIDs, ATabNumIDs, AGenders: TIntVector;
                            out ABornDates, ARecrutDates, ADismissDates: TDateVector;
                            out AFs, ANs, APs, ATabNums, APostNames, ARanks: TStrVector): Boolean;
+
+
     {Добавление данных нового человека: True - ОК, False - ошибка}
     function StaffMainAdd(out AStaffID: Integer;
                           const AFamily, AName, APatronymic: String;
@@ -41,6 +43,8 @@ type
     function StaffMainLoad(const AStaffID: Integer;
                           out AFamily, AName, APatronymic: String;
                           out ABornDate: TDate; out AGender: Byte): Boolean;
+    {Удаление данных человека: True - ОК, False - ошибка}
+    function StaffMainDelete(const AStaffID: Integer): Boolean;
     {Получение списка людей: True - ОК, False - список пуст
      AFilterValue - фильтр по Ф.И.О.}
     function StaffMainListLoad(const AFilterValue: String;
@@ -48,12 +52,26 @@ type
                           out AFamilies, ANames, APatronymics: TStrVector;
                           out ABornDates: TDateVector): Boolean;
 
+
     {Список табельных номеров по ID человека: True - ОК, False - список пуст}
     function StaffTabNumListLoad(const AStaffID: Integer; out ATabNumIDs: TIntVector;
                           out ATabNums, APostNames, ARanks: TStrVector;
                           out ARecrutDates, ADismissDates: TDateVector): Boolean;
+    {Добавление нового таб. номера: True - ОК, False - ошибка}
+    function StaffTabNumAdd(out ATabNumID: Integer;
+                          const AStaffID, APostID: Integer;
+                          const ATabNum, ARank: String;
+                          const ARecrutDate: TDate): Boolean;
+    {Обновление данных о приеме нового таб. номера: True - ОК, False - ошибка}
+    function StaffTabNumUpdate(const ATabNumID, APostID: Integer;
+                          const ATabNum, ARank: String;
+                          const ARecrutDate: TDate): Boolean;
+    {Удаление таб. номера: True - ОК, False - ошибка}
+    function StaffTabNumDelete(const ATabNumID: Integer): Boolean;
+
+
     {Список переводов по ID таб. номера: True - ОК, False - список пуст}
-    function StaffPostLogLoad(const ATabNumID: Integer;
+    function StaffPostLogListLoad(const ATabNumID: Integer;
                           out APostLogIDs, APostTemps: TIntVector;
                           out APostNames, ARanks: TStrVector;
                           out AFirstDates, ALastDates: TDateVector): Boolean;
@@ -231,6 +249,11 @@ begin
   QClose;
 end;
 
+function TDataBase.StaffMainDelete(const AStaffID: Integer): Boolean;
+begin
+  Result:= Delete('STAFFMAIN', 'StaffID', AStaffID);
+end;
+
 function TDataBase.StaffMainListLoad(const AFilterValue: String;
                           out AStaffIDs, AGenders: TIntVector;
                           out AFamilies, ANames, APatronymics: TStrVector;
@@ -317,7 +340,128 @@ begin
   QClose;
 end;
 
-function TDataBase.StaffPostLogLoad(const ATabNumID: Integer;
+function TDataBase.StaffTabNumAdd(out ATabNumID: Integer;
+                          const AStaffID, APostID: Integer;
+                          const ATabNum, ARank: String;
+                          const ARecrutDate: TDate): Boolean;
+begin
+  Result:= False;
+  QSetQuery(FQuery);
+  try
+    //запись данных в таблицу табельных номеров
+    QSetSQL(
+      sqlINSERT('STAFFTABNUM', ['StaffID', 'PostID', 'TabNum', 'Rank', 'RecrutDate', 'DismissDate'])
+    );
+    QParamInt('StaffID', AStaffID);
+    QParamInt('PostID', APostID);
+    QParamStr('TabNum', ATabNum);
+    QParamStr('Rank', ARank);
+    QParamDT('RecrutDate', ARecrutDate);
+    QParamDT('DismissDate', INFDATE);
+    QExec;
+    //получение ID записанного табельного номера
+    ATabNumID:= LastWritedInt32ID('STAFFTABNUM');
+    //заносим первую запись в табицу переводов
+    QSetSQL(
+      sqlINSERT('STAFFPOSTLOG', ['TabNumID', 'PostID', 'FirstDate', 'LastDate', 'Rank'])
+    );
+    QParamInt('TabNumID', ATabNumID);
+    QParamInt('PostID', APostID);
+    QParamDT('FirstDate', ARecrutDate);
+    QParamDT('LastDate', INFDATE);
+    QParamStr('Rank', ARank);
+    QExec;
+    //заносим первую запись в таблицу персональных графиков
+    QSetSQL(
+      sqlINSERT('STAFFSCHEDULE', ['TabNumID', 'BeginDate', 'EndDate'])
+    );
+    QParamInt('TabNumID', ATabNumID);
+    QParamDT('BeginDate', ARecrutDate);
+    QParamDT('EndDate', INFDATE);
+    QExec;
+    QCommit;
+    Result:= True;
+  except
+    QRollback;
+  end;
+end;
+
+function TDataBase.StaffTabNumUpdate(const ATabNumID, APostID: Integer;
+                                     const ATabNum, ARank: String;
+                                     const ARecrutDate: TDate): Boolean;
+begin
+  Result:= False;
+  QSetQuery(FQuery);
+  try
+    //обновление данных в таблице таб. номеров
+    QSetSQL(
+      sqlUPDATE('STAFFTABNUM', ['PostID', 'TabNum', 'Rank', 'RecrutDate']) +
+      'WHERE TabNumID = :TabNumID'
+    );
+    QParamInt('TabNumID', ATabNumID);
+    QParamInt('PostID', APostID);
+    QParamStr('TabNum', ATabNum);
+    QParamStr('Rank', ARank);
+    QParamDT('RecrutDate', ARecrutDate);
+    QExec;
+    //удаление более ранних периодов из таблицы переводов
+    QSetSQL(
+      'DELETE FROM STAFFPOSTLOG ' +
+      'WHERE (TabNumID = :TabNumID) AND (LastDate < :RecrutDate)'
+    );
+    QParamInt('TabNumID', ATabNumID);
+    QParamDT('RecrutDate', ARecrutDate);
+    QExec;
+    //меняем данные в таблице переводов
+    QSetSQL(
+      sqlUPDATE('STAFFPOSTLOG', ['FirstDate']) +
+      'WHERE (TabNumID = :TabNumID) AND ' +
+                      '(FirstDate = (' +
+                             'SELECT FirstDate FROM STAFFPOSTLOG ' +
+                             'WHERE (TabNumID = :TabNumID) ' +
+                             'ORDER BY FirstDate ' +
+                             'LIMIT 1' +
+                      ')) '
+    );
+    QParamInt('TabNumID', ATabNumID);
+    QParamDT('FirstDate', ARecrutDate);
+    QExec;
+    //удаляем более ранние периоды из таблицы графиков
+    QSetSQL(
+      'DELETE FROM STAFFSCHEDULE ' +
+      'WHERE (TabNumID = :TabNumID) AND (EndDate < :RecrutDate)'
+    );
+    QParamInt('TabNumID', ATabNumID);
+    QParamDT('RecrutDate', ARecrutDate);
+    QExec;
+    //меняем данные в таблице графиков
+    QSetSQL(
+      sqlUPDATE('STAFFSCHEDULE', ['BeginDate']) +
+      'WHERE (TabNumID = :TabNumID) AND ' +
+                      '(BeginDate = (' +
+                             'SELECT BeginDate FROM STAFFSCHEDULE ' +
+                             'WHERE (TabNumID = :TabNumID) ' +
+                             'ORDER BY BeginDate ' +
+                             'LIMIT 1' +
+                      ')) '
+    );
+    QParamInt('TabNumID', ATabNumID);
+    QParamDT('BeginDate', ARecrutDate);
+    QExec;
+
+    QCommit;
+    Result:= True;
+  except
+    QRollback;
+  end;
+end;
+
+function TDataBase.StaffTabNumDelete(const ATabNumID: Integer): Boolean;
+begin
+  Result:= Delete('STAFFTABNUM', 'TabNumID', ATabNumID);
+end;
+
+function TDataBase.StaffPostLogListLoad(const ATabNumID: Integer;
                           out APostLogIDs, APostTemps: TIntVector;
                           out APostNames, ARanks: TStrVector;
                           out AFirstDates, ALastDates: TDateVector): Boolean;

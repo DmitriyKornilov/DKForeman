@@ -487,7 +487,7 @@ begin
   if TabNumList.IsSelected then
     TabNumID:= TabNumListTabNumIDs[TabNumList.SelectedIndex];
 
-  DataBase.StaffPostLogLoad(TabNumID, PostLogIDs, PostLogPostTemps,
+  DataBase.StaffPostLogListLoad(TabNumID, PostLogIDs, PostLogPostTemps,
                             PostLogPostNames, PostLogRanks,
                             PostLogFirstDates, PostLogLastDates);
 
