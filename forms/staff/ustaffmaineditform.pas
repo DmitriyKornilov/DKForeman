@@ -20,7 +20,7 @@ type
     ButtonPanelBevel: TBevel;
     ButtonPanel: TPanel;
     CancelButton: TSpeedButton;
-    BornDateTimePicker: TDateTimePicker;
+    BornDatePicker: TDateTimePicker;
     GenderComboBox: TComboBox;
     FamilyEdit: TEdit;
     NameEdit: TEdit;
@@ -34,6 +34,7 @@ type
     procedure CancelButtonClick(Sender: TObject);
     procedure FamilyEditKeyDown(Sender: TObject; var Key: Word; {%H-}Shift: TShiftState);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+    procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure NameEditKeyDown(Sender: TObject; var Key: Word; {%H-}Shift: TShiftState);
     procedure PatronymicEditKeyDown(Sender: TObject; var Key: Word; {%H-}Shift: TShiftState);
@@ -53,10 +54,15 @@ implementation
 
 { TStaffMainEditForm }
 
+procedure TStaffMainEditForm.FormCreate(Sender: TObject);
+begin
+  StaffID:= -1;
+end;
+
 procedure TStaffMainEditForm.FormShow(Sender: TObject);
 begin
   CanFormClose:= True;
-  if StaffID=0 then BornDateTimePicker.Date:= Date;
+  if StaffID=0 then BornDatePicker.Date:= Date;
   FamilyEdit.SetFocus;
 end;
 
@@ -83,7 +89,7 @@ end;
 
 procedure TStaffMainEditForm.PatronymicEditKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 begin
-  if Key=VK_RETURN then BornDateTimePicker.SetFocus;
+  if Key=VK_RETURN then BornDatePicker.SetFocus;
 end;
 
 procedure TStaffMainEditForm.SaveButtonClick(Sender: TObject);
@@ -110,10 +116,10 @@ begin
 
   if StaffID=0 then //add
     CanFormClose:= DataBase.StaffMainAdd(StaffID, FamilyValue, NameValue, PatronymicValue,
-                                         BornDateTimePicker.Date, GenderComboBox.ItemIndex)
+                                         BornDatePicker.Date, GenderComboBox.ItemIndex)
   else //edit
     CanFormClose:= DataBase.StaffMainUpdate(StaffID, FamilyValue, NameValue, PatronymicValue,
-                                         BornDateTimePicker.Date, GenderComboBox.ItemIndex);
+                                         BornDatePicker.Date, GenderComboBox.ItemIndex);
   if CanFormClose then
     ModalResult:= mrOK;
 end;

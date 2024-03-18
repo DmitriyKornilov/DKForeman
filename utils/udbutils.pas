@@ -5,7 +5,7 @@ unit UDBUtils;
 interface
 
 uses
-  Classes, SysUtils,
+  Classes, SysUtils, StdCtrls,
 
   DK_SQLite3, DK_SQLUtils, DK_Vector, DK_Dialogs, DK_StrUtils, DK_Const;
 
@@ -17,6 +17,15 @@ type
   private
 
   public
+    (**************************************************************************
+                                     СПРАВОЧНИКИ
+    **************************************************************************)
+    procedure PostDictionaryLoad(const AComboBox: TComboBox;
+                                 out APostIDs: TIntVector;
+                                 const ASelectPostID: Integer = -1);
+
+
+
     (**************************************************************************
                                          ШТАТ
     **************************************************************************)
@@ -54,7 +63,8 @@ type
 
 
     {Список табельных номеров по ID человека: True - ОК, False - список пуст}
-    function StaffTabNumListLoad(const AStaffID: Integer; out ATabNumIDs: TIntVector;
+    function StaffTabNumListLoad(const AStaffID: Integer;
+                          out ATabNumIDs, APostIDs: TIntVector;
                           out ATabNums, APostNames, ARanks: TStrVector;
                           out ARecrutDates, ADismissDates: TDateVector): Boolean;
     {Добавление нового таб. номера: True - ОК, False - ошибка}
@@ -83,6 +93,14 @@ var
 implementation
 
 { TDataBase }
+
+procedure TDataBase.PostDictionaryLoad(const AComboBox: TComboBox;
+                                       out APostIDs: TIntVector;
+                                       const ASelectPostID: Integer = -1);
+begin
+  KeyPickLoad(AComboBox, APostIDs, 'STAFFPOST', 'PostID', 'PostName', 'PostName',
+              True{ID>0}, EmptyStr, ASelectPostID);
+end;
 
 function TDataBase.StaffListLoad(const AOrderType, AListType: Byte;
                                out AStaffIDs, ATabNumIDs, AGenders: TIntVector;
@@ -297,13 +315,15 @@ begin
   QClose;
 end;
 
-function TDataBase.StaffTabNumListLoad(const AStaffID: Integer; out ATabNumIDs: TIntVector;
+function TDataBase.StaffTabNumListLoad(const AStaffID: Integer;
+                          out ATabNumIDs, APostIDs: TIntVector;
                           out ATabNums, APostNames, ARanks: TStrVector;
                           out ARecrutDates, ADismissDates: TDateVector): Boolean;
 begin
   Result:= False;
 
   ATabNumIDs:= nil;
+  APostIDs:= nil;
   ATabNums:= nil;
   APostNames:= nil;
   ARanks:= nil;
@@ -314,7 +334,8 @@ begin
 
   QSetQuery(FQuery);
   QSetSQL(
-    'SELECT t1.TabNumID, t1.TabNum, t1.RecrutDate, t1.DismissDate, t1.Rank, t2.PostName ' +
+    'SELECT t1.TabNumID, t1.TabNum, t1.RecrutDate, t1.DismissDate, t1.Rank, '+
+           't1.PostID, t2.PostName ' +
     'FROM STAFFTABNUM t1 ' +
     'INNER JOIN STAFFPOST t2 ON (t1.PostID=t2.PostID) ' +
     'WHERE t1.StaffID = :StaffID ' +
@@ -328,6 +349,7 @@ begin
     while not QEOF do
     begin
       VAppend(ATabNumIDs, QFieldInt('TabNumID'));
+      VAppend(APostIDs, QFieldInt('PostID'));
       VAppend(ATabNums, QFieldStr('TabNum'));
       VAppend(ARanks, QFieldStr('Rank'));
       VAppend(APostNames, QFieldStr('PostName'));

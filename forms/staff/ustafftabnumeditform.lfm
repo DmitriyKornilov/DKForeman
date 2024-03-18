@@ -1,31 +1,184 @@
-object StaffMainEditForm: TStaffMainEditForm
-  Left = 757
-  Height = 190
-  Top = 261
-  Width = 280
+object StaffTabNumEditForm: TStaffTabNumEditForm
+  Left = 413
+  Height = 160
+  Top = 250
+  Width = 600
   AutoSize = True
-  BorderStyle = bsSizeToolWin
-  ClientHeight = 190
-  ClientWidth = 280
-  Constraints.MinHeight = 160
-  Constraints.MinWidth = 240
+  ClientHeight = 160
+  ClientWidth = 600
+  Constraints.MinHeight = 120
+  Constraints.MinWidth = 600
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   OnShow = FormShow
   Position = poScreenCenter
   LCLVersion = '2.2.4.0'
+  object TabNumLabel: TLabel
+    AnchorSideLeft.Control = Owner
+    AnchorSideTop.Control = TabNumEdit
+    AnchorSideTop.Side = asrCenter
+    Left = 6
+    Height = 15
+    Top = 14
+    Width = 100
+    BorderSpacing.Left = 6
+    BorderSpacing.Top = 16
+    Caption = 'Табельный номер'
+    ParentColor = False
+  end
+  object RecrutLabel: TLabel
+    AnchorSideLeft.Control = DismissLabel
+    AnchorSideTop.Control = RecrutDatePicker
+    AnchorSideTop.Side = asrCenter
+    AnchorSideRight.Control = RecrutDatePicker
+    Left = 416
+    Height = 15
+    Top = 14
+    Width = 70
+    BorderSpacing.Right = 6
+    Caption = 'Дата приема'
+    ParentColor = False
+  end
+  object RecrutDatePicker: TDateTimePicker
+    AnchorSideLeft.Control = RecrutLabel
+    AnchorSideLeft.Side = asrBottom
+    AnchorSideTop.Control = Owner
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
+    Left = 515
+    Height = 23
+    Top = 10
+    Width = 79
+    CenturyFrom = 1941
+    MaxDate = 401768
+    MinDate = -53780
+    TabOrder = 0
+    BorderSpacing.Left = 6
+    BorderSpacing.Top = 10
+    BorderSpacing.Right = 6
+    TrailingSeparator = False
+    TextForNullDate = 'NULL'
+    LeadingZeros = True
+    Anchors = [akTop, akRight]
+    Kind = dtkDate
+    TimeFormat = tf24
+    TimeDisplay = tdHMS
+    DateMode = dmComboBox
+    Date = 42334
+    Time = 0.476538217590132
+    UseDefaultSeparators = True
+    HideDateTimeParts = []
+    MonthNames = 'Long'
+  end
+  object DismissLabel: TLabel
+    AnchorSideLeft.Control = RecrutDatePicker
+    AnchorSideLeft.Side = asrBottom
+    AnchorSideTop.Control = DismissDatePicker
+    AnchorSideTop.Side = asrCenter
+    AnchorSideRight.Control = DismissDatePicker
+    Left = 416
+    Height = 15
+    Top = 47
+    Width = 93
+    Anchors = [akTop, akRight]
+    BorderSpacing.Left = 12
+    BorderSpacing.Right = 6
+    Caption = 'Дата увольнения'
+    ParentColor = False
+  end
+  object DismissDatePicker: TDateTimePicker
+    AnchorSideLeft.Control = DismissLabel
+    AnchorSideLeft.Side = asrBottom
+    AnchorSideTop.Control = RankEdit
+    AnchorSideTop.Side = asrCenter
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
+    Left = 515
+    Height = 23
+    Top = 43
+    Width = 79
+    CenturyFrom = 1941
+    MaxDate = 401768
+    MinDate = -53780
+    TabOrder = 1
+    BorderSpacing.Left = 6
+    BorderSpacing.Top = 10
+    BorderSpacing.Right = 6
+    TrailingSeparator = False
+    TextForNullDate = 'NULL'
+    LeadingZeros = True
+    Anchors = [akTop, akRight]
+    Kind = dtkDate
+    TimeFormat = tf24
+    TimeDisplay = tdHMS
+    DateMode = dmComboBox
+    Date = 42334
+    Time = 0.476538217590132
+    UseDefaultSeparators = True
+    HideDateTimeParts = []
+    MonthNames = 'Long'
+  end
+  object PostLabel: TLabel
+    AnchorSideLeft.Control = Owner
+    AnchorSideTop.Control = PostComboBox
+    AnchorSideTop.Side = asrCenter
+    Left = 6
+    Height = 15
+    Top = 80
+    Width = 134
+    BorderSpacing.Left = 6
+    BorderSpacing.Top = 36
+    Caption = 'Должность (профессия)'
+    ParentColor = False
+  end
+  object PostComboBox: TComboBox
+    AnchorSideLeft.Control = PostLabel
+    AnchorSideLeft.Side = asrBottom
+    AnchorSideTop.Control = RankEdit
+    AnchorSideTop.Side = asrBottom
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
+    Left = 146
+    Height = 23
+    Top = 76
+    Width = 448
+    Anchors = [akTop, akLeft, akRight]
+    BorderSpacing.Left = 6
+    BorderSpacing.Top = 10
+    BorderSpacing.Right = 6
+    BorderSpacing.Bottom = 6
+    DropDownCount = 20
+    ItemHeight = 15
+    Style = csDropDownList
+    TabOrder = 2
+  end
+  object TabNumEdit: TEdit
+    AnchorSideLeft.Control = PostLabel
+    AnchorSideLeft.Side = asrBottom
+    AnchorSideTop.Control = Owner
+    AnchorSideRight.Control = DismissLabel
+    Left = 146
+    Height = 23
+    Top = 10
+    Width = 250
+    Anchors = [akTop, akLeft, akRight]
+    BorderSpacing.Left = 6
+    BorderSpacing.Top = 10
+    BorderSpacing.Right = 20
+    TabOrder = 3
+  end
   object ButtonPanel: TPanel
     AnchorSideLeft.Control = Owner
-    AnchorSideTop.Control = BornDatePicker
+    AnchorSideTop.Control = PostComboBox
     AnchorSideTop.Side = asrBottom
     AnchorSideRight.Control = Owner
     AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Control = Owner
     AnchorSideBottom.Side = asrBottom
     Left = 2
-    Height = 37
-    Top = 148
-    Width = 276
+    Height = 40
+    Top = 115
+    Width = 596
     Align = alCustom
     Anchors = [akTop, akLeft, akRight, akBottom]
     AutoSize = True
@@ -34,16 +187,16 @@ object StaffMainEditForm: TStaffMainEditForm
     BorderSpacing.Right = 2
     BorderSpacing.Bottom = 5
     BevelOuter = bvNone
-    ClientHeight = 37
-    ClientWidth = 276
-    TabOrder = 0
+    ClientHeight = 40
+    ClientWidth = 596
+    TabOrder = 4
     object CancelButton: TSpeedButton
       AnchorSideTop.Control = ButtonPanelBevel
       AnchorSideTop.Side = asrBottom
       AnchorSideRight.Control = ButtonPanel
       AnchorSideRight.Side = asrBottom
       Cursor = crHandPoint
-      Left = 171
+      Left = 491
       Height = 30
       Top = 6
       Width = 100
@@ -138,7 +291,7 @@ object StaffMainEditForm: TStaffMainEditForm
       AnchorSideTop.Side = asrCenter
       AnchorSideRight.Control = CancelButton
       Cursor = crHandPoint
-      Left = 71
+      Left = 391
       Height = 30
       Top = 6
       Width = 100
@@ -231,199 +384,38 @@ object StaffMainEditForm: TStaffMainEditForm
       Left = 0
       Height = 6
       Top = 0
-      Width = 276
+      Width = 596
       Align = alTop
       Shape = bsTopLine
     end
   end
-  object FamilyLabel: TLabel
-    AnchorSideLeft.Control = Owner
-    AnchorSideTop.Control = FamilyEdit
-    AnchorSideTop.Side = asrCenter
-    Left = 5
-    Height = 15
-    Top = 14
-    Width = 51
-    BorderSpacing.Left = 5
-    Caption = 'Фамилия'
-    ParentColor = False
-    ParentFont = False
-    WordWrap = True
-  end
-  object FamilyEdit: TEdit
-    AnchorSideLeft.Control = BornDateLabel
+  object RankEdit: TEdit
+    AnchorSideLeft.Control = PostLabel
     AnchorSideLeft.Side = asrBottom
-    AnchorSideTop.Control = Owner
-    AnchorSideRight.Control = Owner
-    AnchorSideRight.Side = asrBottom
-    Left = 93
-    Height = 23
-    Top = 10
-    Width = 182
-    Anchors = [akTop, akLeft, akRight]
-    BorderSpacing.Left = 5
-    BorderSpacing.Top = 10
-    BorderSpacing.Right = 5
-    MaxLength = 60
-    OnKeyDown = FamilyEditKeyDown
-    ParentFont = False
-    TabOrder = 1
-  end
-  object NameLabel: TLabel
-    AnchorSideLeft.Control = Owner
-    AnchorSideTop.Control = NameEdit
-    AnchorSideTop.Side = asrCenter
-    Left = 5
-    Height = 15
-    Top = 47
-    Width = 24
-    BorderSpacing.Left = 5
-    Caption = 'Имя'
-    ParentColor = False
-    ParentFont = False
-    WordWrap = True
-  end
-  object NameEdit: TEdit
-    AnchorSideLeft.Control = BornDateLabel
-    AnchorSideLeft.Side = asrBottom
-    AnchorSideTop.Control = FamilyEdit
+    AnchorSideTop.Control = TabNumEdit
     AnchorSideTop.Side = asrBottom
-    AnchorSideRight.Control = Owner
-    AnchorSideRight.Side = asrBottom
-    Left = 93
+    AnchorSideRight.Control = DismissLabel
+    Left = 146
     Height = 23
     Top = 43
-    Width = 182
+    Width = 250
     Anchors = [akTop, akLeft, akRight]
-    BorderSpacing.Left = 5
+    BorderSpacing.Left = 6
     BorderSpacing.Top = 10
-    BorderSpacing.Right = 5
-    MaxLength = 30
-    OnKeyDown = NameEditKeyDown
-    ParentFont = False
-    TabOrder = 2
-  end
-  object PatronymicLabel: TLabel
-    AnchorSideLeft.Control = Owner
-    AnchorSideTop.Control = PatronymicEdit
-    AnchorSideTop.Side = asrCenter
-    Left = 5
-    Height = 15
-    Top = 80
-    Width = 51
-    BorderSpacing.Left = 5
-    BorderSpacing.Top = 12
-    Caption = 'Отчество'
-    ParentColor = False
-    ParentFont = False
-    WordWrap = True
-  end
-  object PatronymicEdit: TEdit
-    AnchorSideLeft.Control = BornDateLabel
-    AnchorSideLeft.Side = asrBottom
-    AnchorSideTop.Control = NameEdit
-    AnchorSideTop.Side = asrBottom
-    AnchorSideRight.Control = Owner
-    AnchorSideRight.Side = asrBottom
-    Left = 93
-    Height = 23
-    Top = 76
-    Width = 182
-    Anchors = [akTop, akLeft, akRight]
-    BorderSpacing.Left = 5
-    BorderSpacing.Top = 10
-    BorderSpacing.Right = 5
-    MaxLength = 30
-    OnKeyDown = PatronymicEditKeyDown
-    ParentFont = False
-    TabOrder = 3
-  end
-  object BornDateLabel: TLabel
-    AnchorSideLeft.Control = Owner
-    AnchorSideTop.Control = BornDatePicker
-    AnchorSideTop.Side = asrCenter
-    Left = 5
-    Height = 15
-    Top = 113
-    Width = 83
-    BorderSpacing.Left = 5
-    BorderSpacing.Top = 12
-    Caption = 'Дата рождения'
-    ParentColor = False
-    ParentFont = False
-    WordWrap = True
-  end
-  object BornDatePicker: TDateTimePicker
-    AnchorSideLeft.Control = BornDateLabel
-    AnchorSideLeft.Side = asrBottom
-    AnchorSideTop.Control = PatronymicEdit
-    AnchorSideTop.Side = asrBottom
-    AnchorSideRight.Side = asrBottom
-    Left = 93
-    Height = 23
-    Top = 109
-    Width = 79
-    CenturyFrom = 1941
-    MaxDate = 401768
-    MinDate = -53780
-    ParentFont = False
-    TabOrder = 4
-    BorderSpacing.Left = 5
-    BorderSpacing.Top = 10
-    BorderSpacing.Bottom = 10
-    TrailingSeparator = False
-    TextForNullDate = 'NULL'
-    LeadingZeros = True
-    NullInputAllowed = False
-    Kind = dtkDate
-    TimeFormat = tf24
-    TimeDisplay = tdHMS
-    DateMode = dmComboBox
-    Date = 42334
-    Time = 0.476538217590132
-    UseDefaultSeparators = True
-    AutoButtonSize = True
-    HideDateTimeParts = []
-    MonthNames = 'Long'
-  end
-  object GenderLabel: TLabel
-    AnchorSideLeft.Control = BornDatePicker
-    AnchorSideLeft.Side = asrBottom
-    AnchorSideTop.Control = BornDatePicker
-    AnchorSideTop.Side = asrCenter
-    Left = 184
-    Height = 15
-    Top = 113
-    Width = 23
-    BorderSpacing.Left = 12
-    BorderSpacing.Top = 12
-    Caption = 'Пол'
-    ParentColor = False
-    ParentFont = False
-    WordWrap = True
-  end
-  object GenderComboBox: TComboBox
-    AnchorSideLeft.Control = GenderLabel
-    AnchorSideLeft.Side = asrBottom
-    AnchorSideTop.Control = GenderLabel
-    AnchorSideTop.Side = asrCenter
-    AnchorSideRight.Control = Owner
-    AnchorSideRight.Side = asrBottom
-    Left = 212
-    Height = 23
-    Top = 109
-    Width = 63
-    Anchors = [akTop, akLeft, akRight]
-    BorderSpacing.Left = 5
-    BorderSpacing.Right = 5
-    ItemHeight = 15
-    ItemIndex = 1
-    Items.Strings = (
-      'Ж'
-      'М'
-    )
-    Style = csDropDownList
+    BorderSpacing.Right = 20
     TabOrder = 5
-    Text = 'М'
+  end
+  object RankLabel: TLabel
+    AnchorSideLeft.Control = Owner
+    AnchorSideTop.Control = RankEdit
+    AnchorSideTop.Side = asrCenter
+    Left = 6
+    Height = 15
+    Top = 47
+    Width = 128
+    BorderSpacing.Left = 6
+    BorderSpacing.Top = 16
+    Caption = 'Разряд (квалификация)'
+    ParentColor = False
   end
 end

@@ -10,9 +10,9 @@ uses
   //Project utils
   UDBUtils, UConst, UTypes, UUtils,
   //DK packages utils
-  DK_VSTTables, DK_VSTTools, DK_Vector, DK_CtrlUtils, DK_StrUtils,
+  DK_VSTTables, DK_VSTTools, DK_Vector, DK_CtrlUtils, DK_StrUtils, DK_Const,
   //Forms
-  UStaffMainEditForm;
+  UStaffMainEditForm, UStaffTabNumEditForm;
 
 
 type
@@ -69,6 +69,10 @@ type
     procedure StaffVTNodeDblClick(Sender: TBaseVirtualTree;
       const {%H-}HitInfo: THitInfo);
     procedure PostButtonClick(Sender: TObject);
+    procedure TabNumAddButtonClick(Sender: TObject);
+    procedure TabNumDelButtonClick(Sender: TObject);
+    procedure TabNumDismissButtonClick(Sender: TObject);
+    procedure TabNumEditButtonClick(Sender: TObject);
   private
     ModeType: TModeType;
 
@@ -83,7 +87,7 @@ type
     Families, Names, Patronymics, TabNums, PostNames, Ranks, FullNames, StrGenders: TStrVector;
 
     TabNumList: TVSTTable;
-    TabNumListTabNumIDs: TIntVector;
+    TabNumListTabNumIDs, TabNumListPostIDs: TIntVector;
     TabNumListRecrutDates, TabNumListDismissDates: TDateVector;
     TabNumListTabNums, TabNumListPostNames, TabNumListRanks: TStrVector;
 
@@ -115,7 +119,8 @@ type
     procedure PostLogLoad(const APostLogID: Integer = 0);
     procedure PostLogSelect;
 
-    procedure StaffMainEditFormOpen(const EditingType: TEditingType);
+    procedure StaffMainEditFormOpen(const AEditingType: TEditingType);
+    procedure StaffTabNumEditFormOpen(const AEditingType: TEditingType);
   public
     procedure ChangeMode(const AModeType: TModeType);
   end;
@@ -228,6 +233,26 @@ end;
 procedure TStaffForm.PostButtonClick(Sender: TObject);
 begin
   MainForm.DictionarySelect(1);
+end;
+
+procedure TStaffForm.TabNumDelButtonClick(Sender: TObject);
+begin
+
+end;
+
+procedure TStaffForm.TabNumAddButtonClick(Sender: TObject);
+begin
+  StaffTabNumEditFormOpen(etAdd);
+end;
+
+procedure TStaffForm.TabNumEditButtonClick(Sender: TObject);
+begin
+  StaffTabNumEditFormOpen(etEdit);
+end;
+
+procedure TStaffForm.TabNumDismissButtonClick(Sender: TObject);
+begin
+  StaffTabNumEditFormOpen(etCustom);
 end;
 
 procedure TStaffForm.OrderTypeCreate;
@@ -397,7 +422,8 @@ begin
 
   //возвращаем выделение строки
   if ModeType=mtEditing then
-    ReSelectTableRow(StaffList, StaffIDs, AStaffID);
+    StaffList.ReSelect(StaffIDs, AStaffID);
+    //ReSelectTableRow(StaffList, StaffIDs, AStaffID);
 end;
 
 procedure TStaffForm.StaffListSelect;
@@ -435,8 +461,8 @@ begin
   StaffID:= 0;
   if StaffList.IsSelected then
     StaffID:= StaffIDs[StaffList.SelectedIndex];
-  DataBase.StaffTabNumListLoad(StaffID, TabNumListTabNumIDs, TabNumListTabNums,
-                               TabNumListPostNames, TabNumListRanks,
+  DataBase.StaffTabNumListLoad(StaffID, TabNumListTabNumIDs, TabNumListPostIDs,
+                               TabNumListTabNums, TabNumListPostNames, TabNumListRanks,
                                TabNumListRecrutDates, TabNumListDismissDates);
 
   TabNumList.SetColumn('Табельный номер', TabNumListTabNums);
@@ -448,7 +474,8 @@ begin
   TabNumList.Draw;
 
   //возвращаем выделение строки
-  ReSelectTableRow(TabNumList, TabNumListTabNumIDs, ATabNumID);
+  TabNumList.ReSelect(TabNumListTabNumIDs, ATabNumID);
+  //ReSelectTableRow(TabNumList, TabNumListTabNumIDs, ATabNumID);
 end;
 
 procedure TStaffForm.TabNumListSelect;
@@ -500,7 +527,8 @@ begin
   PostLog.Draw;
 
   //возвращаем выделение строки
-  ReSelectTableRow(PostLog, PostLogIDs, APostLogID);
+  PostLog.ReSelect(PostLogIDs, APostLogID);
+  //ReSelectTableRow(PostLog, PostLogIDs, APostLogID);
 end;
 
 procedure TStaffForm.PostLogSelect;
@@ -510,26 +538,72 @@ begin
   PostLogEditButton.Enabled:= PostLog.IsSelected;
 end;
 
-procedure TStaffForm.StaffMainEditFormOpen(const EditingType: TEditingType);
+procedure TStaffForm.StaffMainEditFormOpen(const AEditingType: TEditingType);
 var
   StaffMainEditForm: TStaffMainEditForm;
 begin
   StaffMainEditForm:= TStaffMainEditForm.Create(nil);
   try
-    StaffMainEditForm.StaffID:= 0;
-    if EditingType=etEdit then
+    if AEditingType=etEdit then
     begin
       StaffMainEditForm.StaffID:= StaffIDs[StaffList.SelectedIndex];
       StaffMainEditForm.FamilyEdit.Text:= Families[StaffList.SelectedIndex];
       StaffMainEditForm.NameEdit.Text:= Names[StaffList.SelectedIndex];
       StaffMainEditForm.PatronymicEdit.Text:= Patronymics[StaffList.SelectedIndex];
-      StaffMainEditForm.BornDateTimePicker.Date:= BornDates[StaffList.SelectedIndex];
+      StaffMainEditForm.BornDatePicker.Date:= BornDates[StaffList.SelectedIndex];
       StaffMainEditForm.GenderComboBox.ItemIndex:= Genders[StaffList.SelectedIndex];
     end;
     if StaffMainEditForm.ShowModal=mrOK then
       StaffListLoad(StaffMainEditForm.StaffID);
   finally
     FreeAndNil(StaffMainEditForm);
+  end;
+end;
+
+procedure TStaffForm.StaffTabNumEditFormOpen(const AEditingType: TEditingType);
+var
+  StaffTabNumEditForm: TStaffTabNumEditForm;
+begin
+  StaffTabNumEditForm:= TStaffTabNumEditForm.Create(nil);
+  try
+    StaffTabNumEditForm.EditingType:= AEditingType;
+    StaffTabNumEditForm.StaffID:= StaffIDs[StaffList.SelectedIndex];
+    case AEditingType of
+      etAdd:
+        begin
+          StaffTabNumEditForm.RecrutDatePicker.Date:= Date;
+          StaffTabNumEditForm.DismissDatePicker.Date:= INFDATE;
+          StaffTabNumEditForm.DismissDatePicker.Enabled:= False;
+        end;
+      etEdit:
+        begin
+          StaffTabNumEditForm.PostID:= TabNumListPostIDs[TabNumList.SelectedIndex];
+          StaffTabNumEditForm.TabNumID:= TabNumListTabNumIDs[TabNumList.SelectedIndex];
+          StaffTabNumEditForm.TabNumEdit.Text:= TabNumListTabNums[TabNumList.SelectedIndex];
+          StaffTabNumEditForm.RankEdit.Text:= TabNumListRanks[TabNumList.SelectedIndex];
+          StaffTabNumEditForm.RecrutDatePicker.Date:= TabNumListRecrutDates[TabNumList.SelectedIndex];
+          StaffTabNumEditForm.DismissDatePicker.Date:= INFDATE;
+          StaffTabNumEditForm.DismissDatePicker.Enabled:= False;
+        end;
+      etCustom:
+        begin //Dismiss
+          StaffTabNumEditForm.PostID:= TabNumListPostIDs[TabNumList.SelectedIndex];
+          StaffTabNumEditForm.TabNumID:= TabNumListTabNumIDs[TabNumList.SelectedIndex];
+          StaffTabNumEditForm.TabNumEdit.Text:= TabNumListTabNums[TabNumList.SelectedIndex];
+          StaffTabNumEditForm.TabNumEdit.Enabled:= False;
+          StaffTabNumEditForm.RankEdit.Text:= TabNumListRanks[TabNumList.SelectedIndex];
+          StaffTabNumEditForm.RankEdit.Enabled:= False;
+          StaffTabNumEditForm.RecrutDatePicker.Date:= TabNumListRecrutDates[TabNumList.SelectedIndex];
+          StaffTabNumEditForm.RecrutDatePicker.Enabled:= False;
+          StaffTabNumEditForm.DismissDatePicker.Date:= Date;
+          StaffTabNumEditForm.DismissDatePicker.MinDate:= StaffTabNumEditForm.RecrutDatePicker.Date;
+        end;
+    end;
+
+    if StaffTabNumEditForm.ShowModal=mrOK then
+      TabNumListLoad(StaffTabNumEditForm.TabNumID);
+  finally
+    FreeAndNil(StaffTabNumEditForm);
   end;
 end;
 

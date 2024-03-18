@@ -13,7 +13,7 @@ uses
   Forms, UMainForm, UCalendarForm, lazcontrols, datetimectrls, UDBUtils,
   UStaffForm, UShiftScheduleForm, UVacationPlaneForm, UPersonalScheduleForm,
   UTimetableForm, USIZForm, USSOForm, UStudyForm, UConst, UTypes,
-  UStaffMainEditForm, UUtils;
+  UStaffMainEditForm, UUtils, UStaffTabNumEditForm;
 
 {$R *.res}
 
