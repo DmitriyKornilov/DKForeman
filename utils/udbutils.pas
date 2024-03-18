@@ -78,6 +78,9 @@ type
                           const ARecrutDate: TDate): Boolean;
     {Удаление таб. номера: True - ОК, False - ошибка}
     function StaffTabNumDelete(const ATabNumID: Integer): Boolean;
+    {Проверка наличия таб. номера в записи с ID<>ATabNumID: True - да, False - нет}
+    function StaffTabNumIsExists(const ATabNumID: Integer; const ATabNum: String): Boolean;
+
 
 
     {Список переводов по ID таб. номера: True - ОК, False - список пуст}
@@ -481,6 +484,12 @@ end;
 function TDataBase.StaffTabNumDelete(const ATabNumID: Integer): Boolean;
 begin
   Result:= Delete('STAFFTABNUM', 'TabNumID', ATabNumID);
+end;
+
+function TDataBase.StaffTabNumIsExists(const ATabNumID: Integer; const ATabNum: String): Boolean;
+begin
+  Result:= IsValueInTableNotMatchInt32ID('STAFFTABNUM', 'TabNum', ATabNum,
+                                         'TabNumID', ATabNumID);
 end;
 
 function TDataBase.StaffPostLogListLoad(const ATabNumID: Integer;

@@ -544,6 +544,8 @@ var
 begin
   StaffMainEditForm:= TStaffMainEditForm.Create(nil);
   try
+    StaffMainEditForm.EditingType:= AEditingType;
+    StaffMainEditForm.BornDatePicker.Date:= Date;
     if AEditingType=etEdit then
     begin
       StaffMainEditForm.StaffID:= StaffIDs[StaffList.SelectedIndex];

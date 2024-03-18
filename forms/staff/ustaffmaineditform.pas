@@ -10,7 +10,7 @@ uses
   //DK packages utils
   DK_StrUtils, DK_Dialogs,
   //Project utils
-  UDBUtils;
+  UDBUtils, UTypes;
 
 type
 
@@ -43,6 +43,7 @@ type
     CanFormClose: Boolean;
   public
     StaffID: Integer;
+    EditingType: TEditingType;
   end;
 
 var
@@ -62,7 +63,6 @@ end;
 procedure TStaffMainEditForm.FormShow(Sender: TObject);
 begin
   CanFormClose:= True;
-  if StaffID=0 then BornDatePicker.Date:= Date;
   FamilyEdit.SetFocus;
 end;
 
@@ -114,7 +114,7 @@ begin
 
   PatronymicValue:= STrim(PatronymicEdit.Text);
 
-  if StaffID=0 then //add
+  if EditingType=etAdd then //add
     CanFormClose:= DataBase.StaffMainAdd(StaffID, FamilyValue, NameValue, PatronymicValue,
                                          BornDatePicker.Date, GenderComboBox.ItemIndex)
   else //edit

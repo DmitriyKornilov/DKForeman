@@ -106,7 +106,8 @@ begin
     ShowInfo('Не указан табельный номер!');
     Exit;
   end;
-  //проверка табельного номера!!!
+  if DataBase.StaffTabNumIsExists(TabNumID, TabNum) then
+    if not Confirm('Табельный номер "' + TabNum + '" уже был назначен! Всё равно сохранить?') then Exit;
 
   PostID:= PostIDs[PostComboBox.ItemIndex];
   Rank:= STrim(RankEdit.Text);

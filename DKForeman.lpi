@@ -166,6 +166,7 @@
         <Filename Value="forms\staff\ustafftabnumeditform.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="StaffTabNumEditForm"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UStaffTabNumEditForm"/>
       </Unit>
