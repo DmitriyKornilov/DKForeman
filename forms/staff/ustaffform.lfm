@@ -2,10 +2,10 @@ object StaffForm: TStaffForm
   Left = 383
   Height = 349
   Top = 141
-  Width = 886
+  Width = 890
   Caption = 'StaffForm'
   ClientHeight = 349
-  ClientWidth = 886
+  ClientWidth = 890
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   LCLVersion = '2.2.4.0'
@@ -13,7 +13,7 @@ object StaffForm: TStaffForm
     Left = 2
     Height = 32
     Top = 2
-    Width = 882
+    Width = 886
     Align = alTop
     BorderSpacing.Left = 2
     BorderSpacing.Top = 2
@@ -21,14 +21,14 @@ object StaffForm: TStaffForm
     BevelOuter = bvNone
     BorderStyle = bsSingle
     ClientHeight = 28
-    ClientWidth = 878
+    ClientWidth = 882
     Constraints.MaxHeight = 32
     Constraints.MinHeight = 32
     ParentFont = False
     TabOrder = 0
     object CloseButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 846
+      Left = 850
       Height = 28
       Top = 0
       Width = 32
@@ -114,7 +114,7 @@ object StaffForm: TStaffForm
       OnClick = CloseButtonClick
     end
     object Bevel1: TBevel
-      Left = 842
+      Left = 846
       Height = 28
       Top = 0
       Width = 2
@@ -390,17 +390,17 @@ object StaffForm: TStaffForm
     Left = 247
     Height = 315
     Top = 34
-    Width = 639
+    Width = 643
     Align = alClient
     BevelOuter = bvNone
     ClientHeight = 315
-    ClientWidth = 639
+    ClientWidth = 643
     TabOrder = 3
     object ListPanel: TPanel
       Left = 2
       Height = 311
       Top = 2
-      Width = 458
+      Width = 462
       Align = alClient
       BorderSpacing.Left = 2
       BorderSpacing.Top = 2
@@ -409,13 +409,13 @@ object StaffForm: TStaffForm
       BevelOuter = bvNone
       Caption = 'ListPanel'
       ClientHeight = 311
-      ClientWidth = 458
+      ClientWidth = 462
       TabOrder = 0
       object StaffVT: TVirtualStringTree
         Left = 0
         Height = 277
         Top = 34
-        Width = 458
+        Width = 462
         Align = alClient
         DefaultNodeHeight = 20
         DefaultText = 'Node'
@@ -429,13 +429,13 @@ object StaffForm: TStaffForm
         Left = 0
         Height = 32
         Top = 0
-        Width = 458
+        Width = 462
         Align = alTop
         BorderSpacing.Bottom = 2
         BevelOuter = bvNone
         BorderStyle = bsSingle
         ClientHeight = 28
-        ClientWidth = 454
+        ClientWidth = 458
         Constraints.MaxHeight = 32
         Constraints.MinHeight = 32
         ParentFont = False
@@ -618,6 +618,7 @@ object StaffForm: TStaffForm
             0000000000000000000000000000000000000000000000000000000000000000
             0000000000000000000000000000000000000000000000000000
           }
+          OnClick = ListDelButtonClick
           ShowHint = True
           ParentShowHint = False
         end
@@ -728,13 +729,13 @@ object StaffForm: TStaffForm
           Left = 102
           Height = 28
           Top = 0
-          Width = 352
+          Width = 356
           Align = alLeft
           Anchors = [akTop, akLeft, akRight, akBottom]
           AutoSize = True
           BevelOuter = bvNone
           ClientHeight = 28
-          ClientWidth = 352
+          ClientWidth = 356
           TabOrder = 0
           object FilterLabel: TLabel
             AnchorSideLeft.Control = FilterPanel
@@ -759,7 +760,7 @@ object StaffForm: TStaffForm
             Left = 108
             Height = 23
             Top = 3
-            Width = 242
+            Width = 246
             Anchors = [akTop, akLeft, akRight]
             BorderSpacing.Left = 6
             BorderSpacing.Right = 2
@@ -814,7 +815,7 @@ object StaffForm: TStaffForm
       end
     end
     object EditingSplitter: TSplitter
-      Left = 462
+      Left = 466
       Height = 315
       Top = 0
       Width = 5
@@ -823,7 +824,7 @@ object StaffForm: TStaffForm
       ResizeStyle = rsLine
     end
     object EditingPanel: TPanel
-      Left = 467
+      Left = 471
       Height = 311
       Top = 2
       Width = 170

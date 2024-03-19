@@ -11,6 +11,7 @@ uses
   UDBUtils, UConst, UTypes, UUtils,
   //DK packages utils
   DK_VSTTables, DK_VSTTools, DK_Vector, DK_CtrlUtils, DK_StrUtils, DK_Const,
+  DK_Dialogs,
   //Forms
   UStaffMainEditForm, UStaffTabNumEditForm;
 
@@ -65,6 +66,7 @@ type
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure ListAddButtonClick(Sender: TObject);
+    procedure ListDelButtonClick(Sender: TObject);
     procedure ListEditButtonClick(Sender: TObject);
     procedure StaffVTNodeDblClick(Sender: TBaseVirtualTree;
       const {%H-}HitInfo: THitInfo);
@@ -219,6 +221,18 @@ begin
   StaffMainEditFormOpen(etAdd);
 end;
 
+procedure TStaffForm.ListDelButtonClick(Sender: TObject);
+var
+  S: String;
+begin
+  S:= SNameLong(Families[StaffList.SelectedIndex], Names[StaffList.SelectedIndex],
+                Patronymics[StaffList.SelectedIndex]) +
+      FormatDateTime(' dd.mm.yyyy г.р.', BornDates[StaffList.SelectedIndex]);
+  if not Confirm('Удалить всю информацию по "' + S + '"?') then Exit;
+  DataBase.StaffMainDelete(StaffIDs[StaffList.SelectedIndex]);
+  StaffListLoad;
+end;
+
 procedure TStaffForm.ListEditButtonClick(Sender: TObject);
 begin
   StaffMainEditFormOpen(etEdit);
@@ -236,8 +250,13 @@ begin
 end;
 
 procedure TStaffForm.TabNumDelButtonClick(Sender: TObject);
+var
+  S: String;
 begin
-
+  S:= TabNumListTabNums[TabNumList.SelectedIndex];
+  if not Confirm('Удалить всю информацию по табельному номеру "' + S + '"?') then Exit;
+  DataBase.StaffTabNumDelete(TabNumListTabNumIDs[TabNumList.SelectedIndex]);
+  TabNumListLoad;
 end;
 
 procedure TStaffForm.TabNumAddButtonClick(Sender: TObject);

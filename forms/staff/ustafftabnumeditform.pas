@@ -94,23 +94,26 @@ var
 begin
   CanFormClose:= False;
 
-  if SEmpty(PostComboBox.Text) then
+  if EditingType<>etCustom then //not Dismiss
   begin
-    ShowInfo('Не указана должность!');
-    Exit;
-  end;
+    if SEmpty(PostComboBox.Text) then
+    begin
+      ShowInfo('Не указана должность!');
+      Exit;
+    end;
 
-  TabNum:= STrim(TabNumEdit.Text);
-  if SEmpty(TabNum) then
-  begin
-    ShowInfo('Не указан табельный номер!');
-    Exit;
-  end;
-  if DataBase.StaffTabNumIsExists(TabNumID, TabNum) then
-    if not Confirm('Табельный номер "' + TabNum + '" уже был назначен! Всё равно сохранить?') then Exit;
+    TabNum:= STrim(TabNumEdit.Text);
+    if SEmpty(TabNum) then
+    begin
+      ShowInfo('Не указан табельный номер!');
+      Exit;
+    end;
+    if DataBase.StaffTabNumIsExists(TabNumID, TabNum) then
+      if not Confirm('Табельный номер "' + TabNum + '" уже был назначен! Всё равно сохранить?') then Exit;
 
-  PostID:= PostIDs[PostComboBox.ItemIndex];
-  Rank:= STrim(RankEdit.Text);
+    PostID:= PostIDs[PostComboBox.ItemIndex];
+    Rank:= STrim(RankEdit.Text);
+  end;
 
   case EditingType of
     etAdd:
@@ -121,7 +124,7 @@ begin
                                              TabNum, Rank, RecrutDatePicker.Date);
 
     etCustom: //Dismiss
-      CanFormClose:= True{!!!};
+      CanFormClose:= DataBase.StaffTabNumDismiss(TabNumID, DismissDatePicker.Date);
   end;
 
   if CanFormClose then

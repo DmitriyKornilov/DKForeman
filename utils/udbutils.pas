@@ -76,6 +76,10 @@ type
     function StaffTabNumUpdate(const ATabNumID, APostID: Integer;
                           const ATabNum, ARank: String;
                           const ARecrutDate: TDate): Boolean;
+    {Обновление даты увольнения таб. номера: True - ОК, False - ошибка}
+    function StaffTabNumDismiss(const ATabNumID: Integer; const ADismissDate: TDate): Boolean;
+    {Отмена увольнения таб. номера: True - ОК, False - ошибка}
+    function StaffTabNumDismissCancel(const ATabNumID: Integer): Boolean;
     {Удаление таб. номера: True - ОК, False - ошибка}
     function StaffTabNumDelete(const ATabNumID: Integer): Boolean;
     {Проверка наличия таб. номера в записи с ID<>ATabNumID: True - да, False - нет}
@@ -479,6 +483,34 @@ begin
   except
     QRollback;
   end;
+end;
+
+function TDataBase.StaffTabNumDismiss(const ATabNumID: Integer; const ADismissDate: TDate): Boolean;
+begin
+  Result:= UpdateInt32ID('STAFFTABNUM', 'DismissDate', 'TabNumID', ATabNumID, ADismissDate);
+
+  //Result:= False;
+  //QSetQuery(FQuery);
+  //try
+  //  //обновление даты увольнения в таблице таб. номеров
+  //  QSetSQL(
+  //    sqlUPDATE('STAFFTABNUM', ['DismissDate']) +
+  //    'WHERE TabNumID = :TabNumID'
+  //  );
+  //  QParamInt('TabNumID', ATabNumID);
+  //  QParamDT('DismissDate', ADismissDate);
+  //  QExec;
+  //
+  //  QCommit;
+  //  Result:= True;
+  //except
+  //  QRollback;
+  //end;
+end;
+
+function TDataBase.StaffTabNumDismissCancel(const ATabNumID: Integer): Boolean;
+begin
+  StaffTabNumDismiss(ATabNumID, INFDATE);
 end;
 
 function TDataBase.StaffTabNumDelete(const ATabNumID: Integer): Boolean;
