@@ -9,7 +9,6 @@ object StaffMainEditForm: TStaffMainEditForm
   ClientWidth = 280
   Constraints.MinHeight = 160
   Constraints.MinWidth = 240
-  OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   OnShow = FormShow
   Position = poScreenCenter

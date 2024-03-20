@@ -33,14 +33,13 @@ type
     SaveButton: TSpeedButton;
     procedure CancelButtonClick(Sender: TObject);
     procedure FamilyEditKeyDown(Sender: TObject; var Key: Word; {%H-}Shift: TShiftState);
-    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure NameEditKeyDown(Sender: TObject; var Key: Word; {%H-}Shift: TShiftState);
     procedure PatronymicEditKeyDown(Sender: TObject; var Key: Word; {%H-}Shift: TShiftState);
     procedure SaveButtonClick(Sender: TObject);
   private
-    CanFormClose: Boolean;
+
   public
     StaffID: Integer;
     EditingType: TEditingType;
@@ -62,24 +61,17 @@ end;
 
 procedure TStaffMainEditForm.FormShow(Sender: TObject);
 begin
-  CanFormClose:= True;
   FamilyEdit.SetFocus;
 end;
 
 procedure TStaffMainEditForm.CancelButtonClick(Sender: TObject);
 begin
-  CanFormClose:= True;
   ModalResult:= mrCancel;
 end;
 
 procedure TStaffMainEditForm.FamilyEditKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 begin
   if Key=VK_RETURN then NameEdit.SetFocus;
-end;
-
-procedure TStaffMainEditForm.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
-begin
-  CanClose:= CanFormClose;
 end;
 
 procedure TStaffMainEditForm.NameEditKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
@@ -94,9 +86,10 @@ end;
 
 procedure TStaffMainEditForm.SaveButtonClick(Sender: TObject);
 var
+  IsOK: Boolean;
   FamilyValue, NameValue, PatronymicValue: String;
 begin
-  CanFormClose:= False;
+  IsOK:= False;
 
   FamilyValue:= STrim(FamilyEdit.Text);
   if FamilyValue=EmptyStr then
@@ -114,14 +107,17 @@ begin
 
   PatronymicValue:= STrim(PatronymicEdit.Text);
 
-  if EditingType=etAdd then //add
-    CanFormClose:= DataBase.StaffMainAdd(StaffID, FamilyValue, NameValue, PatronymicValue,
-                                         BornDatePicker.Date, GenderComboBox.ItemIndex)
-  else //edit
-    CanFormClose:= DataBase.StaffMainUpdate(StaffID, FamilyValue, NameValue, PatronymicValue,
+  case EditingType of
+    etAdd:
+      IsOK:= DataBase.StaffMainAdd(StaffID, FamilyValue, NameValue, PatronymicValue,
                                          BornDatePicker.Date, GenderComboBox.ItemIndex);
-  if CanFormClose then
-    ModalResult:= mrOK;
+    etEdit:
+      IsOK:= DataBase.StaffMainUpdate(StaffID, FamilyValue, NameValue, PatronymicValue,
+                                         BornDatePicker.Date, GenderComboBox.ItemIndex);
+  end;
+
+  if not IsOK then Exit;
+  ModalResult:= mrOK;
 end;
 
 end.

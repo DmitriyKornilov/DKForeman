@@ -13,7 +13,7 @@ uses
   DK_VSTTables, DK_VSTTools, DK_Vector, DK_CtrlUtils, DK_StrUtils, DK_Const,
   DK_Dialogs,
   //Forms
-  UStaffMainEditForm, UStaffTabNumEditForm;
+  UStaffMainEditForm, UStaffTabNumEditForm, UStaffPostlogEditForm;
 
 
 type
@@ -69,14 +69,17 @@ type
     procedure ListAddButtonClick(Sender: TObject);
     procedure ListDelButtonClick(Sender: TObject);
     procedure ListEditButtonClick(Sender: TObject);
-    procedure StaffVTNodeDblClick(Sender: TBaseVirtualTree;
-      const {%H-}HitInfo: THitInfo);
+    procedure PostLogAddButtonClick(Sender: TObject);
+    procedure PostLogEditButtonClick(Sender: TObject);
+    procedure PostLogVTNodeDblClick(Sender: TBaseVirtualTree; const {%H-}HitInfo: THitInfo);
+    procedure StaffVTNodeDblClick(Sender: TBaseVirtualTree; const {%H-}HitInfo: THitInfo);
     procedure PostButtonClick(Sender: TObject);
     procedure TabNumAddButtonClick(Sender: TObject);
     procedure TabNumDelButtonClick(Sender: TObject);
     procedure TabNumDismissButtonClick(Sender: TObject);
     procedure TabNumDismissCancelButtonClick(Sender: TObject);
     procedure TabNumEditButtonClick(Sender: TObject);
+    procedure TabNumVTNodeDblClick(Sender: TBaseVirtualTree; const {%H-}HitInfo: THitInfo);
   private
     ModeType: TModeType;
 
@@ -125,6 +128,8 @@ type
 
     procedure StaffMainEditFormOpen(const AEditingType: TEditingType);
     procedure StaffTabNumEditFormOpen(const AEditingType: TEditingType);
+    procedure StaffTabNumDismissCancel;
+    procedure StaffPostLogEditFormOpen(const AEditingType: TEditingType);
   public
     procedure ChangeMode(const AModeType: TModeType);
   end;
@@ -241,6 +246,22 @@ begin
   StaffMainEditFormOpen(etEdit);
 end;
 
+procedure TStaffForm.PostLogAddButtonClick(Sender: TObject);
+begin
+  StaffPostLogEditFormOpen(etAdd);
+end;
+
+procedure TStaffForm.PostLogEditButtonClick(Sender: TObject);
+begin
+  StaffPostLogEditFormOpen(etEdit);
+end;
+
+procedure TStaffForm.PostLogVTNodeDblClick(Sender: TBaseVirtualTree; const HitInfo: THitInfo);
+begin
+  if not PostLog.IsSelected then Exit;
+  StaffPostLogEditFormOpen(etEdit);
+end;
+
 procedure TStaffForm.StaffVTNodeDblClick(Sender: TBaseVirtualTree; const HitInfo: THitInfo);
 begin
   if not StaffList.IsSelected then Exit;
@@ -272,19 +293,23 @@ begin
   StaffTabNumEditFormOpen(etEdit);
 end;
 
+procedure TStaffForm.TabNumVTNodeDblClick(Sender: TBaseVirtualTree; const HitInfo: THitInfo);
+begin
+  if (not TabNumList.IsSelected) then Exit;
+  if SameDate(INFDATE, TabNumListDismissDates[TabNumList.SelectedIndex]) then
+    StaffTabNumEditFormOpen(etEdit)
+  else
+    StaffTabNumDismissCancel;
+end;
+
 procedure TStaffForm.TabNumDismissButtonClick(Sender: TObject);
 begin
   StaffTabNumEditFormOpen(etCustom);
 end;
 
 procedure TStaffForm.TabNumDismissCancelButtonClick(Sender: TObject);
-var
-  S: String;
 begin
-  S:= TabNumListTabNums[TabNumList.SelectedIndex];
-  if not Confirm('Отменить увольнение по табельному номеру "' + S + '"?') then Exit;
-  DataBase.StaffTabNumDismissCancel(TabNumListTabNumIDs[TabNumList.SelectedIndex]);
-  TabNumListLoad(TabNumListTabNumIDs[TabNumList.SelectedIndex]);
+  StaffTabNumDismissCancel;
 end;
 
 procedure TStaffForm.OrderTypeCreate;
@@ -512,14 +537,12 @@ end;
 
 procedure TStaffForm.TabNumListSelect;
 begin
-  TabNumDelButton.Enabled:= TabNumList.IsSelected;
-  TabNumEditButton.Enabled:= TabNumList.IsSelected;
-  TabNumDismissButton.Enabled:= TabNumList.IsSelected;
   TabNumDismissButton.Visible:= TabNumList.IsSelected and
              SameDate(INFDATE, TabNumListDismissDates[TabNumList.SelectedIndex]);
-  TabNumDelButton.Visible:= TabNumDismissButton.Visible;
-  TabNumEditButton.Visible:= TabNumDismissButton.Visible;
   TabNumDismissCancelButton.Visible:= not TabNumDismissButton.Visible;
+  TabNumDelButton.Enabled:= TabNumDismissButton.Visible;
+  TabNumEditButton.Enabled:= TabNumDismissButton.Visible;
+  TabNumDismissButton.Enabled:= TabNumList.IsSelected;
   PostLogLoad;
 end;
 
@@ -570,9 +593,9 @@ end;
 
 procedure TStaffForm.PostLogSelect;
 begin
-  PostLogAddButton.Enabled:= PostLog.SelectedIndex=0;
-  PostLogDelButton.Enabled:= PostLog.IsSelected;
-  PostLogEditButton.Enabled:= PostLog.IsSelected;
+  PostLogAddButton.Enabled:= TabNumDismissButton.Visible and (PostLog.SelectedIndex=0);
+  PostLogDelButton.Enabled:= TabNumDismissButton.Visible and PostLog.IsSelected;
+  PostLogEditButton.Enabled:= PostLogDelButton.Enabled;
 end;
 
 procedure TStaffForm.StaffMainEditFormOpen(const AEditingType: TEditingType);
@@ -643,6 +666,40 @@ begin
       TabNumListLoad(StaffTabNumEditForm.TabNumID);
   finally
     FreeAndNil(StaffTabNumEditForm);
+  end;
+end;
+
+procedure TStaffForm.StaffTabNumDismissCancel;
+var
+  S: String;
+begin
+  S:= TabNumListTabNums[TabNumList.SelectedIndex];
+  if not Confirm('Отменить увольнение по табельному номеру "' + S + '"?') then Exit;
+  DataBase.StaffTabNumDismissCancel(TabNumListTabNumIDs[TabNumList.SelectedIndex]);
+  TabNumListLoad(TabNumListTabNumIDs[TabNumList.SelectedIndex]);
+end;
+
+procedure TStaffForm.StaffPostLogEditFormOpen(const AEditingType: TEditingType);
+var
+  StaffPostLogEditForm: TStaffPostLogEditForm;
+begin
+  StaffPostLogEditForm:= TStaffPostLogEditForm.Create(nil);
+  try
+    StaffPostLogEditForm.EditingType:= AEditingType;
+    //StaffPostLogEditForm.BornDatePicker.Date:= Date;
+    //if AEditingType=etEdit then
+    //begin
+    //  StaffPostLogEditForm.StaffID:= StaffIDs[StaffList.SelectedIndex];
+    //  StaffPostLogEditForm.FamilyEdit.Text:= Families[StaffList.SelectedIndex];
+    //  StaffPostLogEditForm.NameEdit.Text:= Names[StaffList.SelectedIndex];
+    //  StaffPostLogEditForm.PatronymicEdit.Text:= Patronymics[StaffList.SelectedIndex];
+    //  StaffPostLogEditForm.BornDatePicker.Date:= BornDates[StaffList.SelectedIndex];
+    //  StaffPostLogEditForm.GenderComboBox.ItemIndex:= Genders[StaffList.SelectedIndex];
+    //end;
+    if StaffPostLogEditForm.ShowModal=mrOK then
+      PostLogLoad(StaffPostLogEditForm.PostLogID);
+  finally
+    FreeAndNil(StaffPostLogEditForm);
   end;
 end;
 

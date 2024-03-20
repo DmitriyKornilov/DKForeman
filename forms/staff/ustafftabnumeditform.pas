@@ -32,12 +32,10 @@ type
     PostLabel: TLabel;
     RankLabel: TLabel;
     procedure CancelButtonClick(Sender: TObject);
-    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure SaveButtonClick(Sender: TObject);
   private
-    CanFormClose: Boolean;
     PostIDs: TIntVector;
   public
     EditingType: TEditingType; //etCustom - уволить (изменить дату увольнения)
@@ -65,18 +63,11 @@ end;
 
 procedure TStaffTabNumEditForm.CancelButtonClick(Sender: TObject);
 begin
-  CanFormClose:= True;
   ModalResult:= mrCancel;
-end;
-
-procedure TStaffTabNumEditForm.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
-begin
-  CanClose:= CanFormClose;
 end;
 
 procedure TStaffTabNumEditForm.FormShow(Sender: TObject);
 begin
-  CanFormClose:= True;
   DataBase.PostDictionaryLoad(PostComboBox, PostIDs, PostID);
 
   if EditingType=etCustom then
@@ -85,14 +76,15 @@ begin
     DismissDatePicker.SetFocus;
   end
   else
-    TabNumEdit.SetFocus;
+    PostComboBox.SetFocus;
 end;
 
 procedure TStaffTabNumEditForm.SaveButtonClick(Sender: TObject);
 var
+  IsOK: Boolean;
   TabNum, Rank: String;
 begin
-  CanFormClose:= False;
+  IsOK:= False;
 
   if EditingType<>etCustom then //not Dismiss
   begin
@@ -117,18 +109,18 @@ begin
 
   case EditingType of
     etAdd:
-      CanFormClose:= DataBase.StaffTabNumAdd(TabNumID, StaffID, PostID,
+      IsOK:= DataBase.StaffTabNumAdd(TabNumID, StaffID, PostID,
                                              TabNum, Rank, RecrutDatePicker.Date);
     etEdit:
-      CanFormClose:= DataBase.StaffTabNumUpdate(TabNumID, PostID,
+      IsOK:= DataBase.StaffTabNumUpdate(TabNumID, PostID,
                                              TabNum, Rank, RecrutDatePicker.Date);
 
     etCustom: //Dismiss
-      CanFormClose:= DataBase.StaffTabNumDismiss(TabNumID, DismissDatePicker.Date);
+      IsOK:= DataBase.StaffTabNumDismiss(TabNumID, DismissDatePicker.Date);
   end;
 
-  if CanFormClose then
-    ModalResult:= mrOK;
+  if not IsOK then Exit;
+  ModalResult:= mrOK;
 end;
 
 end.

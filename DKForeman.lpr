@@ -13,7 +13,7 @@ uses
   Forms, UMainForm, UCalendarForm, lazcontrols, datetimectrls, UDBUtils,
   UStaffForm, UShiftScheduleForm, UVacationPlaneForm, UPersonalScheduleForm,
   UTimetableForm, USIZForm, USSOForm, UStudyForm, UConst, UTypes,
-  UStaffMainEditForm, UUtils, UStaffTabNumEditForm;
+  UStaffMainEditForm, UUtils, UStaffTabNumEditForm, UStaffPostLogEditForm;
 
 {$R *.res}
 
@@ -22,6 +22,7 @@ begin
   Application.Scaled:=True;
   Application.Initialize;
   Application.CreateForm(TMainForm, MainForm);
+  Application.CreateForm(TStaffPostlogEditForm, StaffPostlogEditForm);
   Application.Run;
 end.
 
