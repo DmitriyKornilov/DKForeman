@@ -29,6 +29,8 @@ lib/
 # Application specific
 work/
 *.db
+*.db-shm
+*.db-wal
 *.trc
 
 # Application bundle for Mac OS

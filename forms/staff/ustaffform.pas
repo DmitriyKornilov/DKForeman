@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, Buttons,
-  StdCtrls, EditBtn, VirtualTrees,
+  StdCtrls, EditBtn, VirtualTrees, DateUtils,
   //Project utils
   UDBUtils, UConst, UTypes, UUtils,
   //DK packages utils
@@ -29,6 +29,7 @@ type
     FilterLabel: TLabel;
     FilterPanel: TPanel;
     ListAddButton: TSpeedButton;
+    TabNumDismissCancelButton: TSpeedButton;
     TabNumVT: TVirtualStringTree;
     TabNumAddButton: TSpeedButton;
     PostLogAddButton: TSpeedButton;
@@ -74,6 +75,7 @@ type
     procedure TabNumAddButtonClick(Sender: TObject);
     procedure TabNumDelButtonClick(Sender: TObject);
     procedure TabNumDismissButtonClick(Sender: TObject);
+    procedure TabNumDismissCancelButtonClick(Sender: TObject);
     procedure TabNumEditButtonClick(Sender: TObject);
   private
     ModeType: TModeType;
@@ -187,6 +189,7 @@ begin
   ControlWidth(TabNumDelButton, TOOL_BUTTON_WIDTH_DEFAULT);
   ControlWidth(TabNumEditButton, TOOL_BUTTON_WIDTH_DEFAULT);
   ControlWidth(TabNumDismissButton, TOOL_BUTTON_WIDTH_DEFAULT);
+  ControlWidth(TabNumDismissCancelButton, TOOL_BUTTON_WIDTH_DEFAULT);
 
   ControlHeight(PostLogToolPanel, TOOL_PANEL_HEIGHT_DEFAULT);
   ControlWidth(PostLogAddButton, TOOL_BUTTON_WIDTH_DEFAULT);
@@ -272,6 +275,16 @@ end;
 procedure TStaffForm.TabNumDismissButtonClick(Sender: TObject);
 begin
   StaffTabNumEditFormOpen(etCustom);
+end;
+
+procedure TStaffForm.TabNumDismissCancelButtonClick(Sender: TObject);
+var
+  S: String;
+begin
+  S:= TabNumListTabNums[TabNumList.SelectedIndex];
+  if not Confirm('Отменить увольнение по табельному номеру "' + S + '"?') then Exit;
+  DataBase.StaffTabNumDismissCancel(TabNumListTabNumIDs[TabNumList.SelectedIndex]);
+  TabNumListLoad(TabNumListTabNumIDs[TabNumList.SelectedIndex]);
 end;
 
 procedure TStaffForm.OrderTypeCreate;
@@ -502,6 +515,11 @@ begin
   TabNumDelButton.Enabled:= TabNumList.IsSelected;
   TabNumEditButton.Enabled:= TabNumList.IsSelected;
   TabNumDismissButton.Enabled:= TabNumList.IsSelected;
+  TabNumDismissButton.Visible:= TabNumList.IsSelected and
+             SameDate(INFDATE, TabNumListDismissDates[TabNumList.SelectedIndex]);
+  TabNumDelButton.Visible:= TabNumDismissButton.Visible;
+  TabNumEditButton.Visible:= TabNumDismissButton.Visible;
+  TabNumDismissCancelButton.Visible:= not TabNumDismissButton.Visible;
   PostLogLoad;
 end;
 
