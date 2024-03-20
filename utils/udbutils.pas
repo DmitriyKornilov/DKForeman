@@ -5,7 +5,7 @@ unit UDBUtils;
 interface
 
 uses
-  Classes, SysUtils, StdCtrls,
+  Classes, SysUtils, StdCtrls, DateUtils,
 
   DK_SQLite3, DK_SQLUtils, DK_Vector, DK_Dialogs, DK_StrUtils, DK_Const;
 
@@ -15,7 +15,22 @@ type
 
   TDataBase = class (TSQLite3)
   private
-
+    {GetNextPeriodFirstDate достает из таблицы ATableName
+     начальную дату ANextPeriodFirstDate периода,
+     следующего за периодом с начальной датой AThisPeriodFirstDate
+    ADateFieldName - имя поля с начальной датой периода
+    ATabNumID - ID табельного номера
+    Если следующего периода нет, то возвращает False и ANextDate:=INFDATE+1}
+    function GetNextPeriodFirstDate(const ATableName, ADateFieldName: String;
+                             const ATabNumID: Integer;
+                             const AThisPeriodFirstDate: TDate;
+                             out ANextPeriodFirstDate: TDate): Boolean;
+    {GetPrevBeginDate - то же самое для предшествующего периода
+    Если предыдущего периода нет, возвращает False и  APrevDate:=AThisPeriodFirstDate-1}
+    function GetPrevPeriodFirstDate(const ATableName, ADateFieldName: String;
+                             const ATabNumID: Integer;
+                             const AThisPeriodFirstDate: TDate;
+                             out APrevPeriodFirstDate: TDate): Boolean;
   public
     (**************************************************************************
                                      СПРАВОЧНИКИ
@@ -89,9 +104,19 @@ type
 
     {Список переводов по ID таб. номера: True - ОК, False - список пуст}
     function StaffPostLogListLoad(const ATabNumID: Integer;
-                          out APostLogIDs, APostTemps: TIntVector;
+                          out APostLogIDs, APostIDs, APostTemps: TIntVector;
                           out APostNames, ARanks: TStrVector;
                           out AFirstDates, ALastDates: TDateVector): Boolean;
+    {Начальная дата предыдущего периода в должности, False - если предыдущего периода нет}
+    function StaffPostLogPrevPeriodFirstDate(const ATabNumID: Integer;
+                          const AThisPeriodFirstDate: TDate;
+                          out APrevPeriodFirstDate: TDate): Boolean;
+    {Начальная дата следующего периода в должности, False - если следующего периода нет}
+    function StaffPostLogNextPeriodFirstDate(const ATabNumID: Integer;
+                          const AThisPeriodFirstDate: TDate;
+                          out ANextPeriodFirstDate: TDate): Boolean;
+    {Наличие другой постоянной должности}
+    //function StaffPostLogIsOtherConstPostExists(const ATabNumID: Integer; const AFirstDate: TDate): Boolean;
   end;
 
 var
@@ -100,6 +125,58 @@ var
 implementation
 
 { TDataBase }
+
+function TDataBase.GetNextPeriodFirstDate(const ATableName, ADateFieldName: String;
+                             const ATabNumID: Integer;
+                             const AThisPeriodFirstDate: TDate;
+                             out ANextPeriodFirstDate: TDate): Boolean;
+var
+  S: String;
+begin
+  S:= SqlEsc(ADateFieldName);
+  QSetQuery(FQuery);
+  QSetSQL(
+     'SELECT'+ S +
+     'FROM' + SqlEsc(ATableName) +
+     'WHERE (TabNumID = :TabNumID) AND (' + S +' > :ThisPeriodFirstDate) ' +
+     'ORDER BY' + S +
+     'LIMIT 1');
+   QParamInt('TabNumID', ATabNumID);
+   QParamDT('ThisPeriodFirstDate', AThisPeriodFirstDate);
+   QOpen;
+   Result:= not QIsEmpty;
+   if Result then
+     ANextPeriodFirstDate:= QFieldDT(ADateFieldName)
+   else
+     ANextPeriodFirstDate:= IncDay(INFDATE, 1);
+   QClose;
+end;
+
+function TDataBase.GetPrevPeriodFirstDate(const ATableName, ADateFieldName: String;
+                             const ATabNumID: Integer;
+                             const AThisPeriodFirstDate: TDate;
+                             out APrevPeriodFirstDate: TDate): Boolean;
+var
+  S: String;
+begin
+  S:= SqlEsc(ADateFieldName);
+  QSetQuery(FQuery);
+  QSetSQL(
+   'SELECT'+ S +
+   'FROM' + SqlEsc(ATableName) +
+   'WHERE (TabNumID = :TabNumID) AND (' + S +' < :ThisPeriodFirstDate) ' +
+   'ORDER BY' + S + 'DESC ' +
+   'LIMIT 1');
+  QParamInt('TabNumID', ATabNumID);
+  QParamDT('ThisPeriodFirstDate', AThisPeriodFirstDate);
+  QOpen;
+  Result:= not QIsEmpty;
+  if Result then
+    APrevPeriodFirstDate:= QFieldDT(ADateFieldName)
+  else
+    APrevPeriodFirstDate:= IncDay(AThisPeriodFirstDate, -1);
+  QClose;
+end;
 
 procedure TDataBase.PostDictionaryLoad(const AComboBox: TComboBox;
                                        out APostIDs: TIntVector;
@@ -525,13 +602,14 @@ begin
 end;
 
 function TDataBase.StaffPostLogListLoad(const ATabNumID: Integer;
-                          out APostLogIDs, APostTemps: TIntVector;
+                          out APostLogIDs, APostIDs, APostTemps: TIntVector;
                           out APostNames, ARanks: TStrVector;
                           out AFirstDates, ALastDates: TDateVector): Boolean;
 begin
   Result:= False;
 
   APostLogIDs:= nil;
+  APostIDs:= nil;
   APostTemps:= nil;
   APostNames:= nil;
   ARanks:= nil;
@@ -542,7 +620,7 @@ begin
 
   QSetQuery(FQuery);
   QSetSQL(
-    'SELECT t1.ID, t1.FirstDate, t1.LastDate, t1.PostTemp, t1.Rank, t2.PostName ' +
+    'SELECT t1.ID, t1.FirstDate, t1.LastDate, t1.PostTemp, t1.Rank, t1.PostID, t2.PostName ' +
     'FROM STAFFPOSTLOG t1 ' +
     'INNER JOIN STAFFPOST t2 ON (t1.PostID=t2.PostID) ' +
     'WHERE TabNumID = :TabNumID ' +
@@ -556,6 +634,7 @@ begin
     while not QEOF do
     begin
       VAppend(APostLogIDs, QFieldInt('ID'));
+      VAppend(APostIDs, QFieldInt('PostID'));
       VAppend(APostTemps, QFieldInt('PostTemp'));
       VAppend(ARanks, QFieldStr('Rank'));
       VAppend(APostNames, QFieldStr('PostName'));
@@ -567,6 +646,36 @@ begin
   end;
   QClose;
 end;
+
+function TDataBase.StaffPostLogPrevPeriodFirstDate(const ATabNumID: Integer;
+                                    const AThisPeriodFirstDate: TDate;
+                                    out APrevPeriodFirstDate: TDate): Boolean;
+begin
+  Result:= GetPrevPeriodFirstDate('STAFFPOSTLOG', 'FirstDate',
+                        ATabNumID, AThisPeriodFirstDate, APrevPeriodFirstDate);
+end;
+
+function TDataBase.StaffPostLogNextPeriodFirstDate(const ATabNumID: Integer;
+                                    const AThisPeriodFirstDate: TDate;
+                                    out ANextPeriodFirstDate: TDate): Boolean;
+begin
+  Result:= GetNextPeriodFirstDate('STAFFPOSTLOG', 'FirstDate',
+                        ATabNumID, AThisPeriodFirstDate, ANextPeriodFirstDate);
+end;
+
+//function TDataBase.StaffPostLogIsOtherConstPostExists(const ATabNumID: Integer; const AFirstDate: TDate): Boolean;
+//begin
+//  QSetQuery(FQuery);
+//  QSetSQL(
+//     'SELECT FirstDate FROM STAFFPOSTLOG ' +
+//     'WHERE (TabNumID = :TabNumID) AND (FirstDate <> :FirstDate) AND (PostTemp = 0) ' +
+//     'LIMIT 1');
+//   QParamInt('TabNumID', ATabNumID);
+//   QParamDT('FirstDate', AFirstDate);
+//   QOpen;
+//   Result:= not QIsEmpty;
+//   QClose;
+//end;
 
 end.
 

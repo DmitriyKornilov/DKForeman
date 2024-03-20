@@ -99,7 +99,7 @@ type
     TabNumListTabNums, TabNumListPostNames, TabNumListRanks: TStrVector;
 
     PostLog: TVSTTable;
-    PostLogIDs, PostLogPostTemps: TIntVector;
+    PostLogIDs, PostLogPostIDs, PostLogPostTemps: TIntVector;
     PostLogFirstDates, PostLogLastDates: TDateVector;
     PostLogPostNames, PostLogRanks: TStrVector;
 
@@ -574,7 +574,7 @@ begin
   if TabNumList.IsSelected then
     TabNumID:= TabNumListTabNumIDs[TabNumList.SelectedIndex];
 
-  DataBase.StaffPostLogListLoad(TabNumID, PostLogIDs, PostLogPostTemps,
+  DataBase.StaffPostLogListLoad(TabNumID, PostLogIDs, PostLogPostIDs, PostLogPostTemps,
                             PostLogPostNames, PostLogRanks,
                             PostLogFirstDates, PostLogLastDates);
 
@@ -592,10 +592,17 @@ begin
 end;
 
 procedure TStaffForm.PostLogSelect;
+var
+  IsOK: Boolean;
 begin
-  PostLogAddButton.Enabled:= TabNumDismissButton.Visible and (PostLog.SelectedIndex=0);
-  PostLogDelButton.Enabled:= TabNumDismissButton.Visible and PostLog.IsSelected;
-  PostLogEditButton.Enabled:= PostLogDelButton.Enabled;
+  IsOK:= TabNumDismissButton.Visible {не уволен} and PostLog.IsSelected;
+  PostLogAddButton.Enabled:= IsOK and (PostLog.SelectedIndex=0 {последняя запись});
+  PostLogDelButton.Enabled:= IsOK and (PostLog.SelectedIndex<High(PostLogIDs) {не самая первая должность});
+    //(PostLogPostTemps[PostLog.SelectedIndex]=1 or  {это временная должность или есть другая постоянная}
+    // DataBase.StaffPostLogIsOtherConstPostExists(TabNumListTabNumIDs[TabNumList.SelectedIndex],
+    //                                            PostLogFirstDates[PostLog.SelectedIndex]));
+  PostLogEditButton.Enabled:= IsOK and (Length(PostLogIDs)>1); //and (PostLog.SelectedIndex>0 {не самая последняя должность});
+                              //(PostLog.SelectedIndex<High(PostLogIDs) {не самая первая должность});
 end;
 
 procedure TStaffForm.StaffMainEditFormOpen(const AEditingType: TEditingType);
@@ -686,6 +693,10 @@ begin
   StaffPostLogEditForm:= TStaffPostLogEditForm.Create(nil);
   try
     StaffPostLogEditForm.EditingType:= AEditingType;
+    StaffPostLogEditForm.TabNumID:= TabNumListTabNumIDs[TabNumList.SelectedIndex];
+    StaffPostLogEditForm.PostID:= PostLogPostIDs[PostLog.SelectedIndex];
+    StaffPostLogEditForm.PostLogID:= PostLogIDs[PostLog.SelectedIndex];
+    StaffPostLogEditForm.FirstDatePicker.Date:= PostLogFirstDates[PostLog.SelectedIndex];
     //StaffPostLogEditForm.BornDatePicker.Date:= Date;
     //if AEditingType=etEdit then
     //begin
@@ -701,6 +712,10 @@ begin
   finally
     FreeAndNil(StaffPostLogEditForm);
   end;
+
+  {DataBase.StaffPostLogListLoad(TabNumID, PostLogIDs, PostLogPostIDs, PostLogPostTemps,
+                            PostLogPostNames, PostLogRanks,
+                            PostLogFirstDates, PostLogLastDates);}
 end;
 
 procedure TStaffForm.ChangeMode(const AModeType: TModeType);

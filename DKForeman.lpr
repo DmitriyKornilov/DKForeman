@@ -22,7 +22,6 @@ begin
   Application.Scaled:=True;
   Application.Initialize;
   Application.CreateForm(TMainForm, MainForm);
-  Application.CreateForm(TStaffPostlogEditForm, StaffPostlogEditForm);
   Application.Run;
 end.
 
