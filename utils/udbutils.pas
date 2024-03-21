@@ -14,23 +14,6 @@ type
   { TDataBase }
 
   TDataBase = class (TSQLite3)
-  private
-    {GetNextPeriodFirstDate достает из таблицы ATableName
-     начальную дату ANextPeriodFirstDate периода,
-     следующего за периодом с начальной датой AThisPeriodFirstDate
-    ADateFieldName - имя поля с начальной датой периода
-    ATabNumID - ID табельного номера
-    Если следующего периода нет, то возвращает False и ANextDate:=INFDATE+1}
-    function GetNextPeriodFirstDate(const ATableName, ADateFieldName: String;
-                             const ATabNumID: Integer;
-                             const AThisPeriodFirstDate: TDate;
-                             out ANextPeriodFirstDate: TDate): Boolean;
-    {GetPrevBeginDate - то же самое для предшествующего периода
-    Если предыдущего периода нет, возвращает False и  APrevDate:=AThisPeriodFirstDate-1}
-    function GetPrevPeriodFirstDate(const ATableName, ADateFieldName: String;
-                             const ATabNumID: Integer;
-                             const AThisPeriodFirstDate: TDate;
-                             out APrevPeriodFirstDate: TDate): Boolean;
   public
     (**************************************************************************
                                      СПРАВОЧНИКИ
@@ -84,12 +67,12 @@ type
                           out ARecrutDates, ADismissDates: TDateVector): Boolean;
     {Добавление нового таб. номера: True - ОК, False - ошибка}
     function StaffTabNumAdd(out ATabNumID: Integer;
-                          const AStaffID, APostID: Integer;
-                          const ATabNum, ARank: String;
+                          const AStaffID: Integer;
+                          const ATabNum: String;
                           const ARecrutDate: TDate): Boolean;
     {Обновление данных о приеме нового таб. номера: True - ОК, False - ошибка}
-    function StaffTabNumUpdate(const ATabNumID, APostID: Integer;
-                          const ATabNum, ARank: String;
+    function StaffTabNumUpdate(const ATabNumID: Integer;
+                          const ATabNum: String;
                           const ARecrutDate: TDate): Boolean;
     {Обновление даты увольнения таб. номера: True - ОК, False - ошибка}
     function StaffTabNumDismiss(const ATabNumID: Integer; const ADismissDate: TDate): Boolean;
@@ -111,16 +94,18 @@ type
                           out APostLogIDs, APostIDs, APostTemps: TIntVector;
                           out APostNames, ARanks: TStrVector;
                           out AFirstDates, ALastDates: TDateVector): Boolean;
-    {Начальная дата предыдущего периода в должности, False - если предыдущего периода нет}
-    function StaffPostLogPrevPeriodFirstDate(const ATabNumID: Integer;
-                          const AThisPeriodFirstDate: TDate;
-                          out APrevPeriodFirstDate: TDate): Boolean;
-    {Начальная дата следующего периода в должности, False - если следующего периода нет}
-    function StaffPostLogNextPeriodFirstDate(const ATabNumID: Integer;
-                          const AThisPeriodFirstDate: TDate;
-                          out ANextPeriodFirstDate: TDate): Boolean;
-    {Наличие другой постоянной должности}
-    //function StaffPostLogIsOtherConstPostExists(const ATabNumID: Integer; const AFirstDate: TDate): Boolean;
+    {Новая запись (перевод с последней должности) в таблице переводов: True - ОК, False - ошибка}
+    function StaffPostLogAdd(const APostLogID, ATabNumID, APostID, APostTemp: Integer;
+                          const ARank: String;
+                          const AFirstDate: TDate): Boolean;
+    {Обновление записи в таблице переводов: True - ОК, False - ошибка}
+    function StaffPostLogUpdate(const APrevPostLogID, APostLogID, APostID, APostTemp: Integer;
+                          const ARank: String;
+                          const AFirstDate: TDate): Boolean;
+    {Удаление записи из таблицы переводов: True - ОК, False - ошибка}
+    function StaffPostLogDelete(const APrevPostLogID, APostLogID: Integer;
+                          const ALastDate: TDate): Boolean;
+
   end;
 
 var
@@ -129,58 +114,6 @@ var
 implementation
 
 { TDataBase }
-
-function TDataBase.GetNextPeriodFirstDate(const ATableName, ADateFieldName: String;
-                             const ATabNumID: Integer;
-                             const AThisPeriodFirstDate: TDate;
-                             out ANextPeriodFirstDate: TDate): Boolean;
-var
-  S: String;
-begin
-  S:= SqlEsc(ADateFieldName);
-  QSetQuery(FQuery);
-  QSetSQL(
-     'SELECT'+ S +
-     'FROM' + SqlEsc(ATableName) +
-     'WHERE (TabNumID = :TabNumID) AND (' + S +' > :ThisPeriodFirstDate) ' +
-     'ORDER BY' + S +
-     'LIMIT 1');
-   QParamInt('TabNumID', ATabNumID);
-   QParamDT('ThisPeriodFirstDate', AThisPeriodFirstDate);
-   QOpen;
-   Result:= not QIsEmpty;
-   if Result then
-     ANextPeriodFirstDate:= QFieldDT(ADateFieldName)
-   else
-     ANextPeriodFirstDate:= IncDay(INFDATE, 1);
-   QClose;
-end;
-
-function TDataBase.GetPrevPeriodFirstDate(const ATableName, ADateFieldName: String;
-                             const ATabNumID: Integer;
-                             const AThisPeriodFirstDate: TDate;
-                             out APrevPeriodFirstDate: TDate): Boolean;
-var
-  S: String;
-begin
-  S:= SqlEsc(ADateFieldName);
-  QSetQuery(FQuery);
-  QSetSQL(
-   'SELECT'+ S +
-   'FROM' + SqlEsc(ATableName) +
-   'WHERE (TabNumID = :TabNumID) AND (' + S +' < :ThisPeriodFirstDate) ' +
-   'ORDER BY' + S + 'DESC ' +
-   'LIMIT 1');
-  QParamInt('TabNumID', ATabNumID);
-  QParamDT('ThisPeriodFirstDate', AThisPeriodFirstDate);
-  QOpen;
-  Result:= not QIsEmpty;
-  if Result then
-    APrevPeriodFirstDate:= QFieldDT(ADateFieldName)
-  else
-    APrevPeriodFirstDate:= IncDay(AThisPeriodFirstDate, -1);
-  QClose;
-end;
 
 procedure TDataBase.PostDictionaryLoad(const AComboBox: TComboBox;
                                        out APostIDs: TIntVector;
@@ -485,8 +418,8 @@ begin
 end;
 
 function TDataBase.StaffTabNumAdd(out ATabNumID: Integer;
-                          const AStaffID, APostID: Integer;
-                          const ATabNum, ARank: String;
+                          const AStaffID: Integer;
+                          const ATabNum: String;
                           const ARecrutDate: TDate): Boolean;
 begin
   Result:= False;
@@ -494,12 +427,10 @@ begin
   try
     //запись данных в таблицу табельных номеров
     QSetSQL(
-      sqlINSERT('STAFFTABNUM', ['StaffID', 'PostID', 'TabNum', 'Rank', 'RecrutDate', 'DismissDate'])
+      sqlINSERT('STAFFTABNUM', ['StaffID', 'TabNum', 'RecrutDate', 'DismissDate'])
     );
     QParamInt('StaffID', AStaffID);
-    QParamInt('PostID', APostID);
     QParamStr('TabNum', ATabNum);
-    QParamStr('Rank', ARank);
     QParamDT('RecrutDate', ARecrutDate);
     QParamDT('DismissDate', INFDATE);
     QExec;
@@ -507,13 +438,11 @@ begin
     ATabNumID:= LastWritedInt32ID('STAFFTABNUM');
     //заносим первую запись в табицу переводов
     QSetSQL(
-      sqlINSERT('STAFFPOSTLOG', ['TabNumID', 'PostID', 'FirstDate', 'LastDate', 'Rank'])
+      sqlINSERT('STAFFPOSTLOG', ['TabNumID', 'FirstDate', 'LastDate'])
     );
     QParamInt('TabNumID', ATabNumID);
-    QParamInt('PostID', APostID);
     QParamDT('FirstDate', ARecrutDate);
     QParamDT('LastDate', INFDATE);
-    QParamStr('Rank', ARank);
     QExec;
     //заносим первую запись в таблицу персональных графиков
     QSetSQL(
@@ -530,8 +459,8 @@ begin
   end;
 end;
 
-function TDataBase.StaffTabNumUpdate(const ATabNumID, APostID: Integer;
-                                     const ATabNum, ARank: String;
+function TDataBase.StaffTabNumUpdate(const ATabNumID: Integer;
+                                     const ATabNum: String;
                                      const ARecrutDate: TDate): Boolean;
 begin
   Result:= False;
@@ -539,13 +468,11 @@ begin
   try
     //обновление данных в таблице таб. номеров
     QSetSQL(
-      sqlUPDATE('STAFFTABNUM', ['PostID', 'TabNum', 'Rank', 'RecrutDate']) +
+      sqlUPDATE('STAFFTABNUM', ['TabNum', 'RecrutDate']) +
       'WHERE TabNumID = :TabNumID'
     );
     QParamInt('TabNumID', ATabNumID);
-    QParamInt('PostID', APostID);
     QParamStr('TabNum', ATabNum);
-    QParamStr('Rank', ARank);
     QParamDT('RecrutDate', ARecrutDate);
     QExec;
     //удаление более ранних периодов из таблицы переводов
@@ -603,24 +530,6 @@ end;
 function TDataBase.StaffTabNumDismiss(const ATabNumID: Integer; const ADismissDate: TDate): Boolean;
 begin
   Result:= UpdateInt32ID('STAFFTABNUM', 'DismissDate', 'TabNumID', ATabNumID, ADismissDate);
-
-  //Result:= False;
-  //QSetQuery(FQuery);
-  //try
-  //  //обновление даты увольнения в таблице таб. номеров
-  //  QSetSQL(
-  //    sqlUPDATE('STAFFTABNUM', ['DismissDate']) +
-  //    'WHERE TabNumID = :TabNumID'
-  //  );
-  //  QParamInt('TabNumID', ATabNumID);
-  //  QParamDT('DismissDate', ADismissDate);
-  //  QExec;
-  //
-  //  QCommit;
-  //  Result:= True;
-  //except
-  //  QRollback;
-  //end;
 end;
 
 function TDataBase.StaffTabNumDismissCancel(const ATabNumID: Integer): Boolean;
@@ -716,35 +625,75 @@ begin
   QClose;
 end;
 
-function TDataBase.StaffPostLogPrevPeriodFirstDate(const ATabNumID: Integer;
-                                    const AThisPeriodFirstDate: TDate;
-                                    out APrevPeriodFirstDate: TDate): Boolean;
+function TDataBase.StaffPostLogAdd(const APostLogID, ATabNumID, APostID, APostTemp: Integer;
+                                  const ARank: String;
+                                  const AFirstDate: TDate): Boolean;
 begin
-  Result:= GetPrevPeriodFirstDate('STAFFPOSTLOG', 'FirstDate',
-                        ATabNumID, AThisPeriodFirstDate, APrevPeriodFirstDate);
+  Result:= False;
+  QSetQuery(FQuery);
+  try
+    //меняем конечную дату текущего периода
+    UpdateInt32ID('STAFFPOSTLOG', 'LastDate', 'ID', APostLogID, IncDay(AFirstDate, -1), False{no commit});
+    QSetSQL(
+      sqlINSERT('STAFFPOSTLOG', ['TabNumID', 'PostID', 'FirstDate', 'LastDate', 'PostTemp', 'Rank'])
+    );
+    QParamInt('TabNumID', ATabNumID);
+    QParamInt('PostID', APostID);
+    QParamDT('FirstDate', AFirstDate);
+    QParamDT('LastDate', INFDATE);
+    QParamInt('PostTemp', APostTemp);
+    QParamStr('Rank', ARank, not SEmpty(ARank));
+    QExec;
+    QCommit;
+    Result:= True;
+  except
+    QRollback;
+  end;
 end;
 
-function TDataBase.StaffPostLogNextPeriodFirstDate(const ATabNumID: Integer;
-                                    const AThisPeriodFirstDate: TDate;
-                                    out ANextPeriodFirstDate: TDate): Boolean;
+function TDataBase.StaffPostLogUpdate(const APrevPostLogID, APostLogID, APostID, APostTemp: Integer;
+                                      const ARank: String;
+                                      const AFirstDate: TDate): Boolean;
 begin
-  Result:= GetNextPeriodFirstDate('STAFFPOSTLOG', 'FirstDate',
-                        ATabNumID, AThisPeriodFirstDate, ANextPeriodFirstDate);
+  Result:= False;
+  QSetQuery(FQuery);
+  try
+    //меняем конечную дату предыдущего периода
+    UpdateInt32ID('STAFFPOSTLOG', 'LastDate', 'ID', APrevPostLogID, IncDay(AFirstDate, -1), False{no commit});
+    //изменяем начальную дату  и должность текущего периода
+    QSetSQL(
+      sqlUPDATE('STAFFPOSTLOG', [ 'PostID', 'FirstDate', 'PostTemp', 'Rank']) +
+      'WHERE ID = :PostLogID'
+    );
+    QParamInt('PostLogID', APostLogID);
+    QParamInt('PostID', APostID);
+    QParamDT('FirstDate', AFirstDate);
+    QParamInt('PostTemp', APostTemp);
+    QParamStr('Rank', ARank, not SEmpty(ARank));
+    QExec;
+    QCommit;
+    Result:= True;
+  except
+    QRollback;
+  end;
 end;
 
-//function TDataBase.StaffPostLogIsOtherConstPostExists(const ATabNumID: Integer; const AFirstDate: TDate): Boolean;
-//begin
-//  QSetQuery(FQuery);
-//  QSetSQL(
-//     'SELECT FirstDate FROM STAFFPOSTLOG ' +
-//     'WHERE (TabNumID = :TabNumID) AND (FirstDate <> :FirstDate) AND (PostTemp = 0) ' +
-//     'LIMIT 1');
-//   QParamInt('TabNumID', ATabNumID);
-//   QParamDT('FirstDate', AFirstDate);
-//   QOpen;
-//   Result:= not QIsEmpty;
-//   QClose;
-//end;
+function TDataBase.StaffPostLogDelete(const APrevPostLogID, APostLogID: Integer;
+                                      const ALastDate: TDate): Boolean;
+begin
+  Result:= False;
+  try
+    //удаление записи
+    Delete('STAFFPOSTLOG', 'ID', APostLogID, False {no commit});
+    //замена конечной даты предыдущего периода на конечную дату этого периода
+    UpdateInt32ID('STAFFPOSTLOG', 'LastDate', 'ID', APrevPostLogID, ALastDate, False{no commit});
+
+    QCommit;
+    Result:= True;
+  except
+    QRollback;
+  end;
+end;
 
 end.
 

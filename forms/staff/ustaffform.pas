@@ -70,6 +70,7 @@ type
     procedure ListDelButtonClick(Sender: TObject);
     procedure ListEditButtonClick(Sender: TObject);
     procedure PostLogAddButtonClick(Sender: TObject);
+    procedure PostLogDelButtonClick(Sender: TObject);
     procedure PostLogEditButtonClick(Sender: TObject);
     procedure PostLogVTNodeDblClick(Sender: TBaseVirtualTree; const {%H-}HitInfo: THitInfo);
     procedure StaffVTNodeDblClick(Sender: TBaseVirtualTree; const {%H-}HitInfo: THitInfo);
@@ -251,6 +252,15 @@ begin
   StaffPostLogEditFormOpen(etAdd);
 end;
 
+procedure TStaffForm.PostLogDelButtonClick(Sender: TObject);
+begin
+  if not Confirm('Удалить информацию о выбранном периоде работы?') then Exit;
+  if DataBase.StaffPostLogDelete(PostLogIDs[PostLog.SelectedIndex + 1],
+                              PostLogIDs[PostLog.SelectedIndex],
+                              PostLogLastDates[PostLog.SelectedIndex]) then
+    TabNumListLoad(TabNumListTabNumIDs[TabNumList.SelectedIndex])
+end;
+
 procedure TStaffForm.PostLogEditButtonClick(Sender: TObject);
 begin
   StaffPostLogEditFormOpen(etEdit);
@@ -426,26 +436,27 @@ end;
 procedure TStaffForm.StaffListColumnSet;
 begin
   StaffList.Visible:= False;
-
-  StaffList.Clear;
-  StaffList.AddColumn('№ п/п', 50);
-  StaffList.AddColumn('Ф.И.О', 220);
-  StaffList.AddColumn('Дата рождения', 120);
-  StaffList.AddColumn('Пол', 50);
-  if ModeType<>mtEditing then
-  begin
-    StaffList.AddColumn('Табельный номер', 120);
-    StaffList.AddColumn('Дата приема', 120);
-    StaffList.AddColumn('Дата увольнения', 120);
-    StaffList.AddColumn('Разряд', 60);
-    StaffList.AddColumn('Должность', 200);
-    StaffList.AutosizeColumnEnable('Должность');
-  end
-  else
-    StaffList.AutosizeColumnEnable('Ф.И.О');
-  StaffList.Draw;
-
-  StaffList.Visible:= True;
+  try
+    StaffList.Clear;
+    StaffList.AddColumn('№ п/п', 50);
+    StaffList.AddColumn('Ф.И.О', 220);
+    StaffList.AddColumn('Дата рождения', 120);
+    StaffList.AddColumn('Пол', 50);
+    if ModeType<>mtEditing then
+    begin
+      StaffList.AddColumn('Табельный номер', 120);
+      StaffList.AddColumn('Дата приема', 120);
+      StaffList.AddColumn('Дата увольнения', 120);
+      StaffList.AddColumn('Разряд', 60);
+      StaffList.AddColumn('Должность', 200);
+      StaffList.AutosizeColumnEnable('Должность');
+    end
+    else
+      StaffList.AutosizeColumnEnable('Ф.И.О');
+    StaffList.Draw;
+  finally
+    StaffList.Visible:= True;
+  end;
 end;
 
 procedure TStaffForm.StaffListLoad(const AStaffID: Integer = 0);
@@ -466,24 +477,27 @@ begin
   StrDismissDates:= VDateToStr(DismissDates, True);
   VChangeIf(StrDismissDates, EmptyStr, EMPTY_MARK);
 
-  StaffList.ValuesClear;
-  StaffList.SetColumn('№ п/п', VIntToStr(VOrder(Length(StaffIDs))));
-  NameTypeSelect;
-  StaffList.SetColumn('Дата рождения', VDateToStr(BornDates, True));
-  StaffList.SetColumn('Пол', StrGenders);
-  if ModeType<>mtEditing then
-  begin
-    StaffList.SetColumn('Табельный номер', TabNums);
-    StaffList.SetColumn('Дата приема', VDateToStr(RecrutDates, True));
-    StaffList.SetColumn('Дата увольнения', StrDismissDates);
-    StaffList.SetColumn('Разряд', Ranks);
-    StaffList.SetColumn('Должность', PostNames, taLeftJustify);
+  StaffList.Visible:= False;
+  try
+    StaffList.ValuesClear;
+    StaffList.SetColumn('№ п/п', VIntToStr(VOrder(Length(StaffIDs))));
+    NameTypeSelect;
+    StaffList.SetColumn('Дата рождения', VDateToStr(BornDates, True));
+    StaffList.SetColumn('Пол', StrGenders);
+    if ModeType<>mtEditing then
+    begin
+      StaffList.SetColumn('Табельный номер', TabNums);
+      StaffList.SetColumn('Дата приема', VDateToStr(RecrutDates, True));
+      StaffList.SetColumn('Дата увольнения', StrDismissDates);
+      StaffList.SetColumn('Разряд', Ranks);
+      StaffList.SetColumn('Должность', PostNames, taLeftJustify);
+    end;
+    StaffList.Draw;
+    if ModeType=mtEditing then
+      StaffList.ReSelect(StaffIDs, AStaffID);  //возвращаем выделение строки
+  finally
+    StaffList.Visible:= True;
   end;
-  StaffList.Draw;
-
-  //возвращаем выделение строки
-  if ModeType=mtEditing then
-    StaffList.ReSelect(StaffIDs, AStaffID);
 end;
 
 procedure TStaffForm.StaffListSelect;
@@ -518,27 +532,29 @@ var
 begin
   if not Assigned(TabNumList) then Exit;
   if ModeType<>mtEditing then Exit;
-  TabNumList.ValuesClear;
+
   StaffID:= 0;
   if StaffList.IsSelected then
     StaffID:= StaffIDs[StaffList.SelectedIndex];
   DataBase.StaffTabNumListLoad(StaffID, TabNumListTabNumIDs, TabNumListPostIDs,
                                TabNumListTabNums, TabNumListPostNames, TabNumListRanks,
                                TabNumListRecrutDates, TabNumListDismissDates);
-
   StrDismissDates:= VDateToStr(TabNumListDismissDates, True);
   VChangeIf(StrDismissDates, EmptyStr, EMPTY_MARK);
 
-  TabNumList.SetColumn('Табельный номер', TabNumListTabNums);
-  TabNumList.SetColumn('Дата приема', VDateToStr(TabNumListRecrutDates, True));
-  TabNumList.SetColumn('Дата увольнения', StrDismissDates);
-  TabNumList.SetColumn('Разряд', TabNumListRanks);
-  TabNumList.SetColumn('Последняя (текущая) должность', TabNumListPostNames, taLeftJustify);
-
-  TabNumList.Draw;
-
-  //возвращаем выделение строки
-  TabNumList.ReSelect(TabNumListTabNumIDs, ATabNumID);
+  TabNumList.Visible:= False;
+  try
+    TabNumList.ValuesClear;
+    TabNumList.SetColumn('Табельный номер', TabNumListTabNums);
+    TabNumList.SetColumn('Дата приема', VDateToStr(TabNumListRecrutDates, True));
+    TabNumList.SetColumn('Дата увольнения', StrDismissDates);
+    TabNumList.SetColumn('Разряд', TabNumListRanks);
+    TabNumList.SetColumn('Последняя (текущая) должность', TabNumListPostNames, taLeftJustify);
+    TabNumList.Draw;
+    TabNumList.ReSelect(TabNumListTabNumIDs, ATabNumID); //возвращаем выделение строки
+  finally
+    TabNumList.Visible:= True;
+  end;
 end;
 
 procedure TStaffForm.TabNumListSelect;
@@ -576,28 +592,29 @@ var
 begin
   if not Assigned(PostLog) then Exit;
   if ModeType<>mtEditing then Exit;
-  PostLog.ValuesClear;
+
   TabNumID:= 0;
   if TabNumList.IsSelected then
     TabNumID:= TabNumListTabNumIDs[TabNumList.SelectedIndex];
-
   DataBase.StaffPostLogListLoad(TabNumID, PostLogIDs, PostLogPostIDs, PostLogPostTemps,
                             PostLogPostNames, PostLogRanks,
                             PostLogFirstDates, PostLogLastDates);
-
   StrLastDates:= VDateToStr(PostLogLastDates, True);
   VChangeIf(StrLastDates, EmptyStr, EMPTY_MARK);
 
-  PostLog.SetColumn('Статус должности', VPickFromKey(PostLogPostTemps, POST_TEMP_KEYS, POST_TEMP_PICKS));
-  PostLog.SetColumn('Дата начала', VDateToStr(PostLogFirstDates, True));
-  PostLog.SetColumn('Дата окончания', StrLastDates);
-  PostLog.SetColumn('Разряд', PostLogRanks);
-  PostLog.SetColumn('Должность', PostLogPostNames, taLeftJustify);
-
-  PostLog.Draw;
-
-  //возвращаем выделение строки
-  PostLog.ReSelect(PostLogIDs, APostLogID);
+  PostLog.Visible:= False;
+  try
+    PostLog.ValuesClear;
+    PostLog.SetColumn('Статус должности', VPickFromKey(PostLogPostTemps, POST_TEMP_KEYS, POST_TEMP_PICKS));
+    PostLog.SetColumn('Дата начала', VDateToStr(PostLogFirstDates, True));
+    PostLog.SetColumn('Дата окончания', StrLastDates);
+    PostLog.SetColumn('Разряд', PostLogRanks);
+    PostLog.SetColumn('Должность', PostLogPostNames, taLeftJustify);
+    PostLog.Draw;
+    PostLog.ReSelect(PostLogIDs, APostLogID);  //возвращаем выделение строки
+  finally
+    PostLog.Visible:= True;
+  end;
 end;
 
 procedure TStaffForm.PostLogSelect;
@@ -607,11 +624,7 @@ begin
   IsOK:= TabNumDismissButton.Visible {не уволен} and PostLog.IsSelected;
   PostLogAddButton.Enabled:= IsOK and (PostLog.SelectedIndex=0 {последняя запись});
   PostLogDelButton.Enabled:= IsOK and (PostLog.SelectedIndex<High(PostLogIDs) {не самая первая должность});
-    //(PostLogPostTemps[PostLog.SelectedIndex]=1 or  {это временная должность или есть другая постоянная}
-    // DataBase.StaffPostLogIsOtherConstPostExists(TabNumListTabNumIDs[TabNumList.SelectedIndex],
-    //                                            PostLogFirstDates[PostLog.SelectedIndex]));
-  PostLogEditButton.Enabled:= IsOK and (Length(PostLogIDs)>1); //and (PostLog.SelectedIndex>0 {не самая последняя должность});
-                              //(PostLog.SelectedIndex<High(PostLogIDs) {не самая первая должность});
+  PostLogEditButton.Enabled:= IsOK;
 end;
 
 procedure TStaffForm.StaffMainEditFormOpen(const AEditingType: TEditingType);
@@ -655,22 +668,17 @@ begin
         end;
       etEdit:
         begin
-          StaffTabNumEditForm.PostID:= TabNumListPostIDs[TabNumList.SelectedIndex];
           StaffTabNumEditForm.TabNumID:= TabNumListTabNumIDs[TabNumList.SelectedIndex];
           StaffTabNumEditForm.TabNumEdit.Text:= TabNumListTabNums[TabNumList.SelectedIndex];
-          StaffTabNumEditForm.RankEdit.Text:= TabNumListRanks[TabNumList.SelectedIndex];
           StaffTabNumEditForm.RecrutDatePicker.Date:= TabNumListRecrutDates[TabNumList.SelectedIndex];
           StaffTabNumEditForm.DismissDatePicker.Date:= INFDATE;
           StaffTabNumEditForm.DismissDatePicker.Enabled:= False;
         end;
       etCustom:
         begin //Dismiss
-          StaffTabNumEditForm.PostID:= TabNumListPostIDs[TabNumList.SelectedIndex];
           StaffTabNumEditForm.TabNumID:= TabNumListTabNumIDs[TabNumList.SelectedIndex];
           StaffTabNumEditForm.TabNumEdit.Text:= TabNumListTabNums[TabNumList.SelectedIndex];
           StaffTabNumEditForm.TabNumEdit.Enabled:= False;
-          StaffTabNumEditForm.RankEdit.Text:= TabNumListRanks[TabNumList.SelectedIndex];
-          StaffTabNumEditForm.RankEdit.Enabled:= False;
           StaffTabNumEditForm.RecrutDatePicker.Date:= TabNumListRecrutDates[TabNumList.SelectedIndex];
           StaffTabNumEditForm.RecrutDatePicker.Enabled:= False;
           StaffTabNumEditForm.DismissDatePicker.Date:= Date;
@@ -698,26 +706,48 @@ end;
 procedure TStaffForm.StaffPostLogEditFormOpen(const AEditingType: TEditingType);
 var
   StaffPostLogEditForm: TStaffPostLogEditForm;
+  ThisFirstDate, PrevFirstDate, NextFirstDate: TDate;
 begin
   StaffPostLogEditForm:= TStaffPostLogEditForm.Create(nil);
   try
+    ThisFirstDate:= PostLogFirstDates[PostLog.SelectedIndex];
     StaffPostLogEditForm.EditingType:= AEditingType;
     StaffPostLogEditForm.TabNumID:= TabNumListTabNumIDs[TabNumList.SelectedIndex];
     StaffPostLogEditForm.PostID:= PostLogPostIDs[PostLog.SelectedIndex];
     StaffPostLogEditForm.PostLogID:= PostLogIDs[PostLog.SelectedIndex];
-    StaffPostLogEditForm.FirstDatePicker.Date:= PostLogFirstDates[PostLog.SelectedIndex];
-    //StaffPostLogEditForm.BornDatePicker.Date:= Date;
-    //if AEditingType=etEdit then
-    //begin
-    //  StaffPostLogEditForm.StaffID:= StaffIDs[StaffList.SelectedIndex];
-    //  StaffPostLogEditForm.FamilyEdit.Text:= Families[StaffList.SelectedIndex];
-    //  StaffPostLogEditForm.NameEdit.Text:= Names[StaffList.SelectedIndex];
-    //  StaffPostLogEditForm.PatronymicEdit.Text:= Patronymics[StaffList.SelectedIndex];
-    //  StaffPostLogEditForm.BornDatePicker.Date:= BornDates[StaffList.SelectedIndex];
-    //  StaffPostLogEditForm.GenderComboBox.ItemIndex:= Genders[StaffList.SelectedIndex];
-    //end;
+    StaffPostLogEditForm.FirstDatePicker.Date:= ThisFirstDate;
+    case AEditingType of
+      etAdd: //перевод с последней должности
+        begin
+          StaffPostLogEditForm.FirstDatePicker.Date:= IncDay(ThisFirstDate, 1);
+          StaffPostLogEditForm.FirstDatePicker.MinDate:= StaffPostLogEditForm.FirstDatePicker.Date;
+          StaffPostLogEditForm.FirstDatePicker.MaxDate:= IncDay(INFDATE, -1);
+        end;
+      etEdit: //редактирование должности
+        begin
+          StaffPostLogEditForm.FirstDatePicker.Date:= ThisFirstDate;
+          if SameDate(ThisFirstDate, TabNumListRecrutDates[TabNumList.SelectedIndex]) then
+          begin //первая запись
+            StaffPostLogEditForm.StatusComboBox.Enabled:= False; //нельзя менять постоянный статус должности
+            StaffPostLogEditForm.FirstDatePicker.Enabled:= False;//нельзя менять дату начала работы (приема)
+            StaffPostLogEditForm.PrevPostLogID:= 0;
+          end
+          else begin //последующие записи
+            StaffPostLogEditForm.StatusComboBox.ItemIndex:= PostLogPostTemps[PostLog.SelectedIndex];
+            PrevFirstDate:= PostLogFirstDates[PostLog.SelectedIndex + 1];
+            StaffPostLogEditForm.PrevPostLogID:= PostLogIDs[PostLog.SelectedIndex + 1];
+            StaffPostLogEditForm.FirstDatePicker.MinDate:= IncDay(PrevFirstDate, 1);
+            if PostLog.SelectedIndex=0 then //последняя запись
+              NextFirstDate:= IncDay(INFDATE, 1)
+            else //промежуточная запись
+              NextFirstDate:= IncDay(PostLogFirstDates[PostLog.SelectedIndex - 1]);
+            StaffPostLogEditForm.FirstDatePicker.MaxDate:= IncDay(NextFirstDate, -1);
+          end;
+        end;
+    end;
     if StaffPostLogEditForm.ShowModal=mrOK then
-      PostLogLoad(StaffPostLogEditForm.PostLogID);
+      TabNumListLoad(TabNumListTabNumIDs[TabNumList.SelectedIndex]);
+      //PostLogLoad(StaffPostLogEditForm.PostLogID);
   finally
     FreeAndNil(StaffPostLogEditForm);
   end;
