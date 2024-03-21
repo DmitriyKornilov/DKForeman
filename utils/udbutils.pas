@@ -213,10 +213,17 @@ begin
            'tt.TabNumID, tt.TabNum, tt.RecrutDate, tt.DismissDate, tt.Rank, tt.PostName ' +
     'FROM STAFFMAIN t1 ' +
     'LEFT OUTER JOIN ( ' +
-           'SELECT t2.StaffID, t2.TabNumID, t2.TabNum, t2.RecrutDate, t2.DismissDate, t2.Rank, ' +
-                  't3.PostName ' +
+           'SELECT t2.StaffID, t2.TabNumID, t2.TabNum, t2.RecrutDate, t2.DismissDate, ' +
+                  'ttt.Rank, ttt.PostID, ttt.PostName ' +
            'FROM STAFFTABNUM t2 ' +
-           'INNER JOIN STAFFPOST t3 ON (t2.PostID=t3.PostID) ' +
+           'LEFT OUTER JOIN ( ' +
+                   'SELECT t3.TabNumID, t3.Rank, t3.PostID, t4.PostName ' +
+                   'FROM STAFFPOSTLOG t3 ' +
+                   'INNER JOIN STAFFPOST t4 ON (t3.PostID=t4.PostID) ' +
+                   'WHERE (t3.PostTemp = 0) AND (t3.FirstDate <= :DateValue) ' +
+                   'ORDER BY t3.FirstDate DESC ' +
+                   'LIMIT 1' +
+                   ') ttt ON (ttt.TabNumID=t2.TabNumID) ' +
            ') tt ON (tt.StaffID=t1.StaffID) ' ;
 
   if AListType>0 then
@@ -418,13 +425,19 @@ begin
 
   QSetQuery(FQuery);
   QSetSQL(
-    'SELECT t1.TabNumID, t1.TabNum, t1.RecrutDate, t1.DismissDate, t1.Rank, '+
-           't1.PostID, t2.PostName ' +
+    'SELECT t1.TabNumID, t1.TabNum, t1.RecrutDate, t1.DismissDate, tt.Rank, tt.PostName, tt.FirstDate '+
     'FROM STAFFTABNUM t1 ' +
-    'INNER JOIN STAFFPOST t2 ON (t1.PostID=t2.PostID) ' +
-    'WHERE t1.StaffID = :StaffID ' +
-    'ORDER BY t1.TabNum'
+    'LEFT OUTER JOIN ( ' +
+           'SELECT t2.TabNumID, t2.Rank, t2.FirstDate, t3.PostName ' +
+           'FROM STAFFPOSTLOG t2 ' +
+           'INNER JOIN STAFFPOST t3 ON (t2.PostID=t3.PostID) ' +
+           'WHERE (t2.PostTemp = 0) AND (t2.FirstDate <= :DateValue) ' +
+           ') tt ON (tt.TabNumID=t1.TabNumID) ' +
+    'WHERE (t1.StaffID = :StaffID) ' +
+    'ORDER BY t1.TabNum, tt.FirstDate DESC ' +
+    'LIMIT 1'
   );
+  QParamDT('DateValue', Date);
   QParamInt('StaffID', AStaffID);
   QOpen;
   if not QIsEmpty then
@@ -433,12 +446,11 @@ begin
     while not QEOF do
     begin
       VAppend(ATabNumIDs, QFieldInt('TabNumID'));
-      VAppend(APostIDs, QFieldInt('PostID'));
       VAppend(ATabNums, QFieldStr('TabNum'));
-      VAppend(ARanks, QFieldStr('Rank'));
-      VAppend(APostNames, QFieldStr('PostName'));
       VAppend(ARecrutDates, QFieldDT('RecrutDate'));
       VAppend(ADismissDates, QFieldDT('DismissDate'));
+      VAppend(ARanks, QFieldStr('Rank'));
+      VAppend(APostNames, QFieldStr('PostName'));
       QNext;
     end;
     Result:= True;
@@ -587,7 +599,7 @@ end;
 
 function TDataBase.StaffTabNumDismissCancel(const ATabNumID: Integer): Boolean;
 begin
-  StaffTabNumDismiss(ATabNumID, INFDATE);
+  Result:= StaffTabNumDismiss(ATabNumID, INFDATE);
 end;
 
 function TDataBase.StaffTabNumDelete(const ATabNumID: Integer): Boolean;

@@ -310,6 +310,7 @@ object MainForm: TMainForm
       AllowAllUp = True
       Constraints.MaxWidth = 40
       Constraints.MinWidth = 40
+      Down = True
       Glyph.Data = {
         36090000424D3609000000000000360000002800000018000000180000000100
         20000000000000090000640000006400000000000000000000005D4E46E65C4F

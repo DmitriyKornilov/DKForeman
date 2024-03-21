@@ -4998,13 +4998,11 @@
       },
       "ReferenceFrom" : {
         "TableNames" : [
-          "STAFFTABNUM",
           "STAFFPOSTLOG",
           "SIZNORMITEMPOST",
           "SSONORMITEMPOST"
         ],
         "FieldNames" : [
-          "POSTID",
           "POSTID",
           "POSTID",
           "POSTID"
@@ -5365,10 +5363,8 @@
       "TABNUMID",
       "TABNUM",
       "STAFFID",
-      "POSTID",
       "RECRUTDATE",
-      "DISMISSDATE",
-      "RANK"
+      "DISMISSDATE"
     ],
     "TABNUMID" : {
       "FieldType" : "INTEGER",
@@ -5458,30 +5454,6 @@
         ]
       }
     },
-    "POSTID" : {
-      "FieldType" : "INTEGER",
-      "PrimaryKey" : false,
-      "Status" : false,
-      "NotNull" : true,
-      "DefaultValue" : "0",
-      "Description" : [
-        "ID должности (актуальная постоянная должность - меняется при изменении STAFFPOSTLOG)"
-      ],
-      "ExistingValues" : [
-      ],
-      "ReferenceTo" : {
-        "TableName" : "STAFFPOST",
-        "FieldName" : "POSTID",
-        "OnDelete" : 2,
-        "OnUpdate" : 0
-      },
-      "ReferenceFrom" : {
-        "TableNames" : [
-        ],
-        "FieldNames" : [
-        ]
-      }
-    },
     "RECRUTDATE" : {
       "FieldType" : "DATETIME",
       "PrimaryKey" : false,
@@ -5514,30 +5486,6 @@
       "DefaultValue" : "",
       "Description" : [
         "Дата увольнения"
-      ],
-      "ExistingValues" : [
-      ],
-      "ReferenceTo" : {
-        "TableName" : "",
-        "FieldName" : "",
-        "OnDelete" : 4,
-        "OnUpdate" : 4
-      },
-      "ReferenceFrom" : {
-        "TableNames" : [
-        ],
-        "FieldNames" : [
-        ]
-      }
-    },
-    "RANK" : {
-      "FieldType" : "TEXT",
-      "PrimaryKey" : false,
-      "Status" : false,
-      "NotNull" : false,
-      "DefaultValue" : "",
-      "Description" : [
-        "Актуальный разряд - меняется при изменении данных в STAFFPOSTLOG"
       ],
       "ExistingValues" : [
       ],
