@@ -324,8 +324,7 @@ begin
     'должности (профессии)',
     'дате рождения',
     'дате приема',
-    'дате увольнения',
-    'разряду'
+    'дате увольнения'
   ]);
   OrderType:= TVSTStringList.Create(OrderTypeVT, S, @OrderTypeSelect);
   OrderType.Update(V);
@@ -450,6 +449,8 @@ begin
 end;
 
 procedure TStaffForm.StaffListLoad(const AStaffID: Integer = 0);
+var
+  StrDismissDates: TStrVector;
 begin
   if (not Assigned(OrderType)) or (not Assigned(ListType)) then Exit;
   if ModeType=mtEditing then
@@ -462,6 +463,9 @@ begin
                            Families, Names, Patronymics, TabNums, PostNames, Ranks);
 
   StrGenders:= VPickFromKey(Genders, GENDER_KEYS, GENDER_PICKS);
+  StrDismissDates:= VDateToStr(DismissDates, True);
+  VChangeIf(StrDismissDates, EmptyStr, EMPTY_MARK);
+
   StaffList.ValuesClear;
   StaffList.SetColumn('№ п/п', VIntToStr(VOrder(Length(StaffIDs))));
   NameTypeSelect;
@@ -471,7 +475,7 @@ begin
   begin
     StaffList.SetColumn('Табельный номер', TabNums);
     StaffList.SetColumn('Дата приема', VDateToStr(RecrutDates, True));
-    StaffList.SetColumn('Дата увольнения', VDateToStr(DismissDates, True));
+    StaffList.SetColumn('Дата увольнения', StrDismissDates);
     StaffList.SetColumn('Разряд', Ranks);
     StaffList.SetColumn('Должность', PostNames, taLeftJustify);
   end;
@@ -480,7 +484,6 @@ begin
   //возвращаем выделение строки
   if ModeType=mtEditing then
     StaffList.ReSelect(StaffIDs, AStaffID);
-    //ReSelectTableRow(StaffList, StaffIDs, AStaffID);
 end;
 
 procedure TStaffForm.StaffListSelect;
@@ -511,6 +514,7 @@ end;
 procedure TStaffForm.TabNumListLoad(const ATabNumID: Integer);
 var
   StaffID: Integer;
+  StrDismissDates: TStrVector;
 begin
   if not Assigned(TabNumList) then Exit;
   if ModeType<>mtEditing then Exit;
@@ -522,9 +526,12 @@ begin
                                TabNumListTabNums, TabNumListPostNames, TabNumListRanks,
                                TabNumListRecrutDates, TabNumListDismissDates);
 
+  StrDismissDates:= VDateToStr(TabNumListDismissDates, True);
+  VChangeIf(StrDismissDates, EmptyStr, EMPTY_MARK);
+
   TabNumList.SetColumn('Табельный номер', TabNumListTabNums);
   TabNumList.SetColumn('Дата приема', VDateToStr(TabNumListRecrutDates, True));
-  TabNumList.SetColumn('Дата увольнения', VDateToStr(TabNumListDismissDates, True));
+  TabNumList.SetColumn('Дата увольнения', StrDismissDates);
   TabNumList.SetColumn('Разряд', TabNumListRanks);
   TabNumList.SetColumn('Последняя (текущая) должность', TabNumListPostNames, taLeftJustify);
 
@@ -532,7 +539,6 @@ begin
 
   //возвращаем выделение строки
   TabNumList.ReSelect(TabNumListTabNumIDs, ATabNumID);
-  //ReSelectTableRow(TabNumList, TabNumListTabNumIDs, ATabNumID);
 end;
 
 procedure TStaffForm.TabNumListSelect;
@@ -566,6 +572,7 @@ end;
 procedure TStaffForm.PostLogLoad(const APostLogID: Integer);
 var
   TabNumID: Integer;
+  StrLastDates: TStrVector;
 begin
   if not Assigned(PostLog) then Exit;
   if ModeType<>mtEditing then Exit;
@@ -578,9 +585,12 @@ begin
                             PostLogPostNames, PostLogRanks,
                             PostLogFirstDates, PostLogLastDates);
 
+  StrLastDates:= VDateToStr(PostLogLastDates, True);
+  VChangeIf(StrLastDates, EmptyStr, EMPTY_MARK);
+
   PostLog.SetColumn('Статус должности', VPickFromKey(PostLogPostTemps, POST_TEMP_KEYS, POST_TEMP_PICKS));
   PostLog.SetColumn('Дата начала', VDateToStr(PostLogFirstDates, True));
-  PostLog.SetColumn('Дата окончания', VDateToStr(PostLogLastDates, True));
+  PostLog.SetColumn('Дата окончания', StrLastDates);
   PostLog.SetColumn('Разряд', PostLogRanks);
   PostLog.SetColumn('Должность', PostLogPostNames, taLeftJustify);
 
@@ -588,7 +598,6 @@ begin
 
   //возвращаем выделение строки
   PostLog.ReSelect(PostLogIDs, APostLogID);
-  //ReSelectTableRow(PostLog, PostLogIDs, APostLogID);
 end;
 
 procedure TStaffForm.PostLogSelect;

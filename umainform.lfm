@@ -5,15 +5,14 @@ object MainForm: TMainForm
   Width = 968
   ClientHeight = 372
   ClientWidth = 968
-  DesignTimePPI = 120
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
-  LCLVersion = '3.2.0.0'
+  LCLVersion = '2.2.4.0'
   WindowState = wsMaximized
   object ToolPanel: TPanel
     Left = 2
-    Height = 40
+    Height = 32
     Top = 2
     Width = 964
     Align = alTop
@@ -22,22 +21,22 @@ object MainForm: TMainForm
     BorderSpacing.Right = 2
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 36
+    ClientHeight = 28
     ClientWidth = 960
-    Constraints.MaxHeight = 40
-    Constraints.MinHeight = 40
+    Constraints.MaxHeight = 32
+    Constraints.MinHeight = 32
     ParentFont = False
     TabOrder = 0
     object AboutButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 874
-      Height = 36
+      Left = 890
+      Height = 28
       Hint = 'О программе'
       Top = 0
-      Width = 40
+      Width = 32
       Align = alRight
-      Constraints.MaxWidth = 40
-      Constraints.MinWidth = 40
+      Constraints.MaxWidth = 32
+      Constraints.MinWidth = 32
       Glyph.Data = {
         36090000424D3609000000000000360000002800000018000000180000000100
         2000000000000009000064000000640000000000000000000000000000000000
@@ -119,14 +118,14 @@ object MainForm: TMainForm
     end
     object ExitButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 920
-      Height = 36
+      Left = 928
+      Height = 28
       Hint = 'Выход'
       Top = 0
-      Width = 40
+      Width = 32
       Align = alRight
-      Constraints.MaxWidth = 40
-      Constraints.MinWidth = 40
+      Constraints.MaxWidth = 32
+      Constraints.MinWidth = 32
       Glyph.Data = {
         36090000424D3609000000000000360000002800000018000000180000000100
         2000000000000009000064000000640000000000000000000000000000000000
@@ -209,15 +208,15 @@ object MainForm: TMainForm
     end
     object SettingButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 788
-      Height = 36
+      Left = 820
+      Height = 28
       Hint = 'Параметры'
       Top = 0
-      Width = 40
+      Width = 32
       Align = alRight
       AllowAllUp = True
-      Constraints.MaxWidth = 40
-      Constraints.MinWidth = 40
+      Constraints.MaxWidth = 32
+      Constraints.MinWidth = 32
       Glyph.Data = {
         36090000424D3609000000000000360000002800000018000000180000000100
         2000000000000009000064000000640000000000000000000000000000000000
@@ -301,16 +300,15 @@ object MainForm: TMainForm
     end
     object EditingButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 748
-      Height = 36
+      Left = 788
+      Height = 28
       Hint = 'Редактирование'
       Top = 0
-      Width = 40
+      Width = 32
       Align = alRight
       AllowAllUp = True
-      Constraints.MaxWidth = 40
-      Constraints.MinWidth = 40
-      Down = True
+      Constraints.MaxWidth = 32
+      Constraints.MinWidth = 32
       Glyph.Data = {
         36090000424D3609000000000000360000002800000018000000180000000100
         20000000000000090000640000006400000000000000000000005D4E46E65C4F
@@ -393,8 +391,8 @@ object MainForm: TMainForm
       ParentShowHint = False
     end
     object Bevel1: TBevel
-      Left = 870
-      Height = 36
+      Left = 886
+      Height = 28
       Top = 0
       Width = 2
       Align = alRight
@@ -403,8 +401,8 @@ object MainForm: TMainForm
       Shape = bsRightLine
     end
     object Bevel2: TBevel
-      Left = 916
-      Height = 36
+      Left = 924
+      Height = 28
       Top = 0
       Width = 2
       Align = alRight
@@ -414,14 +412,14 @@ object MainForm: TMainForm
     end
     object RefreshButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 828
-      Height = 36
+      Left = 852
+      Height = 28
       Hint = 'Обновить'
       Top = 0
-      Width = 40
+      Width = 32
       Align = alRight
-      Constraints.MaxWidth = 40
-      Constraints.MinWidth = 40
+      Constraints.MaxWidth = 32
+      Constraints.MinWidth = 32
       Glyph.Data = {
         36090000424D3609000000000000360000002800000018000000180000000100
         2000000000000009000064000000640000000000000000000000000000000000
@@ -504,9 +502,9 @@ object MainForm: TMainForm
     object StaffButton: TBCButton
       Cursor = crHandPoint
       Left = 1
-      Height = 34
+      Height = 26
       Top = 1
-      Width = 82
+      Width = 75
       Align = alLeft
       AutoSize = True
       StateClicked.Background.Color = 16245964
@@ -688,10 +686,10 @@ object MainForm: TMainForm
     end
     object TimingButton: TBCButton
       Cursor = crHandPoint
-      Left = 85
-      Height = 34
+      Left = 78
+      Height = 26
       Top = 1
-      Width = 233
+      Width = 197
       Align = alLeft
       AutoSize = True
       StateClicked.Background.Color = 16245964
@@ -876,10 +874,10 @@ object MainForm: TMainForm
     end
     object SafetyButton: TBCButton
       Cursor = crHandPoint
-      Left = 320
-      Height = 34
+      Left = 277
+      Height = 26
       Top = 1
-      Width = 160
+      Width = 140
       Align = alLeft
       AutoSize = True
       StateClicked.Background.Color = 16245964
@@ -1063,8 +1061,8 @@ object MainForm: TMainForm
       MemoryUsage = bmuHigh
     end
     object Bevel3: TBevel
-      Left = 482
-      Height = 36
+      Left = 419
+      Height = 28
       Top = 0
       Width = 2
       Align = alLeft
@@ -1074,10 +1072,10 @@ object MainForm: TMainForm
     end
     object DictionaryButton: TBCButton
       Cursor = crHandPoint
-      Left = 486
-      Height = 34
+      Left = 423
+      Height = 26
       Top = 1
-      Width = 160
+      Width = 141
       Align = alLeft
       AutoSize = True
       StateClicked.Background.Color = 16245964
@@ -1262,16 +1260,16 @@ object MainForm: TMainForm
   end
   object MainPanel: TPanel
     Left = 0
-    Height = 330
-    Top = 42
+    Height = 338
+    Top = 34
     Width = 968
     Align = alClient
     BevelOuter = bvNone
     TabOrder = 1
   end
   object TimingMenu: TPopupMenu
-    Left = 200
-    Top = 48
+    Left = 160
+    Top = 38
     object CalendarMenuItem: TMenuItem
       Caption = 'Производственный календарь'
       Bitmap.Data = {
@@ -1674,8 +1672,8 @@ object MainForm: TMainForm
     end
   end
   object SafetyMenu: TPopupMenu
-    Left = 359
-    Top = 48
+    Left = 287
+    Top = 38
     object SIZMenuItem: TMenuItem
       Caption = 'Средства индивидуальной защиты'
       Bitmap.Data = {
@@ -1918,8 +1916,8 @@ object MainForm: TMainForm
     end
   end
   object DictionaryMenu: TPopupMenu
-    Left = 553
-    Top = 48
+    Left = 442
+    Top = 38
     object PostListMenuItem: TMenuItem
       Caption = 'Перечень должностей (профессий)'
       Bitmap.Data = {

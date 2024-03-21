@@ -101,7 +101,11 @@ type
     function StaffTabNumIsExists(const ATabNumID: Integer; const ATabNum: String): Boolean;
 
 
-
+    {Актуальная постоянная должность таб номера на дату}
+    procedure StaffPostForDate(const ATabNumID: Integer;
+                               const ADate: TDate;
+                               out APostID: Integer;
+                               out APostName, ARank: String);
     {Список переводов по ID таб. номера: True - ОК, False - список пуст}
     function StaffPostLogListLoad(const ATabNumID: Integer;
                           out APostLogIDs, APostIDs, APostTemps: TIntVector;
@@ -192,6 +196,9 @@ function TDataBase.StaffListLoad(const AOrderType, AListType: Byte;
                                out AFs, ANs, APs, ATabNums, APostNames, ARanks: TStrVector): Boolean;
 var
   SQLStr: String;
+  i, PostID: Integer;
+  PostName, Rank: String;
+  Indexes: TIntVector;
 begin
   Result:= False;
 
@@ -208,22 +215,14 @@ begin
   APostNames:= nil;
   ARanks:= nil;
 
+  //список людей на текущую дату
   SQLStr:=
     'SELECT t1.StaffID, t1.Name, t1.Patronymic, t1.Family, t1.BornDate, t1.Gender, '+
-           'tt.TabNumID, tt.TabNum, tt.RecrutDate, tt.DismissDate, tt.Rank, tt.PostName ' +
+           'tt.TabNumID, tt.TabNum, tt.RecrutDate, tt.DismissDate ' +
     'FROM STAFFMAIN t1 ' +
     'LEFT OUTER JOIN ( ' +
-           'SELECT t2.StaffID, t2.TabNumID, t2.TabNum, t2.RecrutDate, t2.DismissDate, ' +
-                  'ttt.Rank, ttt.PostID, ttt.PostName ' +
+           'SELECT t2.StaffID, t2.TabNumID, t2.TabNum, t2.RecrutDate, t2.DismissDate ' +
            'FROM STAFFTABNUM t2 ' +
-           'LEFT OUTER JOIN ( ' +
-                   'SELECT t3.TabNumID, t3.Rank, t3.PostID, t4.PostName ' +
-                   'FROM STAFFPOSTLOG t3 ' +
-                   'INNER JOIN STAFFPOST t4 ON (t3.PostID=t4.PostID) ' +
-                   'WHERE (t3.PostTemp = 0) AND (t3.FirstDate <= :DateValue) ' +
-                   'ORDER BY t3.FirstDate DESC ' +
-                   'LIMIT 1' +
-                   ') ttt ON (ttt.TabNumID=t2.TabNumID) ' +
            ') tt ON (tt.StaffID=t1.StaffID) ' ;
 
   if AListType>0 then
@@ -237,13 +236,11 @@ begin
   end;
   SQLStr:= SQLStr + 'ORDER BY ';
   case AOrderType of
-  0: SQLStr:= SQLStr + 't1.Family, t1.Name, t1.Patronymic ';
+  0,2: SQLStr:= SQLStr + 't1.Family, t1.Name, t1.Patronymic ';
   1: SQLStr:= SQLStr + 'tt.TabNum, t1.Family, t1.Name, t1.Patronymic ';
-  2: SQLStr:= SQLStr + 'tt.PostName, t1.Family, t1.Name, t1.Patronymic ';
   3: SQLStr:= SQLStr + 't1.BornDate, t1.Family, t1.Name, t1.Patronymic ';
   4: SQLStr:= SQLStr + 'tt.RecrutDate, t1.Family, t1.Name, t1.Patronymic ';
   5: SQLStr:= SQLStr + 'tt.DismissDate, t1.Family, t1.Name, t1.Patronymic ';
-  6: SQLStr:= SQLStr + 'tt.Rank, t1.Family, t1.Name, t1.Patronymic ';
   end;
 
   QSetQuery(FQuery);
@@ -265,13 +262,38 @@ begin
       VAppend(ANs, QFieldStr('Name'));
       VAppend(APs, QFieldStr('Patronymic'));
       VAppend(ATabNums, QFieldStr('TabNum'));
-      VAppend(APostNames, QFieldStr('PostName'));
-      VAppend(ARanks, QFieldStr('Rank'));
       QNext;
     end;
     Result:= True;
   end;
   QClose;
+
+  if not Result then Exit;
+
+  //актуальные должности и разряды на текущую дату
+  for i:= 0 to High(ATabNumIDs) do
+  begin
+    StaffPostForDate(ATabNumIDs[i], Date, PostID, PostName, Rank);
+    VAppend(APostNames, PostName);
+    VAppend(ARanks, Rank);
+  end;
+
+  //сортировка по наименованию должности
+  if AOrderType<>2 then Exit;
+  VSort(APostNames, Indexes);
+
+  AStaffIDs:= VReplace(AStaffIDs, Indexes);
+  ATabNumIDs:= VReplace(ATabNumIDs, Indexes);
+  AGenders:= VReplace(AGenders, Indexes);
+  ABornDates:= VReplace(ABornDates, Indexes);
+  ARecrutDates:= VReplace(ARecrutDates, Indexes);
+  ADismissDates:= VReplace(ADismissDates, Indexes);
+  AFs:= VReplace(AFs, Indexes);
+  ANs:= VReplace(ANs, Indexes);
+  APs:= VReplace(APs, Indexes);
+  ATabNums:= VReplace(ATabNums, Indexes);
+  APostNames:= VReplace(APostNames, Indexes);
+  ARanks:= VReplace(ARanks, Indexes);
 end;
 
 function TDataBase.StaffMainAdd(out AStaffID: Integer;
@@ -410,6 +432,9 @@ function TDataBase.StaffTabNumListLoad(const AStaffID: Integer;
                           out ATabNumIDs, APostIDs: TIntVector;
                           out ATabNums, APostNames, ARanks: TStrVector;
                           out ARecrutDates, ADismissDates: TDateVector): Boolean;
+var
+  i, PostID: Integer;
+  PostName, Rank: String;
 begin
   Result:= False;
 
@@ -422,22 +447,14 @@ begin
   ADismissDates:= nil;
 
   if AStaffID<=0 then Exit;
-
+  //табельные номера с периодами работы
   QSetQuery(FQuery);
   QSetSQL(
-    'SELECT t1.TabNumID, t1.TabNum, t1.RecrutDate, t1.DismissDate, tt.Rank, tt.PostName, tt.FirstDate '+
-    'FROM STAFFTABNUM t1 ' +
-    'LEFT OUTER JOIN ( ' +
-           'SELECT t2.TabNumID, t2.Rank, t2.FirstDate, t3.PostName ' +
-           'FROM STAFFPOSTLOG t2 ' +
-           'INNER JOIN STAFFPOST t3 ON (t2.PostID=t3.PostID) ' +
-           'WHERE (t2.PostTemp = 0) AND (t2.FirstDate <= :DateValue) ' +
-           ') tt ON (tt.TabNumID=t1.TabNumID) ' +
-    'WHERE (t1.StaffID = :StaffID) ' +
-    'ORDER BY t1.TabNum, tt.FirstDate DESC ' +
-    'LIMIT 1'
+    'SELECT TabNumID, TabNum, RecrutDate, DismissDate '+
+    'FROM STAFFTABNUM ' +
+    'WHERE (StaffID = :StaffID) ' +
+    'ORDER BY TabNum, RecrutDate'
   );
-  QParamDT('DateValue', Date);
   QParamInt('StaffID', AStaffID);
   QOpen;
   if not QIsEmpty then
@@ -449,13 +466,22 @@ begin
       VAppend(ATabNums, QFieldStr('TabNum'));
       VAppend(ARecrutDates, QFieldDT('RecrutDate'));
       VAppend(ADismissDates, QFieldDT('DismissDate'));
-      VAppend(ARanks, QFieldStr('Rank'));
-      VAppend(APostNames, QFieldStr('PostName'));
+
       QNext;
     end;
     Result:= True;
   end;
   QClose;
+
+  if not Result then Exit;
+  //актуальные должности и разряды на текущую дату
+  for i:= 0 to High(ATabNumIDs) do
+  begin
+    StaffPostForDate(ATabNumIDs[i], Date, PostID, PostName, Rank);
+    VAppend(APostIDs, PostID);
+    VAppend(APostNames, PostName);
+    VAppend(ARanks, Rank);
+  end;
 end;
 
 function TDataBase.StaffTabNumAdd(out ATabNumID: Integer;
@@ -611,6 +637,37 @@ function TDataBase.StaffTabNumIsExists(const ATabNumID: Integer; const ATabNum: 
 begin
   Result:= IsValueInTableNotMatchInt32ID('STAFFTABNUM', 'TabNum', ATabNum,
                                          'TabNumID', ATabNumID);
+end;
+
+procedure TDataBase.StaffPostForDate(const ATabNumID: Integer;
+                                     const ADate: TDate;
+                                     out APostID: Integer;
+                                     out APostName, ARank: String);
+begin
+  APostName:= EmptyStr;
+  ARank:= EmptyStr;
+  APostID:= 0;
+
+  QSetQuery(FQuery);
+  QSetSQL(
+    'SELECT t1.Rank, t1.PostID, t2.PostName ' +
+    'FROM STAFFPOSTLOG t1 ' +
+    'INNER JOIN STAFFPOST t2 ON (t1.PostID=t2.PostID) ' +
+    'WHERE (t1.TabNumID = :TabNumID) AND (t1.PostTemp = 0) AND (t1.FirstDate <= :DateValue) ' +
+    'ORDER BY t1.FirstDate DESC ' +
+    'LIMIT 1'
+  );
+  QParamDT('DateValue', ADate);
+  QParamInt('TabNumID', ATabNumID);
+  QOpen;
+  if not QIsEmpty then
+  begin
+    QFirst;
+    APostName:= QFieldStr('PostName');
+    ARank:= QFieldStr('Rank');
+    APostID:= QFieldInt('PostID');
+  end;
+  QClose;
 end;
 
 function TDataBase.StaffPostLogListLoad(const ATabNumID: Integer;

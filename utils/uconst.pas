@@ -8,6 +8,8 @@ uses
   Classes, SysUtils;
 
 const
+  EMPTY_MARK = '—';
+
   TIMETABLE_TYPEMARK_KEYS: array of Integer =
     (0,               1,      2,            3,              4        );
   TIMETABLE_TYPEMARK_PICKS: array of String  =
