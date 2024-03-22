@@ -229,7 +229,7 @@ var
 begin
   case ADictionary of
     1: DataBase.EditList('Перечень должностей (профессий)',
-                         'STAFFPOST', 'PostID', 'PostName', True, True, 400{, GridFont});
+                         'STAFFPOST', 'PostID', 'PostName', True, True, 400, GridFont);
     2: DataBase.EditTable('Коды табеля учета рабочего времени',
                           'TIMETABLEMARK', 'DigMark',
                           ['DigMark',      'StrMark',       'TypeMark', 'Note'        ],
@@ -240,8 +240,8 @@ begin
                           [ taCenter,       taCenter,        taCenter,   taLeftJustify],
                           True, ['DigMark'], 4,
                           [nil,             nil,             TIMETABLE_TYPEMARK_KEYS,  nil],
-                          [nil,             nil,             TIMETABLE_TYPEMARK_PICKS, nil]{,
-                          GridFont});
+                          [nil,             nil,             TIMETABLE_TYPEMARK_PICKS, nil],
+                          GridFont);
     3: begin
          DataBase.KeyPickList('SIZUNIT', 'UnitID', 'UnitName', VKeys, VPicks);
          DataBase.EditDoubleTable('Перечень средств индивидуальной защиты',
@@ -263,7 +263,7 @@ begin
                          True, ['SIZName'], 1,
                          [nil,                 VKeys,               SIZ_SIZETYPE_KEYS ],
                          [nil,                 VPicks,              SIZ_SIZETYPE_PICKS],
-                         'ClassID');
+                         'ClassID', GridFont);
 
        end;
     4: DataBase.EditTable('Единицы измерения средств индивидуальной защиты',
@@ -274,11 +274,11 @@ begin
                           [ True,           True,              True                 ],
                           [ 400,            100,               200                  ],
                           [ taLeftJustify,  taCenter,          taCenter             ],
-                          True, ['UnitName'], 1, nil, nil{, GridFont});
+                          True, ['UnitName'], 1, nil, nil, GridFont);
     5: DataBase.EditList('Дополнительные условия выдачи СИЗ',
-                         'SIZREASON', 'ReasonID', 'ReasonName', True, True, 400{, GridFont});
+                         'SIZREASON', 'ReasonID', 'ReasonName', True, True, 400, GridFont);
     6: DataBase.EditList('Особые сроки службы СИЗ',
-                         'SIZSPECLIFE', 'SpecLifeID', 'SpecLifeName', True, True, 400{, GridFont});
+                         'SIZSPECLIFE', 'SpecLifeID', 'SpecLifeName', True, True, 400, GridFont);
     7: begin
          DataBase.KeyPickList('SSOUNIT', 'UnitID', 'UnitName', VKeys, VPicks);
          DataBase.EditDoubleTable('Перечень средств индивидуальной защиты',
@@ -300,7 +300,7 @@ begin
                          True, ['SSOName'], 1,
                          [nil,             VKeys,               SSO_SIZETYPE_KEYS ],
                          [nil,             VPicks,              SSO_SIZETYPE_PICKS],
-                         'ClassID');
+                         'ClassID', GridFont);
 
        end;
     8: DataBase.EditTable('Единицы измерения смывающих и обезвреживающих средств',
@@ -311,7 +311,7 @@ begin
                           [ True,           True,              True                 ],
                           [ 400,            100,               200                  ],
                           [ taLeftJustify,  taCenter,          taCenter             ],
-                          True, ['UnitName'], 1, nil, nil{, GridFont});
+                          True, ['UnitName'], 1, nil, nil, GridFont);
   end;
 
 end;

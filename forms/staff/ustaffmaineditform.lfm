@@ -5,6 +5,7 @@ object StaffMainEditForm: TStaffMainEditForm
   Width = 280
   AutoSize = True
   BorderStyle = bsSizeToolWin
+  Caption = 'Сотрудник'
   ClientHeight = 190
   ClientWidth = 280
   Constraints.MinHeight = 160

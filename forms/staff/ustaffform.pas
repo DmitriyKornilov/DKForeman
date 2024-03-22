@@ -29,6 +29,8 @@ type
     FilterLabel: TLabel;
     FilterPanel: TPanel;
     ListAddButton: TSpeedButton;
+    PostButton1: TSpeedButton;
+    PostButton2: TSpeedButton;
     TabNumDismissCancelButton: TSpeedButton;
     TabNumVT: TVirtualStringTree;
     TabNumAddButton: TSpeedButton;
@@ -69,6 +71,8 @@ type
     procedure ListAddButtonClick(Sender: TObject);
     procedure ListDelButtonClick(Sender: TObject);
     procedure ListEditButtonClick(Sender: TObject);
+    procedure PostButton1Click(Sender: TObject);
+    procedure PostButton2Click(Sender: TObject);
     procedure PostLogAddButtonClick(Sender: TObject);
     procedure PostLogDelButtonClick(Sender: TObject);
     procedure PostLogEditButtonClick(Sender: TObject);
@@ -82,6 +86,8 @@ type
     procedure TabNumEditButtonClick(Sender: TObject);
     procedure TabNumVTNodeDblClick(Sender: TBaseVirtualTree; const {%H-}HitInfo: THitInfo);
   private
+    Percents: Integer;
+
     ModeType: TModeType;
 
     OrderType: TVSTStringList;
@@ -178,6 +184,7 @@ end;
 
 procedure TStaffForm.FormCreate(Sender: TObject);
 begin
+  Percents:= 100;
   ModeType:= mtView;
 
   ControlHeight(ToolPanel, TOOL_PANEL_HEIGHT_DEFAULT);
@@ -245,6 +252,18 @@ end;
 procedure TStaffForm.ListEditButtonClick(Sender: TObject);
 begin
   StaffMainEditFormOpen(etEdit);
+end;
+
+procedure TStaffForm.PostButton1Click(Sender: TObject);
+begin
+  Percents:= Percents-10;
+  StaffList.SetZoom(Percents);
+end;
+
+procedure TStaffForm.PostButton2Click(Sender: TObject);
+begin
+  Percents:= Percents+10;
+  StaffList.SetZoom(Percents);
 end;
 
 procedure TStaffForm.PostLogAddButtonClick(Sender: TObject);
