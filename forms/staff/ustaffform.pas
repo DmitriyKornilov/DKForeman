@@ -8,7 +8,7 @@ uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, Buttons,
   StdCtrls, EditBtn, VirtualTrees, DateUtils,
   //Project utils
-  UDBUtils, UConst, UTypes, UUtils,
+  UDataBase, UConst, UTypes, UUtils,
   //DK packages utils
   DK_VSTTables, DK_VSTTools, DK_Vector, DK_CtrlUtils, DK_StrUtils, DK_Const,
   DK_Dialogs,

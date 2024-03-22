@@ -12,7 +12,7 @@ uses
   DK_Const, DK_LCLStrRus, DK_HeapTrace, DK_CtrlUtils, DK_Fonts, DK_VSTTables,
   DK_Vector,
   //Project utils
-  UDBUtils, UConst, UTypes,
+  UDataBase, UConst, UTypes,
   //Forms
   UStaffForm,
   UCalendarForm, UShiftScheduleForm, UVacationPlaneForm,

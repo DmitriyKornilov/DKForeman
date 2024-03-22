@@ -10,10 +10,11 @@ uses
   athreads,
   {$ENDIF}
   Interfaces, // this includes the LCL widgetset
-  Forms, UMainForm, UCalendarForm, lazcontrols, datetimectrls, UDBUtils,
+  Forms, UMainForm, UCalendarForm, lazcontrols, datetimectrls, UDataBase,
   UStaffForm, UShiftScheduleForm, UVacationPlaneForm, UPersonalScheduleForm,
   UTimetableForm, USIZForm, USSOForm, UStudyForm, UConst, UTypes,
-  UStaffMainEditForm, UUtils, UStaffTabNumEditForm, UStaffPostLogEditForm;
+  UStaffMainEditForm, UUtils, UCalendar, UWorkHours, UStaffTabNumEditForm,
+  UStaffPostLogEditForm;
 
 {$R *.res}
 

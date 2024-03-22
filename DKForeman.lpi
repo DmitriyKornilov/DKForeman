@@ -78,9 +78,9 @@
         <UnitName Value="UCalendarForm"/>
       </Unit>
       <Unit>
-        <Filename Value="utils\udbutils.pas"/>
+        <Filename Value="utils\udatabase.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="UDBUtils"/>
+        <UnitName Value="UDataBase"/>
       </Unit>
       <Unit>
         <Filename Value="forms\staff\ustaffform.pas"/>
@@ -178,6 +178,16 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UStaffPostLogEditForm"/>
       </Unit>
+      <Unit>
+        <Filename Value="utils\timing\ucalendar.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="UCalendar"/>
+      </Unit>
+      <Unit>
+        <Filename Value="utils\timing\uworkhours.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="UWorkHours"/>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -188,7 +198,7 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
-      <OtherUnitFiles Value="forms\calendar;utils;forms\staff;forms\timing;forms\siz;forms\sso;forms\study"/>
+      <OtherUnitFiles Value="forms\calendar;utils;forms\staff;forms\timing;forms\siz;forms\sso;forms\study;utils\timing"/>
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <Linking>
