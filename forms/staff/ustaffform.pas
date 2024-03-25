@@ -6,12 +6,11 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, Buttons,
-  StdCtrls, EditBtn, VirtualTrees, DateUtils,
+  StdCtrls, EditBtn, VirtualTrees, BCPanel, DateUtils,
   //Project utils
   UDataBase, UConst, UTypes, UUtils,
   //DK packages utils
-  DK_VSTTables, DK_VSTTools, DK_Vector, DK_CtrlUtils, DK_StrUtils, DK_Const,
-  DK_Dialogs,
+  DK_VSTTables, DK_VSTTools, DK_Vector, DK_StrUtils, DK_Const, DK_Dialogs,
   //Forms
   UStaffMainEditForm, UStaffTabNumEditForm, UStaffPostlogEditForm;
 
@@ -21,6 +20,8 @@ type
   { TStaffForm }
 
   TStaffForm = class(TForm)
+    ListCaptionPanel: TBCPanel;
+    TabNumCaptionPanel: TBCPanel;
     Bevel1: TBevel;
     Bevel2: TBevel;
     CloseButton: TSpeedButton;
@@ -31,6 +32,7 @@ type
     ListAddButton: TSpeedButton;
     PostButton1: TSpeedButton;
     PostButton2: TSpeedButton;
+    PostLogCaptionPanel: TBCPanel;
     TabNumDismissCancelButton: TSpeedButton;
     TabNumVT: TVirtualStringTree;
     TabNumAddButton: TSpeedButton;
@@ -187,27 +189,41 @@ begin
   Percents:= 100;
   ModeType:= mtView;
 
-  ControlHeight(ToolPanel, TOOL_PANEL_HEIGHT_DEFAULT);
-  ControlWidth(CloseButton, TOOL_BUTTON_WIDTH_DEFAULT);
-  ControlWidth(ExportButton, TOOL_BUTTON_WIDTH_DEFAULT);
-  ControlWidth(PostButton, TOOL_BUTTON_WIDTH_DEFAULT);
+  SetToolPanels([
+    ToolPanel, ListToolPanel, TabNumToolPanel, PostLogToolPanel
+  ]);
+  SetCaptionPanels([
+    ListCaptionPanel, TabNumCaptionPanel, PostLogCaptionPanel
+  ]);
+  SetToolButtons([
+    CloseButton, ExportButton, PostButton,
+    ListAddButton, ListDelButton, ListEditButton,
+    TabNumAddButton, TabNumDelButton, TabNumEditButton, TabNumDismissButton, TabNumDismissCancelButton,
+    PostLogAddButton, PostLogDelButton, PostLogEditButton
+  ]);
 
-  ControlHeight(ListToolPanel, TOOL_PANEL_HEIGHT_DEFAULT);
-  ControlWidth(ListAddButton, TOOL_BUTTON_WIDTH_DEFAULT);
-  ControlWidth(ListDelButton, TOOL_BUTTON_WIDTH_DEFAULT);
-  ControlWidth(ListEditButton, TOOL_BUTTON_WIDTH_DEFAULT);
+  //ControlHeight(ToolPanel, TOOL_PANEL_HEIGHT_DEFAULT);
+  //ControlWidth(CloseButton, TOOL_BUTTON_WIDTH_DEFAULT);
+  //ControlWidth(ExportButton, TOOL_BUTTON_WIDTH_DEFAULT);
+  //ControlWidth(PostButton, TOOL_BUTTON_WIDTH_DEFAULT);
 
-  ControlHeight(TabNumToolPanel, TOOL_PANEL_HEIGHT_DEFAULT);
-  ControlWidth(TabNumAddButton, TOOL_BUTTON_WIDTH_DEFAULT);
-  ControlWidth(TabNumDelButton, TOOL_BUTTON_WIDTH_DEFAULT);
-  ControlWidth(TabNumEditButton, TOOL_BUTTON_WIDTH_DEFAULT);
-  ControlWidth(TabNumDismissButton, TOOL_BUTTON_WIDTH_DEFAULT);
-  ControlWidth(TabNumDismissCancelButton, TOOL_BUTTON_WIDTH_DEFAULT);
+  //ControlHeight(ListCaptionPanel, TOOL_PANEL_HEIGHT_DEFAULT);
+  //ControlHeight(ListToolPanel, TOOL_PANEL_HEIGHT_DEFAULT);
+  //ControlWidth(ListAddButton, TOOL_BUTTON_WIDTH_DEFAULT);
+  //ControlWidth(ListDelButton, TOOL_BUTTON_WIDTH_DEFAULT);
+  //ControlWidth(ListEditButton, TOOL_BUTTON_WIDTH_DEFAULT);
 
-  ControlHeight(PostLogToolPanel, TOOL_PANEL_HEIGHT_DEFAULT);
-  ControlWidth(PostLogAddButton, TOOL_BUTTON_WIDTH_DEFAULT);
-  ControlWidth(PostLogDelButton, TOOL_BUTTON_WIDTH_DEFAULT);
-  ControlWidth(PostLogEditButton, TOOL_BUTTON_WIDTH_DEFAULT);
+  //ControlHeight(TabNumToolPanel, TOOL_PANEL_HEIGHT_DEFAULT);
+  //ControlWidth(TabNumAddButton, TOOL_BUTTON_WIDTH_DEFAULT);
+  //ControlWidth(TabNumDelButton, TOOL_BUTTON_WIDTH_DEFAULT);
+  //ControlWidth(TabNumEditButton, TOOL_BUTTON_WIDTH_DEFAULT);
+  //ControlWidth(TabNumDismissButton, TOOL_BUTTON_WIDTH_DEFAULT);
+  //ControlWidth(TabNumDismissCancelButton, TOOL_BUTTON_WIDTH_DEFAULT);
+
+  //ControlHeight(PostLogToolPanel, TOOL_PANEL_HEIGHT_DEFAULT);
+  //ControlWidth(PostLogAddButton, TOOL_BUTTON_WIDTH_DEFAULT);
+  //ControlWidth(PostLogDelButton, TOOL_BUTTON_WIDTH_DEFAULT);
+  //ControlWidth(PostLogEditButton, TOOL_BUTTON_WIDTH_DEFAULT);
 
   StaffListCreate;
   ListTypeCreate;
@@ -524,6 +540,14 @@ begin
   ListDelButton.Enabled:= StaffList.IsSelected;
   ListEditButton.Enabled:= StaffList.IsSelected;
   TabNumAddButton.Enabled:= StaffList.IsSelected;
+
+  TabNumCaptionPanel.Caption:= 'Табельные номера';
+  if StaffList.IsSelected then
+    TabNumCaptionPanel.Caption:= TabNumCaptionPanel.Caption + ': ' +
+                                 SNameLong(Families[StaffList.SelectedIndex],
+                                           Names[StaffList.SelectedIndex],
+                                           Patronymics[StaffList.SelectedIndex]);
+
   TabNumListLoad;
 end;
 
@@ -584,6 +608,11 @@ begin
   TabNumDelButton.Enabled:= TabNumDismissButton.Visible;
   TabNumEditButton.Enabled:= TabNumDismissButton.Visible;
   TabNumDismissButton.Enabled:= TabNumList.IsSelected;
+
+  PostLogCaptionPanel.Caption:= 'История переводов';
+  if TabNumList.IsSelected then
+    PostLogCaptionPanel.Caption:= PostLogCaptionPanel.Caption + ' по табельному номеру ' +
+                                  TabNumListTabNums[TabNumList.SelectedIndex];
   PostLogLoad;
 end;
 
@@ -799,6 +828,7 @@ begin
   StaffList.CanUnselect:= ModeType<>mtEditing;
   StaffList.CanSelect:= ModeType=mtEditing;
   ListToolPanel.Visible:= ModeType=mtEditing;
+  ListCaptionPanel.Visible:= ModeType=mtEditing;
   if ModeType=mtEditing then
   begin
     EditingPanel.Width:= Round(ClientWidth*2/3);
