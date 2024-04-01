@@ -26,6 +26,15 @@
     </RunParams>
     <RequiredPackages>
       <Item>
+        <PackageName Value="DKZoom"/>
+      </Item>
+      <Item>
+        <PackageName Value="laz_fpspreadsheet_visual_dsgn"/>
+      </Item>
+      <Item>
+        <PackageName Value="laz_fpspreadsheet_visual"/>
+      </Item>
+      <Item>
         <PackageName Value="DKSpreadSheet"/>
       </Item>
       <Item>
@@ -190,6 +199,19 @@
         <Filename Value="utils\timing\uworkhours.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="UWorkHours"/>
+      </Unit>
+      <Unit>
+        <Filename Value="utils\timing\ucalendarsheet.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="UCalendarSheet"/>
+      </Unit>
+      <Unit>
+        <Filename Value="forms\timing\ucalendareditform.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="CalendarEditForm"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="UCalendarEditForm"/>
       </Unit>
     </Units>
   </ProjectOptions>

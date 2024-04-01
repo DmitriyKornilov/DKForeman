@@ -304,36 +304,6 @@ object StaffForm: TStaffForm
       ShowHint = True
       ParentShowHint = False
     end
-    object PostButton1: TSpeedButton
-      Cursor = crHandPoint
-      Left = 80
-      Height = 36
-      Hint = 'Перечень должностей (профессий)'
-      Top = 0
-      Width = 40
-      Align = alLeft
-      Constraints.MaxWidth = 40
-      Constraints.MinWidth = 40
-      Caption = '-'
-      OnClick = PostButton1Click
-      ShowHint = True
-      ParentShowHint = False
-    end
-    object PostButton2: TSpeedButton
-      Cursor = crHandPoint
-      Left = 120
-      Height = 36
-      Hint = 'Перечень должностей (профессий)'
-      Top = 0
-      Width = 40
-      Align = alLeft
-      Constraints.MaxWidth = 40
-      Constraints.MinWidth = 40
-      Caption = '+'
-      OnClick = PostButton2Click
-      ShowHint = True
-      ParentShowHint = False
-    end
   end
   object SettingPanel: TPanel
     Left = 2
@@ -410,7 +380,7 @@ object StaffForm: TStaffForm
       TabOrder = 3
     end
   end
-  object SettingSplitter: TSplitter
+  object LeftSplitter: TSplitter
     Left = 302
     Height = 394
     Top = 42

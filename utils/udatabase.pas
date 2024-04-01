@@ -6,7 +6,9 @@ interface
 
 uses
   Classes, SysUtils, StdCtrls, DateUtils,
-
+  //Project utils
+  UCalendar,
+  //DK packages utils
   DK_SQLite3, DK_SQLUtils, DK_Vector, DK_Dialogs, DK_StrUtils, DK_Const;
 
 type
@@ -15,6 +17,13 @@ type
 
   TDataBase = class (TSQLite3)
   public
+    (**************************************************************************
+                                      ПАРАМЕТРЫ
+    **************************************************************************)
+    function SettingLoad(const ASettingName: String): Integer;
+    function SettingsLoad(const ASettingNames: TStrVector): TIntVector;
+    procedure SettingUpdate(const ASettingName: String; const ASettingValue: Integer);
+    procedure SettingsUpdate(const ASettingNames: TStrVector; const ASettingValues: TIntVector);
     (**************************************************************************
                                      СПРАВОЧНИКИ
     **************************************************************************)
@@ -106,6 +115,18 @@ type
     function StaffPostLogDelete(const APrevPostLogID, APostLogID: Integer;
                           const ALastDate: TDate): Boolean;
 
+    (**************************************************************************
+                                    КАЛЕНДАРЬ
+    **************************************************************************)
+    {Список корректировок календаря: True - ОК, False - список пуст}
+    function CalendarCorrectionsLoad(const ABeginDate, AEndDate: TDate;
+                                     out ACorrections: TCalendarCorrections): Boolean;
+    {Запись или обновление корректировки календаря: True - ОК, False - ошибка}
+    function CalendarCorrectionsUpdate(const ADates: TDateVector;
+                                       const AStatus, ASwapDay: Integer): Boolean;
+    {Удаление корректировки дня календаря: True - ОК, False - ошибка}
+    function CalendarCorrectionDelete(const ADate: TDate): Boolean;
+
   end;
 
 var
@@ -114,6 +135,39 @@ var
 implementation
 
 { TDataBase }
+
+function TDataBase.SettingLoad(const ASettingName: String): Integer;
+begin
+  Result:= ValueIntStrID('SETTINGS', 'Value', 'Name', ASettingName);
+end;
+
+function TDataBase.SettingsLoad(const ASettingNames: TStrVector): TIntVector;
+var
+  i: Integer;
+begin
+  VDim(Result{%H-}, Length(ASettingNames));
+  for i:= 0 to High(Result) do
+    Result[i]:= SettingLoad(ASettingNames[i]);
+end;
+
+procedure TDataBase.SettingUpdate(const ASettingName: String; const ASettingValue: Integer);
+begin
+  UpdateStrID('SETTINGS', 'Value', 'Name', ASettingName, ASettingValue, True {commit});
+end;
+
+procedure TDataBase.SettingsUpdate(const ASettingNames: TStrVector;
+  const ASettingValues: TIntVector);
+var
+  i: Integer;
+begin
+  try
+    for i:= 0 to High(ASettingNames) do
+      UpdateStrID('SETTINGS', 'Value', 'Name', ASettingNames[i], ASettingValues[i], False {no commit});
+    QCommit;
+  finally
+    QRollback;
+  end;
+end;
 
 procedure TDataBase.PostDictionaryLoad(const AComboBox: TComboBox;
                                        out APostIDs: TIntVector;
@@ -693,6 +747,65 @@ begin
   except
     QRollback;
   end;
+end;
+
+function TDataBase.CalendarCorrectionsLoad(const ABeginDate, AEndDate: TDate;
+                                     out ACorrections: TCalendarCorrections): Boolean;
+begin
+  Result:= False;
+  ACorrections:= EmptyCalendarCorrections;
+  QSetQuery(FQuery);
+  QSetSQL(
+    'SELECT * FROM CALENDAR ' +
+    'WHERE DayDate BETWEEN :BD AND :ED ' +
+    'ORDER BY DayDate');
+  QParamDT('BD', ABeginDate);
+  QParamDT('ED', AEndDate);
+  QOpen;
+  if not QIsEmpty then
+  begin
+    QFirst;
+    while not QEOF do
+    begin
+      VAppend(ACorrections.Dates, QFieldDT('DayDate'));
+      VAppend(ACorrections.Statuses, QFieldInt('Status'));
+      VAppend(ACorrections.SwapDays, QFieldInt('SwapDay'));
+      QNext;
+    end;
+    Result:= True;
+  end;
+  QClose;
+end;
+
+function TDataBase.CalendarCorrectionsUpdate(const ADates: TDateVector;
+                                   const AStatus, ASwapDay: Integer): Boolean;
+var
+  i: Integer;
+begin
+  Result:= False;
+  if VIsNil(ADates) then Exit;
+  QSetQuery(FQuery);
+  try
+    QSetSQL(
+      sqlINSERT('CALENDAR', ['DayDate', 'Status', 'SwapDay'], 'REPLACE')
+    );
+    QParamInt('Status', AStatus);
+    QParamInt('SwapDay', ASwapDay);
+    for i:= 0 to High(ADates) do
+    begin
+      QParamDT('DayDate', ADates[i]);
+      QExec;
+    end;
+    QCommit;
+    Result:= True;
+  except
+    QRollback;
+  end;
+end;
+
+function TDataBase.CalendarCorrectionDelete(const ADate: TDate): Boolean;
+begin
+  Result:= Delete('CALENDAR', 'DayDate', ADate);
 end;
 
 end.

@@ -7,11 +7,14 @@ interface
 uses
   Classes, SysUtils, Graphics, Controls, ExtCtrls, Buttons, BCPanel,
   //DK packages utils
-  DK_CtrlUtils, DK_Color;
+  DK_CtrlUtils, DK_Color, DK_Vector;
 
   procedure SetToolPanels(const AControls: array of TControl);
   procedure SetCaptionPanels(const AControls: array of TBCPanel);
   procedure SetToolButtons(const AControls: array of TControl);
+
+  function SettingByName(const AName: String; const ANames: TStrVector;
+                         const AValues: TIntVector): Integer;
 
 
 implementation
@@ -42,6 +45,12 @@ var
 begin
   for i:= 0 to High(AControls) do
     ControlWidth(AControls[i], TOOL_BUTTON_WIDTH_DEFAULT);
+end;
+
+function SettingByName(const AName: String; const ANames: TStrVector;
+  const AValues: TIntVector): Integer;
+begin
+  VSameIndexValue(AName, ANames, AValues, Result);
 end;
 
 

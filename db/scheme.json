@@ -6,6 +6,7 @@
     "SCHEDULECORRECT",
     "SCHEDULECYCLE",
     "SCHEDULEMAIN",
+    "SETTINGS",
     "SHIFTCOLORS",
     "SIZCLASSES",
     "SIZDOC",
@@ -913,6 +914,89 @@
       ],
       "ExistingValues" : [
         "0",
+        "0"
+      ],
+      "ReferenceTo" : {
+        "TableName" : "",
+        "FieldName" : "",
+        "OnDelete" : 4,
+        "OnUpdate" : 4
+      },
+      "ReferenceFrom" : {
+        "TableNames" : [
+        ],
+        "FieldNames" : [
+        ]
+      }
+    },
+    "IndexesList" : [
+    ]
+  },
+  "SETTINGS" : {
+    "Description" : "ПОЛЬЗОВАТЕЛЬСКИЕ ПАРАМЕТРЫ",
+    "Notes" : [
+    ],
+    "FieldsList" : [
+      "NAME",
+      "VALUE"
+    ],
+    "NAME" : {
+      "FieldType" : "TEXT",
+      "PrimaryKey" : true,
+      "Status" : false,
+      "NotNull" : true,
+      "DefaultValue" : "",
+      "Description" : [
+        "Наименование параметра"
+      ],
+      "ExistingValues" : [
+        "STAFFORM.LISTTYPE",
+        "STAFFORM.ORDERTYPE",
+        "STAFFORM.NUMBER",
+        "STAFFORM.STAFFNAME",
+        "STAFFORM.BORNDATE",
+        "STAFFORM.GENDER",
+        "STAFFORM.TABNUM",
+        "STAFFORM.RECRUTDATE",
+        "STAFFORM.DISMISSDATE",
+        "STAFFORM.RANK",
+        "STAFFORM.POSTNAME",
+        "STAFFORM.NAMETYPE"
+      ],
+      "ReferenceTo" : {
+        "TableName" : "",
+        "FieldName" : "",
+        "OnDelete" : 4,
+        "OnUpdate" : 4
+      },
+      "ReferenceFrom" : {
+        "TableNames" : [
+        ],
+        "FieldNames" : [
+        ]
+      }
+    },
+    "VALUE" : {
+      "FieldType" : "INTEGER",
+      "PrimaryKey" : false,
+      "Status" : false,
+      "NotNull" : true,
+      "DefaultValue" : "",
+      "Description" : [
+        "Значение параметра"
+      ],
+      "ExistingValues" : [
+        "1",
+        "0",
+        "1",
+        "1",
+        "1",
+        "1",
+        "1",
+        "1",
+        "1",
+        "1",
+        "1",
         "0"
       ],
       "ReferenceTo" : {

@@ -30,8 +30,6 @@ type
     FilterLabel: TLabel;
     FilterPanel: TPanel;
     ListAddButton: TSpeedButton;
-    PostButton1: TSpeedButton;
-    PostButton2: TSpeedButton;
     PostLogCaptionPanel: TBCPanel;
     TabNumDismissCancelButton: TSpeedButton;
     TabNumVT: TVirtualStringTree;
@@ -53,7 +51,7 @@ type
     TabNumEditingPanel: TPanel;
     SettingPanel: TPanel;
     PostButton: TSpeedButton;
-    SettingSplitter: TSplitter;
+    LeftSplitter: TSplitter;
     PostLogToolPanel: TPanel;
     PostLogVT: TVirtualStringTree;
     EditingSplitter: TSplitter;
@@ -73,8 +71,6 @@ type
     procedure ListAddButtonClick(Sender: TObject);
     procedure ListDelButtonClick(Sender: TObject);
     procedure ListEditButtonClick(Sender: TObject);
-    procedure PostButton1Click(Sender: TObject);
-    procedure PostButton2Click(Sender: TObject);
     procedure PostLogAddButtonClick(Sender: TObject);
     procedure PostLogDelButtonClick(Sender: TObject);
     procedure PostLogEditButtonClick(Sender: TObject);
@@ -88,9 +84,12 @@ type
     procedure TabNumEditButtonClick(Sender: TObject);
     procedure TabNumVTNodeDblClick(Sender: TBaseVirtualTree; const {%H-}HitInfo: THitInfo);
   private
+    CanLoadStaffList: Boolean;
     Percents: Integer;
 
     ModeType: TModeType;
+
+    SettingValues: TIntVector;
 
     OrderType: TVSTStringList;
     ListType: TVSTStringList;
@@ -139,6 +138,9 @@ type
     procedure StaffTabNumEditFormOpen(const AEditingType: TEditingType);
     procedure StaffTabNumDismissCancel;
     procedure StaffPostLogEditFormOpen(const AEditingType: TEditingType);
+
+    procedure SettingsLoad;
+    procedure SettingsSave;
   public
     procedure ChangeMode(const AModeType: TModeType);
   end;
@@ -202,43 +204,41 @@ begin
     PostLogAddButton, PostLogDelButton, PostLogEditButton
   ]);
 
-  //ControlHeight(ToolPanel, TOOL_PANEL_HEIGHT_DEFAULT);
-  //ControlWidth(CloseButton, TOOL_BUTTON_WIDTH_DEFAULT);
-  //ControlWidth(ExportButton, TOOL_BUTTON_WIDTH_DEFAULT);
-  //ControlWidth(PostButton, TOOL_BUTTON_WIDTH_DEFAULT);
-
-  //ControlHeight(ListCaptionPanel, TOOL_PANEL_HEIGHT_DEFAULT);
-  //ControlHeight(ListToolPanel, TOOL_PANEL_HEIGHT_DEFAULT);
-  //ControlWidth(ListAddButton, TOOL_BUTTON_WIDTH_DEFAULT);
-  //ControlWidth(ListDelButton, TOOL_BUTTON_WIDTH_DEFAULT);
-  //ControlWidth(ListEditButton, TOOL_BUTTON_WIDTH_DEFAULT);
-
-  //ControlHeight(TabNumToolPanel, TOOL_PANEL_HEIGHT_DEFAULT);
-  //ControlWidth(TabNumAddButton, TOOL_BUTTON_WIDTH_DEFAULT);
-  //ControlWidth(TabNumDelButton, TOOL_BUTTON_WIDTH_DEFAULT);
-  //ControlWidth(TabNumEditButton, TOOL_BUTTON_WIDTH_DEFAULT);
-  //ControlWidth(TabNumDismissButton, TOOL_BUTTON_WIDTH_DEFAULT);
-  //ControlWidth(TabNumDismissCancelButton, TOOL_BUTTON_WIDTH_DEFAULT);
-
-  //ControlHeight(PostLogToolPanel, TOOL_PANEL_HEIGHT_DEFAULT);
-  //ControlWidth(PostLogAddButton, TOOL_BUTTON_WIDTH_DEFAULT);
-  //ControlWidth(PostLogDelButton, TOOL_BUTTON_WIDTH_DEFAULT);
-  //ControlWidth(PostLogEditButton, TOOL_BUTTON_WIDTH_DEFAULT);
-
+  CanLoadStaffList:= False;
   StaffListCreate;
   ListTypeCreate;
   OrderTypeCreate;
   ColumnsListCreate;
   NameTypeCreate;
-
+  SettingsLoad;
   TabNumListCreate;
   PostLogCreate;
+  CanLoadStaffList:= True;
 
   ChangeMode(mtView);
 end;
 
+procedure TStaffForm.SettingsLoad;
+begin
+  SettingValues:= DataBase.SettingsLoad(SETTING_NAMES_STAFFORM);
+  ListType.Select(SettingValues[0]);  //STAFFORM.LISTTYPE
+  OrderType.Select(SettingValues[1]); //STAFFORM.ORDERTYPE
+  ColumnsList.Selected:= VIntToBool(VCut(SettingValues, 2, 10)); //columns
+  NameType.Select(SettingValues[11]); //STAFFORM.NAMETYPE
+end;
+
+procedure TStaffForm.SettingsSave;
+begin
+  SettingValues[0]:= ListType.SelectedIndex;  //STAFFORM.LISTTYPE
+  SettingValues[1]:= OrderType.SelectedIndex; //STAFFORM.ORDERTYPE
+  VChangeIn(SettingValues, VBoolToInt(ColumnsList.Selected), 2, 10); //columns
+  SettingValues[11]:= NameType.SelectedIndex; //STAFFORM.NAMETYPE
+  DataBase.SettingsUpdate(SETTING_NAMES_STAFFORM, SettingValues);
+end;
+
 procedure TStaffForm.FormDestroy(Sender: TObject);
 begin
+  SettingsSave;
   FreeAndNil(StaffList);
   FreeAndNil(OrderType);
   FreeAndNil(ListType);
@@ -268,18 +268,6 @@ end;
 procedure TStaffForm.ListEditButtonClick(Sender: TObject);
 begin
   StaffMainEditFormOpen(etEdit);
-end;
-
-procedure TStaffForm.PostButton1Click(Sender: TObject);
-begin
-  Percents:= Percents-10;
-  StaffList.SetZoom(Percents);
-end;
-
-procedure TStaffForm.PostButton2Click(Sender: TObject);
-begin
-  Percents:= Percents+10;
-  StaffList.SetZoom(Percents);
 end;
 
 procedure TStaffForm.PostLogAddButtonClick(Sender: TObject);
@@ -498,6 +486,8 @@ procedure TStaffForm.StaffListLoad(const AStaffID: Integer = 0);
 var
   StrDismissDates: TStrVector;
 begin
+  if not CanLoadStaffList then Exit;
+
   if (not Assigned(OrderType)) or (not Assigned(ListType)) then Exit;
   if ModeType=mtEditing then
     DataBase.StaffMainListLoad(STrimLeft(FilterEdit.Text), StaffIDs, Genders,
@@ -529,7 +519,9 @@ begin
     end;
     StaffList.Draw;
     if ModeType=mtEditing then
-      StaffList.ReSelect(StaffIDs, AStaffID);  //возвращаем выделение строки
+      StaffList.ReSelect(StaffIDs, AStaffID)  //возвращаем выделение строки
+    else
+      StaffList.ColumnVisibles:= ColumnsList.Selected;
   finally
     StaffList.Visible:= True;
   end;
@@ -818,10 +810,10 @@ begin
   if ModeType=mtSetting then
   begin
     SettingPanel.Visible:= True;
-    SettingSplitter.Visible:= True;
+    LeftSplitter.Visible:= True;
   end
   else begin
-    SettingSplitter.Visible:= False;
+    LeftSplitter.Visible:= False;
     SettingPanel.Visible:= False;
   end;
 

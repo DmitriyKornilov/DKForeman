@@ -14,7 +14,7 @@ uses
   UStaffForm, UShiftScheduleForm, UVacationPlaneForm, UPersonalScheduleForm,
   UTimetableForm, USIZForm, USSOForm, UStudyForm, UConst, UTypes,
   UStaffMainEditForm, UUtils, UCalendar, UWorkHours, UStaffTabNumEditForm,
-  UStaffPostLogEditForm;
+  UStaffPostLogEditForm, UCalendarSheet, UCalendarEditForm;
 
 {$R *.res}
 
@@ -23,6 +23,7 @@ begin
   Application.Scaled:=True;
   Application.Initialize;
   Application.CreateForm(TMainForm, MainForm);
+  Application.CreateForm(TCalendarEditForm, CalendarEditForm);
   Application.Run;
 end.
 

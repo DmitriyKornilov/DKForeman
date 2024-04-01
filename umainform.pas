@@ -12,7 +12,7 @@ uses
   DK_Const, DK_LCLStrRus, DK_HeapTrace, DK_CtrlUtils, DK_Fonts, DK_VSTTables,
   DK_Vector,
   //Project utils
-  UDataBase, UConst, UTypes,
+  UDataBase, UUtils, UConst, UTypes,
   //Forms
   UStaffForm,
   UCalendarForm, UShiftScheduleForm, UVacationPlaneForm,
@@ -178,7 +178,7 @@ begin
   case Category of
       0: ;
       1: (CategoryForm as TStaffForm).ChangeMode(ModeType);
-      2: ;
+      2: (CategoryForm as TCalendarForm).ChangeMode(ModeType);
       3: ;
       4: ;
       5: ;
@@ -198,6 +198,7 @@ begin
   try
     Category:= ACategory;
     Caption:= MAIN_CAPTION + MAIN_DESCRIPTION[ACategory];
+    SettingButton.Enabled:= Category<>2;
 
     if Assigned(CategoryForm) then FreeAndNil(CategoryForm);
     case Category of
@@ -322,12 +323,12 @@ begin
   Height:= 300; Width:= 500; //for normal form maximizing
   Caption:= MAIN_CAPTION;
 
-  ControlHeight(ToolPanel, TOOL_PANEL_HEIGHT_DEFAULT);
-  ControlWidth(EditingButton, TOOL_BUTTON_WIDTH_DEFAULT);
-  ControlWidth(SettingButton, TOOL_BUTTON_WIDTH_DEFAULT);
-  ControlWidth(RefreshButton, TOOL_BUTTON_WIDTH_DEFAULT);
-  ControlWidth(AboutButton, TOOL_BUTTON_WIDTH_DEFAULT);
-  ControlWidth(ExitButton, TOOL_BUTTON_WIDTH_DEFAULT);
+  SetToolPanels([
+    ToolPanel
+  ]);
+  SetToolButtons([
+    EditingButton, SettingButton, RefreshButton, AboutButton, ExitButton
+  ]);
 
   SetGridFont;
   DBConnect;
