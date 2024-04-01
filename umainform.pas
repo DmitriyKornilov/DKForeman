@@ -95,6 +95,7 @@ type
     procedure DBConnect;
 
     procedure ChangeMode;
+    procedure SettingsSave;
   public
     GridFont: TFont;
     procedure CategorySelect(const ACategory: Byte);
@@ -176,18 +177,36 @@ begin
     ModeType:= mtView;
 
   case Category of
-      0: ;
-      1: (CategoryForm as TStaffForm).ChangeMode(ModeType);
-      2: (CategoryForm as TCalendarForm).ChangeMode(ModeType);
-      3: ;
-      4: ;
-      5: ;
-      6: ;
-      7: ;
-      8: ;
-      9: ;
-    end;
+    0: ;
+    1: (CategoryForm as TStaffForm).ChangeMode(ModeType);
+    2: (CategoryForm as TCalendarForm).ChangeMode(ModeType);
+    3: ;
+    4: ;
+    5: ;
+    6: ;
+    7: ;
+    8: ;
+    9: ;
+  end;
 
+end;
+
+procedure TMainForm.SettingsSave;
+begin
+  if not Assigned(CategoryForm) then Exit;
+
+  case Category of
+    0: ;
+    1: (CategoryForm as TStaffForm).SettingsSave;
+    //2: (CategoryForm as TCalendarForm).SettingsSave;
+    3: ;
+    4: ;
+    5: ;
+    6: ;
+    7: ;
+    8: ;
+    9: ;
+  end;
 end;
 
 procedure TMainForm.CategorySelect(const ACategory: Byte);
@@ -196,6 +215,7 @@ begin
 
   Screen.Cursor:= crHourGlass;
   try
+    SettingsSave;
     Category:= ACategory;
     Caption:= MAIN_CAPTION + MAIN_DESCRIPTION[ACategory];
     SettingButton.Enabled:= Category<>2;
@@ -218,6 +238,7 @@ begin
       CategoryForm.Show;
       ChangeMode;
     end;
+
   finally
     Screen.Cursor:= crDefault;
   end;
@@ -464,6 +485,7 @@ end;
 
 procedure TMainForm.ExitButtonClick(Sender: TObject);
 begin
+  SettingsSave;
   Close;
 end;
 

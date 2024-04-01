@@ -1062,18 +1062,18 @@ object MainForm: TMainForm
       MemoryUsage = bmuHigh
     end
     object Bevel3: TBevel
-      Left = 482
+      Left = 483
       Height = 36
       Top = 0
       Width = 2
       Align = alLeft
-      BorderSpacing.Left = 2
+      BorderSpacing.Left = 3
       BorderSpacing.Right = 2
       Shape = bsRightLine
     end
     object DictionaryButton: TBCButton
       Cursor = crHandPoint
-      Left = 486
+      Left = 487
       Height = 34
       Top = 1
       Width = 160

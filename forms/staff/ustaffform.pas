@@ -140,8 +140,8 @@ type
     procedure StaffPostLogEditFormOpen(const AEditingType: TEditingType);
 
     procedure SettingsLoad;
-    procedure SettingsSave;
   public
+    procedure SettingsSave;
     procedure ChangeMode(const AModeType: TModeType);
   end;
 
@@ -238,7 +238,6 @@ end;
 
 procedure TStaffForm.FormDestroy(Sender: TObject);
 begin
-  SettingsSave;
   FreeAndNil(StaffList);
   FreeAndNil(OrderType);
   FreeAndNil(ListType);
