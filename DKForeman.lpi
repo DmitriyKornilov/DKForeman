@@ -106,6 +106,7 @@
         <Filename Value="forms\timing\ushiftscheduleform.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="ShiftScheduleForm"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UShiftScheduleForm"/>
       </Unit>

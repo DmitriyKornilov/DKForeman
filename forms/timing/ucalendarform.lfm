@@ -164,16 +164,104 @@ object CalendarForm: TCalendarForm
       BorderSpacing.Right = 2
       Shape = bsRightLine
     end
-    object ExportButton: TSpeedButton
+    object ExportButton: TBCButton
       Cursor = crHandPoint
       Left = 73
-      Height = 36
-      Hint = 'Экспорт таблицы'
-      Top = 0
-      Width = 40
+      Height = 34
+      Top = 1
+      Width = 104
       Align = alLeft
-      Constraints.MaxWidth = 40
-      Constraints.MinWidth = 40
+      AutoSize = True
+      StateClicked.Background.Color = 16245964
+      StateClicked.Background.Gradient1.StartColor = 16577765
+      StateClicked.Background.Gradient1.EndColor = 16180676
+      StateClicked.Background.Gradient1.GradientType = gtLinear
+      StateClicked.Background.Gradient1.Point1XPercent = 0
+      StateClicked.Background.Gradient1.Point1YPercent = 0
+      StateClicked.Background.Gradient1.Point2XPercent = 0
+      StateClicked.Background.Gradient1.Point2YPercent = 100
+      StateClicked.Background.Gradient2.StartColor = 15716760
+      StateClicked.Background.Gradient2.EndColor = 14398312
+      StateClicked.Background.Gradient2.GradientType = gtLinear
+      StateClicked.Background.Gradient2.Point1XPercent = 0
+      StateClicked.Background.Gradient2.Point1YPercent = 0
+      StateClicked.Background.Gradient2.Point2XPercent = 0
+      StateClicked.Background.Gradient2.Point2YPercent = 100
+      StateClicked.Background.Gradient1EndPercent = 55
+      StateClicked.Background.Style = bbsColor
+      StateClicked.Border.Color = 10048512
+      StateClicked.Border.LightColor = clBlack
+      StateClicked.Border.LightOpacity = 100
+      StateClicked.Border.Style = bboSolid
+      StateClicked.FontEx.Color = clBlack
+      StateClicked.FontEx.FontQuality = fqSystemClearType
+      StateClicked.FontEx.Shadow = False
+      StateClicked.FontEx.ShadowRadius = 5
+      StateClicked.FontEx.ShadowOffsetX = 5
+      StateClicked.FontEx.ShadowOffsetY = 5
+      StateClicked.FontEx.Style = []
+      StateHover.Background.Color = 16511461
+      StateHover.Background.Gradient1.StartColor = 16643818
+      StateHover.Background.Gradient1.EndColor = 16576729
+      StateHover.Background.Gradient1.GradientType = gtLinear
+      StateHover.Background.Gradient1.Point1XPercent = 0
+      StateHover.Background.Gradient1.Point1YPercent = 0
+      StateHover.Background.Gradient1.Point2XPercent = 0
+      StateHover.Background.Gradient1.Point2YPercent = 100
+      StateHover.Background.Gradient2.StartColor = 16639678
+      StateHover.Background.Gradient2.EndColor = 16112039
+      StateHover.Background.Gradient2.GradientType = gtLinear
+      StateHover.Background.Gradient2.Point1XPercent = 0
+      StateHover.Background.Gradient2.Point1YPercent = 0
+      StateHover.Background.Gradient2.Point2XPercent = 0
+      StateHover.Background.Gradient2.Point2YPercent = 100
+      StateHover.Background.Gradient1EndPercent = 50
+      StateHover.Background.Style = bbsColor
+      StateHover.Border.Color = 14120960
+      StateHover.Border.LightOpacity = 200
+      StateHover.Border.Style = bboSolid
+      StateHover.FontEx.Color = clBlack
+      StateHover.FontEx.FontQuality = fqSystemClearType
+      StateHover.FontEx.Shadow = False
+      StateHover.FontEx.ShadowRadius = 5
+      StateHover.FontEx.ShadowOffsetX = 5
+      StateHover.FontEx.ShadowOffsetY = 5
+      StateHover.FontEx.Style = []
+      StateNormal.Background.Color = 14803425
+      StateNormal.Background.Gradient1.StartColor = 15921906
+      StateNormal.Background.Gradient1.EndColor = 15461355
+      StateNormal.Background.Gradient1.GradientType = gtLinear
+      StateNormal.Background.Gradient1.Point1XPercent = 0
+      StateNormal.Background.Gradient1.Point1YPercent = 0
+      StateNormal.Background.Gradient1.Point2XPercent = 0
+      StateNormal.Background.Gradient1.Point2YPercent = 100
+      StateNormal.Background.Gradient2.StartColor = 14540253
+      StateNormal.Background.Gradient2.EndColor = 13619151
+      StateNormal.Background.Gradient2.GradientType = gtLinear
+      StateNormal.Background.Gradient2.Point1XPercent = 0
+      StateNormal.Background.Gradient2.Point1YPercent = 0
+      StateNormal.Background.Gradient2.Point2XPercent = 0
+      StateNormal.Background.Gradient2.Point2YPercent = 100
+      StateNormal.Background.Gradient1EndPercent = 50
+      StateNormal.Background.Style = bbsColor
+      StateNormal.Border.Color = 11382189
+      StateNormal.Border.LightOpacity = 200
+      StateNormal.Border.Style = bboSolid
+      StateNormal.FontEx.Color = clBlack
+      StateNormal.FontEx.FontQuality = fqSystemClearType
+      StateNormal.FontEx.Shadow = False
+      StateNormal.FontEx.ShadowRadius = 5
+      StateNormal.FontEx.ShadowOffsetX = 5
+      StateNormal.FontEx.ShadowOffsetY = 5
+      StateNormal.FontEx.Style = []
+      BorderSpacing.Left = 1
+      BorderSpacing.Top = 1
+      BorderSpacing.Bottom = 1
+      Caption = 'Экспорт'
+      Color = clNone
+      DropDownWidth = 16
+      DropDownArrowSize = 8
+      GlobalOpacity = 255
       Glyph.Data = {
         36090000424D3609000000000000360000002800000018000000180000000100
         2000000000000009000064000000640000000000000000000000000000000000
@@ -250,9 +338,16 @@ object CalendarForm: TCalendarForm
         00000000000000000000007C0003007C00150000000000000000000000000000
         0000000000000000000000000000000000000000000000000000
       }
+      GlyphMargin = 0
       OnClick = ExportButtonClick
-      ShowHint = True
-      ParentShowHint = False
+      ParentColor = False
+      Rounding.RoundX = 0
+      Rounding.RoundY = 0
+      RoundingDropDown.RoundX = 1
+      RoundingDropDown.RoundY = 1
+      TextApplyGlobalOpacity = False
+      DropDownStyle = bdsCommon
+      MemoryUsage = bmuHigh
     end
   end
   object EditingPanel: TPanel
@@ -704,7 +799,7 @@ object CalendarForm: TCalendarForm
           ParentShowHint = False
         end
       end
-      object VT1: TVirtualStringTree
+      object DayVT: TVirtualStringTree
         Left = 0
         Height = 95
         Top = 42
@@ -718,7 +813,7 @@ object CalendarForm: TCalendarForm
         Header.Height = 20
         Header.MainColumn = -1
         TabOrder = 1
-        OnDblClick = VT1DblClick
+        OnDblClick = DayVTDblClick
       end
     end
     object CopyPanel: TPanel
@@ -1019,7 +1114,7 @@ object CalendarForm: TCalendarForm
           ParentShowHint = False
         end
       end
-      object VT2: TVirtualStringTree
+      object CopyVT: TVirtualStringTree
         Left = 0
         Height = 102
         Top = 42
@@ -1044,7 +1139,7 @@ object CalendarForm: TCalendarForm
     ResizeStyle = rsLine
     Visible = False
   end
-  object CalendarPanel: TPanel
+  object SheetPanel: TPanel
     Left = 410
     Height = 313
     Top = 44
@@ -1062,7 +1157,7 @@ object CalendarForm: TCalendarForm
     ParentBackground = False
     ParentColor = False
     TabOrder = 3
-    object CalendarGrid: TsWorksheetGrid
+    object ViewGrid: TsWorksheetGrid
       Left = 0
       Height = 285
       Top = 0
@@ -1080,7 +1175,7 @@ object CalendarForm: TCalendarForm
       SelectionPen.Width = 0
       ShowGridLines = False
       ShowHeaders = False
-      WorkbookSource = CalendarGrid.internal
+      WorkbookSource = ViewGrid.internal
       Align = alClient
       AutoAdvance = aaNone
       AutoEdit = False
@@ -1096,8 +1191,8 @@ object CalendarForm: TCalendarForm
       TabOrder = 0
       TabStop = False
       TitleFont.Style = [fsBold]
-      OnDblClick = CalendarGridDblClick
-      OnMouseDown = CalendarGridMouseDown
+      OnDblClick = ViewGridDblClick
+      OnMouseDown = ViewGridMouseDown
     end
     object ZoomPanel: TPanel
       Left = 0

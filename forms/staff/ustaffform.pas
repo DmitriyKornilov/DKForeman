@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, Buttons,
-  StdCtrls, EditBtn, VirtualTrees, BCPanel, DateUtils,
+  StdCtrls, EditBtn, VirtualTrees, BCPanel, BCButton, DateUtils,
   //Project utils
   UDataBase, UConst, UTypes, UUtils,
   //DK packages utils
@@ -20,12 +20,18 @@ type
   { TStaffForm }
 
   TStaffForm = class(TForm)
+    ColumnsListVT: TVirtualStringTree;
+    ExportButton: TBCButton;
     ListCaptionPanel: TBCPanel;
+    ListTypeVT: TVirtualStringTree;
+    NameTypeVT: TVirtualStringTree;
+    OrderTypeVT: TVirtualStringTree;
+    SettingClientPanel: TPanel;
+    SettingCaptionPanel: TBCPanel;
     TabNumCaptionPanel: TBCPanel;
     Bevel1: TBevel;
     Bevel2: TBevel;
     CloseButton: TSpeedButton;
-    ExportButton: TSpeedButton;
     FilterEdit: TEditButton;
     FilterLabel: TLabel;
     FilterPanel: TPanel;
@@ -50,7 +56,6 @@ type
     PostLogEditingPanel: TPanel;
     TabNumEditingPanel: TPanel;
     SettingPanel: TPanel;
-    PostButton: TSpeedButton;
     LeftSplitter: TSplitter;
     PostLogToolPanel: TPanel;
     PostLogVT: TVirtualStringTree;
@@ -58,10 +63,6 @@ type
     ToolPanel: TPanel;
     ListToolPanel: TPanel;
     StaffVT: TVirtualStringTree;
-    ListTypeVT: TVirtualStringTree;
-    OrderTypeVT: TVirtualStringTree;
-    ColumnsListVT: TVirtualStringTree;
-    NameTypeVT: TVirtualStringTree;
     procedure CloseButtonClick(Sender: TObject);
     procedure ExportButtonClick(Sender: TObject);
     procedure FilterEditButtonClick(Sender: TObject);
@@ -77,7 +78,6 @@ type
     procedure PostLogEditButtonClick(Sender: TObject);
     procedure PostLogVTNodeDblClick(Sender: TBaseVirtualTree; const {%H-}HitInfo: THitInfo);
     procedure StaffVTNodeDblClick(Sender: TBaseVirtualTree; const {%H-}HitInfo: THitInfo);
-    procedure PostButtonClick(Sender: TObject);
     procedure TabNumAddButtonClick(Sender: TObject);
     procedure TabNumDelButtonClick(Sender: TObject);
     procedure TabNumDismissButtonClick(Sender: TObject);
@@ -86,8 +86,7 @@ type
     procedure TabNumVTNodeDblClick(Sender: TBaseVirtualTree; const {%H-}HitInfo: THitInfo);
   private
     CanLoadStaffList: Boolean;
-    Percents: Integer;
-
+    //ZoomPercent: Integer;
     ModeType: TModeType;
 
     SettingValues: TIntVector;
@@ -121,19 +120,22 @@ type
     procedure NameTypeCreate;
     procedure NameTypeSelect;
 
-    procedure StaffListUpdate;
     procedure StaffListCreate;
     procedure StaffListColumnSet;
     procedure StaffListLoad(const SelectedID: Integer = -1);
+    procedure StaffListUpdate;
     procedure StaffListSelect;
+    procedure StaffListDelItem;
 
     procedure TabNumListCreate;
     procedure TabNumListLoad(const SelectedID: Integer = -1);
     procedure TabNumListSelect;
+    procedure TabNumListDelItem;
 
     procedure PostLogCreate;
     procedure PostLogLoad(const SelectedID: Integer = -1);
     procedure PostLogSelect;
+    procedure PostLogDelItem;
 
     procedure StaffMainEditFormOpen(const AEditingType: TEditingType);
     procedure StaffTabNumEditFormOpen(const AEditingType: TEditingType);
@@ -189,17 +191,18 @@ end;
 
 procedure TStaffForm.FormCreate(Sender: TObject);
 begin
-  Percents:= 100;
   ModeType:= mtView;
+
+  //ZoomPercent:= 100;
 
   SetToolPanels([
     ToolPanel, ListToolPanel, TabNumToolPanel, PostLogToolPanel
   ]);
   SetCaptionPanels([
-    ListCaptionPanel, TabNumCaptionPanel, PostLogCaptionPanel
+    SettingCaptionPanel, ListCaptionPanel, TabNumCaptionPanel, PostLogCaptionPanel
   ]);
   SetToolButtons([
-    CloseButton, ExportButton, PostButton,
+    CloseButton,
     ListAddButton, ListDelButton, ListEditButton,
     TabNumAddButton, TabNumDelButton, TabNumEditButton, TabNumDismissButton, TabNumDismissCancelButton,
     PostLogAddButton, PostLogDelButton, PostLogEditButton
@@ -258,16 +261,22 @@ begin
   StaffMainEditFormOpen(etAdd);
 end;
 
-procedure TStaffForm.ListDelButtonClick(Sender: TObject);
+procedure TStaffForm.StaffListDelItem;
 var
   S: String;
 begin
+  if not ListDelButton.Enabled then Exit;
   S:= SNameLong(Families[StaffList.SelectedIndex], Names[StaffList.SelectedIndex],
                 Patronymics[StaffList.SelectedIndex]) +
       FormatDateTime(' dd.mm.yyyy г.р.', BornDates[StaffList.SelectedIndex]);
   if not Confirm('Удалить всю информацию по "' + S + '"?') then Exit;
   DataBase.StaffMainDelete(StaffIDs[StaffList.SelectedIndex]);
   StaffListLoad;
+end;
+
+procedure TStaffForm.ListDelButtonClick(Sender: TObject);
+begin
+ StaffListDelItem;
 end;
 
 procedure TStaffForm.ListEditButtonClick(Sender: TObject);
@@ -280,13 +289,19 @@ begin
   StaffPostLogEditFormOpen(etAdd);
 end;
 
-procedure TStaffForm.PostLogDelButtonClick(Sender: TObject);
+procedure TStaffForm.PostLogDelItem;
 begin
+  if not PostLogDelButton.Enabled then Exit;
   if not Confirm('Удалить информацию о выбранном периоде работы?') then Exit;
   if DataBase.StaffPostLogDelete(PostLogIDs[PostLog.SelectedIndex + 1],
                               PostLogIDs[PostLog.SelectedIndex],
                               PostLogLastDates[PostLog.SelectedIndex]) then
     TabNumListLoad;
+end;
+
+procedure TStaffForm.PostLogDelButtonClick(Sender: TObject);
+begin
+  PostLogDelItem;
 end;
 
 procedure TStaffForm.PostLogEditButtonClick(Sender: TObject);
@@ -306,19 +321,20 @@ begin
   StaffMainEditFormOpen(etEdit);
 end;
 
-procedure TStaffForm.PostButtonClick(Sender: TObject);
-begin
-  MainForm.DictionarySelect(1);
-end;
-
-procedure TStaffForm.TabNumDelButtonClick(Sender: TObject);
+procedure TStaffForm.TabNumListDelItem;
 var
   S: String;
 begin
+  if not TabNumDelButton.Enabled then Exit;
   S:= TabNumListTabNums[TabNumList.SelectedIndex];
   if not Confirm('Удалить всю информацию по табельному номеру "' + S + '"?') then Exit;
   DataBase.StaffTabNumDelete(TabNumListTabNumIDs[TabNumList.SelectedIndex]);
   TabNumListLoad;
+end;
+
+procedure TStaffForm.TabNumDelButtonClick(Sender: TObject);
+begin
+  TabNumListDelItem;
 end;
 
 procedure TStaffForm.TabNumAddButtonClick(Sender: TObject);
@@ -449,17 +465,18 @@ end;
 
 procedure TStaffForm.StaffListUpdate;
 var
-  SelectedStaffID: Integer;
+  SelectedID: Integer;
 begin
-  SelectedStaffID:= GetSelectedID(StaffList, StaffIDs);
+  SelectedID:= GetSelectedID(StaffList, StaffIDs);
   StaffListColumnSet;
-  StaffListLoad(SelectedStaffID);
+  StaffListLoad(SelectedID);
 end;
 
 procedure TStaffForm.StaffListCreate;
 begin
   StaffList:= TVSTTable.Create(StaffVT);
   StaffList.OnSelect:= @StaffListSelect;
+  StaffList.OnDelKeyDown:= @StaffListDelItem;
   StaffList.SetSingleFont(MainForm.GridFont);
   StaffList.HeaderFont.Style:= [fsBold];
 end;
@@ -560,6 +577,7 @@ begin
   TabNumList.CanSelect:= True;
   TabNumList.CanUnselect:= False;
   TabNumList.OnSelect:= @TabNumListSelect;
+  TabNumList.OnDelKeyDown:= @TabNumListDelItem;
   TabNumList.SetSingleFont(MainForm.GridFont);
   TabNumList.HeaderFont.Style:= [fsBold];
 
@@ -617,7 +635,7 @@ begin
 
   PostLogCaptionPanel.Caption:= 'История переводов';
   if TabNumList.IsSelected then
-    PostLogCaptionPanel.Caption:= PostLogCaptionPanel.Caption + ' по табельному номеру ' +
+    PostLogCaptionPanel.Caption:= PostLogCaptionPanel.Caption + ' по табельному номеру: ' +
                                   TabNumListTabNums[TabNumList.SelectedIndex];
   PostLogLoad;
 end;
@@ -628,6 +646,7 @@ begin
   PostLog.CanSelect:= True;
   PostLog.CanUnselect:= False;
   PostLog.OnSelect:= @PostLogSelect;
+  PostLog.OnDelKeyDown:= @PostLogDelItem;
   PostLog.SetSingleFont(MainForm.GridFont);
   PostLog.HeaderFont.Style:= [fsBold];
 
@@ -804,51 +823,48 @@ begin
     end;
     if StaffPostLogEditForm.ShowModal=mrOK then
       TabNumListLoad(TabNumListTabNumIDs[TabNumList.SelectedIndex]);
-      //PostLogLoad(StaffPostLogEditForm.PostLogID);
   finally
     FreeAndNil(StaffPostLogEditForm);
   end;
 
-  {DataBase.StaffPostLogListLoad(TabNumID, PostLogIDs, PostLogPostIDs, PostLogPostTemps,
-                            PostLogPostNames, PostLogRanks,
-                            PostLogFirstDates, PostLogLastDates);}
 end;
 
 procedure TStaffForm.ViewUpdate(const AModeType: TModeType);
 begin
   MainPanel.Visible:= False;
+  try
+    ModeType:= AModeType;
+    ExportButton.Enabled:= ModeType<>mtEditing;
 
+    StaffListUpdate;
 
-  ModeType:= AModeType;
-  ExportButton.Enabled:= ModeType<>mtEditing;
+    if ModeType=mtSetting then
+    begin
+      SettingPanel.Visible:= True;
+      LeftSplitter.Visible:= True;
+    end
+    else begin
+      LeftSplitter.Visible:= False;
+      SettingPanel.Visible:= False;
+    end;
 
-  StaffListUpdate;
+    if ModeType=mtEditing then
+    begin
+      EditingPanel.Visible:= True;
+      EditingSplitter.Visible:= True;
+    end
+    else begin
+      EditingSplitter.Visible:= False;
+      EditingPanel.Visible:= False;
+    end;
 
-  if ModeType=mtSetting then
-  begin
-    SettingPanel.Visible:= True;
-    LeftSplitter.Visible:= True;
-  end
-  else begin
-    LeftSplitter.Visible:= False;
-    SettingPanel.Visible:= False;
+    StaffList.CanUnselect:= ModeType<>mtEditing;
+    StaffList.CanSelect:= ModeType=mtEditing;
+    ListToolPanel.Visible:= ModeType=mtEditing;
+
+  finally
+    MainPanel.Visible:= True;
   end;
-
-  StaffList.CanUnselect:= ModeType<>mtEditing;
-  StaffList.CanSelect:= ModeType=mtEditing;
-  ListToolPanel.Visible:= ModeType=mtEditing;
-  ListCaptionPanel.Visible:= ModeType=mtEditing;
-  if ModeType=mtEditing then
-  begin
-    EditingPanel.Visible:= True;
-    EditingSplitter.Visible:= True;
-  end
-  else begin
-    EditingSplitter.Visible:= False;
-    EditingPanel.Visible:= False;
-  end;
-
-  MainPanel.Visible:= True;
 end;
 
 end.

@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, Buttons,
-  Spin, StdCtrls, fpspreadsheetgrid, VirtualTrees, BCPanel, DateUtils,
+  Spin, StdCtrls, fpspreadsheetgrid, VirtualTrees, BCPanel, BCButton, DateUtils,
   //Project utils
   UConst, UTypes, UUtils, UCalendar, UCalendarSheet,
   //DK packages utils
@@ -22,18 +22,18 @@ type
   TCalendarForm = class(TForm)
     Bevel1: TBevel;
     Bevel2: TBevel;
+    ExportButton: TBCButton;
     ZoomBevel: TBevel;
-    CalendarGrid: TsWorksheetGrid;
+    ViewGrid: TsWorksheetGrid;
     CloseButton: TSpeedButton;
     CopySaveButton: TSpeedButton;
     CopyDelButton: TSpeedButton;
     CopyCancelButton: TSpeedButton;
     CopyPanel: TPanel;
     CopyToolPanel: TPanel;
-    ExportButton: TSpeedButton;
     CaptionPanel: TBCPanel;
     DayPanel: TPanel;
-    CalendarPanel: TPanel;
+    SheetPanel: TPanel;
     EditingPanel: TPanel;
     LeftSplitter: TSplitter;
     DayAddButton: TSpeedButton;
@@ -41,14 +41,14 @@ type
     DayCopyButton: TSpeedButton;
     DayEditButton: TSpeedButton;
     DayToolPanel: TPanel;
-    VT1: TVirtualStringTree;
-    VT2: TVirtualStringTree;
+    DayVT: TVirtualStringTree;
+    CopyVT: TVirtualStringTree;
     YearPanel: TPanel;
     ToolPanel: TPanel;
     YearSpinEdit: TSpinEdit;
     ZoomPanel: TPanel;
-    procedure CalendarGridDblClick(Sender: TObject);
-    procedure CalendarGridMouseDown(Sender: TObject; Button: TMouseButton;
+    procedure ViewGridDblClick(Sender: TObject);
+    procedure ViewGridMouseDown(Sender: TObject; Button: TMouseButton;
       {%H-}Shift: TShiftState; X, Y: Integer);
     procedure CloseButtonClick(Sender: TObject);
     procedure CopyCancelButtonClick(Sender: TObject);
@@ -62,7 +62,7 @@ type
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
-    procedure VT1DblClick(Sender: TObject);
+    procedure DayVTDblClick(Sender: TObject);
     procedure YearSpinEditChange(Sender: TObject);
   private
     ModeType: TModeType;
@@ -120,16 +120,16 @@ begin
   MainForm.CategorySelect(0);
 end;
 
-procedure TCalendarForm.CalendarGridDblClick(Sender: TObject);
+procedure TCalendarForm.ViewGridDblClick(Sender: TObject);
 var
   DayDate: TDate;
 begin
-  if not CalendarSheet.GridToDate(CalendarGrid.Row, CalendarGrid.Col, DayDate) then Exit;
+  if not CalendarSheet.GridToDate(ViewGrid.Row, ViewGrid.Col, DayDate) then Exit;
   VSTDays.ReSelect(Corrections.Dates, DayDate, False);
   CalendarEditFormOpen(DayDate);
 end;
 
-procedure TCalendarForm.CalendarGridMouseDown(Sender: TObject;
+procedure TCalendarForm.ViewGridMouseDown(Sender: TObject;
   Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 var
   R,C: Integer;
@@ -216,12 +216,12 @@ begin
   //  $00CCE3CC,
   //  $00FFCACA,
   //  $00FFFFFF]);
-  //ColorList:= TVSTColorList.Create(VT1);
+  //ColorList:= TVSTColorList.Create(DayVT);
 
   ZoomPercent:= 100;
   CreateZoomControls(50, 150, ZoomPercent, ZoomPanel, @CalendarDraw, True);
 
-  CalendarSheet:= TCalendarSheet.Create(MainForm.GridFont, CalendarGrid.Worksheet, CalendarGrid);
+  CalendarSheet:= TCalendarSheet.Create(MainForm.GridFont, ViewGrid.Worksheet, ViewGrid);
   TablesCreate;
   Calendar:= TCalendar.Create;
   YearSpinEdit.Value:= YearOfDate(Date);
@@ -241,11 +241,11 @@ begin
   //ColorList.Update(Items, Colors);
 end;
 
-procedure TCalendarForm.VT1DblClick(Sender: TObject);
+procedure TCalendarForm.DayVTDblClick(Sender: TObject);
 var
   DayDate: TDate;
 begin
-  if CalendarSheet.GridToDate(CalendarGrid.Row, CalendarGrid.Col, DayDate) then
+  if CalendarSheet.GridToDate(ViewGrid.Row, ViewGrid.Col, DayDate) then
     CalendarEditFormOpen(DayDate);
 end;
 
@@ -256,28 +256,27 @@ end;
 
 procedure TCalendarForm.TablesCreate;
 var
-  W1, W2, W3: Integer;
+  i: Integer;
+  W: TIntVector;
 begin
-  W1:= 80;
-  W2:= 100;
-  W3:= 150;
-  VSTDays:= TVSTTable.Create(VT1);
+  W:= VCreateInt([80, 100, 150]);
+
+  VSTDays:= TVSTTable.Create(DayVT);
   VSTDays.OnSelect:= @CorrectionSelect;
   VSTDays.SetSingleFont(MainForm.GridFont);
   VSTDays.HeaderFont.Style:= [fsBold];
   VSTDays.CanSelect:= True;
-  VSTDays.AddColumn('Дата', W1);
-  VSTDays.AddColumn('Статус', W2);
-  VSTDays.AddColumn('Заменяемый день', W3);
+  for i:= 0 to High(W) do
+    VSTDays.AddColumn(CALENDAR_CORRECTION_COLUMN_NAMES[i], W[i]);
   VSTDays.Draw;
-  VSTCopy:= TVSTTable.Create(VT2);
+
+  VSTCopy:= TVSTTable.Create(CopyVT);
   VSTCopy.OnSelect:= @CopySelect;
   VSTCopy.SetSingleFont(MainForm.GridFont);
   VSTCopy.HeaderFont.Style:= [fsBold];
   VSTCopy.CanSelect:= True;
-  VSTCopy.AddColumn('Дата', W1);
-  VSTCopy.AddColumn('Статус', W2);
-  VSTCopy.AddColumn('Заменяемый день', W3);
+  for i:= 0 to High(W) do
+    VSTCopy.AddColumn(CALENDAR_CORRECTION_COLUMN_NAMES[i], W[i]);
   VSTCopy.Draw;
 end;
 
@@ -312,9 +311,9 @@ begin
   SwapDays:= VPickFromKey(Corrections.SwapDays, DAY_NAME_KEYS, DAY_NAME_PICKS);
 
   VSTDays.ValuesClear;
-  VSTDays.SetColumn('Дата', Dates);
-  VSTDays.SetColumn('Статус', Statuses);
-  VSTDays.SetColumn('Заменяемый день', SwapDays);
+  VSTDays.SetColumn(CALENDAR_CORRECTION_COLUMN_NAMES[0], Dates);
+  VSTDays.SetColumn(CALENDAR_CORRECTION_COLUMN_NAMES[1], Statuses);
+  VSTDays.SetColumn(CALENDAR_CORRECTION_COLUMN_NAMES[2], SwapDays);
   VSTDays.Draw;
   VSTDays.ReSelect(Corrections.Dates, ASelectedDate);
 
@@ -329,9 +328,9 @@ begin
   VDim(Statuses{%H-}, Length(SelectedDates), DAY_STATUS_PICKS[SelectedStatus]);
   VDim(SwapDays{%H-}, Length(SelectedDates), DAY_NAME_PICKS[SelectedSwapDay]);
 
-  VSTCopy.SetColumn('Дата', Dates);
-  VSTCopy.SetColumn('Статус', Statuses);
-  VSTCopy.SetColumn('Заменяемый день', SwapDays);
+  VSTCopy.SetColumn(CALENDAR_CORRECTION_COLUMN_NAMES[0], Dates);
+  VSTCopy.SetColumn(CALENDAR_CORRECTION_COLUMN_NAMES[1], Statuses);
+  VSTCopy.SetColumn(CALENDAR_CORRECTION_COLUMN_NAMES[2], SwapDays);
   VSTCopy.Draw;
   VSTCopy.ReSelect(SelectedDates, ASelectedDate);
 
@@ -462,14 +461,14 @@ end;
 
 procedure TCalendarForm.CalendarDraw(const AZoomPercent: Integer);
 begin
-  CalendarGrid.Visible:= False;
+  ViewGrid.Visible:= False;
   try
     ZoomPercent:= AZoomPercent;
     CalendarSheet.Zoom(ZoomPercent);
     CalendarSheet.Draw(Calendar, SelectedDates);
     CalendarSheet.ColorsUpdate(Colors);
   finally
-    CalendarGrid.Visible:= True;
+    ViewGrid.Visible:= True;
   end;
 end;
 
@@ -488,10 +487,12 @@ begin
   begin
     EditingPanel.Visible:= True;
     LeftSplitter.Visible:= True;
+    SheetPanel.AnchorToNeighbour(akLeft, 0, LeftSplitter);
   end
   else begin
     LeftSplitter.Visible:= False;
     EditingPanel.Visible:= False;
+    SheetPanel.AnchorToNeighbour(akLeft, 2, Self);
   end;
 end;
 

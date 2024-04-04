@@ -1,10 +1,10 @@
 object StaffForm: TStaffForm
   Left = 383
-  Height = 436
+  Height = 619
   Top = 141
   Width = 1112
   Caption = 'StaffForm'
-  ClientHeight = 436
+  ClientHeight = 619
   ClientWidth = 1112
   DesignTimePPI = 120
   OnCreate = FormCreate
@@ -125,16 +125,104 @@ object StaffForm: TStaffForm
       BorderSpacing.Right = 2
       Shape = bsRightLine
     end
-    object ExportButton: TSpeedButton
+    object ExportButton: TBCButton
       Cursor = crHandPoint
-      Left = 0
-      Height = 36
-      Hint = 'Экспорт таблицы'
-      Top = 0
-      Width = 40
+      Left = 1
+      Height = 34
+      Top = 1
+      Width = 104
       Align = alLeft
-      Constraints.MaxWidth = 40
-      Constraints.MinWidth = 40
+      AutoSize = True
+      StateClicked.Background.Color = 16245964
+      StateClicked.Background.Gradient1.StartColor = 16577765
+      StateClicked.Background.Gradient1.EndColor = 16180676
+      StateClicked.Background.Gradient1.GradientType = gtLinear
+      StateClicked.Background.Gradient1.Point1XPercent = 0
+      StateClicked.Background.Gradient1.Point1YPercent = 0
+      StateClicked.Background.Gradient1.Point2XPercent = 0
+      StateClicked.Background.Gradient1.Point2YPercent = 100
+      StateClicked.Background.Gradient2.StartColor = 15716760
+      StateClicked.Background.Gradient2.EndColor = 14398312
+      StateClicked.Background.Gradient2.GradientType = gtLinear
+      StateClicked.Background.Gradient2.Point1XPercent = 0
+      StateClicked.Background.Gradient2.Point1YPercent = 0
+      StateClicked.Background.Gradient2.Point2XPercent = 0
+      StateClicked.Background.Gradient2.Point2YPercent = 100
+      StateClicked.Background.Gradient1EndPercent = 55
+      StateClicked.Background.Style = bbsColor
+      StateClicked.Border.Color = 10048512
+      StateClicked.Border.LightColor = clBlack
+      StateClicked.Border.LightOpacity = 100
+      StateClicked.Border.Style = bboSolid
+      StateClicked.FontEx.Color = clBlack
+      StateClicked.FontEx.FontQuality = fqSystemClearType
+      StateClicked.FontEx.Shadow = False
+      StateClicked.FontEx.ShadowRadius = 5
+      StateClicked.FontEx.ShadowOffsetX = 5
+      StateClicked.FontEx.ShadowOffsetY = 5
+      StateClicked.FontEx.Style = []
+      StateHover.Background.Color = 16511461
+      StateHover.Background.Gradient1.StartColor = 16643818
+      StateHover.Background.Gradient1.EndColor = 16576729
+      StateHover.Background.Gradient1.GradientType = gtLinear
+      StateHover.Background.Gradient1.Point1XPercent = 0
+      StateHover.Background.Gradient1.Point1YPercent = 0
+      StateHover.Background.Gradient1.Point2XPercent = 0
+      StateHover.Background.Gradient1.Point2YPercent = 100
+      StateHover.Background.Gradient2.StartColor = 16639678
+      StateHover.Background.Gradient2.EndColor = 16112039
+      StateHover.Background.Gradient2.GradientType = gtLinear
+      StateHover.Background.Gradient2.Point1XPercent = 0
+      StateHover.Background.Gradient2.Point1YPercent = 0
+      StateHover.Background.Gradient2.Point2XPercent = 0
+      StateHover.Background.Gradient2.Point2YPercent = 100
+      StateHover.Background.Gradient1EndPercent = 50
+      StateHover.Background.Style = bbsColor
+      StateHover.Border.Color = 14120960
+      StateHover.Border.LightOpacity = 200
+      StateHover.Border.Style = bboSolid
+      StateHover.FontEx.Color = clBlack
+      StateHover.FontEx.FontQuality = fqSystemClearType
+      StateHover.FontEx.Shadow = False
+      StateHover.FontEx.ShadowRadius = 5
+      StateHover.FontEx.ShadowOffsetX = 5
+      StateHover.FontEx.ShadowOffsetY = 5
+      StateHover.FontEx.Style = []
+      StateNormal.Background.Color = 14803425
+      StateNormal.Background.Gradient1.StartColor = 15921906
+      StateNormal.Background.Gradient1.EndColor = 15461355
+      StateNormal.Background.Gradient1.GradientType = gtLinear
+      StateNormal.Background.Gradient1.Point1XPercent = 0
+      StateNormal.Background.Gradient1.Point1YPercent = 0
+      StateNormal.Background.Gradient1.Point2XPercent = 0
+      StateNormal.Background.Gradient1.Point2YPercent = 100
+      StateNormal.Background.Gradient2.StartColor = 14540253
+      StateNormal.Background.Gradient2.EndColor = 13619151
+      StateNormal.Background.Gradient2.GradientType = gtLinear
+      StateNormal.Background.Gradient2.Point1XPercent = 0
+      StateNormal.Background.Gradient2.Point1YPercent = 0
+      StateNormal.Background.Gradient2.Point2XPercent = 0
+      StateNormal.Background.Gradient2.Point2YPercent = 100
+      StateNormal.Background.Gradient1EndPercent = 50
+      StateNormal.Background.Style = bbsColor
+      StateNormal.Border.Color = 11382189
+      StateNormal.Border.LightOpacity = 200
+      StateNormal.Border.Style = bboSolid
+      StateNormal.FontEx.Color = clBlack
+      StateNormal.FontEx.FontQuality = fqSystemClearType
+      StateNormal.FontEx.Shadow = False
+      StateNormal.FontEx.ShadowRadius = 5
+      StateNormal.FontEx.ShadowOffsetX = 5
+      StateNormal.FontEx.ShadowOffsetY = 5
+      StateNormal.FontEx.Style = []
+      BorderSpacing.Left = 1
+      BorderSpacing.Top = 1
+      BorderSpacing.Bottom = 1
+      Caption = 'Экспорт'
+      Color = clNone
+      DropDownWidth = 16
+      DropDownArrowSize = 8
+      GlobalOpacity = 255
       Glyph.Data = {
         36090000424D3609000000000000360000002800000018000000180000000100
         2000000000000009000064000000640000000000000000000000000000000000
@@ -211,104 +299,21 @@ object StaffForm: TStaffForm
         00000000000000000000007C0003007C00150000000000000000000000000000
         0000000000000000000000000000000000000000000000000000
       }
+      GlyphMargin = 0
       OnClick = ExportButtonClick
-      ShowHint = True
-      ParentShowHint = False
-    end
-    object PostButton: TSpeedButton
-      Cursor = crHandPoint
-      Left = 40
-      Height = 36
-      Hint = 'Перечень должностей (профессий)'
-      Top = 0
-      Width = 40
-      Align = alLeft
-      Constraints.MaxWidth = 40
-      Constraints.MinWidth = 40
-      Glyph.Data = {
-        36090000424D3609000000000000360000002800000018000000180000000100
-        2000000000000009000064000000640000000000000000000000000000000000
-        0000000000000000000000000000000000000000000000000000000000000000
-        0000000000000000000000000000000000000000000000000000000000000000
-        0000000000000000000000000000000000000000000000000000000000000000
-        0000000000000000000000000000000000000000000000000000000000000000
-        0000000000000000000000000000000000000000000000000000000000000000
-        00000000000000000000000000000000000000000000000000007C6B5B367563
-        5380756353807563538075635380756353807563538075635380756353807563
-        5380756353807563538075635380756353807563538075635380756353807563
-        538075635380756353807563538075635380756353807C6B5B356D5B4AA34D3A
-        28FF4D3A28FF4D3A28FF4D3A28FF4D3A28FF4D3A28FF4D3A28FF4D3A28FF4D3A
-        28FF4D3A28FF4D3A28FF4D3A28FF4D3A28FF4D3A28FF4D3A28FF4D3A28FF4D3A
-        28FF4D3A28FF4D3A28FF4D3A28FF4D3A28FF4D3A28FF6D5B4AA26C5A4AA44C3A
-        27FF4C3A27FF4C3A27FF4C3A27FF4C3A27FF4C3A27FF4C3A27FF4C3A27FF4C3A
-        27FF4C3A27FF4C3A27FF4C3A27FF4D3A28FF4C3A28FF4C3A27FF4D3A28FF4C3A
-        28FF4C3A27FF4D3A28FF4C3A28FF4C3A27FF4D3A28FF6C5A4AA36C5A4AA44D3A
-        27FF4C3927FF4D3A28FF4D3A28FF4C3927FF4C3927FF4C3927FF4C3927FF4C39
-        27FF4C3927FF4C3927FF4D3A28FF4D3A28FF4D3A28FF4D3A28FF4D3A28FF4D3A
-        28FF4D3A28FF4D3A28FF4D3A28FF4D3A28FF4D3A28FF6C5A4AA36C5A4AA44D3A
-        28FF4D3A28FF4D3A28FF4D3A28FF4D3A28FF4D3A28FF4D3A28FF4D3A28FF4D3A
-        28FF4D3A28FF4D3A28FF4D3A28FF4D3A28FF4D3A28FF4D3A28FF4D3A28FF4D3A
-        28FF4D3A28FF4D3A28FF4D3A28FF4D3A28FF4D3A28FF6C5A4AA36C5A4AA44C3A
-        27FF4C3A27FF4C3A27FF4C3A27FF4C3A27FF4C3A27FF4C3A27FF4C3A27FF4C3A
-        27FF4C3A27FF4C3A27FF4C3A27FF4D3A28FF4C3A28FF4C3A27FF4D3A28FF4C3A
-        28FF4C3A27FF4D3A28FF4C3A28FF4C3A27FF4D3A28FF6C5A4AA36C5A4AA44D3A
-        27FF4C3927FF4D3A28FF4D3A28FF4C3927FF4C3927FF4C3927FF4C3927FF4C39
-        27FF4C3927FF4C3927FF4D3A28FF4D3A28FF4D3A28FF4D3A28FF4D3A28FF4D3A
-        28FF4D3A28FF4D3A28FF4D3A28FF4D3A28FF4D3A28FF6C5A4AA36C5A4AA44D3A
-        28FF4D3A28FF4D3A28FF4D3A28FF4D3A28FF544130FF978A7FFF7C6D5FFF4D3A
-        28FF4D3A28FF4D3A28FF4D3A28FF4D3A28FF4D3A28FF7C6D5FFF978A7FFF5441
-        30FF4D3A28FF4D3A28FF4D3A28FF4D3A28FF4D3A28FF6C5A4AA36C5A4AA44C3A
-        27FF4C3A27FF4C3A27FF4C3A27FF4D3A28FF61503FFFE1DCD7FFA5998FFF5E4B
-        3AFF5E4B3AFF5E4B3AFF5E4B3AFF5E4B3AFF5E4B3AFFA5998FFFE1DCD7FF6150
-        3FFF4D3A28FF4D3A28FF4C3A28FF4C3A27FF4D3A28FF6C5A4AA36C5A4AA44D3A
-        27FF53402EFF5F4D3CFF665341FF695643FF6E5B48FFFAF7F5FFB2A69CFF5F4A
-        36FF5F4A36FF5F4A36FF5F4A36FF5F4A36FF5F4A36FFB2A69CFFFBF8F6FF6E5B
-        48FF695643FF665341FF5F4D3CFF53402EFF4D3A28FF6C5A4AA3746251C06855
-        43FF675340FF5F4A35FF5D4833FF5D4833FF5C4833FF574533FF5A4733FF5D48
-        33FF5D4833FF5D4833FF5E4834FF5E4934FF5E4934FF5A4733FF574533FF5D48
-        33FF5E4834FF5E4934FF5F4A35FF675340FF685543FF746252C06B5744FF5D48
-        33FF5D4833FF5D4833FF5D4833FF5D4833FF5C4833FF4E3B29FF56422EFF5D48
-        33FF5D4833FF5D4833FF5D4833FF5E4934FF5E4834FF56422EFF4E3B29FF5C48
-        33FF5D4833FF5E4934FF5E4834FF5D4833FF5E4934FF6B5744FF6B5744FF5E49
-        34FF5D4833FF5E4934FF5E4934FF5D4833FF5C4833FF4E3B29FF56422EFF5D48
-        33FF5D4833FF5D4833FF5E4934FF5E4934FF5E4934FF56422EFF4E3B29FF5C48
-        33FF5E4934FF5E4934FF5E4934FF5E4934FF5E4934FF6B5744FF6B5744FF5D48
-        33FF5D4833FF5D4833FF5D4833FF5D4833FF5C4833FF4E3B29FF56422EFF5D48
-        33FF5D4833FF5D4833FF5E4834FF5E4934FF5E4934FF56422EFF4E3B29FF5C48
-        33FF5E4834FF5E4934FF5E4934FF5E4834FF5E4934FF6B5744FF6B5744FF5D48
-        33FF5D4833FF5D4833FF5D4833FF5D4833FF5C4833FF4E3B29FF56422EFF5D48
-        33FF5D4833FF5D4833FF5D4833FF5E4934FF5E4834FF56422EFF4E3B29FF5C48
-        33FF5D4833FF5E4934FF5E4834FF5D4833FF5E4934FF6B5744FF6B5744FF5E49
-        34FF5D4833FF5E4934FF5E4934FF5D4833FF5C4833FF4E3B29FF56422EFF5D48
-        33FF5D4833FF5D4833FF5E4934FF5E4934FF5E4934FF56422EFF4E3B29FF5C48
-        33FF5E4934FF5E4934FF5E4934FF5E4934FF5E4934FF6B5744FF715F4DF66955
-        42FF695542FF695542FF695542FF695542FF675440FF4E3B29FF5C4835FF6955
-        42FF695542FF695542FF695542FF695542FF695542FF5C4835FF4E3B29FF6754
-        40FF695542FF695542FF695542FF695542FF695542FF715F4DF67D6C5C087D6C
-        5C0C7D6C5C0C7D6C5C0C7D6C5C0C7D6C5C0C7A69580D5744320FACA09666AEA3
-        996B7D6C5C0C7D6C5C0C7E6D5D0C7E6D5D0CAFA49A6BACA096665744320F7A69
-        590D7E6D5D0C7E6D5D0C7E6D5D0C7E6D5D0C7E6D5D0C7D6C5C08000000000000
-        00000000000000000000000000000000000000000000000000004C39275C4C39
-        27C74C3927754C3927754D3A28754D3A28754D3A28C74D3A285C000000000000
-        0000000000000000000000000000000000000000000000000000000000000000
-        00000000000000000000000000000000000000000000000000004C3927024C39
-        27614C3927804C3927804D3A28804D3A28804D3A28614D3A2802000000000000
-        0000000000000000000000000000000000000000000000000000000000000000
-        0000000000000000000000000000000000000000000000000000000000000000
-        0000000000000000000000000000000000000000000000000000000000000000
-        0000000000000000000000000000000000000000000000000000000000000000
-        0000000000000000000000000000000000000000000000000000000000000000
-        0000000000000000000000000000000000000000000000000000000000000000
-        0000000000000000000000000000000000000000000000000000
-      }
-      OnClick = PostButtonClick
-      ShowHint = True
-      ParentShowHint = False
+      ParentColor = False
+      Rounding.RoundX = 0
+      Rounding.RoundY = 0
+      RoundingDropDown.RoundX = 1
+      RoundingDropDown.RoundY = 1
+      TextApplyGlobalOpacity = False
+      DropDownStyle = bdsCommon
+      MemoryUsage = bmuHigh
     end
   end
   object SettingPanel: TPanel
     Left = 2
-    Height = 390
+    Height = 573
     Top = 44
     Width = 300
     Align = alLeft
@@ -316,74 +321,131 @@ object StaffForm: TStaffForm
     BorderSpacing.Top = 2
     BorderSpacing.Bottom = 2
     BevelOuter = bvNone
-    BorderStyle = bsSingle
-    ClientHeight = 386
-    ClientWidth = 296
+    ClientHeight = 573
+    ClientWidth = 300
     Color = clWindow
     ParentBackground = False
     ParentColor = False
     TabOrder = 1
     Visible = False
-    object ListTypeVT: TVirtualStringTree
+    object SettingCaptionPanel: TBCPanel
       Left = 0
-      Height = 79
+      Height = 30
       Top = 0
-      Width = 296
+      Width = 300
       Align = alTop
-      BorderStyle = bsNone
-      DefaultText = 'Node'
-      Header.AutoSizeIndex = 0
-      Header.Columns = <>
-      Header.MainColumn = -1
-      Margin = 50
+      BorderSpacing.Bottom = 2
+      Background.Color = clBtnFace
+      Background.Gradient1.StartColor = clWhite
+      Background.Gradient1.EndColor = clBlack
+      Background.Gradient1.GradientType = gtLinear
+      Background.Gradient1.Point1XPercent = 0
+      Background.Gradient1.Point1YPercent = 0
+      Background.Gradient1.Point2XPercent = 0
+      Background.Gradient1.Point2YPercent = 100
+      Background.Gradient2.StartColor = clWhite
+      Background.Gradient2.EndColor = clBlack
+      Background.Gradient2.GradientType = gtLinear
+      Background.Gradient2.Point1XPercent = 0
+      Background.Gradient2.Point1YPercent = 0
+      Background.Gradient2.Point2XPercent = 0
+      Background.Gradient2.Point2YPercent = 100
+      Background.Gradient1EndPercent = 35
+      Background.Style = bbsColor
+      BevelInner = bvNone
+      BevelOuter = bvNone
+      BevelWidth = 1
+      Border.Color = clActiveBorder
+      Border.Style = bboSolid
+      BorderBCStyle = bpsBorder
+      Caption = 'Параметры'
+      FontEx.Color = clDefault
+      FontEx.FontQuality = fqSystemClearType
+      FontEx.Shadow = False
+      FontEx.ShadowRadius = 5
+      FontEx.ShadowOffsetX = 5
+      FontEx.ShadowOffsetY = 5
+      FontEx.Style = [fsBold]
+      FontEx.TextAlignment = bcaLeftCenter
+      FontEx.PaddingLeft = 10
+      ParentBackground = False
+      Rounding.RoundX = 1
+      Rounding.RoundY = 1
       TabOrder = 0
     end
-    object OrderTypeVT: TVirtualStringTree
+    object SettingClientPanel: TPanel
       Left = 0
-      Height = 79
-      Top = 91
-      Width = 296
-      Align = alTop
-      BorderSpacing.Top = 12
-      BorderStyle = bsNone
-      DefaultText = 'Node'
-      Header.AutoSizeIndex = 0
-      Header.Columns = <>
-      Header.MainColumn = -1
+      Height = 541
+      Top = 32
+      Width = 300
+      Align = alClient
+      BevelOuter = bvNone
+      BorderStyle = bsSingle
+      ClientHeight = 537
+      ClientWidth = 296
+      ParentBackground = False
       TabOrder = 1
-    end
-    object ColumnsListVT: TVirtualStringTree
-      Left = 0
-      Height = 79
-      Top = 182
-      Width = 296
-      Align = alTop
-      BorderSpacing.Top = 12
-      BorderStyle = bsNone
-      DefaultText = 'Node'
-      Header.AutoSizeIndex = 0
-      Header.Columns = <>
-      Header.MainColumn = -1
-      TabOrder = 2
-    end
-    object NameTypeVT: TVirtualStringTree
-      Left = 0
-      Height = 79
-      Top = 273
-      Width = 296
-      Align = alTop
-      BorderSpacing.Top = 12
-      BorderStyle = bsNone
-      DefaultText = 'Node'
-      Header.AutoSizeIndex = 0
-      Header.Columns = <>
-      Header.MainColumn = -1
-      TabOrder = 3
+      object ListTypeVT: TVirtualStringTree
+        Left = 0
+        Height = 79
+        Top = 0
+        Width = 296
+        Align = alTop
+        BorderStyle = bsNone
+        DefaultText = 'Node'
+        Header.AutoSizeIndex = 0
+        Header.Columns = <>
+        Header.MainColumn = -1
+        Margin = 50
+        TabOrder = 0
+      end
+      object OrderTypeVT: TVirtualStringTree
+        Left = 0
+        Height = 79
+        Top = 91
+        Width = 296
+        Align = alTop
+        BorderSpacing.Top = 12
+        BorderStyle = bsNone
+        DefaultText = 'Node'
+        Header.AutoSizeIndex = 0
+        Header.Columns = <>
+        Header.MainColumn = -1
+        TabOrder = 1
+      end
+      object ColumnsListVT: TVirtualStringTree
+        Left = 0
+        Height = 79
+        Top = 182
+        Width = 296
+        Align = alTop
+        BorderSpacing.Top = 12
+        BorderStyle = bsNone
+        DefaultText = 'Node'
+        Header.AutoSizeIndex = 0
+        Header.Columns = <>
+        Header.MainColumn = -1
+        TabOrder = 2
+      end
+      object NameTypeVT: TVirtualStringTree
+        Left = 0
+        Height = 79
+        Top = 273
+        Width = 296
+        Align = alTop
+        BorderSpacing.Top = 12
+        BorderStyle = bsNone
+        DefaultText = 'Node'
+        Header.AutoSizeIndex = 0
+        Header.Columns = <>
+        Header.MainColumn = -1
+        TabOrder = 3
+      end
     end
   end
   object LeftSplitter: TSplitter
     Left = 302
-    Height = 394
+    Height = 577
     Top = 42
     Width = 6
     ResizeStyle = rsLine
@@ -391,17 +453,17 @@ object StaffForm: TStaffForm
   end
   object MainPanel: TPanel
     Left = 308
-    Height = 394
+    Height = 577
     Top = 42
     Width = 804
     Align = alClient
     BevelOuter = bvNone
-    ClientHeight = 394
+    ClientHeight = 577
     ClientWidth = 804
     TabOrder = 3
     object ListPanel: TPanel
       Left = 2
-      Height = 390
+      Height = 573
       Top = 2
       Width = 580
       Align = alClient
@@ -410,14 +472,14 @@ object StaffForm: TStaffForm
       BorderSpacing.Right = 2
       BorderSpacing.Bottom = 2
       BevelOuter = bvNone
-      ClientHeight = 390
+      ClientHeight = 573
       ClientWidth = 580
       ParentBackground = False
       ParentColor = False
       TabOrder = 0
       object StaffVT: TVirtualStringTree
         Left = 0
-        Height = 316
+        Height = 499
         Top = 74
         Width = 580
         Align = alClient
@@ -850,7 +912,7 @@ object StaffForm: TStaffForm
         Border.Color = clActiveBorder
         Border.Style = bboSolid
         BorderBCStyle = bpsBorder
-        Caption = 'Сотрудники'
+        Caption = 'Список сотрудников'
         FontEx.Color = clDefault
         FontEx.FontQuality = fqSystemClearType
         FontEx.Shadow = False
@@ -868,7 +930,7 @@ object StaffForm: TStaffForm
     end
     object EditingSplitter: TSplitter
       Left = 584
-      Height = 394
+      Height = 577
       Top = 0
       Width = 6
       Align = alRight
@@ -877,7 +939,7 @@ object StaffForm: TStaffForm
     end
     object EditingPanel: TPanel
       Left = 590
-      Height = 390
+      Height = 573
       Top = 2
       Width = 212
       Align = alRight
@@ -885,7 +947,7 @@ object StaffForm: TStaffForm
       BorderSpacing.Right = 2
       BorderSpacing.Bottom = 2
       BevelOuter = bvNone
-      ClientHeight = 390
+      ClientHeight = 573
       ClientWidth = 212
       TabOrder = 2
       Visible = False
@@ -1442,12 +1504,12 @@ object StaffForm: TStaffForm
       end
       object PostLogEditingPanel: TPanel
         Left = 0
-        Height = 204
+        Height = 387
         Top = 186
         Width = 212
         Align = alClient
         BevelOuter = bvNone
-        ClientHeight = 204
+        ClientHeight = 387
         ClientWidth = 212
         TabOrder = 2
         object PostLogToolPanel: TPanel
@@ -1740,7 +1802,7 @@ object StaffForm: TStaffForm
         end
         object PostLogVT: TVirtualStringTree
           Left = 0
-          Height = 130
+          Height = 313
           Top = 74
           Width = 212
           Align = alClient

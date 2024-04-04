@@ -180,7 +180,7 @@ begin
     0: ;
     1: (CategoryForm as TStaffForm).ViewUpdate(ModeType);
     2: (CategoryForm as TCalendarForm).ViewUpdate(ModeType);
-    3: ;
+    3: (CategoryForm as TShiftScheduleForm).ViewUpdate(ModeType);
     4: ;
     5: ;
     6: ;
@@ -199,7 +199,7 @@ begin
     0: ;
     1: (CategoryForm as TStaffForm).SettingsSave;
     //2: (CategoryForm as TCalendarForm).SettingsSave;
-    3: ;
+    3: (CategoryForm as TShiftScheduleForm).SettingsSave;
     4: ;
     5: ;
     6: ;

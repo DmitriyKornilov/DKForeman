@@ -44,7 +44,10 @@ const
   SSO_SIZETYPE_PICKS: array of String  =
     ('индивидуально', 'дозированно');
 
-
+  CALENDAR_CORRECTION_COLUMN_NAMES: array of String  =
+    ('Дата', 'Статус', 'Заменяемый день');
+  SCHEDULE_CORRECTION_COLUMN_NAMES: array of String  =
+    ('Дата', 'Всего часов', 'Ночных часов', 'Код табеля', '№ смены');
 
   COLOR_GRAY        = $00E0E0E0;
   COLOR_BLACK       = $00000000;
