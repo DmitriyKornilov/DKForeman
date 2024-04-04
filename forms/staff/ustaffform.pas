@@ -68,6 +68,7 @@ type
     procedure FilterEditChange(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
+    procedure FormShow(Sender: TObject);
     procedure ListAddButtonClick(Sender: TObject);
     procedure ListDelButtonClick(Sender: TObject);
     procedure ListEditButtonClick(Sender: TObject);
@@ -123,15 +124,15 @@ type
     procedure StaffListUpdate;
     procedure StaffListCreate;
     procedure StaffListColumnSet;
-    procedure StaffListLoad(const AStaffID: Integer = 0);
+    procedure StaffListLoad(const SelectedID: Integer = -1);
     procedure StaffListSelect;
 
     procedure TabNumListCreate;
-    procedure TabNumListLoad(const ATabNumID: Integer = 0);
+    procedure TabNumListLoad(const SelectedID: Integer = -1);
     procedure TabNumListSelect;
 
     procedure PostLogCreate;
-    procedure PostLogLoad(const APostLogID: Integer = 0);
+    procedure PostLogLoad(const SelectedID: Integer = -1);
     procedure PostLogSelect;
 
     procedure StaffMainEditFormOpen(const AEditingType: TEditingType);
@@ -142,7 +143,7 @@ type
     procedure SettingsLoad;
   public
     procedure SettingsSave;
-    procedure ChangeMode(const AModeType: TModeType);
+    procedure ViewUpdate(const AModeType: TModeType);
   end;
 
 var
@@ -215,7 +216,7 @@ begin
   PostLogCreate;
   CanLoadStaffList:= True;
 
-  ChangeMode(mtView);
+  ViewUpdate(mtView);
 end;
 
 procedure TStaffForm.SettingsLoad;
@@ -245,6 +246,11 @@ begin
   FreeAndNil(NameType);
   FreeAndNil(TabNumList);
   FreeAndNil(PostLog);
+end;
+
+procedure TStaffForm.FormShow(Sender: TObject);
+begin
+  EditingPanel.Width:= Round(ClientWidth*2/3);
 end;
 
 procedure TStaffForm.ListAddButtonClick(Sender: TObject);
@@ -280,7 +286,7 @@ begin
   if DataBase.StaffPostLogDelete(PostLogIDs[PostLog.SelectedIndex + 1],
                               PostLogIDs[PostLog.SelectedIndex],
                               PostLogLastDates[PostLog.SelectedIndex]) then
-    TabNumListLoad(TabNumListTabNumIDs[TabNumList.SelectedIndex])
+    TabNumListLoad;
 end;
 
 procedure TStaffForm.PostLogEditButtonClick(Sender: TObject);
@@ -442,9 +448,12 @@ begin
 end;
 
 procedure TStaffForm.StaffListUpdate;
+var
+  SelectedStaffID: Integer;
 begin
+  SelectedStaffID:= GetSelectedID(StaffList, StaffIDs);
   StaffListColumnSet;
-  StaffListLoad;
+  StaffListLoad(SelectedStaffID);
 end;
 
 procedure TStaffForm.StaffListCreate;
@@ -481,11 +490,14 @@ begin
   end;
 end;
 
-procedure TStaffForm.StaffListLoad(const AStaffID: Integer = 0);
+procedure TStaffForm.StaffListLoad(const SelectedID: Integer = -1);
 var
   StrDismissDates: TStrVector;
+  SelectedStaffID: Integer;
 begin
   if not CanLoadStaffList then Exit;
+
+  SelectedStaffID:= GetSelectedID(StaffList, StaffIDs, SelectedID);
 
   if (not Assigned(OrderType)) or (not Assigned(ListType)) then Exit;
   if ModeType=mtEditing then
@@ -518,7 +530,7 @@ begin
     end;
     StaffList.Draw;
     if ModeType=mtEditing then
-      StaffList.ReSelect(StaffIDs, AStaffID)  //возвращаем выделение строки
+      StaffList.ReSelect(StaffIDs, SelectedStaffID, True)  //возвращаем выделение строки
     else
       StaffList.ColumnVisibles:= ColumnsList.Selected;
   finally
@@ -559,13 +571,16 @@ begin
   TabNumList.Draw;
 end;
 
-procedure TStaffForm.TabNumListLoad(const ATabNumID: Integer);
+procedure TStaffForm.TabNumListLoad(const SelectedID: Integer = -1);
 var
   StaffID: Integer;
   StrDismissDates: TStrVector;
+  SelectedTabNumID: Integer;
 begin
   if not Assigned(TabNumList) then Exit;
   if ModeType<>mtEditing then Exit;
+
+  SelectedTabNumID:= GetSelectedID(TabNumList, TabNumListTabNumIDs, SelectedID);
 
   StaffID:= 0;
   if StaffList.IsSelected then
@@ -585,7 +600,7 @@ begin
     TabNumList.SetColumn('Разряд', TabNumListRanks);
     TabNumList.SetColumn('Последняя (текущая) должность', TabNumListPostNames, taLeftJustify);
     TabNumList.Draw;
-    TabNumList.ReSelect(TabNumListTabNumIDs, ATabNumID); //возвращаем выделение строки
+    TabNumList.ReSelect(TabNumListTabNumIDs, SelectedTabNumID, True); //возвращаем выделение строки
   finally
     TabNumList.Visible:= True;
   end;
@@ -624,13 +639,16 @@ begin
   PostLog.Draw;
 end;
 
-procedure TStaffForm.PostLogLoad(const APostLogID: Integer);
+procedure TStaffForm.PostLogLoad(const SelectedID: Integer = -1);
 var
   TabNumID: Integer;
   StrLastDates: TStrVector;
+  SelectedPostLogID: Integer;
 begin
   if not Assigned(PostLog) then Exit;
   if ModeType<>mtEditing then Exit;
+
+  SelectedPostLogID:= GetSelectedID(PostLog, PostLogIDs, SelectedID);
 
   TabNumID:= 0;
   if TabNumList.IsSelected then
@@ -650,7 +668,7 @@ begin
     PostLog.SetColumn('Разряд', PostLogRanks);
     PostLog.SetColumn('Должность', PostLogPostNames, taLeftJustify);
     PostLog.Draw;
-    PostLog.ReSelect(PostLogIDs, APostLogID);  //возвращаем выделение строки
+    PostLog.ReSelect(PostLogIDs, SelectedPostLogID, True);  //возвращаем выделение строки
   finally
     PostLog.Visible:= True;
   end;
@@ -796,7 +814,7 @@ begin
                             PostLogFirstDates, PostLogLastDates);}
 end;
 
-procedure TStaffForm.ChangeMode(const AModeType: TModeType);
+procedure TStaffForm.ViewUpdate(const AModeType: TModeType);
 begin
   MainPanel.Visible:= False;
 
@@ -822,18 +840,12 @@ begin
   ListCaptionPanel.Visible:= ModeType=mtEditing;
   if ModeType=mtEditing then
   begin
-    EditingPanel.Width:= Round(ClientWidth*2/3);
     EditingPanel.Visible:= True;
     EditingSplitter.Visible:= True;
-    if not VIsNil(StaffIDs) then
-      StaffList.Select(0);
   end
   else begin
     EditingSplitter.Visible:= False;
     EditingPanel.Visible:= False;
-
-    if StaffList.IsSelected then
-      StaffList.UnSelect;
   end;
 
   MainPanel.Visible:= True;

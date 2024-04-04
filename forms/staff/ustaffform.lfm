@@ -9,6 +9,7 @@ object StaffForm: TStaffForm
   DesignTimePPI = 120
   OnCreate = FormCreate
   OnDestroy = FormDestroy
+  OnShow = FormShow
   LCLVersion = '3.2.0.0'
   object ToolPanel: TPanel
     Left = 2

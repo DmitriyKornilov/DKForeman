@@ -101,7 +101,7 @@ type
 
     procedure CalendarEditFormOpen(const ADate: TDate);
   public
-    procedure ChangeMode(const AModeType: TModeType);
+    procedure ViewUpdate(const AModeType: TModeType);
   end;
 
 var
@@ -125,7 +125,7 @@ var
   DayDate: TDate;
 begin
   if not CalendarSheet.GridToDate(CalendarGrid.Row, CalendarGrid.Col, DayDate) then Exit;
-  VSTDays.ReSelect(Corrections.Dates, DayDate);
+  VSTDays.ReSelect(Corrections.Dates, DayDate, False);
   CalendarEditFormOpen(DayDate);
 end;
 
@@ -480,7 +480,7 @@ begin
   CalendarDraw(ZoomPercent);
 end;
 
-procedure TCalendarForm.ChangeMode(const AModeType: TModeType);
+procedure TCalendarForm.ViewUpdate(const AModeType: TModeType);
 begin
   ModeType:= AModeType;
 

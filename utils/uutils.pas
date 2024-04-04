@@ -7,11 +7,14 @@ interface
 uses
   Classes, SysUtils, Graphics, Controls, ExtCtrls, Buttons, BCPanel,
   //DK packages utils
-  DK_CtrlUtils, DK_Color, DK_Vector;
+  DK_CtrlUtils, DK_Color, DK_Vector, DK_VSTTables;
 
   procedure SetToolPanels(const AControls: array of TControl);
   procedure SetCaptionPanels(const AControls: array of TBCPanel);
   procedure SetToolButtons(const AControls: array of TControl);
+
+  function GetSelectedID(const ATable: TVSTTable; const AIDValues: TIntVector;
+                         const ASelectedID: Integer = -1): Integer;
 
   function SettingByName(const AName: String; const ANames: TStrVector;
                          const AValues: TIntVector): Integer;
@@ -47,13 +50,21 @@ begin
     ControlWidth(AControls[i], TOOL_BUTTON_WIDTH_DEFAULT);
 end;
 
+function GetSelectedID(const ATable: TVSTTable; const AIDValues: TIntVector;
+                       const ASelectedID: Integer = -1): Integer;
+begin
+  Result:= -1;
+  if ASelectedID>0 then
+    Result:= ASelectedID
+  else if Assigned(ATable) and ATable.IsSelected then
+    Result:= AIDValues[ATable.SelectedIndex];
+end;
+
 function SettingByName(const AName: String; const ANames: TStrVector;
   const AValues: TIntVector): Integer;
 begin
   VSameIndexValue(AName, ANames, AValues, Result);
 end;
-
-
 
 end.
 

@@ -27,7 +27,7 @@ type
 
   TMainForm = class(TForm)
     AboutButton: TSpeedButton;
-    Bevel3: TBevel;
+    Bevel4: TBevel;
     CalendarMenuItem: TMenuItem;
     TimetableMarkMenuItem: TMenuItem;
     SIZListMenuItem: TMenuItem;
@@ -94,7 +94,7 @@ type
     procedure SetGridFont;
     procedure DBConnect;
 
-    procedure ChangeMode;
+    procedure ViewUpdate;
     procedure SettingsSave;
   public
     GridFont: TFont;
@@ -163,7 +163,7 @@ begin
   DataBase.ExecuteScript(DDLName);
 end;
 
-procedure TMainForm.ChangeMode;
+procedure TMainForm.ViewUpdate;
 var
   ModeType: TModeType;
 begin
@@ -178,8 +178,8 @@ begin
 
   case Category of
     0: ;
-    1: (CategoryForm as TStaffForm).ChangeMode(ModeType);
-    2: (CategoryForm as TCalendarForm).ChangeMode(ModeType);
+    1: (CategoryForm as TStaffForm).ViewUpdate(ModeType);
+    2: (CategoryForm as TCalendarForm).ViewUpdate(ModeType);
     3: ;
     4: ;
     5: ;
@@ -236,7 +236,7 @@ begin
     if Assigned(CategoryForm) then
     begin
       CategoryForm.Show;
-      ChangeMode;
+      ViewUpdate;
     end;
 
   finally
@@ -248,11 +248,13 @@ procedure TMainForm.DictionarySelect(const ADictionary: Byte);
 var
   VKeys: TIntVector;
   VPicks: TStrVector;
+  IsOK: Boolean;
 begin
+  IsOK:= False;
   case ADictionary of
-    1: DataBase.EditList('Перечень должностей (профессий)',
+    1: IsOK:= DataBase.EditList('Перечень должностей (профессий)',
                          'STAFFPOST', 'PostID', 'PostName', True, True, 400, GridFont);
-    2: DataBase.EditTable('Коды табеля учета рабочего времени',
+    2: IsOK:= DataBase.EditTable('Коды табеля учета рабочего времени',
                           'TIMETABLEMARK', 'DigMark',
                           ['DigMark',      'StrMark',       'TypeMark', 'Note'        ],
                           ['Цифровой код', 'Буквенный код', 'Статус',   'Описание'    ],
@@ -266,7 +268,7 @@ begin
                           GridFont);
     3: begin
          DataBase.KeyPickList('SIZUNIT', 'UnitID', 'UnitName', VKeys, VPicks);
-         DataBase.EditDoubleTable('Перечень средств индивидуальной защиты',
+         IsOK:= DataBase.EditDoubleTable('Перечень средств индивидуальной защиты',
                          'SIZCLASSES', 'ClassID',
                          ['ClassName'],
                          ['Наименование класса'],
@@ -288,7 +290,7 @@ begin
                          'ClassID', GridFont);
 
        end;
-    4: DataBase.EditTable('Единицы измерения средств индивидуальной защиты',
+    4: IsOK:= DataBase.EditTable('Единицы измерения средств индивидуальной защиты',
                           'SIZUNIT', 'UnitID',
                           ['UnitName',     'UnitDigitalCode', 'UnitStringCode'      ],
                           ['Наименование', 'Код',             'Условное обозначение'],
@@ -297,13 +299,13 @@ begin
                           [ 400,            100,               200                  ],
                           [ taLeftJustify,  taCenter,          taCenter             ],
                           True, ['UnitName'], 1, nil, nil, GridFont);
-    5: DataBase.EditList('Дополнительные условия выдачи СИЗ',
+    5: IsOK:= DataBase.EditList('Дополнительные условия выдачи СИЗ',
                          'SIZREASON', 'ReasonID', 'ReasonName', True, True, 400, GridFont);
-    6: DataBase.EditList('Особые сроки службы СИЗ',
+    6: IsOK:= DataBase.EditList('Особые сроки службы СИЗ',
                          'SIZSPECLIFE', 'SpecLifeID', 'SpecLifeName', True, True, 400, GridFont);
     7: begin
          DataBase.KeyPickList('SSOUNIT', 'UnitID', 'UnitName', VKeys, VPicks);
-         DataBase.EditDoubleTable('Перечень средств индивидуальной защиты',
+         IsOK:= DataBase.EditDoubleTable('Перечень средств индивидуальной защиты',
                          'SSOCLASSES', 'ClassID',
                          ['ClassName'],
                          ['Наименование класса'],
@@ -325,7 +327,7 @@ begin
                          'ClassID', GridFont);
 
        end;
-    8: DataBase.EditTable('Единицы измерения смывающих и обезвреживающих средств',
+    8: IsOK:= DataBase.EditTable('Единицы измерения смывающих и обезвреживающих средств',
                           'SSOUNIT', 'UnitID',
                           ['UnitName',     'UnitDigitalCode', 'UnitStringCode'      ],
                           ['Наименование', 'Код',             'Условное обозначение'],
@@ -336,6 +338,7 @@ begin
                           True, ['UnitName'], 1, nil, nil, GridFont);
   end;
 
+  if IsOK then ViewUpdate;
 end;
 
 procedure TMainForm.FormCreate(Sender: TObject);
@@ -390,12 +393,12 @@ end;
 
 procedure TMainForm.EditingButtonClick(Sender: TObject);
 begin
-  ChangeMode;
+  ViewUpdate;
 end;
 
 procedure TMainForm.SettingButtonClick(Sender: TObject);
 begin
-  ChangeMode;
+  ViewUpdate;
 end;
 
 procedure TMainForm.StaffButtonClick(Sender: TObject);

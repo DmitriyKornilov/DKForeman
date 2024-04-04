@@ -2,9 +2,9 @@ object MainForm: TMainForm
   Left = 401
   Height = 372
   Top = 160
-  Width = 968
+  Width = 1258
   ClientHeight = 372
-  ClientWidth = 968
+  ClientWidth = 1258
   DesignTimePPI = 120
   OnCreate = FormCreate
   OnDestroy = FormDestroy
@@ -15,7 +15,7 @@ object MainForm: TMainForm
     Left = 2
     Height = 40
     Top = 2
-    Width = 964
+    Width = 1254
     Align = alTop
     BorderSpacing.Left = 2
     BorderSpacing.Top = 2
@@ -23,14 +23,14 @@ object MainForm: TMainForm
     BevelOuter = bvNone
     BorderStyle = bsSingle
     ClientHeight = 36
-    ClientWidth = 960
+    ClientWidth = 1250
     Constraints.MaxHeight = 40
     Constraints.MinHeight = 40
     ParentFont = False
     TabOrder = 0
     object AboutButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 874
+      Left = 1164
       Height = 36
       Hint = 'О программе'
       Top = 0
@@ -119,7 +119,7 @@ object MainForm: TMainForm
     end
     object ExitButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 920
+      Left = 1210
       Height = 36
       Hint = 'Выход'
       Top = 0
@@ -209,7 +209,7 @@ object MainForm: TMainForm
     end
     object SettingButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 788
+      Left = 1078
       Height = 36
       Hint = 'Параметры'
       Top = 0
@@ -301,7 +301,7 @@ object MainForm: TMainForm
     end
     object EditingButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 748
+      Left = 1038
       Height = 36
       Hint = 'Редактирование'
       Top = 0
@@ -392,7 +392,7 @@ object MainForm: TMainForm
       ParentShowHint = False
     end
     object Bevel1: TBevel
-      Left = 870
+      Left = 1160
       Height = 36
       Top = 0
       Width = 2
@@ -402,7 +402,7 @@ object MainForm: TMainForm
       Shape = bsRightLine
     end
     object Bevel2: TBevel
-      Left = 916
+      Left = 1206
       Height = 36
       Top = 0
       Width = 2
@@ -413,7 +413,7 @@ object MainForm: TMainForm
     end
     object RefreshButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 828
+      Left = 1118
       Height = 36
       Hint = 'Обновить'
       Top = 0
@@ -1061,16 +1061,6 @@ object MainForm: TMainForm
       ImageIndex = 7
       MemoryUsage = bmuHigh
     end
-    object Bevel3: TBevel
-      Left = 483
-      Height = 36
-      Top = 0
-      Width = 2
-      Align = alLeft
-      BorderSpacing.Left = 3
-      BorderSpacing.Right = 2
-      Shape = bsRightLine
-    end
     object DictionaryButton: TBCButton
       Cursor = crHandPoint
       Left = 487
@@ -1258,12 +1248,22 @@ object MainForm: TMainForm
       ImageIndex = 7
       MemoryUsage = bmuHigh
     end
+    object Bevel4: TBevel
+      Left = 483
+      Height = 36
+      Top = 0
+      Width = 2
+      Align = alLeft
+      BorderSpacing.Left = 3
+      BorderSpacing.Right = 2
+      Shape = bsRightLine
+    end
   end
   object MainPanel: TPanel
     Left = 0
     Height = 330
     Top = 42
-    Width = 968
+    Width = 1258
     Align = alClient
     BevelOuter = bvNone
     TabOrder = 1
