@@ -55,20 +55,12 @@ type
   function WorkHoursToStr(const AWorkHours: Integer;
                           const AFractionDigitsCount: Byte = FRACTION_DIGITS_IN_WORKHOURS;
                           const ANeedEndZerosInFrac: Boolean = False): String;
+  function VWorkHoursToStr(const AWorkHours: TIntVector;
+                          const AFractionDigitsCount: Byte = FRACTION_DIGITS_IN_WORKHOURS;
+                          const ANeedEndZerosInFrac: Boolean = False): TStrVector;
   function CalcShortenedDayHours(const AHours: Integer): Integer;
 
 implementation
-
-function CalcShortenedDayHours(const AHours: Integer): Integer;
-var
-  dH: Integer;
-begin
-  dH:= REDUCE_HOURS_COUNT_IN_BEFORE*WORKHOURS_DENOMINATOR;
-  if AHours<dH then
-    Result:= 0
-  else
-    Result:= AHours - dH;
-end;
 
 {TWorkHours}
 
@@ -176,6 +168,30 @@ begin
       Result:= Result + '0';
   end;
   Result:= Result + S;
+end;
+
+function VWorkHoursToStr(const AWorkHours: TIntVector;
+                          const AFractionDigitsCount: Byte = FRACTION_DIGITS_IN_WORKHOURS;
+                          const ANeedEndZerosInFrac: Boolean = False): TStrVector;
+var
+  i: Integer;
+begin
+  Result:= nil;
+  if VIsNil(AWorkHours) then Exit;
+  VDim(Result, Length(AWorkHours));
+  for i:= 0 to High(AWorkHours) do
+    Result[i]:= WorkHoursToStr(AWorkHours[i], AFractionDigitsCount, ANeedEndZerosInFrac);
+end;
+
+function CalcShortenedDayHours(const AHours: Integer): Integer;
+var
+  dH: Integer;
+begin
+  dH:= REDUCE_HOURS_COUNT_IN_BEFORE*WORKHOURS_DENOMINATOR;
+  if AHours<dH then
+    Result:= 0
+  else
+    Result:= AHours - dH;
 end;
 
 end.

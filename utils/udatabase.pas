@@ -127,6 +127,23 @@ type
     {Удаление корректировки дня календаря: True - ОК, False - ошибка}
     function CalendarCorrectionDelete(const ADate: TDate): Boolean;
 
+    (**************************************************************************
+                                ГРАФИК СМЕННОСТИ
+    **************************************************************************)
+    {Список графиков сменности: True - ОК, False - список пуст}
+    function ScheduleMainListLoad(out AScheduleIDs, AWeekHours, ACycleCounts: TIntVector;
+                                  out AScheduleNames: TStrVector): Boolean;
+    {Структура графика/корректировок : True - ОК, False - пусто (ошибка)}
+    function ScheduleParamsLoad(const ATableName, AIDFieldName: String;
+                                const AIDValue: Integer; out ADates: TDateVector;
+                                out ATotalHours, ANightHours, AShiftNums: TIntVector;
+                                out AStrMarks: TStrVector;
+                                const ABeginDate: TDate = 0;
+                                const AEndDate: TDate = 0): Boolean;
+    {Цикл (структура) графика сменности: True - ОК, False - пусто (ошибка)}
+    function ScheduleCycleLoad(const AScheduleID: Integer; out ADates: TDateVector;
+                               out ATotalHours, ANightHours, AShiftNums: TIntVector;
+                               out AStrMarks: TStrVector): Boolean;
   end;
 
 var
@@ -437,8 +454,7 @@ begin
   //табельные номера с периодами работы
   QSetQuery(FQuery);
   QSetSQL(
-    'SELECT TabNumID, TabNum, RecrutDate, DismissDate '+
-    'FROM STAFFTABNUM ' +
+    sqlSELECT('STAFFTABNUM', ['TabNumID', 'TabNum', 'RecrutDate', 'DismissDate']) +
     'WHERE (StaffID = :StaffID) ' +
     'ORDER BY TabNum, RecrutDate'
   );
@@ -453,7 +469,6 @@ begin
       VAppend(ATabNums, QFieldStr('TabNum'));
       VAppend(ARecrutDates, QFieldDT('RecrutDate'));
       VAppend(ADismissDates, QFieldDT('DismissDate'));
-
       QNext;
     end;
     Result:= True;
@@ -806,6 +821,97 @@ end;
 function TDataBase.CalendarCorrectionDelete(const ADate: TDate): Boolean;
 begin
   Result:= Delete('CALENDAR', 'DayDate', ADate);
+end;
+
+function TDataBase.ScheduleMainListLoad(out AScheduleIDs, AWeekHours, ACycleCounts: TIntVector;
+                                  out AScheduleNames: TStrVector): Boolean;
+begin
+  Result:= False;
+
+  AScheduleIDs:= nil;
+  AWeekHours:= nil;
+  ACycleCounts:= nil;
+  AScheduleNames:= nil;
+
+  QSetQuery(FQuery);
+  QSetSQL(
+    sqlSELECT('SCHEDULEMAIN', ['ScheduleID', 'ScheduleName', 'WeekHours', 'CycleCount']) +
+    'WHERE ScheduleID>0 ' +
+    'ORDER BY ScheduleName'
+  );
+  QOpen;
+  if not QIsEmpty then
+  begin
+    QFirst;
+    while not QEOF do
+    begin
+      VAppend(AScheduleIDs, QFieldInt('ScheduleID'));
+      VAppend(AScheduleNames, QFieldStr('ScheduleName'));
+      VAppend(AWeekHours, QFieldInt('WeekHours'));
+      VAppend(ACycleCounts, QFieldInt('CycleCount'));
+      QNext;
+    end;
+    Result:= True;
+  end;
+  QClose;
+end;
+
+function TDataBase.ScheduleParamsLoad(const ATableName, AIDFieldName: String;
+                                const AIDValue: Integer; out ADates: TDateVector;
+                                out ATotalHours, ANightHours, AShiftNums: TIntVector;
+                                out AStrMarks: TStrVector;
+                                const ABeginDate: TDate = 0;
+                                const AEndDate: TDate = 0): Boolean;
+var
+  SQLStr: String;
+begin
+  Result:= False;
+
+  ADates:= nil;
+  ATotalHours:= nil;
+  ANightHours:= nil;
+  AShiftNums:= nil;
+  AStrMarks:= nil;
+
+  SQLStr:=
+    'SELECT t1.DayDate, t1.HoursTotal, t1.HoursNight, t1.ShiftNum, t2.StrMark ' +
+    'FROM ' + SqlEsc(ATableName) + ' t1 ' +
+    'INNER JOIN TIMETABLEMARK t2 ON (t1.DigMark=t2.DigMark) ' +
+    'WHERE (' + SqlEsc(AIDFieldName) + ' = :IDValue) ';
+  if (ABeginDate>0) and (AEndDate>0) then
+    SQLStr:= SQLStr + 'AND (DayDate BETWEEN :BD AND :ED) ';
+  SQLStr:= SQLStr +
+    'ORDER BY DayDate';
+
+  QSetQuery(FQuery);
+  QSetSQL(SQLStr);
+  QParamInt('IDValue', AIDValue);
+  QParamDT('BD', ABeginDate);
+  QParamDT('ED', AEndDate);
+  QOpen;
+  if not QIsEmpty then
+  begin
+    QFirst;
+    while not QEOF do
+    begin
+      VAppend(ADates, QFieldDT('DayDate'));
+      VAppend(ATotalHours, QFieldInt('HoursTotal'));
+      VAppend(ANightHours, QFieldInt('HoursNight'));
+      VAppend(AShiftNums, QFieldInt('ShiftNum'));
+      VAppend(AStrMarks, QFieldStr('StrMark'));
+      QNext;
+    end;
+    Result:= True;
+  end;
+  QClose;
+end;
+
+function TDataBase.ScheduleCycleLoad(const AScheduleID: Integer; out ADates: TDateVector;
+                               out ATotalHours, ANightHours, AShiftNums: TIntVector;
+                               out AStrMarks: TStrVector): Boolean;
+begin
+  Result:= ScheduleParamsLoad('SCHEDULECYCLE', 'ScheduleID', AScheduleID,
+                              ADates, ATotalHours, ANightHours, AShiftNums, AStrMarks);
 end;
 
 end.

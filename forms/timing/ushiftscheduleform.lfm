@@ -167,6 +167,7 @@ object ShiftScheduleForm: TShiftScheduleForm
       Cursor = crHandPoint
       Left = 73
       Height = 34
+      Hint = 'Экспорт в формат электронной таблицы XLSX или ODS'
       Top = 1
       Width = 104
       Align = alLeft
@@ -343,6 +344,7 @@ object ShiftScheduleForm: TShiftScheduleForm
       Rounding.RoundY = 0
       RoundingDropDown.RoundX = 1
       RoundingDropDown.RoundY = 1
+      ShowHint = True
       TextApplyGlobalOpacity = False
       DropDownStyle = bdsCommon
       MemoryUsage = bmuHigh
@@ -487,12 +489,12 @@ object ShiftScheduleForm: TShiftScheduleForm
     TabOrder = 3
     object ScheduleListPanel: TPanel
       Left = 0
-      Height = 200
+      Height = 432
       Top = 0
       Width = 500
       Align = alClient
       BevelOuter = bvNone
-      ClientHeight = 200
+      ClientHeight = 432
       ClientWidth = 500
       TabOrder = 0
       object ListCaptionPanel: TBCPanel
@@ -828,7 +830,7 @@ object ShiftScheduleForm: TShiftScheduleForm
       end
       object ScheduleListVT: TVirtualStringTree
         Left = 0
-        Height = 126
+        Height = 186
         Top = 74
         Width = 500
         Align = alClient
@@ -839,39 +841,16 @@ object ShiftScheduleForm: TShiftScheduleForm
         Margin = 50
         TabOrder = 2
       end
-    end
-    object EditingSplitter: TSplitter
-      Cursor = crVSplit
-      Left = 0
-      Height = 6
-      Top = 200
-      Width = 500
-      Align = alBottom
-      ResizeAnchor = akBottom
-      ResizeStyle = rsLine
-      Visible = False
-    end
-    object EditingPanel: TPanel
-      Left = 0
-      Height = 551
-      Top = 206
-      Width = 500
-      Align = alBottom
-      BevelOuter = bvNone
-      ClientHeight = 551
-      ClientWidth = 500
-      TabOrder = 2
-      Visible = False
       object StructurePanel: TPanel
         Left = 0
-        Height = 159
-        Top = 0
+        Height = 166
+        Top = 266
         Width = 500
-        Align = alTop
+        Align = alBottom
         BevelOuter = bvNone
-        ClientHeight = 159
+        ClientHeight = 166
         ClientWidth = 500
-        TabOrder = 0
+        TabOrder = 3
         object StructureCaptionPanel: TBCPanel
           Left = 0
           Height = 30
@@ -919,7 +898,7 @@ object ShiftScheduleForm: TShiftScheduleForm
         end
         object StructureVT: TVirtualStringTree
           Left = 0
-          Height = 127
+          Height = 134
           Top = 32
           Width = 500
           Align = alClient
@@ -936,24 +915,47 @@ object ShiftScheduleForm: TShiftScheduleForm
         Cursor = crVSplit
         Left = 0
         Height = 6
-        Top = 159
+        Top = 260
         Width = 500
-        Align = alTop
-        ResizeAnchor = akTop
+        Align = alBottom
+        ResizeAnchor = akBottom
         ResizeStyle = rsLine
       end
+    end
+    object EditingSplitter: TSplitter
+      Cursor = crVSplit
+      Left = 0
+      Height = 6
+      Top = 432
+      Width = 500
+      Align = alBottom
+      ResizeAnchor = akBottom
+      ResizeStyle = rsLine
+      Visible = False
+    end
+    object EditingPanel: TPanel
+      Left = 0
+      Height = 319
+      Top = 438
+      Width = 500
+      Align = alBottom
+      BevelOuter = bvNone
+      ClientHeight = 319
+      ClientWidth = 500
+      TabOrder = 2
+      Visible = False
       object CorrectionsPanel: TPanel
         Left = 0
-        Height = 386
-        Top = 165
+        Height = 319
+        Top = 0
         Width = 500
         Align = alClient
         BevelOuter = bvNone
-        ClientHeight = 386
+        ClientHeight = 319
         ClientWidth = 500
         ParentBackground = False
         ParentColor = False
-        TabOrder = 2
+        TabOrder = 0
         object CorrectionsCaptionPanel: TBCPanel
           Left = 0
           Height = 30
@@ -1001,12 +1003,12 @@ object ShiftScheduleForm: TShiftScheduleForm
         end
         object DayPanel: TPanel
           Left = 0
-          Height = 210
+          Height = 143
           Top = 32
           Width = 500
           Align = alClient
           BevelOuter = bvNone
-          ClientHeight = 210
+          ClientHeight = 143
           ClientWidth = 500
           TabOrder = 1
           object DayToolPanel: TPanel
@@ -1385,7 +1387,7 @@ object ShiftScheduleForm: TShiftScheduleForm
           end
           object DayVT: TVirtualStringTree
             Left = 0
-            Height = 168
+            Height = 101
             Top = 42
             Width = 500
             Align = alClient
@@ -1402,7 +1404,7 @@ object ShiftScheduleForm: TShiftScheduleForm
         object CopyPanel: TPanel
           Left = 0
           Height = 144
-          Top = 242
+          Top = 175
           Width = 500
           Align = alBottom
           BevelOuter = bvNone

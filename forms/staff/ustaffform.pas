@@ -836,8 +836,6 @@ begin
     ModeType:= AModeType;
     ExportButton.Enabled:= ModeType<>mtEditing;
 
-    StaffListUpdate;
-
     if ModeType=mtSetting then
     begin
       SettingPanel.Visible:= True;
@@ -861,6 +859,8 @@ begin
     StaffList.CanUnselect:= ModeType<>mtEditing;
     StaffList.CanSelect:= ModeType=mtEditing;
     ListToolPanel.Visible:= ModeType=mtEditing;
+
+    StaffListUpdate;
 
   finally
     MainPanel.Visible:= True;

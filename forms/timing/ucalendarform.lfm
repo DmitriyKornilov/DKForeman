@@ -168,6 +168,7 @@ object CalendarForm: TCalendarForm
       Cursor = crHandPoint
       Left = 73
       Height = 34
+      Hint = 'Экспорт в формат электронной таблицы XLSX или ODS'
       Top = 1
       Width = 104
       Align = alLeft
@@ -345,6 +346,7 @@ object CalendarForm: TCalendarForm
       Rounding.RoundY = 0
       RoundingDropDown.RoundX = 1
       RoundingDropDown.RoundY = 1
+      ShowHint = True
       TextApplyGlobalOpacity = False
       DropDownStyle = bdsCommon
       MemoryUsage = bmuHigh

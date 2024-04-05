@@ -8,7 +8,7 @@ uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, Buttons,
   fpspreadsheetgrid, BCPanel, BCButton, VirtualTrees, Spin,
   //Project utils
-  UDataBase, UConst, UTypes, UUtils,
+  UDataBase, UConst, UTypes, UUtils, UWorkHours,
   //DK packages utils
   DK_VSTTables, DK_VSTTools, DK_Vector, DK_StrUtils, DK_Const, DK_Dialogs,
   DK_Zoom, DK_DateUtils;
@@ -48,19 +48,19 @@ type
     DayToolPanel: TPanel;
     CorrectionsPanel: TPanel;
     SheetPanel: TPanel;
-    StructureCaptionPanel: TBCPanel;
     ListToolPanel: TPanel;
     LeftSplitter: TSplitter;
     ListCaptionPanel: TBCPanel;
     ListPanel: TPanel;
     EditingPanel: TPanel;
-    StructureVT: TVirtualStringTree;
-    Splitter2: TSplitter;
-    StructurePanel: TPanel;
     ScheduleListVT: TVirtualStringTree;
     ScheduleListPanel: TPanel;
     SettingPanel: TPanel;
     EditingSplitter: TSplitter;
+    Splitter2: TSplitter;
+    StructureCaptionPanel: TBCPanel;
+    StructurePanel: TPanel;
+    StructureVT: TVirtualStringTree;
     ToolPanel: TPanel;
     DayVT: TVirtualStringTree;
     CopyVT: TVirtualStringTree;
@@ -88,11 +88,15 @@ type
     VSTDays: TVSTTable;
     VSTCopy: TVSTTable;
 
+    ScheduleIDs, WeekHours, CycleCounts: TIntVector;
+    ScheduleNames: TStrVector;
+
     procedure EditingTablesCreate;
+    procedure StructureLoad;
 
     procedure ScheduleListCreate;
     procedure ScheduleListSelect;
-    procedure ScheduleListUpdate;
+    procedure ScheduleListLoad(const SelectedID: Integer = -1);
     procedure ScheduleListDelItem;
 
     procedure ParamListCreate;
@@ -180,7 +184,7 @@ var
   H: Integer;
 begin
   H:= MainPanel.Height div 3;
-  EditingPanel.Height:= 2*H;
+  EditingPanel.Height:= H;
   StructurePanel.Height:= H;
 end;
 
@@ -189,16 +193,14 @@ var
   i: Integer;
   W: TIntVector;
 begin
-  W:= VCreateInt([80, 80, 90, 70, 60]);
+  W:= VCreateInt([70, 80, 90, 70, 60]);
 
   Structure:= TVSTTable.Create(StructureVT);
-  //Structure.OnSelect:= @CorrectionSelect;
   Structure.SetSingleFont(MainForm.GridFont);
   Structure.HeaderFont.Style:= [fsBold];
   Structure.CanSelect:= True;
   for i:= 0 to High(W) do
     Structure.AddColumn(SCHEDULE_CORRECTION_COLUMN_NAMES[i], W[i]);
-  Structure.AutosizeColumnEnable(SCHEDULE_CORRECTION_COLUMN_NAMES[0]);
   Structure.Draw;
 
   VSTDays:= TVSTTable.Create(DayVT);
@@ -208,7 +210,6 @@ begin
   VSTDays.CanSelect:= True;
   for i:= 0 to High(W) do
     VSTDays.AddColumn(SCHEDULE_CORRECTION_COLUMN_NAMES[i], W[i]);
-  VSTDays.AutosizeColumnEnable(SCHEDULE_CORRECTION_COLUMN_NAMES[0]);
   VSTDays.Draw;
 
   VSTCopy:= TVSTTable.Create(CopyVT);
@@ -218,13 +219,53 @@ begin
   VSTCopy.CanSelect:= True;
   for i:= 0 to High(W) do
     VSTCopy.AddColumn(SCHEDULE_CORRECTION_COLUMN_NAMES[i], W[i]);
-  VSTCopy.AutosizeColumnEnable(SCHEDULE_CORRECTION_COLUMN_NAMES[0]);
   VSTCopy.Draw;
+end;
+
+procedure TShiftScheduleForm.StructureLoad;
+var
+  Dates: TDateVector;
+  TotalHours, NightHours, ShiftNums: TIntVector;
+  StrMarks, StrDates, StrShiftNums: TStrVector;
+begin
+  Structure.ValuesClear;
+  StructureCaptionPanel.Caption:= 'Структура: ';
+
+  if not ScheduleList.IsSelected then Exit;
+
+  StructureCaptionPanel.Caption:= StructureCaptionPanel.Caption +
+                                  ScheduleNames[ScheduleList.SelectedIndex];
+
+
+  DataBase.ScheduleCycleLoad(ScheduleIDs[ScheduleList.SelectedIndex],
+                             Dates, TotalHours, NightHours, ShiftNums, StrMarks);
+
+  StrShiftNums:= VIntToStr(ShiftNums);
+  VChangeIf(StrShiftNums, '0', EMPTY_MARK);
+  if CycleCounts[ScheduleList.SelectedIndex]=0 then
+    StrDates:= VCreateStr(WEEKDAYSSHORT)
+  else
+    StrDates:= VDateToStr(Dates);
+
+  Structure.Visible:= False;
+  try
+    Structure.ValuesClear;
+    Structure.SetColumn(SCHEDULE_CORRECTION_COLUMN_NAMES[0], StrDates);
+    Structure.SetColumn(SCHEDULE_CORRECTION_COLUMN_NAMES[1], VWorkHoursToStr(TotalHours));
+    Structure.SetColumn(SCHEDULE_CORRECTION_COLUMN_NAMES[2], VWorkHoursToStr(NightHours));
+    Structure.SetColumn(SCHEDULE_CORRECTION_COLUMN_NAMES[3], StrMarks);
+    Structure.SetColumn(SCHEDULE_CORRECTION_COLUMN_NAMES[4], StrShiftNums);
+    Structure.Draw;
+  finally
+    Structure.Visible:= True;
+  end;
 end;
 
 procedure TShiftScheduleForm.ScheduleListCreate;
 begin
   ScheduleList:= TVSTTable.Create(ScheduleListVT);
+  ScheduleList.CanSelect:= True;
+  ScheduleList.CanUnselect:= False;
   ScheduleList.OnSelect:= @ScheduleListSelect;
   ScheduleList.OnDelKeyDown:= @ScheduleListDelItem;
   ScheduleList.SetSingleFont(MainForm.GridFont);
@@ -239,7 +280,7 @@ end;
 
 procedure TShiftScheduleForm.ScheduleListSelect;
 begin
-
+  StructureLoad;
 end;
 
 procedure TShiftScheduleForm.ParamListCreate;
@@ -314,9 +355,25 @@ begin
   end;
 end;
 
-procedure TShiftScheduleForm.ScheduleListUpdate;
+procedure TShiftScheduleForm.ScheduleListLoad(const SelectedID: Integer = -1);
+var
+  SelectedScheduleID: Integer;
 begin
+  SelectedScheduleID:= GetSelectedID(ScheduleList, ScheduleIDs, SelectedID);
 
+  DataBase.ScheduleMainListLoad(ScheduleIDs, WeekHours, CycleCounts, ScheduleNames);
+
+  ScheduleList.Visible:= False;
+  try
+    ScheduleList.ValuesClear;
+    ScheduleList.SetColumn('№ п/п', VIntToStr(VOrder(Length(ScheduleIDs))));
+    ScheduleList.SetColumn('Наименование графика', ScheduleNames, taLeftJustify);
+    ScheduleList.SetColumn('Часов в неделю', VIntToStr(WeekHours));
+    ScheduleList.Draw;
+    ScheduleList.ReSelect(ScheduleIDs, SelectedScheduleID, True);  //возвращаем выделение строки
+  finally
+    ScheduleList.Visible:= True;
+  end;
 end;
 
 procedure TShiftScheduleForm.ScheduleListDelItem;
@@ -343,8 +400,6 @@ begin
     ModeType:= AModeType;
     ExportButton.Enabled:= ModeType<>mtEditing;
 
-    ScheduleListUpdate;
-
     LeftSplitter.Align:= alRight;
     if ModeType=mtSetting then
       SettingPanel.Visible:= True
@@ -365,6 +420,8 @@ begin
       EditingSplitter.Visible:= False;
       EditingPanel.Visible:= False;
     end;
+
+    ScheduleListLoad;
 
   finally
     MainPanel.Visible:= True;

@@ -259,7 +259,7 @@ var
   i: Integer;
   W: TIntVector;
 begin
-  W:= VCreateInt([80, 100, 150]);
+  W:= VCreateInt([80, 110, 150]);
 
   VSTDays:= TVSTTable.Create(DayVT);
   VSTDays.OnSelect:= @CorrectionSelect;
