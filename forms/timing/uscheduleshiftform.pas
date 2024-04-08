@@ -273,7 +273,7 @@ var
   i: Integer;
   W: TIntVector;
 begin
-  W:= VCreateInt([70, 60, 80, 90, 70]);
+  W:= VCreateInt([70, 70, 80, 90, 70]);
 
   Structure:= TVSTTable.Create(StructureVT);
   Structure.SetSingleFont(MainForm.GridFont);

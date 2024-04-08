@@ -32,7 +32,7 @@ type
       PERIOD_COLUMN_WIDTH  = 70;    //ширина столбца "Месяц"
       SUMDAYS_COLUMN_WITH  = 35;    //--кол-ва дней
       SUMHOURS_COLUMN_WITH = 50;    //--кол-ва часов
-      ROW_DEFAULT_HEIGHT   = 22;
+      ROW_DEFAULT_HEIGHT   = 24;
       //FIRSTROW_TITLE_HEIGHT = 50; 3*SHeight
     var
       FSchedule: TShiftSchedule;

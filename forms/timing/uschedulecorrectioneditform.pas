@@ -36,6 +36,8 @@ type
     procedure CancelButtonClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
+
+
   private
     DigMarks: TIntVector;
   public
@@ -71,6 +73,10 @@ begin
   LastDatePicker.MaxDate:= FirstDatePicker.MaxDate;
   DataBase.TimetableMarkDictionaryLoad(MarkComboBox, DigMarks, DigMark);
 end;
+
+
+
+
 
 end.
 
