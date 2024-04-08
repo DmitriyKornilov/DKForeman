@@ -47,6 +47,7 @@ type
     ToolPanel: TPanel;
     YearSpinEdit: TSpinEdit;
     ZoomPanel: TPanel;
+    procedure DayVTNodeDblClick(Sender: TBaseVirtualTree; const HitInfo: THitInfo);
     procedure ViewGridDblClick(Sender: TObject);
     procedure ViewGridMouseDown(Sender: TObject; Button: TMouseButton;
       {%H-}Shift: TShiftState; X, Y: Integer);
@@ -62,7 +63,6 @@ type
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
-    procedure DayVTDblClick(Sender: TObject);
     procedure YearSpinEditChange(Sender: TObject);
   private
     ModeType: TModeType;
@@ -189,8 +189,9 @@ begin
 end;
 
 procedure TCalendarForm.FormCreate(Sender: TObject);
-
 begin
+  ModeType:= mtView;
+
   SetToolPanels([
     ToolPanel, DayToolPanel, CopyToolPanel
   ]);
@@ -241,12 +242,13 @@ begin
   //ColorList.Update(Items, Colors);
 end;
 
-procedure TCalendarForm.DayVTDblClick(Sender: TObject);
+procedure TCalendarForm.DayVTNodeDblClick(Sender: TBaseVirtualTree; const HitInfo: THitInfo);
 var
   DayDate: TDate;
 begin
-  if CalendarSheet.GridToDate(ViewGrid.Row, ViewGrid.Col, DayDate) then
-    CalendarEditFormOpen(DayDate);
+  if not VSTDays.IsSelected then Exit;
+  DayDate:= Corrections.Dates[HitInfo.HitNode^.Index];
+  CalendarEditFormOpen(DayDate);
 end;
 
 procedure TCalendarForm.YearSpinEditChange(Sender: TObject);
@@ -302,8 +304,7 @@ var
   BD, ED: TDate;
   Dates, Statuses, SwapDays: TStrVector;
 begin
-  BD:= FirstDayInYear(YearSpinEdit.Value);
-  ED:= LastDayInYear(YearSpinEdit.Value);
+  FirstLastDayInYear(YearSpinEdit.Value, BD, ED);
   DataBase.CalendarCorrectionsLoad(BD, ED, Corrections);
 
   Dates:= VDateToStr(Corrections.Dates);

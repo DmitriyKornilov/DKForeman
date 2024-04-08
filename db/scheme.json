@@ -908,7 +908,7 @@
       "PrimaryKey" : false,
       "Status" : false,
       "NotNull" : true,
-      "DefaultValue" : "7",
+      "DefaultValue" : "0",
       "Description" : [
         "Количество дней цикла графика сменности"
       ],

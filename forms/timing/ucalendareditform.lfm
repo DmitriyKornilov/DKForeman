@@ -191,7 +191,7 @@ object CalendarEditForm: TCalendarEditForm
       BorderSpacing.Right = 6
       Constraints.MinHeight = 38
       Constraints.MinWidth = 125
-      Caption = 'Отмена'
+      Caption = 'Отменить'
       Glyph.Data = {
         36090000424D3609000000000000360000002800000018000000180000000100
         2000000000000009000064000000640000000000000000000000000000000000

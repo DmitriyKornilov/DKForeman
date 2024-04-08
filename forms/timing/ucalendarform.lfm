@@ -815,7 +815,7 @@ object CalendarForm: TCalendarForm
         Header.Height = 20
         Header.MainColumn = -1
         TabOrder = 1
-        OnDblClick = DayVTDblClick
+        OnNodeDblClick = DayVTNodeDblClick
       end
     end
     object CopyPanel: TPanel

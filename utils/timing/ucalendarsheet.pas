@@ -20,6 +20,7 @@ type
     function SetWidths: TIntVector; override;
   private
   const
+    COLUMNS_COUNT    = 32;
     RESUME_FIRST_ROW = 15;
     RESUME_FIRST_COL = 25;
     LEGEND_FIRST_ROW = 3;
@@ -43,14 +44,14 @@ type
     FHighLightDays: TDateVector;
     FRowHeight: Integer;
 
-    procedure DrawCaption;
-    procedure DrawLegend;
-    procedure DrawResumeLine(const R, C, AColorIndex: Integer; const ACalendar: TCalendar);
-    procedure DrawResumeTableCaption;
-    procedure DrawMonth(const AMonth: Byte);
-    procedure DrawQuarter(const AQuarter: Byte);
-    procedure DrawHalf(const AHalf: Byte);
-    procedure DrawYear;
+    procedure CaptionDraw;
+    procedure LegendDraw;
+    procedure ResumeLineDraw(const R, C, AColorIndex: Integer; const ACalendar: TCalendar);
+    procedure ResumeTableCaptionDraw;
+    procedure MonthDraw(const AMonth: Byte);
+    procedure QuarterDraw(const AQuarter: Byte);
+    procedure HalfDraw(const AHalf: Byte);
+    procedure YearDraw;
   public
     constructor Create(const AFont: TFont; const AWorksheet: TsWorksheet; const AGrid: TsWorksheetGrid = nil);
 
@@ -63,14 +64,14 @@ type
 
 implementation
 
-procedure TCalendarSheet.DrawCaption;
+procedure TCalendarSheet.CaptionDraw;
 begin
   Writer.SetFont(Font.Name, Font.Size+3, [fsBold], clBlack);
   Writer.WriteText(1, 1, 1, Writer.ColCount, 'ПРОИЗВОДСТВЕННЫЙ КАЛЕНДАРЬ НА ' +
                IntToStr(FYear) + ' ГОД');
 end;
 
-procedure TCalendarSheet.DrawLegend;
+procedure TCalendarSheet.LegendDraw;
 var
   R,C: Integer;
 
@@ -98,7 +99,7 @@ begin
   Writer.SetAlignmentDefault;
 end;
 
-procedure TCalendarSheet.DrawResumeTableCaption;
+procedure TCalendarSheet.ResumeTableCaptionDraw;
 var
   R,C: Integer;
 begin
@@ -187,7 +188,7 @@ begin
   Writer.DrawBorders(R, C, R+18, C, cbtAll);
 end;
 
-procedure TCalendarSheet.DrawResumeLine(const R,C, AColorIndex: Integer; const ACalendar: TCalendar);
+procedure TCalendarSheet.ResumeLineDraw(const R,C, AColorIndex: Integer; const ACalendar: TCalendar);
 var
   i: Integer;
 begin
@@ -207,17 +208,17 @@ begin
   Writer.DrawBorders(R, C, R, C+6, cbtAll);
 end;
 
-procedure TCalendarSheet.DrawYear;
+procedure TCalendarSheet.YearDraw;
 var
   R,C: Integer;
 begin
   Writer.SetFont(Font.Name, Font.Size, [fsBold], clBlack);
   R:= YEAR_RESUME_ROW;
   C:= RESUME_FIRST_COL+1;
-  DrawResumeLine(R,C, YEAR_COLOR_INDEX, FCalendar);
+  ResumeLineDraw(R,C, YEAR_COLOR_INDEX, FCalendar);
 end;
 
-procedure TCalendarSheet.DrawHalf(const AHalf: Byte);
+procedure TCalendarSheet.HalfDraw(const AHalf: Byte);
 var
   R,C: Integer;
   HalfCalendar: TCalendar;
@@ -230,13 +231,13 @@ begin
   HalfCalendar:= TCalendar.Create;
   try
     FCalendar.Cut(BD, ED, HalfCalendar);
-    DrawResumeLine(R,C, HALFYEAR_COLOR_INDEX, HalfCalendar);
+    ResumeLineDraw(R,C, HALFYEAR_COLOR_INDEX, HalfCalendar);
   finally
     FreeAndNil(HalfCalendar);
   end;
 end;
 
-procedure TCalendarSheet.DrawQuarter(const AQuarter: Byte);
+procedure TCalendarSheet.QuarterDraw(const AQuarter: Byte);
 var
   R,C: Integer;
   QuarterCalendar: TCalendar;
@@ -249,13 +250,13 @@ begin
   QuarterCalendar:= TCalendar.Create;
   try
     FCalendar.Cut(BD, ED, QuarterCalendar);
-    DrawResumeLine(R,C, QUARTER_COLOR_INDEX, QuarterCalendar);
+    ResumeLineDraw(R,C, QUARTER_COLOR_INDEX, QuarterCalendar);
   finally
     FreeAndNil(QuarterCalendar);
   end;
 end;
 
-procedure TCalendarSheet.DrawMonth(const AMonth: Byte);
+procedure TCalendarSheet.MonthDraw(const AMonth: Byte);
 var
   R,C, i,j: Integer;
   MonthCalendar: TCalendar;
@@ -293,7 +294,7 @@ begin
     end;
     R:= MONTH_RESUME_ROWS[AMonth];
     C:= RESUME_FIRST_COL+1;
-    DrawResumeLine(R,C, 0, MonthCalendar);
+    ResumeLineDraw(R,C, 0, MonthCalendar);
   finally
     FreeAndNil(MonthCalendar);
   end;
@@ -309,7 +310,7 @@ var
   i, W: Integer;
 begin
   Result:= nil;
-  VDim(Result, 32);
+  VDim(Result, COLUMNS_COUNT);
 
   W:= 30;
   for i:= 0 to 23 do Result[i]:= W;
@@ -327,9 +328,8 @@ end;
 constructor TCalendarSheet.Create(const AFont: TFont; const AWorksheet: TsWorksheet;
   const AGrid: TsWorksheetGrid);
 begin
-  inherited Create(AWorksheet, AGrid);
+  inherited Create(AWorksheet, AGrid, AFont);
   FRowHeight:= 24;
-  Font:= AFont;
   Writer.SetBordersColor(clBlack);
 end;
 
@@ -342,13 +342,13 @@ begin
   FYear:= YearOfDate(FCalendar.BeginDate);
   FHighLightDays:= AHighLightDays;
   Writer.BeginEdit;
-  DrawCaption;
-  DrawLegend;
-  DrawResumeTableCaption;
-  for i:=1 to 12 do DrawMonth(i);
-  for i:=1 to 4  do DrawQuarter(i);
-  for i:=1 to 2  do DrawHalf(i);
-  DrawYear;
+  CaptionDraw;
+  LegendDraw;
+  ResumeTableCaptionDraw;
+  for i:=1 to 12 do MonthDraw(i);
+  for i:=1 to 4  do QuarterDraw(i);
+  for i:=1 to 2  do HalfDraw(i);
+  YearDraw;
   Writer.WriteText(13,25, EmptyStr);
 
   Writer.SetRowHeight(2, FRowHeight-4);

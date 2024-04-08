@@ -15,8 +15,8 @@ uses
   UDataBase, UUtils, UConst, UTypes,
   //Forms
   UStaffForm,
-  UCalendarForm, UShiftScheduleForm, UVacationPlaneForm,
-  UPersonalScheduleForm, UTimetableForm,
+  UCalendarForm, UScheduleShiftForm, UVacationPlaneForm,
+  USchedulePersonalForm, UTimetableForm,
   USIZForm,
   USSOForm,
   UStudyForm;
@@ -180,7 +180,7 @@ begin
     0: ;
     1: (CategoryForm as TStaffForm).ViewUpdate(ModeType);
     2: (CategoryForm as TCalendarForm).ViewUpdate(ModeType);
-    3: (CategoryForm as TShiftScheduleForm).ViewUpdate(ModeType);
+    3: (CategoryForm as TScheduleShiftForm).ViewUpdate(ModeType);
     4: ;
     5: ;
     6: ;
@@ -199,7 +199,7 @@ begin
     0: ;
     1: (CategoryForm as TStaffForm).SettingsSave;
     //2: (CategoryForm as TCalendarForm).SettingsSave;
-    3: (CategoryForm as TShiftScheduleForm).SettingsSave;
+    3: (CategoryForm as TScheduleShiftForm).SettingsSave;
     4: ;
     5: ;
     6: ;
@@ -225,9 +225,9 @@ begin
       0: ;
       1: CategoryForm:= FormOnPanelCreate(TStaffForm, MainPanel);
       2: CategoryForm:= FormOnPanelCreate(TCalendarForm, MainPanel);
-      3: CategoryForm:= FormOnPanelCreate(TShiftScheduleForm, MainPanel);
+      3: CategoryForm:= FormOnPanelCreate(TScheduleShiftForm, MainPanel);
       4: CategoryForm:= FormOnPanelCreate(TVacationPlaneForm, MainPanel);
-      5: CategoryForm:= FormOnPanelCreate(TPersonalScheduleForm, MainPanel);
+      5: CategoryForm:= FormOnPanelCreate(TSchedulePersonalForm, MainPanel);
       6: CategoryForm:= FormOnPanelCreate(TTimetableForm, MainPanel);
       7: CategoryForm:= FormOnPanelCreate(TSIZForm, MainPanel);
       8: CategoryForm:= FormOnPanelCreate(TSSOForm, MainPanel);

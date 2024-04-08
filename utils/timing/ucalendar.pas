@@ -19,6 +19,18 @@ const
   DAY_STATUS_BEFORE  = 3; //3 - предпраздничный (рабочий с сокращенным временем)
   DAY_STATUS_WEEKDAY = 4; //4 - будний (обычный рабочий)
 
+  MAIN_COLOR_INDEX      = 0;  //scTransparent
+  HOLIDEY_COLOR_INDEX   = 1;
+  OFFDAY_COLOR_INDEX    = 2;
+  BEFORE_COLOR_INDEX    = 3;
+  WEEKDAY_COLOR_INDEX   = 4;
+  MONTHNAME_COLOR_INDEX = 5;
+  DAYNAME_COLOR_INDEX   = 6;
+  HIGHLIGHT_COLOR_INDEX = 7;
+  QUARTER_COLOR_INDEX   = 8;
+  HALFYEAR_COLOR_INDEX  = 9;
+  YEAR_COLOR_INDEX      = 10;
+
 type
 
   {Простой календарь}

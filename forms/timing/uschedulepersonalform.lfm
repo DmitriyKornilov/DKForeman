@@ -1,13 +1,13 @@
-object PersonalScheduleForm: TPersonalScheduleForm
+object SchedulePersonalForm: TSchedulePersonalForm
   Left = 408
   Height = 240
   Top = 250
   Width = 613
-  Caption = 'PersonalScheduleForm'
+  Caption = 'SchedulePersonalForm'
   ClientHeight = 240
   ClientWidth = 613
   DesignTimePPI = 120
-  LCLVersion = '2.2.6.0'
+  LCLVersion = '3.2.0.0'
   object ToolPanel: TPanel
     Left = 2
     Height = 40

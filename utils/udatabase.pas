@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, StdCtrls, DateUtils,
   //Project utils
-  UCalendar,
+  UCalendar, UConst, USchedule,
   //DK packages utils
   DK_SQLite3, DK_SQLUtils, DK_Vector, DK_Dialogs, DK_StrUtils, DK_Const;
 
@@ -29,7 +29,12 @@ type
     **************************************************************************)
     procedure PostDictionaryLoad(const AComboBox: TComboBox;
                                  out APostIDs: TIntVector;
-                                 const ASelectPostID: Integer = -1);
+                                 const ASelectPostID: Integer = -1;
+                                 const AIDNotZero: Boolean = True);
+    procedure TimetableMarkDictionaryLoad(const AComboBox: TComboBox;
+                                 out ADigMarks: TIntVector;
+                                 const ASelectDigMark: Integer = -1;
+                                 const AIDNotZero: Boolean = True);
 
 
 
@@ -118,6 +123,8 @@ type
     (**************************************************************************
                                     КАЛЕНДАРЬ
     **************************************************************************)
+    {Календарь за период с учетом корректировок}
+    procedure CalendarLoad(const ABeginDate, AEndDate: TDate; var ACalendar: TCalendar);
     {Список корректировок календаря: True - ОК, False - список пуст}
     function CalendarCorrectionsLoad(const ABeginDate, AEndDate: TDate;
                                      out ACorrections: TCalendarCorrections): Boolean;
@@ -128,22 +135,42 @@ type
     function CalendarCorrectionDelete(const ADate: TDate): Boolean;
 
     (**************************************************************************
-                                ГРАФИК СМЕННОСТИ
+                                     ГРАФИКИ
     **************************************************************************)
     {Список графиков сменности: True - ОК, False - список пуст}
     function ScheduleMainListLoad(out AScheduleIDs, AWeekHours, ACycleCounts: TIntVector;
                                   out AScheduleNames: TStrVector): Boolean;
-    {Структура графика/корректировок : True - ОК, False - пусто (ошибка)}
-    function ScheduleParamsLoad(const ATableName, AIDFieldName: String;
-                                const AIDValue: Integer; out ADates: TDateVector;
-                                out ATotalHours, ANightHours, AShiftNums: TIntVector;
+    {Структура графика/список корректировок : True - ОК, False - пусто (ошибка)}
+    function ScheduleParamsLoad(const ATableName, AFindFieldName, AIDFieldName: String;
+                                const AFindValue: Integer;
+                                out AParamIDs: TIntVector;
+                                out ADates: TDateVector;
+                                out ATotalHours, ANightHours, AShiftNums, ADigMarks: TIntVector;
                                 out AStrMarks: TStrVector;
                                 const ABeginDate: TDate = 0;
                                 const AEndDate: TDate = 0): Boolean;
     {Цикл (структура) графика сменности: True - ОК, False - пусто (ошибка)}
-    function ScheduleCycleLoad(const AScheduleID: Integer; out ADates: TDateVector;
-                               out ATotalHours, ANightHours, AShiftNums: TIntVector;
-                               out AStrMarks: TStrVector): Boolean;
+    function ScheduleCycleLoad(const AScheduleID: Integer;
+                               out ACycleIDs: TIntVector;
+                               out ACycle: TScheduleCycle): Boolean;
+    {Cписок корректировок графика сменности: True - ОК, False - пусто (ошибка)}
+    function ScheduleShiftCorrectionsLoad(const AScheduleID: Integer;
+                               out ACorrectIDs: TIntVector;
+                               out ACorrect: TScheduleCorrect;
+                               const ABeginDate: TDate = 0;
+                               const AEndDate: TDate = 0): Boolean;
+
+
+    (**************************************************************************
+                                      ТАБЕЛИ
+    **************************************************************************)
+    {Список кодов табеля: True - ОК, False - пусто}
+    function TimetableMarkListLoad(out ADigMarks: TIntVector;
+                                   out AStrMarks, ANotes: TStrVector;
+                                   const AIDNotZero: Boolean = True): Boolean;
+    function TimetableMarkListLoad(out ADigMarks: TIntVector;
+                                   out AItemMarks: TStrVector;
+                                   const AIDNotZero: Boolean = True): Boolean;
   end;
 
 var
@@ -188,10 +215,32 @@ end;
 
 procedure TDataBase.PostDictionaryLoad(const AComboBox: TComboBox;
                                        out APostIDs: TIntVector;
-                                       const ASelectPostID: Integer = -1);
+                                       const ASelectPostID: Integer = -1;
+                                       const AIDNotZero: Boolean = True);
 begin
   KeyPickLoad(AComboBox, APostIDs, 'STAFFPOST', 'PostID', 'PostName', 'PostName',
-              True{ID>0}, EmptyStr, ASelectPostID);
+              AIDNotZero, EmptyStr, ASelectPostID);
+end;
+
+procedure TDataBase.TimetableMarkDictionaryLoad(const AComboBox: TComboBox;
+                                 out ADigMarks: TIntVector;
+                                 const ASelectDigMark: Integer = -1;
+                                 const AIDNotZero: Boolean = True);
+var
+  Ind: Integer;
+  ItemMarks: TStrVector;
+begin
+  TimetableMarkListLoad(ADigMarks, ItemMarks, AIDNotZero);
+
+  VToStrings(ItemMarks, AComboBox.Items);
+
+  if ASelectDigMark>=0 then
+  begin
+    Ind:= VIndexOf(ADigMarks, ASelectDigMark);
+    if Ind<0 then Ind:= 0;
+    AComboBox.ItemIndex:= Ind;
+  end else
+    AComboBox.ItemIndex:= 0;
 end;
 
 function TDataBase.StaffListLoad(const AOrderType, AListType: Byte;
@@ -764,6 +813,14 @@ begin
   end;
 end;
 
+procedure TDataBase.CalendarLoad(const ABeginDate, AEndDate: TDate; var ACalendar: TCalendar);
+var
+  Corrections: TCalendarCorrections;
+begin
+  DataBase.CalendarCorrectionsLoad(ABeginDate, AEndDate, Corrections);
+  ACalendar.Calc(ABeginDate, AEndDate, Corrections);
+end;
+
 function TDataBase.CalendarCorrectionsLoad(const ABeginDate, AEndDate: TDate;
                                      out ACorrections: TCalendarCorrections): Boolean;
 begin
@@ -856,9 +913,11 @@ begin
   QClose;
 end;
 
-function TDataBase.ScheduleParamsLoad(const ATableName, AIDFieldName: String;
-                                const AIDValue: Integer; out ADates: TDateVector;
-                                out ATotalHours, ANightHours, AShiftNums: TIntVector;
+function TDataBase.ScheduleParamsLoad(const ATableName, AFindFieldName, AIDFieldName: String;
+                                const AFindValue: Integer;
+                                out AParamIDs: TIntVector;
+                                out ADates: TDateVector;
+                                out ATotalHours, ANightHours, AShiftNums, ADigMarks: TIntVector;
                                 out AStrMarks: TStrVector;
                                 const ABeginDate: TDate = 0;
                                 const AEndDate: TDate = 0): Boolean;
@@ -867,25 +926,28 @@ var
 begin
   Result:= False;
 
+  AParamIDs:= nil;
   ADates:= nil;
   ATotalHours:= nil;
   ANightHours:= nil;
   AShiftNums:= nil;
+  ADigMarks:= nil;
   AStrMarks:= nil;
 
   SQLStr:=
-    'SELECT t1.DayDate, t1.HoursTotal, t1.HoursNight, t1.ShiftNum, t2.StrMark ' +
+    'SELECT t1.DayDate, t1.HoursTotal, t1.HoursNight, t1.ShiftNum, t1.DigMark, t2.StrMark, ' +
+           't1.' + SqlEsc(AIDFieldName, False) + ' ' +
     'FROM ' + SqlEsc(ATableName) + ' t1 ' +
     'INNER JOIN TIMETABLEMARK t2 ON (t1.DigMark=t2.DigMark) ' +
-    'WHERE (' + SqlEsc(AIDFieldName) + ' = :IDValue) ';
+    'WHERE (t1.' + SqlEsc(AFindFieldName, False) + ' = :FindValue) ';
   if (ABeginDate>0) and (AEndDate>0) then
-    SQLStr:= SQLStr + 'AND (DayDate BETWEEN :BD AND :ED) ';
+    SQLStr:= SQLStr + 'AND (t1.DayDate BETWEEN :BD AND :ED) ';
   SQLStr:= SQLStr +
-    'ORDER BY DayDate';
+    'ORDER BY t1.DayDate';
 
   QSetQuery(FQuery);
   QSetSQL(SQLStr);
-  QParamInt('IDValue', AIDValue);
+  QParamInt('FindValue', AFindValue);
   QParamDT('BD', ABeginDate);
   QParamDT('ED', AEndDate);
   QOpen;
@@ -894,10 +956,12 @@ begin
     QFirst;
     while not QEOF do
     begin
+      VAppend(AParamIDs, QFieldInt(AIDFieldName));
       VAppend(ADates, QFieldDT('DayDate'));
       VAppend(ATotalHours, QFieldInt('HoursTotal'));
       VAppend(ANightHours, QFieldInt('HoursNight'));
       VAppend(AShiftNums, QFieldInt('ShiftNum'));
+      VAppend(ADigMarks, QFieldInt('DigMark'));
       VAppend(AStrMarks, QFieldStr('StrMark'));
       QNext;
     end;
@@ -906,12 +970,85 @@ begin
   QClose;
 end;
 
-function TDataBase.ScheduleCycleLoad(const AScheduleID: Integer; out ADates: TDateVector;
-                               out ATotalHours, ANightHours, AShiftNums: TIntVector;
-                               out AStrMarks: TStrVector): Boolean;
+function TDataBase.ScheduleCycleLoad(const AScheduleID: Integer;
+                               out ACycleIDs: TIntVector;
+                               out ACycle: TScheduleCycle): Boolean;
 begin
-  Result:= ScheduleParamsLoad('SCHEDULECYCLE', 'ScheduleID', AScheduleID,
-                              ADates, ATotalHours, ANightHours, AShiftNums, AStrMarks);
+  ACycle:= EmptyScheduleCycle;
+  ACycle.ScheduleID:= AScheduleID;
+  ACycle.Count:= ValueInt32Int32ID('SCHEDULEMAIN', 'CycleCount', 'ScheduleID', AScheduleID);
+  ACycle.IsWeek:= ACycle.Count=0;
+  Result:= ScheduleParamsLoad('SCHEDULECYCLE', 'ScheduleID', 'CycleID', AScheduleID,
+    ACycleIDs, ACycle.Dates, ACycle.HoursTotal, ACycle.HoursNight, ACycle.ShiftNums,
+    ACycle.DigMarks, ACycle.StrMarks);
+end;
+
+function TDataBase.ScheduleShiftCorrectionsLoad(const AScheduleID: Integer;
+                               out ACorrectIDs: TIntVector;
+                               out ACorrect: TScheduleCorrect;
+                               const ABeginDate: TDate = 0;
+                               const AEndDate: TDate = 0): Boolean;
+begin
+  ACorrect:= EmptyScheduleCorrect;
+  Result:= ScheduleParamsLoad('SCHEDULECORRECT', 'ScheduleID', 'CorrectID', AScheduleID,
+    ACorrectIDs, ACorrect.Dates, ACorrect.HoursTotal, ACorrect.HoursNight, ACorrect.ShiftNums,
+    ACorrect.DigMarks, ACorrect.StrMarks, ABeginDate, AEndDate);
+end;
+
+function TDataBase.TimetableMarkListLoad(out ADigMarks: TIntVector;
+                                   out AStrMarks, ANotes: TStrVector;
+                                   const AIDNotZero: Boolean = True): Boolean;
+var
+  SQLStr: String;
+begin
+  Result:= False;
+
+  ADigMarks:= nil;
+  AStrMarks:= nil;
+  ANotes:= nil;
+
+  SQLStr:=
+    sqlSELECT('TIMETABLEMARK', ['DigMark', 'StrMark', 'Note']);
+  if AIDNotZero then
+    SQLStr:= SQLStr + 'WHERE (DigMark>0) '
+  else
+    SQLStr:= SQLStr + 'WHERE (DigMark>=0) ';
+  SQLStr:= SQLStr +
+    'ORDER BY DigMark';
+
+  QSetQuery(FQuery);
+  QSetSQL(SQLStr);
+  QOpen;
+  if not QIsEmpty then
+  begin
+    QFirst;
+    while not QEOF do
+    begin
+      VAppend(ADigMarks, QFieldInt('DigMark'));
+      VAppend(AStrMarks, QFieldStr('StrMark'));
+      VAppend(ANotes, QFieldStr('Note'));
+      QNext;
+    end;
+    Result:= True;
+  end;
+  QClose;
+end;
+
+function TDataBase.TimetableMarkListLoad(out ADigMarks: TIntVector;
+                                   out AItemMarks: TStrVector;
+                                   const AIDNotZero: Boolean = True): Boolean;
+var
+  i: Integer;
+  StrMarks, Notes: TStrVector;
+begin
+  AItemMarks:= nil;
+  Result:= TimetableMarkListLoad(ADigMarks, StrMarks, Notes, AIDNotZero);
+  if not Result then Exit;
+  VDim(AItemMarks, Length(ADigMarks));
+  for i:= 0 to High(ADigMarks) do
+    AItemMarks[i]:= StrMarks[i] +
+                ' (' + SFillLeft(IntToStr(ADigMarks[i]), 2, '0') + ') ' +
+                EMPTY_MARK + SYMBOL_SPACE + Notes[i];
 end;
 
 end.

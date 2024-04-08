@@ -103,12 +103,12 @@
         <UnitName Value="UStaffForm"/>
       </Unit>
       <Unit>
-        <Filename Value="forms\timing\ushiftscheduleform.pas"/>
+        <Filename Value="forms\timing\uscheduleshiftform.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="ShiftScheduleForm"/>
+        <ComponentName Value="ScheduleShiftForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <UnitName Value="UShiftScheduleForm"/>
+        <UnitName Value="UScheduleShiftForm"/>
       </Unit>
       <Unit>
         <Filename Value="forms\timing\uvacationplaneform.pas"/>
@@ -118,11 +118,12 @@
         <UnitName Value="UVacationPlaneForm"/>
       </Unit>
       <Unit>
-        <Filename Value="forms\timing\upersonalscheduleform.pas"/>
+        <Filename Value="forms\timing\uschedulepersonalform.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="PersonalScheduleForm"/>
+        <ComponentName Value="SchedulePersonalForm"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <UnitName Value="UPersonalScheduleForm"/>
+        <UnitName Value="USchedulePersonalForm"/>
       </Unit>
       <Unit>
         <Filename Value="forms\timing\utimetableform.pas"/>
@@ -214,6 +215,36 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UCalendarEditForm"/>
       </Unit>
+      <Unit>
+        <Filename Value="forms\timing\uschedulecorrectioneditform.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="ScheduleCorrectionEditForm"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="UScheduleCorrectionEditForm"/>
+      </Unit>
+      <Unit>
+        <Filename Value="utils\timing\uschedule.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="USchedule"/>
+      </Unit>
+      <Unit>
+        <Filename Value="utils\timing\utimingsheet.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="UTimingSheet"/>
+      </Unit>
+      <Unit>
+        <Filename Value="utils\timing\uscheduleshiftsheet.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="UScheduleShiftSheet"/>
+      </Unit>
+      <Unit>
+        <Filename Value="forms\uchooseform.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="ChooseForm"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="UChooseForm"/>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -224,7 +255,7 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
-      <OtherUnitFiles Value="forms\calendar;utils;forms\staff;forms\timing;forms\siz;forms\sso;forms\study;utils\timing"/>
+      <OtherUnitFiles Value="forms\calendar;utils;forms\staff;forms\timing;forms\siz;forms\sso;forms\study;utils\timing;forms"/>
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <Linking>

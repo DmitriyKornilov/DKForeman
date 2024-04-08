@@ -1,9 +1,9 @@
-object ShiftScheduleForm: TShiftScheduleForm
+object ScheduleShiftForm: TScheduleShiftForm
   Left = 406
   Height = 803
   Top = 109
   Width = 997
-  Caption = 'ShiftScheduleForm'
+  Caption = 'ScheduleShiftForm'
   ClientHeight = 803
   ClientWidth = 997
   DesignTimePPI = 120
@@ -149,6 +149,7 @@ object ShiftScheduleForm: TShiftScheduleForm
         BorderSpacing.Top = 2
         BorderSpacing.Bottom = 2
         MinValue = 2010
+        OnChange = YearSpinEditChange
         TabOrder = 0
         Value = 2022
       end
@@ -339,6 +340,7 @@ object ShiftScheduleForm: TShiftScheduleForm
         0000000000000000000000000000000000000000000000000000
       }
       GlyphMargin = 0
+      OnClick = ExportButtonClick
       ParentColor = False
       Rounding.RoundX = 0
       Rounding.RoundY = 0
@@ -489,12 +491,12 @@ object ShiftScheduleForm: TShiftScheduleForm
     TabOrder = 3
     object ScheduleListPanel: TPanel
       Left = 0
-      Height = 432
+      Height = 256
       Top = 0
       Width = 500
       Align = alClient
       BevelOuter = bvNone
-      ClientHeight = 432
+      ClientHeight = 256
       ClientWidth = 500
       TabOrder = 0
       object ListCaptionPanel: TBCPanel
@@ -830,7 +832,7 @@ object ShiftScheduleForm: TShiftScheduleForm
       end
       object ScheduleListVT: TVirtualStringTree
         Left = 0
-        Height = 186
+        Height = 182
         Top = 74
         Width = 500
         Align = alClient
@@ -841,92 +843,12 @@ object ShiftScheduleForm: TShiftScheduleForm
         Margin = 50
         TabOrder = 2
       end
-      object StructurePanel: TPanel
-        Left = 0
-        Height = 166
-        Top = 266
-        Width = 500
-        Align = alBottom
-        BevelOuter = bvNone
-        ClientHeight = 166
-        ClientWidth = 500
-        TabOrder = 3
-        object StructureCaptionPanel: TBCPanel
-          Left = 0
-          Height = 30
-          Top = 0
-          Width = 500
-          Align = alTop
-          BorderSpacing.Bottom = 2
-          Background.Color = clBtnFace
-          Background.Gradient1.StartColor = clWhite
-          Background.Gradient1.EndColor = clBlack
-          Background.Gradient1.GradientType = gtLinear
-          Background.Gradient1.Point1XPercent = 0
-          Background.Gradient1.Point1YPercent = 0
-          Background.Gradient1.Point2XPercent = 0
-          Background.Gradient1.Point2YPercent = 100
-          Background.Gradient2.StartColor = clWhite
-          Background.Gradient2.EndColor = clBlack
-          Background.Gradient2.GradientType = gtLinear
-          Background.Gradient2.Point1XPercent = 0
-          Background.Gradient2.Point1YPercent = 0
-          Background.Gradient2.Point2XPercent = 0
-          Background.Gradient2.Point2YPercent = 100
-          Background.Gradient1EndPercent = 35
-          Background.Style = bbsColor
-          BevelInner = bvNone
-          BevelOuter = bvNone
-          BevelWidth = 1
-          Border.Color = clActiveBorder
-          Border.Style = bboSolid
-          BorderBCStyle = bpsBorder
-          Caption = 'Структура:'
-          FontEx.Color = clDefault
-          FontEx.FontQuality = fqSystemClearType
-          FontEx.Shadow = False
-          FontEx.ShadowRadius = 5
-          FontEx.ShadowOffsetX = 5
-          FontEx.ShadowOffsetY = 5
-          FontEx.Style = [fsBold]
-          FontEx.TextAlignment = bcaLeftCenter
-          FontEx.PaddingLeft = 10
-          ParentBackground = False
-          Rounding.RoundX = 1
-          Rounding.RoundY = 1
-          TabOrder = 0
-        end
-        object StructureVT: TVirtualStringTree
-          Left = 0
-          Height = 134
-          Top = 32
-          Width = 500
-          Align = alClient
-          BorderSpacing.Top = 2
-          DefaultText = 'Node'
-          Header.AutoSizeIndex = 0
-          Header.Columns = <>
-          Header.MainColumn = -1
-          Margin = 50
-          TabOrder = 1
-        end
-      end
-      object Splitter2: TSplitter
-        Cursor = crVSplit
-        Left = 0
-        Height = 6
-        Top = 260
-        Width = 500
-        Align = alBottom
-        ResizeAnchor = akBottom
-        ResizeStyle = rsLine
-      end
     end
     object EditingSplitter: TSplitter
       Cursor = crVSplit
       Left = 0
       Height = 6
-      Top = 432
+      Top = 256
       Width = 500
       Align = alBottom
       ResizeAnchor = akBottom
@@ -935,23 +857,23 @@ object ShiftScheduleForm: TShiftScheduleForm
     end
     object EditingPanel: TPanel
       Left = 0
-      Height = 319
-      Top = 438
+      Height = 495
+      Top = 262
       Width = 500
       Align = alBottom
       BevelOuter = bvNone
-      ClientHeight = 319
+      ClientHeight = 495
       ClientWidth = 500
       TabOrder = 2
       Visible = False
       object CorrectionsPanel: TPanel
         Left = 0
-        Height = 319
-        Top = 0
+        Height = 333
+        Top = 162
         Width = 500
-        Align = alClient
+        Align = alBottom
         BevelOuter = bvNone
-        ClientHeight = 319
+        ClientHeight = 333
         ClientWidth = 500
         ParentBackground = False
         ParentColor = False
@@ -1003,12 +925,12 @@ object ShiftScheduleForm: TShiftScheduleForm
         end
         object DayPanel: TPanel
           Left = 0
-          Height = 143
+          Height = 157
           Top = 32
           Width = 500
           Align = alClient
           BevelOuter = bvNone
-          ClientHeight = 143
+          ClientHeight = 157
           ClientWidth = 500
           TabOrder = 1
           object DayToolPanel: TPanel
@@ -1111,6 +1033,7 @@ object ShiftScheduleForm: TShiftScheduleForm
                 00EC007E00FF007E00FF007F00FF007F00FF007F00EC007F0021000000000000
                 0000000000000000000000000000000000000000000000000000
               }
+              OnClick = DayAddButtonClick
               ShowHint = True
               ParentShowHint = False
             end
@@ -1291,6 +1214,7 @@ object ShiftScheduleForm: TShiftScheduleForm
                 0000000000000000000000000000000000000000000000000000000000008869
                 4D0285654994856448F78564488B86674A010000000000000000
               }
+              OnClick = DayEditButtonClick
               ShowHint = True
               ParentShowHint = False
             end
@@ -1387,7 +1311,7 @@ object ShiftScheduleForm: TShiftScheduleForm
           end
           object DayVT: TVirtualStringTree
             Left = 0
-            Height = 101
+            Height = 115
             Top = 42
             Width = 500
             Align = alClient
@@ -1399,12 +1323,13 @@ object ShiftScheduleForm: TShiftScheduleForm
             Header.Height = 20
             Header.MainColumn = -1
             TabOrder = 1
+            OnNodeDblClick = DayVTNodeDblClick
           end
         end
         object CopyPanel: TPanel
           Left = 0
           Height = 144
-          Top = 175
+          Top = 189
           Width = 500
           Align = alBottom
           BevelOuter = bvNone
@@ -1712,6 +1637,86 @@ object ShiftScheduleForm: TShiftScheduleForm
             TabOrder = 1
           end
         end
+      end
+      object StructurePanel: TPanel
+        Left = 0
+        Height = 156
+        Top = 0
+        Width = 500
+        Align = alClient
+        BevelOuter = bvNone
+        ClientHeight = 156
+        ClientWidth = 500
+        TabOrder = 1
+        object StructureCaptionPanel: TBCPanel
+          Left = 0
+          Height = 30
+          Top = 0
+          Width = 500
+          Align = alTop
+          BorderSpacing.Bottom = 2
+          Background.Color = clBtnFace
+          Background.Gradient1.StartColor = clWhite
+          Background.Gradient1.EndColor = clBlack
+          Background.Gradient1.GradientType = gtLinear
+          Background.Gradient1.Point1XPercent = 0
+          Background.Gradient1.Point1YPercent = 0
+          Background.Gradient1.Point2XPercent = 0
+          Background.Gradient1.Point2YPercent = 100
+          Background.Gradient2.StartColor = clWhite
+          Background.Gradient2.EndColor = clBlack
+          Background.Gradient2.GradientType = gtLinear
+          Background.Gradient2.Point1XPercent = 0
+          Background.Gradient2.Point1YPercent = 0
+          Background.Gradient2.Point2XPercent = 0
+          Background.Gradient2.Point2YPercent = 100
+          Background.Gradient1EndPercent = 35
+          Background.Style = bbsColor
+          BevelInner = bvNone
+          BevelOuter = bvNone
+          BevelWidth = 1
+          Border.Color = clActiveBorder
+          Border.Style = bboSolid
+          BorderBCStyle = bpsBorder
+          Caption = 'Структура:'
+          FontEx.Color = clDefault
+          FontEx.FontQuality = fqSystemClearType
+          FontEx.Shadow = False
+          FontEx.ShadowRadius = 5
+          FontEx.ShadowOffsetX = 5
+          FontEx.ShadowOffsetY = 5
+          FontEx.Style = [fsBold]
+          FontEx.TextAlignment = bcaLeftCenter
+          FontEx.PaddingLeft = 10
+          ParentBackground = False
+          Rounding.RoundX = 1
+          Rounding.RoundY = 1
+          TabOrder = 0
+        end
+        object StructureVT: TVirtualStringTree
+          Left = 0
+          Height = 124
+          Top = 32
+          Width = 500
+          Align = alClient
+          BorderSpacing.Top = 2
+          DefaultText = 'Node'
+          Header.AutoSizeIndex = 0
+          Header.Columns = <>
+          Header.MainColumn = -1
+          Margin = 50
+          TabOrder = 1
+        end
+      end
+      object Splitter2: TSplitter
+        Cursor = crVSplit
+        Left = 0
+        Height = 6
+        Top = 156
+        Width = 500
+        Align = alBottom
+        ResizeAnchor = akBottom
+        ResizeStyle = rsLine
       end
     end
   end

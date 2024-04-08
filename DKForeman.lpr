@@ -11,10 +11,12 @@ uses
   {$ENDIF}
   Interfaces, // this includes the LCL widgetset
   Forms, UMainForm, UCalendarForm, lazcontrols, datetimectrls, UDataBase,
-  UStaffForm, UShiftScheduleForm, UVacationPlaneForm, UPersonalScheduleForm,
+  UStaffForm, UScheduleShiftForm, UVacationPlaneForm, USchedulePersonalForm,
   UTimetableForm, USIZForm, USSOForm, UStudyForm, UConst, UTypes,
   UStaffMainEditForm, UUtils, UCalendar, UWorkHours, UStaffTabNumEditForm,
-  UStaffPostLogEditForm, UCalendarSheet, UCalendarEditForm;
+  UStaffPostLogEditForm, UCalendarSheet, USchedule, UTimingSheet,
+  UScheduleShiftSheet, UCalendarEditForm, UScheduleCorrectionEditForm, 
+UChooseForm;
 
 {$R *.res}
 
@@ -24,6 +26,9 @@ begin
   Application.Initialize;
   Application.CreateForm(TMainForm, MainForm);
   Application.CreateForm(TCalendarEditForm, CalendarEditForm);
+  Application.CreateForm(TScheduleCorrectionEditForm, ScheduleCorrectionEditForm
+    );
+  Application.CreateForm(TChooseForm, ChooseForm);
   Application.Run;
 end.
 

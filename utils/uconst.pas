@@ -47,13 +47,14 @@ const
   CALENDAR_CORRECTION_COLUMN_NAMES: array of String  =
     ('Дата', 'Статус', 'Заменяемый день');
   SCHEDULE_CORRECTION_COLUMN_NAMES: array of String  =
-    ('Дата', 'Всего часов', 'Ночных часов', 'Код табеля', '№ смены');
+    ('Дата', '№ смены', 'Всего часов', 'Ночных часов', 'Код табеля');
 
   COLOR_GRAY        = $00E0E0E0;
   COLOR_BLACK       = $00000000;
   COLOR_WHITE       = $00FFFFFF;
   COLOR_ORANGE      = $0097CBFF;
   COLOR_GREEN       = $00CCE3CC;
+  COLOR_YELLOW      = $00B3FFFF;
 
   COLOR_CALENDAR_MONTHNAME = COLOR_WHITE;//COLOR_BEIGE; //цвет ячейки с названием месяца
   COLOR_CALENDAR_DAYNAME   = COLOR_WHITE;//COLOR_GRAY;  //цвет ячеек с названиями дней недели
@@ -67,18 +68,10 @@ const
                                               COLOR_GRAY, //COLOR_VIOLET,  //предпраздничный
                                               COLOR_WHITE);  //рабочий
 
-  MAIN_COLOR_INDEX      = 0;  //scTransparent
-  HOLIDEY_COLOR_INDEX   = 1;
-  OFFDAY_COLOR_INDEX    = 2;
-  BEFORE_COLOR_INDEX    = 3;
-  WEEKDAY_COLOR_INDEX   = 4;
-  MONTHNAME_COLOR_INDEX = 5;
-  DAYNAME_COLOR_INDEX   = 6;
-  HIGHLIGHT_COLOR_INDEX = 7;
-  QUARTER_COLOR_INDEX   = 8;
-  HALFYEAR_COLOR_INDEX  = 9;
-  YEAR_COLOR_INDEX      = 10;
-
+  COLOR_SCHEDULE_CORRECTION   = COLOR_YELLOW;
+  COLOR_SCHEDULE_NOTWORK      = COLOR_GREEN;
+  COLOR_SCHEDULE_TITLE        = COLOR_WHITE;
+  COLOR_SCHEDULE_OUTSIDEMONTH = COLOR_GRAY;
 
   SETTING_NAMES_STAFFORM: array of String  =  (
     'STAFFORM.LISTTYPE',

@@ -7,7 +7,9 @@ interface
 uses
   Classes, SysUtils, Graphics, Controls, ExtCtrls, Buttons, BCPanel,
   //DK packages utils
-  DK_CtrlUtils, DK_Color, DK_Vector, DK_VSTTables;
+  DK_CtrlUtils, DK_Color, DK_Vector, DK_VSTTables, DK_DateUtils,
+  //Project utils
+  UDataBase, UCalendar, USchedule;
 
   procedure SetToolPanels(const AControls: array of TControl);
   procedure SetCaptionPanels(const AControls: array of TBCPanel);
@@ -18,6 +20,19 @@ uses
 
   function SettingByName(const AName: String; const ANames: TStrVector;
                          const AValues: TIntVector): Integer;
+
+  procedure CalendarForPeriod(const ABeginDate, AEndDate: TDate; var ACalendar: TCalendar);
+  procedure CalendarForYear(const AYear: Word; var ACalendar: TCalendar);
+  procedure CalendarForMonth(const AMonth, AYear: Word; var ACalendar: TCalendar);
+
+  procedure ScheduleShiftByCalendar(const AScheduleID: Integer;
+                         const ACalendar: TCalendar; var ASchedule: TShiftSchedule);
+  procedure ScheduleShiftForPeriod(const AScheduleID: Integer;
+                         const ABeginDate, AEndDate: TDate; var ASchedule: TShiftSchedule);
+  procedure ScheduleShiftForYear(const AScheduleID: Integer;
+                         const AYear: Word; var ASchedule: TShiftSchedule);
+  procedure ScheduleShiftForMonth(const AScheduleID: Integer;
+                         const AMonth, AYear: Word; var ASchedule: TShiftSchedule);
 
 
 implementation
@@ -64,6 +79,77 @@ function SettingByName(const AName: String; const ANames: TStrVector;
   const AValues: TIntVector): Integer;
 begin
   VSameIndexValue(AName, ANames, AValues, Result);
+end;
+
+procedure CalendarForPeriod(const ABeginDate, AEndDate: TDate; var ACalendar: TCalendar);
+begin
+  if not Assigned(ACalendar) then
+    ACalendar:= TCalendar.Create;
+  DataBase.CalendarLoad(ABeginDate, AEndDate, ACalendar);
+end;
+
+procedure CalendarForYear(const AYear: Word; var ACalendar: TCalendar);
+var
+  BD, ED: TDate;
+begin
+  FirstLastDayInYear(AYear, BD, ED);
+  CalendarForPeriod(BD, ED, ACalendar);
+end;
+
+procedure CalendarForMonth(const AMonth, AYear: Word; var ACalendar: TCalendar);
+var
+  BD, ED: TDate;
+begin
+  FirstLastDayInMonth(AMonth, AYear, BD, ED);
+  CalendarForPeriod(BD, ED, ACalendar);
+end;
+
+procedure ScheduleShiftByCalendar(const AScheduleID: Integer;
+  const ACalendar: TCalendar; var ASchedule: TShiftSchedule);
+var
+  Cycle: TScheduleCycle;
+  V: TIntVector;
+  WeekHours: Integer;
+  Correct: TScheduleCorrect;
+begin
+  if not Assigned(ASchedule) then
+    ASchedule:= TShiftSchedule.Create;
+  WeekHours:= DataBase.ValueInt32Int32ID('SCHEDULEMAIN', 'WeekHours', 'ScheduleID', AScheduleID);
+  DataBase.ScheduleCycleLoad(AScheduleID, V, Cycle);
+  DataBase.ScheduleShiftCorrectionsLoad(AScheduleID, V, Correct, ACalendar.BeginDate, ACalendar.EndDate);
+  ASchedule.Calc(ACalendar, WeekHours, Cycle, Correct);
+end;
+
+procedure ScheduleShiftForPeriod(const AScheduleID: Integer;
+  const ABeginDate, AEndDate: TDate; var ASchedule: TShiftSchedule);
+var
+  Calendar: TCalendar;
+begin
+  Calendar:= TCalendar.Create;
+  try
+    CalendarForPeriod(ABeginDate, AEndDate, Calendar);
+    ScheduleShiftByCalendar(AScheduleID, Calendar, ASchedule);
+  finally
+    FreeAndNil(Calendar);
+  end;
+end;
+
+procedure ScheduleShiftForYear(const AScheduleID: Integer; const AYear: Word;
+  var ASchedule: TShiftSchedule);
+var
+  BD, ED: TDate;
+begin
+  FirstLastDayInYear(AYear, BD, ED);
+  ScheduleShiftForPeriod(AScheduleID, BD, ED, ASchedule);
+end;
+
+procedure ScheduleShiftForMonth(const AScheduleID: Integer;
+  const AMonth, AYear: Word; var ASchedule: TShiftSchedule);
+var
+  BD, ED: TDate;
+begin
+  FirstLastDayInMonth(AMonth, AYear, BD, ED);
+  ScheduleShiftForPeriod(AScheduleID, BD, ED, ASchedule);
 end;
 
 end.

@@ -1,4 +1,4 @@
-unit UPersonalScheduleForm;
+unit USchedulePersonalForm;
 
 {$mode ObjFPC}{$H+}
 
@@ -9,9 +9,9 @@ uses
 
 type
 
-  { TPersonalScheduleForm }
+  { TSchedulePersonalForm }
 
-  TPersonalScheduleForm = class(TForm)
+  TSchedulePersonalForm = class(TForm)
     Bevel1: TBevel;
     CloseButton: TSpeedButton;
     ToolPanel: TPanel;
@@ -23,7 +23,7 @@ type
   end;
 
 var
-  PersonalScheduleForm: TPersonalScheduleForm;
+  SchedulePersonalForm: TSchedulePersonalForm;
 
 implementation
 
@@ -31,9 +31,9 @@ uses UMainForm;
 
 {$R *.lfm}
 
-{ TPersonalScheduleForm }
+{ TSchedulePersonalForm }
 
-procedure TPersonalScheduleForm.CloseButtonClick(Sender: TObject);
+procedure TSchedulePersonalForm.CloseButtonClick(Sender: TObject);
 begin
   MainForm.CategorySelect(0);
 end;
