@@ -44,6 +44,11 @@ const
   SSO_SIZETYPE_PICKS: array of String  =
     ('индивидуально', 'дозированно');
 
+  POST_STATUS_KEYS: array of Integer =
+    (0,            1          );
+  POST_STATUS_PICKS: array of String  =
+    ('Постоянная', 'Временная');
+
   CALENDAR_CORRECTION_COLUMN_NAMES: array of String  =
     ('Дата', 'Статус', 'Заменяемый день');
   SCHEDULE_CORRECTION_COLUMN_NAMES: array of String  =

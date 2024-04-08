@@ -26,6 +26,9 @@
     </RunParams>
     <RequiredPackages>
       <Item>
+        <PackageName Value="DKDropDown"/>
+      </Item>
+      <Item>
         <PackageName Value="DKZoom"/>
       </Item>
       <Item>

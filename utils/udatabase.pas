@@ -9,7 +9,8 @@ uses
   //Project utils
   UCalendar, UConst, USchedule,
   //DK packages utils
-  DK_SQLite3, DK_SQLUtils, DK_Vector, DK_Dialogs, DK_StrUtils, DK_Const;
+  DK_SQLite3, DK_SQLUtils, DK_Vector, DK_Dialogs, DK_StrUtils, DK_Const,
+  DK_DropDown;
 
 type
 
@@ -27,11 +28,11 @@ type
     (**************************************************************************
                                      СПРАВОЧНИКИ
     **************************************************************************)
-    procedure PostDictionaryLoad(const AComboBox: TComboBox;
+    procedure PostDictionaryLoad(const ADropDown: TDropDown;
                                  out APostIDs: TIntVector;
                                  const ASelectPostID: Integer = -1;
                                  const AIDNotZero: Boolean = True);
-    procedure TimetableMarkDictionaryLoad(const AComboBox: TComboBox;
+    procedure TimetableMarkDictionaryLoad(const ADropDown: TDropDown;
                                  out ADigMarks: TIntVector;
                                  const ASelectDigMark: Integer = -1;
                                  const AIDNotZero: Boolean = True);
@@ -213,34 +214,28 @@ begin
   end;
 end;
 
-procedure TDataBase.PostDictionaryLoad(const AComboBox: TComboBox;
+procedure TDataBase.PostDictionaryLoad(const ADropDown: TDropDown;
                                        out APostIDs: TIntVector;
                                        const ASelectPostID: Integer = -1;
                                        const AIDNotZero: Boolean = True);
+var
+  Items: TStrVector;
 begin
-  KeyPickLoad(AComboBox, APostIDs, 'STAFFPOST', 'PostID', 'PostName', 'PostName',
-              AIDNotZero, EmptyStr, ASelectPostID);
+  //KeyPickLoad(AComboBox, APostIDs, 'STAFFPOST', 'PostID', 'PostName', 'PostName',
+  //            AIDNotZero, EmptyStr, ASelectPostID);
+  KeyPickList('STAFFPOST', 'PostID', 'PostName', APostIDs, Items, AIDNotZero, 'PostName');
+  ADropDown.KeyPick(Items, APostIDs, ASelectPostID);
 end;
 
-procedure TDataBase.TimetableMarkDictionaryLoad(const AComboBox: TComboBox;
+procedure TDataBase.TimetableMarkDictionaryLoad(const ADropDown: TDropDown;
                                  out ADigMarks: TIntVector;
                                  const ASelectDigMark: Integer = -1;
                                  const AIDNotZero: Boolean = True);
 var
-  Ind: Integer;
-  ItemMarks: TStrVector;
+  Items: TStrVector;
 begin
-  TimetableMarkListLoad(ADigMarks, ItemMarks, AIDNotZero);
-
-  VToStrings(ItemMarks, AComboBox.Items);
-
-  if ASelectDigMark>=0 then
-  begin
-    Ind:= VIndexOf(ADigMarks, ASelectDigMark);
-    if Ind<0 then Ind:= 0;
-    AComboBox.ItemIndex:= Ind;
-  end else
-    AComboBox.ItemIndex:= 0;
+  TimetableMarkListLoad(ADigMarks, Items, AIDNotZero);
+  ADropDown.KeyPick(Items, ADigMarks, ASelectDigMark);
 end;
 
 function TDataBase.StaffListLoad(const AOrderType, AListType: Byte;

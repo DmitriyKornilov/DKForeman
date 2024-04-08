@@ -6,11 +6,11 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, StdCtrls,
-  DateTimePicker, LCLType, Buttons,
+  DateTimePicker, LCLType, Buttons, BCButton,
   //DK packages utils
-  DK_StrUtils, DK_Dialogs,
+  DK_StrUtils, DK_Dialogs, DK_DropDown,
   //Project utils
-  UDataBase, UTypes;
+  UDataBase, UTypes, UConst;
 
 type
 
@@ -21,7 +21,6 @@ type
     ButtonPanel: TPanel;
     CancelButton: TSpeedButton;
     BornDatePicker: TDateTimePicker;
-    GenderComboBox: TComboBox;
     FamilyEdit: TEdit;
     NameEdit: TEdit;
     PatronymicEdit: TEdit;
@@ -31,9 +30,11 @@ type
     BornDateLabel: TLabel;
     GenderLabel: TLabel;
     SaveButton: TSpeedButton;
+    GenderBCButton: TBCButton;
     procedure CancelButtonClick(Sender: TObject);
     procedure FamilyEditKeyDown(Sender: TObject; var Key: Word; {%H-}Shift: TShiftState);
     procedure FormCreate(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure NameEditKeyDown(Sender: TObject; var Key: Word; {%H-}Shift: TShiftState);
     procedure PatronymicEditKeyDown(Sender: TObject; var Key: Word; {%H-}Shift: TShiftState);
@@ -43,6 +44,7 @@ type
   public
     StaffID: Integer;
     EditingType: TEditingType;
+    GenderDropDown: TDropDown;
   end;
 
 var
@@ -57,6 +59,14 @@ implementation
 procedure TStaffMainEditForm.FormCreate(Sender: TObject);
 begin
   StaffID:= -1;
+  GenderDropDown:= TDropDown.Create(GenderBCButton);
+  GenderDropDown.Items:= GENDER_PICKS;
+  GenderDropDown.ItemIndex:= 1;
+end;
+
+procedure TStaffMainEditForm.FormDestroy(Sender: TObject);
+begin
+  FreeAndNil(GenderDropDown);
 end;
 
 procedure TStaffMainEditForm.FormShow(Sender: TObject);
@@ -110,10 +120,10 @@ begin
   case EditingType of
     etAdd:
       IsOK:= DataBase.StaffMainAdd(StaffID, FamilyValue, NameValue, PatronymicValue,
-                                         BornDatePicker.Date, GenderComboBox.ItemIndex);
+                                         BornDatePicker.Date, GenderDropDown.ItemIndex);
     etEdit:
       IsOK:= DataBase.StaffMainUpdate(StaffID, FamilyValue, NameValue, PatronymicValue,
-                                         BornDatePicker.Date, GenderComboBox.ItemIndex);
+                                         BornDatePicker.Date, GenderDropDown.ItemIndex);
   end;
 
   if not IsOK then Exit;

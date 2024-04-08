@@ -718,7 +718,7 @@ begin
       StaffMainEditForm.NameEdit.Text:= Names[StaffList.SelectedIndex];
       StaffMainEditForm.PatronymicEdit.Text:= Patronymics[StaffList.SelectedIndex];
       StaffMainEditForm.BornDatePicker.Date:= BornDates[StaffList.SelectedIndex];
-      StaffMainEditForm.GenderComboBox.ItemIndex:= Genders[StaffList.SelectedIndex];
+      StaffMainEditForm.GenderDropDown.ItemIndex:= Genders[StaffList.SelectedIndex];
     end;
     if StaffMainEditForm.ShowModal=mrOK then
       StaffListLoad(StaffMainEditForm.StaffID);
@@ -804,12 +804,12 @@ begin
           StaffPostLogEditForm.FirstDatePicker.Date:= ThisFirstDate;
           if SameDate(ThisFirstDate, TabNumListRecrutDates[TabNumList.SelectedIndex]) then
           begin //первая запись
-            StaffPostLogEditForm.StatusComboBox.Enabled:= False; //нельзя менять постоянный статус должности
+            StaffPostLogEditForm.StatusDropDown.Enabled:= False; //нельзя менять постоянный статус должности
             StaffPostLogEditForm.FirstDatePicker.Enabled:= False;//нельзя менять дату начала работы (приема)
             StaffPostLogEditForm.PrevPostLogID:= 0;
           end
           else begin //последующие записи
-            StaffPostLogEditForm.StatusComboBox.ItemIndex:= PostLogPostTemps[PostLog.SelectedIndex];
+            StaffPostLogEditForm.StatusDropDown.ItemIndex:= PostLogPostTemps[PostLog.SelectedIndex];
             PrevFirstDate:= PostLogFirstDates[PostLog.SelectedIndex + 1];
             StaffPostLogEditForm.PrevPostLogID:= PostLogIDs[PostLog.SelectedIndex + 1];
             StaffPostLogEditForm.FirstDatePicker.MinDate:= IncDay(PrevFirstDate, 1);

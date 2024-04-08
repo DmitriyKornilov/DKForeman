@@ -6,9 +6,9 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, Spin,
-  ExtCtrls, VirtualTrees, DateTimePicker, Buttons, DateUtils,
+  ExtCtrls, VirtualTrees, DateTimePicker, Buttons, BCButton, DateUtils,
   //DK packages utils
-  DK_Vector, DK_DateUtils,
+  DK_Vector, DK_DateUtils, DK_DropDown,
   //Project utils
   UDataBase;
 
@@ -17,10 +17,10 @@ type
   { TScheduleCorrectionEditForm }
 
   TScheduleCorrectionEditForm = class(TForm)
+    MarkBCButton: TBCButton;
     ButtonPanel: TPanel;
     ButtonPanelBevel: TBevel;
     CancelButton: TSpeedButton;
-    MarkComboBox: TComboBox;
     LastDateCheckBox: TCheckBox;
     FirstDatePicker: TDateTimePicker;
     LastDatePicker: TDateTimePicker;
@@ -35,11 +35,13 @@ type
     ShiftNumSpinEdit: TSpinEdit;
     procedure CancelButtonClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
 
 
   private
     DigMarks: TIntVector;
+    MarkDropDown: TDropDown;
   public
     DigMark: Integer;
   end;
@@ -58,6 +60,12 @@ begin
   DigMark:= -1;
   FirstDatePicker.Date:= Date;
   LastDatePicker.Date:= IncDay(Date);
+  MarkDropDown:= TDropDown.Create(MarkBCButton);
+end;
+
+procedure TScheduleCorrectionEditForm.FormDestroy(Sender: TObject);
+begin
+  FreeAndNil(MarkDropDown);
 end;
 
 procedure TScheduleCorrectionEditForm.CancelButtonClick(Sender: TObject);
@@ -71,7 +79,7 @@ begin
   FirstDatePicker.MaxDate:= LastDayInYear(FirstDatePicker.Date);
   LastDatePicker.MinDate:= FirstDatePicker.MinDate;
   LastDatePicker.MaxDate:= FirstDatePicker.MaxDate;
-  DataBase.TimetableMarkDictionaryLoad(MarkComboBox, DigMarks, DigMark);
+  DataBase.TimetableMarkDictionaryLoad(MarkDropDown, DigMarks, DigMark);
 end;
 
 
