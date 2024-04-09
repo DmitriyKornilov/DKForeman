@@ -16,7 +16,7 @@ uses
   UStaffMainEditForm, UUtils, UCalendar, UWorkHours, UStaffTabNumEditForm,
   UStaffPostLogEditForm, UCalendarSheet, USchedule, UTimingSheet,
   UScheduleShiftSheet, UCalendarEditForm, UScheduleCorrectionEditForm, 
-UChooseForm;
+UChooseForm, UScheduleShiftEditForm;
 
 {$R *.res}
 
@@ -25,10 +25,6 @@ begin
   Application.Scaled:=True;
   Application.Initialize;
   Application.CreateForm(TMainForm, MainForm);
-  Application.CreateForm(TCalendarEditForm, CalendarEditForm);
-  Application.CreateForm(TScheduleCorrectionEditForm, ScheduleCorrectionEditForm
-    );
-  Application.CreateForm(TChooseForm, ChooseForm);
   Application.Run;
 end.
 

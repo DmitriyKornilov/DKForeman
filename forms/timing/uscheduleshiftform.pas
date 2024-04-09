@@ -14,7 +14,7 @@ uses
   DK_VSTTables, DK_VSTTools, DK_Vector, DK_StrUtils, DK_Const, DK_Dialogs,
   DK_Zoom, DK_DateUtils, DK_Color, DK_SheetExporter,
   //Forms
-  UChooseForm, UScheduleCorrectionEditForm;
+  UChooseForm, UScheduleShiftEditForm, UScheduleCorrectionEditForm;
 
 type
 
@@ -78,6 +78,9 @@ type
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure ScheduleAddButtonClick(Sender: TObject);
+    procedure ScheduleEditButtonClick(Sender: TObject);
+    procedure ScheduleListVTNodeDblClick(Sender: TBaseVirtualTree; const {%H-}HitInfo: THitInfo);
     procedure YearSpinEditChange(Sender: TObject);
   private
     CanDrawSchedule: Boolean;
@@ -136,6 +139,7 @@ type
     procedure ScheduleExport;
 
     procedure ScheduleCorrectionEditFormOpen(const AEditingType: TEditingType);
+    procedure ScheduleShiftEditFormOpen(const AEditingType: TEditingType);
 
     procedure SettingsLoad;
   public
@@ -245,6 +249,23 @@ begin
   H:= MainPanel.Height div 3;
   EditingPanel.Height:= 2*H;
   CorrectionsPanel.Height:= H;
+end;
+
+procedure TScheduleShiftForm.ScheduleAddButtonClick(Sender: TObject);
+begin
+  ScheduleShiftEditFormOpen(etAdd);
+end;
+
+procedure TScheduleShiftForm.ScheduleEditButtonClick(Sender: TObject);
+begin
+  ScheduleShiftEditFormOpen(etEdit);
+end;
+
+procedure TScheduleShiftForm.ScheduleListVTNodeDblClick(Sender: TBaseVirtualTree;
+                                           const HitInfo: THitInfo);
+begin
+  if not ScheduleList.IsSelected then Exit;
+  ScheduleShiftEditFormOpen(etEdit);
 end;
 
 procedure TScheduleShiftForm.YearSpinEditChange(Sender: TObject);
@@ -413,6 +434,8 @@ end;
 
 procedure TScheduleShiftForm.ScheduleListSelect;
 begin
+  ScheduleDelButton.Enabled:= ScheduleList.IsSelected;
+  ScheduleEditButton.Enabled:= ScheduleList.IsSelected;
   DayAddButton.Enabled:= ScheduleList.IsSelected;
   ScheduleChange;
 end;
@@ -618,6 +641,35 @@ begin
   end;
 end;
 
+procedure TScheduleShiftForm.ScheduleShiftEditFormOpen(const AEditingType: TEditingType);
+var
+  ScheduleShiftEditForm: TScheduleShiftEditForm;
+begin
+  ScheduleShiftEditForm:= TScheduleShiftEditForm.Create(nil);
+  try
+    //if CycleCounts[ScheduleList.SelectedIndex]>0 then
+    //  ScheduleShiftEditForm.ShiftNumSpinEdit.MaxValue:= CycleCounts[ScheduleList.SelectedIndex]
+    //else
+    //  ScheduleShiftEditForm.ShiftNumSpinEdit.MaxValue:= 7; //недельный график
+
+    if AEditingType=etEdit then
+    begin
+      ScheduleShiftEditForm.ScheduleID:= ScheduleIDs[ScheduleList.SelectedIndex];
+      //ScheduleShiftEditForm.DigMark:= Correct.DigMarks[VSTDays.SelectedIndex];
+      //ScheduleShiftEditForm.FirstDatePicker.Date:= Correct.Dates[VSTDays.SelectedIndex];
+      //ScheduleShiftEditForm.LastDatePicker.Date:= Correct.Dates[VSTDays.SelectedIndex];
+      //ScheduleShiftEditForm.TotalHoursSpinEdit.Value:= WorkHoursIntToFrac(Correct.HoursTotal[VSTDays.SelectedIndex]);
+      //ScheduleShiftEditForm.NightHoursSpinEdit.Value:= WorkHoursIntToFrac(Correct.HoursNight[VSTDays.SelectedIndex]);;
+      //ScheduleShiftEditForm.ShiftNumSpinEdit.Value:= Correct.ShiftNums[VSTDays.SelectedIndex];
+    end;
+    if ScheduleShiftEditForm.ShowModal=mrOK then
+      //ScheduleChange;
+  finally
+    FreeAndNil(ScheduleShiftEditForm);
+  end;
+
+end;
+
 procedure TScheduleShiftForm.ScheduleListLoad(const SelectedID: Integer = -1);
 var
   SelectedScheduleID: Integer;
@@ -663,26 +715,26 @@ begin
     ModeType:= AModeType;
     ExportButton.Enabled:= ModeType<>mtEditing;
 
-    LeftSplitter.Align:= alRight;
-    if ModeType=mtSetting then
-      SettingPanel.Visible:= True
-    else
-      ListPanel.Visible:= True;
-    LeftSplitter.Align:= alLeft;
-
-    //StaffList.CanUnselect:= ModeType<>mtEditing;
-    //StaffList.CanSelect:= ModeType=mtEditing;
     ListToolPanel.Visible:= ModeType=mtEditing;
-
+    VSTDays.CanSelect:= ModeType=mtEditing;
     if ModeType=mtEditing then
     begin
       EditingPanel.Visible:= True;
       EditingSplitter.Visible:= True;
     end
     else begin
+      if VSTDays.IsSelected then
+        VSTDays.UnSelect;
       EditingSplitter.Visible:= False;
       EditingPanel.Visible:= False;
     end;
+
+    LeftSplitter.Align:= alRight;
+    if ModeType=mtSetting then
+      SettingPanel.Visible:= True
+    else
+      ListPanel.Visible:= True;
+    LeftSplitter.Align:= alLeft;
 
     ScheduleListLoad;
 

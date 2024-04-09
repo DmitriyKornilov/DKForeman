@@ -409,14 +409,15 @@ object StaffMainEditForm: TStaffMainEditForm
     AnchorSideLeft.Control = GenderLabel
     AnchorSideLeft.Side = asrBottom
     AnchorSideTop.Control = BornDatePicker
-    AnchorSideTop.Side = asrCenter
     AnchorSideRight.Control = Owner
     AnchorSideRight.Side = asrBottom
+    AnchorSideBottom.Control = BornDatePicker
+    AnchorSideBottom.Side = asrBottom
     Left = 274
-    Height = 29
+    Height = 28
     Top = 132
     Width = 68
-    Anchors = [akTop, akLeft, akRight]
+    Anchors = [akTop, akLeft, akRight, akBottom]
     StateClicked.Background.Gradient1.StartColor = 8404992
     StateClicked.Background.Gradient1.EndColor = 4194304
     StateClicked.Background.Gradient1.GradientType = gtRadial
@@ -498,7 +499,6 @@ object StaffMainEditForm: TStaffMainEditForm
     StateNormal.FontEx.TextAlignment = bcaLeftCenter
     StateNormal.FontEx.PaddingLeft = 5
     BorderSpacing.Left = 8
-    BorderSpacing.Top = 12
     BorderSpacing.Right = 8
     Color = clNone
     DropDownWidth = 16
