@@ -73,7 +73,7 @@ const
 
 type
   {Корректировки графика}
-  TScheduleCorrect = record
+  TScheduleCorrections = record
     Dates     : TDateVector;
     HoursTotal: TIntVector;
     HoursNight: TIntVector;
@@ -82,10 +82,10 @@ type
     ShiftNums : TIntVector;
   end;
 
-  function ScheduleCorrectCopy(ACorrect: TScheduleCorrect): TScheduleCorrect;
+  function ScheduleCorrectCopy(ACorrect: TScheduleCorrections): TScheduleCorrections;
 
 const
-  EmptyScheduleCorrect: TScheduleCorrect =
+  EmptyScheduleCorrections: TScheduleCorrections =
     (Dates     : nil;
      HoursTotal: nil;
      HoursNight: nil;
@@ -141,7 +141,7 @@ type
   private
     procedure WriteCycle(const ACycle: TScheduleCycle);
     procedure WriteCalendarSpecDays(const ACalendar: TCalendar; const ACycle: TScheduleCycle);
-    procedure WriteCorrections(const ACorrect: TScheduleCorrect);
+    procedure WriteCorrections(const ACorrect: TScheduleCorrections);
     function GetDaysCountDefault: Integer;
     function GetDaysCountCorrect: Integer;
     function GetBeginDate: TDate;
@@ -157,7 +157,7 @@ type
                  out AInd1, AInd2: Integer): Boolean;
     procedure Calc(const ACalendar: TCalendar;
                    const ACycle: TScheduleCycle;
-                   const ACorrect: TScheduleCorrect);
+                   const ACorrect: TScheduleCorrections);
     property BeginDate: TDate read GetBeginDate;
     property EndDate  : TDate read GetEndDate;
     property DaysCount: Integer read GetDaysCount;  //общее кол-во дней
@@ -191,7 +191,7 @@ type
     procedure Calc(const ACalendar: TCalendar;
                    const AHoursInWeek: Byte;
                    const ACycle: TScheduleCycle;
-                   const ACorrect: TScheduleCorrect);
+                   const ACorrect: TScheduleCorrections);
     property HoursInWeek: Byte read FHoursInWeek;
     property Cycle: TScheduleCycle read FCycle;
   end;
@@ -213,7 +213,7 @@ type
     procedure Calc(const ACalendar: TCalendar;
                    const AHoursInWeek: Byte;
                    const ACycle: TScheduleCycle;
-                   const ACorrect: TScheduleCorrect;
+                   const ACorrect: TScheduleCorrections;
                    const AScheduleBD: TDate = NULDATE; const AScheduleED: TDate = INFDATE; //период работы в графике
                    const APostBD: TDate = NULDATE; const APostED: TDate = INFDATE //период работы в должности
                    );
@@ -260,7 +260,7 @@ type
     FMarkDIGCorrectVacation: TIntVector;    //вектор цифровых табельных кодов графика с корректировками и c учетом отпуска
     FShiftNumsDefaultVacation: TIntVector;  //вектор номеров смен (типовые с учетом отпуска)
     FShiftNumsCorrectVacation: TIntVector;  //вектор номеров смен с учетом корректировок и отпуска
-    FPersonalCorrect: TScheduleCorrect;
+    FPersonalCorrect: TScheduleCorrections;
     function GetDaysCountDefaultVacation: Integer;
     function GetDaysCountCorrectVacation: Integer;
     function GetShiftCountCorrectVacation: Integer;
@@ -270,12 +270,12 @@ type
     procedure Calc;
     procedure SetMarksVacation(const AInd, ADigMark: Integer; const AStrMark: String);
     procedure WritePersonalCorrections;
-    function GetPersonalCorrect: TScheduleCorrect;
+    function GetPersonalCorrect: TScheduleCorrections;
   public
     constructor Create(const ATabNum: Integer;
                        const ARecrutDate, ADismissDate: TDate;
                        const AIsVacation: TIntVector;
-                       const APersonalCorrect: TScheduleCorrect;
+                       const APersonalCorrect: TScheduleCorrections;
                        const AStrMarkVacationMain: String = STRMARK_VACATIONMAIN;
                        const AStrMarkVacationAddition: String = STRMARK_VACATIONADDITION;
                        const AStrMarkVacationHoliday: String = STRMARK_VACATIONHOLIDAY);
@@ -302,7 +302,7 @@ type
     property ShiftCountCorrectVacation: Integer read GetShiftCountCorrectVacation;
     property ShiftNumbersDefaultVacation: TIntVector read FShiftNumsDefaultVacation;
     property ShiftNumbersCorrectVacation: TIntVector read FShiftNumsCorrectVacation;
-    property PersonalCorrect: TScheduleCorrect read GetPersonalCorrect;
+    property PersonalCorrect: TScheduleCorrections read GetPersonalCorrect;
     //property VacationBeginDate: TDate read FVacationBeginDate;
   end;
 
@@ -416,7 +416,7 @@ begin
   AVacationPlane.FactDays:= MCut(ASource.FactDays);
 end;
 
-function ScheduleCorrectCopy(ACorrect: TScheduleCorrect): TScheduleCorrect;
+function ScheduleCorrectCopy(ACorrect: TScheduleCorrections): TScheduleCorrections;
 begin
   Result.Dates:= VCut(ACorrect.Dates);
   Result.HoursTotal:= VCut(ACorrect.HoursTotal);
@@ -766,13 +766,13 @@ begin
   end;
 end;
 
-function TPersonalSchedule.GetPersonalCorrect: TScheduleCorrect;
+function TPersonalSchedule.GetPersonalCorrect: TScheduleCorrections;
 begin
   GetPersonalCorrect:= ScheduleCorrectCopy(FPersonalCorrect);
 end;
 
 constructor TPersonalSchedule.Create(const ATabNum: Integer; const ARecrutDate,
-  ADismissDate: TDate; const AIsVacation: TIntVector; const APersonalCorrect: TScheduleCorrect;
+  ADismissDate: TDate; const AIsVacation: TIntVector; const APersonalCorrect: TScheduleCorrections;
   const AStrMarkVacationMain: String; const AStrMarkVacationAddition: String;
   const AStrMarkVacationHoliday: String);
 begin
@@ -805,7 +805,7 @@ begin
   FMarkSTRCorrectVacation:= nil;
   FMarkDIGDefaultVacation:= nil;
   FMarkDIGCorrectVacation:= nil;
-  FPersonalCorrect:= EmptyScheduleCorrect;
+  FPersonalCorrect:= EmptyScheduleCorrections;
 end;
 
 function TPersonalSchedule.Cut(const ABeginDate, AEndDate: TDate;
@@ -1007,7 +1007,7 @@ end;
 
 procedure TPostSchedule.Calc(const ACalendar: TCalendar;
   const AHoursInWeek: Byte; const ACycle: TScheduleCycle;
-  const ACorrect: TScheduleCorrect; const AScheduleBD: TDate;
+  const ACorrect: TScheduleCorrections; const AScheduleBD: TDate;
   const AScheduleED: TDate; const APostBD: TDate; const APostED: TDate);
 var
   i: Integer;
@@ -1063,7 +1063,7 @@ end;
 
 procedure TShiftSchedule.Calc(const ACalendar: TCalendar;
   const AHoursInWeek: Byte; const ACycle: TScheduleCycle;
-  const ACorrect: TScheduleCorrect);
+  const ACorrect: TScheduleCorrections);
 begin
   inherited Calc(ACalendar, ACycle, ACorrect);
   FCycle:= ACycle;
@@ -1162,7 +1162,7 @@ begin
   end;
 end;
 
-procedure TCustomShiftSchedule.WriteCorrections(const ACorrect: TScheduleCorrect);
+procedure TCustomShiftSchedule.WriteCorrections(const ACorrect: TScheduleCorrections);
 var
   i, n: Integer;
 begin
@@ -1265,7 +1265,7 @@ end;
 procedure TCustomShiftSchedule.Calc(const ACalendar: TCalendar;
                               //const AHoursInWeek: Byte;
                               const ACycle: TScheduleCycle;
-                              const ACorrect: TScheduleCorrect);
+                              const ACorrect: TScheduleCorrections);
 begin
   Clear;
   //берем основные параметры с календаря

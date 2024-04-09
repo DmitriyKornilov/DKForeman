@@ -10,7 +10,7 @@ uses
   //DK packages utils
   DK_DateUtils, DK_Vector, DK_Const, DK_DropDown,
   //Project utils
-  UDataBase, UConst;
+  UDataBase, UConst, UCalendar, UUtils;
 
 type
 
@@ -77,16 +77,11 @@ end;
 
 procedure TCalendarEditForm.SaveButtonClick(Sender: TObject);
 var
-  i, n, Status, SwapDay: Integer;
-  Dates: TDateVector;
+  Corrections: TCalendarCorrections;
 begin
-  Status:= StatusDropDown.ItemIndex+1;
-  SwapDay:= SwapDayDropDown.ItemIndex; //Ord(SwapDayComboBox.Enabled)*(SwapDayComboBox.ItemIndex);
-  n:= DaysBetweenDates(FirstDatePicker.Date, LastDatePicker.Date);
-  Dates:= nil;
-  for i:= 0 to n do
-    VAppend(Dates, IncDay(FirstDatePicker.Date, i));
-  if DataBase.CalendarCorrectionsUpdate(Dates, Status, SwapDay) then
+  Corrections:= GetCalendarCorrections(FirstDatePicker.Date, LastDatePicker.Date,
+                        StatusDropDown.ItemIndex+1, SwapDayDropDown.ItemIndex);
+  if DataBase.CalendarCorrectionsUpdate(Corrections) then
     ModalResult:= mrOK;
 end;
 

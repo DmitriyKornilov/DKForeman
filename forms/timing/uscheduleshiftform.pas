@@ -101,7 +101,7 @@ type
 
     Calendar: TCalendar;
     CorrectIDs: TIntVector;
-    Correct: TScheduleCorrect;
+    Correct: TScheduleCorrections;
     Cycle: TScheduleCycle;
     Schedule: TShiftSchedule;
     ScheduleSheetYear: TShiftScheduleTableSheet;
@@ -381,6 +381,7 @@ begin
     VSTDays.SetColumn(SCHEDULE_CORRECTION_COLUMN_NAMES[3], VWorkHoursToStr(Correct.HoursNight));
     VSTDays.SetColumn(SCHEDULE_CORRECTION_COLUMN_NAMES[4], Correct.StrMarks);
     VSTDays.Draw;
+    VSTDays.ReSelect(CorrectIDs, SelectedCorrectionID);
   finally
     VSTDays.Visible:= True;
   end;
@@ -600,17 +601,18 @@ begin
       ScheduleCorrectionEditForm.ShiftNumSpinEdit.MaxValue:= CycleCounts[ScheduleList.SelectedIndex]
     else
       ScheduleCorrectionEditForm.ShiftNumSpinEdit.MaxValue:= 7; //недельный график
+    ScheduleCorrectionEditForm.ScheduleID:= ScheduleIDs[ScheduleList.SelectedIndex];
     if AEditingType=etEdit then
     begin
       ScheduleCorrectionEditForm.DigMark:= Correct.DigMarks[VSTDays.SelectedIndex];
       ScheduleCorrectionEditForm.FirstDatePicker.Date:= Correct.Dates[VSTDays.SelectedIndex];
-      ScheduleCorrectionEditForm.LastDatePicker.Date:= IncDay(Correct.Dates[VSTDays.SelectedIndex]);
+      ScheduleCorrectionEditForm.LastDatePicker.Date:= Correct.Dates[VSTDays.SelectedIndex];
       ScheduleCorrectionEditForm.TotalHoursSpinEdit.Value:= WorkHoursIntToFrac(Correct.HoursTotal[VSTDays.SelectedIndex]);
       ScheduleCorrectionEditForm.NightHoursSpinEdit.Value:= WorkHoursIntToFrac(Correct.HoursNight[VSTDays.SelectedIndex]);;
       ScheduleCorrectionEditForm.ShiftNumSpinEdit.Value:= Correct.ShiftNums[VSTDays.SelectedIndex];
     end;
     if ScheduleCorrectionEditForm.ShowModal=mrOK then
-      {StaffListLoad(ScheduleCorrectionEditForm.StaffID)};
+      ScheduleChange;
   finally
     FreeAndNil(ScheduleCorrectionEditForm);
   end;

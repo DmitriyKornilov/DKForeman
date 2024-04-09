@@ -130,8 +130,7 @@ type
     function CalendarCorrectionsLoad(const ABeginDate, AEndDate: TDate;
                                      out ACorrections: TCalendarCorrections): Boolean;
     {Запись или обновление корректировки календаря: True - ОК, False - ошибка}
-    function CalendarCorrectionsUpdate(const ADates: TDateVector;
-                                       const AStatus, ASwapDay: Integer): Boolean;
+    function CalendarCorrectionsUpdate(const ACorrections: TCalendarCorrections): Boolean;
     {Удаление корректировки дня календаря: True - ОК, False - ошибка}
     function CalendarCorrectionDelete(const ADate: TDate): Boolean;
 
@@ -157,9 +156,20 @@ type
     {Cписок корректировок графика сменности: True - ОК, False - пусто (ошибка)}
     function ScheduleShiftCorrectionsLoad(const AScheduleID: Integer;
                                out ACorrectIDs: TIntVector;
-                               out ACorrect: TScheduleCorrect;
+                               out ACorrections: TScheduleCorrections;
                                const ABeginDate: TDate = 0;
                                const AEndDate: TDate = 0): Boolean;
+    {Запись или обновление корректировки графика: True - ОК, False - ошибка}
+    function ScheduleCorrectionsUpdate(const ATableName, AIDFieldName: String;
+                               const AIDValue: Integer;
+                               const ACorrections: TScheduleCorrections): Boolean;
+    {Запись или обновление корректировки графика сменности: True - ОК, False - ошибка}
+    function ScheduleShiftCorrectionsUpdate(const AScheduleID: Integer;
+                               const ACorrections: TScheduleCorrections): Boolean;
+    {Запись или обновление корректировки персонального графика: True - ОК, False - ошибка}
+    function SchedulePersonalCorrectionsUpdate(const ATubNumID: Integer;
+                               const ACorrections: TScheduleCorrections): Boolean;
+
 
 
     (**************************************************************************
@@ -844,23 +854,22 @@ begin
   QClose;
 end;
 
-function TDataBase.CalendarCorrectionsUpdate(const ADates: TDateVector;
-                                   const AStatus, ASwapDay: Integer): Boolean;
+function TDataBase.CalendarCorrectionsUpdate(const ACorrections: TCalendarCorrections): Boolean;
 var
   i: Integer;
 begin
   Result:= False;
-  if VIsNil(ADates) then Exit;
+  if VIsNil(ACorrections.Dates) then Exit;
   QSetQuery(FQuery);
   try
     QSetSQL(
       sqlINSERT('CALENDAR', ['DayDate', 'Status', 'SwapDay'], 'REPLACE')
     );
-    QParamInt('Status', AStatus);
-    QParamInt('SwapDay', ASwapDay);
-    for i:= 0 to High(ADates) do
+    for i:= 0 to High(ACorrections.Dates) do
     begin
-      QParamDT('DayDate', ADates[i]);
+      QParamInt('Status', ACorrections.Statuses[i]);
+      QParamInt('SwapDay', ACorrections.SwapDays[i]);
+      QParamDT('DayDate', ACorrections.Dates[i]);
       QExec;
     end;
     QCommit;
@@ -980,14 +989,57 @@ end;
 
 function TDataBase.ScheduleShiftCorrectionsLoad(const AScheduleID: Integer;
                                out ACorrectIDs: TIntVector;
-                               out ACorrect: TScheduleCorrect;
+                               out ACorrections: TScheduleCorrections;
                                const ABeginDate: TDate = 0;
                                const AEndDate: TDate = 0): Boolean;
 begin
-  ACorrect:= EmptyScheduleCorrect;
+  ACorrections:= EmptyScheduleCorrections;
   Result:= ScheduleParamsLoad('SCHEDULECORRECT', 'ScheduleID', 'CorrectID', AScheduleID,
-    ACorrectIDs, ACorrect.Dates, ACorrect.HoursTotal, ACorrect.HoursNight, ACorrect.ShiftNums,
-    ACorrect.DigMarks, ACorrect.StrMarks, ABeginDate, AEndDate);
+    ACorrectIDs, ACorrections.Dates, ACorrections.HoursTotal, ACorrections.HoursNight, ACorrections.ShiftNums,
+    ACorrections.DigMarks, ACorrections.StrMarks, ABeginDate, AEndDate);
+end;
+
+function TDataBase.ScheduleCorrectionsUpdate(const ATableName, AIDFieldName: String;
+                               const AIDValue: Integer;
+                               const ACorrections: TScheduleCorrections): Boolean;
+var
+  i: Integer;
+begin
+  Result:= False;
+  if VIsNil(ACorrections.Dates) then Exit;
+  QSetQuery(FQuery);
+  try
+    QSetSQL(
+      sqlINSERT(ATableName,
+        [AIDFieldName, 'DayDate', 'HoursTotal', 'HoursNight', 'DigMark', 'ShiftNum'], 'REPLACE')
+    );
+    QParamInt(AIDFieldName, AIDValue);
+    for i:= 0 to High(ACorrections.Dates) do
+    begin
+      QParamDT('DayDate', ACorrections.Dates[i]);
+      QParamInt('HoursTotal', ACorrections.HoursTotal[i]);
+      QParamInt('HoursNight', ACorrections.HoursNight[i]);
+      QParamInt('DigMark', ACorrections.DigMarks[i]);
+      QParamInt('ShiftNum', ACorrections.ShiftNums[i]);
+      QExec;
+    end;
+    QCommit;
+    Result:= True;
+  except
+    QRollback;
+  end;
+end;
+
+function TDataBase.ScheduleShiftCorrectionsUpdate(const AScheduleID: Integer;
+  const ACorrections: TScheduleCorrections): Boolean;
+begin
+  Result:= ScheduleCorrectionsUpdate('SCHEDULECORRECT', 'ScheduleID', AScheduleID, ACorrections);
+end;
+
+function TDataBase.SchedulePersonalCorrectionsUpdate(const ATubNumID: Integer;
+  const ACorrections: TScheduleCorrections): Boolean;
+begin
+  Result:= ScheduleCorrectionsUpdate('PERSONALCORRECT', 'TabNumID', ATubNumID, ACorrections);
 end;
 
 function TDataBase.TimetableMarkListLoad(out ADigMarks: TIntVector;

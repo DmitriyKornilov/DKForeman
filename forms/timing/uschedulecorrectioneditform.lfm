@@ -417,6 +417,7 @@ object ScheduleCorrectionEditForm: TScheduleCorrectionEditForm
         BC98835716987A4A01987A4A01987949008F7949001000000000
       }
       ImageIndex = 3
+      OnClick = SaveButtonClick
       ParentFont = False
     end
     object ButtonPanelBevel: TBevel

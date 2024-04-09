@@ -356,11 +356,16 @@ begin
 end;
 
 procedure TCalendarForm.CopyEnd(const ANeedSave: Boolean);
+var
+  C: TCalendarCorrections;
 begin
   if not VIsNil(SelectedDates) then
   begin
     if ANeedSave then //apply copies
-      DataBase.CalendarCorrectionsUpdate(SelectedDates, SelectedStatus, SelectedSwapDay);
+    begin
+      C:= GetCalendarCorrections(SelectedDates, SelectedStatus, SelectedSwapDay);
+      DataBase.CalendarCorrectionsUpdate(C);
+    end;
     VSTCopy.ValuesClear;
     CalendarRefresh;
   end

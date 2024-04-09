@@ -8,9 +8,9 @@ uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, Spin,
   ExtCtrls, VirtualTrees, DateTimePicker, Buttons, BCButton, DateUtils,
   //DK packages utils
-  DK_Vector, DK_DateUtils, DK_DropDown,
+  DK_Vector, DK_DateUtils, DK_DropDown, DK_Dialogs,
   //Project utils
-  UDataBase;
+  UDataBase, UUtils, UWorkHours, USchedule;
 
 type
 
@@ -37,13 +37,14 @@ type
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure SaveButtonClick(Sender: TObject);
 
 
   private
     DigMarks: TIntVector;
     MarkDropDown: TDropDown;
   public
-    DigMark: Integer;
+    DigMark, ScheduleID, TabNumID: Integer;
   end;
 
 var
@@ -58,8 +59,10 @@ implementation
 procedure TScheduleCorrectionEditForm.FormCreate(Sender: TObject);
 begin
   DigMark:= -1;
+  ScheduleID:= -1;
+  TabNumID:= -1;
   FirstDatePicker.Date:= Date;
-  LastDatePicker.Date:= IncDay(Date);
+  LastDatePicker.Date:= Date;
   MarkDropDown:= TDropDown.Create(MarkBCButton);
 end;
 
@@ -82,9 +85,39 @@ begin
   DataBase.TimetableMarkDictionaryLoad(MarkDropDown, DigMarks, DigMark);
 end;
 
+procedure TScheduleCorrectionEditForm.SaveButtonClick(Sender: TObject);
+var
+  IsOK: Boolean;
+  Corrections: TScheduleCorrections;
+  HoursTotal, HoursNight, ShiftNum: Integer;
+begin
+  IsOK:= False;
 
+  if MarkDropDown.ItemIndex<0 then
+  begin
+    ShowInfo('Не указан основной код табеля!');
+    Exit;
+  end;
 
+  HoursTotal:= WorkHoursFracToInt(TotalHoursSpinEdit.Value);
+  HoursNight:= WorkHoursFracToInt(NightHoursSpinEdit.Value);
+  ShiftNum:= ShiftNumSpinEdit.Value;
 
+  if (HoursTotal>0) and (ShiftNum=0) then
+    if not Confirm('Указано количество рабочих часов, но не указан номер смены (=0)! ' +
+             'Всё равно записать изменения?') then Exit;
+
+  Corrections:= GetScheduleCorrections(FirstDatePicker.Date, LastDatePicker.Date,
+                  HoursTotal, HoursNight, DigMarks[MarkDropDown.ItemIndex], ShiftNum);
+
+  if TabNumID>0 then //pesonal schedule corrections
+    IsOK:= DataBase.SchedulePersonalCorrectionsUpdate(TabNumID, Corrections)
+  else if ScheduleID>0 then //shift schedule corrections
+    IsOK:= DataBase.ScheduleShiftCorrectionsUpdate(ScheduleID, Corrections);
+
+  if not IsOK then Exit;
+  ModalResult:= mrOK;
+end;
 
 end.
 
