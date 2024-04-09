@@ -6,11 +6,11 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls,
-  DateTimePicker, Buttons, DateUtils,
+  DateTimePicker, Buttons, BCButton, DateUtils,
   //DK packages utils
-  DK_DateUtils, DK_Vector, DK_Const,
+  DK_DateUtils, DK_Vector, DK_Const, DK_DropDown,
   //Project utils
-  UDataBase;
+  UDataBase, UConst;
 
 type
 
@@ -20,9 +20,9 @@ type
     ButtonPanel: TPanel;
     ButtonPanelBevel: TBevel;
     CancelButton: TSpeedButton;
-    StatusComboBox: TComboBox;
-    SwapDayComboBox: TComboBox;
     FirstDatePicker: TDateTimePicker;
+    StatusBCButton: TBCButton;
+    SwapDayBCButton: TBCButton;
     SwapDayLabel: TLabel;
     LastDatePicker: TDateTimePicker;
     PeriodLabel: TLabel;
@@ -31,11 +31,14 @@ type
     SaveButton: TSpeedButton;
     procedure CancelButtonClick(Sender: TObject);
     procedure FirstDatePickerChange(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure SaveButtonClick(Sender: TObject);
-    procedure StatusComboBoxChange(Sender: TObject);
   private
-
+    StatusDropDown: TDropDown;
+    SwapDayDropDown: TDropDown;
+    procedure StatusDropDownChange;
   public
     Year: Word;
     DayDate: TDate;
@@ -50,11 +53,11 @@ implementation
 
 { TCalendarEditForm }
 
-procedure TCalendarEditForm.StatusComboBoxChange(Sender: TObject);
+procedure TCalendarEditForm.StatusDropDownChange;
 begin
-  if (SwapDayComboBox.ItemIndex>0) and (StatusComboBox.ItemIndex<>3) then
-    SwapDayComboBox.ItemIndex:=0;
-  SwapDayComboBox.Enabled:= StatusComboBox.ItemIndex=3;
+  if (SwapDayDropDown.ItemIndex>0) and (StatusDropDown.ItemIndex<>3) then
+    SwapDayDropDown.ItemIndex:=0;
+  SwapDayDropDown.Enabled:= StatusDropDown.ItemIndex=3;
 end;
 
 procedure TCalendarEditForm.FormShow(Sender: TObject);
@@ -77,8 +80,8 @@ var
   i, n, Status, SwapDay: Integer;
   Dates: TDateVector;
 begin
-  Status:= StatusComboBox.ItemIndex+1;
-  SwapDay:= SwapDayComboBox.ItemIndex; //Ord(SwapDayComboBox.Enabled)*(SwapDayComboBox.ItemIndex);
+  Status:= StatusDropDown.ItemIndex+1;
+  SwapDay:= SwapDayDropDown.ItemIndex; //Ord(SwapDayComboBox.Enabled)*(SwapDayComboBox.ItemIndex);
   n:= DaysBetweenDates(FirstDatePicker.Date, LastDatePicker.Date);
   Dates:= nil;
   for i:= 0 to n do
@@ -96,6 +99,24 @@ procedure TCalendarEditForm.FirstDatePickerChange(Sender: TObject);
 begin
   LastDatePicker.MinDate:= FirstDatePicker.Date;
   LastDatePicker.Date:= FirstDatePicker.Date;
+end;
+
+procedure TCalendarEditForm.FormCreate(Sender: TObject);
+begin
+  SwapDayDropDown:= TDropDown.Create(SwapDayBCButton);
+  SwapDayDropDown.Items:= DAY_NAME_PICKS;
+  SwapDayDropDown.ItemIndex:= 0;
+
+  StatusDropDown:= TDropDown.Create(StatusBCButton);
+  StatusDropDown.OnChange:= @StatusDropDownChange;
+  StatusDropDown.Items:= VCut(DAY_STATUS_PICKS, 1);
+  StatusDropDown.ItemIndex:= 0;
+end;
+
+procedure TCalendarEditForm.FormDestroy(Sender: TObject);
+begin
+  FreeAndNil(StatusDropDown);
+  FreeAndNil(SwapDayDropDown);
 end;
 
 end.
