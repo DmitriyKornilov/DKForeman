@@ -200,6 +200,9 @@ begin
     DayAddButton, DayDelButton, DayEditButton, DayCopyButton,
     CopySaveButton, CopyDelButton,CopyCancelButton
   ]);
+  SetCategoryButtons([
+    ExportButton
+  ]);
 
   ColorsLoad;
 

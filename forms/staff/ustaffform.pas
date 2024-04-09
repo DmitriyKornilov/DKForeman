@@ -207,6 +207,9 @@ begin
     TabNumAddButton, TabNumDelButton, TabNumEditButton, TabNumDismissButton, TabNumDismissCancelButton,
     PostLogAddButton, PostLogDelButton, PostLogEditButton
   ]);
+  SetCategoryButtons([
+    ExportButton
+  ]);
 
   CanLoadStaffList:= False;
   StaffListCreate;

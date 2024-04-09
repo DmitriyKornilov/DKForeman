@@ -353,6 +353,9 @@ begin
   SetToolButtons([
     EditingButton, SettingButton, RefreshButton, AboutButton, ExitButton
   ]);
+  SetCategoryButtons([
+    StaffButton, TimingButton, SafetyButton, DictionaryButton
+  ]);
 
   SetGridFont;
   DBConnect;

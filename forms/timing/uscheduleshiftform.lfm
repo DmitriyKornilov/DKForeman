@@ -1808,9 +1808,10 @@ object ScheduleShiftForm: TScheduleShiftForm
       Left = 0
       Height = 24
       Top = 2
-      Width = 99
+      Width = 97
       Align = alTop
       BorderSpacing.Top = 2
+      BorderSpacing.Right = 2
       BorderSpacing.Bottom = 2
       Background.Color = clBtnFace
       Background.Gradient1.StartColor = clWhite

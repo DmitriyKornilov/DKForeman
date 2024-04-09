@@ -5,7 +5,7 @@ unit UUtils;
 interface
 
 uses
-  Classes, SysUtils, Graphics, Controls, ExtCtrls, Buttons, BCPanel,
+  Classes, SysUtils, Graphics, Controls, BCPanel, BCButton,
   //DK packages utils
   DK_CtrlUtils, DK_Color, DK_Vector, DK_VSTTables, DK_DateUtils,
   //Project utils
@@ -14,6 +14,7 @@ uses
   procedure SetToolPanels(const AControls: array of TControl);
   procedure SetCaptionPanels(const AControls: array of TBCPanel);
   procedure SetToolButtons(const AControls: array of TControl);
+  procedure SetCategoryButtons(const AControls: array of TBCButton);
 
   function GetSelectedID(const ATable: TVSTTable; const AIDValues: TIntVector;
                          const ASelectedID: Integer = -1): Integer;
@@ -47,12 +48,16 @@ end;
 
 procedure SetCaptionPanels(const AControls: array of TBCPanel);
 var
-  i: Integer;
+  i, h: Integer;
+  c: TColor;
 begin
+  h:= Round(TOOL_PANEL_HEIGHT_DEFAULT*0.6);
+  c:= cl3DLight;
+  //c:= ColorIncLightness(clBtnFace, -15);
   for i:= 0 to High(AControls) do
   begin
-    ControlHeight(AControls[i], Round(TOOL_PANEL_HEIGHT_DEFAULT*0.6));
-    AControls[i].Background.Color:= ColorIncLightness(clBtnFace, -15);
+    ControlHeight(AControls[i], h);
+    AControls[i].Background.Color:= c;
     AControls[i].Border.Color:= clActiveBorder;
   end;
 end;
@@ -63,6 +68,22 @@ var
 begin
   for i:= 0 to High(AControls) do
     ControlWidth(AControls[i], TOOL_BUTTON_WIDTH_DEFAULT);
+end;
+
+procedure SetCategoryButtons(const AControls: array of TBCButton);
+var
+  i: Integer;
+  c: TColor;
+begin
+  c:= cl3DLight;
+  //c:= ColorIncLightness(clBtnFace, -15);
+  for i:= 0 to High(AControls) do
+  begin
+    AControls[i].StateNormal.Background.Color:= c;
+    AControls[i].StateNormal.Border.Color:= clActiveBorder;
+    //AControls[i].StateHover.Background.Color:= DefaultSelectionBGColor;
+    //AControls[i].StateHover.Border.Color:= clHighlight;
+  end;
 end;
 
 function GetSelectedID(const ATable: TVSTTable; const AIDValues: TIntVector;
