@@ -252,6 +252,7 @@
         <Filename Value="forms\timing\uscheduleshifteditform.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="ScheduleShiftEditForm"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UScheduleShiftEditForm"/>
       </Unit>

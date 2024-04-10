@@ -79,8 +79,7 @@ type
     Corrections: TCalendarCorrections;
 
     SelectedDates: TDateVector;
-    SelectedStatus: Integer;
-    SelectedSwapDay: Integer;
+    SelectedStatus, SelectedSwapDay: Integer;
     IsCopyDates: Boolean;
 
     procedure TablesCreate;
@@ -135,6 +134,7 @@ var
   R,C: Integer;
   DayDate: TDate;
 begin
+  if ModeType<>mtEditing then Exit;
   R:= 0;
   C:= 0;
   if Button=mbLeft then
@@ -329,16 +329,21 @@ var
   Dates, Statuses, SwapDays: TStrVector;
 begin
   Dates:= VDateToStr(SelectedDates);
-  VDim(Statuses{%H-}, Length(SelectedDates), DAY_STATUS_PICKS[SelectedStatus]);
-  VDim(SwapDays{%H-}, Length(SelectedDates), DAY_NAME_PICKS[SelectedSwapDay]);
+  VDim(Statuses{%H-}, Length(Dates), DAY_STATUS_PICKS[SelectedStatus]);
+  VDim(SwapDays{%H-}, Length(Dates), DAY_NAME_PICKS[SelectedSwapDay]);
 
-  VSTCopy.SetColumn(CALENDAR_CORRECTION_COLUMN_NAMES[0], Dates);
-  VSTCopy.SetColumn(CALENDAR_CORRECTION_COLUMN_NAMES[1], Statuses);
-  VSTCopy.SetColumn(CALENDAR_CORRECTION_COLUMN_NAMES[2], SwapDays);
-  VSTCopy.Draw;
-  VSTCopy.ReSelect(SelectedDates, ASelectedDate);
+  VSTCopy.Visible:= False;
+  try
+    VSTCopy.SetColumn(CALENDAR_CORRECTION_COLUMN_NAMES[0], Dates);
+    VSTCopy.SetColumn(CALENDAR_CORRECTION_COLUMN_NAMES[1], Statuses);
+    VSTCopy.SetColumn(CALENDAR_CORRECTION_COLUMN_NAMES[2], SwapDays);
+    VSTCopy.Draw;
+    VSTCopy.ReSelect(SelectedDates, ASelectedDate);
+  finally
+    VSTCopy.Visible:= True;
+  end;
 
-  CopySaveButton.Enabled:= not VIsNil(SelectedDates);
+  CopySaveButton.Enabled:= not VIsNil(Dates);
 end;
 
 procedure TCalendarForm.CopyBegin;
@@ -387,8 +392,8 @@ begin
   DayDate:= NULDATE;
   if VSTDays.IsSelected then
     DayDate:= Corrections.Dates[VSTDays.SelectedIndex];
-
   DayInGridSelect(DayDate);
+
   DayDelButton.Enabled:= VSTDays.IsSelected;
   DayEditButton.Enabled:= DayDelButton.Enabled;
   DayCopyButton.Enabled:= DayDelButton.Enabled;

@@ -1308,6 +1308,7 @@ object ScheduleShiftForm: TScheduleShiftForm
                 8AFFFEC98AFFFEC98AFFFFCA8BFFFFCA8BFFFFCA8BFFFFCA8BFFFFCA8BFFFDA4
                 29F2FD9607470000000000000000000000000000000000000000
               }
+              OnClick = DayCopyButtonClick
               ShowHint = True
               ParentShowHint = False
             end
@@ -1441,6 +1442,7 @@ object ScheduleShiftForm: TScheduleShiftForm
                 BC98C2BBBC98C2BBBC98C2BBBC98C2BBBC98C2BBBC98C2BBBC98C2BBBC98C2BB
                 BC98835716987A4A01987A4A01987949008F7949001000000000
               }
+              OnClick = CopySaveButtonClick
               ShowHint = True
               ParentShowHint = False
             end
@@ -1531,6 +1533,7 @@ object ScheduleShiftForm: TScheduleShiftForm
                 0000000000000000000000000000000000000000000000000000000000000000
                 0000000000000000000000000000000000000000000000000000
               }
+              OnClick = CopyDelButtonClick
               ShowHint = True
               ParentShowHint = False
             end
@@ -1620,6 +1623,7 @@ object ScheduleShiftForm: TScheduleShiftForm
                 0000000000000000000000000000000000000000000000000000000000000000
                 0000000000000000000000000000000000000000000000000000
               }
+              OnClick = CopyCancelButtonClick
               ShowHint = True
               ParentShowHint = False
             end
@@ -1785,6 +1789,8 @@ object ScheduleShiftForm: TScheduleShiftForm
         TabOrder = 0
         TabStop = False
         TitleFont.Style = [fsBold]
+        OnDblClick = ViewGridDblClick
+        OnMouseDown = ViewGridMouseDown
       end
       object ZoomPanel: TPanel
         Left = 0

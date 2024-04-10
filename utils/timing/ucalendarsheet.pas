@@ -52,12 +52,12 @@ type
     procedure QuarterDraw(const AQuarter: Byte);
     procedure HalfDraw(const AHalf: Byte);
     procedure YearDraw;
+    function GridToMonth(const ARow, ACol: Integer; out ADayInWeek, AWeekInMonth, AMonth: Integer): Boolean;
   public
     constructor Create(const AFont: TFont; const AWorksheet: TsWorksheet; const AGrid: TsWorksheetGrid = nil);
 
     procedure Draw(const AYearCalendar: TCalendar; const AHighLightDays: TDateVector);
 
-    function GridToMonth(const ARow, ACol: Integer; out ADayInWeek, AWeekInMonth, AMonth: Integer): Boolean;
     function GridToDate(const ARow, ACol: Integer; out ADate: TDate): Boolean;
     function DateToGrid(const ADate: TDate; out ARow, ACol: Integer): Boolean;
  end;

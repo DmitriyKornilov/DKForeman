@@ -48,6 +48,12 @@ type
     procedure BlankDraw;
     procedure ScheduleDraw;
     function IsNeedCaption: Boolean;
+
+    function RowToMonth(const ARow: Integer): Integer;
+    function ColToDay(const ACol, AMonth: Integer): Integer;
+    function DateToRow(const ADate: TDate): Integer;
+    function DateToCol(const ADate: TDate): Integer;
+
   public
     constructor Create(const AFont: TFont;
                        const AWorksheet: TsWorksheet;
@@ -58,6 +64,9 @@ type
                    const AName: String;
                    const ANeedNight, ANeedCorrect, ANeedMarks, AScheduleNotWorkColor: Boolean;
                    const AHighLightDays: TDateVector=nil);
+
+    function GridToDate(const ARow, ACol: Integer; out ADate: TDate): Boolean;
+    function DateToGrid(const ADate: TDate; out ARow, ACol: Integer): Boolean;
   end;
 
 
@@ -418,6 +427,129 @@ begin
   BordersDraw(1 + Ord(IsNeedCaption));
   for i:= 2+Ord(IsNeedCaption) to Writer.RowCount do
     Writer.SetRowHeight(i, ROW_DEFAULT_HEIGHT);
+end;
+
+function TShiftScheduleTableSheet.RowToMonth(const ARow: Integer): Integer;
+begin
+  Result:= 0;
+  if FNeedNight then
+  begin
+    case ARow of
+    3,4: Result:= 1;
+    5,6: Result:= 2;
+    7,8: Result:= 3;
+    11,12: Result:= 4;
+    13,14: Result:= 5;
+    15,16: Result:= 6;
+    19,20: Result:= 7;
+    21,22: Result:= 8;
+    23,24: Result:= 9;
+    27,28: Result:= 10;
+    29,30: Result:= 11;
+    31,32: Result:= 12;
+    end;
+  end else
+  begin
+    case ARow of
+    3: Result:= 1;
+    4: Result:= 2;
+    5: Result:= 3;
+    7: Result:= 4;
+    8: Result:= 5;
+    9: Result:= 6;
+    11: Result:= 7;
+    12: Result:= 8;
+    13: Result:= 9;
+    15: Result:= 10;
+    16: Result:= 11;
+    17: Result:= 12;
+   end;
+  end;
+end;
+
+function TShiftScheduleTableSheet.ColToDay(const ACol, AMonth: Integer): Integer;
+begin
+  Result:= 0;
+  if (not Assigned(FCalendar)) or (not FCalendar.Calculated) then Exit;
+  if (ACol>=2) and (ACol<=32) then
+  begin
+    if (ACol-1)<=DaysInPeriod(AMonth, YearOfDate(FCalendar.BeginDate)) then
+      Result:= ACol-1;
+  end;
+end;
+
+function TShiftScheduleTableSheet.DateToRow(const ADate: TDate): Integer;
+var
+  M: Integer;
+begin
+  M:= MonthOfDate(ADate);
+  if FNeedNight then
+  begin
+    case M of
+    1: Result:= 3;
+    2: Result:= 5;
+    3: Result:= 7;
+    4: Result:= 11;
+    5: Result:= 13;
+    6: Result:= 15;
+    7: Result:= 19;
+    8: Result:= 21;
+    9: Result:= 23;
+    10: Result:= 27;
+    11: Result:= 29;
+    12: Result:= 31;
+    end;
+  end else
+  begin
+    case M of
+    1: Result:= 3;
+    2: Result:= 4;
+    3: Result:= 5;
+    4: Result:= 7;
+    5: Result:= 8;
+    6: Result:= 9;
+    7: Result:= 11;
+    8: Result:= 12;
+    9: Result:= 13;
+    10: Result:= 15;
+    11: Result:= 16;
+    12: Result:= 17;
+   end;
+  end;
+end;
+
+function TShiftScheduleTableSheet.DateToCol(const ADate: TDate): Integer;
+begin
+  Result:= DayOfDate(ADate) + 1;
+end;
+
+function TShiftScheduleTableSheet.GridToDate(const ARow, ACol: Integer;
+                                             out ADate: TDate): Boolean;
+var
+  M, D: Integer;
+begin
+  Result:= False;
+  ADate:= NULDATE;
+  if (not Assigned(FCalendar)) or (not FCalendar.Calculated) then Exit;
+  M:= RowToMonth(ARow);
+  D:= 0;
+  if M>0 then D:= ColToDay(ACol, M);
+  if D>0 then
+  begin
+    ADate:= EncodeDate(YearOfDate(FCalendar.BeginDate), M, D);
+    Result:= True;
+  end;
+end;
+
+function TShiftScheduleTableSheet.DateToGrid(const ADate: TDate;
+                                             out ARow, ACol: Integer): Boolean;
+begin
+  Result:= False;
+  if (not Assigned(FCalendar)) or (not FCalendar.Calculated) then Exit;
+  if YearOfDate(ADate)<>YearOfDate(FCalendar.BeginDate) then Exit;
+  ARow:= DateToRow(ADate);
+  ACol:= DateToCol(ADate);
+  Result:= True;
 end;
 
 end.
