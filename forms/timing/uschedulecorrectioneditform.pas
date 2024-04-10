@@ -8,7 +8,7 @@ uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, Spin,
   ExtCtrls, VirtualTrees, DateTimePicker, Buttons, BCButton, DateUtils,
   //DK packages utils
-  DK_Vector, DK_DateUtils, DK_DropDown, DK_Dialogs,
+  DK_Vector, DK_DateUtils, DK_DropDown, DK_Dialogs, DK_Const,
   //Project utils
   UDataBase, UUtils, UWorkHours, USchedule;
 
@@ -44,6 +44,7 @@ type
     DigMarks: TIntVector;
     MarkDropDown: TDropDown;
   public
+    Year: Integer;
     DigMark, ScheduleID, TabNumID: Integer;
   end;
 
@@ -61,8 +62,6 @@ begin
   DigMark:= -1;
   ScheduleID:= -1;
   TabNumID:= -1;
-  FirstDatePicker.Date:= Date;
-  LastDatePicker.Date:= Date;
   MarkDropDown:= TDropDown.Create(MarkBCButton);
 end;
 
@@ -78,6 +77,9 @@ end;
 
 procedure TScheduleCorrectionEditForm.FormShow(Sender: TObject);
 begin
+  if SameDate(FirstDatePicker.Date, NULDATE) then
+    FirstDatePicker.Date:= FirstDayInYear(Year);
+  LastDatePicker.Date:= FirstDatePicker.Date;
   FirstDatePicker.MinDate:= FirstDayInYear(FirstDatePicker.Date);
   FirstDatePicker.MaxDate:= LastDayInYear(FirstDatePicker.Date);
   LastDatePicker.MinDate:= FirstDatePicker.MinDate;

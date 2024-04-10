@@ -36,12 +36,12 @@ type
     procedure FormShow(Sender: TObject);
     procedure SaveButtonClick(Sender: TObject);
   private
-    StatusDropDown: TDropDown;
-    SwapDayDropDown: TDropDown;
     procedure StatusDropDownChange;
   public
-    Year: Word;
+    Year: Integer;
     DayDate: TDate;
+    StatusDropDown: TDropDown;
+    SwapDayDropDown: TDropDown;
   end;
 
 var

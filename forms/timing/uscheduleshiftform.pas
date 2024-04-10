@@ -77,7 +77,7 @@ type
     procedure DayAddButtonClick(Sender: TObject);
     procedure DayCopyButtonClick(Sender: TObject);
     procedure DayEditButtonClick(Sender: TObject);
-    procedure DayVTNodeDblClick(Sender: TBaseVirtualTree; const {%H-}HitInfo: THitInfo);
+    procedure DayVTNodeDblClick(Sender: TBaseVirtualTree; const HitInfo: THitInfo);
     procedure ExportButtonClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -87,7 +87,7 @@ type
     procedure ScheduleListVTNodeDblClick(Sender: TBaseVirtualTree; const {%H-}HitInfo: THitInfo);
     procedure ViewGridDblClick(Sender: TObject);
     procedure ViewGridMouseDown(Sender: TObject; Button: TMouseButton;
-      Shift: TShiftState; X, Y: Integer);
+      {%H-}Shift: TShiftState; X, Y: Integer);
     procedure YearSpinEditChange(Sender: TObject);
   private
     CanDrawSchedule: Boolean;
@@ -120,6 +120,7 @@ type
     SelectedHoursTotal, SelectedHoursNight, SelectedDigMark, SelectedShiftNum: Integer;
     SelectedStrMark: String;
     IsCopyDates: Boolean;
+
     procedure CopyBegin;
     procedure CopyEnd(const ANeedSave: Boolean);
     procedure DayInGridSelect(const ADate: TDate);
@@ -142,10 +143,11 @@ type
     procedure ScheduleListLoad(const SelectedID: Integer = -1);
     procedure ScheduleListDelItem;
 
+
     procedure CycleLoad;
     procedure ScheduleLoad;
     procedure YearChange;
-    procedure ScheduleChange;
+    procedure ScheduleChange(const ANeedCycleLoad: Boolean);
     procedure ScheduleToSheet(var ASheet: TShiftScheduleTableSheet;
                               const AWorksheet: TsWorksheet;
                               const AGrid: TsWorksheetGrid;
@@ -156,7 +158,7 @@ type
     procedure ScheduleRedraw;
     procedure ScheduleExport;
 
-    procedure ScheduleCorrectionEditFormOpen(const AEditingType: TEditingType);
+    procedure ScheduleCorrectionEditFormOpen(const ADate: TDate);
     procedure ScheduleShiftEditFormOpen(const AEditingType: TEditingType);
 
     procedure SettingsLoad;
@@ -187,10 +189,13 @@ begin
 end;
 
 procedure TScheduleShiftForm.CopyDelButtonClick(Sender: TObject);
+var
+  R,C: Integer;
 begin
+  ScheduleSheet.DateToGrid(SelectedDates[VSTCopy.SelectedIndex], R, C);
+  ScheduleSheet.SelectionDelCell(R,C);
   VDel(SelectedDates, VSTCopy.SelectedIndex);
   CopyListLoad;
-  ScheduleRedraw;
 end;
 
 procedure TScheduleShiftForm.CopySaveButtonClick(Sender: TObject);
@@ -200,7 +205,7 @@ end;
 
 procedure TScheduleShiftForm.DayAddButtonClick(Sender: TObject);
 begin
-  ScheduleCorrectionEditFormOpen(etAdd);
+  ScheduleCorrectionEditFormOpen(NULDATE);
 end;
 
 procedure TScheduleShiftForm.DayCopyButtonClick(Sender: TObject);
@@ -210,13 +215,16 @@ end;
 
 procedure TScheduleShiftForm.DayEditButtonClick(Sender: TObject);
 begin
-  ScheduleCorrectionEditFormOpen(etEdit);
+  ScheduleCorrectionEditFormOpen(Corrections.Dates[VSTDays.SelectedIndex]);
 end;
 
 procedure TScheduleShiftForm.DayVTNodeDblClick(Sender: TBaseVirtualTree; const HitInfo: THitInfo);
+var
+  DayDate: TDate;
 begin
   if not VSTDays.IsSelected then Exit;
-  ScheduleCorrectionEditFormOpen(etEdit);
+  DayDate:= Corrections.Dates[HitInfo.HitNode^.Index];
+  ScheduleCorrectionEditFormOpen(DayDate);
 end;
 
 procedure TScheduleShiftForm.ExportButtonClick(Sender: TObject);
@@ -261,8 +269,7 @@ begin
   SettingsLoad;
   YearSpinEdit.Value:= YearOfDate(Date);
   CanDrawSchedule:= True;
-
-  ViewUpdate(mtView);
+  IsCopyDates:= False;
 end;
 
 procedure TScheduleShiftForm.FormDestroy(Sender: TObject);
@@ -314,7 +321,7 @@ var
 begin
   if not ScheduleSheet.GridToDate(ViewGrid.Row, ViewGrid.Col, DayDate) then Exit;
   VSTDays.ReSelect(Corrections.Dates, DayDate, False);
-  ScheduleCorrectionEditFormOpen(etEdit);
+  ScheduleCorrectionEditFormOpen(DayDate);
 end;
 
 procedure TScheduleShiftForm.ViewGridMouseDown(Sender: TObject;
@@ -330,8 +337,9 @@ begin
     (Sender as TsWorksheetGrid).MouseToCell(X,Y,C,R);
 
   ScheduleSheet.GridToDate(R, C, DayDate);
+  if not IsCopyDates then
+    DayInListSelect(DayDate);
   DayInGridSelect(DayDate);
-  DayInListSelect(DayDate);
 end;
 
 procedure TScheduleShiftForm.YearSpinEditChange(Sender: TObject);
@@ -353,7 +361,7 @@ begin
   SelectedDigMark:= Corrections.DigMarks[VSTDays.SelectedIndex];
   SelectedShiftNum:= Corrections.ShiftNums[VSTDays.SelectedIndex];
   SelectedStrMark:= Corrections.StrMarks[VSTDays.SelectedIndex];
-  ScheduleSheet.SelectionClear;
+  VSTDays.Unselect;
 end;
 
 procedure TScheduleShiftForm.CopyEnd(const ANeedSave: Boolean);
@@ -367,14 +375,15 @@ begin
       C:= GetScheduleCorrections(SelectedDates, SelectedHoursTotal, SelectedHoursNight,
                                  SelectedDigMark, SelectedShiftNum, SelectedStrMark);
       DataBase.ScheduleShiftCorrectionsUpdate(ScheduleIDs[ScheduleList.SelectedIndex], C);
+      ScheduleChange(False{no cycle reload}); //includes SelectedDates:= nil;
+    end
+    else begin//cancel copies
+      ScheduleSheet.SelectionClear;
+      SelectedDates:= nil;
     end;
     VSTCopy.ValuesClear;
-    ScheduleChange;
-  end
-  else begin //cancel copies
-    ScheduleSheet.SelectionClear;
-    VSTDays.Unselect;
   end;
+
   IsCopyDates:= False;
   CopyPanel.Visible:= False;
   CopyPanel.Align:= alBottom;
@@ -386,6 +395,8 @@ procedure TScheduleShiftForm.DayInGridSelect(const ADate: TDate);
 var
   Ind, R, C, ROld, COld: Integer;
 begin
+  if not Assigned(ScheduleSheet) then Exit;
+
   ScheduleSheet.DateToGrid(ADate, R, C);
   if IsCopyDates then
   begin
@@ -575,13 +586,11 @@ begin
 end;
 
 procedure TScheduleShiftForm.CorrectionSelect;
-var
-  DayDate: TDate;
 begin
-  DayDate:= NULDATE;
   if VSTDays.IsSelected then
-    DayDate:= Corrections.Dates[VSTDays.SelectedIndex];
-  DayInGridSelect(DayDate);
+    DayInGridSelect(Corrections.Dates[VSTDays.SelectedIndex])
+  else if Assigned(ScheduleSheet) then
+    ScheduleSheet.SelectionClear;
 
   DayDelButton.Enabled:= VSTDays.IsSelected;
   DayEditButton.Enabled:= DayDelButton.Enabled;
@@ -644,7 +653,7 @@ begin
   ScheduleDelButton.Enabled:= ScheduleList.IsSelected;
   ScheduleEditButton.Enabled:= ScheduleList.IsSelected;
   DayAddButton.Enabled:= ScheduleList.IsSelected;
-  ScheduleChange;
+  ScheduleChange(True{cycle load});
 end;
 
 procedure TScheduleShiftForm.ParamListCreate;
@@ -694,13 +703,14 @@ end;
 procedure TScheduleShiftForm.YearChange;
 begin
   CalendarForYear(YearSpinEdit.Value, Calendar);
-  ScheduleChange;
+  ScheduleChange(False{no cycle reload});
 end;
 
-procedure TScheduleShiftForm.ScheduleChange;
+procedure TScheduleShiftForm.ScheduleChange(const ANeedCycleLoad: Boolean);
 begin
+  if not CanDrawSchedule then Exit;
   SelectedDates:= nil;
-  CycleLoad;
+  if ANeedCycleLoad then CycleLoad;
   CorrectionsLoad;
   ScheduleLoad;
   ScheduleRedraw;
@@ -747,19 +757,6 @@ begin
   try
     ZoomPercent:= AZoomPercent;
     ScheduleToSheet(ScheduleSheet, ViewGrid.Worksheet, ViewGrid, Calendar, Schedule);
-    //if Assigned(ScheduleSheet) then FreeAndNil(ScheduleSheet);
-    //ScheduleSheet:= TShiftScheduleTableSheet.Create(MainForm.GridFont,
-    //                          ViewGrid.Worksheet, ViewGrid, CountType.SelectedIndex);
-    //
-    //ScheduleSheet.Zoom(ZoomPercent);
-    //ScheduleSheet.Draw(Calendar, Schedule, EmptyStr,
-    //                       ParamList.Checked[0], ParamList.Checked[1],
-    //                       ParamList.Checked[2], ColorType.SelectedIndex=0,
-    //                       {SelectedDates}nil);
-    //if ParamList.Checked[3] then
-    //  ScheduleSheet.ColorsUpdate(Colors)
-    //else
-    //  ScheduleSheet.ColorsClear;
   finally
     ViewGrid.Visible:= True;
   end;
@@ -822,9 +819,10 @@ begin
   end;
 end;
 
-procedure TScheduleShiftForm.ScheduleCorrectionEditFormOpen(const AEditingType: TEditingType);
+procedure TScheduleShiftForm.ScheduleCorrectionEditFormOpen(const ADate: TDate);
 var
   ScheduleCorrectionEditForm: TScheduleCorrectionEditForm;
+  Ind: Integer;
 begin
   ScheduleCorrectionEditForm:= TScheduleCorrectionEditForm.Create(nil);
   try
@@ -832,18 +830,19 @@ begin
       ScheduleCorrectionEditForm.ShiftNumSpinEdit.MaxValue:= CycleCounts[ScheduleList.SelectedIndex]
     else
       ScheduleCorrectionEditForm.ShiftNumSpinEdit.MaxValue:= 7; //недельный график
+    ScheduleCorrectionEditForm.Year:= YearSpinEdit.Value;
     ScheduleCorrectionEditForm.ScheduleID:= ScheduleIDs[ScheduleList.SelectedIndex];
-    if AEditingType=etEdit then
+    ScheduleCorrectionEditForm.FirstDatePicker.Date:= ADate;
+    Ind:= VIndexOfDate(Corrections.Dates, ADate);
+    if Ind>=0 then
     begin
       ScheduleCorrectionEditForm.DigMark:= Corrections.DigMarks[VSTDays.SelectedIndex];
-      ScheduleCorrectionEditForm.FirstDatePicker.Date:= Corrections.Dates[VSTDays.SelectedIndex];
-      ScheduleCorrectionEditForm.LastDatePicker.Date:= Corrections.Dates[VSTDays.SelectedIndex];
       ScheduleCorrectionEditForm.TotalHoursSpinEdit.Value:= WorkHoursIntToFrac(Corrections.HoursTotal[VSTDays.SelectedIndex]);
       ScheduleCorrectionEditForm.NightHoursSpinEdit.Value:= WorkHoursIntToFrac(Corrections.HoursNight[VSTDays.SelectedIndex]);;
       ScheduleCorrectionEditForm.ShiftNumSpinEdit.Value:= Corrections.ShiftNums[VSTDays.SelectedIndex];
     end;
     if ScheduleCorrectionEditForm.ShowModal=mrOK then
-      ScheduleChange;
+      ScheduleChange(False{no cycle reload});
   finally
     FreeAndNil(ScheduleCorrectionEditForm);
   end;

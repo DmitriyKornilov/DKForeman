@@ -62,7 +62,6 @@ type
     procedure ExportButtonClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
-    procedure FormShow(Sender: TObject);
     procedure YearSpinEditChange(Sender: TObject);
   private
     ModeType: TModeType;
@@ -141,8 +140,9 @@ begin
     (Sender as TsWorksheetGrid).MouseToCell(X,Y,C,R);
 
   CalendarSheet.GridToDate(R, C, DayDate);
+  if not IsCopyDates then
+    DayInListSelect(DayDate);
   DayInGridSelect(DayDate);
-  DayInListSelect(DayDate);
 end;
 
 procedure TCalendarForm.CopyCancelButtonClick(Sender: TObject);
@@ -151,10 +151,13 @@ begin
 end;
 
 procedure TCalendarForm.CopyDelButtonClick(Sender: TObject);
+var
+  R,C: Integer;
 begin
+  CalendarSheet.DateToGrid(SelectedDates[VSTCopy.SelectedIndex], R, C);
+  CalendarSheet.SelectionDelCell(R,C);
   VDel(SelectedDates, VSTCopy.SelectedIndex);
   CopyListLoad;
-  CalendarDraw(ZoomPercent);
 end;
 
 procedure TCalendarForm.CopySaveButtonClick(Sender: TObject);
@@ -229,6 +232,7 @@ begin
   TablesCreate;
   Calendar:= TCalendar.Create;
   YearSpinEdit.Value:= YearOfDate(Date);
+  IsCopyDates:= False;
 end;
 
 procedure TCalendarForm.FormDestroy(Sender: TObject);
@@ -238,11 +242,6 @@ begin
   FreeAndNil(VSTCopy);
   FreeAndNil(CalendarSheet);
   FreeAndNil(Calendar);
-end;
-
-procedure TCalendarForm.FormShow(Sender: TObject);
-begin
-  //ColorList.Update(Items, Colors);
 end;
 
 procedure TCalendarForm.DayVTNodeDblClick(Sender: TBaseVirtualTree; const HitInfo: THitInfo);
@@ -357,7 +356,7 @@ begin
   SelectedDates:= nil;
   SelectedStatus:= Corrections.Statuses[VSTDays.SelectedIndex];
   SelectedSwapDay:= Corrections.SwapDays[VSTDays.SelectedIndex];
-  CalendarSheet.SelectionClear;
+  VSTDays.UnSelect;
 end;
 
 procedure TCalendarForm.CopyEnd(const ANeedSave: Boolean);
@@ -370,14 +369,15 @@ begin
     begin
       C:= GetCalendarCorrections(SelectedDates, SelectedStatus, SelectedSwapDay);
       DataBase.CalendarCorrectionsUpdate(C);
+      CalendarRefresh; //includes SelectedDates:= nil;
+    end
+    else begin //cancel copies
+      CalendarSheet.SelectionClear;
+      SelectedDates:= nil;
     end;
     VSTCopy.ValuesClear;
-    CalendarRefresh;
-  end
-  else begin //cancel copies
-    CalendarSheet.SelectionClear;
-    VSTDays.Unselect;
   end;
+
   IsCopyDates:= False;
   CopyPanel.Visible:= False;
   CopyPanel.Align:= alBottom;
@@ -386,13 +386,11 @@ begin
 end;
 
 procedure TCalendarForm.CorrectionSelect;
-var
-  DayDate: TDate;
 begin
-  DayDate:= NULDATE;
   if VSTDays.IsSelected then
-    DayDate:= Corrections.Dates[VSTDays.SelectedIndex];
-  DayInGridSelect(DayDate);
+    DayInGridSelect(Corrections.Dates[VSTDays.SelectedIndex])
+  else
+    CalendarSheet.SelectionClear;
 
   DayDelButton.Enabled:= VSTDays.IsSelected;
   DayEditButton.Enabled:= DayDelButton.Enabled;
@@ -456,11 +454,18 @@ end;
 procedure TCalendarForm.CalendarEditFormOpen(const ADate: TDate);
 var
   CalendarEditForm: TCalendarEditForm;
+  Ind: Integer;
 begin
   CalendarEditForm:= TCalendarEditForm.Create(CalendarForm);
   try
     CalendarEditForm.DayDate:= ADate;
     CalendarEditForm.Year:= YearSpinEdit.Value;
+    Ind:= VIndexOfDate(Corrections.Dates, ADate);
+    if Ind>=0 then
+    begin
+      CalendarEditForm.SwapDayDropDown.ItemIndex:= Corrections.SwapDays[Ind];
+      CalendarEditForm.StatusDropDown.ItemIndex:= Corrections.Statuses[Ind]-1;
+    end;
     if CalendarEditForm.ShowModal=mrOK then
       CalendarRefresh
     else begin

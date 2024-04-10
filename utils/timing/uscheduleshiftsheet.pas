@@ -394,8 +394,11 @@ constructor TShiftScheduleTableSheet.Create(const AFont: TFont;
                                   const AResumeType: Byte);
 begin
   FResumeType:= AResumeType;
-  FCaption:= EmptyStr;
   inherited Create(AWorksheet, AGrid, AFont);
+  FResumeType:= AResumeType;
+  FCaption:= EmptyStr;
+  FCalendar:= nil;
+  FSchedule:= nil;
   Writer.SetBordersColor(clBlack);
 end;
 
@@ -545,6 +548,8 @@ function TShiftScheduleTableSheet.DateToGrid(const ADate: TDate;
                                              out ARow, ACol: Integer): Boolean;
 begin
   Result:= False;
+  ARow:= 0;
+  ACol:= 0;
   if (not Assigned(FCalendar)) or (not FCalendar.Calculated) then Exit;
   if YearOfDate(ADate)<>YearOfDate(FCalendar.BeginDate) then Exit;
   ARow:= DateToRow(ADate);
