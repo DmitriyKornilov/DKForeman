@@ -95,7 +95,8 @@ type
     procedure CopySelect;
 
     procedure DayInGridSelect(const ADate: TDate);
-    procedure DayInListSelect(const ADate: TDate);
+    function DayInListSelect(const ADate: TDate): Boolean;
+
 
     procedure CalendarEditFormOpen(const ADate: TDate);
   public
@@ -131,18 +132,27 @@ procedure TCalendarForm.ViewGridMouseDown(Sender: TObject;
   Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 var
   R,C: Integer;
-  DayDate: TDate;
+  D: TDate;
 begin
   if ModeType<>mtEditing then Exit;
-  R:= 0;
-  C:= 0;
   if Button=mbLeft then
+  begin
     (Sender as TsWorksheetGrid).MouseToCell(X,Y,C,R);
-
-  CalendarSheet.GridToDate(R, C, DayDate);
-  if not IsCopyDates then
-    DayInListSelect(DayDate);
-  DayInGridSelect(DayDate);
+    if not CalendarSheet.GridToDate(R, C, D) then Exit;
+    if DayInListSelect(D) then Exit;
+    DayInGridSelect(D);
+  end
+  else if Button=mbRight then
+  begin
+    if IsCopyDates then
+    begin
+      VSTCopy.ValuesClear;
+      CalendarSheet.SelectionClear;
+      SelectedDates:= nil;
+    end
+    else
+      VSTDays.UnSelect;
+  end;
 end;
 
 procedure TCalendarForm.CopyCancelButtonClick(Sender: TObject);
@@ -353,7 +363,6 @@ begin
   CopyPanel.Align:= alClient;
   CopyPanel.Visible:= True;
 
-  SelectedDates:= nil;
   SelectedStatus:= Corrections.Statuses[VSTDays.SelectedIndex];
   SelectedSwapDay:= Corrections.SwapDays[VSTDays.SelectedIndex];
   VSTDays.UnSelect;
@@ -389,8 +398,11 @@ procedure TCalendarForm.CorrectionSelect;
 begin
   if VSTDays.IsSelected then
     DayInGridSelect(Corrections.Dates[VSTDays.SelectedIndex])
-  else
-    CalendarSheet.SelectionClear;
+  else if not VIsNil(SelectedDates) then
+  begin
+    CalendarSheet.Unselect(SelectedDates[0]);
+    SelectedDates:= nil;
+  end;
 
   DayDelButton.Enabled:= VSTDays.IsSelected;
   DayEditButton.Enabled:= DayDelButton.Enabled;
@@ -404,51 +416,51 @@ end;
 
 procedure TCalendarForm.DayInGridSelect(const ADate: TDate);
 var
-  Ind, R, C, ROld, COld: Integer;
+  Ind, R, C: Integer;
 begin
-  CalendarSheet.DateToGrid(ADate, R, C);
-  if IsCopyDates then
+  if not CalendarSheet.DateToGrid(ADate, R, C) then //неверная дата
+    Exit;
+
+  if IsCopyDates then //копирование корректировки (multiselect)
   begin
     Ind:= VIndexOfDate(SelectedDates, ADate);
-    if Ind>=0 then
+    if Ind>=0 then //повторный клик на дату - убираем выделение
     begin
       VDel(SelectedDates, Ind);
-      CalendarSheet.SelectionDelCell(R, C);
+      CalendarSheet.Unselect(R, C);
     end
-    else begin
+    else begin //клик по новой дате - добавляем к выделению
       VInsAscDate(SelectedDates, ADate);
-      CalendarSheet.SelectionAddCell(R, C);
+      CalendarSheet.Select(R, C);
     end;
-    CopyListLoad;
+    CopyListLoad; //обновление таблицы
   end
-  else begin
-    if not VIsNil(SelectedDates) then
+  else begin //корректировка (single select)
+    if not VIsNil(SelectedDates) then  //уже есть выделение
     begin
-      CalendarSheet.DateToGrid(SelectedDates[0], ROld, COld);
-      CalendarSheet.SelectionDelCell(ROld, COld);
+      //клик по новой дате - убираем старое выделение
+      if not SameDate(SelectedDates[0], ADate) then
+        CalendarSheet.Unselect(SelectedDates[0]);
     end;
-    if not SameDate(ADate, NULDATE) then
-    begin
-      VDim(SelectedDates, 1, ADate);
-      CalendarSheet.SelectionAddCell(R, C);
-    end
-    else begin
-      SelectedDates:= nil;
-    end;
+    //новое выделение
+    VDim(SelectedDates, 1, ADate);
+    CalendarSheet.Select(R, C);
   end;
 end;
 
-procedure TCalendarForm.DayInListSelect(const ADate: TDate);
+function TCalendarForm.DayInListSelect(const ADate: TDate): Boolean;
 var
   Ind: Integer;
 begin
+  Result:= False;
   if IsCopyDates then Exit;
 
   Ind:= VIndexOfDate(Corrections.Dates, ADate);
   if Ind>=0 then
     VSTDays.Select(Ind)
-  else
+  else if VSTDays.IsSelected then
     VSTDays.UnSelect;
+  Result:= Ind>=0;
 end;
 
 procedure TCalendarForm.CalendarEditFormOpen(const ADate: TDate);
@@ -484,7 +496,7 @@ begin
   try
     ZoomPercent:= AZoomPercent;
     CalendarSheet.Zoom(ZoomPercent);
-    CalendarSheet.Draw(Calendar, SelectedDates);
+    CalendarSheet.Draw(Calendar);
     CalendarSheet.ColorsUpdate(Colors);
   finally
     ViewGrid.Visible:= True;

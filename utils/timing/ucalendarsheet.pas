@@ -41,7 +41,6 @@ type
   var
     FCalendar: TCalendar;
     FYear: Word;
-    FHighLightDays: TDateVector;
     FRowHeight: Integer;
 
     procedure CaptionDraw;
@@ -56,10 +55,15 @@ type
   public
     constructor Create(const AFont: TFont; const AWorksheet: TsWorksheet; const AGrid: TsWorksheetGrid = nil);
 
-    procedure Draw(const AYearCalendar: TCalendar; const AHighLightDays: TDateVector);
+    procedure Draw(const AYearCalendar: TCalendar);
 
     function GridToDate(const ARow, ACol: Integer; out ADate: TDate): Boolean;
     function DateToGrid(const ADate: TDate; out ARow, ACol: Integer): Boolean;
+
+    procedure Select(const ADate: TDate);
+    procedure Select(const ARow, ACol: Integer);
+    procedure Unselect(const ADate: TDate);
+    procedure Unselect(const ARow, ACol: Integer);
  end;
 
 implementation
@@ -286,11 +290,7 @@ begin
       R:= MONTH_FIRST_ROWS[AMonth] + MonthCalendar.WeekNumsInMonth[i] + 1;
       C:= MONTH_FIRST_COLS[AMonth] + MonthCalendar.DayNumsInWeek[i] - 1;
       Writer.WriteNumber(R,C,i+1,cbtOuter);
-      j:= VIndexOfDate(FHighLightDays, MonthCalendar.Dates[i]);
-      if j>=0 then
-        Writer.AddCellBGColorIndex(R, C, HIGHLIGHT_COLOR_INDEX)
-      else
-        Writer.AddCellBGColorIndex(R, C, MonthCalendar.DayStatuses[i]);
+      Writer.AddCellBGColorIndex(R, C, MonthCalendar.DayStatuses[i]);
     end;
     R:= MONTH_RESUME_ROWS[AMonth];
     C:= RESUME_FIRST_COL+1;
@@ -333,14 +333,12 @@ begin
   Writer.SetBordersColor(clBlack);
 end;
 
-procedure TCalendarSheet.Draw(const AYearCalendar: TCalendar;
-  const AHighLightDays: TDateVector);
+procedure TCalendarSheet.Draw(const AYearCalendar: TCalendar);
 var
   i: Integer;
 begin
   FCalendar:= AYearCalendar;
   FYear:= YearOfDate(FCalendar.BeginDate);
-  FHighLightDays:= AHighLightDays;
   Writer.BeginEdit;
   CaptionDraw;
   LegendDraw;
@@ -439,6 +437,32 @@ begin
   3: ACol:= DayNumberInWeek(ADate) + 16;
   end;
   Result:= True;
+end;
+
+procedure TCalendarSheet.Select(const ADate: TDate);
+var
+  R, C: Integer;
+begin
+  DateToGrid(ADate, R, C);
+  Select(R, C);
+end;
+
+procedure TCalendarSheet.Select(const ARow, ACol: Integer);
+begin
+  SelectionAddCell(ARow, ACol);
+end;
+
+procedure TCalendarSheet.Unselect(const ADate: TDate);
+var
+  R, C: Integer;
+begin
+  DateToGrid(ADate, R, C);
+  Unselect(R, C);
+end;
+
+procedure TCalendarSheet.Unselect(const ARow, ACol: Integer);
+begin
+  SelectionDelCell(ARow, ACol);
 end;
 
 end.

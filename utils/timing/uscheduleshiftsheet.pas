@@ -41,7 +41,6 @@ type
       FNeedCorrect: Boolean;
       FScheduleNotWorkColor: Boolean;
       FNeedMarks: Boolean;
-      FHighLightDays: TDateVector;
       FResumeType: Byte;
       FCaption: String;
     procedure CaptionDraw;
@@ -62,11 +61,15 @@ type
     procedure Draw(const ACalendar: TCalendar;
                    const ASchedule: TShiftSchedule;
                    const AName: String;
-                   const ANeedNight, ANeedCorrect, ANeedMarks, AScheduleNotWorkColor: Boolean;
-                   const AHighLightDays: TDateVector=nil);
+                   const ANeedNight, ANeedCorrect, ANeedMarks, AScheduleNotWorkColor: Boolean);
 
     function GridToDate(const ARow, ACol: Integer; out ADate: TDate): Boolean;
     function DateToGrid(const ADate: TDate; out ARow, ACol: Integer): Boolean;
+
+    procedure Select(const ADate: TDate);
+    procedure Select(const ARow, ACol: Integer);
+    procedure Unselect(const ADate: TDate);
+    procedure Unselect(const ARow, ACol: Integer);
   end;
 
 
@@ -277,23 +280,18 @@ var
     ChooseShiftScheduleData(CutSchedule, FNeedCorrect, WorkHours, d,s, Marks);
     for i:= 0 to CutCalendar.DaysCount - 1 do
     begin
-      j:= VIndexOfDate(FHighLightDays, CutCalendar.Dates[i]);
-      if j>=0 then
-        AddScheduleColorIndex(Writer, ARow, ACol+i, HIGHLIGHT_COLOR_INDEX, FNeedNight)
+      if FNeedCorrect and (CutSchedule.IsCorrection[i]=CORRECTION_YES) then
+        AddScheduleColorIndex(Writer, ARow, ACol+i, CORRECT_COLOR_INDEX, FNeedNight)
       else begin
-        if FNeedCorrect and (CutSchedule.IsCorrection[i]=CORRECTION_YES) then
-          AddScheduleColorIndex(Writer, ARow, ACol+i, CORRECT_COLOR_INDEX, FNeedNight)
+        if FScheduleNotWorkColor then
+        begin
+          if WorkHours.Total[i]=0 then
+            AddScheduleColorIndex(Writer, ARow, ACol+i, NOTWORK_COLOR_INDEX, FNeedNight);
+        end
         else begin
-          if FScheduleNotWorkColor then
-          begin
-            if WorkHours.Total[i]=0 then
-              AddScheduleColorIndex(Writer, ARow, ACol+i, NOTWORK_COLOR_INDEX, FNeedNight);
-          end
-          else begin
-            if (CutCalendar.DayStatuses[i]=DAY_STATUS_HOLIDAY) or
-               (CutCalendar.DayStatuses[i]=DAY_STATUS_OFFDAY) then
-               AddScheduleColorIndex(Writer, ARow, ACol+i, NOTWORK_COLOR_INDEX, FNeedNight);
-          end;
+          if (CutCalendar.DayStatuses[i]=DAY_STATUS_HOLIDAY) or
+             (CutCalendar.DayStatuses[i]=DAY_STATUS_OFFDAY) then
+             AddScheduleColorIndex(Writer, ARow, ACol+i, NOTWORK_COLOR_INDEX, FNeedNight);
         end;
       end;
       DrawHoursOrMarks(Writer, ARow, ACol+i, WorkHours.Total[i], WorkHours.Night[i],
@@ -405,8 +403,7 @@ end;
 procedure TShiftScheduleTableSheet.Draw(const ACalendar: TCalendar;
                    const ASchedule: TShiftSchedule;
                    const AName: String;
-                   const ANeedNight, ANeedCorrect, ANeedMarks, AScheduleNotWorkColor: Boolean;
-                   const AHighLightDays: TDateVector=nil);
+                   const ANeedNight, ANeedCorrect, ANeedMarks, AScheduleNotWorkColor: Boolean);
 var
   i: Integer;
 begin
@@ -417,7 +414,6 @@ begin
   FNeedCorrect:= ANeedCorrect;
   FNeedMarks:= ANeedMarks;
   FScheduleNotWorkColor:= AScheduleNotWorkColor;
-  FHighLightDays:= AHighLightDays;
 
   Writer.BeginEdit;
   CaptionDraw;
@@ -555,6 +551,36 @@ begin
   ARow:= DateToRow(ADate);
   ACol:= DateToCol(ADate);
   Result:= True;
+end;
+
+procedure TShiftScheduleTableSheet.Select(const ADate: TDate);
+var
+  R, C: Integer;
+begin
+  DateToGrid(ADate, R, C);
+  Select(R, C);
+end;
+
+procedure TShiftScheduleTableSheet.Select(const ARow, ACol: Integer);
+begin
+  SelectionAddCell(ARow, ACol);
+  if FNeedNight then
+    SelectionAddCell(ARow+1, ACol);
+end;
+
+procedure TShiftScheduleTableSheet.Unselect(const ADate: TDate);
+var
+  R, C: Integer;
+begin
+  DateToGrid(ADate, R, C);
+  Unselect(R, C);
+end;
+
+procedure TShiftScheduleTableSheet.Unselect(const ARow, ACol: Integer);
+begin
+  SelectionDelCell(ARow, ACol);
+  if FNeedNight then
+    SelectionDelCell(ARow+1, ACol);
 end;
 
 end.
