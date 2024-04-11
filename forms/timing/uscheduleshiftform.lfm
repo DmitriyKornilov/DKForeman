@@ -737,6 +737,7 @@ object ScheduleShiftForm: TScheduleShiftForm
             0000000000000000000000000000000000000000000000000000000000000000
             0000000000000000000000000000000000000000000000000000
           }
+          OnClick = ScheduleDelButtonClick
           ShowHint = True
           ParentShowHint = False
         end
@@ -1127,6 +1128,7 @@ object ScheduleShiftForm: TScheduleShiftForm
                 0000000000000000000000000000000000000000000000000000000000000000
                 0000000000000000000000000000000000000000000000000000
               }
+              OnClick = DayDelButtonClick
               ShowHint = True
               ParentShowHint = False
             end

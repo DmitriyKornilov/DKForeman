@@ -90,6 +90,7 @@ type
     procedure CopyBegin;
     procedure CopyEnd(const ANeedSave: Boolean);
 
+    procedure CorrectionDelete;
     procedure CorrectionSelect;
     procedure CopySelect;
 
@@ -180,8 +181,7 @@ end;
 
 procedure TCalendarForm.DayDelButtonClick(Sender: TObject);
 begin
-  DataBase.CalendarCorrectionDelete(Corrections.Dates[VSTDays.SelectedIndex]);
-  CalendarRefresh;
+  CorrectionDelete;
 end;
 
 procedure TCalendarForm.DayEditButtonClick(Sender: TObject);
@@ -270,6 +270,7 @@ begin
 
   VSTDays:= TVSTTable.Create(DayVT);
   VSTDays.OnSelect:= @CorrectionSelect;
+  VSTDays.OnDelKeyDown:= @CorrectionDelete;
   VSTDays.SetSingleFont(MainForm.GridFont);
   VSTDays.HeaderFont.Style:= [fsBold];
   VSTDays.CanSelect:= True;
@@ -387,6 +388,20 @@ begin
   DayPanel.Visible:= True;
 end;
 
+procedure TCalendarForm.CorrectionDelete;
+var
+  Ind: Integer;
+begin
+  if not VSTDays.IsSelected then Exit;
+  Ind:= VSTDays.SelectedIndex;
+  DataBase.CalendarCorrectionDelete(Corrections.Dates[Ind]);
+  CalendarRefresh;
+  if VIsNil(Corrections.Dates) then Exit;
+  if Ind>High(Corrections.Dates) then Dec(Ind);
+  VSTDays.Select(Ind);
+  VSTDays.SetFocus;
+end;
+
 procedure TCalendarForm.CorrectionSelect;
 begin
   if VSTDays.IsSelected then
@@ -468,6 +483,8 @@ procedure TCalendarForm.ViewUpdate(const AModeType: TModeType);
 begin
   ModeType:= AModeType;
 
+  if IsCopyDates then CopyEnd(False);
+
   if ModeType=mtEditing then
   begin
     EditingPanel.Visible:= True;
@@ -479,6 +496,7 @@ begin
     EditingPanel.Visible:= False;
     SheetPanel.AnchorToNeighbour(akLeft, 2, Self);
   end;
+
 end;
 
 end.

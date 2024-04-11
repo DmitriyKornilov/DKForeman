@@ -140,6 +140,7 @@ type
     {Список графиков сменности: True - ОК, False - список пуст}
     function ScheduleMainListLoad(out AScheduleIDs, AWeekHours, ACycleCounts: TIntVector;
                                   out AScheduleNames: TStrVector): Boolean;
+
     {Структура графика/список корректировок : True - ОК, False - пусто (ошибка)}
     function ScheduleParamsLoad(const ATableName, AFindFieldName, AIDFieldName: String;
                                 const AFindValue: Integer;
@@ -149,28 +150,34 @@ type
                                 out AStrMarks: TStrVector;
                                 const ABeginDate: TDate = 0;
                                 const AEndDate: TDate = 0): Boolean;
+    {Запись или обновление корректировки графика: True - ОК, False - ошибка}
+    function ScheduleCorrectionsUpdate(const ATableName, AIDFieldName: String;
+                               const AIDValue: Integer;
+                               const ACorrections: TScheduleCorrections): Boolean;
+
     {Цикл (структура) графика сменности: True - ОК, False - пусто (ошибка)}
     function ScheduleCycleLoad(const AScheduleID: Integer;
                                out ACycleIDs: TIntVector;
                                out ACycle: TScheduleCycle): Boolean;
+
     {Cписок корректировок графика сменности: True - ОК, False - пусто (ошибка)}
     function ScheduleShiftCorrectionsLoad(const AScheduleID: Integer;
                                out ACorrectIDs: TIntVector;
                                out ACorrections: TScheduleCorrections;
                                const ABeginDate: TDate = 0;
                                const AEndDate: TDate = 0): Boolean;
-    {Запись или обновление корректировки графика: True - ОК, False - ошибка}
-    function ScheduleCorrectionsUpdate(const ATableName, AIDFieldName: String;
-                               const AIDValue: Integer;
-                               const ACorrections: TScheduleCorrections): Boolean;
     {Запись или обновление корректировки графика сменности: True - ОК, False - ошибка}
     function ScheduleShiftCorrectionsUpdate(const AScheduleID: Integer;
                                const ACorrections: TScheduleCorrections): Boolean;
+    {Удаление корректировки графика сменности: True - ОК, False - ошибка}
+    function ScheduleShiftCorrectionDelete(const ACorrectID: Integer): Boolean;
+
     {Запись или обновление корректировки персонального графика: True - ОК, False - ошибка}
     function SchedulePersonalCorrectionsUpdate(const ATubNumID: Integer;
                                const ACorrections: TScheduleCorrections): Boolean;
 
-
+    {Удаление графика сменности: True - ОК, False - ошибка}
+    function ScheduleShiftDelete(const AScheduleID: Integer): Boolean;
 
     (**************************************************************************
                                       ТАБЕЛИ
@@ -1036,10 +1043,20 @@ begin
   Result:= ScheduleCorrectionsUpdate('SCHEDULECORRECT', 'ScheduleID', AScheduleID, ACorrections);
 end;
 
+function TDataBase.ScheduleShiftCorrectionDelete(const ACorrectID: Integer): Boolean;
+begin
+  Result:= Delete('SCHEDULECORRECT', 'CorrectID', ACorrectID);
+end;
+
 function TDataBase.SchedulePersonalCorrectionsUpdate(const ATubNumID: Integer;
   const ACorrections: TScheduleCorrections): Boolean;
 begin
   Result:= ScheduleCorrectionsUpdate('PERSONALCORRECT', 'TabNumID', ATubNumID, ACorrections);
+end;
+
+function TDataBase.ScheduleShiftDelete(const AScheduleID: Integer): Boolean;
+begin
+  Result:= Delete('SCHEDULEMAIN', 'ScheduleID', AScheduleID);
 end;
 
 function TDataBase.TimetableMarkListLoad(out ADigMarks: TIntVector;

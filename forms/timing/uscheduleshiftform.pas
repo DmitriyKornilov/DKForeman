@@ -76,6 +76,7 @@ type
     procedure CopySaveButtonClick(Sender: TObject);
     procedure DayAddButtonClick(Sender: TObject);
     procedure DayCopyButtonClick(Sender: TObject);
+    procedure DayDelButtonClick(Sender: TObject);
     procedure DayEditButtonClick(Sender: TObject);
     procedure DayVTNodeDblClick(Sender: TBaseVirtualTree; const HitInfo: THitInfo);
     procedure ExportButtonClick(Sender: TObject);
@@ -83,6 +84,7 @@ type
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure ScheduleAddButtonClick(Sender: TObject);
+    procedure ScheduleDelButtonClick(Sender: TObject);
     procedure ScheduleEditButtonClick(Sender: TObject);
     procedure ScheduleListVTNodeDblClick(Sender: TBaseVirtualTree; const {%H-}HitInfo: THitInfo);
     procedure ViewGridDblClick(Sender: TObject);
@@ -132,6 +134,7 @@ type
 
     procedure EditingTablesCreate;
     procedure CorrectionsLoad(const SelectedID: Integer = -1);
+    procedure CorrectionDelete;
     procedure CorrectionSelect;
     procedure CopyListLoad(const ASelectedDate: TDate=0);
     procedure CopySelect;
@@ -205,6 +208,11 @@ end;
 procedure TScheduleShiftForm.DayCopyButtonClick(Sender: TObject);
 begin
   CopyBegin;
+end;
+
+procedure TScheduleShiftForm.DayDelButtonClick(Sender: TObject);
+begin
+  CorrectionDelete;
 end;
 
 procedure TScheduleShiftForm.DayEditButtonClick(Sender: TObject);
@@ -295,6 +303,11 @@ end;
 procedure TScheduleShiftForm.ScheduleAddButtonClick(Sender: TObject);
 begin
   ScheduleShiftEditFormOpen(etAdd);
+end;
+
+procedure TScheduleShiftForm.ScheduleDelButtonClick(Sender: TObject);
+begin
+
 end;
 
 procedure TScheduleShiftForm.ScheduleEditButtonClick(Sender: TObject);
@@ -444,6 +457,7 @@ begin
 
   VSTDays:= TVSTTable.Create(DayVT);
   VSTDays.OnSelect:= @CorrectionSelect;
+  VSTDays.OnDelKeyDown:= @CorrectionDelete;
   VSTDays.SetSingleFont(MainForm.GridFont);
   VSTDays.HeaderFont.Style:= [fsBold];
   VSTDays.CanSelect:= True;
@@ -541,6 +555,20 @@ begin
   finally
     VSTDays.Visible:= True;
   end;
+end;
+
+procedure TScheduleShiftForm.CorrectionDelete;
+var
+  Ind: Integer;
+begin
+  if not VSTDays.IsSelected then Exit;
+  Ind:= VSTDays.SelectedIndex;
+  DataBase.ScheduleShiftCorrectionDelete(CorrectIDs[Ind]);
+  ScheduleChange(False {no cycle load});
+  if VIsNil(CorrectIDs) then Exit;
+  if Ind>High(CorrectIDs) then Dec(Ind);
+  VSTDays.Select(Ind);
+  VSTDays.SetFocus;
 end;
 
 procedure TScheduleShiftForm.CorrectionSelect;
@@ -872,7 +900,7 @@ begin
   ListPanel.Visible:= False;
   try
     ModeType:= AModeType;
-    ExportButton.Enabled:= ModeType<>mtEditing;
+    if IsCopyDates then CopyEnd(False);
 
     ListToolPanel.Visible:= ModeType=mtEditing;
     VSTDays.CanSelect:= ModeType=mtEditing;
