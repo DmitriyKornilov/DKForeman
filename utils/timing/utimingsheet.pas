@@ -5,11 +5,39 @@ unit UTimingSheet;
 interface
 
 uses
-  Classes, SysUtils,
+  Classes, SysUtils, Graphics, fpspreadsheetgrid, fpspreadsheet, DateUtils,
   //DK packages utils
-  DK_SheetWriter, DK_Vector,
+  DK_SheetTypes, DK_SheetWriter, DK_Vector,
   //Project utils
   USchedule, UWorkHours;
+
+type
+
+  { TDateSheet }
+
+  TDateSheet = class(TCustomSheet)
+  private
+    FSelectedDates: TDateVector;
+    FMultiSelect: Boolean;
+  public
+    constructor Create(const AWorksheet: TsWorksheet;
+                       const AGrid: TsWorksheetGrid;
+                       const AFont: TFont);
+
+    function GridToDate(const ARow, ACol: Integer; out ADate: TDate): Boolean; virtual; abstract;
+    function DateToGrid(const ADate: TDate; out ARow, ACol: Integer): Boolean; virtual; abstract;
+
+    procedure Select(const ADate: TDate); virtual;
+    procedure Unselect(const ADate: TDate); virtual;
+    procedure SelectionClear; override;
+    function IsSelected: Boolean;
+    function IsDateSelected(const ADate: TDate): Boolean;
+
+    procedure DayInGridSelect(const ADate: TDate);
+
+    property SelectedDates: TDateVector read FSelectedDates write FSelectedDates;
+    property MultiSelect: Boolean read FMultiSelect write FMultiSelect;
+  end;
 
   procedure AddScheduleColorIndex(const AWriter: TSheetWriter;
                                   const ARow, ACol, AInd: Integer;
@@ -265,6 +293,77 @@ begin
                    AWriteTotalIfZero, AWriteNightIfZero, ANeedNight, ANeedMarks,
                    AIsVacation, AIsDefine);
 end;
+
+{ TDateSheet }
+
+
+constructor TDateSheet.Create(const AWorksheet: TsWorksheet;
+                       const AGrid: TsWorksheetGrid;
+                       const AFont: TFont);
+begin
+  inherited Create(AWorksheet, AGrid, AFont);
+  Writer.SetBordersColor(clBlack);
+  FSelectedDates:= nil;
+  FMultiSelect:= False;
+end;
+
+procedure TDateSheet.Select(const ADate: TDate);
+var
+  R, C: Integer;
+begin
+  if not DateToGrid(ADate, R, C) then Exit;
+  SelectionAddCell(R, C);
+  VInsAscDate(FSelectedDates, ADate);
+end;
+
+procedure TDateSheet.Unselect(const ADate: TDate);
+var
+  R, C: Integer;
+begin
+  if not IsSelected then Exit;
+  if not DateToGrid(ADate, R, C) then Exit;
+  SelectionDelCell(R, C);
+  VDel(FSelectedDates, ADate);
+end;
+
+procedure TDateSheet.SelectionClear;
+begin
+  inherited SelectionClear;
+  FSelectedDates:= nil;
+end;
+
+function TDateSheet.IsSelected: Boolean;
+begin
+  Result:= not VIsNil(FSelectedDates);
+end;
+
+function TDateSheet.IsDateSelected(const ADate: TDate): Boolean;
+begin
+  Result:= VIndexOfDate(FSelectedDates, ADate)>=0;
+end;
+
+procedure TDateSheet.DayInGridSelect(const ADate: TDate);
+begin
+  if MultiSelect then //копирование корректировки (multiselect)
+  begin
+    if IsDateSelected(ADate) then //повторный клик на дату - убираем выделение
+      Unselect(ADate)
+    else //клик по новой дате - добавляем к выделению
+      Select(ADate);
+  end
+  else begin //корректировка (single select)
+    if IsSelected then  //уже есть выделение
+    begin
+      //клик по новой дате - убираем старое выделение
+      if not SameDate(FSelectedDates[0], ADate) then
+        Unselect(FSelectedDates[0]);
+    end;
+    //новое выделение
+    Select(ADate);
+  end;
+end;
+
+
 
 end.
 

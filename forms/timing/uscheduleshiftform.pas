@@ -116,14 +116,12 @@ type
     Schedule: TShiftSchedule;
     ScheduleSheet: TShiftScheduleTableSheet;
 
-    SelectedDates: TDateVector;
     SelectedHoursTotal, SelectedHoursNight, SelectedDigMark, SelectedShiftNum: Integer;
     SelectedStrMark: String;
     IsCopyDates: Boolean;
 
     procedure CopyBegin;
     procedure CopyEnd(const ANeedSave: Boolean);
-    procedure DayInGridSelect(const ADate: TDate);
     function DayInListSelect(const ADate: TDate): Boolean;
 
     procedure ColorsLoad;
@@ -189,12 +187,8 @@ begin
 end;
 
 procedure TScheduleShiftForm.CopyDelButtonClick(Sender: TObject);
-var
-  R,C: Integer;
 begin
-  ScheduleSheet.DateToGrid(SelectedDates[VSTCopy.SelectedIndex], R, C);
-  ScheduleSheet.SelectionDelCell(R,C);
-  VDel(SelectedDates, VSTCopy.SelectedIndex);
+  ScheduleSheet.Unselect(ScheduleSheet.SelectedDates[VSTCopy.SelectedIndex]);
   CopyListLoad;
 end;
 
@@ -220,11 +214,11 @@ end;
 
 procedure TScheduleShiftForm.DayVTNodeDblClick(Sender: TBaseVirtualTree; const HitInfo: THitInfo);
 var
-  DayDate: TDate;
+  D: TDate;
 begin
   if not VSTDays.IsSelected then Exit;
-  DayDate:= Corrections.Dates[HitInfo.HitNode^.Index];
-  ScheduleCorrectionEditFormOpen(DayDate);
+  D:= Corrections.Dates[HitInfo.HitNode^.Index];
+  ScheduleCorrectionEditFormOpen(D);
 end;
 
 procedure TScheduleShiftForm.ExportButtonClick(Sender: TObject);
@@ -336,7 +330,8 @@ begin
     (Sender as TsWorksheetGrid).MouseToCell(X, Y, C, R);
     if not ScheduleSheet.GridToDate(R, C, D) then Exit;
     if DayInListSelect(D) then Exit;
-    DayInGridSelect(D);
+    ScheduleSheet.DayInGridSelect(D);
+    if IsCopyDates then CopyListLoad;
   end
   else if Button=mbRight then
   begin
@@ -344,22 +339,10 @@ begin
     begin
       VSTCopy.ValuesClear;
       ScheduleSheet.SelectionClear;
-      SelectedDates:= nil;
     end
     else
       VSTDays.UnSelect;
   end;
-
-  //if ModeType<>mtEditing then Exit;
-  //R:= 0;
-  //C:= 0;
-  //if Button=mbLeft then
-  //  (Sender as TsWorksheetGrid).MouseToCell(X,Y,C,R);
-  //
-  //ScheduleSheet.GridToDate(R, C, D);
-  //if not IsCopyDates then
-  //  DayInListSelect(D);
-  //DayInGridSelect(D);
 end;
 
 procedure TScheduleShiftForm.YearSpinEditChange(Sender: TObject);
@@ -370,6 +353,7 @@ end;
 procedure TScheduleShiftForm.CopyBegin;
 begin
   IsCopyDates:= True;
+  ScheduleSheet.MultiSelect:= True;
   DayPanel.Visible:= False;
   DayPanel.Align:= alBottom;
   CopyPanel.Align:= alClient;
@@ -387,62 +371,26 @@ procedure TScheduleShiftForm.CopyEnd(const ANeedSave: Boolean);
 var
   C: TScheduleCorrections;
 begin
-  if not VIsNil(SelectedDates) then
+  if ScheduleSheet.IsSelected then
   begin
     if ANeedSave then //apply copies
     begin
-      C:= GetScheduleCorrections(SelectedDates, SelectedHoursTotal, SelectedHoursNight,
+      C:= GetScheduleCorrections(ScheduleSheet.SelectedDates, SelectedHoursTotal, SelectedHoursNight,
                                  SelectedDigMark, SelectedShiftNum, SelectedStrMark);
       DataBase.ScheduleShiftCorrectionsUpdate(ScheduleIDs[ScheduleList.SelectedIndex], C);
-      ScheduleChange(False{no cycle reload}); //includes SelectedDates:= nil;
+      ScheduleChange(False{no cycle reload});
     end
-    else begin//cancel copies
+    else //cancel copies
       ScheduleSheet.SelectionClear;
-      SelectedDates:= nil;
-    end;
     VSTCopy.ValuesClear;
   end;
 
   IsCopyDates:= False;
+  ScheduleSheet.MultiSelect:= False;
   CopyPanel.Visible:= False;
   CopyPanel.Align:= alBottom;
   DayPanel.Align:= alClient;
   DayPanel.Visible:= True;
-end;
-
-procedure TScheduleShiftForm.DayInGridSelect(const ADate: TDate);
-var
-  Ind, R, C: Integer;
-begin
-  if not Assigned(ScheduleSheet) then Exit;
-  if not ScheduleSheet.DateToGrid(ADate, R, C) then //неверная дата
-    Exit;
-
-  if IsCopyDates then //копирование корректировки (multiselect)
-  begin
-    Ind:= VIndexOfDate(SelectedDates, ADate);
-    if Ind>=0 then //повторный клик на дату - убираем выделение
-    begin
-      VDel(SelectedDates, Ind);
-      ScheduleSheet.Unselect(R, C);
-    end
-    else begin //клик по новой дате - добавляем к выделению
-      VInsAscDate(SelectedDates, ADate);
-      ScheduleSheet.Select(R, C);
-    end;
-    CopyListLoad; //обновление таблицы
-  end
-  else begin //корректировка (single select)
-    if not VIsNil(SelectedDates) then  //уже есть выделение
-    begin
-      //клик по новой дате - убираем старое выделение
-      if not SameDate(SelectedDates[0], ADate) then
-        ScheduleSheet.Unselect(SelectedDates[0]);
-    end;
-    //новое выделение
-    VDim(SelectedDates, 1, ADate);
-    ScheduleSheet.Select(R, C);
-  end;
 end;
 
 function TScheduleShiftForm.DayInListSelect(const ADate: TDate): Boolean;
@@ -598,12 +546,9 @@ end;
 procedure TScheduleShiftForm.CorrectionSelect;
 begin
   if VSTDays.IsSelected then
-    DayInGridSelect(Corrections.Dates[VSTDays.SelectedIndex])
-  else if Assigned(ScheduleSheet) and (not VIsNil(SelectedDates)) then
-  begin
-    ScheduleSheet.Unselect(SelectedDates[0]);
-    SelectedDates:= nil;
-  end;
+    ScheduleSheet.DayInGridSelect(Corrections.Dates[VSTDays.SelectedIndex])
+  else if Assigned(ScheduleSheet) then
+    ScheduleSheet.SelectionClear;
 
   DayDelButton.Enabled:= VSTDays.IsSelected;
   DayEditButton.Enabled:= DayDelButton.Enabled;
@@ -614,7 +559,7 @@ procedure TScheduleShiftForm.CopyListLoad(const ASelectedDate: TDate);
 var
   Dates, TotalHours, NightHours, StrMarks, ShiftNums: TStrVector;
 begin
-  Dates:= VDateToStr(SelectedDates);
+  Dates:= VDateToStr(ScheduleSheet.SelectedDates);
   VDim(TotalHours{%H-}, Length(Dates), WorkHoursToStr(SelectedHoursTotal));
   VDim(NightHours{%H-}, Length(Dates), WorkHoursToStr(SelectedHoursNight));
   VDim(StrMarks{%H-}, Length(Dates), SelectedStrMark);
@@ -630,12 +575,12 @@ begin
     VSTCopy.SetColumn(SCHEDULE_CORRECTION_COLUMN_NAMES[3], NightHours);
     VSTCopy.SetColumn(SCHEDULE_CORRECTION_COLUMN_NAMES[4], StrMarks);
     VSTCopy.Draw;
-    VSTCopy.ReSelect(SelectedDates, ASelectedDate);
+    VSTCopy.ReSelect(ScheduleSheet.SelectedDates, ASelectedDate);
   finally
     VSTCopy.Visible:= True;
   end;
 
-  CopySaveButton.Enabled:= not VIsNil(SelectedDates);
+  CopySaveButton.Enabled:= ScheduleSheet.IsSelected;
 
 end;
 
@@ -722,7 +667,6 @@ end;
 procedure TScheduleShiftForm.ScheduleChange(const ANeedCycleLoad: Boolean);
 begin
   if not CanDrawSchedule then Exit;
-  SelectedDates:= nil;
   if ANeedCycleLoad then CycleLoad;
   CorrectionsLoad;
   ScheduleLoad;
@@ -735,8 +679,8 @@ procedure TScheduleShiftForm.ScheduleToSheet(var ASheet: TShiftScheduleTableShee
   const AScheduleName: String = '');
 begin
   if Assigned(ASheet) then FreeAndNil(ASheet);
-  ASheet:= TShiftScheduleTableSheet.Create(MainForm.GridFont,
-                            AWorksheet, AGrid, CountType.SelectedIndex);
+  ASheet:= TShiftScheduleTableSheet.Create(AWorksheet, AGrid, MainForm.GridFont,
+                                           CountType.SelectedIndex);
 
   if Assigned(AGrid) then
     ASheet.Zoom(ZoomPercent);

@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, Graphics, fpspreadsheetgrid, fpspreadsheet,
   //Project utils
-  UConst, UCalendar, UWorkHours,
+  UConst, UCalendar, UWorkHours, UTimingSheet,
   //DK packages utils
   DK_SheetWriter, DK_Vector, DK_Const, DK_DateUtils, DK_StrUtils, DK_SheetTypes;
 
@@ -15,7 +15,7 @@ type
 
   { TCalendarSheet }
 
-  TCalendarSheet = class (TCustomSheet)
+  TCalendarSheet = class (TDateSheet)
   protected
     function SetWidths: TIntVector; override;
   private
@@ -51,19 +51,14 @@ type
     procedure QuarterDraw(const AQuarter: Byte);
     procedure HalfDraw(const AHalf: Byte);
     procedure YearDraw;
+
     function GridToMonth(const ARow, ACol: Integer; out ADayInWeek, AWeekInMonth, AMonth: Integer): Boolean;
+
   public
-    constructor Create(const AFont: TFont; const AWorksheet: TsWorksheet; const AGrid: TsWorksheetGrid = nil);
-
+    constructor Create(const AWorksheet: TsWorksheet; const AGrid: TsWorksheetGrid; const AFont: TFont);
     procedure Draw(const AYearCalendar: TCalendar);
-
-    function GridToDate(const ARow, ACol: Integer; out ADate: TDate): Boolean;
-    function DateToGrid(const ADate: TDate; out ARow, ACol: Integer): Boolean;
-
-    procedure Select(const ADate: TDate);
-    procedure Select(const ARow, ACol: Integer);
-    procedure Unselect(const ADate: TDate);
-    procedure Unselect(const ARow, ACol: Integer);
+    function GridToDate(const ARow, ACol: Integer; out ADate: TDate): Boolean; override;
+    function DateToGrid(const ADate: TDate; out ARow, ACol: Integer): Boolean; override;
  end;
 
 implementation
@@ -325,12 +320,11 @@ begin
   for i:= 29 to 31 do Result[i]:= W;
 end;
 
-constructor TCalendarSheet.Create(const AFont: TFont; const AWorksheet: TsWorksheet;
-  const AGrid: TsWorksheetGrid);
+constructor TCalendarSheet.Create(const AWorksheet: TsWorksheet;
+  const AGrid: TsWorksheetGrid; const AFont: TFont);
 begin
   inherited Create(AWorksheet, AGrid, AFont);
   FRowHeight:= 24;
-  Writer.SetBordersColor(clBlack);
 end;
 
 procedure TCalendarSheet.Draw(const AYearCalendar: TCalendar);
@@ -437,32 +431,6 @@ begin
   3: ACol:= DayNumberInWeek(ADate) + 16;
   end;
   Result:= True;
-end;
-
-procedure TCalendarSheet.Select(const ADate: TDate);
-var
-  R, C: Integer;
-begin
-  DateToGrid(ADate, R, C);
-  Select(R, C);
-end;
-
-procedure TCalendarSheet.Select(const ARow, ACol: Integer);
-begin
-  SelectionAddCell(ARow, ACol);
-end;
-
-procedure TCalendarSheet.Unselect(const ADate: TDate);
-var
-  R, C: Integer;
-begin
-  DateToGrid(ADate, R, C);
-  Unselect(R, C);
-end;
-
-procedure TCalendarSheet.Unselect(const ARow, ACol: Integer);
-begin
-  SelectionDelCell(ARow, ACol);
 end;
 
 end.

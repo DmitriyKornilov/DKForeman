@@ -77,7 +77,6 @@ type
     Calendar: TCalendar;
     Corrections: TCalendarCorrections;
 
-    SelectedDates: TDateVector;
     SelectedStatus, SelectedSwapDay: Integer;
     IsCopyDates: Boolean;
 
@@ -94,9 +93,7 @@ type
     procedure CorrectionSelect;
     procedure CopySelect;
 
-    procedure DayInGridSelect(const ADate: TDate);
     function DayInListSelect(const ADate: TDate): Boolean;
-
 
     procedure CalendarEditFormOpen(const ADate: TDate);
   public
@@ -121,11 +118,11 @@ end;
 
 procedure TCalendarForm.ViewGridDblClick(Sender: TObject);
 var
-  DayDate: TDate;
+  D: TDate;
 begin
-  if not CalendarSheet.GridToDate(ViewGrid.Row, ViewGrid.Col, DayDate) then Exit;
-  VSTDays.ReSelect(Corrections.Dates, DayDate, False);
-  CalendarEditFormOpen(DayDate);
+  if not CalendarSheet.GridToDate(ViewGrid.Row, ViewGrid.Col, D) then Exit;
+  VSTDays.ReSelect(Corrections.Dates, D, False);
+  CalendarEditFormOpen(D);
 end;
 
 procedure TCalendarForm.ViewGridMouseDown(Sender: TObject;
@@ -140,7 +137,8 @@ begin
     (Sender as TsWorksheetGrid).MouseToCell(X,Y,C,R);
     if not CalendarSheet.GridToDate(R, C, D) then Exit;
     if DayInListSelect(D) then Exit;
-    DayInGridSelect(D);
+    CalendarSheet.DayInGridSelect(D);
+    if IsCopyDates then CopyListLoad;
   end
   else if Button=mbRight then
   begin
@@ -148,7 +146,6 @@ begin
     begin
       VSTCopy.ValuesClear;
       CalendarSheet.SelectionClear;
-      SelectedDates:= nil;
     end
     else
       VSTDays.UnSelect;
@@ -161,12 +158,8 @@ begin
 end;
 
 procedure TCalendarForm.CopyDelButtonClick(Sender: TObject);
-var
-  R,C: Integer;
 begin
-  CalendarSheet.DateToGrid(SelectedDates[VSTCopy.SelectedIndex], R, C);
-  CalendarSheet.SelectionDelCell(R,C);
-  VDel(SelectedDates, VSTCopy.SelectedIndex);
+  CalendarSheet.Unselect(CalendarSheet.SelectedDates[VSTCopy.SelectedIndex]);
   CopyListLoad;
 end;
 
@@ -238,7 +231,7 @@ begin
   ZoomPercent:= 100;
   CreateZoomControls(50, 150, ZoomPercent, ZoomPanel, @CalendarDraw, True);
 
-  CalendarSheet:= TCalendarSheet.Create(MainForm.GridFont, ViewGrid.Worksheet, ViewGrid);
+  CalendarSheet:= TCalendarSheet.Create(ViewGrid.Worksheet, ViewGrid, MainForm.GridFont);
   TablesCreate;
   Calendar:= TCalendar.Create;
   YearSpinEdit.Value:= YearOfDate(Date);
@@ -256,11 +249,11 @@ end;
 
 procedure TCalendarForm.DayVTNodeDblClick(Sender: TBaseVirtualTree; const HitInfo: THitInfo);
 var
-  DayDate: TDate;
+  D: TDate;
 begin
   if not VSTDays.IsSelected then Exit;
-  DayDate:= Corrections.Dates[HitInfo.HitNode^.Index];
-  CalendarEditFormOpen(DayDate);
+  D:= Corrections.Dates[HitInfo.HitNode^.Index];
+  CalendarEditFormOpen(D);
 end;
 
 procedure TCalendarForm.YearSpinEditChange(Sender: TObject);
@@ -337,7 +330,7 @@ procedure TCalendarForm.CopyListLoad(const ASelectedDate: TDate = 0);
 var
   Dates, Statuses, SwapDays: TStrVector;
 begin
-  Dates:= VDateToStr(SelectedDates);
+  Dates:= VDateToStr(CalendarSheet.SelectedDates);
   VDim(Statuses{%H-}, Length(Dates), DAY_STATUS_PICKS[SelectedStatus]);
   VDim(SwapDays{%H-}, Length(Dates), DAY_NAME_PICKS[SelectedSwapDay]);
 
@@ -347,17 +340,18 @@ begin
     VSTCopy.SetColumn(CALENDAR_CORRECTION_COLUMN_NAMES[1], Statuses);
     VSTCopy.SetColumn(CALENDAR_CORRECTION_COLUMN_NAMES[2], SwapDays);
     VSTCopy.Draw;
-    VSTCopy.ReSelect(SelectedDates, ASelectedDate);
+    VSTCopy.ReSelect(CalendarSheet.SelectedDates, ASelectedDate);
   finally
     VSTCopy.Visible:= True;
   end;
 
-  CopySaveButton.Enabled:= not VIsNil(Dates);
+  CopySaveButton.Enabled:= CalendarSheet.IsSelected;
 end;
 
 procedure TCalendarForm.CopyBegin;
 begin
   IsCopyDates:= True;
+  CalendarSheet.MultiSelect:= True;
   DayPanel.Visible:= False;
   DayPanel.Align:= alBottom;
   CopyPanel.Align:= alClient;
@@ -372,22 +366,21 @@ procedure TCalendarForm.CopyEnd(const ANeedSave: Boolean);
 var
   C: TCalendarCorrections;
 begin
-  if not VIsNil(SelectedDates) then
+  if CalendarSheet.IsSelected then
   begin
     if ANeedSave then //apply copies
     begin
-      C:= GetCalendarCorrections(SelectedDates, SelectedStatus, SelectedSwapDay);
+      C:= GetCalendarCorrections(CalendarSheet.SelectedDates, SelectedStatus, SelectedSwapDay);
       DataBase.CalendarCorrectionsUpdate(C);
-      CalendarRefresh; //includes SelectedDates:= nil;
+      CalendarRefresh;
     end
-    else begin //cancel copies
+    else //cancel copies
       CalendarSheet.SelectionClear;
-      SelectedDates:= nil;
-    end;
     VSTCopy.ValuesClear;
   end;
 
   IsCopyDates:= False;
+  CalendarSheet.MultiSelect:= False;
   CopyPanel.Visible:= False;
   CopyPanel.Align:= alBottom;
   DayPanel.Align:= alClient;
@@ -397,12 +390,9 @@ end;
 procedure TCalendarForm.CorrectionSelect;
 begin
   if VSTDays.IsSelected then
-    DayInGridSelect(Corrections.Dates[VSTDays.SelectedIndex])
-  else if not VIsNil(SelectedDates) then
-  begin
-    CalendarSheet.Unselect(SelectedDates[0]);
-    SelectedDates:= nil;
-  end;
+    CalendarSheet.DayInGridSelect(Corrections.Dates[VSTDays.SelectedIndex])
+  else
+    CalendarSheet.SelectionClear;
 
   DayDelButton.Enabled:= VSTDays.IsSelected;
   DayEditButton.Enabled:= DayDelButton.Enabled;
@@ -412,40 +402,6 @@ end;
 procedure TCalendarForm.CopySelect;
 begin
   CopyDelButton.Enabled:= VSTCopy.IsSelected;
-end;
-
-procedure TCalendarForm.DayInGridSelect(const ADate: TDate);
-var
-  Ind, R, C: Integer;
-begin
-  if not CalendarSheet.DateToGrid(ADate, R, C) then //неверная дата
-    Exit;
-
-  if IsCopyDates then //копирование корректировки (multiselect)
-  begin
-    Ind:= VIndexOfDate(SelectedDates, ADate);
-    if Ind>=0 then //повторный клик на дату - убираем выделение
-    begin
-      VDel(SelectedDates, Ind);
-      CalendarSheet.Unselect(R, C);
-    end
-    else begin //клик по новой дате - добавляем к выделению
-      VInsAscDate(SelectedDates, ADate);
-      CalendarSheet.Select(R, C);
-    end;
-    CopyListLoad; //обновление таблицы
-  end
-  else begin //корректировка (single select)
-    if not VIsNil(SelectedDates) then  //уже есть выделение
-    begin
-      //клик по новой дате - убираем старое выделение
-      if not SameDate(SelectedDates[0], ADate) then
-        CalendarSheet.Unselect(SelectedDates[0]);
-    end;
-    //новое выделение
-    VDim(SelectedDates, 1, ADate);
-    CalendarSheet.Select(R, C);
-  end;
 end;
 
 function TCalendarForm.DayInListSelect(const ADate: TDate): Boolean;
@@ -481,7 +437,6 @@ begin
     if CalendarEditForm.ShowModal=mrOK then
       CalendarRefresh
     else begin
-      SelectedDates:= nil;
       CalendarDraw(ZoomPercent);
       VSTDays.UnSelect;
     end;
@@ -505,7 +460,6 @@ end;
 
 procedure TCalendarForm.CalendarRefresh;
 begin
-  SelectedDates:= nil;
   CalendarLoad;
   CalendarDraw(ZoomPercent);
 end;

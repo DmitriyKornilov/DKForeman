@@ -17,7 +17,7 @@ type
 
   { TShiftScheduleTableSheet }
 
-  TShiftScheduleTableSheet = class (TCustomSheet)
+  TShiftScheduleTableSheet = class (TDateSheet)
   protected
     function SetWidths: TIntVector; override;
   private
@@ -54,22 +54,20 @@ type
     function DateToCol(const ADate: TDate): Integer;
 
   public
-    constructor Create(const AFont: TFont;
-                       const AWorksheet: TsWorksheet;
+    constructor Create(const AWorksheet: TsWorksheet;
                        const AGrid: TsWorksheetGrid;
+                       const AFont: TFont;
                        const AResumeType: Byte {0-дни, 1-смены, 2-дни и смены});
     procedure Draw(const ACalendar: TCalendar;
                    const ASchedule: TShiftSchedule;
                    const AName: String;
                    const ANeedNight, ANeedCorrect, ANeedMarks, AScheduleNotWorkColor: Boolean);
 
-    function GridToDate(const ARow, ACol: Integer; out ADate: TDate): Boolean;
-    function DateToGrid(const ADate: TDate; out ARow, ACol: Integer): Boolean;
+    function GridToDate(const ARow, ACol: Integer; out ADate: TDate): Boolean; override;
+    function DateToGrid(const ADate: TDate; out ARow, ACol: Integer): Boolean; override;
 
-    procedure Select(const ADate: TDate);
-    procedure Select(const ARow, ACol: Integer);
-    procedure Unselect(const ADate: TDate);
-    procedure Unselect(const ARow, ACol: Integer);
+    procedure Select(const ADate: TDate); override;
+    procedure Unselect(const ADate: TDate); override;
   end;
 
 
@@ -272,12 +270,12 @@ var
 
   procedure DrawMonth(ARow, ACol, AMonth: Word);
   var
-    i,j,d,s: Integer;
+    i, d, s: Integer;
   begin
     FirstLastDayInMonth(AMonth,AYear,BD,ED);
     FCalendar.Cut(BD, ED, CutCalendar);
     FSchedule.Cut(BD, ED, CutSchedule);
-    ChooseShiftScheduleData(CutSchedule, FNeedCorrect, WorkHours, d,s, Marks);
+    ChooseShiftScheduleData(CutSchedule, FNeedCorrect, WorkHours, d, s, Marks);
     for i:= 0 to CutCalendar.DaysCount - 1 do
     begin
       if FNeedCorrect and (CutSchedule.IsCorrection[i]=CORRECTION_YES) then
@@ -386,9 +384,9 @@ begin
   Result:= (not Writer.HasGrid) and (not SEmpty(FCaption));
 end;
 
-constructor TShiftScheduleTableSheet.Create(const AFont: TFont;
-                                  const AWorksheet: TsWorksheet;
+constructor TShiftScheduleTableSheet.Create(const AWorksheet: TsWorksheet;
                                   const AGrid: TsWorksheetGrid;
+                                  const AFont: TFont;
                                   const AResumeType: Byte);
 begin
   FResumeType:= AResumeType;
@@ -397,7 +395,6 @@ begin
   FCaption:= EmptyStr;
   FCalendar:= nil;
   FSchedule:= nil;
-  Writer.SetBordersColor(clBlack);
 end;
 
 procedure TShiftScheduleTableSheet.Draw(const ACalendar: TCalendar;
@@ -557,30 +554,20 @@ procedure TShiftScheduleTableSheet.Select(const ADate: TDate);
 var
   R, C: Integer;
 begin
-  DateToGrid(ADate, R, C);
-  Select(R, C);
-end;
-
-procedure TShiftScheduleTableSheet.Select(const ARow, ACol: Integer);
-begin
-  SelectionAddCell(ARow, ACol);
-  if FNeedNight then
-    SelectionAddCell(ARow+1, ACol);
+  inherited Select(ADate);
+  if not FNeedNight then Exit;
+  if not DateToGrid(ADate, R, C) then Exit;
+  SelectionAddCell(R+1, C);
 end;
 
 procedure TShiftScheduleTableSheet.Unselect(const ADate: TDate);
 var
   R, C: Integer;
 begin
-  DateToGrid(ADate, R, C);
-  Unselect(R, C);
-end;
-
-procedure TShiftScheduleTableSheet.Unselect(const ARow, ACol: Integer);
-begin
-  SelectionDelCell(ARow, ACol);
-  if FNeedNight then
-    SelectionDelCell(ARow+1, ACol);
+  inherited Unselect(ADate);
+  if not FNeedNight then Exit;
+  if not DateToGrid(ADate, R, C) then Exit;
+  SelectionDelCell(R+1, C);
 end;
 
 end.
