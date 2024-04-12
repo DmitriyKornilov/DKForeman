@@ -189,6 +189,7 @@ type
     function TimetableMarkListLoad(out ADigMarks: TIntVector;
                                    out AItemMarks: TStrVector;
                                    const AIDNotZero: Boolean = True): Boolean;
+    function TimetableStrMarkLoad(const ADigMark: Integer): String;
   end;
 
 var
@@ -837,7 +838,7 @@ function TDataBase.CalendarCorrectionsLoad(const ABeginDate, AEndDate: TDate;
                                      out ACorrections: TCalendarCorrections): Boolean;
 begin
   Result:= False;
-  ACorrections:= EmptyCalendarCorrections;
+  ACorrections:= CalendarCorrectionsEmpty;
   QSetQuery(FQuery);
   QSetSQL(
     'SELECT * FROM CALENDAR ' +
@@ -985,7 +986,7 @@ function TDataBase.ScheduleCycleLoad(const AScheduleID: Integer;
                                out ACycleIDs: TIntVector;
                                out ACycle: TScheduleCycle): Boolean;
 begin
-  ACycle:= EmptyScheduleCycle;
+  ACycle:= ScheduleCycleEmpty;
   ACycle.ScheduleID:= AScheduleID;
   ACycle.Count:= ValueInt32Int32ID('SCHEDULEMAIN', 'CycleCount', 'ScheduleID', AScheduleID);
   ACycle.IsWeek:= ACycle.Count=0;
@@ -1113,6 +1114,11 @@ begin
     AItemMarks[i]:= StrMarks[i] +
                 ' (' + SFillLeft(IntToStr(ADigMarks[i]), 2, '0') + ') ' +
                 EMPTY_MARK + SYMBOL_SPACE + Notes[i];
+end;
+
+function TDataBase.TimetableStrMarkLoad(const ADigMark: Integer): String;
+begin
+  Result:= ValueStrInt32ID('TIMETABLEMARK', 'StrMark', 'DigMark',  ADigMark);
 end;
 
 end.

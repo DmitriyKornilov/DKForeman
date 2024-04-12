@@ -5,11 +5,11 @@ unit UUtils;
 interface
 
 uses
-  Classes, SysUtils, Graphics, Controls, BCPanel, BCButton,
+  Classes, SysUtils, Graphics, Controls, BCPanel, BCButton, DateUtils,
   //DK packages utils
-  DK_CtrlUtils, DK_Color, DK_Vector, DK_VSTTables, DK_DateUtils,
+  DK_CtrlUtils, DK_Color, DK_Vector, DK_VSTTables, DK_DateUtils, DK_Const,
   //Project utils
-  UDataBase, UCalendar, USchedule;
+  UDataBase, UConst, UWorkHours, UCalendar, USchedule;
 
   //UI
   procedure SetToolPanels(const AControls: array of TControl);
@@ -40,7 +40,11 @@ uses
   function GetScheduleCorrections(const ABeginDate, AEndDate: TDate;
                          const AHoursTotal, AHoursNight, ADigMark, AShiftNum: Integer;
                          const AStrMark: String = ''): TScheduleCorrections;
-  //ScheduleShift load/creation
+  //ScheduleShift load/create/draw
+  function ScheduleCycleWeek(const AScheduleID: Integer = 0): TScheduleCycle;
+  procedure ScheduleCycleDateColumnSet(const ATable: TVSTCustomSimpleTable; const ACycle: TScheduleCycle; out AStrDates: TStrVector);
+  procedure ScheduleCycleDraw(const ATable: TVSTEdit; const ACycle: TScheduleCycle);
+  procedure ScheduleCycleDraw(const ATable: TVSTTable; const ACycle: TScheduleCycle);
   procedure ScheduleShiftByCalendar(const AScheduleID: Integer;
                          const ACalendar: TCalendar; var ASchedule: TShiftSchedule);
   procedure ScheduleShiftForPeriod(const AScheduleID: Integer;
@@ -145,7 +149,7 @@ function GetCalendarCorrections(const ADates: TDateVector;
 var
   n: Integer;
 begin
-  Result:= EmptyCalendarCorrections;
+  Result:= CalendarCorrectionsEmpty;
   Result.Dates:= VCut(ADates);
   n:= Length(ADates);
   VDim(Result.Statuses, n, AStatus);
@@ -186,6 +190,97 @@ begin
   Dates:= VCreateDate(ABeginDate, AEndDate);
   Result:= GetScheduleCorrections(Dates, AHoursTotal, AHoursNight, ADigMark,
                                   AShiftNum, AStrMark);
+end;
+
+function ScheduleCycleWeek(const AScheduleID: Integer = 0): TScheduleCycle;
+var
+  i, x: Integer;
+  S: String;
+begin
+  Result.ScheduleID:= AScheduleID;
+  Result.IsWeek:= True;
+  Result.Count:= 0;
+  for i:= 0 to 6 do
+    VAppend(Result.Dates, IncDay(MONDAY_DATE, i));
+
+  VDim(Result.HoursTotal, 7, 0);
+  x:= 8*WORKHOURS_DENOMINATOR;
+  for i:= 0 to 4 do
+    Result.HoursTotal[i]:= x;
+  VDim(Result.HoursNight, 7, 0);
+
+  VDim(Result.DigMarks, 7, 1);
+  Result.DigMarks[5]:= 26 {В};
+  Result.DigMarks[6]:= 26 {В};
+
+  S:= DataBase.TimetableStrMarkLoad(1);
+  VDim(Result.StrMarks, 7, S);
+  S:= DataBase.TimetableStrMarkLoad(26);
+  Result.StrMarks[5]:= S;
+  Result.StrMarks[6]:= S;
+
+  Result.ShiftNums:= VOrder(7);
+  Result.ShiftNums[5]:= 0;
+  Result.ShiftNums[6]:= 0;
+
+end;
+
+procedure ScheduleCycleDateColumnSet(const ATable: TVSTCustomSimpleTable;
+                                     const ACycle: TScheduleCycle;
+                                     out AStrDates: TStrVector);
+begin
+  if ACycle.IsWeek then
+  begin
+    ATable.RenameColumn(0, 'День');
+    AStrDates:= VCreateStr(WEEKDAYSSHORT);
+  end
+  else begin
+    ATable.RenameColumn(0, SCHEDULE_CORRECTION_COLUMN_NAMES[0]);
+    AStrDates:= VDateToStr(ACycle.Dates);
+  end;
+end;
+
+procedure ScheduleCycleDraw(const ATable: TVSTEdit; const ACycle: TScheduleCycle);
+var
+  StrDates: TStrVector;
+begin
+  ScheduleCycleDateColumnSet(ATable, ACycle, StrDates);
+
+  ATable.Visible:= False;
+  try
+    ATable.ValuesClear;
+    ATable.SetColumnRowTitles(StrDates);
+    ATable.SetColumnInteger(SCHEDULE_CORRECTION_COLUMN_NAMES[1], ACycle.ShiftNums);
+    ATable.SetColumnDouble(SCHEDULE_CORRECTION_COLUMN_NAMES[2], VWorkHoursIntToFrac(ACycle.HoursTotal));
+    ATable.SetColumnDouble(SCHEDULE_CORRECTION_COLUMN_NAMES[3], VWorkHoursIntToFrac(ACycle.HoursNight));
+    ATable.SetColumnInteger(SCHEDULE_CORRECTION_COLUMN_NAMES[4], ACycle.DigMarks);
+    ATable.Draw;
+  finally
+    ATable.Visible:= True;
+  end;
+
+end;
+
+procedure ScheduleCycleDraw(const ATable: TVSTTable; const ACycle: TScheduleCycle);
+var
+  StrDates, StrShiftNums: TStrVector;
+begin
+  ScheduleCycleDateColumnSet(ATable, ACycle, StrDates);
+  StrShiftNums:= VIntToStr(ACycle.ShiftNums);
+  VChangeIf(StrShiftNums, '0', EMPTY_MARK);
+
+  ATable.Visible:= False;
+  try
+    ATable.ValuesClear;
+    ATable.SetColumn({SCHEDULE_CORRECTION_COLUMN_NAMES[0]}0, StrDates);
+    ATable.SetColumn(SCHEDULE_CORRECTION_COLUMN_NAMES[1], StrShiftNums);
+    ATable.SetColumn(SCHEDULE_CORRECTION_COLUMN_NAMES[2], VWorkHoursToStr(ACycle.HoursTotal));
+    ATable.SetColumn(SCHEDULE_CORRECTION_COLUMN_NAMES[3], VWorkHoursToStr(ACycle.HoursNight));
+    ATable.SetColumn(SCHEDULE_CORRECTION_COLUMN_NAMES[4], ACycle.StrMarks);
+    ATable.Draw;
+  finally
+    ATable.Visible:= True;
+  end;
 end;
 
 procedure ScheduleShiftByCalendar(const AScheduleID: Integer;

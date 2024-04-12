@@ -8,7 +8,8 @@ uses
   Classes, SysUtils;
 
 const
-  EMPTY_MARK = '—';
+  MONDAY_DATE = 45292; //01.01.2024 - ПН
+  EMPTY_MARK  = '—';
 
   TIMETABLE_TYPEMARK_KEYS: array of Integer =
     (0,               1,      2,            3,              4        );
@@ -51,8 +52,12 @@ const
 
   CALENDAR_CORRECTION_COLUMN_NAMES: array of String  =
     ('Дата', 'Статус', 'Заменяемый день');
+  CALENDAR_CORRECTION_COLUMN_WIDTHS: array of Integer =
+    (80,     110,      150              );
   SCHEDULE_CORRECTION_COLUMN_NAMES: array of String  =
     ('Дата', '№ смены', 'Всего часов', 'Ночных часов', 'Код табеля');
+  SCHEDULE_CORRECTION_COLUMN_WIDTHS: array of Integer =
+    (70,     70,        80,            90,             70          );
 
   COLOR_GRAY        = $00E0E0E0;
   COLOR_BLACK       = $00000000;

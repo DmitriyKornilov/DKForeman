@@ -264,18 +264,16 @@ end;
 procedure TCalendarForm.TablesCreate;
 var
   i: Integer;
-  W: TIntVector;
 begin
-  W:= VCreateInt([80, 110, 150]);
-
   VSTDays:= TVSTTable.Create(DayVT);
   VSTDays.OnSelect:= @CorrectionSelect;
   VSTDays.OnDelKeyDown:= @CorrectionDelete;
   VSTDays.SetSingleFont(MainForm.GridFont);
   VSTDays.HeaderFont.Style:= [fsBold];
   VSTDays.CanSelect:= True;
-  for i:= 0 to High(W) do
-    VSTDays.AddColumn(CALENDAR_CORRECTION_COLUMN_NAMES[i], W[i]);
+  for i:= 0 to High(CALENDAR_CORRECTION_COLUMN_WIDTHS) do
+    VSTDays.AddColumn(CALENDAR_CORRECTION_COLUMN_NAMES[i],
+                      CALENDAR_CORRECTION_COLUMN_WIDTHS[i]);
   VSTDays.Draw;
 
   VSTCopy:= TVSTTable.Create(CopyVT);
@@ -283,8 +281,9 @@ begin
   VSTCopy.SetSingleFont(MainForm.GridFont);
   VSTCopy.HeaderFont.Style:= [fsBold];
   VSTCopy.CanSelect:= True;
-  for i:= 0 to High(W) do
-    VSTCopy.AddColumn(CALENDAR_CORRECTION_COLUMN_NAMES[i], W[i]);
+  for i:= 0 to High(CALENDAR_CORRECTION_COLUMN_WIDTHS) do
+    VSTCopy.AddColumn(CALENDAR_CORRECTION_COLUMN_NAMES[i],
+                      CALENDAR_CORRECTION_COLUMN_WIDTHS[i]);
   VSTCopy.Draw;
 end;
 

@@ -58,6 +58,7 @@ type
   function VWorkHoursToStr(const AWorkHours: TIntVector;
                           const AFractionDigitsCount: Byte = FRACTION_DIGITS_IN_WORKHOURS;
                           const ANeedEndZerosInFrac: Boolean = False): TStrVector;
+  function VWorkHoursIntToFrac(const AWorkHours: TIntVector): TDblVector;
   function CalcShortenedDayHours(const AHours: Integer): Integer;
 
 implementation
@@ -181,6 +182,17 @@ begin
   VDim(Result, Length(AWorkHours));
   for i:= 0 to High(AWorkHours) do
     Result[i]:= WorkHoursToStr(AWorkHours[i], AFractionDigitsCount, ANeedEndZerosInFrac);
+end;
+
+function VWorkHoursIntToFrac(const AWorkHours: TIntVector): TDblVector;
+var
+  i: Integer;
+begin
+  Result:= nil;
+  if VIsNil(AWorkHours) then Exit;
+  VDim(Result, Length(AWorkHours));
+  for i:= 0 to High(AWorkHours) do
+    Result[i]:= WorkHoursIntToFrac(AWorkHours[i]);
 end;
 
 function CalcShortenedDayHours(const AHours: Integer): Integer;

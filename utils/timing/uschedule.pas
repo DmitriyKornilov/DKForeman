@@ -59,7 +59,7 @@ type
   end;
 
 const
-  EmptyScheduleCycle: TScheduleCycle =
+  ScheduleCycleEmpty: TScheduleCycle =
     (ScheduleID: 0;
      IsWeek    : False;
      Count     : -1;
@@ -1047,7 +1047,7 @@ procedure TShiftSchedule.Clear;
 begin
   inherited Clear;
   FHoursInWeek:= 0;
-  FCycle:= EmptyScheduleCycle;
+  FCycle:= ScheduleCycleEmpty;
 end;
 
 function TShiftSchedule.Cut(const ABeginDate, AEndDate: TDate;

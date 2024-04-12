@@ -8,9 +8,9 @@ uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, Spin,
   ExtCtrls, BCButton, VirtualTrees, DateTimePicker, Buttons,
   //DK packages utils
-  DK_Vector, DK_DropDown, DK_VSTTables,
+  DK_Vector, DK_DropDown, DK_VSTTables, DK_Const,
   //Project utils
-  UDataBase, UUtils, UConst;
+  UDataBase, UWorkHours, USchedule, UUtils, UConst;
 
 type
 
@@ -41,9 +41,12 @@ type
   private
     TypeDropDown: TDropDown;
     Structure: TVSTEdit;
+    KeyMarks: TIntVector;
+    PickMarks: TStrVector;
     procedure TypeDropDownChange;
+
   public
-    ScheduleID: Integer;
+    Cycle: TScheduleCycle;
   end;
 
 var
@@ -59,17 +62,28 @@ uses UMainForm;
 
 procedure TScheduleShiftEditForm.FormCreate(Sender: TObject);
 begin
-  ScheduleID:= -1;
-  FirstDatePicker.Date:= Date;
+  Cycle:= ScheduleCycleWeek;
+
+  DataBase.TimetableMarkListLoad(KeyMarks, PickMarks, True{ DigMark>0});
 
   Structure:= TVSTEdit.Create(VT);
   Structure.SetSingleFont(MainForm.GridFont);
+  Structure.ShowZeros:= True;
   Structure.HeaderFont.Style:= [fsBold];
-  Structure.AddColumnRowTitles(SCHEDULE_CORRECTION_COLUMN_NAMES[0], 70);
-  Structure.AddColumnInteger(SCHEDULE_CORRECTION_COLUMN_NAMES[1], 70);
-  Structure.AddColumnInteger(SCHEDULE_CORRECTION_COLUMN_NAMES[2], 80);
-  Structure.AddColumnInteger(SCHEDULE_CORRECTION_COLUMN_NAMES[3], 90);
-  Structure.AddColumnInteger(SCHEDULE_CORRECTION_COLUMN_NAMES[4], 70);
+  Structure.AddColumnRowTitles(SCHEDULE_CORRECTION_COLUMN_NAMES[0],
+                               SCHEDULE_CORRECTION_COLUMN_WIDTHS[0]);
+
+  Structure.AddColumnInteger(SCHEDULE_CORRECTION_COLUMN_NAMES[1],
+                             SCHEDULE_CORRECTION_COLUMN_WIDTHS[1]);
+  Structure.AddColumnDouble(SCHEDULE_CORRECTION_COLUMN_NAMES[2],
+                            FRACTION_DIGITS_IN_WORKHOURS,
+                             SCHEDULE_CORRECTION_COLUMN_WIDTHS[2]);
+  Structure.AddColumnDouble(SCHEDULE_CORRECTION_COLUMN_NAMES[3],
+                            FRACTION_DIGITS_IN_WORKHOURS,
+                             SCHEDULE_CORRECTION_COLUMN_WIDTHS[3]);
+  Structure.AddColumnKeyPick(SCHEDULE_CORRECTION_COLUMN_NAMES[4], KeyMarks, PickMarks,
+                             SCHEDULE_CORRECTION_COLUMN_WIDTHS[4],
+                             taCenter, taLeftJustify);
   Structure.Draw;
 
   TypeDropDown:= TDropDown.Create(TypeBCButton);
@@ -92,6 +106,7 @@ end;
 procedure TScheduleShiftEditForm.FormShow(Sender: TObject);
 begin
   Width:= Width + 5; //fix datetimepicker button size bug
+  ScheduleCycleDraw(Structure, Cycle);
 end;
 
 procedure TScheduleShiftEditForm.SaveButtonClick(Sender: TObject);
@@ -110,7 +125,19 @@ procedure TScheduleShiftEditForm.TypeDropDownChange;
 begin
   CycleCountSpinEdit.Enabled:= TypeDropDown.ItemIndex=1;
   FirstDatePicker.Enabled:= TypeDropDown.ItemIndex=1;
+  if TypeDropDown.ItemIndex=0 then  //недельный
+  begin
+    FirstDatePicker.Date:= MONDAY_DATE;
+    CycleCountSpinEdit.Value:= 7;
+  end
+  else begin//цикловой
+    FirstDatePicker.Date:= Date;
+    CycleCountSpinEdit.Value:= 1;
+  end;
+
 end;
+
+
 
 end.
 

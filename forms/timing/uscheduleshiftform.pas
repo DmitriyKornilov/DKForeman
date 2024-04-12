@@ -443,16 +443,14 @@ end;
 procedure TScheduleShiftForm.EditingTablesCreate;
 var
   i: Integer;
-  W: TIntVector;
 begin
-  W:= VCreateInt([70, 70, 80, 90, 70]);
-
   Structure:= TVSTTable.Create(StructureVT);
   Structure.SetSingleFont(MainForm.GridFont);
   Structure.HeaderFont.Style:= [fsBold];
   Structure.CanSelect:= False;
-  for i:= 0 to High(W) do
-    Structure.AddColumn(SCHEDULE_CORRECTION_COLUMN_NAMES[i], W[i]);
+  for i:= 0 to High(SCHEDULE_CORRECTION_COLUMN_WIDTHS) do
+    Structure.AddColumn(SCHEDULE_CORRECTION_COLUMN_NAMES[i],
+                        SCHEDULE_CORRECTION_COLUMN_WIDTHS[i]);
   Structure.Draw;
 
   VSTDays:= TVSTTable.Create(DayVT);
@@ -461,8 +459,9 @@ begin
   VSTDays.SetSingleFont(MainForm.GridFont);
   VSTDays.HeaderFont.Style:= [fsBold];
   VSTDays.CanSelect:= True;
-  for i:= 0 to High(W) do
-    VSTDays.AddColumn(SCHEDULE_CORRECTION_COLUMN_NAMES[i], W[i]);
+  for i:= 0 to High(SCHEDULE_CORRECTION_COLUMN_WIDTHS) do
+    VSTDays.AddColumn(SCHEDULE_CORRECTION_COLUMN_NAMES[i],
+                      SCHEDULE_CORRECTION_COLUMN_WIDTHS[i]);
   VSTDays.Draw;
 
   VSTCopy:= TVSTTable.Create(CopyVT);
@@ -470,15 +469,15 @@ begin
   VSTCopy.SetSingleFont(MainForm.GridFont);
   VSTCopy.HeaderFont.Style:= [fsBold];
   VSTCopy.CanSelect:= True;
-  for i:= 0 to High(W) do
-    VSTCopy.AddColumn(SCHEDULE_CORRECTION_COLUMN_NAMES[i], W[i]);
+  for i:= 0 to High(SCHEDULE_CORRECTION_COLUMN_WIDTHS) do
+    VSTCopy.AddColumn(SCHEDULE_CORRECTION_COLUMN_NAMES[i],
+                      SCHEDULE_CORRECTION_COLUMN_WIDTHS[i]);
   VSTCopy.Draw;
 end;
 
 procedure TScheduleShiftForm.CycleLoad;
 var
   CycleIDs: TIntVector;
-  StrDates, StrShiftNums: TStrVector;
 begin
   Structure.ValuesClear;
   StructureCaptionPanel.Caption:= 'Структура: ';
@@ -489,32 +488,7 @@ begin
                                   ScheduleNames[ScheduleList.SelectedIndex];
 
   DataBase.ScheduleCycleLoad(ScheduleIDs[ScheduleList.SelectedIndex], CycleIDs, Cycle);
-
-  StrShiftNums:= VIntToStr(Cycle.ShiftNums);
-  VChangeIf(StrShiftNums, '0', EMPTY_MARK);
-
-  if Cycle.IsWeek then
-  begin
-    Structure.RenameColumn(0, 'День');
-    StrDates:= VCreateStr(WEEKDAYSSHORT);
-  end
-  else begin
-    Structure.RenameColumn(0, 'Дата');
-    StrDates:= VDateToStr(Cycle.Dates);
-  end;
-
-  Structure.Visible:= False;
-  try
-    Structure.ValuesClear;
-    Structure.SetColumn({SCHEDULE_CORRECTION_COLUMN_NAMES[0]}0, StrDates);
-    Structure.SetColumn(SCHEDULE_CORRECTION_COLUMN_NAMES[1], StrShiftNums);
-    Structure.SetColumn(SCHEDULE_CORRECTION_COLUMN_NAMES[2], VWorkHoursToStr(Cycle.HoursTotal));
-    Structure.SetColumn(SCHEDULE_CORRECTION_COLUMN_NAMES[3], VWorkHoursToStr(Cycle.HoursNight));
-    Structure.SetColumn(SCHEDULE_CORRECTION_COLUMN_NAMES[4], Cycle.StrMarks);
-    Structure.Draw;
-  finally
-    Structure.Visible:= True;
-  end;
+  ScheduleCycleDraw(Structure, Cycle);
 end;
 
 procedure TScheduleShiftForm.CorrectionsLoad(const SelectedID: Integer = -1);
@@ -834,20 +808,12 @@ var
 begin
   ScheduleShiftEditForm:= TScheduleShiftEditForm.Create(nil);
   try
-    //if CycleCounts[ScheduleList.SelectedIndex]>0 then
-    //  ScheduleShiftEditForm.ShiftNumSpinEdit.MaxValue:= CycleCounts[ScheduleList.SelectedIndex]
-    //else
-    //  ScheduleShiftEditForm.ShiftNumSpinEdit.MaxValue:= 7; //недельный график
-
     if AEditingType=etEdit then
     begin
-      ScheduleShiftEditForm.ScheduleID:= ScheduleIDs[ScheduleList.SelectedIndex];
-      //ScheduleShiftEditForm.DigMark:= Corrections.DigMarks[VSTDays.SelectedIndex];
-      //ScheduleShiftEditForm.FirstDatePicker.Date:= Corrections.Dates[VSTDays.SelectedIndex];
-      //ScheduleShiftEditForm.LastDatePicker.Date:= Corrections.Dates[VSTDays.SelectedIndex];
-      //ScheduleShiftEditForm.TotalHoursSpinEdit.Value:= WorkHoursIntToFrac(Corrections.HoursTotal[VSTDays.SelectedIndex]);
-      //ScheduleShiftEditForm.NightHoursSpinEdit.Value:= WorkHoursIntToFrac(Corrections.HoursNight[VSTDays.SelectedIndex]);;
-      //ScheduleShiftEditForm.ShiftNumSpinEdit.Value:= Corrections.ShiftNums[VSTDays.SelectedIndex];
+      ScheduleShiftEditForm.Cycle:= Cycle;
+      ScheduleShiftEditForm.NameEdit.Text:= ScheduleNames[ScheduleList.SelectedIndex];
+      ScheduleShiftEditForm.WeekHoursSpinEdit.Value:= WeekHours[ScheduleList.SelectedIndex];
+
     end;
     if ScheduleShiftEditForm.ShowModal=mrOK then
       //ScheduleChange;

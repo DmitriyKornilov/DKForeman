@@ -70,7 +70,7 @@ type
   end;
 
 const
-  EmptyCalendarCorrections: TCalendarCorrections =
+  CalendarCorrectionsEmpty: TCalendarCorrections =
     (Dates   : nil;
      Statuses: nil;
      SwapDays: nil;
