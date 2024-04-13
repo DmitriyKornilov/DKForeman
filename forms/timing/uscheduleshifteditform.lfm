@@ -70,6 +70,7 @@ object ScheduleShiftEditForm: TScheduleShiftEditForm
     BorderSpacing.Top = 12
     BorderSpacing.Right = 8
     MaxValue = 40
+    MinValue = 1
     TabOrder = 1
     Value = 40
   end
@@ -112,10 +113,11 @@ object ScheduleShiftEditForm: TScheduleShiftEditForm
     Alignment = taRightJustify
     Anchors = [akTop, akLeft, akRight]
     BorderSpacing.Top = 15
-    Enabled = False
-    MinValue = 1
+    MaxValue = 365
+    MinValue = 2
+    OnChange = CycleCountSpinEditChange
     TabOrder = 2
-    Value = 1
+    Value = 2
   end
   object FirstDateLabel: TLabel
     AnchorSideLeft.Control = CycleCountSpinEdit
@@ -125,23 +127,23 @@ object ScheduleShiftEditForm: TScheduleShiftEditForm
     Left = 379
     Height = 20
     Top = 125
-    Width = 110
+    Width = 85
     BorderSpacing.Left = 15
-    Caption = 'Начальная дата'
+    Caption = 'Дата начала'
     ParentColor = False
     WordWrap = True
   end
   object FirstDatePicker: TDateTimePicker
-    AnchorSideLeft.Control = FirstDateLabel
+    AnchorSideLeft.Control = TypeLabel
     AnchorSideLeft.Side = asrBottom
     AnchorSideTop.Control = WeekHoursSpinEdit
     AnchorSideTop.Side = asrBottom
     AnchorSideRight.Control = Owner
     AnchorSideRight.Side = asrBottom
-    Left = 497
+    Left = 474
     Height = 28
     Top = 121
-    Width = 125
+    Width = 148
     CenturyFrom = 1941
     MaxDate = 401768
     MinDate = -53780
@@ -151,7 +153,6 @@ object ScheduleShiftEditForm: TScheduleShiftEditForm
     BorderSpacing.Left = 8
     BorderSpacing.Top = 15
     BorderSpacing.Right = 8
-    Enabled = False
     TrailingSeparator = False
     TextForNullDate = 'NULL'
     LeadingZeros = True
@@ -167,20 +168,21 @@ object ScheduleShiftEditForm: TScheduleShiftEditForm
     AutoButtonSize = True
     HideDateTimeParts = []
     MonthNames = 'Long'
+    OnChange = FirstDatePickerChange
   end
   object TypeBCButton: TBCButton
     Tag = -1
-    AnchorSideLeft.Control = FirstDateLabel
+    AnchorSideLeft.Control = TypeLabel
     AnchorSideLeft.Side = asrBottom
     AnchorSideTop.Control = WeekHoursSpinEdit
     AnchorSideRight.Control = Owner
     AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Control = WeekHoursSpinEdit
     AnchorSideBottom.Side = asrBottom
-    Left = 497
+    Left = 474
     Height = 28
     Top = 78
-    Width = 125
+    Width = 148
     Anchors = [akTop, akLeft, akRight, akBottom]
     StateClicked.Background.Gradient1.StartColor = 8404992
     StateClicked.Background.Gradient1.EndColor = 4194304

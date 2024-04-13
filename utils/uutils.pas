@@ -43,7 +43,8 @@ uses
                          const AHoursTotal, AHoursNight, ADigMark, AShiftNum: Integer;
                          const AStrMark: String = ''): TScheduleCorrections;
   //ScheduleShift load/create/draw
-  function ScheduleCycleWeek(const AScheduleID: Integer = 0): TScheduleCycle;
+  procedure ScheduleCycleToWeek(var ACycle: TScheduleCycle);
+  procedure ScheduleCycleToCount(var ACycle: TScheduleCycle; const ACount: Integer; const AFirstDate: TDate);
   procedure ScheduleCycleDateColumnSet(const ATable: TVSTCustomSimpleTable; const ACycle: TScheduleCycle; out AStrDates: TStrVector);
   procedure ScheduleCycleDraw(const ATable: TVSTEdit; const ACycle: TScheduleCycle);
   procedure ScheduleCycleDraw(const ATable: TVSTTable; const ACycle: TScheduleCycle);
@@ -194,37 +195,73 @@ begin
                                   AShiftNum, AStrMark);
 end;
 
-function ScheduleCycleWeek(const AScheduleID: Integer = 0): TScheduleCycle;
+procedure ScheduleCycleToWeek(var ACycle: TScheduleCycle);
 var
-  i, x: Integer;
+  i, x, n: Integer;
   S: String;
 begin
-  Result.ScheduleID:= AScheduleID;
-  Result.IsWeek:= True;
-  Result.Count:= 0;
+  ACycle.IsWeek:= True;
+  ACycle.Count:= 0;
+  n:= Length(ACycle.Dates);
+
+  VRedim(ACycle.Dates, 7);
   for i:= 0 to 6 do
-    VAppend(Result.Dates, IncDay(MONDAY_DATE, i));
-
-  VDim(Result.HoursTotal, 7, 0);
-  x:= 8*WORKHOURS_DENOMINATOR;
-  for i:= 0 to 4 do
-    Result.HoursTotal[i]:= x;
-  VDim(Result.HoursNight, 7, 0);
-
-  VDim(Result.DigMarks, 7, 1);
-  Result.DigMarks[5]:= 26 {В};
-  Result.DigMarks[6]:= 26 {В};
-
+    ACycle.Dates[i]:= IncDay(MONDAY_DATE, i);
+  if n=7 then Exit;
   S:= DataBase.TimetableStrMarkLoad(1);
-  VDim(Result.StrMarks, 7, S);
+  VRedim(ACycle.HoursTotal, 7, 0);
+  VRedim(ACycle.HoursNight, 7, 0);
+  VRedim(ACycle.DigMarks, 7, 1);
+  VRedim(ACycle.StrMarks, 7, S);
+  VRedim(ACycle.ShiftNums, 7, 0);
+  if n>7 then Exit;
+
   S:= DataBase.TimetableStrMarkLoad(26);
-  Result.StrMarks[5]:= S;
-  Result.StrMarks[6]:= S;
+  if n<=5 then
+  begin
+    x:= 8*WORKHOURS_DENOMINATOR;
+    for i:= n to 4 do
+    begin
+      ACycle.HoursTotal[i]:= x;
+      ACycle.ShiftNums[i]:= i+1;
+    end;
+    for i:= 5 to 6 do
+    begin
+      ACycle.DigMarks[i]:= 26 {B};
+      ACycle.StrMarks[i]:= S;
+    end;
+  end
+  else begin
+    for i:= n-1 to 6 do
+    begin
+      ACycle.DigMarks[i]:= 26 {B};
+      ACycle.StrMarks[i]:= S;
+    end;
+  end;
+end;
 
-  Result.ShiftNums:= VOrder(7);
-  Result.ShiftNums[5]:= 0;
-  Result.ShiftNums[6]:= 0;
+procedure ScheduleCycleToCount(var ACycle: TScheduleCycle; const ACount: Integer;
+                               const AFirstDate: TDate);
+var
+  i, n: Integer;
+begin
+  if ACycle.IsWeek then
+    n:= 7
+  else
+    n:= ACycle.Count;
+  ACycle.IsWeek:= False;
+  ACycle.Count:= ACount;
 
+  VRedim(ACycle.Dates, ACount);
+  for i:= 0 to ACount-1 do
+    ACycle.Dates[i]:= IncDay(AFirstDate, i);
+  if n=ACount then Exit;
+
+  VRedim(ACycle.HoursTotal, ACount, 0);
+  VRedim(ACycle.HoursNight, ACount, 0);
+  VRedim(ACycle.DigMarks, ACount, 26);
+  VRedim(ACycle.StrMarks, ACount, DataBase.TimetableStrMarkLoad(26));
+  VRedim(ACycle.ShiftNums, ACount, 0);
 end;
 
 procedure ScheduleCycleDateColumnSet(const ATable: TVSTCustomSimpleTable;

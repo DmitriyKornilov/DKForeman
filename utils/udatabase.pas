@@ -10,7 +10,7 @@ uses
   UCalendar, UConst, USchedule,
   //DK packages utils
   DK_SQLite3, DK_SQLUtils, DK_Vector, DK_StrUtils, DK_Const,
-  DK_DropDown;
+  DK_VSTDropDown;
 
 type
 
@@ -176,6 +176,14 @@ type
     function SchedulePersonalCorrectionsUpdate(const ATubNumID: Integer;
                                const ACorrections: TScheduleCorrections): Boolean;
 
+    {Проверка наличия наименования графика в записи с ID<>AScheduleID: True - да, False - нет}
+    function ScheduleShiftIsExists(const AScheduleID: Integer; const AScheduleName: String): Boolean;
+    {Добавление нового графика сменности: True - ОК, False - ошибка}
+    function ScheduleShiftAdd(const AScheduleName: String; const AWeekHours: Integer;
+                              var ACycle: TScheduleCycle): Boolean;
+    {Обновление графика сменности: True - ОК, False - ошибка}
+    function ScheduleShiftUpdate(const AScheduleName: String; const AWeekHours: Integer;
+                              const ACycle: TScheduleCycle): Boolean;
     {Удаление графика сменности: True - ОК, False - ошибка}
     function ScheduleShiftDelete(const AScheduleID: Integer): Boolean;
 
@@ -1053,6 +1061,85 @@ function TDataBase.SchedulePersonalCorrectionsUpdate(const ATubNumID: Integer;
   const ACorrections: TScheduleCorrections): Boolean;
 begin
   Result:= ScheduleCorrectionsUpdate('PERSONALCORRECT', 'TabNumID', ATubNumID, ACorrections);
+end;
+
+function TDataBase.ScheduleShiftIsExists(const AScheduleID: Integer;
+  const AScheduleName: String): Boolean;
+begin
+  Result:= IsValueInTableNotMatchInt32ID('SCHEDULEMAIN', 'ScheduleName', AScheduleName,
+                                         'ScheduleID', AScheduleID);
+end;
+
+procedure ScheduleCycleAdd(const ACycle: TScheduleCycle);
+var
+  i: Integer;
+begin
+  QSetSQL(
+    sqlINSERT('SCHEDULECYCLE', ['ScheduleID', 'DayDate', 'HoursTotal', 'HoursNight',
+                                'DigMark', 'ShiftNum'])
+  );
+  QParamInt('ScheduleID', ACycle.ScheduleID);
+  for i:= 0 to High(ACycle.Dates) do
+  begin
+    QParamDT('DayDate', ACycle.Dates[i]);
+    QParamInt('HoursTotal', ACycle.HoursTotal[i]);
+    QParamInt('HoursNight', ACycle.HoursNight[i]);
+    QParamInt('DigMark', ACycle.DigMarks[i]);
+    QParamInt('ShiftNum', ACycle.ShiftNums[i]);
+    QExec;
+  end;
+end;
+
+
+function TDataBase.ScheduleShiftAdd(const AScheduleName: String;
+  const AWeekHours: Integer; var ACycle: TScheduleCycle): Boolean;
+begin
+  Result:= False;
+  QSetQuery(FQuery);
+  try
+    //запись графика
+    QSetSQL(
+      sqlINSERT('SCHEDULEMAIN', ['ScheduleName', 'WeekHours', 'CycleCount'])
+    );
+    QParamStr('ScheduleName', AScheduleName);
+    QParamInt('WeekHours', AWeekHours);
+    QParamInt('CycleCount', ACycle.Count);
+    QExec;
+    //получение ID записанного графика
+    ACycle.ScheduleID:= LastWritedInt32ID('SCHEDULEMAIN');
+    //запись цикла графика
+    ScheduleCycleAdd(ACycle);
+    QCommit;
+    Result:= True;
+  except
+    QRollback;
+  end;
+end;
+
+function TDataBase.ScheduleShiftUpdate(const AScheduleName: String;
+  const AWeekHours: Integer; const ACycle: TScheduleCycle): Boolean;
+begin
+  Result:= False;
+  QSetQuery(FQuery);
+  try
+    //обновление данных графика
+    QSetSQL(
+      sqlUPDATE('SCHEDULEMAIN', ['ScheduleName', 'WeekHours', 'CycleCount']) +
+      'WHERE ScheduleID = :ScheduleID'
+    );
+    QParamStr('ScheduleName', AScheduleName);
+    QParamInt('WeekHours', AWeekHours);
+    QParamInt('CycleCount', ACycle.Count);
+    QExec;
+    //удаление старого цикла графика
+    Delete('SCHEDULECYCLE', 'ScheduleID', ACycle.ScheduleID, False {no commit});
+    //запись цикла графика
+    ScheduleCycleAdd(ACycle);
+    QCommit;
+    Result:= True;
+  except
+    QRollback;
+  end;
 end;
 
 function TDataBase.ScheduleShiftDelete(const AScheduleID: Integer): Boolean;

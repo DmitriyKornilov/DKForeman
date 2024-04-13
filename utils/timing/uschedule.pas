@@ -61,7 +61,7 @@ type
 const
   ScheduleCycleEmpty: TScheduleCycle =
     (ScheduleID: 0;
-     IsWeek    : False;
+     IsWeek    : True;
      Count     : -1;
      Dates     : nil;
      HoursTotal: nil;

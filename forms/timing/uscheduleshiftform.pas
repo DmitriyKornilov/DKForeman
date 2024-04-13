@@ -148,7 +148,8 @@ type
     procedure CycleLoad;
     procedure ScheduleLoad;
     procedure YearChange;
-    procedure ScheduleChange(const ANeedCycleLoad: Boolean);
+    procedure ScheduleChange(const ANeedCycleLoad: Boolean;
+                             const ANeedCorrectionsLoad: Boolean = True);
     procedure ScheduleToSheet(var ASheet: TShiftScheduleTableSheet;
                               const AWorksheet: TsWorksheet;
                               const AGrid: TsWorksheetGrid;
@@ -668,11 +669,12 @@ begin
   ScheduleChange(False{no cycle reload});
 end;
 
-procedure TScheduleShiftForm.ScheduleChange(const ANeedCycleLoad: Boolean);
+procedure TScheduleShiftForm.ScheduleChange(const ANeedCycleLoad: Boolean;
+                             const ANeedCorrectionsLoad: Boolean = True);
 begin
   if not CanDrawSchedule then Exit;
   if ANeedCycleLoad then CycleLoad;
-  CorrectionsLoad;
+  if ANeedCorrectionsLoad then CorrectionsLoad;
   ScheduleLoad;
   ScheduleRedraw;
 end;
@@ -818,11 +820,16 @@ begin
 
     end;
     if ScheduleShiftEditForm.ShowModal=mrOK then
-      //ScheduleChange;
+    begin
+      Cycle:= ScheduleShiftEditForm.Cycle;
+      if AEditingType=etAdd then
+        ScheduleListLoad(Cycle.ScheduleID)
+      else
+        ScheduleChange(True{cycle reload}, False {co corrections reload});
+    end;
   finally
     FreeAndNil(ScheduleShiftEditForm);
   end;
-
 end;
 
 procedure TScheduleShiftForm.ScheduleListLoad(const SelectedID: Integer = -1);
