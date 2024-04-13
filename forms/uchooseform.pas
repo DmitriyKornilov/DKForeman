@@ -8,7 +8,7 @@ uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, Buttons,
   StdCtrls, VirtualTrees,
   //DK packages utils
-  DK_Vector, DK_VSTTools, DK_CtrlUtils;
+  DK_Vector, DK_VSTTableTools, DK_CtrlUtils;
 
 type
 

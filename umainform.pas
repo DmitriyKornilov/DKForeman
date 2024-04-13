@@ -9,7 +9,7 @@ uses
   Menus, BCButton, LCLType,
 
   //DK packages utils
-  DK_Const, DK_LCLStrRus, DK_HeapTrace, DK_CtrlUtils, DK_Fonts, DK_VSTTables,
+  DK_Const, DK_LCLStrRus, DK_HeapTrace, DK_CtrlUtils, DK_Fonts, DK_VSTTypes,
   DK_Vector,
   //Project utils
   UDataBase, UUtils, UConst, UTypes,

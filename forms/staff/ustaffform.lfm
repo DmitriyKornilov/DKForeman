@@ -1,41 +1,42 @@
 object StaffForm: TStaffForm
   Left = 383
-  Height = 495
+  Height = 619
   Top = 141
-  Width = 890
+  Width = 1112
   Caption = 'StaffForm'
-  ClientHeight = 495
-  ClientWidth = 890
+  ClientHeight = 619
+  ClientWidth = 1112
+  DesignTimePPI = 120
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
-  LCLVersion = '2.2.4.0'
+  LCLVersion = '3.2.0.0'
   object ToolPanel: TPanel
     Left = 2
-    Height = 32
+    Height = 40
     Top = 2
-    Width = 886
+    Width = 1108
     Align = alTop
     BorderSpacing.Left = 2
     BorderSpacing.Top = 2
     BorderSpacing.Right = 2
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 28
-    ClientWidth = 882
-    Constraints.MaxHeight = 32
-    Constraints.MinHeight = 32
+    ClientHeight = 36
+    ClientWidth = 1104
+    Constraints.MaxHeight = 40
+    Constraints.MinHeight = 40
     ParentFont = False
     TabOrder = 0
     object CloseButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 850
-      Height = 28
+      Left = 1064
+      Height = 36
       Top = 0
-      Width = 32
+      Width = 40
       Align = alRight
-      Constraints.MaxWidth = 32
-      Constraints.MinWidth = 32
+      Constraints.MaxWidth = 40
+      Constraints.MinWidth = 40
       Glyph.Data = {
         36090000424D3609000000000000360000002800000018000000180000000100
         2000000000000009000064000000640000000000000000000000000000000000
@@ -115,8 +116,8 @@ object StaffForm: TStaffForm
       OnClick = CloseButtonClick
     end
     object Bevel1: TBevel
-      Left = 846
-      Height = 28
+      Left = 1060
+      Height = 36
       Top = 0
       Width = 2
       Align = alRight
@@ -127,10 +128,10 @@ object StaffForm: TStaffForm
     object ExportButton: TBCButton
       Cursor = crHandPoint
       Left = 1
-      Height = 26
+      Height = 34
       Hint = 'Экспорт в формат электронной таблицы XLSX или ODS'
       Top = 1
-      Width = 93
+      Width = 104
       Align = alLeft
       AutoSize = True
       StateClicked.Background.Color = 16245964
@@ -314,16 +315,16 @@ object StaffForm: TStaffForm
   end
   object SettingPanel: TPanel
     Left = 2
-    Height = 457
-    Top = 36
-    Width = 240
+    Height = 573
+    Top = 44
+    Width = 300
     Align = alLeft
     BorderSpacing.Left = 2
     BorderSpacing.Top = 2
     BorderSpacing.Bottom = 2
     BevelOuter = bvNone
-    ClientHeight = 457
-    ClientWidth = 240
+    ClientHeight = 573
+    ClientWidth = 300
     Color = clWindow
     ParentBackground = False
     ParentColor = False
@@ -331,9 +332,9 @@ object StaffForm: TStaffForm
     Visible = False
     object SettingCaptionPanel: TBCPanel
       Left = 0
-      Height = 24
+      Height = 30
       Top = 0
-      Width = 240
+      Width = 300
       Align = alTop
       BorderSpacing.Bottom = 2
       Background.Color = clBtnFace
@@ -376,37 +377,37 @@ object StaffForm: TStaffForm
     end
     object SettingClientPanel: TPanel
       Left = 0
-      Height = 431
-      Top = 26
-      Width = 240
+      Height = 541
+      Top = 32
+      Width = 300
       Align = alClient
       BevelOuter = bvNone
       BorderStyle = bsSingle
-      ClientHeight = 427
-      ClientWidth = 236
+      ClientHeight = 537
+      ClientWidth = 296
       ParentBackground = False
       TabOrder = 1
       object ListTypeVT: TVirtualStringTree
         Left = 0
-        Height = 63
+        Height = 79
         Top = 0
-        Width = 236
+        Width = 296
         Align = alTop
         BorderStyle = bsNone
         DefaultText = 'Node'
         Header.AutoSizeIndex = 0
         Header.Columns = <>
         Header.MainColumn = -1
-        Margin = 40
+        Margin = 50
         TabOrder = 0
       end
       object OrderTypeVT: TVirtualStringTree
         Left = 0
-        Height = 63
-        Top = 73
-        Width = 236
+        Height = 79
+        Top = 91
+        Width = 296
         Align = alTop
-        BorderSpacing.Top = 10
+        BorderSpacing.Top = 12
         BorderStyle = bsNone
         DefaultText = 'Node'
         Header.AutoSizeIndex = 0
@@ -416,11 +417,11 @@ object StaffForm: TStaffForm
       end
       object ColumnsListVT: TVirtualStringTree
         Left = 0
-        Height = 63
-        Top = 146
-        Width = 236
+        Height = 79
+        Top = 182
+        Width = 296
         Align = alTop
-        BorderSpacing.Top = 10
+        BorderSpacing.Top = 12
         BorderStyle = bsNone
         DefaultText = 'Node'
         Header.AutoSizeIndex = 0
@@ -430,11 +431,11 @@ object StaffForm: TStaffForm
       end
       object NameTypeVT: TVirtualStringTree
         Left = 0
-        Height = 63
-        Top = 219
-        Width = 236
+        Height = 79
+        Top = 273
+        Width = 296
         Align = alTop
-        BorderSpacing.Top = 10
+        BorderSpacing.Top = 12
         BorderStyle = bsNone
         DefaultText = 'Node'
         Header.AutoSizeIndex = 0
@@ -445,46 +446,46 @@ object StaffForm: TStaffForm
     end
   end
   object LeftSplitter: TSplitter
-    Left = 242
-    Height = 461
-    Top = 34
-    Width = 5
+    Left = 302
+    Height = 577
+    Top = 42
+    Width = 6
     ResizeStyle = rsLine
     Visible = False
   end
   object MainPanel: TPanel
-    Left = 247
-    Height = 461
-    Top = 34
-    Width = 643
+    Left = 308
+    Height = 577
+    Top = 42
+    Width = 804
     Align = alClient
     BevelOuter = bvNone
-    ClientHeight = 461
-    ClientWidth = 643
+    ClientHeight = 577
+    ClientWidth = 804
     TabOrder = 3
     object ListPanel: TPanel
       Left = 2
-      Height = 457
+      Height = 573
       Top = 2
-      Width = 462
+      Width = 580
       Align = alClient
       BorderSpacing.Left = 2
       BorderSpacing.Top = 2
       BorderSpacing.Right = 2
       BorderSpacing.Bottom = 2
       BevelOuter = bvNone
-      ClientHeight = 457
-      ClientWidth = 462
+      ClientHeight = 573
+      ClientWidth = 580
       ParentBackground = False
       ParentColor = False
       TabOrder = 0
       object StaffVT: TVirtualStringTree
         Left = 0
-        Height = 397
-        Top = 60
-        Width = 462
+        Height = 499
+        Top = 74
+        Width = 580
         Align = alClient
-        DefaultNodeHeight = 20
+        DefaultNodeHeight = 25
         DefaultText = 'Node'
         Header.AutoSizeIndex = 0
         Header.Columns = <>
@@ -494,17 +495,17 @@ object StaffForm: TStaffForm
       end
       object ListToolPanel: TPanel
         Left = 0
-        Height = 32
-        Top = 26
-        Width = 462
+        Height = 40
+        Top = 32
+        Width = 580
         Align = alTop
         BorderSpacing.Bottom = 2
         BevelOuter = bvNone
         BorderStyle = bsSingle
-        ClientHeight = 28
-        ClientWidth = 458
-        Constraints.MaxHeight = 32
-        Constraints.MinHeight = 32
+        ClientHeight = 36
+        ClientWidth = 576
+        Constraints.MaxHeight = 40
+        Constraints.MinHeight = 40
         ParentBackground = False
         ParentColor = False
         ParentFont = False
@@ -513,13 +514,13 @@ object StaffForm: TStaffForm
         object ListAddButton: TSpeedButton
           Cursor = crHandPoint
           Left = 0
-          Height = 28
+          Height = 36
           Hint = 'Добавить'
           Top = 0
-          Width = 32
+          Width = 40
           Align = alLeft
-          Constraints.MaxWidth = 32
-          Constraints.MinWidth = 32
+          Constraints.MaxWidth = 40
+          Constraints.MinWidth = 40
           Glyph.Data = {
             36090000424D3609000000000000360000002800000018000000180000000100
             2000000000000009000064000000640000000000000000000000000000000000
@@ -602,14 +603,14 @@ object StaffForm: TStaffForm
         end
         object ListDelButton: TSpeedButton
           Cursor = crHandPoint
-          Left = 32
-          Height = 28
+          Left = 40
+          Height = 36
           Hint = 'Удалить'
           Top = 0
-          Width = 32
+          Width = 40
           Align = alLeft
-          Constraints.MaxWidth = 32
-          Constraints.MinWidth = 32
+          Constraints.MaxWidth = 40
+          Constraints.MinWidth = 40
           Enabled = False
           Glyph.Data = {
             36090000424D3609000000000000360000002800000018000000180000000100
@@ -693,14 +694,14 @@ object StaffForm: TStaffForm
         end
         object ListEditButton: TSpeedButton
           Cursor = crHandPoint
-          Left = 64
-          Height = 28
+          Left = 80
+          Height = 36
           Hint = 'Редактировать'
           Top = 0
-          Width = 32
+          Width = 40
           Align = alLeft
-          Constraints.MaxWidth = 32
-          Constraints.MinWidth = 32
+          Constraints.MaxWidth = 40
+          Constraints.MinWidth = 40
           Enabled = False
           Glyph.Data = {
             36090000424D3609000000000000360000002800000018000000180000000100
@@ -783,8 +784,8 @@ object StaffForm: TStaffForm
           ParentShowHint = False
         end
         object Bevel2: TBevel
-          Left = 98
-          Height = 28
+          Left = 122
+          Height = 36
           Top = 0
           Width = 2
           Align = alLeft
@@ -795,16 +796,16 @@ object StaffForm: TStaffForm
         object FilterPanel: TPanel
           AnchorSideRight.Control = ListToolPanel
           AnchorSideRight.Side = asrBottom
-          Left = 102
-          Height = 28
+          Left = 126
+          Height = 36
           Top = 0
-          Width = 356
+          Width = 450
           Align = alLeft
           Anchors = [akTop, akLeft, akRight, akBottom]
           AutoSize = True
           BevelOuter = bvNone
-          ClientHeight = 28
-          ClientWidth = 356
+          ClientHeight = 36
+          ClientWidth = 450
           ParentBackground = False
           TabOrder = 0
           object FilterLabel: TLabel
@@ -812,9 +813,9 @@ object StaffForm: TStaffForm
             AnchorSideTop.Control = FilterPanel
             AnchorSideTop.Side = asrCenter
             Left = 2
-            Height = 15
-            Top = 7
-            Width = 100
+            Height = 20
+            Top = 8
+            Width = 122
             BorderSpacing.Left = 2
             Caption = 'Фильтр по Ф.И.О.:'
             ParentColor = False
@@ -827,15 +828,15 @@ object StaffForm: TStaffForm
             AnchorSideRight.Control = FilterPanel
             AnchorSideRight.Side = asrBottom
             AnchorSideBottom.Side = asrBottom
-            Left = 108
-            Height = 23
-            Top = 3
-            Width = 246
+            Left = 132
+            Height = 28
+            Top = 4
+            Width = 316
             Anchors = [akTop, akLeft, akRight]
-            BorderSpacing.Left = 6
+            BorderSpacing.Left = 8
             BorderSpacing.Right = 2
             ButtonCursor = crHandPoint
-            ButtonWidth = 23
+            ButtonWidth = 29
             CharCase = ecUppercase
             Glyph.Data = {
               36040000424D3604000000000000360000002800000010000000100000000100
@@ -885,9 +886,9 @@ object StaffForm: TStaffForm
       end
       object ListCaptionPanel: TBCPanel
         Left = 0
-        Height = 24
+        Height = 30
         Top = 0
-        Width = 462
+        Width = 580
         Align = alTop
         BorderSpacing.Bottom = 2
         Background.Color = clBtnFace
@@ -930,62 +931,62 @@ object StaffForm: TStaffForm
       end
     end
     object EditingSplitter: TSplitter
-      Left = 466
-      Height = 461
+      Left = 584
+      Height = 577
       Top = 0
-      Width = 5
+      Width = 6
       Align = alRight
       ResizeAnchor = akRight
       ResizeStyle = rsLine
     end
     object EditingPanel: TPanel
-      Left = 471
-      Height = 457
+      Left = 590
+      Height = 573
       Top = 2
-      Width = 170
+      Width = 212
       Align = alRight
       BorderSpacing.Top = 2
       BorderSpacing.Right = 2
       BorderSpacing.Bottom = 2
       BevelOuter = bvNone
-      ClientHeight = 457
-      ClientWidth = 170
+      ClientHeight = 573
+      ClientWidth = 212
       TabOrder = 2
       Visible = False
       object TabNumEditingPanel: TPanel
         Left = 0
-        Height = 144
+        Height = 180
         Top = 0
-        Width = 170
+        Width = 212
         Align = alTop
         BevelOuter = bvNone
-        ClientHeight = 144
-        ClientWidth = 170
+        ClientHeight = 180
+        ClientWidth = 212
         TabOrder = 0
         object TabNumToolPanel: TPanel
           Left = 0
-          Height = 32
-          Top = 26
-          Width = 170
+          Height = 40
+          Top = 32
+          Width = 212
           Align = alTop
           BevelOuter = bvNone
           BorderStyle = bsSingle
-          ClientHeight = 28
-          ClientWidth = 166
-          Constraints.MaxHeight = 32
-          Constraints.MinHeight = 32
+          ClientHeight = 36
+          ClientWidth = 208
+          Constraints.MaxHeight = 40
+          Constraints.MinHeight = 40
           ParentFont = False
           TabOrder = 0
           object TabNumAddButton: TSpeedButton
             Cursor = crHandPoint
             Left = 0
-            Height = 28
+            Height = 36
             Hint = 'Добавить'
             Top = 0
-            Width = 32
+            Width = 40
             Align = alLeft
-            Constraints.MaxWidth = 32
-            Constraints.MinWidth = 32
+            Constraints.MaxWidth = 40
+            Constraints.MinWidth = 40
             Enabled = False
             Glyph.Data = {
               36090000424D3609000000000000360000002800000018000000180000000100
@@ -1069,14 +1070,14 @@ object StaffForm: TStaffForm
           end
           object TabNumDelButton: TSpeedButton
             Cursor = crHandPoint
-            Left = 32
-            Height = 28
+            Left = 40
+            Height = 36
             Hint = 'Удалить'
             Top = 0
-            Width = 32
+            Width = 40
             Align = alLeft
-            Constraints.MaxWidth = 32
-            Constraints.MinWidth = 32
+            Constraints.MaxWidth = 40
+            Constraints.MinWidth = 40
             Enabled = False
             Glyph.Data = {
               36090000424D3609000000000000360000002800000018000000180000000100
@@ -1160,14 +1161,14 @@ object StaffForm: TStaffForm
           end
           object TabNumEditButton: TSpeedButton
             Cursor = crHandPoint
-            Left = 64
-            Height = 28
+            Left = 80
+            Height = 36
             Hint = 'Редактировать'
             Top = 0
-            Width = 32
+            Width = 40
             Align = alLeft
-            Constraints.MaxWidth = 32
-            Constraints.MinWidth = 32
+            Constraints.MaxWidth = 40
+            Constraints.MinWidth = 40
             Enabled = False
             Glyph.Data = {
               36090000424D3609000000000000360000002800000018000000180000000100
@@ -1251,14 +1252,14 @@ object StaffForm: TStaffForm
           end
           object TabNumDismissButton: TSpeedButton
             Cursor = crHandPoint
-            Left = 96
-            Height = 28
+            Left = 120
+            Height = 36
             Hint = 'Уволить'
             Top = 0
-            Width = 32
+            Width = 40
             Align = alLeft
-            Constraints.MaxWidth = 32
-            Constraints.MinWidth = 32
+            Constraints.MaxWidth = 40
+            Constraints.MinWidth = 40
             Enabled = False
             Glyph.Data = {
               36090000424D3609000000000000360000002800000018000000180000000100
@@ -1342,14 +1343,14 @@ object StaffForm: TStaffForm
           end
           object TabNumDismissCancelButton: TSpeedButton
             Cursor = crHandPoint
-            Left = 128
-            Height = 28
+            Left = 160
+            Height = 36
             Hint = 'Отменить увольнение'
             Top = 0
-            Width = 32
+            Width = 40
             Align = alLeft
-            Constraints.MaxWidth = 32
-            Constraints.MinWidth = 32
+            Constraints.MaxWidth = 40
+            Constraints.MinWidth = 40
             Glyph.Data = {
               36090000424D3609000000000000360000002800000018000000180000000100
               200000000000000900006400000064000000000000000000000000000000D78B
@@ -1434,12 +1435,12 @@ object StaffForm: TStaffForm
         end
         object TabNumVT: TVirtualStringTree
           Left = 0
-          Height = 84
-          Top = 60
-          Width = 170
+          Height = 106
+          Top = 74
+          Width = 212
           Align = alClient
           BorderSpacing.Top = 2
-          DefaultNodeHeight = 20
+          DefaultNodeHeight = 25
           DefaultText = 'Node'
           Header.AutoSizeIndex = 0
           Header.Columns = <>
@@ -1449,9 +1450,9 @@ object StaffForm: TStaffForm
         end
         object TabNumCaptionPanel: TBCPanel
           Left = 0
-          Height = 24
+          Height = 30
           Top = 0
-          Width = 170
+          Width = 212
           Align = alTop
           BorderSpacing.Bottom = 2
           Background.Color = clBtnFace
@@ -1496,47 +1497,47 @@ object StaffForm: TStaffForm
       object HorizEditingSplitter: TSplitter
         Cursor = crVSplit
         Left = 0
-        Height = 5
-        Top = 144
-        Width = 170
+        Height = 6
+        Top = 180
+        Width = 212
         Align = alTop
         ResizeAnchor = akTop
         ResizeStyle = rsLine
       end
       object PostLogEditingPanel: TPanel
         Left = 0
-        Height = 308
-        Top = 149
-        Width = 170
+        Height = 387
+        Top = 186
+        Width = 212
         Align = alClient
         BevelOuter = bvNone
-        ClientHeight = 308
-        ClientWidth = 170
+        ClientHeight = 387
+        ClientWidth = 212
         TabOrder = 2
         object PostLogToolPanel: TPanel
           Left = 0
-          Height = 32
-          Top = 26
-          Width = 170
+          Height = 40
+          Top = 32
+          Width = 212
           Align = alTop
           BevelOuter = bvNone
           BorderStyle = bsSingle
-          ClientHeight = 28
-          ClientWidth = 166
-          Constraints.MaxHeight = 32
-          Constraints.MinHeight = 32
+          ClientHeight = 36
+          ClientWidth = 208
+          Constraints.MaxHeight = 40
+          Constraints.MinHeight = 40
           ParentFont = False
           TabOrder = 0
           object PostLogAddButton: TSpeedButton
             Cursor = crHandPoint
             Left = 0
-            Height = 28
+            Height = 36
             Hint = 'Перевести'
             Top = 0
-            Width = 32
+            Width = 40
             Align = alLeft
-            Constraints.MaxWidth = 32
-            Constraints.MinWidth = 32
+            Constraints.MaxWidth = 40
+            Constraints.MinWidth = 40
             Enabled = False
             Glyph.Data = {
               36090000424D3609000000000000360000002800000018000000180000000100
@@ -1620,14 +1621,14 @@ object StaffForm: TStaffForm
           end
           object PostLogDelButton: TSpeedButton
             Cursor = crHandPoint
-            Left = 32
-            Height = 28
+            Left = 40
+            Height = 36
             Hint = 'Удалить'
             Top = 0
-            Width = 32
+            Width = 40
             Align = alLeft
-            Constraints.MaxWidth = 32
-            Constraints.MinWidth = 32
+            Constraints.MaxWidth = 40
+            Constraints.MinWidth = 40
             Enabled = False
             Glyph.Data = {
               36090000424D3609000000000000360000002800000018000000180000000100
@@ -1711,14 +1712,14 @@ object StaffForm: TStaffForm
           end
           object PostLogEditButton: TSpeedButton
             Cursor = crHandPoint
-            Left = 64
-            Height = 28
+            Left = 80
+            Height = 36
             Hint = 'Редактировать'
             Top = 0
-            Width = 32
+            Width = 40
             Align = alLeft
-            Constraints.MaxWidth = 32
-            Constraints.MinWidth = 32
+            Constraints.MaxWidth = 40
+            Constraints.MinWidth = 40
             Enabled = False
             Glyph.Data = {
               36090000424D3609000000000000360000002800000018000000180000000100
@@ -1803,12 +1804,12 @@ object StaffForm: TStaffForm
         end
         object PostLogVT: TVirtualStringTree
           Left = 0
-          Height = 248
-          Top = 60
-          Width = 170
+          Height = 313
+          Top = 74
+          Width = 212
           Align = alClient
           BorderSpacing.Top = 2
-          DefaultNodeHeight = 20
+          DefaultNodeHeight = 25
           DefaultText = 'Node'
           Header.AutoSizeIndex = 0
           Header.Columns = <>
@@ -1818,9 +1819,9 @@ object StaffForm: TStaffForm
         end
         object PostLogCaptionPanel: TBCPanel
           Left = 0
-          Height = 24
+          Height = 30
           Top = 0
-          Width = 170
+          Width = 212
           Align = alTop
           BorderSpacing.Bottom = 2
           Background.Color = clBtnFace

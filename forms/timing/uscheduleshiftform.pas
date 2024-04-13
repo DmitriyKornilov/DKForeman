@@ -11,7 +11,7 @@ uses
   UDataBase, UConst, UTypes, UUtils, UWorkHours, Ucalendar, USchedule,
   UScheduleShiftSheet,
   //DK packages utils
-  DK_VSTTables, DK_VSTTools, DK_Vector, DK_StrUtils, DK_Const, DK_Dialogs,
+  DK_VSTTables, DK_VSTTableTools, DK_Vector, DK_StrUtils, DK_Const, DK_Dialogs,
   DK_Zoom, DK_DateUtils, DK_Color, DK_SheetExporter,
   //Forms
   UChooseForm, UScheduleShiftEditForm, UScheduleCorrectionEditForm;
@@ -318,6 +318,7 @@ end;
 procedure TScheduleShiftForm.ScheduleListVTNodeDblClick(Sender: TBaseVirtualTree;
                                            const HitInfo: THitInfo);
 begin
+  if ModeType<>mtEditing then Exit;
   if not ScheduleList.IsSelected then Exit;
   ScheduleShiftEditFormOpen(etEdit);
 end;
@@ -326,6 +327,7 @@ procedure TScheduleShiftForm.ViewGridDblClick(Sender: TObject);
 var
   DayDate: TDate;
 begin
+  if ModeType<>mtEditing then Exit;
   if not ScheduleSheet.GridToDate(ViewGrid.Row, ViewGrid.Col, DayDate) then Exit;
   VSTDays.ReSelect(Corrections.Dates, DayDate, False);
   ScheduleCorrectionEditFormOpen(DayDate);

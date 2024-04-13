@@ -121,6 +121,7 @@ procedure TCalendarForm.ViewGridDblClick(Sender: TObject);
 var
   D: TDate;
 begin
+  if ModeType<>mtEditing then Exit;
   if not CalendarSheet.GridToDate(ViewGrid.Row, ViewGrid.Col, D) then Exit;
   VSTDays.ReSelect(Corrections.Dates, D, False);
   CalendarEditFormOpen(D);

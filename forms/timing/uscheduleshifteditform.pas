@@ -8,7 +8,7 @@ uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, Spin,
   ExtCtrls, BCButton, VirtualTrees, DateTimePicker, Buttons,
   //DK packages utils
-  DK_Vector, DK_DropDown, DK_VSTTables, DK_Const,
+  DK_Vector, DK_DropDown, DK_VSTEdit, DK_Const,
   //Project utils
   UDataBase, UWorkHours, USchedule, UUtils, UConst;
 
@@ -68,7 +68,7 @@ begin
 
   Structure:= TVSTEdit.Create(VT);
   Structure.SetSingleFont(MainForm.GridFont);
-  Structure.ShowZeros:= True;
+  Structure.IsShowZeros:= True;
   Structure.HeaderFont.Style:= [fsBold];
   Structure.AddColumnRowTitles(SCHEDULE_CORRECTION_COLUMN_NAMES[0],
                                SCHEDULE_CORRECTION_COLUMN_WIDTHS[0]);

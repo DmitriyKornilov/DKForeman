@@ -59,10 +59,10 @@ end;
 
 procedure TStaffPostlogEditForm.FormCreate(Sender: TObject);
 begin
-  PostDropDown:= TDropDown.Create(PostBCButton);
   StatusDropDown:= TDropDown.Create(StatusBCButton);
   StatusDropDown.Items:= POST_STATUS_PICKS;
   StatusDropDown.ItemIndex:= 0;
+  PostDropDown:= TDropDown.Create(PostBCButton);
 end;
 
 procedure TStaffPostlogEditForm.FormDestroy(Sender: TObject);

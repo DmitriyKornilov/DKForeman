@@ -7,7 +7,9 @@ interface
 uses
   Classes, SysUtils, Graphics, Controls, BCPanel, BCButton, DateUtils,
   //DK packages utils
-  DK_CtrlUtils, DK_Color, DK_Vector, DK_VSTTables, DK_DateUtils, DK_Const,
+  DK_CtrlUtils, DK_Color, DK_Vector, DK_DateUtils, DK_Const,
+  DK_VSTEdit, DK_VSTTables, DK_VSTCore,
+
   //Project utils
   UDataBase, UConst, UWorkHours, UCalendar, USchedule;
 

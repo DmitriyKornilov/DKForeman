@@ -10,7 +10,7 @@ uses
   //Project utils
   UDataBase, UConst, UTypes, UUtils,
   //DK packages utils
-  DK_VSTTables, DK_VSTTools, DK_Vector, DK_StrUtils, DK_Const, DK_Dialogs,
+  DK_VSTTypes, DK_VSTTables, DK_VSTTableTools, DK_Vector, DK_StrUtils, DK_Const, DK_Dialogs,
   //Forms
   UStaffMainEditForm, UStaffTabNumEditForm, UStaffPostlogEditForm;
 
