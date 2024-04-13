@@ -5,11 +5,11 @@ unit UDataBase;
 interface
 
 uses
-  Classes, SysUtils, StdCtrls, DateUtils,
+  Classes, SysUtils, DateUtils,
   //Project utils
   UCalendar, UConst, USchedule,
   //DK packages utils
-  DK_SQLite3, DK_SQLUtils, DK_Vector, DK_Dialogs, DK_StrUtils, DK_Const,
+  DK_SQLite3, DK_SQLUtils, DK_Vector, DK_StrUtils, DK_Const,
   DK_DropDown;
 
 type

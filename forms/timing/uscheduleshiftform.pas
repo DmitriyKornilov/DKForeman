@@ -11,7 +11,7 @@ uses
   UDataBase, UConst, UTypes, UUtils, UWorkHours, Ucalendar, USchedule,
   UScheduleShiftSheet,
   //DK packages utils
-  DK_VSTTables, DK_VSTTableTools, DK_Vector, DK_StrUtils, DK_Const, DK_Dialogs,
+  DK_VSTTables, DK_VSTTableTools, DK_Vector, DK_Const, DK_Dialogs,
   DK_Zoom, DK_DateUtils, DK_Color, DK_SheetExporter,
   //Forms
   UChooseForm, UScheduleShiftEditForm, UScheduleCorrectionEditForm;
@@ -307,7 +307,7 @@ end;
 
 procedure TScheduleShiftForm.ScheduleDelButtonClick(Sender: TObject);
 begin
-
+  ScheduleListDelItem;
 end;
 
 procedure TScheduleShiftForm.ScheduleEditButtonClick(Sender: TObject);
@@ -848,7 +848,12 @@ end;
 
 procedure TScheduleShiftForm.ScheduleListDelItem;
 begin
-
+  if not ScheduleList.IsSelected then Exit;
+  if not Confirm('Удалить график  "' +
+                 ScheduleNames[ScheduleList.SelectedIndex] +
+                 '"?') then Exit;
+  DataBase.ScheduleShiftDelete(ScheduleIDs[ScheduleList.SelectedIndex]);
+  ScheduleListLoad;
 end;
 
 procedure TScheduleShiftForm.SettingsLoad;
