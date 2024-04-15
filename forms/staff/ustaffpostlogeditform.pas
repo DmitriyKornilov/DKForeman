@@ -35,12 +35,12 @@ type
     procedure SaveButtonClick(Sender: TObject);
   private
     PostIDs: TIntVector;
-    PostDropDown: TDropDown;
+    PostDropDown: TVSTDropDown;
 
   public
     EditingType: TEditingType;
     TabNumID, PostID, PostLogID, PrevPostLogID: Integer;
-    StatusDropDown: TDropDown;
+    StatusDropDown: TVSTDropDown;
   end;
 
 var
@@ -59,10 +59,10 @@ end;
 
 procedure TStaffPostlogEditForm.FormCreate(Sender: TObject);
 begin
-  StatusDropDown:= TDropDown.Create(StatusBCButton);
+  StatusDropDown:= TVSTDropDown.Create(StatusBCButton);
   StatusDropDown.Items:= POST_STATUS_PICKS;
   StatusDropDown.ItemIndex:= 0;
-  PostDropDown:= TDropDown.Create(PostBCButton);
+  PostDropDown:= TVSTDropDown.Create(PostBCButton);
 end;
 
 procedure TStaffPostlogEditForm.FormDestroy(Sender: TObject);

@@ -28,11 +28,11 @@ type
     (**************************************************************************
                                      СПРАВОЧНИКИ
     **************************************************************************)
-    procedure PostDictionaryLoad(const ADropDown: TDropDown;
+    procedure PostDictionaryLoad(const ADropDown: TVSTDropDown;
                                  out APostIDs: TIntVector;
                                  const ASelectPostID: Integer = -1;
                                  const AIDNotZero: Boolean = True);
-    procedure TimetableMarkDictionaryLoad(const ADropDown: TDropDown;
+    procedure TimetableMarkDictionaryLoad(const ADropDown: TVSTDropDown;
                                  out ADigMarks: TIntVector;
                                  const ASelectDigMark: Integer = -1;
                                  const AIDNotZero: Boolean = True);
@@ -240,7 +240,7 @@ begin
   end;
 end;
 
-procedure TDataBase.PostDictionaryLoad(const ADropDown: TDropDown;
+procedure TDataBase.PostDictionaryLoad(const ADropDown: TVSTDropDown;
                                        out APostIDs: TIntVector;
                                        const ASelectPostID: Integer = -1;
                                        const AIDNotZero: Boolean = True);
@@ -253,7 +253,7 @@ begin
   ADropDown.KeyPick(Items, APostIDs, ASelectPostID);
 end;
 
-procedure TDataBase.TimetableMarkDictionaryLoad(const ADropDown: TDropDown;
+procedure TDataBase.TimetableMarkDictionaryLoad(const ADropDown: TVSTDropDown;
                                  out ADigMarks: TIntVector;
                                  const ASelectDigMark: Integer = -1;
                                  const AIDNotZero: Boolean = True);

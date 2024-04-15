@@ -7,8 +7,8 @@ interface
 uses
   Classes, SysUtils, Graphics, Controls, BCPanel, BCButton, DateUtils,
   //DK packages utils
-  DK_CtrlUtils, DK_Color, DK_Vector, DK_DateUtils, DK_Const,
-  DK_VSTEdit, DK_VSTTables, DK_VSTCore,
+  DK_CtrlUtils, DK_Color, DK_Vector, DK_DateUtils, DK_Const, DK_Fonts,
+  DK_StrUtils, DK_VSTEdit, DK_VSTTables, DK_VSTCore, DK_PPI, DK_VSTDropDownConst,
 
   //Project utils
   UDataBase, UConst, UWorkHours, UCalendar, USchedule;
@@ -18,6 +18,8 @@ uses
   procedure SetCaptionPanels(const AControls: array of TBCPanel);
   procedure SetToolButtons(const AControls: array of TControl);
   procedure SetCategoryButtons(const AControls: array of TBCButton);
+  function GetControlCaptionWidth(const AControl: TControl; const ACaption: String): Integer;
+  function GetBCButtonWidth(const AControl: TControl; const ACaption: String): Integer;
 
   //ID for TVSTTable.ReSelect
   function GetSelectedID(const ATable: TVSTTable; const AIDValues: TIntVector;
@@ -106,6 +108,27 @@ begin
     AControls[i].StateNormal.Background.Color:= c;
     AControls[i].StateNormal.Border.Color:= clActiveBorder;
   end;
+end;
+
+function GetControlCaptionWidth(const AControl: TControl; const ACaption: String): Integer;
+var
+  AFontName: String;
+  AFontSize: Single;
+  DesignTimePPI: Integer;
+begin
+  LoadFontFromControl(AControl, AFontName, AFontSize);
+  Result:= SWidth(ACaption, AFontName, AFontSize);
+  DesignTimePPI:= ControlDesignTimePPI(AControl);
+  Result:= SizeFromDefaultToDesignTime(Result, DesignTimePPI);
+end;
+
+function GetBCButtonWidth(const AControl: TControl; const ACaption: String): Integer;
+var
+  DesignTimePPI: Integer;
+begin
+  DesignTimePPI:= ControlDesignTimePPI(AControl);
+  Result:= GetControlCaptionWidth(AControl, ACaption) +
+           SizeFromDefaultToDesignTime(DROPDOWN_WIDTH_DEFAULT, DesignTimePPI);
 end;
 
 function GetSelectedID(const ATable: TVSTTable; const AIDValues: TIntVector;

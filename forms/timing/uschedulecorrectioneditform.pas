@@ -42,7 +42,7 @@ type
 
   private
     DigMarks: TIntVector;
-    MarkDropDown: TDropDown;
+    MarkDropDown: TVSTDropDown;
   public
     Year: Integer;
     DigMark, ScheduleID, TabNumID: Integer;
@@ -62,7 +62,7 @@ begin
   DigMark:= -1;
   ScheduleID:= -1;
   TabNumID:= -1;
-  MarkDropDown:= TDropDown.Create(MarkBCButton);
+  MarkDropDown:= TVSTDropDown.Create(MarkBCButton);
 end;
 
 procedure TScheduleCorrectionEditForm.FormDestroy(Sender: TObject);

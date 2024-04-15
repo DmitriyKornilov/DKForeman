@@ -13,7 +13,6 @@ uses
   DK_Math;
 
 type
-  { Годовой график сменности в виде таблицы }
 
   { TShiftScheduleTableSheet }
 
@@ -28,36 +27,49 @@ type
       FWriteSumTotalIfZero = True;
       FWriteSumNightIfZero = True;
       COLUMNS_COUNT        = 36;
-      DAY_COLUMN_WIDTH     = 33;       //ширина столбцов дней месяца
+      DAY_COLUMN_WIDTH     = 33;    //ширина столбцов дней месяца
       PERIOD_COLUMN_WIDTH  = 70;    //ширина столбца "Месяц"
       SUMDAYS_COLUMN_WITH  = 35;    //--кол-ва дней
       SUMHOURS_COLUMN_WITH = 50;    //--кол-ва часов
       ROW_DEFAULT_HEIGHT   = 24;
       //FIRSTROW_TITLE_HEIGHT = 50; 3*SHeight
     var
-      FSchedule: TShiftSchedule;
       FCalendar: TCalendar;
       FNeedNight: Boolean;
       FNeedCorrect: Boolean;
       FScheduleNotWorkColor: Boolean;
       FNeedMarks: Boolean;
       FResumeType: Byte;
-      FCaption: String;
+
+    function IsNeedCaption: Boolean;
+
+    function GetCaption: String; virtual; abstract;
+    function GetPeriodColumnName: String; virtual; abstract;
     procedure CaptionDraw;
+  public
+    constructor Create(const AWorksheet: TsWorksheet;
+                       const AGrid: TsWorksheetGrid;
+                       const AFont: TFont;
+                       const AResumeType: Byte {0-дни, 1-смены, 2-дни и смены});
+  end;
+
+  { TShiftScheduleYearSheet }
+  // Годовой график сменности в виде таблицы
+  TShiftScheduleYearSheet = class (TShiftScheduleTableSheet)
+  private
+    FSchedule: TShiftSchedule;
+    FCaption: String;
     procedure BlankDraw;
     procedure ScheduleDraw;
-    function IsNeedCaption: Boolean;
 
     function RowToMonth(const ARow: Integer): Integer;
     function ColToDay(const ACol, AMonth: Integer): Integer;
     function DateToRow(const ADate: TDate): Integer;
     function DateToCol(const ADate: TDate): Integer;
 
+    function GetCaption: String; override;
+    function GetPeriodColumnName: String; override;
   public
-    constructor Create(const AWorksheet: TsWorksheet;
-                       const AGrid: TsWorksheetGrid;
-                       const AFont: TFont;
-                       const AResumeType: Byte {0-дни, 1-смены, 2-дни и смены});
     procedure Draw(const ACalendar: TCalendar;
                    const ASchedule: TShiftSchedule;
                    const AName: String;
@@ -68,6 +80,26 @@ type
 
     procedure Select(const ADate: TDate); override;
     procedure Unselect(const ADate: TDate); override;
+  end;
+
+  { TShiftScheduleMonthSheet }
+  //Сводная таблица графиков сменности на месяц
+  TShiftScheduleMonthSheet = class (TShiftScheduleTableSheet)
+  private
+    FSchedules: TShiftScheduleVector;
+    FVisible: TBoolVector;
+    FNames: TStrVector;
+    procedure BlankDraw;
+    procedure ScheduleDraw;
+    function GetCaption: String; override;
+    function GetPeriodColumnName: String; override;
+  public
+    procedure Draw(const ACalendar: TCalendar;
+                   const ASchedules: TShiftScheduleVector;
+                   const ANames: TStrVector;
+                   const ANeedNight, ANeedCorrect, ANeedMarks, AScheduleNotWorkColor: Boolean;
+                   const AVisible: TBoolVector = nil);
+
   end;
 
 
@@ -135,6 +167,11 @@ begin
   end;
 end;
 
+function TShiftScheduleTableSheet.IsNeedCaption: Boolean;
+begin
+  Result:= (not Writer.HasGrid) and (not SEmpty(GetCaption));
+end;
+
 procedure TShiftScheduleTableSheet.CaptionDraw;
 var
   R, C, i,n: Integer;
@@ -146,13 +183,12 @@ begin
   begin
     Writer.SetFont(Font.Name, Font.Size+2, [fsBold], clBlack);
     Writer.SetAlignment(haLeft, vaCenter);
-    Writer.WriteText(R, C, R, C+35, 'График сменности "' + FCaption + '"' +
-                           FormatDateTime(' на yyyy год', FSchedule.BeginDate));
+    Writer.WriteText(R, C, R, C+35, GetCaption);
     R:= R + 1;
   end;
   Writer.SetAlignment(haCenter, vaCenter);
   Writer.SetFont(Font.Name, Font.Size, [fsBold], clBlack);
-  Writer.WriteText(R, C, R+1, C, 'Месяц', cbtOuter);
+  Writer.WriteText(R, C, R+1, C, GetPeriodColumnName, cbtOuter);
   Writer.AddCellBGColorIndex(R, C, TITLE_COLOR_INDEX);
   Writer.AddCellBGColorIndex(R+1, C, TITLE_COLOR_INDEX);
   S:= 'Часов за день';
@@ -191,7 +227,22 @@ begin
   Writer.SetRowHeight(R, i);
 end;
 
-procedure TShiftScheduleTableSheet.BlankDraw;
+constructor TShiftScheduleTableSheet.Create(const AWorksheet: TsWorksheet;
+                       const AGrid: TsWorksheetGrid;
+                       const AFont: TFont;
+                       const AResumeType: Byte {0-дни, 1-смены, 2-дни и смены});
+begin
+  FResumeType:= AResumeType;
+  inherited Create(AWorksheet, AGrid, AFont);
+  FResumeType:= AResumeType;
+  FCalendar:= nil;
+end;
+
+{ TShiftScheduleYearSheet }
+
+
+
+procedure TShiftScheduleYearSheet.BlankDraw;
 const
   C1= 2;
 var
@@ -258,7 +309,7 @@ begin
   Writer.WriteText(R, C+1, R+DeltaR-1, C+31, EmptyStr, cbtOuter);
 end;
 
-procedure TShiftScheduleTableSheet.ScheduleDraw;
+procedure TShiftScheduleYearSheet.ScheduleDraw;
 var
   R,C,DeltaR,m: Integer;
   AYear: Word;
@@ -379,25 +430,7 @@ begin
   end;
 end;
 
-function TShiftScheduleTableSheet.IsNeedCaption: Boolean;
-begin
-  Result:= (not Writer.HasGrid) and (not SEmpty(FCaption));
-end;
-
-constructor TShiftScheduleTableSheet.Create(const AWorksheet: TsWorksheet;
-                                  const AGrid: TsWorksheetGrid;
-                                  const AFont: TFont;
-                                  const AResumeType: Byte);
-begin
-  FResumeType:= AResumeType;
-  inherited Create(AWorksheet, AGrid, AFont);
-  FResumeType:= AResumeType;
-  FCaption:= EmptyStr;
-  FCalendar:= nil;
-  FSchedule:= nil;
-end;
-
-procedure TShiftScheduleTableSheet.Draw(const ACalendar: TCalendar;
+procedure TShiftScheduleYearSheet.Draw(const ACalendar: TCalendar;
                    const ASchedule: TShiftSchedule;
                    const AName: String;
                    const ANeedNight, ANeedCorrect, ANeedMarks, AScheduleNotWorkColor: Boolean);
@@ -425,7 +458,7 @@ begin
     Writer.SetRowHeight(i, ROW_DEFAULT_HEIGHT);
 end;
 
-function TShiftScheduleTableSheet.RowToMonth(const ARow: Integer): Integer;
+function TShiftScheduleYearSheet.RowToMonth(const ARow: Integer): Integer;
 begin
   Result:= 0;
   if FNeedNight then
@@ -463,7 +496,7 @@ begin
   end;
 end;
 
-function TShiftScheduleTableSheet.ColToDay(const ACol, AMonth: Integer): Integer;
+function TShiftScheduleYearSheet.ColToDay(const ACol, AMonth: Integer): Integer;
 begin
   Result:= 0;
   if (not Assigned(FCalendar)) or (not FCalendar.Calculated) then Exit;
@@ -474,7 +507,7 @@ begin
   end;
 end;
 
-function TShiftScheduleTableSheet.DateToRow(const ADate: TDate): Integer;
+function TShiftScheduleYearSheet.DateToRow(const ADate: TDate): Integer;
 var
   M: Integer;
 begin
@@ -514,12 +547,25 @@ begin
   end;
 end;
 
-function TShiftScheduleTableSheet.DateToCol(const ADate: TDate): Integer;
+function TShiftScheduleYearSheet.DateToCol(const ADate: TDate): Integer;
 begin
   Result:= DayOfDate(ADate) + 1;
 end;
 
-function TShiftScheduleTableSheet.GridToDate(const ARow, ACol: Integer;
+function TShiftScheduleYearSheet.GetCaption: String;
+begin
+  Result:= EmptyStr;
+  if SEmpty(FCaption) then Exit;
+  Result:= 'График сменности "' + FCaption + '"' +
+           FormatDateTime(' на yyyy год', FSchedule.BeginDate);
+end;
+
+function TShiftScheduleYearSheet.GetPeriodColumnName: String;
+begin
+  Result:= 'Месяц';
+end;
+
+function TShiftScheduleYearSheet.GridToDate(const ARow, ACol: Integer;
                                              out ADate: TDate): Boolean;
 var
   M, D: Integer;
@@ -537,7 +583,7 @@ begin
   end;
 end;
 
-function TShiftScheduleTableSheet.DateToGrid(const ADate: TDate;
+function TShiftScheduleYearSheet.DateToGrid(const ADate: TDate;
                                              out ARow, ACol: Integer): Boolean;
 begin
   Result:= False;
@@ -550,7 +596,7 @@ begin
   Result:= True;
 end;
 
-procedure TShiftScheduleTableSheet.Select(const ADate: TDate);
+procedure TShiftScheduleYearSheet.Select(const ADate: TDate);
 var
   R, C: Integer;
 begin
@@ -560,7 +606,7 @@ begin
   SelectionAddCell(R+1, C);
 end;
 
-procedure TShiftScheduleTableSheet.Unselect(const ADate: TDate);
+procedure TShiftScheduleYearSheet.Unselect(const ADate: TDate);
 var
   R, C: Integer;
 begin
@@ -568,6 +614,153 @@ begin
   if not FNeedNight then Exit;
   if not DateToGrid(ADate, R, C) then Exit;
   SelectionDelCell(R+1, C);
+end;
+
+{ TShiftScheduleMonthSheet }
+
+procedure TShiftScheduleMonthSheet.BlankDraw;
+const
+  C1= 2;
+var
+  DeltaR, R, RR, C,C2, i,j,k,m: Integer;
+begin
+  C2:= COLUMNS_COUNT + Ord(FResumeType=2);
+  DeltaR:= 1 + Ord(FNeedNight);
+  RR:= 3 + Ord(IsNeedCaption);
+  C:= 1;
+  Writer.SetFont(Font.Name, Font.Size, [], clBlack);
+  k:= -1;
+  for i:= 0 to High(FSchedules) do
+  begin
+    if FVisible[i] then
+    begin
+      Inc(k);
+      R:= RR + k*DeltaR;
+      Writer.SetAlignment(haLeft, vaCenter);
+      Writer.WriteText(R, C, R + DeltaR - 1, C, FNames[i], cbtOuter);
+      Writer.SetAlignment(haCenter, vaCenter);
+      for m:= R to R+DeltaR-1 do
+        for j:= C1 to C2 do
+          Writer.WriteText(m,j,EmptyStr, cbtOuter);
+    end;
+  end;
+end;
+
+procedure TShiftScheduleMonthSheet.ScheduleDraw;
+var
+  R,RR,C,DeltaR,j,k: Integer;
+  Marks: TStrVector;
+  WorkHours: TWorkHours;
+
+  procedure DrawSingle(ARow, ACol, AInd: Word);
+  var
+    i,d,s: Integer;
+  begin
+    ChooseShiftScheduleData(FSchedules[AInd], FNeedCorrect, WorkHours, d,s, Marks);
+    for i:= 0 to FCalendar.DaysCount - 1 do
+    begin
+      if FNeedCorrect and (FSchedules[AInd].IsCorrection[i]=CORRECTION_YES) then
+        AddScheduleColorIndex(Writer, ARow, ACol+i, CORRECT_COLOR_INDEX, FNeedNight)
+      else begin
+        if FScheduleNotWorkColor then
+        begin
+          if WorkHours.Total[i]=0 then
+            AddScheduleColorIndex(Writer, ARow, ACol+i, NOTWORK_COLOR_INDEX, FNeedNight);
+        end
+        else begin
+          if (FCalendar.DayStatuses[i]=DAY_STATUS_HOLIDAY) or
+             (FCalendar.DayStatuses[i]=DAY_STATUS_OFFDAY) then
+             AddScheduleColorIndex(Writer, ARow, ACol+i, NOTWORK_COLOR_INDEX, FNeedNight);
+        end;
+      end;
+      DrawHoursOrMarks(Writer, ARow, ACol+i, WorkHours.Total[i], WorkHours.Night[i],
+                       Marks[i], EmptyStr, FWriteTotalIfZero, FWriteNightIfZero, FNeedNight, FNeedMarks);
+    end;
+    for i:= FCalendar.DaysCount to 30 do
+    begin
+      DrawMonthOutside(Writer, ARow, ACol+i, FNeedNight);
+      AddScheduleColorIndex(Writer, ARow, ACol+i, OUTSIDEMONTH_COLOR_INDEX, FNeedNight);
+    end;
+    if FResumeType<2 then
+    begin
+      if FResumeType=0 then
+        DrawDaysCount(Writer, ARow, ACol+31, d, FWriteDaysCountIfZero, FNeedNight)
+      else
+        DrawDaysCount(Writer, ARow, ACol+31, s, FWriteDaysCountIfZero, FNeedNight);
+      i:=0;
+    end
+    else begin
+      DrawDaysCount(Writer, ARow, ACol+31, d, FWriteDaysCountIfZero, FNeedNight);
+      DrawDaysCount(Writer, ARow, ACol+32, s, FWriteDaysCountIfZero, FNeedNight);
+      i:= 1;
+    end;
+    DrawHours(Writer, ARow, ACol+32+i, WorkHours.SumTotal, WorkHours.SumNight,
+                 FWriteSumTotalIfZero, FWriteSumNightIfZero, FNeedNight);
+    DrawDaysCount(Writer, ARow, ACol+33+i, FCalendar.WorkDaysCount, FWriteDaysCountIfZero, FNeedNight);
+    DrawHours(Writer, ARow, ACol+34+i, FCalendar.SumWorkHoursInt(FSchedules[AInd].HoursInWeek), 0,
+               FWriteSumTotalIfZero, False, FNeedNight);
+  end;
+
+begin
+  DeltaR:= 1 + Ord(FNeedNight);
+  RR:= 3 + Ord(not Writer.HasGrid);
+  C:= 2;
+  k:= -1;
+  for j:= 0 to High(FSchedules) do
+  begin
+    if FVisible[j] then
+    begin
+      Inc(k);
+      R:= RR + k*DeltaR;
+      DrawSingle(R,C,j);
+    end;
+  end;
+end;
+
+function TShiftScheduleMonthSheet.GetCaption: String;
+begin
+  Result:= 'Графики сменности на ' +
+           SUpper(MONTHSNOM[MonthOfDate(FCalendar.BeginDate)]) +
+           FormatDateTime(' yyyy года', FCalendar.BeginDate);
+end;
+
+function TShiftScheduleMonthSheet.GetPeriodColumnName: String;
+begin
+  Result:= 'График';
+end;
+
+procedure TShiftScheduleMonthSheet.Draw(const ACalendar: TCalendar;
+  const ASchedules: TShiftScheduleVector; const ANames: TStrVector;
+  const ANeedNight, ANeedCorrect, ANeedMarks, AScheduleNotWorkColor: Boolean;
+  const AVisible: TBoolVector = nil);
+var
+  W,i: Integer;
+begin
+  FCalendar:= ACalendar;
+  FSchedules:= ASchedules;
+  FNeedNight:= ANeedNight;
+  FNeedCorrect:= ANeedCorrect;
+  FNeedMarks:= ANeedMarks;
+  FScheduleNotWorkColor:= AScheduleNotWorkColor;
+  FVisible:= AVisible;
+  FNames:= ANames;
+
+  Writer.BeginEdit;
+  W:= PERIOD_COLUMN_WIDTH;
+  for i:= 0 to High(FSchedules) do
+    if FVisible[i] then
+      W:= Max(W, SWidth(FNames[i], Font.Name, Font.Size));
+  Writer.SetColWidth(1, W);
+  CaptionDraw;
+  BlankDraw;
+  ScheduleDraw;
+  if Writer.HasGrid then
+    Writer.SetFrozenRows(2);
+  Writer.EndEdit;
+
+  BordersDraw(1 + Ord(IsNeedCaption));
+  for i:= 2+Ord(IsNeedCaption) to Writer.RowCount do
+    Writer.SetRowHeight(i, ROW_DEFAULT_HEIGHT);
 end;
 
 end.

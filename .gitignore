@@ -37,4 +37,4 @@ work/
 *.app/
 
 # Docs
-*.docx
+#*.docx

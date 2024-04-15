@@ -44,7 +44,7 @@ type
   public
     StaffID: Integer;
     EditingType: TEditingType;
-    GenderDropDown: TDropDown;
+    GenderDropDown: TVSTDropDown;
   end;
 
 var
@@ -59,7 +59,7 @@ implementation
 procedure TStaffMainEditForm.FormCreate(Sender: TObject);
 begin
   StaffID:= -1;
-  GenderDropDown:= TDropDown.Create(GenderBCButton);
+  GenderDropDown:= TVSTDropDown.Create(GenderBCButton);
   GenderDropDown.Items:= GENDER_PICKS;
   GenderDropDown.ItemIndex:= 1;
 end;

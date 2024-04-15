@@ -40,8 +40,8 @@ type
   public
     Year: Integer;
     DayDate: TDate;
-    StatusDropDown: TDropDown;
-    SwapDayDropDown: TDropDown;
+    StatusDropDown: TVSTDropDown;
+    SwapDayDropDown: TVSTDropDown;
   end;
 
 var
@@ -98,11 +98,11 @@ end;
 
 procedure TCalendarEditForm.FormCreate(Sender: TObject);
 begin
-  SwapDayDropDown:= TDropDown.Create(SwapDayBCButton);
+  SwapDayDropDown:= TVSTDropDown.Create(SwapDayBCButton);
   SwapDayDropDown.Items:= DAY_NAME_PICKS;
   SwapDayDropDown.ItemIndex:= 0;
 
-  StatusDropDown:= TDropDown.Create(StatusBCButton);
+  StatusDropDown:= TVSTDropDown.Create(StatusBCButton);
   StatusDropDown.OnChange:= @StatusDropDownChange;
   StatusDropDown.Items:= VCut(DAY_STATUS_PICKS, 1);
   StatusDropDown.ItemIndex:= 0;

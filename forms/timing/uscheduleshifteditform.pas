@@ -41,7 +41,7 @@ type
     procedure FormShow(Sender: TObject);
     procedure SaveButtonClick(Sender: TObject);
   private
-    TypeDropDown: TDropDown;
+    TypeDropDown: TVSTDropDown;
     Structure: TVSTEdit;
     KeyMarks: TIntVector;
     PickMarks: TStrVector;
@@ -87,7 +87,7 @@ begin
                              taCenter, taLeftJustify);
   Structure.Draw;
 
-  TypeDropDown:= TDropDown.Create(TypeBCButton);
+  TypeDropDown:= TVSTDropDown.Create(TypeBCButton);
   TypeDropDown.OnChange:= @TypeDropDownChange;
   TypeDropDown.Items:= VCreateStr(['недельный', 'цикловой']);
 end;
