@@ -257,6 +257,7 @@
         <Filename Value="forms\timing\uscheduleshiftmonthform.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="ScheduleShiftMonthForm"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UScheduleShiftMonthForm"/>
       </Unit>

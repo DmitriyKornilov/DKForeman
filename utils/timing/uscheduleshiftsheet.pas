@@ -99,7 +99,9 @@ type
                    const ANames: TStrVector;
                    const ANeedNight, ANeedCorrect, ANeedMarks, AScheduleNotWorkColor: Boolean;
                    const AVisible: TBoolVector = nil);
-
+    //not used
+    function GridToDate(const {%H-}ARow, {%H-}ACol: Integer; out ADate: TDate): Boolean; override;
+    function DateToGrid(const {%H-}ADate: TDate; out ARow, ACol: Integer): Boolean; override;
   end;
 
 
@@ -720,7 +722,7 @@ end;
 function TShiftScheduleMonthSheet.GetCaption: String;
 begin
   Result:= 'Графики сменности на ' +
-           SUpper(MONTHSNOM[MonthOfDate(FCalendar.BeginDate)]) +
+           MONTHSNOM[MonthOfDate(FCalendar.BeginDate)] +
            FormatDateTime(' yyyy года', FCalendar.BeginDate);
 end;
 
@@ -749,7 +751,7 @@ begin
   W:= PERIOD_COLUMN_WIDTH;
   for i:= 0 to High(FSchedules) do
     if FVisible[i] then
-      W:= Max(W, SWidth(FNames[i], Font.Name, Font.Size));
+      W:= Max(W, SWidth(FNames[i], Font.Name, Font.Size+1));
   Writer.SetColWidth(1, W);
   CaptionDraw;
   BlankDraw;
@@ -761,6 +763,21 @@ begin
   BordersDraw(1 + Ord(IsNeedCaption));
   for i:= 2+Ord(IsNeedCaption) to Writer.RowCount do
     Writer.SetRowHeight(i, ROW_DEFAULT_HEIGHT);
+end;
+
+function TShiftScheduleMonthSheet.GridToDate(const ARow, ACol: Integer;
+  out ADate: TDate): Boolean;
+begin
+  ADate:= 0;
+  Result:= False;
+end;
+
+function TShiftScheduleMonthSheet.DateToGrid(const ADate: TDate;
+  out ARow, ACol: Integer): Boolean;
+begin
+  ARow:= 0;
+  ACol:= 0;
+  Result:= False;
 end;
 
 end.

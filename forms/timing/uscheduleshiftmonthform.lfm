@@ -7,16 +7,15 @@ object ScheduleShiftMonthForm: TScheduleShiftMonthForm
   Caption = 'ScheduleShiftMonthForm'
   ClientHeight = 240
   ClientWidth = 697
-  DesignTimePPI = 120
   OnClose = FormClose
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
-  LCLVersion = '3.2.0.0'
+  LCLVersion = '2.2.4.0'
   WindowState = wsMaximized
   object ToolPanel: TPanel
     Left = 2
-    Height = 40
+    Height = 32
     Top = 2
     Width = 693
     Align = alTop
@@ -25,21 +24,21 @@ object ScheduleShiftMonthForm: TScheduleShiftMonthForm
     BorderSpacing.Right = 2
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 36
+    ClientHeight = 28
     ClientWidth = 689
-    Constraints.MaxHeight = 40
-    Constraints.MinHeight = 40
+    Constraints.MaxHeight = 32
+    Constraints.MinHeight = 32
     ParentFont = False
     TabOrder = 0
     object CloseButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 649
-      Height = 36
+      Left = 657
+      Height = 28
       Top = 0
-      Width = 40
+      Width = 32
       Align = alRight
-      Constraints.MaxWidth = 40
-      Constraints.MinWidth = 40
+      Constraints.MaxWidth = 32
+      Constraints.MinWidth = 32
       Glyph.Data = {
         36090000424D3609000000000000360000002800000018000000180000000100
         2000000000000009000064000000640000000000000000000000000000000000
@@ -119,8 +118,8 @@ object ScheduleShiftMonthForm: TScheduleShiftMonthForm
       OnClick = CloseButtonClick
     end
     object Bevel1: TBevel
-      Left = 645
-      Height = 36
+      Left = 653
+      Height = 28
       Top = 0
       Width = 2
       Align = alRight
@@ -130,22 +129,22 @@ object ScheduleShiftMonthForm: TScheduleShiftMonthForm
     end
     object YearPanel: TPanel
       Left = 0
-      Height = 36
+      Height = 28
       Top = 0
-      Width = 268
+      Width = 214
       Align = alLeft
       AutoSize = True
       BevelOuter = bvNone
-      ClientHeight = 36
-      ClientWidth = 268
+      ClientHeight = 28
+      ClientWidth = 214
       TabOrder = 0
       object YearSpinEdit: TSpinEdit
         AnchorSideTop.Control = YearPanel
         AnchorSideTop.Side = asrCenter
         Left = 2
-        Height = 28
-        Top = 4
-        Width = 63
+        Height = 23
+        Top = 3
+        Width = 50
         Align = alCustom
         Alignment = taCenter
         BorderSpacing.Left = 2
@@ -165,10 +164,10 @@ object ScheduleShiftMonthForm: TScheduleShiftMonthForm
         AnchorSideRight.Side = asrBottom
         AnchorSideBottom.Control = YearSpinEdit
         AnchorSideBottom.Side = asrBottom
-        Left = 68
-        Height = 28
-        Top = 4
-        Width = 200
+        Left = 54
+        Height = 23
+        Top = 3
+        Width = 160
         Anchors = [akTop, akLeft, akBottom]
         StateClicked.Background.Gradient1.StartColor = 8404992
         StateClicked.Background.Gradient1.EndColor = 4194304
@@ -250,7 +249,7 @@ object ScheduleShiftMonthForm: TScheduleShiftMonthForm
         StateNormal.FontEx.Style = []
         StateNormal.FontEx.TextAlignment = bcaLeftCenter
         StateNormal.FontEx.PaddingLeft = 5
-        BorderSpacing.Left = 3
+        BorderSpacing.Left = 2
         Color = clNone
         DropDownWidth = 16
         DropDownArrowSize = 8
@@ -267,22 +266,22 @@ object ScheduleShiftMonthForm: TScheduleShiftMonthForm
       end
     end
     object Bevel2: TBevel
-      Left = 272
-      Height = 36
+      Left = 217
+      Height = 28
       Top = 0
       Width = 2
       Align = alLeft
-      BorderSpacing.Left = 4
+      BorderSpacing.Left = 3
       BorderSpacing.Right = 2
       Shape = bsRightLine
     end
     object ExportButton: TBCButton
       Cursor = crHandPoint
-      Left = 364
-      Height = 34
+      Left = 291
+      Height = 26
       Hint = 'Экспорт в формат электронной таблицы XLSX или ODS'
       Top = 1
-      Width = 104
+      Width = 93
       Align = alLeft
       AutoSize = True
       StateClicked.Background.Color = 16245964
@@ -452,6 +451,7 @@ object ScheduleShiftMonthForm: TScheduleShiftMonthForm
         0000000000000000000000000000000000000000000000000000
       }
       GlyphMargin = 0
+      OnClick = ExportButtonClick
       ParentColor = False
       Rounding.RoundX = 0
       Rounding.RoundY = 0
@@ -463,25 +463,25 @@ object ScheduleShiftMonthForm: TScheduleShiftMonthForm
       MemoryUsage = bmuHigh
     end
     object Bevel3: TBevel
-      Left = 359
-      Height = 36
+      Left = 287
+      Height = 28
       Top = 0
       Width = 2
       Align = alLeft
-      BorderSpacing.Left = 3
-      BorderSpacing.Right = 3
+      BorderSpacing.Left = 2
+      BorderSpacing.Right = 2
       Shape = bsRightLine
     end
     object CheckAllButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 276
-      Height = 36
+      Left = 221
+      Height = 28
       Hint = 'Выбрать все графики'
       Top = 0
-      Width = 40
+      Width = 32
       Align = alLeft
-      Constraints.MaxWidth = 40
-      Constraints.MinWidth = 40
+      Constraints.MaxWidth = 32
+      Constraints.MinWidth = 32
       Glyph.Data = {
         36090000424D3609000000000000360000002800000018000000180000000100
         2000000000000009000064000000640000000000000000000000000000000071
@@ -564,14 +564,14 @@ object ScheduleShiftMonthForm: TScheduleShiftMonthForm
     end
     object UncheckAllButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 316
-      Height = 36
+      Left = 253
+      Height = 28
       Hint = 'Снять выбор со всех графиков'
       Top = 0
-      Width = 40
+      Width = 32
       Align = alLeft
-      Constraints.MaxWidth = 40
-      Constraints.MinWidth = 40
+      Constraints.MaxWidth = 32
+      Constraints.MinWidth = 32
       Glyph.Data = {
         36090000424D3609000000000000360000002800000018000000180000000100
         2000000000000009000064000000640000000000000000000000000000000071
@@ -655,23 +655,23 @@ object ScheduleShiftMonthForm: TScheduleShiftMonthForm
   end
   object LeftPanel: TPanel
     Left = 2
-    Height = 194
-    Top = 44
-    Width = 350
+    Height = 202
+    Top = 36
+    Width = 280
     Align = alLeft
     BorderSpacing.Left = 2
     BorderSpacing.Top = 2
     BorderSpacing.Bottom = 2
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 190
-    ClientWidth = 346
+    ClientHeight = 198
+    ClientWidth = 276
     TabOrder = 1
     object VT: TVirtualStringTree
       Left = 0
-      Height = 190
+      Height = 198
       Top = 0
-      Width = 346
+      Width = 276
       Align = alClient
       BorderStyle = bsNone
       DefaultText = 'Node'
@@ -682,34 +682,34 @@ object ScheduleShiftMonthForm: TScheduleShiftMonthForm
     end
   end
   object LeftSplitter: TSplitter
-    Left = 352
-    Height = 198
-    Top = 42
-    Width = 6
+    Left = 282
+    Height = 206
+    Top = 34
+    Width = 5
     ResizeStyle = rsLine
   end
   object SheetPanel: TPanel
-    Left = 358
-    Height = 194
-    Top = 44
-    Width = 337
+    Left = 287
+    Height = 202
+    Top = 36
+    Width = 408
     Align = alClient
     BorderSpacing.Top = 2
     BorderSpacing.Right = 2
     BorderSpacing.Bottom = 2
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 190
-    ClientWidth = 333
+    ClientHeight = 198
+    ClientWidth = 404
     Color = clWhite
     ParentBackground = False
     ParentColor = False
     TabOrder = 3
     object ViewGrid: TsWorksheetGrid
       Left = 0
-      Height = 166
+      Height = 178
       Top = 0
-      Width = 333
+      Width = 404
       AutoExpand = []
       DisplayFixedColRow = False
       FrozenBorderPen.Style = psClear
@@ -742,9 +742,9 @@ object ScheduleShiftMonthForm: TScheduleShiftMonthForm
     end
     object ZoomPanel: TPanel
       Left = 0
-      Height = 22
-      Top = 168
-      Width = 333
+      Height = 18
+      Top = 180
+      Width = 404
       Align = alBottom
       BevelOuter = bvNone
       Color = clWhite
@@ -755,8 +755,8 @@ object ScheduleShiftMonthForm: TScheduleShiftMonthForm
     object ZoomBevel: TBevel
       Left = 0
       Height = 2
-      Top = 166
-      Width = 333
+      Top = 178
+      Width = 404
       Align = alBottom
       Shape = bsBottomLine
       Style = bsRaised

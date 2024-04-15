@@ -9,10 +9,12 @@ uses
   Buttons, Spin, VirtualTrees, fpspreadsheetgrid,
 
   //DK packages utils
-  DK_Vector, DK_StrUtils, DK_Fonts, DK_Const, DK_VSTDropDown, DK_DateUtils,
-  DK_VSTTableTools, DK_Zoom,
+  DK_Vector, DK_Fonts, DK_Const, DK_VSTDropDown, DK_DateUtils, DK_StrUtils,
+  DK_VSTTableTools, DK_Zoom, DK_SheetExporter,
   //Project utils
-  UDataBase, UUtils, UCalendar, USchedule, UScheduleShiftSheet;
+  UDataBase, UUtils, UCalendar, USchedule, UScheduleShiftSheet,
+  //Forms
+  UChooseForm;
 
 type
 
@@ -39,6 +41,7 @@ type
     ZoomPanel: TPanel;
     procedure CheckAllButtonClick(Sender: TObject);
     procedure CloseButtonClick(Sender: TObject);
+    procedure ExportButtonClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -58,9 +61,16 @@ type
     ScheduleNames: TStrVector;
     Schedules: TShiftScheduleVector;
 
+    procedure CalendarAndSchedulesUpdate(const AMonth, AYear: Word;
+                                         var ACalendar: TCalendar;
+                                         var ASchedules: TShiftScheduleVector);
+
     procedure ScheduleLoad;
     procedure ScheduleDraw(const AZoomPercent: Integer);
+    procedure ScheduleReDraw;
     procedure ScheduleRefresh;
+
+    procedure ScheduleExport;
 
   public
     ResumeType: Integer;
@@ -136,7 +146,8 @@ begin
   Sheet:= TShiftScheduleMonthSheet.Create(ViewGrid.Worksheet, ViewGrid, MainForm.GridFont, ResumeType);
 
   DataBase.ScheduleMainListLoad(ScheduleIDs, WeekHours, CycleCounts, ScheduleNames);
-  ScheduleList:= TVSTCheckList.Create(VT, EmptyStr, ScheduleNames, @ScheduleRefresh);
+  ScheduleList:= TVSTCheckList.Create(VT, EmptyStr, ScheduleNames, @ScheduleReDraw);
+  ScheduleList.StopSelectEventWhileCheckAll:= True;
 
   CanDrawSchedule:= True;
 end;
@@ -160,6 +171,11 @@ begin
   Close;
 end;
 
+procedure TScheduleShiftMonthForm.ExportButtonClick(Sender: TObject);
+begin
+  ScheduleExport;
+end;
+
 procedure TScheduleShiftMonthForm.CheckAllButtonClick(Sender: TObject);
 begin
   ScheduleList.CheckAll(True);
@@ -178,43 +194,124 @@ end;
 
 procedure TScheduleShiftMonthForm.YearSpinEditChange(Sender: TObject);
 begin
-  //CalendarForYear(YearSpinEdit.Value, Calendar);
   ScheduleRefresh;
+end;
+
+procedure TScheduleShiftMonthForm.CalendarAndSchedulesUpdate(const AMonth, AYear: Word;
+         var ACalendar: TCalendar;
+         var ASchedules: TShiftScheduleVector);
+var
+  i: Integer;
+  Schedule: TShiftSchedule;
+begin
+  CalendarForMonth(AMonth, AYear, ACalendar);
+  VSDel(ASchedules);
+  for i:= 0 to High(ScheduleIDs) do
+  begin
+    Schedule:= TShiftSchedule.Create;
+    ScheduleShiftByCalendar(ScheduleIDs[i], ACalendar, Schedule{%H-});
+    VSAppend(ASchedules, Schedule);
+  end;
 end;
 
 procedure TScheduleShiftMonthForm.ScheduleLoad;
 var
-  i, M, Y: Integer;
-  Schedule: TShiftSchedule;
+  M, Y: Integer;
 begin
+  if not CanDrawSchedule then Exit;
   M:= MonthDropDown.ItemIndex+1;
   Y:= YearSpinEdit.Value;
-  CalendarForMonth(M, Y, Calendar);
-  VSDel(Schedules);
-  for i:= 0 to High(ScheduleIDs) do
-  begin
-    Schedule:= TShiftSchedule.Create;
-    ScheduleShiftByCalendar(ScheduleIDs[i], Calendar, Schedule{%H-});
-    VSAppend(Schedules, Schedule);
-  end;
+  CalendarAndSchedulesUpdate(M, Y, Calendar, Schedules);
 end;
 
 procedure TScheduleShiftMonthForm.ScheduleDraw(const AZoomPercent: Integer);
 begin
+  if not CanDrawSchedule then Exit;
   ZoomPercent:= AZoomPercent;
   Sheet.Zoom(ZoomPercent);
   Sheet.Draw(Calendar, Schedules, ScheduleNames,
              NeedNight, NeedCorrect, NeedMarks, ScheduleNotWorkColor,
              ScheduleList.Selected);
   if not VIsNil(Colors) then
-    Sheet.ColorsUpdate(Colors)
+    Sheet.ColorsUpdate(Colors);
+end;
+
+procedure TScheduleShiftMonthForm.ScheduleReDraw;
+begin
+  ScheduleDraw(ZoomPercent);
 end;
 
 procedure TScheduleShiftMonthForm.ScheduleRefresh;
 begin
-  if not CanDrawSchedule then Exit;
   ScheduleLoad;
-  ScheduleDraw(ZoomPercent);
+  ScheduleReDraw;
+end;
+
+procedure TScheduleShiftMonthForm.ScheduleExport;
+var
+  Exporter: TSheetsExporter;
+  i: Integer;
+  V: TStrVector;
+  S: String;
+
+  procedure ScheduleToSheet(const AWorksheet: TsWorksheet;
+                            const ACalendar: TCalendar;
+                            const ASchedules: TShiftScheduleVector);
+  var
+    ExpSheet: TShiftScheduleMonthSheet;
+  begin
+    ExpSheet:= TShiftScheduleMonthSheet.Create(AWorksheet, nil, MainForm.GridFont, ResumeType);
+    try
+      ExpSheet.Draw(ACalendar, ASchedules, ScheduleNames,
+             NeedNight, NeedCorrect, NeedMarks, ScheduleNotWorkColor,
+             ScheduleList.Selected);
+      if not VIsNil(Colors) then
+      ExpSheet.ColorsUpdate(Colors)
+    finally
+      FreeAndNil(ExpSheet);
+    end;
+  end;
+
+  procedure ExportMonth(const AMonth, AYear: Word);
+  var
+    ExpCalendar: TCalendar;
+    ExpSchedules: TShiftScheduleVector;
+    Worksheet: TsWorksheet;
+  begin
+    ExpCalendar:= nil;
+    ExpSchedules:= nil;
+    CalendarAndSchedulesUpdate(AMonth, AYear, ExpCalendar, ExpSchedules);
+    try
+      Worksheet:= Exporter.AddWorksheet(SFirstUpper(MONTHSNOM[AMonth]) + ' ' + IntToStr(AYear));
+      ScheduleToSheet(Worksheet, ExpCalendar, ExpSchedules);
+      Exporter.PageSettings(spoLandscape);
+    finally
+      FreeAndNil(ExpCalendar);
+      VSDel(ExpSchedules);
+    end;
+  end;
+
+begin
+  S:= 'Сохранить в файл:';
+  V:= VCreateStr([
+    'Сводный график на ' + MonthDropDown.Text + ' ' + YearSpinEdit.Text + ' года',
+    'Сводные графики на все месяцы ' + YearSpinEdit.Text + ' года'
+  ]);
+  i:= Choose(S, V);
+  if i=0 then Exit;
+
+  Exporter:= TSheetsExporter.Create;
+  try
+    if i=1 then //график на выбранный месяц
+      ExportMonth(MonthDropDown.ItemIndex+1, YearSpinEdit.Value)
+    else begin //график на все месяцы
+      for i:= 1 to 12 do
+        ExportMonth(i, YearSpinEdit.Value);
+    end;
+    Exporter.Save('Выполнено!');
+  finally
+    FreeAndNil(Exporter);
+  end;
 end;
 
 end.
