@@ -5,7 +5,9 @@ unit UConst;
 interface
 
 uses
-  Classes, SysUtils;
+  Classes, SysUtils,
+
+  DK_Color;
 
 const
   MONDAY_DATE = 45292; //01.01.2024 - ПН
@@ -59,29 +61,38 @@ const
   SCHEDULE_CORRECTION_COLUMN_WIDTHS: array of Integer =
     (70,     70,        80,            90,             70          );
 
-  COLOR_GRAY        = $00E0E0E0;
-  COLOR_BLACK       = $00000000;
-  COLOR_WHITE       = $00FFFFFF;
-  COLOR_ORANGE      = $0097CBFF;
-  COLOR_GREEN       = $00CCE3CC;
-  COLOR_YELLOW      = $00B3FFFF;
-
-  COLOR_CALENDAR_MONTHNAME = COLOR_WHITE;//COLOR_BEIGE; //цвет ячейки с названием месяца
-  COLOR_CALENDAR_DAYNAME   = COLOR_WHITE;//COLOR_GRAY;  //цвет ячеек с названиями дней недели
-  COLOR_CALENDAR_QUARTER   = COLOR_GRAY;
-  COLOR_CALENDAR_HALFYEAR  = COLOR_GREEN;
+  COLOR_CALENDAR_MONTHNAME = COLOR_WHITE; //цвет ячейки с названием месяца
+  COLOR_CALENDAR_DAYNAME   = COLOR_WHITE; //цвет ячеек с названиями дней недели
+  COLOR_CALENDAR_QUARTER   = COLOR_GREEN;
+  COLOR_CALENDAR_HALFYEAR  = COLOR_PURPLE;
   COLOR_CALENDAR_YEAR      = COLOR_ORANGE;
 
-  COLORS_CALENDAR: array [0..4] of Integer = (COLOR_BLACK,   //неизвестный
-                                              COLOR_ORANGE,  //праздничный
-                                              COLOR_GREEN,   //выходной
-                                              COLOR_GRAY, //COLOR_VIOLET,  //предпраздничный
-                                              COLOR_WHITE);  //рабочий
+  COLORS_CALENDAR: array of Integer = (
+    COLOR_BLACK,   //неизвестный
+    COLOR_ORANGE,  //праздничный
+    COLOR_GREEN,   //выходной
+    COLOR_PURPLE,  //предпраздничный
+    COLOR_WHITE    //рабочий
+  );
 
   COLOR_SCHEDULE_CORRECTION   = COLOR_YELLOW;
   COLOR_SCHEDULE_NOTWORK      = COLOR_GREEN;
   COLOR_SCHEDULE_TITLE        = COLOR_WHITE;
   COLOR_SCHEDULE_OUTSIDEMONTH = COLOR_GRAY;
+
+  COLORS_SHIFT: array of Integer = (
+    COLOR_WHITE,
+    COLOR_PURPLE,
+    COLOR_GREEN,
+    COLOR_ORANGE,
+    COLOR_AQUA,
+    COLOR_RED,
+    COLOR_YELLOW,
+    COLOR_GRAY,
+    COLOR_BLUE,
+    COLOR_BROWN,
+    COLOR_BEIGE
+  );
 
   SETTING_NAMES_STAFFORM: array of String  =  (
     'STAFFORM.LISTTYPE',

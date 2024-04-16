@@ -538,6 +538,7 @@ object ScheduleShiftForm: TScheduleShiftForm
         961DA5A595EEA5A5955000000000000000000000000000000000
       }
       GlyphMargin = 0
+      OnClick = CalendarButtonClick
       ParentColor = False
       Rounding.RoundX = 0
       Rounding.RoundY = 0

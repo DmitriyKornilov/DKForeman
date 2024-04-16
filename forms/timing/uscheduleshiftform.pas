@@ -15,7 +15,7 @@ uses
   DK_Zoom, DK_DateUtils, DK_Color, DK_SheetExporter,
   //Forms
   UChooseForm, UScheduleShiftEditForm, UScheduleCorrectionEditForm,
-  UScheduleShiftMonthForm;
+  UScheduleShiftCalendarForm, UScheduleShiftMonthForm;
 
 type
 
@@ -74,6 +74,7 @@ type
     YearSpinEdit: TSpinEdit;
     ZoomBevel: TBevel;
     ZoomPanel: TPanel;
+    procedure CalendarButtonClick(Sender: TObject);
     procedure CloseButtonClick(Sender: TObject);
     procedure CopyCancelButtonClick(Sender: TObject);
     procedure CopyDelButtonClick(Sender: TObject);
@@ -188,6 +189,12 @@ uses UMainForm;
 procedure TScheduleShiftForm.CloseButtonClick(Sender: TObject);
 begin
   MainForm.CategorySelect(0);
+end;
+
+procedure TScheduleShiftForm.CalendarButtonClick(Sender: TObject);
+begin
+  ScheduleShiftCalendarFormCreate(YearSpinEdit.Value,
+    ScheduleNames[ScheduleList.SelectedIndex]);
 end;
 
 procedure TScheduleShiftForm.CopyCancelButtonClick(Sender: TObject);
@@ -633,6 +640,7 @@ begin
   ScheduleDelButton.Enabled:= ScheduleList.IsSelected;
   ScheduleEditButton.Enabled:= ScheduleList.IsSelected;
   DayAddButton.Enabled:= ScheduleList.IsSelected;
+  CalendarButton.Enabled:= ScheduleList.IsSelected;
   ScheduleChange(True{cycle load});
 end;
 

@@ -99,6 +99,7 @@ var
 begin
   Frm:= TScheduleShiftMonthForm.Create(nil);
   try
+    Frm.Caption:= MAIN_CAPTION + MAIN_DESCRIPTION[11];
     Frm.ResumeType:= AResumeType;
     Frm.NeedNight:= ANeedNight;
     Frm.NeedCorrect:= ANeedCorrect;
@@ -117,7 +118,6 @@ end;
 procedure TScheduleShiftMonthForm.FormCreate(Sender: TObject);
 begin
   CanDrawSchedule:= False;
-  Caption:= MAIN_CAPTION + MAIN_DESCRIPTION[11];
   Height:= 300; Width:= 500; //for normal form maximizing
 
   SetToolPanels([
@@ -137,7 +137,6 @@ begin
   MonthDropDown.Items:= VCreateStr(MONTHSNOM);
   MonthDropDown.ItemIndex:= MonthOfDate(Date) - 1;
   MonthDropDown.DropDownCount:= 12;
-
 
   ZoomPercent:= 100;
   CreateZoomControls(50, 150, ZoomPercent, ZoomPanel, @ScheduleDraw, True);
