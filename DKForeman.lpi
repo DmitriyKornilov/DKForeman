@@ -265,6 +265,7 @@
         <Filename Value="forms\timing\uscheduleshiftcalendarform.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="ScheduleShiftCalendarForm"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UScheduleShiftCalendarForm"/>
       </Unit>

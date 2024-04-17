@@ -104,7 +104,7 @@ type
 
     Colors: TColorVector;
 
-    ParamList: TVSTCheckTable;
+    ParamList: TVSTCheckList;
     CountType: TVSTStringList;
     ColorType: TVSTStringList;
 
@@ -194,7 +194,8 @@ end;
 procedure TScheduleShiftForm.CalendarButtonClick(Sender: TObject);
 begin
   ScheduleShiftCalendarFormCreate(YearSpinEdit.Value,
-    ScheduleNames[ScheduleList.SelectedIndex]);
+                                  ScheduleIDs[ScheduleList.SelectedIndex],
+                                  ScheduleNames[ScheduleList.SelectedIndex]);
 end;
 
 procedure TScheduleShiftForm.CopyCancelButtonClick(Sender: TObject);
@@ -646,17 +647,15 @@ end;
 
 procedure TScheduleShiftForm.ParamListCreate;
 var
-  S: String;
   V: TStrVector;
 begin
-  S:= 'Параметры отображения:';
   V:= VCreateStr([
     'Отображать строку ночных часов',
     'Учитывать корректировки графика',
     'Коды табеля для нерабочих дней',
     'Использовать цвета'
   ]);
-  ParamList:= TVSTCheckList.Create(ParamListVT, S, V, @ScheduleRedraw);
+  ParamList:= TVSTCheckList.Create(ParamListVT, VIEW_PARAMS_CAPTION, V, @ScheduleRedraw);
 end;
 
 procedure TScheduleShiftForm.CountTypeCreate;

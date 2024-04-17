@@ -7,15 +7,14 @@ object ScheduleShiftCalendarForm: TScheduleShiftCalendarForm
   Caption = 'ScheduleShiftCalendarForm'
   ClientHeight = 338
   ClientWidth = 693
-  DesignTimePPI = 120
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
-  LCLVersion = '3.2.0.0'
+  LCLVersion = '2.2.4.0'
   WindowState = wsMaximized
   object ToolPanel: TPanel
     Left = 2
-    Height = 40
+    Height = 32
     Top = 2
     Width = 689
     Align = alTop
@@ -24,21 +23,21 @@ object ScheduleShiftCalendarForm: TScheduleShiftCalendarForm
     BorderSpacing.Right = 2
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 36
+    ClientHeight = 28
     ClientWidth = 685
-    Constraints.MaxHeight = 40
-    Constraints.MinHeight = 40
+    Constraints.MaxHeight = 32
+    Constraints.MinHeight = 32
     ParentFont = False
     TabOrder = 0
     object CloseButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 645
-      Height = 36
+      Left = 653
+      Height = 28
       Top = 0
-      Width = 40
+      Width = 32
       Align = alRight
-      Constraints.MaxWidth = 40
-      Constraints.MinWidth = 40
+      Constraints.MaxWidth = 32
+      Constraints.MinWidth = 32
       Glyph.Data = {
         36090000424D3609000000000000360000002800000018000000180000000100
         2000000000000009000064000000640000000000000000000000000000000000
@@ -118,33 +117,33 @@ object ScheduleShiftCalendarForm: TScheduleShiftCalendarForm
       OnClick = CloseButtonClick
     end
     object Bevel1: TBevel
-      Left = 641
-      Height = 36
+      Left = 649
+      Height = 28
       Top = 0
       Width = 2
       Align = alRight
-      BorderSpacing.Left = 3
+      BorderSpacing.Left = 2
       BorderSpacing.Right = 2
       Shape = bsRightLine
     end
     object YearPanel: TPanel
       Left = 0
-      Height = 36
+      Height = 28
       Top = 0
-      Width = 65
+      Width = 52
       Align = alLeft
       AutoSize = True
       BevelOuter = bvNone
-      ClientHeight = 36
-      ClientWidth = 65
+      ClientHeight = 28
+      ClientWidth = 52
       TabOrder = 0
       object YearSpinEdit: TSpinEdit
         AnchorSideTop.Control = YearPanel
         AnchorSideTop.Side = asrCenter
         Left = 2
-        Height = 28
-        Top = 4
-        Width = 63
+        Height = 23
+        Top = 3
+        Width = 50
         Align = alCustom
         Alignment = taCenter
         BorderSpacing.Left = 2
@@ -157,22 +156,22 @@ object ScheduleShiftCalendarForm: TScheduleShiftCalendarForm
       end
     end
     object Bevel2: TBevel
-      Left = 68
-      Height = 36
+      Left = 54
+      Height = 28
       Top = 0
       Width = 2
       Align = alLeft
-      BorderSpacing.Left = 3
+      BorderSpacing.Left = 2
       BorderSpacing.Right = 2
       Shape = bsRightLine
     end
     object ExportButton: TBCButton
       Cursor = crHandPoint
-      Left = 72
-      Height = 34
+      Left = 58
+      Height = 26
       Hint = 'Экспорт в формат электронной таблицы XLSX или ODS'
       Top = 1
-      Width = 104
+      Width = 93
       Align = alLeft
       AutoSize = True
       StateClicked.Background.Color = 16245964
@@ -354,15 +353,15 @@ object ScheduleShiftCalendarForm: TScheduleShiftCalendarForm
     end
     object SettingButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 598
-      Height = 36
+      Left = 615
+      Height = 28
       Hint = 'Параметры'
       Top = 0
-      Width = 40
+      Width = 32
       Align = alRight
       AllowAllUp = True
-      Constraints.MaxWidth = 40
-      Constraints.MinWidth = 40
+      Constraints.MaxWidth = 32
+      Constraints.MinWidth = 32
       Glyph.Data = {
         36090000424D3609000000000000360000002800000018000000180000000100
         2000000000000009000064000000640000000000000000000000000000000000
@@ -447,24 +446,26 @@ object ScheduleShiftCalendarForm: TScheduleShiftCalendarForm
   end
   object LeftPanel: TPanel
     Left = 2
-    Height = 292
-    Top = 44
-    Width = 350
+    Height = 300
+    Top = 36
+    Width = 280
     Align = alLeft
     BorderSpacing.Left = 2
     BorderSpacing.Top = 2
     BorderSpacing.Bottom = 2
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 288
-    ClientWidth = 346
+    ClientHeight = 296
+    ClientWidth = 276
+    Color = clWindow
+    ParentColor = False
     TabOrder = 1
     Visible = False
-    object VT: TVirtualStringTree
+    object ColorVT: TVirtualStringTree
       Left = 0
-      Height = 288
-      Top = 0
-      Width = 346
+      Height = 156
+      Top = 140
+      Width = 276
       Align = alClient
       BorderStyle = bsNone
       DefaultText = 'Node'
@@ -473,20 +474,50 @@ object ScheduleShiftCalendarForm: TScheduleShiftCalendarForm
       Header.MainColumn = -1
       TabOrder = 0
     end
+    object ParamVT: TVirtualStringTree
+      Left = 0
+      Height = 100
+      Top = 0
+      Width = 276
+      Align = alTop
+      BorderStyle = bsNone
+      DefaultText = 'Node'
+      Header.AutoSizeIndex = 0
+      Header.Columns = <>
+      Header.MainColumn = -1
+      TabOrder = 1
+    end
+    object Label1: TLabel
+      Left = 5
+      Height = 15
+      Top = 120
+      Width = 271
+      Align = alTop
+      BorderSpacing.Left = 5
+      BorderSpacing.Top = 20
+      BorderSpacing.Bottom = 5
+      Caption = 'Используемые цвета'
+      Color = clWindow
+      Font.Color = clWindowText
+      Font.Style = [fsBold]
+      ParentColor = False
+      ParentFont = False
+      Transparent = False
+    end
   end
   object LeftSplitter: TSplitter
-    Left = 352
-    Height = 296
-    Top = 42
-    Width = 6
+    Left = 282
+    Height = 304
+    Top = 34
+    Width = 5
     ResizeStyle = rsLine
     Visible = False
   end
   object SheetPanel: TPanel
-    Left = 360
-    Height = 292
-    Top = 44
-    Width = 331
+    Left = 289
+    Height = 300
+    Top = 36
+    Width = 402
     Align = alClient
     BorderSpacing.Left = 2
     BorderSpacing.Top = 2
@@ -494,17 +525,17 @@ object ScheduleShiftCalendarForm: TScheduleShiftCalendarForm
     BorderSpacing.Bottom = 2
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 288
-    ClientWidth = 327
+    ClientHeight = 296
+    ClientWidth = 398
     Color = clWhite
     ParentBackground = False
     ParentColor = False
     TabOrder = 3
     object ViewGrid: TsWorksheetGrid
       Left = 0
-      Height = 264
+      Height = 276
       Top = 0
-      Width = 327
+      Width = 398
       AutoExpand = []
       DisplayFixedColRow = False
       FrozenBorderPen.Style = psClear
@@ -537,9 +568,9 @@ object ScheduleShiftCalendarForm: TScheduleShiftCalendarForm
     end
     object ZoomPanel: TPanel
       Left = 0
-      Height = 22
-      Top = 266
-      Width = 327
+      Height = 18
+      Top = 278
+      Width = 398
       Align = alBottom
       BevelOuter = bvNone
       Color = clWhite
@@ -550,8 +581,8 @@ object ScheduleShiftCalendarForm: TScheduleShiftCalendarForm
     object ZoomBevel: TBevel
       Left = 0
       Height = 2
-      Top = 264
-      Width = 327
+      Top = 276
+      Width = 398
       Align = alBottom
       Shape = bsBottomLine
       Style = bsRaised

@@ -226,13 +226,19 @@ end;
 procedure TScheduleShiftMonthForm.ScheduleDraw(const AZoomPercent: Integer);
 begin
   if not CanDrawSchedule then Exit;
-  ZoomPercent:= AZoomPercent;
-  Sheet.Zoom(ZoomPercent);
-  Sheet.Draw(Calendar, Schedules, ScheduleNames,
-             NeedNight, NeedCorrect, NeedMarks, ScheduleNotWorkColor,
-             ScheduleList.Selected);
-  if not VIsNil(Colors) then
-    Sheet.ColorsUpdate(Colors);
+
+  ViewGrid.Visible:= False;
+  try
+    ZoomPercent:= AZoomPercent;
+    Sheet.Zoom(ZoomPercent);
+    Sheet.Draw(Calendar, Schedules, ScheduleNames,
+               NeedNight, NeedCorrect, NeedMarks, ScheduleNotWorkColor,
+               ScheduleList.Selected);
+    if not VIsNil(Colors) then
+      Sheet.ColorsUpdate(Colors);
+  finally
+    ViewGrid.Visible:= True;
+  end;
 end;
 
 procedure TScheduleShiftMonthForm.ScheduleReDraw;

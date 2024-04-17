@@ -104,6 +104,34 @@ type
     function DateToGrid(const {%H-}ADate: TDate; out ARow, ACol: Integer): Boolean; override;
   end;
 
+  { TShiftScheduleCalendarSheet }
+  //Годовой график сменности в виде календаря
+  TShiftScheduleCalendarSheet = class (TCustomSheet)
+  protected
+    function SetWidths: TIntVector; override;
+  private
+    const
+      COL_WIDTH = 30;
+      COLUMNS_COUNT = 23;
+      MONTH_FIRST_ROWS:  array [1..12] of Byte = (3,3,3,12,12,12,21,21,21,30,30,30);
+      MONTH_FIRST_COLS:  array [1..12] of Byte = (1,9,17,1,9,17,1,9,17,1,9,17);
+    var
+      FSchedule: TShiftSchedule;
+      FCalendar: TCalendar;
+      FNeedCorrect, FFirstShiftDayColorOnly: Boolean;
+      FYear: Word;
+      FPrevShiftNumber: Integer;
+    procedure CaptionDraw(const AName: String);
+    procedure MonthDraw(const AMonth: Byte);
+  public
+    procedure Draw(const ACalendar: TCalendar;
+                   const ASchedule: TShiftSchedule;
+                   const APrevShiftNumber: Integer;
+                   const AName: String;
+                   const ANeedCorrect,                            //учитывать корректировки
+                         AFirstShiftDayColorOnly: Boolean);       //раскаршивать только первый день переходящей смены
+  end;
+
 
   procedure ChooseShiftScheduleData(const TSS: TShiftSchedule; const ANeedCorrect: Boolean;
                                     out WH: TWorkHours;
@@ -236,8 +264,6 @@ constructor TShiftScheduleTableSheet.Create(const AWorksheet: TsWorksheet;
 begin
   FResumeType:= AResumeType;
   inherited Create(AWorksheet, AGrid, AFont);
-  FResumeType:= AResumeType;
-  FCalendar:= nil;
 end;
 
 { TShiftScheduleYearSheet }
@@ -778,6 +804,102 @@ begin
   ARow:= 0;
   ACol:= 0;
   Result:= False;
+end;
+
+{ TShiftScheduleCalendarSheet }
+
+function TShiftScheduleCalendarSheet.SetWidths: TIntVector;
+begin
+  VDim(Result{%H-}, COLUMNS_COUNT, COL_WIDTH);
+end;
+
+procedure TShiftScheduleCalendarSheet.CaptionDraw(const AName: String);
+begin
+  Writer.SetAlignment(haCenter, vaCenter);
+  Writer.SetFont(Font.Name, Font.Size+2, [fsBold], clBlack);
+  Writer.WriteText(1, 1, 1, Writer.ColCount, SUpper('График "' + AName + '"' +
+                           FormatDateTime(' на yyyy год', FSchedule.BeginDate)));
+end;
+
+procedure TShiftScheduleCalendarSheet.MonthDraw(const AMonth: Byte);
+var
+  R,C, i,j, Ind, PrevInd: Integer;
+  MonthCalendar: TCalendar;
+  BD, ED: TDate;
+begin
+  Writer.SetAlignment(haCenter, vaCenter);
+  Writer.SetFont(Font.Name, Font.Size, [fsBold], clBlack);
+  R:= MONTH_FIRST_ROWS[AMonth];
+  C:= MONTH_FIRST_COLS[AMonth];
+  Writer.WriteText(R, C, R, C+6, SUpper(MONTHSNOM[AMonth]), cbtOuter);
+  Writer.AddCellBGColorIndex(R, C, MONTHNAME_COLOR_INDEX);
+  if Writer.HasGrid then
+    Writer.DrawBorders(R, C+7, cbtLeft);
+  R:= R+1;
+  for i:= 0 to 6 do
+  begin
+    C:= MONTH_FIRST_COLS[AMonth] + i;
+    Writer.WriteText(R, C, WEEKDAYSSHORT[i+1], cbtOuter);
+    Writer.AddCellBGColorIndex(R, C, DAYNAME_COLOR_INDEX);
+  end;
+  Writer.SetFont(Font.Name, Font.Size, [], clBlack);
+  for i:= MONTH_FIRST_ROWS[AMonth] + 2 to MONTH_FIRST_ROWS[AMonth] + 7 do
+    for j:= MONTH_FIRST_COLS[AMonth] to MONTH_FIRST_COLS[AMonth] + 6 do
+      Writer.WriteText(i, j, EmptyStr, cbtOuter);
+  FirstLastDayinMonth(AMonth, FYear, BD, ED);
+  MonthCalendar:= TCalendar.Create;
+  try
+    FCalendar.Cut(BD, ED, MonthCalendar);
+    for i:=0 to MonthCalendar.DaysCount - 1 do
+    begin
+      R:= MONTH_FIRST_ROWS[AMonth] + MonthCalendar.WeekNumsInMonth[i] + 1;
+      C:= MONTH_FIRST_COLS[AMonth] + MonthCalendar.DayNumsInWeek[i] - 1;
+      Writer.WriteNumber(R,C,i+1,cbtOuter);
+      j:= DayNumberInYear(MonthCalendar.Dates[i])-1; //индекс дня в году
+      PrevInd:= -1;
+      //определяем номер смены этой и предыдущей
+      if FNeedCorrect then
+      begin
+        Ind:= FSchedule.ShiftNumbersCorrect[j];
+        if j>0 then
+          PrevInd:= FSchedule.ShiftNumbersCorrect[j-1]
+        else
+          PrevInd:= FPrevShiftNumber;
+      end
+      else begin
+        Ind:= FSchedule.ShiftNumbersDefault[j];
+        if j>0 then
+          PrevInd:= FSchedule.ShiftNumbersDefault[j-1]
+        else
+          PrevInd:= FPrevShiftNumber;
+      end;
+      //если нужно красить только первый день переходящей смены и это второй день, то обнуляем номер смены
+      if FFirstShiftDayColorOnly then
+        if Ind=PrevInd then
+          Ind:= 0;
+      Writer.AddCellBGColorIndex(R, C, Ind);
+    end;
+  finally
+    FreeAndNil(MonthCalendar);
+  end;
+end;
+
+procedure TShiftScheduleCalendarSheet.Draw(const ACalendar: TCalendar;
+  const ASchedule: TShiftSchedule; const APrevShiftNumber: Integer; const AName: String;
+  const ANeedCorrect, AFirstShiftDayColorOnly: Boolean);
+var
+  i: Integer;
+begin
+  FCalendar:= ACalendar;
+  FSchedule:= ASchedule;
+  FPrevShiftNumber:= APrevShiftNumber;
+  FNeedCorrect:= ANeedCorrect;
+  FFirstShiftDayColorOnly:= AFirstShiftDayColorOnly;
+  FYear:= YearOfDate(FSchedule.Dates[0]);
+  Writer.BeginEdit;
+  CaptionDraw(AName);
+  for i:=1 to 12 do MonthDraw(i);
+  Writer.EndEdit;
 end;
 
 end.
