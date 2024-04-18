@@ -21,6 +21,10 @@ type
     (**************************************************************************
                                       ПАРАМЕТРЫ
     **************************************************************************)
+    function ColorShiftUpdate(const AColorValue, AColorIndex: Integer): Boolean;
+    function ColorsShiftUpdate(const AColorValues: TIntVector = nil;
+                               const AColorIndexes: TIntVector = nil): Boolean;
+    function ColorsShiftLoad(out AColorValues, AColorIndexes: TIntVector): Boolean;
     function SettingLoad(const ASettingName: String): Integer;
     function SettingsLoad(const ASettingNames: TStrVector): TIntVector;
     procedure SettingUpdate(const ASettingName: String; const ASettingValue: Integer);
@@ -206,6 +210,81 @@ var
 implementation
 
 { TDataBase }
+
+function TDataBase.ColorShiftUpdate(const AColorValue, AColorIndex: Integer): Boolean;
+begin
+  Result:= UpdateInt32ID('SHIFTCOLORS', 'ColorValue', 'ColorIndex', AColorIndex, AColorValue);
+end;
+
+function TDataBase.ColorsShiftUpdate(const AColorValues: TIntVector = nil;
+                                     const AColorIndexes: TIntVector = nil): Boolean;
+var
+  ColorIndexes, ColorValues: TIntVector;
+  i: Integer;
+begin
+  if VIsNil(AColorValues) then
+  begin
+    ColorValues:= VCreateInt(COLORS_SHIFT);
+    VAppend(ColorValues, COLOR_SHIFT_UNDEFINED_VALUE);
+  end
+  else
+    ColorValues:= AColorValues;
+
+  if VIsNil(AColorIndexes) then
+    ColorIndexes:= VOrder(High(ColorValues), True)
+  else
+    ColorIndexes:= AColorIndexes;
+
+  Result:= False;
+  QSetQuery(FQuery);
+  try
+    //удаляем старые значения
+    QSetSQL(
+      'DELETE FROM SHIFTCOLORS'
+    );
+    QExec;
+    //записываем новые значения
+    QSetSQL(
+      sqlINSERT('SHIFTCOLORS', ['ColorIndex', 'ColorValue'])
+    );
+    for i:= 0 to High(ColorValues) do
+    begin
+      QParamInt('ColorIndex', ColorIndexes[i]);
+      QParamInt('ColorValue', ColorValues[i]);
+      QExec;
+    end;
+    Result:= True;
+    QCommit;
+  except
+    QRollback;
+  end;
+end;
+
+function TDataBase.ColorsShiftLoad(out AColorValues, AColorIndexes: TIntVector): Boolean;
+begin
+  AColorValues:= nil;
+  AColorIndexes:= nil;
+
+  Result:= False;
+  QSetQuery(FQuery);
+  QSetSQL(
+    sqlSELECT('SHIFTCOLORS', ['ColorIndex', 'ColorValue']) +
+    'ORDER BY ColorIndex'
+  );
+  QOpen;
+  if not QIsEmpty then
+  begin
+    QFirst;
+    while not QEOF do
+    begin
+      VAppend(AColorValues, QFieldInt('ColorValue'));
+      VAppend(AColorIndexes, QFieldInt('ColorIndex'));
+      QNext;
+    end;
+    Result:= True;
+  end;
+  QClose;
+end;
 
 function TDataBase.SettingLoad(const ASettingName: String): Integer;
 begin

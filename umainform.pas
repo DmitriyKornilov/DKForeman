@@ -153,14 +153,21 @@ implementation
 procedure TMainForm.DBConnect;
 var
   DBPath, DBName, DDLName: String;
+  IsDBFileExists: Boolean;
 begin
   DBPath:= ExtractFilePath(Application.ExeName) + DirectorySeparator + 'db' + DirectorySeparator;
   DBName:= DBPath + 'base.db';
   DDLName:= DBPath + 'ddl.sql';
+  IsDBFileExists:= FileExists(DBName);
 
   DataBase:= TDataBase.Create;
   DataBase.Connect(DBName);
   DataBase.ExecuteScript(DDLName);
+  if not IsDBFileExists then
+  begin
+    DataBase.ColorsShiftUpdate;
+
+  end;
 end;
 
 procedure TMainForm.ViewUpdate;

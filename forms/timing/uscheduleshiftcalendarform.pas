@@ -12,7 +12,7 @@ uses
   DK_Vector, DK_Fonts, DK_Const, DK_Graph,
   DK_VSTTypes, DK_VSTEditTools, DK_Zoom, DK_SheetExporter,
   //Project utils
-  UConst, UUtils, UCalendar, USchedule, UScheduleShiftSheet;
+  UDataBase, UConst, UUtils, UCalendar, USchedule, UScheduleShiftSheet;
 
 type
 
@@ -55,6 +55,7 @@ type
     procedure SettingButtonClick(Sender: TObject);
   private
     ZoomPercent: Integer;
+    CanDrawSchedule: Boolean;
 
     ColorNames: TStrVector;
     ColorValues: TColorVector;
@@ -74,10 +75,13 @@ type
     procedure ColorsLoad;
     function Colors: TColorVector;
     procedure ColorSelect;
-    procedure ColorChange(const {%H-}ARowIndex, {%H-}AColIndex: Integer;
-                           const {%H-}ANewText: String;
+    procedure ColorChange(const ARowIndex, {%H-}AColIndex: Integer;
+                           const ANewText: String;
                            const {%H-}AColumnType: TVSTColumnType;
                            const {%H-}ASaveChanges: Boolean);
+
+    procedure SettingsLoad;
+    procedure SettingsSave;
   public
     ScheduleID: Integer;
     ScheduleName: String;
@@ -130,6 +134,8 @@ begin
     ExportButton
   ]);
 
+  CanDrawSchedule:= False;
+
   ColorList:= TVSTColorList.Create(ColorVT);
   ColorVT.BorderStyle:= bsSingle;
   ColorList.OnEdititingDone:= @ColorChange;
@@ -141,10 +147,15 @@ begin
   Calendar:= TCalendar.Create;
   Schedule:= TShiftSchedule.Create;
   Sheet:= TShiftScheduleCalendarSheet.Create(ViewGrid.Worksheet, ViewGrid, MainForm.GridFont);
+
+  SettingsLoad;
+
+  CanDrawSchedule:= True;
 end;
 
 procedure TScheduleShiftCalendarForm.FormDestroy(Sender: TObject);
 begin
+  SettingsSave;
   FreeAndNil(ColorList);
   FreeAndNil(Calendar);
   FreeAndNil(Schedule);
@@ -214,6 +225,7 @@ end;
 
 procedure TScheduleShiftCalendarForm.ScheduleDraw(const AZoomPercent: Integer);
 begin
+  if not CanDrawSchedule then Exit;
   ViewGrid.Visible:= False;
   try
     ZoomPercent:= AZoomPercent;
@@ -240,14 +252,14 @@ end;
 procedure TScheduleShiftCalendarForm.ColorsLoad;
 var
   i: Integer;
+  V: TIntVector;
 begin
-  ColorValues:= VCreateColor(COLORS_SHIFT);
+  DataBase.ColorsShiftLoad(ColorValues, V);
   VDim(ColorNames, Length(ColorValues));
   ColorNames[0]:= 'Нерабочий день';
-  for i:= 1 to High(ColorNames) do
+  for i:= 1 to High(ColorNames)-1 do
     ColorNames[i]:= 'Смена №' + IntToStr(i);
-  VAppend(ColorValues, COLOR_SHIFT_UNDEFINED_VALUE);
-  VAppend(ColorNames, COLOR_SHIFT_UNDEFINED_NAME);
+  ColorNames[High(ColorNames)]:= COLOR_SHIFT_UNDEFINED_NAME;
 end;
 
 function TScheduleShiftCalendarForm.Colors: TColorVector;
@@ -287,6 +299,25 @@ procedure TScheduleShiftCalendarForm.ColorChange(const ARowIndex, AColIndex: Int
                            const ASaveChanges: Boolean);
 begin
   ScheduleRedraw;
+  DataBase.ColorShiftUpdate(StrToInt(ANewText), ARowIndex);
+end;
+
+procedure TScheduleShiftCalendarForm.SettingsLoad;
+var
+  SettingValues: TIntVector;
+begin
+  SettingValues:= DataBase.SettingsLoad(SETTING_NAMES_SCHEDULESHIFTCALENDARFORM);
+  NeedCorrectionsCheckBox.Checked:= SettingValues[0]=1;
+  FirstShiftDayColorOnlyCheckBox.Checked:= SettingValues[1]=1;
+end;
+
+procedure TScheduleShiftCalendarForm.SettingsSave;
+var
+  SettingValues: TIntVector;
+begin
+  SettingValues:= VCreateInt([Ord(NeedCorrectionsCheckBox.Checked),
+                             Ord(FirstShiftDayColorOnlyCheckBox.Checked)]);
+  DataBase.SettingsUpdate(SETTING_NAMES_SCHEDULESHIFTCALENDARFORM, SettingValues);
 end;
 
 procedure TScheduleShiftCalendarForm.FirstShiftDayColorOnlyCheckBoxChange(Sender: TObject);
@@ -306,6 +337,7 @@ begin
   VDel(ColorValues, ColorList.SelectedRowIndex);
   ColorList.Update(ColorNames, ColorValues);
   ScheduleRedraw;
+  DataBase.ColorsShiftUpdate(ColorValues);
 end;
 
 procedure TScheduleShiftCalendarForm.AddButtonClick(Sender: TObject);
@@ -316,6 +348,7 @@ begin
   VIns(ColorValues, High(ColorValues), COLOR_SHIFT_UNDEFINED_VALUE);
   ColorList.Update(ColorNames, ColorValues);
   ScheduleRedraw;
+  DataBase.ColorsShiftUpdate(ColorValues);
 end;
 
 procedure TScheduleShiftCalendarForm.EditButtonClick(Sender: TObject);
