@@ -9,7 +9,7 @@ uses
   BCButton, BCPanel, Spin, StdCtrls, VirtualTrees, fpspreadsheetgrid, DateUtils,
 
   //DK packages utils
-  DK_Vector, DK_Fonts, DK_Const,
+  DK_Vector, DK_Fonts, DK_Const, DK_Graph,
   DK_VSTTypes, DK_VSTEditTools, DK_Zoom, DK_SheetExporter,
   //Project utils
   UConst, UUtils, UCalendar, USchedule, UScheduleShiftSheet;
@@ -44,10 +44,14 @@ type
     ZoomPanel: TPanel;
     procedure AddButtonClick(Sender: TObject);
     procedure CloseButtonClick(Sender: TObject);
+    procedure DelButtonClick(Sender: TObject);
     procedure EditButtonClick(Sender: TObject);
+    procedure ExportButtonClick(Sender: TObject);
+    procedure FirstShiftDayColorOnlyCheckBoxChange(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure NeedCorrectionsCheckBoxChange(Sender: TObject);
     procedure SettingButtonClick(Sender: TObject);
   private
     ZoomPercent: Integer;
@@ -67,12 +71,13 @@ type
     procedure ScheduleRedraw;
     procedure ScheduleRefresh;
 
+    procedure ColorsLoad;
     function Colors: TColorVector;
     procedure ColorSelect;
-    procedure ColorChange(const ARowIndex, AColIndex: Integer;
-                           const ANewText: String;
-                           const AColumnType: TVSTColumnType;
-                           const ASaveChanges: Boolean);
+    procedure ColorChange(const {%H-}ARowIndex, {%H-}AColIndex: Integer;
+                           const {%H-}ANewText: String;
+                           const {%H-}AColumnType: TVSTColumnType;
+                           const {%H-}ASaveChanges: Boolean);
   public
     ScheduleID: Integer;
     ScheduleName: String;
@@ -147,16 +152,15 @@ begin
 end;
 
 procedure TScheduleShiftCalendarForm.FormShow(Sender: TObject);
-var
-  i: Integer;
 begin
-  ColorValues:= VCreateColor(COLORS_SHIFT);
-  VDim(ColorNames, Length(ColorValues));
-  ColorNames[0]:= 'Нерабочий день';
-  for i:= 1 to High(ColorNames) do
-    ColorNames[i]:= 'Смена №' + IntToStr(i);
+  ColorsLoad;
   ColorList.Update(ColorNames, ColorValues);
   ScheduleRefresh;
+end;
+
+procedure TScheduleShiftCalendarForm.NeedCorrectionsCheckBoxChange(Sender: TObject);
+begin
+  ScheduleRedraw;
 end;
 
 procedure TScheduleShiftCalendarForm.SettingButtonClick(Sender: TObject);
@@ -233,10 +237,23 @@ begin
   ScheduleRedraw;
 end;
 
+procedure TScheduleShiftCalendarForm.ColorsLoad;
+var
+  i: Integer;
+begin
+  ColorValues:= VCreateColor(COLORS_SHIFT);
+  VDim(ColorNames, Length(ColorValues));
+  ColorNames[0]:= 'Нерабочий день';
+  for i:= 1 to High(ColorNames) do
+    ColorNames[i]:= 'Смена №' + IntToStr(i);
+  VAppend(ColorValues, COLOR_SHIFT_UNDEFINED_VALUE);
+  VAppend(ColorNames, COLOR_SHIFT_UNDEFINED_NAME);
+end;
+
 function TScheduleShiftCalendarForm.Colors: TColorVector;
 var
   TmpColors: TColorVector;
-  i, N: Integer;
+  i: Integer;
 begin
   Result:= nil;
   //0 - not work color, 1..365 - shift colors
@@ -245,20 +262,22 @@ begin
   TmpColors:= ColorList.Colors;
   if VIsNil(TmpColors) then Exit;
 
-  VDim(Result, DAYNAME_COLOR_INDEX+1, TmpColors[0]);
+  VDim(Result, DAYNAME_COLOR_INDEX+1, VLast(TmpColors));
+  Result[0]:= VFirst(TmpColors);
   Result[MONTHNAME_COLOR_INDEX]:= COLOR_CALENDAR_MONTHNAME;
   Result[DAYNAME_COLOR_INDEX]:= COLOR_CALENDAR_DAYNAME;
 
-  VDel(TmpColors, 0);
-  N:= Length(TmpColors);
-  for i:= 1 to MONTHNAME_COLOR_INDEX-1 do
-    Result[i]:= TmpColors[(i mod N) - 1];
+  TmpColors:= VCut(TmpColors, 1, High(TmpColors));
+  for i:= 0 to MONTHNAME_COLOR_INDEX-2 do
+    Result[i+1]:= ColorFromVector(TmpColors, i);
 end;
 
 procedure TScheduleShiftCalendarForm.ColorSelect;
 begin
   DelButton.Enabled:= ColorList.IsSelected and
-                      (ColorList.SelectedRowIndex<>0); //нельзя удалять цвет нерабочего дня
+                      (ColorList.SelectedRowIndex<>ColorList.Count-1) and //нельзя удалять цвет undefined
+                      (ColorList.SelectedRowIndex<>0);    //нельзя удалять цвет нерабочего дня
+
   EditButton.Enabled:= ColorList.IsSelected;
 end;
 
@@ -270,21 +289,43 @@ begin
   ScheduleRedraw;
 end;
 
+procedure TScheduleShiftCalendarForm.FirstShiftDayColorOnlyCheckBoxChange(Sender: TObject);
+begin
+  ScheduleRedraw;
+end;
+
 procedure TScheduleShiftCalendarForm.CloseButtonClick(Sender: TObject);
 begin
   Close;
 end;
 
+procedure TScheduleShiftCalendarForm.DelButtonClick(Sender: TObject);
+begin
+  if not ColorList.IsSelected then Exit;
+  VDel(ColorNames, ColorList.SelectedRowIndex);
+  VDel(ColorValues, ColorList.SelectedRowIndex);
+  ColorList.Update(ColorNames, ColorValues);
+  ScheduleRedraw;
+end;
+
 procedure TScheduleShiftCalendarForm.AddButtonClick(Sender: TObject);
 begin
-  if ColorList.Count=366 then Exit;  //0 - not work color, 1..365 - shift colors
+  if ColorList.Count>=367 then Exit;  //0 - not work color, 1..365 - shift colors, 366 - undefined color
 
-
+  VIns(ColorNames, High(ColorNames), 'Смена №' + IntToStr(High(ColorNames)));
+  VIns(ColorValues, High(ColorValues), COLOR_SHIFT_UNDEFINED_VALUE);
+  ColorList.Update(ColorNames, ColorValues);
+  ScheduleRedraw;
 end;
 
 procedure TScheduleShiftCalendarForm.EditButtonClick(Sender: TObject);
 begin
   ColorList.Select(ColorList.SelectedRowIndex, 0);
+end;
+
+procedure TScheduleShiftCalendarForm.ExportButtonClick(Sender: TObject);
+begin
+  Sheet.Save(YearSpinEdit.Text);
 end;
 
 end.
