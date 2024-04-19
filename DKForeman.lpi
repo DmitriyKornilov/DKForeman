@@ -26,9 +26,6 @@
     </RunParams>
     <RequiredPackages>
       <Item>
-        <PackageName Value="DKGraphics"/>
-      </Item>
-      <Item>
         <PackageName Value="DKZoom"/>
       </Item>
       <Item>

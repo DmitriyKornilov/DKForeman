@@ -9,7 +9,7 @@ uses
   BCButton, BCPanel, Spin, StdCtrls, VirtualTrees, fpspreadsheetgrid, DateUtils,
 
   //DK packages utils
-  DK_Vector, DK_Fonts, DK_Const, DK_Graph,
+  DK_Vector, DK_Fonts, DK_Const,
   DK_VSTTypes, DK_VSTEditTools, DK_Zoom, DK_SheetExporter,
   //Project utils
   UDataBase, UConst, UUtils, UCalendar, USchedule, UScheduleShiftSheet;
@@ -281,7 +281,7 @@ begin
 
   TmpColors:= VCut(TmpColors, 1, High(TmpColors));
   for i:= 0 to MONTHNAME_COLOR_INDEX-2 do
-    Result[i+1]:= ColorFromVector(TmpColors, i);
+    Result[i+1]:= VColorFromVector(TmpColors, i);
 end;
 
 procedure TScheduleShiftCalendarForm.ColorSelect;
