@@ -12,7 +12,7 @@ uses
   DK_Vector, DK_Fonts, DK_Const, DK_VSTDropDown, DK_DateUtils, DK_StrUtils,
   DK_VSTTableTools, DK_Zoom, DK_SheetExporter,
   //Project utils
-  UDataBase, UUtils, UCalendar, USchedule, UScheduleShiftSheet,
+  UDataBase, UConst, UUtils, UCalendar, USchedule, UScheduleShiftSheet,
   //Forms
   UChooseForm;
 
@@ -72,6 +72,8 @@ type
 
     procedure ScheduleExport;
 
+    procedure SettingsLoad;
+    procedure SettingsSave;
   public
     ResumeType: Integer;
     NeedNight, NeedCorrect, NeedMarks, ScheduleNotWorkColor: Boolean;
@@ -139,7 +141,7 @@ begin
   MonthDropDown.ItemIndex:= MonthOfDate(Date) - 1;
   MonthDropDown.DropDownCount:= 12;
 
-  ZoomPercent:= 100;
+  SettingsLoad; //load ZoomPercent
   CreateZoomControls(50, 150, ZoomPercent, ZoomPanel, @ScheduleDraw, True);
 
   Calendar:= TCalendar.Create;
@@ -154,6 +156,7 @@ end;
 
 procedure TScheduleShiftMonthForm.FormDestroy(Sender: TObject);
 begin
+  SettingsSave;
   FreeAndNil(Calendar);
   FreeAndNil(MonthDropDown);
   FreeAndNil(ScheduleList);
@@ -318,6 +321,22 @@ begin
   finally
     FreeAndNil(Exporter);
   end;
+end;
+
+procedure TScheduleShiftMonthForm.SettingsLoad;
+var
+  SettingValues: TIntVector;
+begin
+  SettingValues:= DataBase.SettingsLoad(SETTING_NAMES_SCHEDULESHIFTMONTHFORM);
+  ZoomPercent:= SettingValues[0];
+end;
+
+procedure TScheduleShiftMonthForm.SettingsSave;
+var
+  SettingValues: TIntVector;
+begin
+  SettingValues:= VCreateInt([ZoomPercent]);
+  DataBase.SettingsUpdate(SETTING_NAMES_SCHEDULESHIFTMONTHFORM, SettingValues);
 end;
 
 end.

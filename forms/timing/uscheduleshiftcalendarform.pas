@@ -141,14 +141,12 @@ begin
   ColorList.OnEdititingDone:= @ColorChange;
   ColorList.OnSelect:= @ColorSelect;
 
-  ZoomPercent:= 100;
-  CreateZoomControls(50, 150, ZoomPercent, ZoomPanel, @ScheduleDraw, True);
-
   Calendar:= TCalendar.Create;
   Schedule:= TShiftSchedule.Create;
   Sheet:= TShiftScheduleCalendarSheet.Create(ViewGrid.Worksheet, ViewGrid, MainForm.GridFont);
 
-  SettingsLoad;
+  SettingsLoad; //load ZoomPercent;
+  CreateZoomControls(50, 150, ZoomPercent, ZoomPanel, @ScheduleDraw, True);
 
   CanDrawSchedule:= True;
 end;
@@ -307,16 +305,18 @@ var
   SettingValues: TIntVector;
 begin
   SettingValues:= DataBase.SettingsLoad(SETTING_NAMES_SCHEDULESHIFTCALENDARFORM);
-  NeedCorrectionsCheckBox.Checked:= SettingValues[0]=1;
-  FirstShiftDayColorOnlyCheckBox.Checked:= SettingValues[1]=1;
+  ZoomPercent:= SettingValues[0];
+  NeedCorrectionsCheckBox.Checked:= SettingValues[1]=1;
+  FirstShiftDayColorOnlyCheckBox.Checked:= SettingValues[2]=1;
 end;
 
 procedure TScheduleShiftCalendarForm.SettingsSave;
 var
   SettingValues: TIntVector;
 begin
-  SettingValues:= VCreateInt([Ord(NeedCorrectionsCheckBox.Checked),
-                             Ord(FirstShiftDayColorOnlyCheckBox.Checked)]);
+  SettingValues:= VCreateInt([ZoomPercent,
+                              Ord(NeedCorrectionsCheckBox.Checked),
+                              Ord(FirstShiftDayColorOnlyCheckBox.Checked)]);
   DataBase.SettingsUpdate(SETTING_NAMES_SCHEDULESHIFTCALENDARFORM, SettingValues);
 end;
 

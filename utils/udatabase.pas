@@ -27,7 +27,7 @@ type
     function ColorsShiftLoad(out AColorValues, AColorIndexes: TIntVector): Boolean;
     function SettingLoad(const ASettingName: String): Integer;
     function SettingsLoad(const ASettingNames: TStrVector): TIntVector;
-    procedure SettingUpdate(const ASettingName: String; const ASettingValue: Integer);
+    procedure SettingUpdate(const ASettingName: String; const ASettingValue: Integer; const ACommit: Boolean = True);
     procedure SettingsUpdate(const ASettingNames: TStrVector; const ASettingValues: TIntVector);
     (**************************************************************************
                                      СПРАВОЧНИКИ
@@ -300,9 +300,22 @@ begin
     Result[i]:= SettingLoad(ASettingNames[i]);
 end;
 
-procedure TDataBase.SettingUpdate(const ASettingName: String; const ASettingValue: Integer);
+procedure TDataBase.SettingUpdate(const ASettingName: String; const ASettingValue: Integer; const ACommit: Boolean = True);
 begin
-  UpdateStrID('SETTINGS', 'Value', 'Name', ASettingName, ASettingValue, True {commit});
+  //UpdateStrID('SETTINGS', 'Value', 'Name', ASettingName, ASettingValue, True {commit});
+
+  QSetQuery(FQuery);
+  try
+    QSetSQL(
+      sqlINSERT('SETTINGS', ['Name', 'Value'], 'REPLACE')
+    );
+    QParamStr('Name', ASettingName);
+    QParamInt('Value', ASettingValue);
+    QExec;
+    if ACommit then QCommit;
+  except
+    QRollback;
+  end;
 end;
 
 procedure TDataBase.SettingsUpdate(const ASettingNames: TStrVector;
@@ -312,7 +325,8 @@ var
 begin
   try
     for i:= 0 to High(ASettingNames) do
-      UpdateStrID('SETTINGS', 'Value', 'Name', ASettingNames[i], ASettingValues[i], False {no commit});
+      SettingUpdate(ASettingNames[i], ASettingValues[i], False {no commit});
+      //UpdateStrID('SETTINGS', 'Value', 'Name', ASettingNames[i], ASettingValues[i], False {no commit});
     QCommit;
   finally
     QRollback;

@@ -252,9 +252,6 @@ procedure TScheduleShiftForm.FormCreate(Sender: TObject);
 begin
   ModeType:= mtView;
 
-  ZoomPercent:= 100;
-  CreateZoomControls(50, 150, ZoomPercent, ZoomPanel, @ScheduleDraw, True);
-
   SetToolPanels([
     ToolPanel, ListToolPanel, DayToolPanel, CopyToolPanel
   ]);
@@ -272,20 +269,24 @@ begin
     ExportButton, CalendarButton, MonthButton
   ]);
 
-  ColorsLoad;
-
-  CanDrawSchedule:= False;
   Calendar:= TCalendar.Create;
   Schedule:= TShiftSchedule.Create;
+
+  CanDrawSchedule:= False;
+
   ScheduleListCreate;
   ParamListCreate;
   CountTypeCreate;
   ColorTypeCreate;
   EditingTablesCreate;
-  SettingsLoad;
   YearSpinEdit.Value:= YearOfDate(Date);
-  CanDrawSchedule:= True;
   IsCopyDates:= False;
+
+  ColorsLoad;
+  SettingsLoad; //load ZoomPercent
+  CreateZoomControls(50, 150, ZoomPercent, ZoomPanel, @ScheduleDraw, True);
+
+  CanDrawSchedule:= True;
 end;
 
 procedure TScheduleShiftForm.FormDestroy(Sender: TObject);
@@ -888,13 +889,32 @@ begin
 end;
 
 procedure TScheduleShiftForm.SettingsLoad;
+var
+  SettingValues: TIntVector;
 begin
-
+  SettingValues:= DataBase.SettingsLoad(SETTING_NAMES_SCHEDULESHIFTFORM);
+  ZoomPercent:= SettingValues[0];
+  ParamList.Checked[0]:= SettingValues[1]=1;
+  ParamList.Checked[1]:= SettingValues[2]=1;
+  ParamList.Checked[2]:= SettingValues[3]=1;
+  ParamList.Checked[3]:= SettingValues[4]=1;
+  CountType.ItemIndex:= SettingValues[5];
+  ColorType.ItemIndex:= SettingValues[6];
 end;
 
 procedure TScheduleShiftForm.SettingsSave;
+var
+  SettingValues: TIntVector;
 begin
-
+  SettingValues:= VCreateInt([ZoomPercent,
+                              Ord(ParamList.Checked[0]),
+                              Ord(ParamList.Checked[1]),
+                              Ord(ParamList.Checked[2]),
+                              Ord(ParamList.Checked[3]),
+                              CountType.ItemIndex,
+                              ColorType.ItemIndex
+                             ]);
+  DataBase.SettingsUpdate(SETTING_NAMES_SCHEDULESHIFTFORM, SettingValues);
 end;
 
 procedure TScheduleShiftForm.ViewUpdate(const AModeType: TModeType);
