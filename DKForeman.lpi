@@ -269,6 +269,13 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UScheduleShiftCalendarForm"/>
       </Unit>
+      <Unit>
+        <Filename Value="forms\timing\uschedulepersonaleditform.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="SchedulePersonalEditForm"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="USchedulePersonalEditForm"/>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

@@ -28,6 +28,13 @@ uses
   function SettingByName(const AName: String; const ANames: TStrVector;
                          const AValues: TIntVector): Integer;
 
+  //Staff list
+  function StaffNameForTiming(const AF, AN, AP, ATabNum, APostName: String;
+                              const ANeedLongName: Boolean = False): String;
+  function StaffNamesForTiming(const AFs, ANs, APs, ATabNums, APostNames: TStrVector;
+                              const ANeedLongName: Boolean = False): TStrVector;
+
+
   //Calendar load/creation
   procedure CalendarForPeriod(const ABeginDate, AEndDate: TDate; var ACalendar: TCalendar);
   procedure CalendarForYear(const AYear: Word; var ACalendar: TCalendar);
@@ -52,6 +59,8 @@ uses
   procedure ScheduleCycleDraw(const ATable: TVSTTable; const ACycle: TScheduleCycle);
   procedure ScheduleShiftByCalendar(const AScheduleID: Integer;
                          const ACalendar: TCalendar; var ASchedule: TShiftSchedule);
+  procedure ScheduleShiftVectorByCalendar(const AScheduleIDs: TIntVector;
+                         const ACalendar: TCalendar; var ASchedules: TShiftScheduleVector);
   procedure ScheduleShiftForPeriod(const AScheduleID: Integer;
                          const ABeginDate, AEndDate: TDate; var ASchedule: TShiftSchedule);
   procedure ScheduleShiftForYear(const AScheduleID: Integer;
@@ -145,6 +154,28 @@ function SettingByName(const AName: String; const ANames: TStrVector;
   const AValues: TIntVector): Integer;
 begin
   VSameIndexValue(AName, ANames, AValues, Result);
+end;
+
+function StaffNameForTiming(const AF, AN, AP, ATabNum, APostName: String;
+                            const ANeedLongName: Boolean = False): String;
+begin
+  if ANeedLongName then
+    Result:= SNameLong(AF, AN, AP)
+  else
+    Result:= SNameShort(AF, AN, AP);
+  Result:= Result + ' [таб.№ ' + ATabNum + '] - ' + APostName;
+end;
+
+function StaffNamesForTiming(const AFs, ANs, APs, ATabNums, APostNames: TStrVector;
+                            const ANeedLongName: Boolean = False): TStrVector;
+var
+  i: Integer;
+begin
+  Result:= nil;
+  if VIsNil(ATabNums) then Exit;
+  VDim(Result, Length(ATabNums));
+  for i:= 0 to High(Result) do
+    Result[i]:= StaffNameForTiming(AFs[i], ANs[i], APs[i], ATabNums[i], APostNames[i], ANeedLongName);
 end;
 
 procedure CalendarForPeriod(const ABeginDate, AEndDate: TDate; var ACalendar: TCalendar);
@@ -359,6 +390,21 @@ begin
   DataBase.ScheduleCycleLoad(AScheduleID, V, Cycle);
   DataBase.ScheduleShiftCorrectionsLoad(AScheduleID, V, Correct, ACalendar.BeginDate, ACalendar.EndDate);
   ASchedule.Calc(ACalendar, WeekHours, Cycle, Correct);
+end;
+
+procedure ScheduleShiftVectorByCalendar(const AScheduleIDs: TIntVector;
+  const ACalendar: TCalendar; var ASchedules: TShiftScheduleVector);
+var
+  i: Integer;
+  Schedule: TShiftSchedule;
+begin
+  VSDel(ASchedules);
+  for i:= 0 to High(AScheduleIDs) do
+  begin
+    Schedule:= TShiftSchedule.Create;
+    ScheduleShiftByCalendar(AScheduleIDs[i], ACalendar, Schedule{%H-});
+    VSAppend(ASchedules, Schedule);
+  end;
 end;
 
 procedure ScheduleShiftForPeriod(const AScheduleID: Integer;

@@ -17,7 +17,7 @@ uses
   UStaffPostLogEditForm, UCalendarSheet, USchedule, UTimingSheet,
   UScheduleShiftSheet, UCalendarEditForm, UScheduleCorrectionEditForm, 
 UChooseForm, UScheduleShiftEditForm, UScheduleShiftMonthForm, 
-UScheduleShiftCalendarForm;
+UScheduleShiftCalendarForm, USchedulePersonalEditForm;
 
 {$R *.res}
 

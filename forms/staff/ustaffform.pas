@@ -20,12 +20,18 @@ type
   { TStaffForm }
 
   TStaffForm = class(TForm)
+    AscendingButton: TSpeedButton;
     ColumnsListVT: TVirtualStringTree;
+    DescendingButton: TSpeedButton;
     ExportButton: TBCButton;
+    FIORadioButton: TRadioButton;
     ListCaptionPanel: TBCPanel;
+    ListOrderToolPanel: TPanel;
     ListTypeVT: TVirtualStringTree;
     NameTypeVT: TVirtualStringTree;
+    OrderLabel: TLabel;
     OrderTypeVT: TVirtualStringTree;
+    BornDateRadioButton: TRadioButton;
     SettingClientPanel: TPanel;
     SettingCaptionPanel: TBCPanel;
     TabNumCaptionPanel: TBCPanel;
@@ -63,10 +69,14 @@ type
     ToolPanel: TPanel;
     ListToolPanel: TPanel;
     StaffVT: TVirtualStringTree;
+    procedure AscendingButtonClick(Sender: TObject);
+    procedure BornDateRadioButtonClick(Sender: TObject);
     procedure CloseButtonClick(Sender: TObject);
+    procedure DescendingButtonClick(Sender: TObject);
     procedure ExportButtonClick(Sender: TObject);
     procedure FilterEditButtonClick(Sender: TObject);
     procedure FilterEditChange(Sender: TObject);
+    procedure FIORadioButtonClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -164,6 +174,25 @@ begin
   MainForm.CategorySelect(0);
 end;
 
+procedure TStaffForm.DescendingButtonClick(Sender: TObject);
+begin
+  DescendingButton.Visible:= False;
+  AscendingButton.Visible:= True;
+  StaffListLoad;
+end;
+
+procedure TStaffForm.AscendingButtonClick(Sender: TObject);
+begin
+  AscendingButton.Visible:= False;
+  DescendingButton.Visible:= True;
+  StaffListLoad;
+end;
+
+procedure TStaffForm.BornDateRadioButtonClick(Sender: TObject);
+begin
+  StaffListLoad;
+end;
+
 procedure TStaffForm.ExportButtonClick(Sender: TObject);
 begin
   StaffList.Save([ctInteger, //№ п/п
@@ -189,6 +218,11 @@ begin
   StaffListLoad;
 end;
 
+procedure TStaffForm.FIORadioButtonClick(Sender: TObject);
+begin
+  StaffListLoad;
+end;
+
 procedure TStaffForm.FormCreate(Sender: TObject);
 begin
   ModeType:= mtView;
@@ -196,13 +230,13 @@ begin
   //ZoomPercent:= 100;
 
   SetToolPanels([
-    ToolPanel, ListToolPanel, TabNumToolPanel, PostLogToolPanel
+    ToolPanel, ListToolPanel, ListOrderToolPanel, TabNumToolPanel, PostLogToolPanel
   ]);
   SetCaptionPanels([
     SettingCaptionPanel, ListCaptionPanel, TabNumCaptionPanel, PostLogCaptionPanel
   ]);
   SetToolButtons([
-    CloseButton,
+    CloseButton, AscendingButton, DescendingButton,
     ListAddButton, ListDelButton, ListEditButton,
     TabNumAddButton, TabNumDelButton, TabNumEditButton, TabNumDismissButton, TabNumDismissCancelButton,
     PostLogAddButton, PostLogDelButton, PostLogEditButton
@@ -514,6 +548,8 @@ procedure TStaffForm.StaffListLoad(const SelectedID: Integer = -1);
 var
   StrDismissDates: TStrVector;
   SelectedStaffID: Integer;
+  IsDescOrder: Boolean;
+  ListOrderType: Byte;
 begin
   if not CanLoadStaffList then Exit;
 
@@ -521,8 +557,15 @@ begin
 
   if (not Assigned(OrderType)) or (not Assigned(ListType)) then Exit;
   if ModeType=mtEditing then
-    DataBase.StaffMainListLoad(STrimLeft(FilterEdit.Text), StaffIDs, Genders,
-                               Families, Names, Patronymics, BornDates)
+  begin
+    if FIORadioButton.Checked then
+      ListOrderType:= 0
+    else
+      ListOrderType:= 1;
+    IsDescOrder:= not DescendingButton.Visible;
+    DataBase.StaffMainListLoad(STrimLeft(FilterEdit.Text), ListOrderType, IsDescOrder,
+                       StaffIDs, Genders, Families, Names, Patronymics, BornDates);
+  end
   else
     DataBase.StaffListLoad(OrderType.SelectedIndex, ListType.SelectedIndex,
                            StaffIDs, TabNumIDs, Genders,

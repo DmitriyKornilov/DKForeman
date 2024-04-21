@@ -244,7 +244,7 @@ type
   {персональный график - с учетом отпусков}
   TPersonalSchedule = class (TCustomPersonalSchedule)
   private
-    FTabNum: Integer; //табельный номер
+    FTabNum: String;
     FRecrutDate: TDate;
     FDismissDate: TDate;
     FIsVacation: TIntVector;
@@ -272,7 +272,7 @@ type
     procedure WritePersonalCorrections;
     function GetPersonalCorrect: TScheduleCorrections;
   public
-    constructor Create(const ATabNum: Integer;
+    constructor Create(const ATabNum: String;
                        const ARecrutDate, ADismissDate: TDate;
                        const AIsVacation: TIntVector;
                        const APersonalCorrect: TScheduleCorrections;
@@ -284,7 +284,7 @@ type
     function Cut(const ABeginDate, AEndDate: TDate; var ACutSchedule: TPersonalSchedule): Boolean;
     procedure Add(const APostSchedule: TPostSchedule; const AIsLast: Boolean = False);
     property IsVacation: TIntVector read FIsVacation;
-    property TabNum: Integer read FTabNum;
+    property TabNum: String read FTabNum;
     property RecrutDate: TDate read FRecrutDate;
     property DismissDate: TDate read FDismissDate;
     property DaysCountDefaultVacation: Integer read GetDaysCountDefaultVacation; //кол-во отработанных дней (типовые с учтом отпуска)
@@ -771,7 +771,7 @@ begin
   GetPersonalCorrect:= ScheduleCorrectCopy(FPersonalCorrect);
 end;
 
-constructor TPersonalSchedule.Create(const ATabNum: Integer; const ARecrutDate,
+constructor TPersonalSchedule.Create(const ATabNum: String; const ARecrutDate,
   ADismissDate: TDate; const AIsVacation: TIntVector; const APersonalCorrect: TScheduleCorrections;
   const AStrMarkVacationMain: String; const AStrMarkVacationAddition: String;
   const AStrMarkVacationHoliday: String);

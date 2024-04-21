@@ -27,7 +27,7 @@ type
     function ColorsShiftLoad(out AColorValues, AColorIndexes: TIntVector): Boolean;
     function SettingLoad(const ASettingName: String): Integer;
     function SettingsLoad(const ASettingNames: TStrVector): TIntVector;
-    procedure SettingUpdate(const ASettingName: String; const ASettingValue: Integer; const ACommit: Boolean = True);
+    procedure SettingUpdate(const ASettingName: String; const ASettingValue: Integer);
     procedure SettingsUpdate(const ASettingNames: TStrVector; const ASettingValues: TIntVector);
     (**************************************************************************
                                      СПРАВОЧНИКИ
@@ -56,6 +56,19 @@ type
                            out ABornDates, ARecrutDates, ADismissDates: TDateVector;
                            out AFs, ANs, APs, ATabNums, APostNames, ARanks: TStrVector): Boolean;
 
+    {Cписок сотрудников для персональных графиков и табелей
+     ABeginDate, AEndDate - отчетный период
+     AOrderType - сортировка: 0-ФИО, 1-табельный номер, 2-должность
+     AIsDescOrder=True - сортировка по убыванию, False - по возрастанию
+     AFilterValue - фильтр по Ф.И.О.}
+    function StaffListForTimingLoad(const AFilterValue: String;
+                             const ABeginDate, AEndDate: TDate;
+                             const AOrderType: Byte;
+                             const AIsDescOrder: Boolean;
+                             out ATabNumIDs: TIntVector;
+                             out ARecrutDates, ADismissDates: TDateVector;
+                             out AFs, ANs, APs, ATabNums, APostNames: TStrVector): Boolean;
+
 
     {Добавление данных нового человека: True - ОК, False - ошибка}
     function StaffMainAdd(out AStaffID: Integer;
@@ -72,8 +85,11 @@ type
     {Удаление данных человека: True - ОК, False - ошибка}
     function StaffMainDelete(const AStaffID: Integer): Boolean;
     {Получение списка людей: True - ОК, False - список пуст
+     AOrderType - порядок сортировки 0 - по ФИО, 1 - по дате рождения
      AFilterValue - фильтр по Ф.И.О.}
     function StaffMainListLoad(const AFilterValue: String;
+                          const AOrderType: Byte;
+                          const AIsDescOrder: Boolean;
                           out AStaffIDs, AGenders: TIntVector;
                           out AFamilies, ANames, APatronymics: TStrVector;
                           out ABornDates: TDateVector): Boolean;
@@ -177,7 +193,7 @@ type
     function ScheduleShiftCorrectionDelete(const ACorrectID: Integer): Boolean;
 
     {Запись или обновление корректировки персонального графика: True - ОК, False - ошибка}
-    function SchedulePersonalCorrectionsUpdate(const ATubNumID: Integer;
+    function SchedulePersonalCorrectionsUpdate(const ATabNumID: Integer;
                                const ACorrections: TScheduleCorrections): Boolean;
 
     {Проверка наличия наименования графика в записи с ID<>AScheduleID: True - да, False - нет}
@@ -190,6 +206,25 @@ type
                               const ACycle: TScheduleCycle): Boolean;
     {Удаление графика сменности: True - ОК, False - ошибка}
     function ScheduleShiftDelete(const AScheduleID: Integer): Boolean;
+
+
+    {История переводов по рабочим графикам: True - ОК, False - пусто}
+    function StaffScheduleHistoryLoad(const ATabNumID: Integer;
+                                      out AIDs: TIntVector;
+                                      out ABeginDates, AEndDates: TDateVector;
+                                      out AScheduleNames: TStrVector): Boolean;
+
+    (**************************************************************************
+                                      ОТПУСКА
+    **************************************************************************)
+    {Информация по отпускам: True - ОК, False - пусто}
+    function VacationsEditingLoad(const ATabNumID, AYear: Integer;
+                                  out ADates: TDateVector;
+                                  out ACounts, AAddCounts: TIntVector): Boolean;
+    {Обновление информации по отпускам: True - ОК, False - пусто}
+    function VacationsEditingUpdate(const ATabNumID, AYear: Integer;
+                                  const ADates: TDateVector;
+                                  const ACounts, AAddCounts: TIntVector): Boolean;
 
     (**************************************************************************
                                       ТАБЕЛИ
@@ -300,22 +335,9 @@ begin
     Result[i]:= SettingLoad(ASettingNames[i]);
 end;
 
-procedure TDataBase.SettingUpdate(const ASettingName: String; const ASettingValue: Integer; const ACommit: Boolean = True);
+procedure TDataBase.SettingUpdate(const ASettingName: String; const ASettingValue: Integer);
 begin
-  //UpdateStrID('SETTINGS', 'Value', 'Name', ASettingName, ASettingValue, True {commit});
-
-  QSetQuery(FQuery);
-  try
-    QSetSQL(
-      sqlINSERT('SETTINGS', ['Name', 'Value'], 'REPLACE')
-    );
-    QParamStr('Name', ASettingName);
-    QParamInt('Value', ASettingValue);
-    QExec;
-    if ACommit then QCommit;
-  except
-    QRollback;
-  end;
+  UpdateStrID('SETTINGS', 'Value', 'Name', ASettingName, ASettingValue, True {commit});
 end;
 
 procedure TDataBase.SettingsUpdate(const ASettingNames: TStrVector;
@@ -325,8 +347,7 @@ var
 begin
   try
     for i:= 0 to High(ASettingNames) do
-      SettingUpdate(ASettingNames[i], ASettingValues[i], False {no commit});
-      //UpdateStrID('SETTINGS', 'Value', 'Name', ASettingNames[i], ASettingValues[i], False {no commit});
+      UpdateStrID('SETTINGS', 'Value', 'Name', ASettingNames[i], ASettingValues[i], False {no commit});
     QCommit;
   finally
     QRollback;
@@ -463,6 +484,103 @@ begin
   ARanks:= VReplace(ARanks, Indexes);
 end;
 
+function TDataBase.StaffListForTimingLoad(const AFilterValue: String;
+                             const ABeginDate, AEndDate: TDate;
+                             const AOrderType: Byte;
+                             const AIsDescOrder: Boolean;
+                             out ATabNumIDs: TIntVector;
+                             out ARecrutDates, ADismissDates: TDateVector;
+                             out AFs, ANs, APs, ATabNums, APostNames: TStrVector): Boolean;
+var
+  SQLStr: String;
+  i, PostID: Integer;
+  PostName, Rank: String;
+  Indexes: TIntVector;
+begin
+  Result:= False;
+
+  ATabNumIDs:= nil;
+  ARecrutDates:= nil;
+  ADismissDates:= nil;
+  AFs:= nil;
+  ANs:= nil;
+  APs:= nil;
+  ATabNums:= nil;
+  APostNames:= nil;
+
+  SQLStr:=
+    'SELECT t1.TabNumID, t1.TabNum, t1.RecrutDate, t1.DismissDate, ' +
+           't2.Name, t2.Patronymic, t2.Family ' +
+    'FROM STAFFTABNUM t1 ' +
+    'INNER JOIN STAFFMAIN t2 ON (t1.StaffID=t2.StaffID) ' +
+    'WHERE (t1.RecrutDate<= :ED) AND (t1.DismissDate >= :BD) ';
+  if not SEmpty(AFilterValue) then
+    SQLStr:= SQLStr + 'AND (t2.FullName LIKE :FilterValue) ';
+  case AOrderType of
+  0: if AIsDescOrder then
+       SQLStr:= SQLStr + 'ORDER BY t2.Family DESC, t2.Name DESC, t2.Patronymic DESC'
+     else
+       SQLStr:= SQLStr + 'ORDER BY t2.Family, t2.Name, t2.Patronymic';
+  1: if AIsDescOrder then
+       SQLStr:= SQLStr + 'ORDER BY t1.TabNum DESC'
+     else
+       SQLStr:= SQLStr + 'ORDER BY t1.TabNum';
+  2: SQLStr:= SQLStr + 'ORDER BY t2.Family, t2.Name, t2.Patronymic';
+  end;
+
+  QSetQuery(FQuery);
+  QSetSQL(SQLStr);
+  QParamDT('BD', ABeginDate);
+  QParamDT('ED', AEndDate);
+  QParamStr('FilterValue', '%'+AFilterValue+'%');
+  QOpen;
+  if not QIsEmpty then
+  begin
+    QFirst;
+    while not QEOF do
+    begin
+      VAppend(ATabNumIDs, QFieldInt('TabNumID'));
+      VAppend(ARecrutDates, QFieldDT('RecrutDate'));
+      VAppend(ADismissDates, QFieldDT('DismissDate'));
+      VAppend(AFs, QFieldStr('Family'));
+      VAppend(ANs, QFieldStr('Name'));
+      VAppend(APs, QFieldStr('Patronymic'));
+      VAppend(ATabNums, QFieldStr('TabNum'));
+      QNext;
+    end;
+    Result:= True;
+  end;
+  QClose;
+
+  if not Result then Exit;
+
+  //актуальные должности и разряды на текущую дату
+  for i:= 0 to High(ATabNumIDs) do
+  begin
+    StaffPostForDate(ATabNumIDs[i], Date, PostID, PostName, Rank);
+    VAppend(APostNames, PostName);
+    //VAppend(ARanks, Rank);
+  end;
+
+  //сортировка по наименованию должности
+  if AOrderType<>2 then Exit;
+
+  if AIsDescOrder then
+    VSort(APostNames, Indexes, True)
+  else
+    VSort(APostNames, Indexes, False);
+
+  ATabNumIDs:= VReplace(ATabNumIDs, Indexes);
+  ARecrutDates:= VReplace(ARecrutDates, Indexes);
+  ADismissDates:= VReplace(ADismissDates, Indexes);
+  AFs:= VReplace(AFs, Indexes);
+  ANs:= VReplace(ANs, Indexes);
+  APs:= VReplace(APs, Indexes);
+  ATabNums:= VReplace(ATabNums, Indexes);
+  APostNames:= VReplace(APostNames, Indexes);
+  //ARanks:= VReplace(ARanks, Indexes);
+end;
+
 function TDataBase.StaffMainAdd(out AStaffID: Integer;
                                 const AFamily, AName, APatronymic: String;
                                 const ABornDate: TDate; const AGender: Byte): Boolean;
@@ -553,6 +671,8 @@ begin
 end;
 
 function TDataBase.StaffMainListLoad(const AFilterValue: String;
+                          const AOrderType: Byte;
+                          const AIsDescOrder: Boolean;
                           out AStaffIDs, AGenders: TIntVector;
                           out AFamilies, ANames, APatronymics: TStrVector;
                           out ABornDates: TDateVector): Boolean;
@@ -571,7 +691,20 @@ begin
   SQLStr:= sqlSELECT('STAFFMAIN', ['StaffID', 'Family', 'Name', 'Patronymic', 'BornDate', 'Gender']);
   if not SEmpty(AFilterValue) then
     SQLStr:= SQLStr + 'WHERE (FullName LIKE :FilterValue)';
-  SQLStr:= SQLStr + 'ORDER BY Family, Name, Patronymic, BornDate';
+
+  if AOrderType=0 then
+  begin
+    if AIsDescOrder then
+      SQLStr:= SQLStr + 'ORDER BY Family DESC, Name DESC, Patronymic DESC, BornDate'
+    else
+      SQLStr:= SQLStr + 'ORDER BY Family, Name, Patronymic, BornDate' ;
+  end
+  else begin
+    if AIsDescOrder then
+      SQLStr:= SQLStr + 'ORDER BY BornDate DESC, Family, Name, Patronymic'
+    else
+      SQLStr:= SQLStr + 'ORDER BY BornDate, Family, Name, Patronymic';
+  end;
 
   QSetQuery(FQuery);
   QSetSQL(SQLStr);
@@ -1150,10 +1283,10 @@ begin
   Result:= Delete('SCHEDULECORRECT', 'CorrectID', ACorrectID);
 end;
 
-function TDataBase.SchedulePersonalCorrectionsUpdate(const ATubNumID: Integer;
+function TDataBase.SchedulePersonalCorrectionsUpdate(const ATabNumID: Integer;
   const ACorrections: TScheduleCorrections): Boolean;
 begin
-  Result:= ScheduleCorrectionsUpdate('PERSONALCORRECT', 'TabNumID', ATubNumID, ACorrections);
+  Result:= ScheduleCorrectionsUpdate('PERSONALCORRECT', 'TabNumID', ATabNumID, ACorrections);
 end;
 
 function TDataBase.ScheduleShiftIsExists(const AScheduleID: Integer;
@@ -1238,6 +1371,119 @@ end;
 function TDataBase.ScheduleShiftDelete(const AScheduleID: Integer): Boolean;
 begin
   Result:= Delete('SCHEDULEMAIN', 'ScheduleID', AScheduleID);
+end;
+
+function TDataBase.StaffScheduleHistoryLoad(const ATabNumID: Integer;
+                                      out AIDs: TIntVector;
+                                      out ABeginDates, AEndDates: TDateVector;
+                                      out AScheduleNames: TStrVector): Boolean;
+begin
+  AIDs:= nil;
+  ABeginDates:= nil;
+  AEndDates:= nil;
+  AScheduleNames:= nil;
+
+  Result:= False;
+  QSetQuery(FQuery);
+  QSetSQL(
+    'SELECT t1.ID, t1.BeginDate, t1.EndDate, t2.ScheduleName ' +
+    'FROM STAFFSCHEDULE t1 ' +
+    'INNER JOIN SCHEDULEMAIN t2 ON (t1.ScheduleID=t2.ScheduleID) ' +
+    'WHERE t1.TabNumID = :TabNumID ' +
+    'ORDER BY t1.BeginDate DESC'
+  );
+  QParamInt('TabNumID', ATabNumID);
+  QOpen;
+  if not QIsEmpty then
+  begin
+    QFirst;
+    while not QEOF do
+    begin
+      VAppend(AIDs, QFieldInt('ID'));
+      VAppend(ABeginDates, QFieldDT('BeginDate'));
+      VAppend(AEndDates, QFieldDT('EndDate'));
+      VAppend(AScheduleNames, QFieldStr('ScheduleName'));
+      QNext;
+    end;
+    Result:= True;
+  end;
+  QClose;
+end;
+
+function TDataBase.VacationsEditingLoad(const ATabNumID, AYear: Integer;
+                                out ADates: TDateVector;
+                                out ACounts, AAddCounts: TIntVector): Boolean;
+begin
+  VDim(ADates{%H-}, 4);
+  VDim(ACounts{%H-}, 4);
+  VDim(AAddCounts{%H-}, 4);
+
+  Result:= False;
+  QSetQuery(FQuery);
+  QSetSQL(
+    'SELECT * FROM STAFFVACATION ' +
+    'WHERE (TabNumID = :TabNumID) AND (YearNum = :YearNum)'
+  );
+  QParamInt('TabNumID', ATabNumID);
+  QParamInt('YearNum', AYear);
+  QOpen;
+  if not QIsEmpty then
+  begin
+    QFirst;
+    ADates[0]:= QFieldDT('Plan1Date');
+    ADates[1]:= QFieldDT('Fact1Date');
+    ADates[2]:= QFieldDT('Plan2Date');
+    ADates[3]:= QFieldDT('Fact2Date');
+    ACounts[0]:= QFieldInt('Plan1Count');
+    ACounts[1]:= QFieldInt('Fact1Count');
+    ACounts[2]:= QFieldInt('Plan2Count');
+    ACounts[3]:= QFieldInt('Fact2Count');
+    AAddCounts[0]:= QFieldInt('Plan1CountAdd');
+    AAddCounts[1]:= QFieldInt('Fact1CountAdd');
+    AAddCounts[2]:= QFieldInt('Plan2CountAdd');
+    AAddCounts[3]:= QFieldInt('Fact2CountAdd');
+    Result:= True;
+  end;
+  QClose;
+end;
+
+function TDataBase.VacationsEditingUpdate(const ATabNumID, AYear: Integer;
+                                  const ADates: TDateVector;
+                                  const ACounts, AAddCounts: TIntVector): Boolean;
+begin
+  Result:= False;
+  QSetQuery(FQuery);
+  try
+    QSetSQL(
+      sqlINSERT('STAFFVACATION', ['TabNumID', 'YearNum',
+                                  'Plan1Date', 'Plan1Count', 'Plan1CountAdd',
+                                  'Fact1Date', 'Fact1Count', 'Fact1CountAdd',
+                                  'Plan2Date', 'Plan2Count', 'Plan2CountAdd',
+                                  'Fact2Date', 'Fact2Count', 'Fact2CountAdd'], 'REPLACE')
+    );
+
+    QParamInt('TabNumID', ATabNumID);
+    QParamInt('YearNum', AYear);
+
+    QParamDT('Plan1Date', ADates[0]);
+    QParamDT('Fact1Date', ADates[1]);
+    QParamDT('Plan2Date', ADates[2]);
+    QParamDT('Fact2Date', ADates[3]);
+    QParamInt('Plan1Count', ACounts[0]);
+    QParamInt('Fact1Count', ACounts[1]);
+    QParamInt('Plan2Count', ACounts[2]);
+    QParamInt('Fact2Count', ACounts[3]);
+    QParamInt('Plan1CountAdd', AAddCounts[0]);
+    QParamInt('Fact1CountAdd', AAddCounts[1]);
+    QParamInt('Plan2CountAdd', AAddCounts[2]);
+    QParamInt('Fact2CountAdd', AAddCounts[3]);
+
+    QExec;
+    QCommit;
+    Result:= True;
+  except
+    QRollback;
+  end;
 end;
 
 function TDataBase.TimetableMarkListLoad(out ADigMarks: TIntVector;

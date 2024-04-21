@@ -8,7 +8,7 @@ uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, Buttons,
   fpspreadsheetgrid, BCPanel, BCButton, VirtualTrees, Spin, DateUtils,
   //Project utils
-  UDataBase, UConst, UTypes, UUtils, UWorkHours, Ucalendar, USchedule,
+  UDataBase, UConst, UTypes, UUtils, UWorkHours, UCalendar, USchedule,
   UScheduleShiftSheet,
   //DK packages utils
   DK_VSTTables, DK_VSTTableTools, DK_Vector, DK_Const, DK_Dialogs,
@@ -109,7 +109,6 @@ type
     ColorType: TVSTStringList;
 
     ScheduleList: TVSTTable;
-    //ScheduleCheck: TVSTCheckTable;
     Structure: TVSTTable;
     VSTDays: TVSTTable;
     VSTCopy: TVSTTable;
@@ -536,8 +535,7 @@ begin
   CorrectionsCaptionPanel.Caption:= CorrectionsCaptionPanel.Caption +
                                   ScheduleNames[ScheduleList.SelectedIndex];
 
-  BD:= FirstDayInYear(YearSpinEdit.Value);
-  ED:= LastDayInYear(YearSpinEdit.Value);
+  FirstLastDayInYear(YearSpinEdit.Value, BD, ED);
   DataBase.ScheduleShiftCorrectionsLoad(ScheduleIDs[ScheduleList.SelectedIndex],
                                         CorrectIDs, Corrections, BD, ED);
 

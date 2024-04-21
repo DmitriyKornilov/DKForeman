@@ -5,12 +5,13 @@ unit UScheduleShiftSheet;
 interface
 
 uses
-  Classes, SysUtils, Graphics, fpspreadsheetgrid, fpspreadsheet,
+  Classes, SysUtils, Graphics, fpspreadsheetgrid, fpspreadsheet, LCLType,
+  Controls, DateUtils,
   //Project utils
-  UConst, UCalendar, UWorkHours, USchedule, UTimingSheet,
+  UConst, UTypes, UCalendar, UWorkHours, USchedule, UTimingSheet,
   //DK packages utils
   DK_SheetWriter, DK_Vector, DK_Const, DK_DateUtils, DK_StrUtils, DK_SheetTypes,
-  DK_Math;
+  DK_Math, DK_Color;
 
 type
 
@@ -130,6 +131,36 @@ type
                    const AName: String;
                    const ANeedCorrect,                            //учитывать корректировки
                          AFirstShiftDayColorOnly: Boolean);       //раскаршивать только первый день переходящей смены
+  end;
+
+  {Список графиков сменности для назначения работнику }
+
+  { TShiftScheduleSimpleSheet }
+
+  TShiftScheduleSimpleSheet = class (TCustomSheet)
+  protected
+    function SetWidths: TIntVector; override;
+  private
+    const
+      NAME_COLUMN_WIDTH = 100;
+      DAY_COLUMN_WIDTH = 60;
+    var
+      FSchedules: TShiftScheduleVector;
+      FNames: TStrVector;
+      FSelectedIndex: Integer;
+    procedure CaptionDraw;
+    procedure LineDraw(const AIndex: Integer; const ASelected: Boolean);
+    function GetIsSelected: Boolean;
+    procedure MouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+    procedure KeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure SelectionMove(const ADirection: TMoveDirection);
+  public
+    constructor Create(const AGrid: TsWorksheetGrid;
+                       const AFont: TFont;
+                       const ANames: TStrVector);
+    procedure Draw(const ASchedules: TShiftScheduleVector);
+    property SelectedIndex: Integer read FSelectedIndex;
+    property IsSelected: Boolean read GetIsSelected;
   end;
 
 
@@ -899,6 +930,130 @@ begin
   Writer.BeginEdit;
   CaptionDraw(AName);
   for i:=1 to 12 do MonthDraw(i);
+  Writer.EndEdit;
+end;
+
+{ TShiftScheduleSimpleSheet }
+
+function TShiftScheduleSimpleSheet.SetWidths: TIntVector;
+var
+  i, W: Integer;
+begin
+  W:= Max(DAY_COLUMN_WIDTH, SWidth('00.00.00', Font.Name, Font.Size, [fsBold]));
+  VDim(Result, 11, W);
+  W:= NAME_COLUMN_WIDTH;
+  for i:= 0 to High(FNames) do
+    W:= Max(W, SWidth(FNames[i], Font.Name, Font.Size, [fsBold]));
+  Result[0]:= W;
+end;
+
+procedure TShiftScheduleSimpleSheet.CaptionDraw;
+var
+  i: Integer;
+begin
+  Writer.SetBackgroundDefault;
+  Writer.SetFont(Font.Name, Font.Size, [fsBold], clBlack);
+  Writer.SetAlignment(haCenter, vaCenter);
+  Writer.WriteText(1, 1, 'График', cbtOuter);
+  for i:=0 to 9 do
+    Writer.WriteText(1, i+2, FormatDateTime('dd.mm.yy', IncDay(FSchedules[0].BeginDate, i)), cbtOuter);
+end;
+
+procedure TShiftScheduleSimpleSheet.LineDraw(const AIndex: Integer; const ASelected: Boolean);
+var
+  R,i: Integer;
+  WorkHours: TWorkHours;
+  Marks: TStrVector;
+begin
+  R:= AIndex*2 + 2;
+  if ASelected then
+    Writer.SetBackground(DefaultSelectionBGColor)
+  else
+    Writer.SetBackgroundDefault;
+
+  Writer.SetFont(Font.Name, Font.Size, [], clBlack);
+  Writer.SetAlignment(haLeft, vaCenter);
+  Writer.WriteText(R, 1, R+1, 1, FNames[AIndex], cbtOuter);
+  Writer.SetAlignment(haCenter, vaCenter);
+  ChooseShiftScheduleData(FSchedules[AIndex], False, WorkHours, i, i, Marks);
+  for i:=0 to 9 do
+    DrawHoursOrMarks(Writer, R, i+2, WorkHours.Total[i], WorkHours.Night[i], Marks[i],
+                     EmptyStr, False, False, True, True);
+end;
+
+function TShiftScheduleSimpleSheet.GetIsSelected: Boolean;
+begin
+  Result:= FSelectedIndex>=0;
+end;
+
+procedure TShiftScheduleSimpleSheet.MouseDown(Sender: TObject;
+  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+var
+  R, C: Integer;
+begin
+  if VIsNil(FNames) then Exit;
+  if Button<>mbLeft then Exit;
+  (Sender as TsWorksheetGrid).MouseToCell(X, Y, C, R);
+  C:= Trunc((R - 2)/2); //new selected index
+  if (C<0) or (C>High(FNames)) then Exit;
+  if IsSelected then
+    LineDraw(FSelectedIndex, False);
+  FSelectedIndex:= C;
+  LineDraw(FSelectedIndex, True);
+end;
+
+procedure TShiftScheduleSimpleSheet.KeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  if Key=VK_UP then
+    SelectionMove(mdUp)
+  else if Key=VK_DOWN then
+    SelectionMove(mdDown)
+end;
+
+procedure TShiftScheduleSimpleSheet.SelectionMove(const ADirection: TMoveDirection);
+var
+  Index: Integer;
+begin
+  if not IsSelected then Exit;
+  if ADirection=mdUp then
+    Index:= FSelectedIndex - 1
+  else if ADirection=mdDown then
+    Index:= FSelectedIndex + 1;
+  if (Index<0) or (Index>High(FNames)) then Exit;
+  LineDraw(FSelectedIndex, False);
+  FSelectedIndex:= Index;
+  LineDraw(FSelectedIndex, True);
+end;
+
+constructor TShiftScheduleSimpleSheet.Create(const AGrid: TsWorksheetGrid;
+                       const AFont: TFont;
+                       const ANames: TStrVector);
+begin
+  FNames:= ANames;
+  inherited Create(AGrid.Worksheet, AGrid, AFont);
+  FSelectedIndex:= -1;
+  Writer.Grid.OnMouseDown:= @MouseDown;
+  Writer.Grid.OnKeyDown:= @KeyDown;
+end;
+
+procedure TShiftScheduleSimpleSheet.Draw(const ASchedules: TShiftScheduleVector);
+var
+  i: Integer;
+begin
+  Writer.Clear;
+  if Length(ASchedules)=0 then Exit;
+
+  FSchedules:= ASchedules;
+  if (not IsSelected) and (Length(FSchedules)>0) then
+    FSelectedIndex:= 0;
+
+  Writer.BeginEdit;
+  CaptionDraw;
+  for i:=0 to High(FSchedules) do
+    LineDraw(i, i=FSelectedIndex);
+  if Length(FSchedules)>0 then
+    Writer.SetFrozenRows(1);
+  BordersDraw;
   Writer.EndEdit;
 end;
 

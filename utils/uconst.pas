@@ -61,6 +61,12 @@ const
     ('Дата', '№ смены', 'Всего часов', 'Ночных часов', 'Код табеля');
   SCHEDULE_CORRECTION_COLUMN_WIDTHS: array of Integer =
     (70,     70,        80,            90,             70          );
+  VACATION_EDIT_COLUMN_NAMES: array of String  =
+    ('Отпуск', 'Дата начала', 'Основной (дней)', 'Дополнительный (дней)');
+  VACATION_EDIT_COLUMN_WIDTHS: array of Integer =
+    (150,       100,           120,               150                   );
+  VACATION_EDIT_ROW_NAMES: array of String  =
+    ('Планируемый (1 часть)', 'Фактический (1 часть)', 'Планируемый (2 часть)', 'Фактический (2 часть)');
 
   COLOR_CALENDAR_MONTHNAME = COLOR_WHITE; //цвет ячейки с названием месяца
   COLOR_CALENDAR_DAYNAME   = COLOR_WHITE; //цвет ячеек с названиями дней недели
@@ -133,6 +139,16 @@ const
     'SCHEDULESHIFTFORM.COLORTYPE'
   );
 
+  SETTING_NAMES_SCHEDULEPERSONALFORM: array of String  =  (
+    'SCHEDULEPERSONALFORM.ZOOM',
+    'SCHEDULEPERSONALFORM.NEEDCORRECTIONS',
+    'SCHEDULEPERSONALFORM.NEEDNIGHTHOURS',
+    'SCHEDULEPERSONALFORM.NEEDNOTWORKMARKS',
+    'SCHEDULEPERSONALFORM.NEEDVACATIONS',
+    'SCHEDULEPERSONALFORM.NEEDCOLORS',
+    'SCHEDULEPERSONALFORM.RESUMETYPE',
+    'SCHEDULEPERSONALFORM.COLORTYPE'
+  );
 
 
 

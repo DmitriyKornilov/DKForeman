@@ -203,18 +203,19 @@ end;
 procedure TScheduleShiftMonthForm.CalendarAndSchedulesUpdate(const AMonth, AYear: Word;
          var ACalendar: TCalendar;
          var ASchedules: TShiftScheduleVector);
-var
-  i: Integer;
-  Schedule: TShiftSchedule;
+//var
+//  i: Integer;
+//  Schedule: TShiftSchedule;
 begin
   CalendarForMonth(AMonth, AYear, ACalendar);
-  VSDel(ASchedules);
-  for i:= 0 to High(ScheduleIDs) do
-  begin
-    Schedule:= TShiftSchedule.Create;
-    ScheduleShiftByCalendar(ScheduleIDs[i], ACalendar, Schedule{%H-});
-    VSAppend(ASchedules, Schedule);
-  end;
+  ScheduleShiftVectorByCalendar(ScheduleIDs, ACalendar, ASchedules);
+  //VSDel(ASchedules);
+  //for i:= 0 to High(ScheduleIDs) do
+  //begin
+  //  Schedule:= TShiftSchedule.Create;
+  //  ScheduleShiftByCalendar(ScheduleIDs[i], ACalendar, Schedule{%H-});
+  //  VSAppend(ASchedules, Schedule);
+  //end;
 end;
 
 procedure TScheduleShiftMonthForm.ScheduleLoad;

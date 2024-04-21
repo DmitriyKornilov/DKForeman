@@ -10,6 +10,7 @@ uses
 type
   TModeType = (mtView, mtEditing, mtSetting);
   TEditingType = (etAdd, etEdit, etCustom);
+  TMoveDirection = (mdUp, mdDown, mdLeft, mdRight);
 
 implementation
 

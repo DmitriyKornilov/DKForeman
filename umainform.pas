@@ -189,7 +189,7 @@ begin
     2: (CategoryForm as TCalendarForm).ViewUpdate(ModeType);
     3: (CategoryForm as TScheduleShiftForm).ViewUpdate(ModeType);
     4: ;
-    5: ;
+    5: (CategoryForm as TSchedulePersonalForm).ViewUpdate(ModeType);
     6: ;
     7: ;
     8: ;
@@ -208,7 +208,7 @@ begin
     //2: (CategoryForm as TCalendarForm).SettingsSave;
     3: (CategoryForm as TScheduleShiftForm).SettingsSave;
     4: ;
-    5: ;
+    5: (CategoryForm as TSchedulePersonalForm).SettingsSave;
     6: ;
     7: ;
     8: ;
