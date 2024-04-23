@@ -2874,6 +2874,7 @@ object SchedulePersonalForm: TSchedulePersonalForm
             0000000000000000000000000000000000000000000000000000000000000000
             0000000000000000000000000000000000000000000000000000
           }
+          OnClick = HistoryDelButtonClick
           ShowHint = True
           ParentShowHint = False
         end
@@ -3073,6 +3074,7 @@ object SchedulePersonalForm: TSchedulePersonalForm
         Header.MainColumn = -1
         Margin = 50
         TabOrder = 2
+        OnNodeDblClick = HistoryVTNodeDblClick
       end
     end
     object Splitter3: TSplitter

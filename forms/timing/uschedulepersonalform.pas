@@ -104,7 +104,10 @@ type
     procedure FormShow(Sender: TObject);
     procedure FIORadioButtonClick(Sender: TObject);
     procedure HistoryAddButtonClick(Sender: TObject);
+    procedure HistoryDelButtonClick(Sender: TObject);
     procedure HistoryEditButtonClick(Sender: TObject);
+    procedure HistoryVTNodeDblClick(Sender: TBaseVirtualTree;
+      const HitInfo: THitInfo);
     procedure PostRadioButtonClick(Sender: TObject);
     procedure TabNumRadioButtonClick(Sender: TObject);
     procedure VacationCancelButtonClick(Sender: TObject);
@@ -137,7 +140,7 @@ type
     TmpVacationCounts, TmpVacationAddCounts: TIntVector;
 
     History: TVSTTable;
-    HistoryIDs: TIntVector;
+    HistoryIDs, HistoryScheduleIDs: TIntVector;
     HistoryBeginDates, HistoryEndDates: TDateVector;
     HistoryScheduleNames: TStrVector;
 
@@ -178,6 +181,7 @@ type
     procedure HistoryCreate;
     procedure HistoryLoad(const SelectedID: Integer = -1);
     procedure HistorySelect;
+    procedure HistoryDelItem;
 
     procedure VacationEditCreate;
     procedure VacationEditLoad;
@@ -322,8 +326,20 @@ begin
   SchedulePersonalEditFormOpen(etAdd);
 end;
 
+procedure TSchedulePersonalForm.HistoryDelButtonClick(Sender: TObject);
+begin
+  HistoryDelItem;
+end;
+
 procedure TSchedulePersonalForm.HistoryEditButtonClick(Sender: TObject);
 begin
+  SchedulePersonalEditFormOpen(etEdit);
+end;
+
+procedure TSchedulePersonalForm.HistoryVTNodeDblClick(Sender: TBaseVirtualTree;
+  const HitInfo: THitInfo);
+begin
+  if not History.IsSelected then Exit;
   SchedulePersonalEditFormOpen(etEdit);
 end;
 
@@ -624,6 +640,7 @@ begin
   History.CanSelect:= True;
   History.CanUnselect:= False;
   History.OnSelect:= @HistorySelect;
+  History.OnDelKeyDown:= @HistoryDelItem;
   History.SetSingleFont(MainForm.GridFont);
   History.HeaderFont.Style:= [fsBold];
 
@@ -646,13 +663,11 @@ begin
   SelectedHistoryID:= GetSelectedID(History, HistoryIDs, SelectedID);
 
   DataBase.StaffScheduleHistoryLoad(TabNumIDs[StaffList.SelectedIndex],
-    HistoryIDs, HistoryBeginDates, HistoryEndDates, HistoryScheduleNames);
+    HistoryIDs, HistoryScheduleIDs, HistoryBeginDates, HistoryEndDates, HistoryScheduleNames);
 
   StrBeginDates:= VFormatDateTime('dd.mm.yyyy', HistoryBeginDates);
   StrEndDates:= VFormatDateTime('dd.mm.yyyy', HistoryEndDates, True);
   VChangeIf(StrEndDates, EmptyStr, EMPTY_MARK);
-
-
 
   History.Visible:= False;
   try
@@ -675,6 +690,16 @@ begin
   HistoryAddButton.Enabled:= IsOK and (History.SelectedIndex=0 {последняя запись});
   HistoryDelButton.Enabled:= IsOK and (History.SelectedIndex<High(HistoryIDs) {не самая первая должность});
   HistoryEditButton.Enabled:= IsOK;
+end;
+
+procedure TSchedulePersonalForm.HistoryDelItem;
+begin
+  if not HistoryDelButton.Enabled then Exit;
+  if not Confirm('Удалить информацию о выбранном периоде работы в графике?') then Exit;
+  if DataBase.StaffScheduleHistoryDelete(HistoryIDs[History.SelectedIndex + 1],
+                              HistoryIDs[History.SelectedIndex],
+                              HistoryEndDates[History.SelectedIndex]) then
+    HistoryLoad;
 end;
 
 procedure TSchedulePersonalForm.VacationEditCreate;
@@ -756,17 +781,43 @@ end;
 procedure TSchedulePersonalForm.SchedulePersonalEditFormOpen(const AEditingType: TEditingType);
 var
   SchedulePersonalEditForm: TSchedulePersonalEditForm;
+  ThisBeginDate, PrevBeginDate, NextBeginDate: TDate;
 begin
   SchedulePersonalEditForm:= TSchedulePersonalEditForm.Create(nil);
   try
-    if AEditingType=etEdit then
-    begin
-
+    ThisBeginDate:= HistoryBeginDates[History.SelectedIndex];
+    SchedulePersonalEditForm.EditingType:= AEditingType;
+    SchedulePersonalEditForm.TabNumID:= TabNumIDs[StaffList.SelectedIndex];
+    SchedulePersonalEditForm.ScheduleID:= HistoryScheduleIDs[History.SelectedIndex];
+    SchedulePersonalEditForm.HistoryID:= HistoryIDs[History.SelectedIndex];
+    case AEditingType of
+      etAdd: //перевод с последнего графика
+        begin
+          SchedulePersonalEditForm.FirstDatePicker.Date:= IncDay(ThisBeginDate, 1);
+          SchedulePersonalEditForm.FirstDatePicker.MinDate:= SchedulePersonalEditForm.FirstDatePicker.Date;
+          SchedulePersonalEditForm.FirstDatePicker.MaxDate:= IncDay(INFDATE, -1);
+        end;
+      etEdit: //редактирование графика
+        begin
+          SchedulePersonalEditForm.FirstDatePicker.Date:= ThisBeginDate;
+          if SameDate(ThisBeginDate, RecrutDates[StaffList.SelectedIndex]) then
+          begin //первая запись
+            SchedulePersonalEditForm.FirstDatePicker.Enabled:= False;//нельзя менять дату начала работы (приема)
+          end
+          else begin //последующие записи
+            PrevBeginDate:= HistoryBeginDates[History.SelectedIndex + 1];
+            SchedulePersonalEditForm.PrevHistoryID:= HistoryIDs[History.SelectedIndex + 1];
+            SchedulePersonalEditForm.FirstDatePicker.MinDate:= IncDay(PrevBeginDate, 1);
+            if History.SelectedIndex=0 then //последняя запись
+              NextBeginDate:= IncDay(INFDATE, 1)
+            else //промежуточная запись
+              NextBeginDate:= IncDay(HistoryBeginDates[History.SelectedIndex - 1]);
+            SchedulePersonalEditForm.FirstDatePicker.MaxDate:= IncDay(NextBeginDate, -1);
+          end;
+        end;
     end;
     if SchedulePersonalEditForm.ShowModal=mrOK then
-    begin
-
-    end;
+      HistoryLoad(SchedulePersonalEditForm.HistoryID);
   finally
     FreeAndNil(SchedulePersonalEditForm);
   end;

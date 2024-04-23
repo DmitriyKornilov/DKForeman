@@ -8,9 +8,9 @@ uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls,
   fpspreadsheetgrid, DateTimePicker, DateUtils, Buttons,
   //Project utils
-  UDataBase, UUtils, UCalendar, USchedule,  UScheduleShiftSheet,
+  UDataBase, UUtils, UTypes, UCalendar, USchedule,  UScheduleShiftSheet,
   //DK packages utils
-  DK_Vector;
+  DK_Vector, DK_Dialogs;
 
 type
 
@@ -25,10 +25,12 @@ type
     SaveButton: TSpeedButton;
     SheetPanel: TPanel;
     ViewGrid: TsWorksheetGrid;
+    procedure CancelButtonClick(Sender: TObject);
     procedure FirstDatePickerChange(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure SaveButtonClick(Sender: TObject);
   private
     ScheduleIDs: TIntVector;
     ScheduleNames: TStrVector;
@@ -36,9 +38,10 @@ type
     Schedules: TShiftScheduleVector;
     Sheet: TShiftScheduleSimpleSheet;
 
-    procedure FirstDateChange;
+    procedure SchedulesUpdate;
   public
-
+    EditingType: TEditingType;
+    TabNumID, ScheduleID, HistoryID, PrevHistoryID: Integer;
   end;
 
 var
@@ -61,25 +64,56 @@ end;
 
 procedure TSchedulePersonalEditForm.FormShow(Sender: TObject);
 begin
-  FirstDatePicker.Date:= Date;
-  FirstDateChange;
+  SchedulesUpdate;
+  Sheet.SelectedIndex:= VIndexOf(ScheduleIDs, ScheduleID);
+end;
+
+procedure TSchedulePersonalEditForm.SaveButtonClick(Sender: TObject);
+var
+  IsOK: Boolean;
+begin
+  IsOK:= False;
+
+  if not Sheet.IsSelected then
+  begin
+    ShowInfo('Не указан график сменности!');
+    Exit;
+  end;
+
+  case EditingType of
+    etAdd:  //превод
+      IsOK:= DataBase.StaffScheduleHistoryAdd(HistoryID, TabNumID,
+                 ScheduleIDs[Sheet.SelectedIndex], FirstDatePicker.Date);
+    etEdit:
+      IsOK:= DataBase.StaffScheduleHistoryUpdate(PrevHistoryID, HistoryID,
+                 ScheduleIDs[Sheet.SelectedIndex], FirstDatePicker.Date);
+  end;
+
+  if not IsOK then Exit;
+  ModalResult:= mrOK;
 end;
 
 procedure TSchedulePersonalEditForm.FirstDatePickerChange(Sender: TObject);
 begin
-  FirstDateChange;
+  SchedulesUpdate;
+end;
+
+procedure TSchedulePersonalEditForm.CancelButtonClick(Sender: TObject);
+begin
+  ModalResult:= mrCancel;
 end;
 
 procedure TSchedulePersonalEditForm.FormCreate(Sender: TObject);
 var
   V: TIntVector;
 begin
+  PrevHistoryID:= -1;
   Calendar:= TCalendar.Create;
   DataBase.ScheduleMainListLoad(ScheduleIDs, V, V, ScheduleNames);
   Sheet:= TShiftScheduleSimpleSheet.Create(ViewGrid, MainForm.GridFont, ScheduleNames);
 end;
 
-procedure TSchedulePersonalEditForm.FirstDateChange;
+procedure TSchedulePersonalEditForm.SchedulesUpdate;
 begin
   CalendarForPeriod(FirstDatePicker.Date, IncDay(FirstDatePicker.Date, 9), Calendar);
   ScheduleShiftVectorByCalendar(ScheduleIDs, Calendar, Schedules);

@@ -129,17 +129,32 @@ type
                           out APostLogIDs, APostIDs, APostTemps: TIntVector;
                           out APostNames, ARanks: TStrVector;
                           out AFirstDates, ALastDates: TDateVector): Boolean;
-    {Новая запись (перевод с последней должности) в таблице переводов: True - ОК, False - ошибка}
+    {Новая запись (перевод с последней должности) в таблице переводов по должностям: True - ОК, False - ошибка}
     function StaffPostLogAdd(const APostLogID, ATabNumID, APostID, APostTemp: Integer;
                           const ARank: String;
                           const AFirstDate: TDate): Boolean;
-    {Обновление записи в таблице переводов: True - ОК, False - ошибка}
+    {Обновление записи в таблице переводов по должностям: True - ОК, False - ошибка}
     function StaffPostLogUpdate(const APrevPostLogID, APostLogID, APostID, APostTemp: Integer;
                           const ARank: String;
                           const AFirstDate: TDate): Boolean;
-    {Удаление записи из таблицы переводов: True - ОК, False - ошибка}
+    {Удаление записи из таблицы переводов по должностям: True - ОК, False - ошибка}
     function StaffPostLogDelete(const APrevPostLogID, APostLogID: Integer;
                           const ALastDate: TDate): Boolean;
+
+    {История переводов по рабочим графикам: True - ОК, False - пусто}
+    function StaffScheduleHistoryLoad(const ATabNumID: Integer;
+                          out AHistoryIDs, AScheduleIDs: TIntVector;
+                          out ABeginDates, AEndDates: TDateVector;
+                          out AScheduleNames: TStrVector): Boolean;
+    {Новая запись (перевод с последнего графика) в таблице переводов по графикам: True - ОК, False - ошибка}
+    function StaffScheduleHistoryAdd(const AHistoryID, ATabNumID, AScheduleID: Integer;
+                          const ABeginDate: TDate): Boolean;
+    {Обновление записи в таблице переводов по графикам: True - ОК, False - ошибка}
+    function StaffScheduleHistoryUpdate(const APrevHistoryID, AHistoryID, AScheduleID: Integer;
+                          const ABeginDate: TDate): Boolean;
+    {Удаление записи из таблицы переводов по графикам: True - ОК, False - ошибка}
+    function StaffScheduleHistoryDelete(const APrevHistoryID, AHistoryID: Integer;
+                          const AEndDate: TDate): Boolean;
 
     (**************************************************************************
                                     КАЛЕНДАРЬ
@@ -208,11 +223,7 @@ type
     function ScheduleShiftDelete(const AScheduleID: Integer): Boolean;
 
 
-    {История переводов по рабочим графикам: True - ОК, False - пусто}
-    function StaffScheduleHistoryLoad(const ATabNumID: Integer;
-                                      out AIDs: TIntVector;
-                                      out ABeginDates, AEndDates: TDateVector;
-                                      out AScheduleNames: TStrVector): Boolean;
+
 
     (**************************************************************************
                                       ОТПУСКА
@@ -999,6 +1010,7 @@ begin
   try
     //меняем конечную дату текущего периода
     UpdateInt32ID('STAFFPOSTLOG', 'LastDate', 'ID', APostLogID, IncDay(AFirstDate, -1), False{no commit});
+    //записываем новые данные
     QSetSQL(
       sqlINSERT('STAFFPOSTLOG', ['TabNumID', 'PostID', 'FirstDate', 'LastDate', 'PostTemp', 'Rank'])
     );
@@ -1024,8 +1036,9 @@ begin
   QSetQuery(FQuery);
   try
     //меняем конечную дату предыдущего периода
-    UpdateInt32ID('STAFFPOSTLOG', 'LastDate', 'ID', APrevPostLogID, IncDay(AFirstDate, -1), False{no commit});
-    //изменяем начальную дату  и должность текущего периода
+    if APrevPostLogID>0 then
+      UpdateInt32ID('STAFFPOSTLOG', 'LastDate', 'ID', APrevPostLogID, IncDay(AFirstDate, -1), False{no commit});
+    //изменяем начальную дату и должность текущего периода
     QSetSQL(
       sqlUPDATE('STAFFPOSTLOG', [ 'PostID', 'FirstDate', 'PostTemp', 'Rank']) +
       'WHERE ID = :PostLogID'
@@ -1052,6 +1065,111 @@ begin
     Delete('STAFFPOSTLOG', 'ID', APostLogID, False {no commit});
     //замена конечной даты предыдущего периода на конечную дату этого периода
     UpdateInt32ID('STAFFPOSTLOG', 'LastDate', 'ID', APrevPostLogID, ALastDate, False{no commit});
+
+    QCommit;
+    Result:= True;
+  except
+    QRollback;
+  end;
+end;
+
+function TDataBase.StaffScheduleHistoryLoad(const ATabNumID: Integer;
+                                      out AHistoryIDs, AScheduleIDs: TIntVector;
+                                      out ABeginDates, AEndDates: TDateVector;
+                                      out AScheduleNames: TStrVector): Boolean;
+begin
+  AHistoryIDs:= nil;
+  AScheduleIDs:= nil;
+  ABeginDates:= nil;
+  AEndDates:= nil;
+  AScheduleNames:= nil;
+
+  Result:= False;
+  QSetQuery(FQuery);
+  QSetSQL(
+    'SELECT t1.ID, t1.BeginDate, t1.EndDate, t1.ScheduleID, t2.ScheduleName ' +
+    'FROM STAFFSCHEDULE t1 ' +
+    'INNER JOIN SCHEDULEMAIN t2 ON (t1.ScheduleID=t2.ScheduleID) ' +
+    'WHERE t1.TabNumID = :TabNumID ' +
+    'ORDER BY t1.BeginDate DESC'
+  );
+  QParamInt('TabNumID', ATabNumID);
+  QOpen;
+  if not QIsEmpty then
+  begin
+    QFirst;
+    while not QEOF do
+    begin
+      VAppend(AHistoryIDs, QFieldInt('ID'));
+      VAppend(AScheduleIDs, QFieldInt('ScheduleID'));
+      VAppend(ABeginDates, QFieldDT('BeginDate'));
+      VAppend(AEndDates, QFieldDT('EndDate'));
+      VAppend(AScheduleNames, QFieldStr('ScheduleName'));
+      QNext;
+    end;
+    Result:= True;
+  end;
+  QClose;
+end;
+
+function TDataBase.StaffScheduleHistoryAdd(const AHistoryID, ATabNumID, AScheduleID: Integer;
+                                     const ABeginDate: TDate): Boolean;
+begin
+  Result:= False;
+  QSetQuery(FQuery);
+  try
+    //меняем конечную дату текущего периода
+    UpdateInt32ID('STAFFSCHEDULE', 'EndDate', 'ID', AHistoryID, IncDay(ABeginDate, -1), False{no commit});
+    //записываем новые данные
+    QSetSQL(
+      sqlINSERT('STAFFSCHEDULE', ['TabNumID', 'ScheduleID', 'BeginDate', 'EndDate'])
+    );
+    QParamInt('TabNumID', ATabNumID);
+    QParamInt('ScheduleID', AScheduleID);
+    QParamDT('BeginDate', ABeginDate);
+    QParamDT('EndDate', INFDATE);
+    QExec;
+    QCommit;
+    Result:= True;
+  except
+    QRollback;
+  end;
+end;
+
+function TDataBase.StaffScheduleHistoryUpdate(const APrevHistoryID, AHistoryID, AScheduleID: Integer;
+                                     const ABeginDate: TDate): Boolean;
+begin
+  Result:= False;
+  QSetQuery(FQuery);
+  try
+    //меняем конечную дату предыдущего периода
+    if APrevHistoryID>0 then
+      UpdateInt32ID('STAFFSCHEDULE', 'EndDate', 'ID', APrevHistoryID, IncDay(ABeginDate, -1), False{no commit});
+    //изменяем начальную дату и график текущего периода
+    QSetSQL(
+      sqlUPDATE('STAFFSCHEDULE', [ 'ScheduleID', 'BeginDate']) +
+      'WHERE ID = :HistoryID'
+    );
+    QParamInt('HistoryID', AHistoryID);
+    QParamInt('ScheduleID', AScheduleID);
+    QParamDT('BeginDate', ABeginDate);
+    QExec;
+    QCommit;
+    Result:= True;
+  except
+    QRollback;
+  end;
+end;
+
+function TDataBase.StaffScheduleHistoryDelete(const APrevHistoryID, AHistoryID: Integer;
+                                     const AEndDate: TDate): Boolean;
+begin
+  Result:= False;
+  try
+    //удаление записи
+    Delete('STAFFSCHEDULE', 'ID', AHistoryID, False {no commit});
+    //замена конечной даты предыдущего периода на конечную дату этого периода
+    UpdateInt32ID('STAFFSCHEDULE', 'EndDate', 'ID', APrevHistoryID, AEndDate, False{no commit});
 
     QCommit;
     Result:= True;
@@ -1371,43 +1489,6 @@ end;
 function TDataBase.ScheduleShiftDelete(const AScheduleID: Integer): Boolean;
 begin
   Result:= Delete('SCHEDULEMAIN', 'ScheduleID', AScheduleID);
-end;
-
-function TDataBase.StaffScheduleHistoryLoad(const ATabNumID: Integer;
-                                      out AIDs: TIntVector;
-                                      out ABeginDates, AEndDates: TDateVector;
-                                      out AScheduleNames: TStrVector): Boolean;
-begin
-  AIDs:= nil;
-  ABeginDates:= nil;
-  AEndDates:= nil;
-  AScheduleNames:= nil;
-
-  Result:= False;
-  QSetQuery(FQuery);
-  QSetSQL(
-    'SELECT t1.ID, t1.BeginDate, t1.EndDate, t2.ScheduleName ' +
-    'FROM STAFFSCHEDULE t1 ' +
-    'INNER JOIN SCHEDULEMAIN t2 ON (t1.ScheduleID=t2.ScheduleID) ' +
-    'WHERE t1.TabNumID = :TabNumID ' +
-    'ORDER BY t1.BeginDate DESC'
-  );
-  QParamInt('TabNumID', ATabNumID);
-  QOpen;
-  if not QIsEmpty then
-  begin
-    QFirst;
-    while not QEOF do
-    begin
-      VAppend(AIDs, QFieldInt('ID'));
-      VAppend(ABeginDates, QFieldDT('BeginDate'));
-      VAppend(AEndDates, QFieldDT('EndDate'));
-      VAppend(AScheduleNames, QFieldStr('ScheduleName'));
-      QNext;
-    end;
-    Result:= True;
-  end;
-  QClose;
 end;
 
 function TDataBase.VacationsEditingLoad(const ATabNumID, AYear: Integer;

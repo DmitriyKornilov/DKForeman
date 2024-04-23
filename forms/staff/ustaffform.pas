@@ -329,7 +329,7 @@ end;
 procedure TStaffForm.PostLogDelItem;
 begin
   if not PostLogDelButton.Enabled then Exit;
-  if not Confirm('Удалить информацию о выбранном периоде работы?') then Exit;
+  if not Confirm('Удалить информацию о выбранном периоде работы в должности?') then Exit;
   if DataBase.StaffPostLogDelete(PostLogIDs[PostLog.SelectedIndex + 1],
                               PostLogIDs[PostLog.SelectedIndex],
                               PostLogLastDates[PostLog.SelectedIndex]) then
@@ -837,7 +837,6 @@ begin
     StaffPostLogEditForm.TabNumID:= TabNumListTabNumIDs[TabNumList.SelectedIndex];
     StaffPostLogEditForm.PostID:= PostLogPostIDs[PostLog.SelectedIndex];
     StaffPostLogEditForm.PostLogID:= PostLogIDs[PostLog.SelectedIndex];
-    StaffPostLogEditForm.FirstDatePicker.Date:= ThisFirstDate;
     case AEditingType of
       etAdd: //перевод с последней должности
         begin

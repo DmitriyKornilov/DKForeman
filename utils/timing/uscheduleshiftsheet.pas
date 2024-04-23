@@ -151,15 +151,16 @@ type
     procedure CaptionDraw;
     procedure LineDraw(const AIndex: Integer; const ASelected: Boolean);
     function GetIsSelected: Boolean;
-    procedure MouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
-    procedure KeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure MouseDown(Sender: TObject; Button: TMouseButton; {%H-}Shift: TShiftState; X, Y: Integer);
+    procedure KeyDown(Sender: TObject; var Key: Word; {%H-}Shift: TShiftState);
     procedure SelectionMove(const ADirection: TMoveDirection);
+    procedure SetSelectedIndex(const AValue: Integer);
   public
     constructor Create(const AGrid: TsWorksheetGrid;
                        const AFont: TFont;
                        const ANames: TStrVector);
     procedure Draw(const ASchedules: TShiftScheduleVector);
-    property SelectedIndex: Integer read FSelectedIndex;
+    property SelectedIndex: Integer read FSelectedIndex write SetSelectedIndex;
     property IsSelected: Boolean read GetIsSelected;
   end;
 
@@ -940,7 +941,7 @@ var
   i, W: Integer;
 begin
   W:= Max(DAY_COLUMN_WIDTH, SWidth('00.00.00', Font.Name, Font.Size, [fsBold]));
-  VDim(Result, 11, W);
+  VDim(Result{%H-}, 11, W);
   W:= NAME_COLUMN_WIDTH;
   for i:= 0 to High(FNames) do
     W:= Max(W, SWidth(FNames[i], Font.Name, Font.Size, [fsBold]));
@@ -1011,18 +1012,25 @@ begin
 end;
 
 procedure TShiftScheduleSimpleSheet.SelectionMove(const ADirection: TMoveDirection);
-var
-  Index: Integer;
 begin
   if not IsSelected then Exit;
   if ADirection=mdUp then
-    Index:= FSelectedIndex - 1
+    SelectedIndex:= SelectedIndex - 1
   else if ADirection=mdDown then
-    Index:= FSelectedIndex + 1;
-  if (Index<0) or (Index>High(FNames)) then Exit;
-  LineDraw(FSelectedIndex, False);
-  FSelectedIndex:= Index;
+    SelectedIndex:= SelectedIndex + 1;
+end;
+
+procedure TShiftScheduleSimpleSheet.SetSelectedIndex(const AValue: Integer);
+begin
+  if FSelectedIndex=AValue then Exit;
+  if (AValue<0) or (AValue>High(FNames)) then Exit;
+  if IsSelected then
+    LineDraw(FSelectedIndex, False);
+  FSelectedIndex:= AValue;
   LineDraw(FSelectedIndex, True);
+  //move grid
+  Writer.Grid.Row:= AValue*2 + 2;
+  Writer.Grid.Row:= AValue*2 + 3;
 end;
 
 constructor TShiftScheduleSimpleSheet.Create(const AGrid: TsWorksheetGrid;
@@ -1053,8 +1061,11 @@ begin
     LineDraw(i, i=FSelectedIndex);
   if Length(FSchedules)>0 then
     Writer.SetFrozenRows(1);
-  BordersDraw;
+
   Writer.EndEdit;
+  //for i:= 1 to Writer.ColCount do
+  //  Writer.WriteText(High(FSchedules)*2 + 3, i, EmptyStr, cbtTop);
+  //BordersDraw;
 end;
 
 end.

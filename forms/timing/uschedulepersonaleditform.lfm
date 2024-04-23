@@ -161,6 +161,7 @@ object SchedulePersonalEditForm: TSchedulePersonalEditForm
         0000000000000000000000000000000000000000000000000000
       }
       ImageIndex = 4
+      OnClick = CancelButtonClick
       ParentFont = False
     end
     object SaveButton: TSpeedButton
@@ -254,6 +255,7 @@ object SchedulePersonalEditForm: TSchedulePersonalEditForm
         BC98835716987A4A01987A4A01987949008F7949001000000000
       }
       ImageIndex = 3
+      OnClick = SaveButtonClick
       ParentFont = False
     end
     object ButtonPanelBevel: TBevel
