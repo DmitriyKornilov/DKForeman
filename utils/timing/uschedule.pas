@@ -41,6 +41,7 @@ const
   TITLE_COLOR_INDEX        = 3;
   OUTSIDEMONTH_COLOR_INDEX = 4;
   HIGHLIGHT_COLOR_INDEX    = 5;
+  NOTDEFINE_COLOR_INDEX    = 6;
   MONTHNAME_COLOR_INDEX    = 366;
   DAYNAME_COLOR_INDEX      = 367;
 
@@ -244,6 +245,7 @@ type
   {персональный график - с учетом отпусков}
   TPersonalSchedule = class (TCustomPersonalSchedule)
   private
+    FTabNumID: Integer;
     FTabNum: String;
     FRecrutDate: TDate;
     FDismissDate: TDate;
@@ -272,7 +274,7 @@ type
     procedure WritePersonalCorrections;
     function GetPersonalCorrect: TScheduleCorrections;
   public
-    constructor Create(const ATabNum: String;
+    constructor Create(const ATabNumID: Integer; const ATabNum: String;
                        const ARecrutDate, ADismissDate: TDate;
                        const AIsVacation: TIntVector;
                        const APersonalCorrect: TScheduleCorrections;
@@ -284,6 +286,7 @@ type
     function Cut(const ABeginDate, AEndDate: TDate; var ACutSchedule: TPersonalSchedule): Boolean;
     procedure Add(const APostSchedule: TPostSchedule; const AIsLast: Boolean = False);
     property IsVacation: TIntVector read FIsVacation;
+    property TabNumID: Integer read FTabNumID;
     property TabNum: String read FTabNum;
     property RecrutDate: TDate read FRecrutDate;
     property DismissDate: TDate read FDismissDate;
@@ -771,12 +774,16 @@ begin
   GetPersonalCorrect:= ScheduleCorrectCopy(FPersonalCorrect);
 end;
 
-constructor TPersonalSchedule.Create(const ATabNum: String; const ARecrutDate,
-  ADismissDate: TDate; const AIsVacation: TIntVector; const APersonalCorrect: TScheduleCorrections;
-  const AStrMarkVacationMain: String; const AStrMarkVacationAddition: String;
-  const AStrMarkVacationHoliday: String);
+constructor TPersonalSchedule.Create(const ATabNumID: Integer; const ATabNum: String;
+                       const ARecrutDate, ADismissDate: TDate;
+                       const AIsVacation: TIntVector;
+                       const APersonalCorrect: TScheduleCorrections;
+                       const AStrMarkVacationMain: String = STRMARK_VACATIONMAIN;
+                       const AStrMarkVacationAddition: String = STRMARK_VACATIONADDITION;
+                       const AStrMarkVacationHoliday: String = STRMARK_VACATIONHOLIDAY);
 begin
   inherited Create;
+  FTabNumID:= ATabNumID;
   FTabNum:= ATabNum;
   FRecrutDate:= ARecrutDate;
   FDismissDate:= ADismissDate;

@@ -35,23 +35,23 @@ uses
                               const ANeedLongName: Boolean = False): TStrVector;
 
 
-  //Calendar load/creation
+  //Calendar
   procedure CalendarForPeriod(const ABeginDate, AEndDate: TDate; var ACalendar: TCalendar);
   procedure CalendarForYear(const AYear: Word; var ACalendar: TCalendar);
   procedure CalendarForMonth(const AMonth, AYear: Word; var ACalendar: TCalendar);
-  //Calendar corrections load
+  //Calendar corrections
   function GetCalendarCorrections(const ADates: TDateVector;
                          const AStatus, ASwapDay: Integer): TCalendarCorrections;
   function GetCalendarCorrections(const ABeginDate, AEndDate: TDate;
                          const AStatus, ASwapDay: Integer): TCalendarCorrections;
-  //Schedule corrections load
+  //Schedule corrections
   function GetScheduleCorrections(const ADates: TDateVector;
                          const AHoursTotal, AHoursNight, ADigMark, AShiftNum: Integer;
                          const AStrMark: String = ''): TScheduleCorrections;
   function GetScheduleCorrections(const ABeginDate, AEndDate: TDate;
                          const AHoursTotal, AHoursNight, ADigMark, AShiftNum: Integer;
                          const AStrMark: String = ''): TScheduleCorrections;
-  //ScheduleShift load/create/draw
+  //ScheduleShift
   procedure ScheduleCycleToWeek(var ACycle: TScheduleCycle);
   procedure ScheduleCycleToCount(var ACycle: TScheduleCycle; const ACount: Integer; const AFirstDate: TDate);
   procedure ScheduleCycleDateColumnSet(const ATable: TVSTCustomSimpleTable; const ACycle: TScheduleCycle; out AStrDates: TStrVector);
@@ -67,7 +67,19 @@ uses
                          const AYear: Word; var ASchedule: TShiftSchedule);
   procedure ScheduleShiftForMonth(const AScheduleID: Integer;
                          const AMonth, AYear: Word; var ASchedule: TShiftSchedule);
+  //SchedulePersonal
 
+  { расчет нормы часов ANormHours и кол-ва рабочих дней AWorkDaysCount
+    для таб номера c ATabNumID за период  ABeginDate, AEndDate
+   (внутри периода могут быть графики разных рабочих недель (40ч, 36ч и т.д.))
+   Если указать даты приема/увольнения ARecrutDate и ADismissDate, то будет
+   расчет с их учетом (например на неполный месяц)}
+  procedure NormHoursAndWorkDaysCounInPeriod(const ATabNumID: Integer;
+                               const ABeginDate, AEndDate: TDate; //период
+                               const ACalendar: TCalendar; //производственный календарь, перекрывающий период
+                               out AWorkDaysCount, ANormHours: Integer;
+                               const ARecrutDate: TDate = NULDATE;
+                               const ADismissDate: TDate = INFDATE);
 
 implementation
 
@@ -437,6 +449,41 @@ var
 begin
   FirstLastDayInMonth(AMonth, AYear, BD, ED);
   ScheduleShiftForPeriod(AScheduleID, BD, ED, ASchedule);
+end;
+
+procedure NormHoursAndWorkDaysCounInPeriod(const ATabNumID: Integer;  //таб номер
+                               const ABeginDate, AEndDate: TDate; //период
+                               const ACalendar: TCalendar; //производственный календарь, перекрывающий период
+                               out AWorkDaysCount, ANormHours: Integer;
+                               const ARecrutDate: TDate = NULDATE;
+                               const ADismissDate: TDate = INFDATE);
+var
+  CutCalendar: TCalendar;
+  WeekHours, IDs, ScheduleIDs: TIntVector;
+  BDs, EDs: TDateVector;
+  ScheduleNames: TStrVector;
+  i: Integer;
+  BD, ED: TDate;
+begin
+  AWorkDaysCount:= 0;
+  ANormHours:= 0;
+  //определяем период пересечения запрашиваемого периода и периода работы
+  if not IsPeriodIntersect(ABeginDate, AEndDate, ARecrutDate, ADismissDate, BD, ED) then Exit;
+  //определяем кол-во дней
+  CutCalendar:= nil;
+  ACalendar.Cut(BD, ED, CutCalendar);
+  AWorkDaysCount:= CutCalendar.WorkDaysCount;
+  FreeAndNil(CutCalendar);
+  //достаем из базы список рабочих часов в неделю с соответствующими периодами
+  if not DataBase.StaffScheduleHistoryLoad(ATabNumID, IDs, ScheduleIDs, WeekHours,
+    BDs, EDs, ScheduleNames, ABeginDate, AEndDate) then Exit;
+  //суммируем кол-во рабочих часов по вытащенным периодам
+  for i:=0 to High(WeekHours) do
+  begin
+    ACalendar.Cut(BDs[i], EDs[i], CutCalendar);
+    ANormHours:= ANormHours + CutCalendar.SumWorkHoursInt(WeekHours[i]);
+    FreeAndNil(CutCalendar);
+  end;
 end;
 
 end.

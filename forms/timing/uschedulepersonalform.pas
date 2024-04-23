@@ -107,7 +107,7 @@ type
     procedure HistoryDelButtonClick(Sender: TObject);
     procedure HistoryEditButtonClick(Sender: TObject);
     procedure HistoryVTNodeDblClick(Sender: TBaseVirtualTree;
-      const HitInfo: THitInfo);
+      const {%H-}HitInfo: THitInfo);
     procedure PostRadioButtonClick(Sender: TObject);
     procedure TabNumRadioButtonClick(Sender: TObject);
     procedure VacationCancelButtonClick(Sender: TObject);
@@ -140,7 +140,7 @@ type
     TmpVacationCounts, TmpVacationAddCounts: TIntVector;
 
     History: TVSTTable;
-    HistoryIDs, HistoryScheduleIDs: TIntVector;
+    HistoryIDs, HistoryScheduleIDs, HistoryWeekHours: TIntVector;
     HistoryBeginDates, HistoryEndDates: TDateVector;
     HistoryScheduleNames: TStrVector;
 
@@ -663,7 +663,8 @@ begin
   SelectedHistoryID:= GetSelectedID(History, HistoryIDs, SelectedID);
 
   DataBase.StaffScheduleHistoryLoad(TabNumIDs[StaffList.SelectedIndex],
-    HistoryIDs, HistoryScheduleIDs, HistoryBeginDates, HistoryEndDates, HistoryScheduleNames);
+    HistoryIDs, HistoryScheduleIDs, HistoryWeekHours,
+    HistoryBeginDates, HistoryEndDates, HistoryScheduleNames);
 
   StrBeginDates:= VFormatDateTime('dd.mm.yyyy', HistoryBeginDates);
   StrEndDates:= VFormatDateTime('dd.mm.yyyy', HistoryEndDates, True);

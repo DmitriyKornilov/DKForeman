@@ -143,9 +143,11 @@ type
 
     {История переводов по рабочим графикам: True - ОК, False - пусто}
     function StaffScheduleHistoryLoad(const ATabNumID: Integer;
-                          out AHistoryIDs, AScheduleIDs: TIntVector;
+                          out AHistoryIDs, AScheduleIDs, AWeekHours: TIntVector;
                           out ABeginDates, AEndDates: TDateVector;
-                          out AScheduleNames: TStrVector): Boolean;
+                          out AScheduleNames: TStrVector;
+                          const AFromDate: TDate = NULDATE;
+                          const AToDate: TDate = INFDATE): Boolean;
     {Новая запись (перевод с последнего графика) в таблице переводов по графикам: True - ОК, False - ошибка}
     function StaffScheduleHistoryAdd(const AHistoryID, ATabNumID, AScheduleID: Integer;
                           const ABeginDate: TDate): Boolean;
@@ -1074,12 +1076,15 @@ begin
 end;
 
 function TDataBase.StaffScheduleHistoryLoad(const ATabNumID: Integer;
-                                      out AHistoryIDs, AScheduleIDs: TIntVector;
-                                      out ABeginDates, AEndDates: TDateVector;
-                                      out AScheduleNames: TStrVector): Boolean;
+                          out AHistoryIDs, AScheduleIDs, AWeekHours: TIntVector;
+                          out ABeginDates, AEndDates: TDateVector;
+                          out AScheduleNames: TStrVector;
+                          const AFromDate: TDate = NULDATE;
+                          const AToDate: TDate = INFDATE): Boolean;
 begin
   AHistoryIDs:= nil;
   AScheduleIDs:= nil;
+  AWeekHours:= nil;
   ABeginDates:= nil;
   AEndDates:= nil;
   AScheduleNames:= nil;
@@ -1087,13 +1092,19 @@ begin
   Result:= False;
   QSetQuery(FQuery);
   QSetSQL(
-    'SELECT t1.ID, t1.BeginDate, t1.EndDate, t1.ScheduleID, t2.ScheduleName ' +
+    'SELECT t1.ID, t1.BeginDate, t1.EndDate, t1.ScheduleID, ' +
+           't2.ScheduleName, t2.WeekHours ' +
     'FROM STAFFSCHEDULE t1 ' +
     'INNER JOIN SCHEDULEMAIN t2 ON (t1.ScheduleID=t2.ScheduleID) ' +
-    'WHERE t1.TabNumID = :TabNumID ' +
+    'WHERE (t1.TabNumID = :TabNumID) AND (' +
+           SqlCROSS('t1.BeginDate', 't1.EndDate', ':BD', ':ED') +
+           ') ' +
     'ORDER BY t1.BeginDate DESC'
   );
+
   QParamInt('TabNumID', ATabNumID);
+  QParamDT('BD', AFromDate);
+  QParamDT('ED', AToDate);
   QOpen;
   if not QIsEmpty then
   begin
@@ -1102,6 +1113,7 @@ begin
     begin
       VAppend(AHistoryIDs, QFieldInt('ID'));
       VAppend(AScheduleIDs, QFieldInt('ScheduleID'));
+      VAppend(AWeekHours, QFieldInt('WeekHours'));
       VAppend(ABeginDates, QFieldDT('BeginDate'));
       VAppend(AEndDates, QFieldDT('EndDate'));
       VAppend(AScheduleNames, QFieldStr('ScheduleName'));

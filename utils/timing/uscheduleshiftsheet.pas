@@ -8,7 +8,7 @@ uses
   Classes, SysUtils, Graphics, fpspreadsheetgrid, fpspreadsheet, LCLType,
   Controls, DateUtils,
   //Project utils
-  UConst, UTypes, UCalendar, UWorkHours, USchedule, UTimingSheet,
+  UUtils, UConst, UTypes, UCalendar, UWorkHours, USchedule, UTimingSheet,
   //DK packages utils
   DK_SheetWriter, DK_Vector, DK_Const, DK_DateUtils, DK_StrUtils, DK_SheetTypes,
   DK_Math, DK_Color;
@@ -54,33 +54,59 @@ type
                        const AResumeType: Byte {0-дни, 1-смены, 2-дни и смены});
   end;
 
-  { TShiftScheduleYearSheet }
-  // Годовой график сменности в виде таблицы
-  TShiftScheduleYearSheet = class (TShiftScheduleTableSheet)
+  { TShiftScheduleYearCustomSheet }
+  // Годовой график в виде таблицы
+  TShiftScheduleYearCustomSheet = class (TShiftScheduleTableSheet)
   private
-    FSchedule: TShiftSchedule;
+    FYear: Word;
     FCaption: String;
     procedure BlankDraw;
-    procedure ScheduleDraw;
+
+    function GetPeriodColumnName: String; override;
 
     function RowToMonth(const ARow: Integer): Integer;
     function ColToDay(const ACol, AMonth: Integer): Integer;
     function DateToRow(const ADate: TDate): Integer;
     function DateToCol(const ADate: TDate): Integer;
-
-    function GetCaption: String; override;
-    function GetPeriodColumnName: String; override;
   public
-    procedure Draw(const ACalendar: TCalendar;
-                   const ASchedule: TShiftSchedule;
-                   const AName: String;
-                   const ANeedNight, ANeedCorrect, ANeedMarks, AScheduleNotWorkColor: Boolean);
-
     function GridToDate(const ARow, ACol: Integer; out ADate: TDate): Boolean; override;
     function DateToGrid(const ADate: TDate; out ARow, ACol: Integer): Boolean; override;
 
     procedure Select(const ADate: TDate); override;
     procedure Unselect(const ADate: TDate); override;
+  end;
+
+  { TShiftScheduleYearSheet }
+  // Годовой график сменности в виде таблицы
+  TShiftScheduleYearSheet = class (TShiftScheduleYearCustomSheet)
+  private
+    FSchedule: TShiftSchedule;
+    procedure ScheduleDraw;
+    function GetCaption: String; override;
+  public
+    procedure Draw(const ACalendar: TCalendar;
+                   const ASchedule: TShiftSchedule;
+                   const AName: String;
+                   const ANeedNight, ANeedCorrect, ANeedMarks, AScheduleNotWorkColor: Boolean);
+  end;
+
+  { TPersonalScheduleYearSheet }
+  // Годовой персональный график в виде таблицы
+  TPersonalScheduleYearSheet = class (TShiftScheduleYearCustomSheet)
+  private
+    FSchedule: TPersonalSchedule;
+    FNeedVacation: Boolean;
+    FUseWorkPeriodInLoadNormHoursAndDays: Boolean; //если True, то кол-во
+                                                   //рабочих дней и часов по норме
+                                                   //буду обрезаны периодом работы [RecrutDate, DismissDate]
+    procedure ScheduleDraw;
+    function GetCaption: String; override;
+  public
+    procedure Draw(const ACalendar: TCalendar;
+                   const ASchedule: TPersonalSchedule;
+                   const AName: String;
+                   const ANeedNight, ANeedCorrect, ANeedMarks, ANeedVacation, AScheduleNotWorkColor: Boolean;
+                   const AUseWorkPeriodInLoadNormHoursAndDays: Boolean = False);
   end;
 
   { TShiftScheduleMonthSheet }
@@ -187,6 +213,422 @@ begin
     SC:= TSS.ShiftCountDefault;
     Marks:= VCut(TSS.MarkSTRDefault);
   end;
+end;
+
+{ TPersonalScheduleYearSheet }
+
+procedure TPersonalScheduleYearSheet.ScheduleDraw;
+var
+  R, C, DeltaR, m: Integer;
+  AYear: Word;
+  BD, ED: TDate;
+  CutCalendar: TCalendar;
+  CutSchedule: TPersonalSchedule;
+  WorkHours: TWorkHours;
+  Marks: TStrVector;
+
+  procedure DrawMonth(ARow, ACol, AMonth: Word);
+  var
+    i, d, h, s: Integer;
+  begin
+    FirstLastDayInMonth(AMonth,AYear,BD,ED);
+    FCalendar.Cut(BD, ED, CutCalendar);
+    FSchedule.Cut(BD, ED, CutSchedule);
+    ChoosePersonalScheduleData(CutSchedule, FNeedCorrect, FNeedVacation, WorkHours, d,s, Marks);
+    for i:= 0 to CutCalendar.DaysCount - 1 do
+    begin
+      if CutSchedule.IsExists[i]=EXISTS_NO then
+         AddScheduleColorIndex(Writer, ARow, ACol+i, OUTSIDEMONTH_COLOR_INDEX, FNeedNight)
+      else begin
+        if CutSchedule.IsDefine[i]=DEFINE_NO then
+          AddScheduleColorIndex(Writer, ARow, ACol+i, NOTDEFINE_COLOR_INDEX, FNeedNight)
+        else begin
+          if FNeedCorrect and (CutSchedule.IsCorrection[i]=CORRECTION_YES) and
+             (CutSchedule.IsVacation[i]=VACATION_NO) then
+            AddScheduleColorIndex(Writer, ARow, ACol+i, CORRECT_COLOR_INDEX, FNeedNight)
+          else begin
+            if FScheduleNotWorkColor then
+            begin
+              if WorkHours.Total[i]=0 then
+                AddScheduleColorIndex(Writer, ARow, ACol+i, NOTWORK_COLOR_INDEX, FNeedNight);
+            end
+            else begin
+              if (CutCalendar.DayStatuses[i]=DAY_STATUS_HOLIDAY) or
+                 (CutCalendar.DayStatuses[i]=DAY_STATUS_OFFDAY) then
+                 AddScheduleColorIndex(Writer, ARow, ACol+i, NOTWORK_COLOR_INDEX, FNeedNight);
+            end;
+          end;
+        end;
+      end;
+
+      DrawPersonalHoursOrMarks(Writer, ARow, ACol+i,
+                CutSchedule.IsExists[i], CutSchedule.IsDefine[i], CutSchedule.IsVacation[i],
+                WorkHours.Total[i], WorkHours.Night[i], Marks[i], EmptyStr,
+                FWriteTotalIfZero, FWriteNightIfZero, FNeedNight, FNeedMarks, FNeedVacation,
+                CutSchedule.StrMarkVacationMain, CutSchedule.StrMarkVacationAddition, CutSchedule.StrMarkVacationHoliday);
+
+    end;
+    for i:= CutCalendar.DaysCount to 30 do
+    begin
+      DrawMonthOutside(Writer, ARow, ACol+i, FNeedNight);
+      AddScheduleColorIndex(Writer, ARow, ACol+i, OUTSIDEMONTH_COLOR_INDEX, FNeedNight);
+    end;
+    DrawDaysOrShiftCount(Writer,  ARow, ACol+31, d, s, FWriteDaysCountIfZero, FNeedNight, FResumeType, i);
+    DrawHours(Writer, ARow, ACol+32+i, WorkHours.SumTotal, WorkHours.SumNight,
+                 FWriteSumTotalIfZero, FWriteSumNightIfZero, FNeedNight);
+    if FUseWorkPeriodInLoadNormHoursAndDays then
+      NormHoursAndWorkDaysCounInPeriod(FSchedule.TabNumID, BD, ED,
+                CutCalendar, d, h, FSchedule.RecrutDate, FSchedule.DismissDate)
+    else
+      NormHoursAndWorkDaysCounInPeriod(FSchedule.TabNumID, BD, ED, CutCalendar, d, h);
+    DrawDaysCount(Writer, ARow, ACol+33+i, d, FWriteDaysCountIfZero, FNeedNight);
+    DrawHours(Writer, ARow, ACol+34+i, h, 0, FWriteSumTotalIfZero, False, FNeedNight);
+  end;
+
+  procedure DrawQuarter(ARow, ACol, AQuart: Word);
+  var
+    d,i,s,h: Integer;
+  begin
+    FirstLastDayInQuarter(AQuart,AYear,BD,ED);
+    FCalendar.Cut(BD, ED, CutCalendar);
+    FSchedule.Cut(BD, ED, CutSchedule);
+    ChoosePersonalScheduleData(CutSchedule, FNeedCorrect, FNeedVacation, WorkHours, d,s, Marks);
+    DrawDaysOrShiftCount(Writer, ARow, ACol+31, d, s, FWriteDaysCountIfZero, FNeedNight, FResumeType, i);
+    DrawHours(Writer, ARow, ACol+32+i, WorkHours.SumTotal, WorkHours.SumNight,
+                 FWriteSumTotalIfZero, FWriteSumNightIfZero, FNeedNight);
+    if FUseWorkPeriodInLoadNormHoursAndDays then
+      NormHoursAndWorkDaysCounInPeriod(FSchedule.TabNumID, BD, ED,
+                CutCalendar, d, h, FSchedule.RecrutDate, FSchedule.DismissDate)
+    else
+      NormHoursAndWorkDaysCounInPeriod(FSchedule.TabNumID, BD, ED, CutCalendar, d, h);
+    DrawDaysCount(Writer, ARow, ACol+33+i, d, FWriteDaysCountIfZero, FNeedNight);
+    DrawHours(Writer, ARow, ACol+34+i, h, 0, FWriteSumTotalIfZero, False, FNeedNight);
+  end;
+
+  procedure DrawYear(ARow, ACol: Word);
+  var
+    d,i,s,h: Integer;
+  begin
+    ChoosePersonalScheduleData(FSchedule, FNeedCorrect, FNeedVacation, WorkHours, d,s, Marks);
+    DrawDaysOrShiftCount(Writer, ARow, ACol+31, d, s, FWriteDaysCountIfZero, FNeedNight, FResumeType, i);
+    DrawHours(Writer, ARow, ACol+32+i, WorkHours.SumTotal, WorkHours.SumNight,
+                 FWriteSumTotalIfZero, FWriteSumNightIfZero, FNeedNight);
+    FirstLastDayInYear(AYear, BD, ED);
+    if FUseWorkPeriodInLoadNormHoursAndDays then
+      NormHoursAndWorkDaysCounInPeriod(FSchedule.TabNumID, BD, ED, FCalendar,
+                             d, h, FSchedule.RecrutDate, FSchedule.DismissDate)
+    else
+      NormHoursAndWorkDaysCounInPeriod(FSchedule.TabNumID, BD, ED, FCalendar, d, h);
+    DrawDaysCount(Writer, ARow, ACol+33+i, d, FWriteDaysCountIfZero, FNeedNight);
+    DrawHours(Writer, ARow, ACol+34+i, h, 0, FWriteSumTotalIfZero, False, FNeedNight);
+  end;
+
+begin
+  CutCalendar:= TCalendar.Create;
+  try
+    CutSchedule:= TPersonalSchedule.Create(FSchedule.TabNumID, FSchedule.TabNum,
+                     FSchedule.RecrutDate, FSchedule.DismissDate, FSchedule.IsVacation,
+                     FSchedule.PersonalCorrect,
+                     FSchedule.StrMarkVacationMain, FSchedule.StrMarkVacationAddition,
+                     FSchedule.StrMarkVacationHoliday);
+    try
+      AYear:= YearOfDate(FSchedule.BeginDate);
+      DeltaR:= 1 + Ord(FNeedNight);
+      R:= 3 + Ord(not Writer.HasGrid);
+      C:= 2;
+      for m:= 1 to 3 do
+      begin
+        DrawMonth(R,C,m);
+        R:= R + DeltaR;
+      end;
+      DrawQuarter(R,C,1);
+      R:= R + DeltaR;
+      for m:= 4 to 6 do
+      begin
+        DrawMonth(R,C,m);
+        R:= R + DeltaR;
+      end;
+      DrawQuarter(R,C,2);
+      R:= R + DeltaR;
+      for m:= 7 to 9 do
+      begin
+        DrawMonth(R,C,m);
+        R:= R + DeltaR;
+      end;
+      DrawQuarter(R,C,3);
+      R:= R + DeltaR;
+      for m:= 10 to 12 do
+      begin
+        DrawMonth(R,C,m);
+        R:= R + DeltaR;
+      end;
+      DrawQuarter(R,C,4);
+      R:= R + DeltaR;
+      DrawYear(R,C);
+    finally
+      FreeAndNil(CutSchedule);
+    end;
+  finally
+    FreeAndNil(CutCalendar);
+  end;
+end;
+
+function TPersonalScheduleYearSheet.GetCaption: String;
+begin
+  Result:= EmptyStr;
+  if SEmpty(FCaption) then Exit;
+  Result:= FCaption + ': персональный график работы на ' + IntToStr(FYear) + ' год';
+end;
+
+procedure TPersonalScheduleYearSheet.Draw(const ACalendar: TCalendar;
+  const ASchedule: TPersonalSchedule;
+  const AName: String;
+  const ANeedNight, ANeedCorrect, ANeedMarks, ANeedVacation, AScheduleNotWorkColor: Boolean;
+  const AUseWorkPeriodInLoadNormHoursAndDays: Boolean = False);
+var
+  i: Integer;
+begin
+  FCaption:= AName;
+  FCalendar:= ACalendar;
+  FSchedule:= ASchedule;
+  FYear:= YearOfDate(FSchedule.BeginDate);
+  FNeedNight:= ANeedNight;
+  FNeedCorrect:= ANeedCorrect;
+  FNeedMarks:= ANeedMarks;
+  FNeedVacation:= ANeedVacation;
+  FScheduleNotWorkColor:= AScheduleNotWorkColor;
+  FUseWorkPeriodInLoadNormHoursAndDays:= AUseWorkPeriodInLoadNormHoursAndDays;
+
+  Writer.BeginEdit;
+  CaptionDraw;
+  BlankDraw;
+  ScheduleDraw;
+  if Writer.HasGrid then
+    Writer.SetFrozenRows(2);
+  Writer.EndEdit;
+
+  BordersDraw(1 + Ord(IsNeedCaption));
+  for i:= 2+Ord(IsNeedCaption) to Writer.RowCount do
+    Writer.SetRowHeight(i, ROW_DEFAULT_HEIGHT);
+end;
+
+{ TShiftScheduleYearCustomSheet }
+
+procedure TShiftScheduleYearCustomSheet.BlankDraw;
+const
+  C1= 2;
+var
+  DeltaR, R, C, i, j, C2: Integer;
+begin
+  C2:= COLUMNS_COUNT + Ord(FResumeType=2);
+  DeltaR:= 1 + Ord(FNeedNight);
+  R:= 3 + Ord(IsNeedCaption);
+  C:= 1;
+  Writer.SetFont(Font.Name, Font.Size, [], clBlack);
+  Writer.SetAlignment(haCenter, vaCenter);
+  for i:= R to R+3*DeltaR-1 do
+    for j:= C1 to C2 do
+      Writer.WriteText(i, j, EmptyStr, cbtOuter);
+  Writer.WriteText(R, C, R+DeltaR-1, C, 'Январь', cbtOuter);
+  R:= R + DeltaR;
+  Writer.WriteText(R, C, R+DeltaR-1, C, 'Февраль', cbtOuter);
+  R:= R + DeltaR;
+  Writer.WriteText(R, C, R+DeltaR-1, C, 'Март', cbtOuter);
+  R:= R + DeltaR;
+  Writer.WriteText(R, C, R+DeltaR-1, C, 'I квартал', cbtOuter);
+  Writer.WriteText(R, C+1, R+DeltaR-1, C+31, EmptyStr, cbtOuter);
+  for i:= R to R+DeltaR-1 do
+    for j:= C to C2 do
+      Writer.AddCellBGColorIndex(i, j, TITLE_COLOR_INDEX);
+  R:= R + DeltaR;
+  Writer.WriteText(R, C, R+DeltaR-1, C, 'Апрель', cbtOuter);
+  R:= R + DeltaR;
+  Writer.WriteText(R, C, R+DeltaR-1, C, 'Май', cbtOuter);
+  R:= R + DeltaR;
+  Writer.WriteText(R, C, R+DeltaR-1, C, 'Июнь', cbtOuter);
+  R:= R + DeltaR;
+  Writer.WriteText(R, C, R+DeltaR-1, C, 'II квартал', cbtOuter);
+  Writer.WriteText(R, C+1, R+DeltaR-1, C+31, EmptyStr, cbtOuter);
+  for i:= R to R+DeltaR-1 do
+    for j:= C to C2 do
+      Writer.AddCellBGColorIndex(i, j, TITLE_COLOR_INDEX);
+  R:= R + DeltaR;
+  Writer.WriteText(R, C, R+DeltaR-1, C, 'Июль', cbtOuter);
+  R:= R + DeltaR;
+  Writer.WriteText(R, C, R+DeltaR-1, C, 'Август', cbtOuter);
+  R:= R + DeltaR;
+  Writer.WriteText(R, C, R+DeltaR-1, C, 'Сентябрь', cbtOuter);
+  R:= R + DeltaR;
+  Writer.WriteText(R, C, R+DeltaR-1, C, 'III квартал', cbtOuter);
+  Writer.WriteText(R, C+1, R+DeltaR-1, C+31, EmptyStr, cbtOuter);
+  for i:= R to R+DeltaR-1 do
+    for j:= C to C2 do
+      Writer.AddCellBGColorIndex(i, j, TITLE_COLOR_INDEX);
+  R:= R + DeltaR;
+  Writer.WriteText(R, C, R+DeltaR-1, C, 'Октябрь', cbtOuter);
+  R:= R + DeltaR;
+  Writer.WriteText(R, C, R+DeltaR-1, C, 'Ноябрь', cbtOuter);
+  R:= R + DeltaR;
+  Writer.WriteText(R, C, R+DeltaR-1, C, 'Декабрь', cbtOuter);
+  R:= R + DeltaR;
+  Writer.WriteText(R, C, R+DeltaR-1, C, 'IV квартал', cbtOuter);
+  Writer.WriteText(R, C+1, R+DeltaR-1, C+31, EmptyStr, cbtOuter);
+  for i:= R to R+DeltaR-1 do
+    for j:= C to C2 do
+      Writer.AddCellBGColorIndex(i, j, TITLE_COLOR_INDEX);
+  R:= R + DeltaR;
+  Writer.WriteText(R, C, R+DeltaR-1, C, IntToStr(FYear) + ' год', cbtOuter);
+  Writer.WriteText(R, C+1, R+DeltaR-1, C+31, EmptyStr, cbtOuter);
+end;
+
+function TShiftScheduleYearCustomSheet.GetPeriodColumnName: String;
+begin
+  Result:= 'Месяц';
+end;
+
+function TShiftScheduleYearCustomSheet.RowToMonth(const ARow: Integer): Integer;
+begin
+  Result:= 0;
+  if FNeedNight then
+  begin
+    case ARow of
+    3,4: Result:= 1;
+    5,6: Result:= 2;
+    7,8: Result:= 3;
+    11,12: Result:= 4;
+    13,14: Result:= 5;
+    15,16: Result:= 6;
+    19,20: Result:= 7;
+    21,22: Result:= 8;
+    23,24: Result:= 9;
+    27,28: Result:= 10;
+    29,30: Result:= 11;
+    31,32: Result:= 12;
+    end;
+  end else
+  begin
+    case ARow of
+    3: Result:= 1;
+    4: Result:= 2;
+    5: Result:= 3;
+    7: Result:= 4;
+    8: Result:= 5;
+    9: Result:= 6;
+    11: Result:= 7;
+    12: Result:= 8;
+    13: Result:= 9;
+    15: Result:= 10;
+    16: Result:= 11;
+    17: Result:= 12;
+   end;
+  end;
+end;
+
+function TShiftScheduleYearCustomSheet.ColToDay(const ACol, AMonth: Integer): Integer;
+begin
+  Result:= 0;
+  if (not Assigned(FCalendar)) or (not FCalendar.Calculated) then Exit;
+  if (ACol>=2) and (ACol<=32) then
+  begin
+    if (ACol-1)<=DaysInPeriod(AMonth, YearOfDate(FCalendar.BeginDate)) then
+      Result:= ACol-1;
+  end;
+end;
+
+function TShiftScheduleYearCustomSheet.DateToRow(const ADate: TDate): Integer;
+var
+  M: Integer;
+begin
+  M:= MonthOfDate(ADate);
+  if FNeedNight then
+  begin
+    case M of
+    1: Result:= 3;
+    2: Result:= 5;
+    3: Result:= 7;
+    4: Result:= 11;
+    5: Result:= 13;
+    6: Result:= 15;
+    7: Result:= 19;
+    8: Result:= 21;
+    9: Result:= 23;
+    10: Result:= 27;
+    11: Result:= 29;
+    12: Result:= 31;
+    end;
+  end else
+  begin
+    case M of
+    1: Result:= 3;
+    2: Result:= 4;
+    3: Result:= 5;
+    4: Result:= 7;
+    5: Result:= 8;
+    6: Result:= 9;
+    7: Result:= 11;
+    8: Result:= 12;
+    9: Result:= 13;
+    10: Result:= 15;
+    11: Result:= 16;
+    12: Result:= 17;
+   end;
+  end;
+end;
+
+function TShiftScheduleYearCustomSheet.DateToCol(const ADate: TDate): Integer;
+begin
+  Result:= DayOfDate(ADate) + 1;
+end;
+
+function TShiftScheduleYearCustomSheet.GridToDate(const ARow, ACol: Integer;
+  out ADate: TDate): Boolean;
+var
+  M, D: Integer;
+begin
+  Result:= False;
+  ADate:= NULDATE;
+  if (not Assigned(FCalendar)) or (not FCalendar.Calculated) then Exit;
+  M:= RowToMonth(ARow);
+  D:= 0;
+  if M>0 then D:= ColToDay(ACol, M);
+  if D>0 then
+  begin
+    ADate:= EncodeDate(YearOfDate(FCalendar.BeginDate), M, D);
+    Result:= True;
+  end;
+end;
+
+function TShiftScheduleYearCustomSheet.DateToGrid(const ADate: TDate;
+  out ARow, ACol: Integer): Boolean;
+begin
+  Result:= False;
+  ARow:= 0;
+  ACol:= 0;
+  if (not Assigned(FCalendar)) or (not FCalendar.Calculated) then Exit;
+  if YearOfDate(ADate)<>YearOfDate(FCalendar.BeginDate) then Exit;
+  ARow:= DateToRow(ADate);
+  ACol:= DateToCol(ADate);
+  Result:= True;
+end;
+
+procedure TShiftScheduleYearCustomSheet.Select(const ADate: TDate);
+var
+  R, C: Integer;
+begin
+  inherited Select(ADate);
+  if not FNeedNight then Exit;
+  if not DateToGrid(ADate, R, C) then Exit;
+  SelectionAddCell(R+1, C);
+end;
+
+procedure TShiftScheduleYearCustomSheet.Unselect(const ADate: TDate);
+var
+  R, C: Integer;
+begin
+  inherited Unselect(ADate);
+  if not FNeedNight then Exit;
+  if not DateToGrid(ADate, R, C) then Exit;
+  SelectionDelCell(R+1, C);
 end;
 
 { TShiftScheduleTableSheet }
@@ -299,75 +741,6 @@ begin
 end;
 
 { TShiftScheduleYearSheet }
-
-
-
-procedure TShiftScheduleYearSheet.BlankDraw;
-const
-  C1= 2;
-var
-  DeltaR, R, C, i, j, C2: Integer;
-begin
-  C2:= COLUMNS_COUNT + Ord(FResumeType=2);
-  DeltaR:= 1 + Ord(FNeedNight);
-  R:= 3 + Ord(IsNeedCaption);
-  C:= 1;
-  Writer.SetFont(Font.Name, Font.Size, [], clBlack);
-  Writer.SetAlignment(haCenter, vaCenter);
-  for i:= R to R+3*DeltaR-1 do
-    for j:= C1 to C2 do
-      Writer.WriteText(i, j, EmptyStr, cbtOuter);
-  Writer.WriteText(R, C, R+DeltaR-1, C, 'Январь', cbtOuter);
-  R:= R + DeltaR;
-  Writer.WriteText(R, C, R+DeltaR-1, C, 'Февраль', cbtOuter);
-  R:= R + DeltaR;
-  Writer.WriteText(R, C, R+DeltaR-1, C, 'Март', cbtOuter);
-  R:= R + DeltaR;
-  Writer.WriteText(R, C, R+DeltaR-1, C, 'I квартал', cbtOuter);
-  Writer.WriteText(R, C+1, R+DeltaR-1, C+31, EmptyStr, cbtOuter);
-  for i:= R to R+DeltaR-1 do
-    for j:= C to C2 do
-      Writer.AddCellBGColorIndex(i, j, TITLE_COLOR_INDEX);
-  R:= R + DeltaR;
-  Writer.WriteText(R, C, R+DeltaR-1, C, 'Апрель', cbtOuter);
-  R:= R + DeltaR;
-  Writer.WriteText(R, C, R+DeltaR-1, C, 'Май', cbtOuter);
-  R:= R + DeltaR;
-  Writer.WriteText(R, C, R+DeltaR-1, C, 'Июнь', cbtOuter);
-  R:= R + DeltaR;
-  Writer.WriteText(R, C, R+DeltaR-1, C, 'II квартал', cbtOuter);
-  Writer.WriteText(R, C+1, R+DeltaR-1, C+31, EmptyStr, cbtOuter);
-  for i:= R to R+DeltaR-1 do
-    for j:= C to C2 do
-      Writer.AddCellBGColorIndex(i, j, TITLE_COLOR_INDEX);
-  R:= R + DeltaR;
-  Writer.WriteText(R, C, R+DeltaR-1, C, 'Июль', cbtOuter);
-  R:= R + DeltaR;
-  Writer.WriteText(R, C, R+DeltaR-1, C, 'Август', cbtOuter);
-  R:= R + DeltaR;
-  Writer.WriteText(R, C, R+DeltaR-1, C, 'Сентябрь', cbtOuter);
-  R:= R + DeltaR;
-  Writer.WriteText(R, C, R+DeltaR-1, C, 'III квартал', cbtOuter);
-  Writer.WriteText(R, C+1, R+DeltaR-1, C+31, EmptyStr, cbtOuter);
-  for i:= R to R+DeltaR-1 do
-    for j:= C to C2 do
-      Writer.AddCellBGColorIndex(i, j, TITLE_COLOR_INDEX);
-  R:= R + DeltaR;
-  Writer.WriteText(R, C, R+DeltaR-1, C, 'Октябрь', cbtOuter);
-  R:= R + DeltaR;
-  Writer.WriteText(R, C, R+DeltaR-1, C, 'Ноябрь', cbtOuter);
-  R:= R + DeltaR;
-  Writer.WriteText(R, C, R+DeltaR-1, C, 'Декабрь', cbtOuter);
-  R:= R + DeltaR;
-  Writer.WriteText(R, C, R+DeltaR-1, C, 'IV квартал', cbtOuter);
-  Writer.WriteText(R, C+1, R+DeltaR-1, C+31, EmptyStr, cbtOuter);
-  for i:= R to R+DeltaR-1 do
-    for j:= C to C2 do
-      Writer.AddCellBGColorIndex(i, j, TITLE_COLOR_INDEX);
-  R:= R + DeltaR;
-  Writer.WriteText(R, C, R+DeltaR-1, C, FormatDateTime('yyyy год', FSchedule.BeginDate), cbtOuter);
-  Writer.WriteText(R, C+1, R+DeltaR-1, C+31, EmptyStr, cbtOuter);
-end;
 
 procedure TShiftScheduleYearSheet.ScheduleDraw;
 var
@@ -500,6 +873,7 @@ begin
   FCaption:= AName;
   FCalendar:= ACalendar;
   FSchedule:= ASchedule;
+  FYear:= YearOfDate(FSchedule.BeginDate);
   FNeedNight:= ANeedNight;
   FNeedCorrect:= ANeedCorrect;
   FNeedMarks:= ANeedMarks;
@@ -518,162 +892,11 @@ begin
     Writer.SetRowHeight(i, ROW_DEFAULT_HEIGHT);
 end;
 
-function TShiftScheduleYearSheet.RowToMonth(const ARow: Integer): Integer;
-begin
-  Result:= 0;
-  if FNeedNight then
-  begin
-    case ARow of
-    3,4: Result:= 1;
-    5,6: Result:= 2;
-    7,8: Result:= 3;
-    11,12: Result:= 4;
-    13,14: Result:= 5;
-    15,16: Result:= 6;
-    19,20: Result:= 7;
-    21,22: Result:= 8;
-    23,24: Result:= 9;
-    27,28: Result:= 10;
-    29,30: Result:= 11;
-    31,32: Result:= 12;
-    end;
-  end else
-  begin
-    case ARow of
-    3: Result:= 1;
-    4: Result:= 2;
-    5: Result:= 3;
-    7: Result:= 4;
-    8: Result:= 5;
-    9: Result:= 6;
-    11: Result:= 7;
-    12: Result:= 8;
-    13: Result:= 9;
-    15: Result:= 10;
-    16: Result:= 11;
-    17: Result:= 12;
-   end;
-  end;
-end;
-
-function TShiftScheduleYearSheet.ColToDay(const ACol, AMonth: Integer): Integer;
-begin
-  Result:= 0;
-  if (not Assigned(FCalendar)) or (not FCalendar.Calculated) then Exit;
-  if (ACol>=2) and (ACol<=32) then
-  begin
-    if (ACol-1)<=DaysInPeriod(AMonth, YearOfDate(FCalendar.BeginDate)) then
-      Result:= ACol-1;
-  end;
-end;
-
-function TShiftScheduleYearSheet.DateToRow(const ADate: TDate): Integer;
-var
-  M: Integer;
-begin
-  M:= MonthOfDate(ADate);
-  if FNeedNight then
-  begin
-    case M of
-    1: Result:= 3;
-    2: Result:= 5;
-    3: Result:= 7;
-    4: Result:= 11;
-    5: Result:= 13;
-    6: Result:= 15;
-    7: Result:= 19;
-    8: Result:= 21;
-    9: Result:= 23;
-    10: Result:= 27;
-    11: Result:= 29;
-    12: Result:= 31;
-    end;
-  end else
-  begin
-    case M of
-    1: Result:= 3;
-    2: Result:= 4;
-    3: Result:= 5;
-    4: Result:= 7;
-    5: Result:= 8;
-    6: Result:= 9;
-    7: Result:= 11;
-    8: Result:= 12;
-    9: Result:= 13;
-    10: Result:= 15;
-    11: Result:= 16;
-    12: Result:= 17;
-   end;
-  end;
-end;
-
-function TShiftScheduleYearSheet.DateToCol(const ADate: TDate): Integer;
-begin
-  Result:= DayOfDate(ADate) + 1;
-end;
-
 function TShiftScheduleYearSheet.GetCaption: String;
 begin
   Result:= EmptyStr;
   if SEmpty(FCaption) then Exit;
-  Result:= 'График сменности "' + FCaption + '"' +
-           FormatDateTime(' на yyyy год', FSchedule.BeginDate);
-end;
-
-function TShiftScheduleYearSheet.GetPeriodColumnName: String;
-begin
-  Result:= 'Месяц';
-end;
-
-function TShiftScheduleYearSheet.GridToDate(const ARow, ACol: Integer;
-                                             out ADate: TDate): Boolean;
-var
-  M, D: Integer;
-begin
-  Result:= False;
-  ADate:= NULDATE;
-  if (not Assigned(FCalendar)) or (not FCalendar.Calculated) then Exit;
-  M:= RowToMonth(ARow);
-  D:= 0;
-  if M>0 then D:= ColToDay(ACol, M);
-  if D>0 then
-  begin
-    ADate:= EncodeDate(YearOfDate(FCalendar.BeginDate), M, D);
-    Result:= True;
-  end;
-end;
-
-function TShiftScheduleYearSheet.DateToGrid(const ADate: TDate;
-                                             out ARow, ACol: Integer): Boolean;
-begin
-  Result:= False;
-  ARow:= 0;
-  ACol:= 0;
-  if (not Assigned(FCalendar)) or (not FCalendar.Calculated) then Exit;
-  if YearOfDate(ADate)<>YearOfDate(FCalendar.BeginDate) then Exit;
-  ARow:= DateToRow(ADate);
-  ACol:= DateToCol(ADate);
-  Result:= True;
-end;
-
-procedure TShiftScheduleYearSheet.Select(const ADate: TDate);
-var
-  R, C: Integer;
-begin
-  inherited Select(ADate);
-  if not FNeedNight then Exit;
-  if not DateToGrid(ADate, R, C) then Exit;
-  SelectionAddCell(R+1, C);
-end;
-
-procedure TShiftScheduleYearSheet.Unselect(const ADate: TDate);
-var
-  R, C: Integer;
-begin
-  inherited Unselect(ADate);
-  if not FNeedNight then Exit;
-  if not DateToGrid(ADate, R, C) then Exit;
-  SelectionDelCell(R+1, C);
+  Result:= 'График сменности "' + FCaption + '" на' + IntToStr(FYear) + ' год';
 end;
 
 { TShiftScheduleMonthSheet }
@@ -1042,6 +1265,7 @@ begin
   FSelectedIndex:= -1;
   Writer.Grid.OnMouseDown:= @MouseDown;
   Writer.Grid.OnKeyDown:= @KeyDown;
+  Writer.SetBordersColor(clBlack);
 end;
 
 procedure TShiftScheduleSimpleSheet.Draw(const ASchedules: TShiftScheduleVector);
@@ -1063,9 +1287,7 @@ begin
     Writer.SetFrozenRows(1);
 
   Writer.EndEdit;
-  //for i:= 1 to Writer.ColCount do
-  //  Writer.WriteText(High(FSchedules)*2 + 3, i, EmptyStr, cbtTop);
-  //BordersDraw;
+  Writer.DrawBorders(Length(FSchedules)*2 + 2, 1, cbtTop);
 end;
 
 end.
