@@ -377,7 +377,7 @@ function TPersonalScheduleYearSheet.GetCaption: String;
 begin
   Result:= EmptyStr;
   if SEmpty(FCaption) then Exit;
-  Result:= FCaption + ': персональный график работы на ' + IntToStr(FYear) + ' год';
+  Result:= FCaption + ': график работы на ' + IntToStr(FYear) + ' год';
 end;
 
 procedure TPersonalScheduleYearSheet.Draw(const ACalendar: TCalendar;
@@ -896,7 +896,7 @@ function TShiftScheduleYearSheet.GetCaption: String;
 begin
   Result:= EmptyStr;
   if SEmpty(FCaption) then Exit;
-  Result:= 'График сменности "' + FCaption + '" на' + IntToStr(FYear) + ' год';
+  Result:= 'График сменности "' + FCaption + '" на ' + IntToStr(FYear) + ' год';
 end;
 
 { TShiftScheduleMonthSheet }

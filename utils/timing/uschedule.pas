@@ -185,8 +185,6 @@ type
     FCycle: TScheduleCycle; //структура графика
     FHoursInWeek: Byte;     //типовое кол-во часов в неделю
   public
-    constructor Create;
-    destructor  Destroy; override;
     procedure Clear;
     function Cut(const ABeginDate, AEndDate: TDate; var ACutSchedule: TShiftSchedule): Boolean;
     procedure Calc(const ACalendar: TCalendar;
@@ -208,8 +206,6 @@ type
     FFirstDay, FLastDay: TDate; //начальная и конечная даты подпериода общего периода запроса для данного графика
     procedure CalcExistion(const AScheduleBD, AScheduleED, APostBD, APostED: TDate);
   public
-    constructor Create;
-    destructor  Destroy; override;
     procedure Clear;
     procedure Calc(const ACalendar: TCalendar;
                    const AHoursInWeek: Byte;
@@ -233,7 +229,6 @@ type
     function SumStrMarks(V1, V2: TStrVector): TStrVector;
   public
     constructor Create;
-    destructor  Destroy; override;
     procedure Clear;
     function Cut(const ABeginDate, AEndDate: TDate;
       var ACutSchedule: TCustomPersonalSchedule; out AInd1, AInd2: Integer): Boolean;
@@ -448,16 +443,16 @@ var
   Delta, CycleCount: Integer;
 begin
   if ACycle.IsWeek then
-    DateToCycleIndex:= DayNumberInWeek(ADate)
+    Result:= DayNumberInWeek(ADate)
   else begin
     Delta:= DaysBetweenDates(ACycle.Dates[0], ADate);
     CycleCount:= Length(ACycle.Dates);
     if Delta>=0 then
-      DateToCycleIndex:= ((CycleCount+Delta) mod CycleCount) + 1
+      Result:= ((CycleCount+Delta) mod CycleCount) + 1
     else
-      DateToCycleIndex:= ((1         +Delta) mod CycleCount) + CycleCount;
+      Result:= ((1         +Delta) mod CycleCount) + CycleCount;
   end;
-  DateToCycleIndex:= DateToCycleIndex - 1;
+  Result:= Result - 1;
 end;
 
 procedure VSAppend(var V: TShiftScheduleVector; const NewValue: TShiftSchedule);
@@ -626,22 +621,22 @@ end;
 
 function TPersonalSchedule.GetDaysCountDefaultVacation: Integer;
 begin
-  GetDaysCountDefaultVacation:= VCountIfNot(FHoursDefaultVacation.Total, 0);
+  Result:= VCountIfNot(FHoursDefaultVacation.Total, 0);
 end;
 
 function TPersonalSchedule.GetDaysCountCorrectVacation: Integer;
 begin
-  GetDaysCountCorrectVacation:= VCountIfNot(FHoursCorrectVacation.Total, 0);
+  Result:= VCountIfNot(FHoursCorrectVacation.Total, 0);
 end;
 
 function TPersonalSchedule.GetShiftCountCorrectVacation: Integer;
 begin
-  GetShiftCountCorrectVacation:= GetShiftCount(FShiftNumsCorrectVacation);
+  Result:= GetShiftCount(FShiftNumsCorrectVacation);
 end;
 
 function TPersonalSchedule.GetShiftCountDeafultVacation: Integer;
 begin
-  GetShiftCountDeafultVacation:= GetShiftCount(FShiftNumsDefaultVacation);
+  Result:= GetShiftCount(FShiftNumsDefaultVacation);
 end;
 
 procedure TPersonalSchedule.WriteVacationHours;
@@ -771,7 +766,7 @@ end;
 
 function TPersonalSchedule.GetPersonalCorrect: TScheduleCorrections;
 begin
-  GetPersonalCorrect:= ScheduleCorrectCopy(FPersonalCorrect);
+  Result:= ScheduleCorrectCopy(FPersonalCorrect);
 end;
 
 constructor TPersonalSchedule.Create(const ATabNumID: Integer; const ATabNum: String;
@@ -859,11 +854,6 @@ constructor TCustomPersonalSchedule.Create;
 begin
   inherited Create;
   FScheduleCount:= 0;
-end;
-
-destructor TCustomPersonalSchedule.Destroy;
-begin
-  inherited Destroy;
 end;
 
 procedure TCustomPersonalSchedule.Clear;
@@ -991,16 +981,6 @@ begin
   end;
 end;
 
-constructor TPostSchedule.Create;
-begin
-  inherited Create;
-end;
-
-destructor TPostSchedule.Destroy;
-begin
-  inherited Destroy;
-end;
-
 procedure TPostSchedule.Clear;
 begin
   inherited Clear;
@@ -1009,8 +989,6 @@ begin
   FLastDay:= NULDATE;
   FFirstDay:= NULDATE;
 end;
-
-
 
 procedure TPostSchedule.Calc(const ACalendar: TCalendar;
   const AHoursInWeek: Byte; const ACycle: TScheduleCycle;
@@ -1039,16 +1017,6 @@ begin
 end;
 
 { TShiftSchedule }
-
-constructor TShiftSchedule.Create;
-begin
-  inherited Create;
-end;
-
-destructor TShiftSchedule.Destroy;
-begin
-  inherited Destroy;
-end;
 
 procedure TShiftSchedule.Clear;
 begin
@@ -1099,7 +1067,7 @@ var
   BD, ED: TDate;
   I1, I2: Integer;
 begin
-  Cut:= False;
+  Result:= False;
   ACutSchedule.Clear;
   //проверяем, рассчиатн ли исходный график
   if not FCalculated then Exit;
@@ -1125,7 +1093,7 @@ begin
   AInd1:= I1;
   AInd2:= I2;
   FCalculated:= True;
-  Cut:= True;
+  Result:= True;
 end;
 
 procedure TCustomShiftSchedule.SetMarks(const AInd, ADigMark: Integer;
@@ -1141,7 +1109,7 @@ function TCustomShiftSchedule.GetShiftCount(const AShiftNums: TIntVector): Integ
 var
   i, ShiftNum, SchedID: Integer;
 begin
-  GetShiftCount:=0;
+  Result:=0;
   ShiftNum:= 0;
   SchedID:= 0;
   for i:=0 to DaysCount-1 do
@@ -1152,13 +1120,13 @@ begin
       begin
         SchedID:= FScheduleIDs[i]; //запоминаем новый график
         ShiftNum:= AShiftNums[i]; //запоминаем новую смену
-        Inc(GetShiftCount);
+        Inc(Result);
       end
       else begin //график тот-же
         if AShiftNums[i]<>ShiftNum then //изменилась смена в этом графике
         begin
           ShiftNum:= AShiftNums[i]; //запоминаем новую смену
-          Inc(GetShiftCount);
+          Inc(Result);
         end;
       end;
     end
@@ -1295,37 +1263,37 @@ end;
 
 function TCustomShiftSchedule.GetDaysCountDefault: Integer;
 begin
-  GetDaysCountDefault:= VCountIfNot(FHoursDefault.Total, 0);
+  Result:= VCountIfNot(FHoursDefault.Total, 0);
 end;
 
 function TCustomShiftSchedule.GetDaysCountCorrect: Integer;
 begin
-  GetDaysCountCorrect:= VCountIfNot(FHoursCorrect.Total, 0);
+  Result:= VCountIfNot(FHoursCorrect.Total, 0);
 end;
 
 function TCustomShiftSchedule.GetBeginDate: TDate;
 begin
-  GetBeginDate:= FDates[0];
+  Result:= VFirst(FDates);
 end;
 
 function TCustomShiftSchedule.GetEndDate: TDate;
 begin
-  GetEndDate:= FDates[High(FDates)];
+  Result:= VLast(FDates);
 end;
 
 function TCustomShiftSchedule.GetDaysCount: Integer;
 begin
-  GetDaysCount:= Length(FDates);
+  Result:= Length(FDates);
 end;
 
 function TCustomShiftSchedule.GetShiftCountCorrect: Integer;
 begin
-  GetShiftCountCorrect:= GetShiftCount(FShiftNumsCorrect);
+  Result:= GetShiftCount(FShiftNumsCorrect);
 end;
 
 function TCustomShiftSchedule.GetShiftCountDeafult: Integer;
 begin
-  GetShiftCountDeafult:= GetShiftCount(FShiftNumsDefault);
+  Result:= GetShiftCount(FShiftNumsDefault);
 end;
 
 end.

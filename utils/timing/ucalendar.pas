@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, DateUtils,
   //DK packages utils
-  DK_Vector, DK_DateUtils,
+  DK_Vector, DK_DateUtils, DK_Const,
   //Project utils
   UWorkHours;
 
@@ -34,32 +34,38 @@ const
 type
 
   {Простой календарь}
+
+  { TCustomCalendar }
+
   TCustomCalendar = class (TObject)
-    protected
-      FCalculated         : Boolean;     //рассчитан ли календарь
-      FDates              : TDateVector; //вектор дат
-      FDayStatuses        : TIntVector;  //статус дня: 2 - выходной 4 - будний (обычный рабочий)
-      FDayNumsInWeek      : TIntVector;  //номер дня в неделе
-      FWeekNumsInMonth    : TIntVector;  //номер недели в месяце
-    private
-      function GetWeekDaysCount: Integer;
-      function GetOffDaysCount: Integer;
-      function GetBeginDate: TDate;
-      function GetDaysCount: Integer;
-      function GetEndDate: TDate;
-    public
-      procedure Clear;
-      procedure Calc(const ABeginDate, AEndDate: TDate);
-      property Calculated: Boolean read FCalculated;
-      property BeginDate: TDate read GetBeginDate;   //начальная дата
-      property EndDate: TDate read GetEndDate;       //конечная дата
-      property DaysCount: Integer read GetDaysCount; //кол-во дней
-      property Dates: TDateVector read FDates;
-      property DayStatuses: TIntVector read FDayStatuses;
-      property DayNumsInWeek: TIntVector read FDayNumsInWeek;
-      property WeekNumsInMonth: TIntVector read FWeekNumsInMonth;
-      property WeekDaysCount: Integer read GetWeekDaysCount;//кол-во будних дней
-      property OffDaysCount: Integer read GetOffDaysCount;  //кол-во выходных дней
+  protected
+    FCalculated         : Boolean;     //рассчитан ли календарь
+    FDates              : TDateVector; //вектор дат
+    FDayStatuses        : TIntVector;  //статус дня: 2 - выходной 4 - будний (обычный рабочий)
+    FDayNumsInWeek      : TIntVector;  //номер дня в неделе
+    FWeekNumsInMonth    : TIntVector;  //номер недели в месяце
+  private
+    function GetBeginDate: TDate;
+    function GetEndDate: TDate;
+    function GetTypedDaysCount(const ABeginDate, AEndDate: TDate; const ADayType: Integer): Integer;
+    function GetIntersectionIndexes(const ABeginDate, AEndDate: TDate;
+                                    out AFirstIndex, ALastIndex: Integer): Boolean;
+  public
+    procedure Clear;
+    procedure Calc(const ABeginDate, AEndDate: TDate);
+    property Calculated: Boolean read FCalculated;
+    property BeginDate: TDate read GetBeginDate;   //начальная дата
+    property EndDate: TDate read GetEndDate;       //конечная дата
+    property Dates: TDateVector read FDates;
+    property DayStatuses: TIntVector read FDayStatuses;
+    property DayNumsInWeek: TIntVector read FDayNumsInWeek;
+    property WeekNumsInMonth: TIntVector read FWeekNumsInMonth;
+    //кол-во дней
+    function DaysCount(const ABeginDate: TDate = NULDATE; const AEndDate: TDate = INFDATE): Integer;
+    //кол-во будних дней
+    function WeekDaysCount(const ABeginDate: TDate = NULDATE; const AEndDate: TDate = INFDATE): Integer;
+    //кол-во выходных дней
+    function OffDaysCount(const ABeginDate: TDate = NULDATE; const AEndDate: TDate = INFDATE): Integer;
   end;
 
   {Корректировки производственного календаря}
@@ -79,25 +85,31 @@ const
 type
 
   {Производственный календарь}
+
+  { TCalendar }
+
   TCalendar = class (TCustomCalendar)
-    protected
-      FSwapDays: TIntVector;  //заменяемый день для корректировки выходного дня на статус "рабочий"
-    private
-      function GetHoliDaysCount: Integer;
-      function GetBeforeCount: Integer;
-      function GetWorkDaysCount: Integer;
-      function GetNotWorkDaysCount: Integer;
-    public
-      procedure Clear;
-      procedure Calc(const ABeginDate, AEndDate: TDate; const ACorrections: TCalendarCorrections);
-      function Cut(const ABeginDate, AEndDate: TDate; var ACutCalendar: TCalendar): Boolean;
-      function SumWorkHoursInt(const AHoursInWeek: Byte): Integer; //сумма рабочих часов в зависимости от кол-ва часов в неделю AHoursInWeek (40, 36, 24) в целочисленном формате
-      function SumWorkHoursFrac(const AHoursInWeek: Byte): Double; //сумма рабочих часов в зависимости от кол-ва часов в неделю AHoursInWeek (40, 36, 24) в дробном формате
-      property SwapDays: TIntVector read FSwapDays;
-      property HoliDaysCount: Integer read GetHoliDaysCount;       //кол-во праздничных дней
-      property BeforeCount: Integer read GetBeforeCount;           //кол-во предпраздничных дней
-      property WorkDaysCount: Integer read GetWorkDaysCount;       //кол-во рабочих дней (будни+предпраздничные)
-      property NotWorkDaysCount: Integer read GetNotWorkDaysCount; //кол-во нерабочих дней (выходные+праздничные)
+  private
+    FSwapDays: TIntVector;  //заменяемый день для корректировки выходного дня на статус "рабочий"
+  public
+    procedure Clear;
+    procedure Calc(const ABeginDate, AEndDate: TDate; const ACorrections: TCalendarCorrections);
+    function Cut(const ABeginDate, AEndDate: TDate; var ACutCalendar: TCalendar): Boolean;
+    //сумма рабочих часов в зависимости от кол-ва часов в неделю AHoursInWeek (40, 36, 24) в целочисленном формате
+    function SumWorkHoursInt(const AHoursInWeek: Byte;
+      const ABeginDate: TDate = NULDATE; const AEndDate: TDate = INFDATE): Integer;
+    //сумма рабочих часов в зависимости от кол-ва часов в неделю AHoursInWeek (40, 36, 24) в дробном формате
+    function SumWorkHoursFrac(const AHoursInWeek: Byte;
+      const ABeginDate: TDate = NULDATE; const AEndDate: TDate = INFDATE): Double;
+    property SwapDays: TIntVector read FSwapDays;
+    //кол-во праздничных дней
+    function HoliDaysCount(const ABeginDate: TDate = NULDATE; const AEndDate: TDate = INFDATE): Integer;
+    //кол-во предпраздничных дней
+    function BeforeDaysCount(const ABeginDate: TDate = NULDATE; const AEndDate: TDate = INFDATE): Integer;
+    //кол-во рабочих дней (будни+предпраздничные)
+    function WorkDaysCount(const ABeginDate: TDate = NULDATE; const AEndDate: TDate = INFDATE): Integer;
+    //кол-во нерабочих дней (выходные+праздничные)
+    function NotWorkDaysCount(const ABeginDate: TDate = NULDATE; const AEndDate: TDate = INFDATE): Integer;
   end;
 
   {MonthGridToDate расчет даты дня, взятого из ячейки [ARow, ACol]
@@ -165,27 +177,59 @@ end;
 
 function TCustomCalendar.GetBeginDate: TDate;
 begin
-  GetBeginDate:= FDates[0];
+  Result:= VFirst(FDates);
 end;
 
-function TCustomCalendar.GetDaysCount: Integer;
+function TCustomCalendar.DaysCount(const ABeginDate: TDate = NULDATE;
+                                   const AEndDate: TDate = INFDATE): Integer;
+var
+  I1, I2: Integer;
 begin
-  GetDaysCount:= Length(FDates);
+  Result:= 0;
+  if not GetIntersectionIndexes(ABeginDate, AEndDate, I1, I2) then Exit;
+  Result:= I2-I1+1;
 end;
 
 function TCustomCalendar.GetEndDate: TDate;
 begin
-  GetEndDate:= FDates[High(FDates)];
+  Result:= VLast(FDates);
 end;
 
-function TCustomCalendar.GetWeekDaysCount: Integer;
+function TCustomCalendar.GetTypedDaysCount(const ABeginDate, AEndDate: TDate;
+  const ADayType: Integer): Integer;
+var
+  I1, I2: Integer;
 begin
-  GetWeekDaysCount:= VCountIf(FDayStatuses, DAY_STATUS_WEEKDAY);
+  Result:= 0;
+  if not GetIntersectionIndexes(ABeginDate, AEndDate, I1, I2) then Exit;
+  Result:= VCountIf(FDayStatuses, ADayType, I1, I2);
 end;
 
-function TCustomCalendar.GetOffDaysCount: Integer;
+function TCustomCalendar.GetIntersectionIndexes(const ABeginDate, AEndDate: TDate;
+                         out AFirstIndex, ALastIndex: Integer): Boolean;
+var
+  BD, ED: TDate;
 begin
-  GetOffDaysCount:= VCountIf(FDayStatuses, DAY_STATUS_OFFDAY);
+  AFirstIndex:= -1;
+  ALastIndex:= -1;
+  //проверяем, пересекаются ли периоды запроса и календаря, запоминаем период пересечения
+  Result:= IsPeriodIntersect(ABeginDate, AEndDate, BeginDate, EndDate, BD, ED);
+  if not Result then Exit;
+  //определяем индексы дат периода пересечения
+  AFirstIndex:= DaysBetweenDates(BeginDate, BD);
+  ALastIndex:= DaysBetweenDates(BeginDate, ED);
+end;
+
+function TCustomCalendar.WeekDaysCount(const ABeginDate: TDate = NULDATE;
+                                       const AEndDate: TDate = INFDATE): Integer;
+begin
+  Result:= GetTypedDaysCount(ABeginDate, AEndDate, DAY_STATUS_WEEKDAY);
+end;
+
+function TCustomCalendar.OffDaysCount(const ABeginDate: TDate = NULDATE;
+                                       const AEndDate: TDate = INFDATE): Integer;
+begin
+  Result:= GetTypedDaysCount(ABeginDate, AEndDate, DAY_STATUS_OFFDAY);
 end;
 
 {TCalendar}
@@ -219,17 +263,13 @@ end;
 
 function TCalendar.Cut(const ABeginDate, AEndDate: TDate; var ACutCalendar: TCalendar): Boolean;
 var
-  BD, ED: TDate;
   I1, I2: Integer;
 begin
-  Cut:= False;
+  Result:= False;
   //проверяем, рассчиатн ли исходный календарь
   if not FCalculated then Exit;
-  //проверяем, пересекаются ли периоды обрезки и исходного календаря, запоминаем период пересечения
-  if not IsPeriodIntersect(ABeginDate, AEndDate, BeginDate, EndDate, BD, ED) then Exit;
   //определяем индексы среза
-  I1:= DaysBetweenDates(BeginDate, BD);
-  I2:= DaysBetweenDates(BeginDate, ED);
+  if not GetIntersectionIndexes(ABeginDate, AEndDate, I1, I2) then Exit;
   //проверяем на существование календаря-среза, создаем при отсутствии
   if not Assigned(ACutCalendar) then
     ACutCalendar:= TCalendar.Create
@@ -242,10 +282,12 @@ begin
   ACutCalendar.FDayNumsInWeek:= VCut(FDayNumsInWeek, I1, I2);
   ACutCalendar.FWeekNumsInMonth:= VCut(FWeekNumsInMonth, I1, I2) ;
   ACutCalendar.FCalculated:= True;
-  Cut:= True;
+  Result:= True;
 end;
 
-function TCalendar.SumWorkHoursInt(const AHoursInWeek: Byte): Integer; //сумма рабочих часов в зависимости от кол-ва часов в неделю AHoursInWeek (40, 36, 24)
+//сумма рабочих часов в зависимости от кол-ва часов в неделю AHoursInWeek (40, 36, 24)
+function TCalendar.SumWorkHoursInt(const AHoursInWeek: Byte;
+  const ABeginDate: TDate = NULDATE; const AEndDate: TDate = INFDATE): Integer;
 var
   x: Integer;
 begin
@@ -253,37 +295,43 @@ begin
   if AHoursInWeek>0 then
   begin
     x:= WeekHoursToWorkHoursInt(AHoursInWeek);
-    Result:= x*WeekDaysCount +
-            (x - WORKHOURS_DENOMINATOR*REDUCE_HOURS_COUNT_IN_BEFORE)*BeforeCount;
+    Result:= x * WeekDaysCount(ABeginDate, AEndDate)  +
+            (x - WORKHOURS_DENOMINATOR*REDUCE_HOURS_COUNT_IN_BEFORE)*BeforeDaysCount(ABeginDate, AEndDate);
   end;
 end;
 
-function TCalendar.SumWorkHoursFrac(const AHoursInWeek: Byte): Double; //сумма рабочих часов в зависимости от кол-ва часов в неделю AHoursInWeek (40, 36, 24) в дробном формате
+//сумма рабочих часов в зависимости от кол-ва часов в неделю AHoursInWeek (40, 36, 24) в дробном формате
+function TCalendar.SumWorkHoursFrac(const AHoursInWeek: Byte;
+  const ABeginDate: TDate = NULDATE; const AEndDate: TDate = INFDATE): Double;
 begin
   Result:= 0;
   if AHoursInWeek>0 then
-    Result:= AHoursInWeek*WorkDaysCount/5   -
-             REDUCE_HOURS_COUNT_IN_BEFORE*BeforeCount;
+    Result:= AHoursInWeek*WorkDaysCount(ABeginDate, AEndDate)/5   -
+             REDUCE_HOURS_COUNT_IN_BEFORE*BeforeDaysCount(ABeginDate, AEndDate);
 end;
 
-function TCalendar.GetHoliDaysCount: Integer;
+function TCalendar.HoliDaysCount(const ABeginDate: TDate = NULDATE;
+                                 const AEndDate: TDate = INFDATE): Integer;
 begin
-  GetHoliDaysCount:= VCountIf(FDayStatuses, DAY_STATUS_HOLIDAY);
+  Result:= GetTypedDaysCount(ABeginDate, AEndDate, DAY_STATUS_HOLIDAY);
 end;
 
-function TCalendar.GetBeforeCount: Integer;
+function TCalendar.BeforeDaysCount(const ABeginDate: TDate = NULDATE;
+                                 const AEndDate: TDate = INFDATE): Integer;
 begin
-  GetBeforeCount:= VCountIf(FDayStatuses, DAY_STATUS_BEFORE);
+  Result:= GetTypedDaysCount(ABeginDate, AEndDate, DAY_STATUS_BEFORE);
 end;
 
-function TCalendar.GetWorkDaysCount: Integer;
+function TCalendar.WorkDaysCount(const ABeginDate: TDate = NULDATE;
+                                 const AEndDate: TDate = INFDATE): Integer;
 begin
-  GetWorkDaysCount:= WeekDaysCount + BeforeCount;
+  Result:= WeekDaysCount(ABeginDate, AEndDate) + BeforeDaysCount(ABeginDate, AEndDate);
 end;
 
-function TCalendar.GetNotWorkDaysCount: Integer;
+function TCalendar.NotWorkDaysCount(const ABeginDate: TDate = NULDATE;
+                                 const AEndDate: TDate = INFDATE): Integer;
 begin
-  GetNotWorkDaysCount:= HolidaysCount + OffDaysCount;
+  Result:= HolidaysCount(ABeginDate, AEndDate) + OffDaysCount(ABeginDate, AEndDate);
 end;
 
 end.

@@ -34,9 +34,11 @@ type
     ShiftNumLabel: TLabel;
     ShiftNumSpinEdit: TSpinEdit;
     procedure CancelButtonClick(Sender: TObject);
+    procedure FirstDatePickerChange(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure LastDateCheckBoxChange(Sender: TObject);
     procedure SaveButtonClick(Sender: TObject);
 
 
@@ -75,6 +77,11 @@ begin
   ModalResult:= mrCancel;
 end;
 
+procedure TScheduleCorrectionEditForm.FirstDatePickerChange(Sender: TObject);
+begin
+  LastDatePicker.MinDate:= FirstDatePicker.Date;
+end;
+
 procedure TScheduleCorrectionEditForm.FormShow(Sender: TObject);
 begin
   if SameDate(FirstDatePicker.Date, NULDATE) then
@@ -82,9 +89,16 @@ begin
   LastDatePicker.Date:= FirstDatePicker.Date;
   FirstDatePicker.MinDate:= FirstDayInYear(FirstDatePicker.Date);
   FirstDatePicker.MaxDate:= LastDayInYear(FirstDatePicker.Date);
-  LastDatePicker.MinDate:= FirstDatePicker.MinDate;
+  LastDatePicker.MinDate:= FirstDatePicker.Date;
   LastDatePicker.MaxDate:= FirstDatePicker.MaxDate;
   DataBase.TimetableMarkDictionaryLoad(MarkDropDown, DigMarks, DigMark);
+end;
+
+procedure TScheduleCorrectionEditForm.LastDateCheckBoxChange(Sender: TObject);
+begin
+  if not LastDateCheckBox.Checked then
+    LastDatePicker.Date:= FirstDatePicker.Date;
+  LastDatePicker.Enabled:= LastDateCheckBox.Checked;
 end;
 
 procedure TScheduleCorrectionEditForm.SaveButtonClick(Sender: TObject);

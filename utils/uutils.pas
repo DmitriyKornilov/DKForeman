@@ -33,7 +33,10 @@ uses
                               const ANeedLongName: Boolean = False): String;
   function StaffNamesForTiming(const AFs, ANs, APs, ATabNums, APostNames: TStrVector;
                               const ANeedLongName: Boolean = False): TStrVector;
-
+  function StaffNameForScheduleName(const AF, AN, AP, ATabNum: String;
+                              const ANeedLongName: Boolean = True): String;
+  function StaffNamesForScheduleNames(const AFs, ANs, APs, ATabNums: TStrVector;
+                              const ANeedLongName: Boolean = True): TStrVector;
 
   //Calendar
   procedure CalendarForPeriod(const ABeginDate, AEndDate: TDate; var ACalendar: TCalendar);
@@ -67,6 +70,15 @@ uses
                          const AYear: Word; var ASchedule: TShiftSchedule);
   procedure ScheduleShiftForMonth(const AScheduleID: Integer;
                          const AMonth, AYear: Word; var ASchedule: TShiftSchedule);
+
+  //Vacations
+  function VacationVector(const ABeginDate, AEndDate, AFirstDate: TDate;
+                          const ACount, AAddCount: Integer;
+                          const AHolidayDates: TDateVector;
+                          out V: TIntVector): Boolean;
+  function VacationForPeriod(const ATabNumID: Integer; const ABeginDate, AEndDate: TDate;
+                          const AHolidayDates: TDateVector;const AIsPlane: Boolean = False): TIntVector;
+
   //SchedulePersonal
 
   { расчет нормы часов ANormHours и кол-ва рабочих дней AWorkDaysCount
@@ -80,6 +92,30 @@ uses
                                out AWorkDaysCount, ANormHours: Integer;
                                const ARecrutDate: TDate = NULDATE;
                                const ADismissDate: TDate = INFDATE);
+
+  function SchedulesPostByCalendar(const ATabNumID: Integer; const ACalendar: TCalendar;
+                          const ASchedBD: TDate = NULDATE; ASchedED: TDate = INFDATE;
+                          const APostBD: TDate = NULDATE; APostED: TDate = INFDATE
+                          ): TPostScheduleVector;
+  //function PersonalScheduleByPostSchedules(const ATabNumID: Integer; const ATabNum: String;
+  //                            const ARecrutDate, ADismissDate: TDate;
+  //                            const ACalendar: TCalendar; const AHolidayDates: TDateVector;
+  //                            const APostSchedules: TPostScheduleVector;
+  //                            const AWithPlaneVacation: Boolean = False;
+  //                            const AStrMarkVacationMain: String = STRMARK_VACATIONMAIN;
+  //                            const AStrMarkVacationAddition: String = STRMARK_VACATIONADDITION;
+  //                            const AStrMarkVacationHoliday: String = STRMARK_VACATIONHOLIDAY
+  //                            ): TPersonalSchedule;
+  function SchedulePersonalByCalendar(const ATabNumID: Integer; const ATabNum: String;
+                              const ARecrutDate, ADismissDate: TDate;
+                              const ACalendar: TCalendar; const AHolidayDates: TDateVector;
+                              const AWithPlaneVacation: Boolean = False;
+                              const AStrMarkVacationMain: String = STRMARK_VACATIONMAIN;
+                              const AStrMarkVacationAddition: String = STRMARK_VACATIONADDITION;
+                              const AStrMarkVacationHoliday: String = STRMARK_VACATIONHOLIDAY;
+                              const ASchedBD: TDate = NULDATE; ASchedED: TDate = INFDATE;
+                              const APostBD: TDate = NULDATE; APostED: TDate = INFDATE
+                              ): TPersonalSchedule;
 
 implementation
 
@@ -171,11 +207,11 @@ end;
 function StaffNameForTiming(const AF, AN, AP, ATabNum, APostName: String;
                             const ANeedLongName: Boolean = False): String;
 begin
-  if ANeedLongName then
-    Result:= SNameLong(AF, AN, AP)
+  Result:= StaffNameForScheduleName(AF, AN, AP, ATabNum, ANeedLongName) + ' - ';
+  if SSame(APostName, '<не указана>') then
+     Result:= Result + '<должность не указана>'
   else
-    Result:= SNameShort(AF, AN, AP);
-  Result:= Result + ' [таб.№ ' + ATabNum + '] - ' + APostName;
+    Result:= Result + APostName;
 end;
 
 function StaffNamesForTiming(const AFs, ANs, APs, ATabNums, APostNames: TStrVector;
@@ -188,6 +224,28 @@ begin
   VDim(Result, Length(ATabNums));
   for i:= 0 to High(Result) do
     Result[i]:= StaffNameForTiming(AFs[i], ANs[i], APs[i], ATabNums[i], APostNames[i], ANeedLongName);
+end;
+
+function StaffNameForScheduleName(const AF, AN, AP, ATabNum: String;
+                              const ANeedLongName: Boolean = True): String;
+begin
+  if ANeedLongName then
+    Result:= SNameLong(AF, AN, AP)
+  else
+    Result:= SNameShort(AF, AN, AP);
+  Result:= Result + ' [таб.№ ' + ATabNum + ']';
+end;
+
+function StaffNamesForScheduleNames(const AFs, ANs, APs, ATabNums: TStrVector;
+                              const ANeedLongName: Boolean = True): TStrVector;
+var
+  i: Integer;
+begin
+  Result:= nil;
+  if VIsNil(ATabNums) then Exit;
+  VDim(Result, Length(ATabNums));
+  for i:= 0 to High(Result) do
+    Result[i]:= StaffNameForScheduleName(AFs[i], ANs[i], APs[i], ATabNums[i], ANeedLongName);
 end;
 
 procedure CalendarForPeriod(const ABeginDate, AEndDate: TDate; var ACalendar: TCalendar);
@@ -451,6 +509,91 @@ begin
   ScheduleShiftForPeriod(AScheduleID, BD, ED, ASchedule);
 end;
 
+function VacationVector(const ABeginDate, AEndDate, AFirstDate: TDate;
+                        const ACount, AAddCount: Integer;
+                        const AHolidayDates: TDateVector;
+                        out V: TIntVector): Boolean;
+var
+  HolidaysCount, I1, I2, i: Integer;
+  LastDate, BD, ED: TDate;
+  Holidays: TDateVector;
+begin
+  Result:= False;
+  V:= nil;
+  //последняя дата отпуска без учета попадания праздничных дней
+  LastDate:= IncDay(AFirstDate, ACount + AAddCount - 1);
+  //рассчитаем дату окончания отпуска с учетом попавших праздников
+  HolidaysCount:= VCountIn(AHolidayDates, AFirstDate, LastDate); //кол-во праздничных дней, попавших в отпуск
+  while HolidaysCount>0 do
+  begin
+    BD:= IncDay(LastDate,1); //начальная дата периода, на который увеличился отпуск из-за попавших праздников
+    LastDate:= IncDay(LastDate, HolidaysCount); //конечная дата периода, на который увеличился отпуск из-за попавших праздников
+    HolidaysCount:= VCountIn(AHolidayDates, BD, LastDate); // дополнительное кол-во праздничных дней, попавших в этот период
+  end;
+  //определяем, пересекается ли полученный период отпуска с запрашиваемым периодом
+  //если да, получаем период пересечения, если нет, то выходим
+  if not IsPeriodIntersect(ABeginDate, AEndDate, AFirstDate, LastDate, BD, ED) then Exit;
+
+  Result:= True;
+  //определяем вектор праздничных дней в полученном периоде отпуска
+  Holidays:= VCut(AHolidayDates, AFirstDate, LastDate);
+  //кол-во праздников, попавших в отпуск до начала периода запроса (для определения I1 - далее)
+  HolidaysCount:= VCountBefore(Holidays, BD);
+  //определяем вектор праздничных дней в периоде пересечения отпуска и запроса
+  Holidays:= VCut(AHolidayDates, BD, ED);
+  //создаем вектор длиной в запрашиваемый период с флагом отсутствия отпуска
+  VDim(V, DaysInPeriod(ABeginDate, AEndDate), VACATION_NO);
+  //заполняем период пересечения отпуска и запрашиваемого периода флагом основного отпуска
+  I1:= DaysBetweenDates(ABeginDate, BD);
+  I2:= DaysBetweenDates(ABeginDate, ED);
+  VChangeIn(V, VACATION_MAIN, I1, I2);
+  //изменяем флаг на VACATION_HOLIDAY в праздничные дни
+  for i := 0 to High(Holidays) do
+  begin
+    I1:= DaysBetweenDates(ABeginDate, Holidays[i]);
+    V[I1]:= VACATION_HOLIDAY;
+  end;
+  //если нет дополнительного отпуска - выходим
+  if AAddCount=0 then Exit;
+
+  I1:= 0;
+  //если отпуск начался раньше периода запроса
+  if CompareDate(AFirstDate, ABeginDate)<0 then
+    //то на начало периода прошло уже I1 дней отпуска
+      I1:= DaysBetweenDates(AFirstDate, ABeginDate) - HolidaysCount;
+  //пробегаем по всем дням
+  for i := 0 to High(V) do
+  begin
+    if V[i]=VACATION_MAIN then //если отмечен основной отпуск
+    begin
+      Inc(I1); //кол-во уже прошедших дней основного отпуска
+      if I1> ACount then  //если основной отпуск кончился
+        V[i]:=VACATION_ADDITION; //записываем дополнительный
+    end;
+  end;
+end;
+
+function VacationForPeriod(const ATabNumID: Integer;
+                            const ABeginDate, AEndDate: TDate;
+                            const AHolidayDates: TDateVector;
+                            const AIsPlane: Boolean = False): TIntVector;
+var
+  FirstDates: TDateVector;
+  Counts, AddCounts, V: TIntVector;
+  i: Integer;
+begin
+  Result:= nil;
+  //создаем вектор статусов отпуска на указанный период с флагом VACATION_NO
+  VDim(Result, DaysInPeriod(ABeginDate, AEndDate), VACATION_NO);
+  //достаем из базы данные по отпуску, если данных нет, то выход
+  if not DataBase.VacationLoad(ATabNumID, ABeginDate, AEndDate, FirstDates,
+                                   Counts, AddCounts, AIsPlane) then Exit;
+  V:= nil;
+  for i:= 0 to High(FirstDates) do
+    if VacationVector(ABeginDate, AEndDate, FirstDates[i], Counts[i], AddCounts[i], AHolidayDates, V) then
+      Result:= VSum(Result, V);
+end;
+
 procedure NormHoursAndWorkDaysCounInPeriod(const ATabNumID: Integer;  //таб номер
                                const ABeginDate, AEndDate: TDate; //период
                                const ACalendar: TCalendar; //производственный календарь, перекрывающий период
@@ -458,7 +601,7 @@ procedure NormHoursAndWorkDaysCounInPeriod(const ATabNumID: Integer;  //таб �
                                const ARecrutDate: TDate = NULDATE;
                                const ADismissDate: TDate = INFDATE);
 var
-  CutCalendar: TCalendar;
+  //CutCalendar: TCalendar;
   WeekHours, IDs, ScheduleIDs: TIntVector;
   BDs, EDs: TDateVector;
   ScheduleNames: TStrVector;
@@ -470,19 +613,124 @@ begin
   //определяем период пересечения запрашиваемого периода и периода работы
   if not IsPeriodIntersect(ABeginDate, AEndDate, ARecrutDate, ADismissDate, BD, ED) then Exit;
   //определяем кол-во дней
-  CutCalendar:= nil;
-  ACalendar.Cut(BD, ED, CutCalendar);
-  AWorkDaysCount:= CutCalendar.WorkDaysCount;
-  FreeAndNil(CutCalendar);
+  AWorkDaysCount:= ACalendar.WorkDaysCount(BD, ED);
   //достаем из базы список рабочих часов в неделю с соответствующими периодами
   if not DataBase.StaffScheduleHistoryLoad(ATabNumID, IDs, ScheduleIDs, WeekHours,
     BDs, EDs, ScheduleNames, ABeginDate, AEndDate) then Exit;
   //суммируем кол-во рабочих часов по вытащенным периодам
   for i:=0 to High(WeekHours) do
+    ANormHours:= ANormHours + ACalendar.SumWorkHoursInt(WeekHours[i], BDs[i], EDs[i]);
+end;
+
+function SchedulesPostByCalendar(const ATabNumID: Integer; const ACalendar: TCalendar;
+                          const ASchedBD: TDate = NULDATE; ASchedED: TDate = INFDATE;
+                          const APostBD: TDate = NULDATE; APostED: TDate = INFDATE ): TPostScheduleVector;
+var
+  PostSchedule: TPostSchedule;
+  ScheduleIDs, WeekHours, V: TIntVector;
+  S: TStrVector;
+  BDs, EDs: TDateVector;
+  LimitBD, LimitED: TDate;
+  i: Integer;
+
+  function CreatePS(const AScheduleID, AHoursInWeek: Integer;
+                    const AScheduleBD, AScheduleED, APstBD, APstED: TDate): TPostSchedule;
+  var
+    Cycle: TScheduleCycle;
+    Correct: TScheduleCorrections;
   begin
-    ACalendar.Cut(BDs[i], EDs[i], CutCalendar);
-    ANormHours:= ANormHours + CutCalendar.SumWorkHoursInt(WeekHours[i]);
-    FreeAndNil(CutCalendar);
+    DataBase.ScheduleCycleLoad(AScheduleID, V, Cycle);
+    DataBase.ScheduleShiftCorrectionsLoad(AScheduleID, V, Correct,
+                                      ACalendar.BeginDate, ACalendar.EndDate);
+    Result:= TPostSchedule.Create;
+    Result.Calc(ACalendar, AHoursInWeek, Cycle, Correct,
+                AScheduleBD, AScheduleED, APstBD, APstED);
+  end;
+
+begin
+  Result:= nil;
+  LimitBD:= MaxDate(APostBD, ASchedBD);
+  LimitED:= MinDate(APostED, ASchedED);
+  //загружаем графики сменности на период запроса, если они есть
+  DataBase.StaffScheduleHistoryLoad(ATabNumID, V, ScheduleIDs, WeekHours,
+                                    BDs, EDs, S, LimitBD, LimitED, False);
+  for i:= 0 to High(ScheduleIDs) do
+  begin
+    //создаем сменный персональный график на подпериод
+    PostSchedule:= CreatePS(ScheduleIDs[i], WeekHours[i], BDs[i], EDs[i], LimitBD, LimitED);
+    //добавляем его к итоговому графику
+    VSAppend(Result, PostSchedule);
+  end;
+end;
+
+
+//function PersonalScheduleByPostSchedules(const ATabNumID: Integer; const ATabNum: String;
+//                              const ARecrutDate, ADismissDate: TDate;
+//                              const ACalendar: TCalendar; const AHolidayDates: TDateVector;
+//                              const APostSchedules: TPostScheduleVector;
+//                              const AWithPlaneVacation: Boolean = False;
+//                              const AStrMarkVacationMain: String = STRMARK_VACATIONMAIN;
+//                              const AStrMarkVacationAddition: String = STRMARK_VACATIONADDITION;
+//                              const AStrMarkVacationHoliday: String = STRMARK_VACATIONHOLIDAY ): TPersonalSchedule;
+//var
+//  i: Integer;
+//  Vac, V: TIntVector;
+//  PersonalCorrect: TScheduleCorrections;
+//begin
+//  Result:= nil;
+//  //загружаем персональные корректировки
+//  DataBase.SchedulePersonalCorrectionsLoad(ATabNumID, V, PersonalCorrect,
+//                                        ACalendar.BeginDate, ACalendar.EndDate);
+//  //загружаем вектор статусов отпуска
+//  Vac:= VacationForPeriod(ATabNumID, ACalendar.BeginDate, ACalendar.EndDate,
+//                          AHolidayDates, AWithPlaneVacation);
+//  //создаем персональный график
+//  Result:= TPersonalSchedule.Create(ATabNumID, ATabNum, ARecrutDate, ADismissDate,
+//    Vac, PersonalCorrect, AStrMarkVacationMain, AStrMarkVacationAddition, AStrMarkVacationHoliday);
+//  //заполняем персональный график
+//  for i:= 0 to High(APostSchedules) do
+//     Result.Add(APostSchedules[i], i=High(APostSchedules));
+//end;
+
+function SchedulePersonalByCalendar(const ATabNumID: Integer; const ATabNum: String;
+                const ARecrutDate, ADismissDate: TDate;
+                const ACalendar: TCalendar; const AHolidayDates: TDateVector;
+                const AWithPlaneVacation: Boolean = False;
+                const AStrMarkVacationMain: String = STRMARK_VACATIONMAIN;
+                const AStrMarkVacationAddition: String = STRMARK_VACATIONADDITION;
+                const AStrMarkVacationHoliday: String = STRMARK_VACATIONHOLIDAY;
+                const ASchedBD: TDate = NULDATE; ASchedED: TDate = INFDATE;
+                const APostBD: TDate = NULDATE; APostED: TDate = INFDATE): TPersonalSchedule;
+var
+  i: Integer;
+  Vac, V: TIntVector;
+  PersonalCorrect: TScheduleCorrections;
+  PostSchedules: TPostScheduleVector;
+begin
+  Result:= nil;
+  //загружаем графики работы в должности и "в графике"
+  PostSchedules:= SchedulesPostByCalendar(ATabNumID, ACalendar, ASchedBD, ASchedED, APostBD, APostED);
+  if Length(PostSchedules)=0 then Exit;
+  try
+    //Result:= PersonalScheduleByPostSchedules(ATabNumID, ATabNum, ARecrutDate, ADismissDate,
+    //                            ACalendar, AHolidayDates, PostSchedules, AWithPlaneVacation,
+    //                           AStrMarkVacationMain, AStrMarkVacationAddition,
+    //                           AStrMarkVacationHoliday);
+
+    //загружаем персональные корректировки
+    DataBase.SchedulePersonalCorrectionsLoad(ATabNumID, V, PersonalCorrect,
+                                          ACalendar.BeginDate, ACalendar.EndDate);
+    //загружаем вектор статусов отпуска
+    Vac:= VacationForPeriod(ATabNumID, ACalendar.BeginDate, ACalendar.EndDate,
+                            AHolidayDates, AWithPlaneVacation);
+    //создаем персональный график
+    Result:= TPersonalSchedule.Create(ATabNumID, ATabNum, ARecrutDate, ADismissDate,
+      Vac, PersonalCorrect, AStrMarkVacationMain, AStrMarkVacationAddition, AStrMarkVacationHoliday);
+    //заполняем персональный график
+    for i:= 0 to High(PostSchedules) do
+       Result.Add(PostSchedules[i], i=High(PostSchedules));
+  finally
+    VSDel(PostSchedules);
   end;
 end;
 

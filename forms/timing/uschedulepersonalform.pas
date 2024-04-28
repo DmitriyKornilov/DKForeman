@@ -10,12 +10,12 @@ uses
   DateUtils,
   //Project utils
   UDataBase, UConst, UTypes, UUtils, UWorkHours, UCalendar, USchedule,
-
+  UScheduleShiftSheet,
   //DK packages utils
   DK_VSTTables, DK_VSTTableTools, DK_VSTEdit, DK_Vector, DK_Const, DK_Dialogs,
-  DK_Zoom, DK_DateUtils, DK_Color, DK_SheetExporter, DK_StrUtils,
+  DK_Zoom, DK_DateUtils, DK_Color, DK_SheetExporter, DK_StrUtils, DK_Progress,
   //Forms
-  UChooseForm, USchedulePersonalEditForm;
+  UChooseForm, USchedulePersonalEditForm, UScheduleCorrectionEditForm;
 
 type
 
@@ -38,6 +38,7 @@ type
     ListOrderToolPanel: TPanel;
     FIORadioButton: TRadioButton;
     PostRadioButton: TRadioButton;
+    SelectDirectoryDialog1: TSelectDirectoryDialog;
     TabNumRadioButton: TRadioButton;
     VacationEraseButton: TSpeedButton;
     VacationScheduleButton: TBCButton;
@@ -94,9 +95,19 @@ type
     YearSpinEdit: TSpinEdit;
     ZoomBevel: TBevel;
     ZoomPanel: TPanel;
+    procedure CopyCancelButtonClick(Sender: TObject);
+    procedure CopyDelButtonClick(Sender: TObject);
+    procedure CopySaveButtonClick(Sender: TObject);
+    procedure DayAddButtonClick(Sender: TObject);
+    procedure DayCopyButtonClick(Sender: TObject);
+    procedure DayDelButtonClick(Sender: TObject);
+    procedure DayEditButtonClick(Sender: TObject);
+    procedure DayVTNodeDblClick(Sender: TBaseVirtualTree;
+      const HitInfo: THitInfo);
     procedure DescendingButtonClick(Sender: TObject);
     procedure CloseButtonClick(Sender: TObject);
     procedure AscendingButtonClick(Sender: TObject);
+    procedure ExportButtonClick(Sender: TObject);
     procedure FilterEditButtonClick(Sender: TObject);
     procedure FilterEditChange(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -114,6 +125,9 @@ type
     procedure VacationDelButtonClick(Sender: TObject);
     procedure VacationEraseButtonClick(Sender: TObject);
     procedure VacationSaveButtonClick(Sender: TObject);
+    procedure ViewGridDblClick(Sender: TObject);
+    procedure ViewGridMouseDown(Sender: TObject; Button: TMouseButton;
+      {%H-}Shift: TShiftState; X, Y: Integer);
     procedure YearSpinEditChange(Sender: TObject);
   private
     CanDrawSchedule: Boolean;
@@ -122,6 +136,10 @@ type
 
     Calendar: TCalendar;
     Schedule: TPersonalSchedule;
+    Sheet: TPersonalScheduleYearSheet;
+
+    CorrectIDs: TIntVector;
+    Corrections: TScheduleCorrections;
 
     Colors: TColorVector;
 
@@ -145,8 +163,8 @@ type
     HistoryScheduleNames: TStrVector;
 
     TabNumIDs: TIntVector;
-    StaffLongNames, StaffShortNames: TStrVector;
-    RecrutDates, DismissDates: TDateVector;
+    StaffLongNames, StaffShortNames, ScheduleNames: TStrVector;
+    RecrutDates, DismissDates, Holidays: TDateVector;
     Families, Names, Patronymics, TabNums, PostNames: TStrVector;
 
 
@@ -175,8 +193,15 @@ type
 
     procedure ScheduleLoad;
     procedure ScheduleChange;
+    procedure ScheduleToSheet(var ASheet: TPersonalScheduleYearSheet;
+                              const AWorksheet: TsWorksheet;
+                              const AGrid: TsWorksheetGrid;
+                              const ACalendar: TCalendar;
+                              const ASchedule: TPersonalSchedule;
+                              const AScheduleName: String = '');
     procedure ScheduleDraw(const AZoomPercent: Integer);
     procedure ScheduleRedraw;
+    procedure ScheduleExport;
 
     procedure HistoryCreate;
     procedure HistoryLoad(const SelectedID: Integer = -1);
@@ -191,8 +216,10 @@ type
     procedure VacationEditingBegin;
     procedure VacationEditDelete;
 
+    procedure ScheduleCorrectionEditFormOpen(const ADate: TDate);
     procedure SchedulePersonalEditFormOpen(const AEditingType: TEditingType);
 
+    procedure ColorsLoad;
     procedure CaptionsUpdate;
     procedure SettingsLoad;
   public
@@ -224,11 +251,62 @@ begin
   StaffListLoad;
 end;
 
+procedure TSchedulePersonalForm.DayAddButtonClick(Sender: TObject);
+begin
+  ScheduleCorrectionEditFormOpen(NULDATE);
+end;
+
+procedure TSchedulePersonalForm.CopySaveButtonClick(Sender: TObject);
+begin
+  CopyEnd(True);
+end;
+
+procedure TSchedulePersonalForm.CopyDelButtonClick(Sender: TObject);
+begin
+  Sheet.Unselect(Sheet.SelectedDates[VSTCopy.SelectedIndex]);
+  CopyListLoad;
+end;
+
+procedure TSchedulePersonalForm.CopyCancelButtonClick(Sender: TObject);
+begin
+  CopyEnd(False);
+end;
+
+procedure TSchedulePersonalForm.DayCopyButtonClick(Sender: TObject);
+begin
+  CopyBegin;
+end;
+
+procedure TSchedulePersonalForm.DayDelButtonClick(Sender: TObject);
+begin
+  CorrectionDelete;
+end;
+
+procedure TSchedulePersonalForm.DayEditButtonClick(Sender: TObject);
+begin
+  ScheduleCorrectionEditFormOpen(Corrections.Dates[VSTDays.SelectedIndex]);
+end;
+
+procedure TSchedulePersonalForm.DayVTNodeDblClick(Sender: TBaseVirtualTree;
+  const HitInfo: THitInfo);
+var
+  D: TDate;
+begin
+  if not VSTDays.IsSelected then Exit;
+  D:= Corrections.Dates[HitInfo.HitNode^.Index];
+  ScheduleCorrectionEditFormOpen(D);
+end;
+
 procedure TSchedulePersonalForm.AscendingButtonClick(Sender: TObject);
 begin
   AscendingButton.Visible:= False;
   DescendingButton.Visible:= True;
   StaffListLoad;
+end;
+
+procedure TSchedulePersonalForm.ExportButtonClick(Sender: TObject);
+begin
+  ScheduleExport;
 end;
 
 procedure TSchedulePersonalForm.FilterEditButtonClick(Sender: TObject);
@@ -265,7 +343,6 @@ begin
   ]);
 
   Calendar:= TCalendar.Create;
-  //Schedule:= TShiftSchedule.Create;
 
   CanDrawSchedule:= False;
 
@@ -280,7 +357,7 @@ begin
 
   IsCopyDates:= False;
 
-  //ColorsLoad;
+  ColorsLoad;
   SettingsLoad; //load ZoomPercent
   CreateZoomControls(50, 150, ZoomPercent, ZoomPanel, @ScheduleDraw, True);
 
@@ -302,7 +379,7 @@ begin
 
   FreeAndNil(Calendar);
   if Assigned(Schedule) then FreeAndNil(Schedule);
-  //if Assigned(Sheet) then FreeAndNil(Sheet);
+  if Assigned(Sheet) then FreeAndNil(Sheet);
 end;
 
 procedure TSchedulePersonalForm.FormShow(Sender: TObject);
@@ -417,32 +494,108 @@ begin
                                 VacationDates, VacationCounts, VacationAddCounts);
 
   ScheduleChange;
-  //TmpVacationDates:= VCut(VacationDates);
-  //TmpVacationCounts:= VCut(VacationCounts);
-  //TmpVacationAddCounts:= VCut(VacationAddCounts);
-  //VacationSaveButton.Enabled:= False;
-  //VacationCancelButton.Enabled:= False;
+end;
+
+procedure TSchedulePersonalForm.ViewGridDblClick(Sender: TObject);
+var
+  DayDate: TDate;
+begin
+  if ModeType<>mtEditing then Exit;
+  if not Sheet.GridToDate(ViewGrid.Row, ViewGrid.Col, DayDate) then Exit;
+  VSTDays.ReSelect(Corrections.Dates, DayDate, False);
+  ScheduleCorrectionEditFormOpen(DayDate);
+end;
+
+procedure TSchedulePersonalForm.ViewGridMouseDown(Sender: TObject;
+  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+var
+  R, C: Integer;
+  D: TDate;
+begin
+  if ModeType<>mtEditing then Exit;
+  if Button=mbLeft then
+  begin
+    (Sender as TsWorksheetGrid).MouseToCell(X, Y, C, R);
+    if not Sheet.GridToDate(R, C, D) then Exit;
+    if DayInListSelect(D) then Exit;
+    Sheet.DayInGridSelect(D);
+    if IsCopyDates then CopyListLoad;
+  end
+  else if Button=mbRight then
+  begin
+    if IsCopyDates then
+    begin
+      VSTCopy.ValuesClear;
+      Sheet.SelectionClear;
+    end
+    else
+      VSTDays.UnSelect;
+  end;
 end;
 
 procedure TSchedulePersonalForm.YearSpinEditChange(Sender: TObject);
 begin
   CalendarForYear(YearSpinEdit.Value, Calendar);
+  Holidays:= DataBase.HolidaysLoad(YearSpinEdit.Value);
   ScheduleChange;
 end;
 
 procedure TSchedulePersonalForm.CopyBegin;
 begin
+  IsCopyDates:= True;
+  Sheet.MultiSelect:= True;
+  DayPanel.Visible:= False;
+  DayPanel.Align:= alBottom;
+  CopyPanel.Align:= alClient;
+  CopyPanel.Visible:= True;
 
+  SelectedHoursTotal:= Corrections.HoursTotal[VSTDays.SelectedIndex];
+  SelectedHoursNight:= Corrections.HoursNight[VSTDays.SelectedIndex];
+  SelectedDigMark:= Corrections.DigMarks[VSTDays.SelectedIndex];
+  SelectedShiftNum:= Corrections.ShiftNums[VSTDays.SelectedIndex];
+  SelectedStrMark:= Corrections.StrMarks[VSTDays.SelectedIndex];
+  VSTDays.Unselect;
 end;
 
 procedure TSchedulePersonalForm.CopyEnd(const ANeedSave: Boolean);
+var
+  C: TScheduleCorrections;
 begin
+  if Sheet.IsSelected then
+  begin
+    if ANeedSave then //apply copies
+    begin
+      C:= GetScheduleCorrections(Sheet.SelectedDates, SelectedHoursTotal, SelectedHoursNight,
+                                 SelectedDigMark, SelectedShiftNum, SelectedStrMark);
+      DataBase.SchedulePersonalCorrectionsUpdate(TabNumIDs[StaffList.SelectedIndex], C);
+      ScheduleChange;
+    end
+    else //cancel copies
+      Sheet.SelectionClear;
+    VSTCopy.ValuesClear;
+  end;
 
+  IsCopyDates:= False;
+  Sheet.MultiSelect:= False;
+  CopyPanel.Visible:= False;
+  CopyPanel.Align:= alBottom;
+  DayPanel.Align:= alClient;
+  DayPanel.Visible:= True;
 end;
 
 function TSchedulePersonalForm.DayInListSelect(const ADate: TDate): Boolean;
+var
+  Ind: Integer;
 begin
+  Result:= False;
+  if IsCopyDates then Exit;
 
+  Ind:= VIndexOfDate(Corrections.Dates, ADate);
+  if Ind>=0 then
+    VSTDays.Select(Ind)
+  else
+    VSTDays.UnSelect;
+  Result:= Ind>=0;
 end;
 
 procedure TSchedulePersonalForm.ParamListCreate;
@@ -516,28 +669,97 @@ begin
 end;
 
 procedure TSchedulePersonalForm.CorrectionsLoad(const SelectedID: Integer = -1);
+var
+  SelectedCorrectionID: Integer;
+  Dates, ShiftNums: TStrVector;
+  BD, ED: TDate;
 begin
+  SelectedCorrectionID:= GetSelectedID(VSTDays, CorrectIDs, SelectedID);
 
+  VSTDays.ValuesClear;
+
+  if not StaffList.IsSelected then Exit;
+
+  FirstLastDayInYear(YearSpinEdit.Value, BD, ED);
+  DataBase.SchedulePersonalCorrectionsLoad(TabNumIDs[StaffList.SelectedIndex],
+                                        CorrectIDs, Corrections, BD, ED);
+
+  ShiftNums:= VIntToStr(Corrections.ShiftNums);
+  VChangeIf(ShiftNums, '0', EMPTY_MARK);
+  Dates:= VDateToStr(Corrections.Dates);
+
+  VSTDays.Visible:= False;
+  try
+    VSTDays.ValuesClear;
+    VSTDays.SetColumn(SCHEDULE_CORRECTION_COLUMN_NAMES[0], Dates);
+    VSTDays.SetColumn(SCHEDULE_CORRECTION_COLUMN_NAMES[1], ShiftNums);
+    VSTDays.SetColumn(SCHEDULE_CORRECTION_COLUMN_NAMES[2], VWorkHoursToStr(Corrections.HoursTotal));
+    VSTDays.SetColumn(SCHEDULE_CORRECTION_COLUMN_NAMES[3], VWorkHoursToStr(Corrections.HoursNight));
+    VSTDays.SetColumn(SCHEDULE_CORRECTION_COLUMN_NAMES[4], Corrections.StrMarks);
+    VSTDays.Draw;
+    VSTDays.ReSelect(CorrectIDs, SelectedCorrectionID);
+  finally
+    VSTDays.Visible:= True;
+  end;
 end;
 
 procedure TSchedulePersonalForm.CorrectionDelete;
+var
+  Ind: Integer;
 begin
-
+  if not VSTDays.IsSelected then Exit;
+  Ind:= VSTDays.SelectedIndex;
+  DataBase.SchedulePersonalCorrectionDelete(CorrectIDs[Ind]);
+  ScheduleChange;
+  if VIsNil(CorrectIDs) then Exit;
+  if Ind>High(CorrectIDs) then Dec(Ind);
+  VSTDays.Select(Ind);
+  VSTDays.SetFocus;
 end;
 
 procedure TSchedulePersonalForm.CorrectionSelect;
 begin
+  if VSTDays.IsSelected then
+    Sheet.DayInGridSelect(Corrections.Dates[VSTDays.SelectedIndex])
+  else if Assigned(Sheet) then
+    Sheet.SelectionClear;
 
+  DayDelButton.Enabled:= VSTDays.IsSelected;
+  DayEditButton.Enabled:= DayDelButton.Enabled;
+  DayCopyButton.Enabled:= DayDelButton.Enabled;
 end;
 
 procedure TSchedulePersonalForm.CopyListLoad(const ASelectedDate: TDate = 0);
+var
+  Dates, TotalHours, NightHours, StrMarks, ShiftNums: TStrVector;
 begin
+  Dates:= VDateToStr(Sheet.SelectedDates);
+  VDim(TotalHours{%H-}, Length(Dates), WorkHoursToStr(SelectedHoursTotal));
+  VDim(NightHours{%H-}, Length(Dates), WorkHoursToStr(SelectedHoursNight));
+  VDim(StrMarks{%H-}, Length(Dates), SelectedStrMark);
+  VDim(ShiftNums{%H-}, Length(Dates), IntToStr(SelectedShiftNum));
+  VChangeIf(ShiftNums, '0', EMPTY_MARK);
 
+  VSTCopy.Visible:= False;
+  try
+    VSTCopy.ValuesClear;
+    VSTCopy.SetColumn(SCHEDULE_CORRECTION_COLUMN_NAMES[0], Dates);
+    VSTCopy.SetColumn(SCHEDULE_CORRECTION_COLUMN_NAMES[1], ShiftNums);
+    VSTCopy.SetColumn(SCHEDULE_CORRECTION_COLUMN_NAMES[2], TotalHours);
+    VSTCopy.SetColumn(SCHEDULE_CORRECTION_COLUMN_NAMES[3], NightHours);
+    VSTCopy.SetColumn(SCHEDULE_CORRECTION_COLUMN_NAMES[4], StrMarks);
+    VSTCopy.Draw;
+    VSTCopy.ReSelect(Sheet.SelectedDates, ASelectedDate);
+  finally
+    VSTCopy.Visible:= True;
+  end;
+
+  CopySaveButton.Enabled:= Sheet.IsSelected;
 end;
 
 procedure TSchedulePersonalForm.CopySelect;
 begin
-
+  CopyDelButton.Enabled:= VSTCopy.IsSelected;
 end;
 
 procedure TSchedulePersonalForm.StaffListCreate;
@@ -586,6 +808,7 @@ begin
                        Families, Names, Patronymics, TabNums, PostNames);
   StaffLongNames:= StaffNamesForTiming(Families, Names, Patronymics, TabNums, PostNames, True);
   StaffShortNames:= StaffNamesForTiming(Families, Names, Patronymics, TabNums, PostNames, False);
+  ScheduleNames:= StaffNamesForScheduleNames(Families, Names, Patronymics, TabNums, True);
 
   StaffList.Visible:= False;
   try
@@ -601,7 +824,13 @@ end;
 
 procedure TSchedulePersonalForm.ScheduleLoad;
 begin
-
+  if Assigned(Schedule) then FreeAndNil(Schedule);
+  if not StaffList.IsSelected then Exit;
+  Schedule:= SchedulePersonalByCalendar(TabNumIDs[StaffList.SelectedIndex],
+    TabNums[StaffList.SelectedIndex],
+    RecrutDates[StaffList.SelectedIndex], DismissDates[StaffList.SelectedIndex],
+    Calendar, Holidays, False,
+    STRMARK_VACATIONMAIN, STRMARK_VACATIONADDITION, STRMARK_VACATIONHOLIDAY);
 end;
 
 procedure TSchedulePersonalForm.ScheduleChange;
@@ -610,20 +839,42 @@ begin
   CaptionsUpdate;
   HistoryLoad;
   VacationEditLoad;
+  CorrectionsLoad;
   ScheduleLoad;
   ScheduleRedraw;
 end;
 
+procedure TSchedulePersonalForm.ScheduleToSheet(var ASheet: TPersonalScheduleYearSheet;
+                              const AWorksheet: TsWorksheet;
+                              const AGrid: TsWorksheetGrid;
+                              const ACalendar: TCalendar;
+                              const ASchedule: TPersonalSchedule;
+                              const AScheduleName: String = '');
+begin
+  if Assigned(ASheet) then FreeAndNil(ASheet);
+  ASheet:= TPersonalScheduleYearSheet.Create(AWorksheet, AGrid, MainForm.GridFont,
+                                           CountType.SelectedIndex);
+
+  if Assigned(AGrid) then
+    ASheet.Zoom(ZoomPercent);
+  ASheet.Draw(ACalendar, ASchedule, AScheduleName,
+              ParamList.Checked[0], ParamList.Checked[1], ParamList.Checked[2],
+              ParamList.Checked[3], ColorType.SelectedIndex=0);
+  if ParamList.Checked[4] then
+    ASheet.ColorsUpdate(Colors)
+  else
+    ASheet.ColorsClear;
+end;
+
 procedure TSchedulePersonalForm.ScheduleDraw(const AZoomPercent: Integer);
 begin
-  //if not CanDrawSchedule then Exit;
   if not Calendar.Calculated then Exit;
-  //if not Schedule.Calculated then Exit;
+  if (not Assigned(Schedule)) or (not Schedule.Calculated) then Exit;
 
   ViewGrid.Visible:= False;
   try
     ZoomPercent:= AZoomPercent;
-    //ScheduleToSheet(Sheet, ViewGrid.Worksheet, ViewGrid, Calendar, Schedule);
+    ScheduleToSheet(Sheet, ViewGrid.Worksheet, ViewGrid, Calendar, Schedule);
   finally
     ViewGrid.Visible:= True;
   end;
@@ -632,6 +883,97 @@ end;
 procedure TSchedulePersonalForm.ScheduleRedraw;
 begin
   ScheduleDraw(ZoomPercent);
+end;
+
+procedure TSchedulePersonalForm.ScheduleExport;
+var
+  V: TStrVector;
+  S: String;
+  ChooseIndex: Integer;
+
+  procedure ExportSingleSchedule;
+  var
+    Exporter: TSheetsExporter;
+    Worksheet: TsWorksheet;
+    ExpSheet: TPersonalScheduleYearSheet;
+  begin
+    ExpSheet:= nil;
+    Exporter:= TSheetsExporter.Create;
+    try
+      Worksheet:= Exporter.AddWorksheet(YearSpinEdit.Text);
+      ScheduleToSheet(ExpSheet, Worksheet, nil, Calendar, Schedule,
+                      ScheduleNames[StaffList.SelectedIndex]);
+      Exporter.PageSettings(spoLandscape);
+      Exporter.Save('Выполнено!');
+    finally
+      if Assigned(ExpSheet) then FreeAndNil(ExpSheet);
+      FreeAndNil(Exporter);
+    end;
+  end;
+
+  procedure ExportSeveralSchedules;
+  var
+    Exporter: TBooksExporter;
+    Worksheet: TsWorksheet;
+    ExpSheet: TPersonalScheduleYearSheet;
+    TmpSchedule: TPersonalSchedule;
+    i: Integer;
+    Progress: TProgress;
+  begin
+    ExpSheet:= nil;
+    Exporter:= TBooksExporter.Create;
+    if not Exporter.BeginExport then
+    begin
+      FreeAndNil(Exporter);
+      Exit;
+    end;
+    try
+      Progress:= TProgress.Create(nil);
+      try
+        Progress.WriteLine1('Экспорт графика');
+        Progress.WriteLine2(EmptyStr);
+        Progress.Show;
+        for i:=0 to High(TabNumIDs) do
+        begin
+          Progress.WriteLine2(ScheduleNames[i]);
+          TmpSchedule:= SchedulePersonalByCalendar(TabNumIDs[i], TabNums[i],
+                 RecrutDates[i], DismissDates[i], Calendar, Holidays, False,
+                 STRMARK_VACATIONMAIN, STRMARK_VACATIONADDITION, STRMARK_VACATIONHOLIDAY);
+          try
+            Worksheet:= Exporter.AddWorksheet(YearSpinEdit.Text);
+            ScheduleToSheet(ExpSheet, Worksheet, nil, Calendar, TmpSchedule, ScheduleNames[i]);
+            Exporter.PageSettings(spoLandscape);
+            Exporter.Save(ScheduleNames[i]);
+          finally
+            FreeAndNil(TmpSchedule);
+          end;
+        end;
+
+      finally
+        FreeAndNil(Progress);
+      end;
+      Exporter.EndExport('Выполнено!');
+    finally
+      if Assigned(ExpSheet) then FreeAndNil(ExpSheet);
+      FreeAndNil(Exporter);
+    end;
+  end;
+
+begin
+  if not StaffList.IsSelected then Exit;
+
+  S:= 'Сохранить в файл:';
+  V:= VCreateStr([
+    ScheduleNames[StaffList.SelectedIndex] + ': график работы на ' + YearSpinEdit.Text + ' год',
+    'Графики работы всех сотрудников на ' + YearSpinEdit.Text + ' год'
+  ]);
+  ChooseIndex:= Choose(S, V);
+  if ChooseIndex=0 then Exit;
+
+  case ChooseIndex of
+  1: ExportSingleSchedule;
+  2: ExportSeveralSchedules;
+  end;
 end;
 
 procedure TSchedulePersonalForm.HistoryCreate;
@@ -697,10 +1039,12 @@ procedure TSchedulePersonalForm.HistoryDelItem;
 begin
   if not HistoryDelButton.Enabled then Exit;
   if not Confirm('Удалить информацию о выбранном периоде работы в графике?') then Exit;
-  if DataBase.StaffScheduleHistoryDelete(HistoryIDs[History.SelectedIndex + 1],
+  if not DataBase.StaffScheduleHistoryDelete(HistoryIDs[History.SelectedIndex + 1],
                               HistoryIDs[History.SelectedIndex],
-                              HistoryEndDates[History.SelectedIndex]) then
-    HistoryLoad;
+                              HistoryEndDates[History.SelectedIndex]) then Exit;
+
+  HistoryLoad;
+  ScheduleChange;
 end;
 
 procedure TSchedulePersonalForm.VacationEditCreate;
@@ -711,7 +1055,6 @@ begin
   VacationEdit.OnSelect:= @VacationEditSelect;
   VacationEdit.OnDeleteCellText:= @VacationEditDelete;
 
-  //VacationEdit.IsShowZeros:= True;
   VacationEdit.HeaderFont.Style:= [fsBold];
   VacationEdit.AddColumnRowTitles(VACATION_EDIT_COLUMN_NAMES[0],
                                VACATION_EDIT_COLUMN_WIDTHS[0]);
@@ -739,9 +1082,6 @@ begin
   DataBase.VacationsEditingLoad(TabNumIDs[StaffList.SelectedIndex], YearSpinEdit.Value,
                                 VacationDates, VacationCounts, VacationAddCounts);
   VacationEditSetColumns(VacationDates, VacationCounts, VacationAddCounts);
-  //TmpVacationDates:= VCut(VacationDates);
-  //TmpVacationCounts:= VCut(VacationCounts);
-  //TmpVacationAddCounts:= VCut(VacationAddCounts);
 end;
 
 procedure TSchedulePersonalForm.VacationEditSetColumns(const ADates: TDateVector;
@@ -777,6 +1117,34 @@ procedure TSchedulePersonalForm.VacationEditDelete;
 begin
   VacationSaveButton.Enabled:= True;
   VacationCancelButton.Enabled:= True;
+end;
+
+procedure TSchedulePersonalForm.ScheduleCorrectionEditFormOpen(const ADate: TDate);
+var
+  ScheduleCorrectionEditForm: TScheduleCorrectionEditForm;
+  Ind: Integer;
+begin
+  if not StaffList.IsSelected then Exit;
+
+  ScheduleCorrectionEditForm:= TScheduleCorrectionEditForm.Create(nil);
+  try
+    ScheduleCorrectionEditForm.ShiftNumSpinEdit.MaxValue:= 365;
+    ScheduleCorrectionEditForm.Year:= YearSpinEdit.Value;
+    ScheduleCorrectionEditForm.TabNumID:= TabNumIDs[StaffList.SelectedIndex];
+    ScheduleCorrectionEditForm.FirstDatePicker.Date:= ADate;
+    Ind:= VIndexOfDate(Corrections.Dates, ADate);
+    if Ind>=0 then
+    begin
+      ScheduleCorrectionEditForm.DigMark:= Corrections.DigMarks[VSTDays.SelectedIndex];
+      ScheduleCorrectionEditForm.TotalHoursSpinEdit.Value:= WorkHoursIntToFrac(Corrections.HoursTotal[VSTDays.SelectedIndex]);
+      ScheduleCorrectionEditForm.NightHoursSpinEdit.Value:= WorkHoursIntToFrac(Corrections.HoursNight[VSTDays.SelectedIndex]);;
+      ScheduleCorrectionEditForm.ShiftNumSpinEdit.Value:= Corrections.ShiftNums[VSTDays.SelectedIndex];
+    end;
+    if ScheduleCorrectionEditForm.ShowModal=mrOK then
+      ScheduleChange;
+  finally
+    FreeAndNil(ScheduleCorrectionEditForm);
+  end;
 end;
 
 procedure TSchedulePersonalForm.SchedulePersonalEditFormOpen(const AEditingType: TEditingType);
@@ -818,10 +1186,25 @@ begin
         end;
     end;
     if SchedulePersonalEditForm.ShowModal=mrOK then
+    begin
       HistoryLoad(SchedulePersonalEditForm.HistoryID);
+      ScheduleChange;
+    end;
   finally
     FreeAndNil(SchedulePersonalEditForm);
   end;
+end;
+
+procedure TSchedulePersonalForm.ColorsLoad;
+begin
+  Colors:= nil;
+  VDim(Colors, 7);
+  Colors[CORRECT_COLOR_INDEX]:= COLOR_SCHEDULE_CORRECTION;
+  Colors[NOTWORK_COLOR_INDEX]:= COLOR_SCHEDULE_NOTWORK;
+  Colors[TITLE_COLOR_INDEX]:= COLOR_SCHEDULE_TITLE;
+  Colors[OUTSIDEMONTH_COLOR_INDEX]:= COLOR_SCHEDULE_OUTSIDEMONTH;
+  Colors[HIGHLIGHT_COLOR_INDEX]:= DefaultSelectionBGColor;
+  Colors[NOTDEFINE_COLOR_INDEX]:= COLOR_SCHEDULE_NOTDEFINE;
 end;
 
 procedure TSchedulePersonalForm.CaptionsUpdate;

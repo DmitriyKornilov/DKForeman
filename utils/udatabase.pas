@@ -9,7 +9,7 @@ uses
   //Project utils
   UCalendar, UConst, USchedule,
   //DK packages utils
-  DK_SQLite3, DK_SQLUtils, DK_Vector, DK_StrUtils, DK_Const,
+  DK_SQLite3, DK_SQLUtils, DK_Vector, DK_StrUtils, DK_Const, DK_DateUtils,
   DK_VSTDropDown;
 
 type
@@ -147,7 +147,8 @@ type
                           out ABeginDates, AEndDates: TDateVector;
                           out AScheduleNames: TStrVector;
                           const AFromDate: TDate = NULDATE;
-                          const AToDate: TDate = INFDATE): Boolean;
+                          const AToDate: TDate = INFDATE;
+                          const AIsDesc: Boolean = True): Boolean;
     {Новая запись (перевод с последнего графика) в таблице переводов по графикам: True - ОК, False - ошибка}
     function StaffScheduleHistoryAdd(const AHistoryID, ATabNumID, AScheduleID: Integer;
                           const ABeginDate: TDate): Boolean;
@@ -170,6 +171,8 @@ type
     function CalendarCorrectionsUpdate(const ACorrections: TCalendarCorrections): Boolean;
     {Удаление корректировки дня календаря: True - ОК, False - ошибка}
     function CalendarCorrectionDelete(const ADate: TDate): Boolean;
+    {Вектор дат праздничных дней текущего года и предыдщего года}
+    function HolidaysLoad(const AYear: Word): TDateVector;
 
     (**************************************************************************
                                      ГРАФИКИ
@@ -185,8 +188,8 @@ type
                                 out ADates: TDateVector;
                                 out ATotalHours, ANightHours, AShiftNums, ADigMarks: TIntVector;
                                 out AStrMarks: TStrVector;
-                                const ABeginDate: TDate = 0;
-                                const AEndDate: TDate = 0): Boolean;
+                                const ABeginDate: TDate = NULDATE;
+                                const AEndDate: TDate = INFDATE): Boolean;
     {Запись или обновление корректировки графика: True - ОК, False - ошибка}
     function ScheduleCorrectionsUpdate(const ATableName, AIDFieldName: String;
                                const AIDValue: Integer;
@@ -201,17 +204,25 @@ type
     function ScheduleShiftCorrectionsLoad(const AScheduleID: Integer;
                                out ACorrectIDs: TIntVector;
                                out ACorrections: TScheduleCorrections;
-                               const ABeginDate: TDate = 0;
-                               const AEndDate: TDate = 0): Boolean;
+                               const ABeginDate: TDate = NULDATE;
+                               const AEndDate: TDate = INFDATE): Boolean;
     {Запись или обновление корректировки графика сменности: True - ОК, False - ошибка}
     function ScheduleShiftCorrectionsUpdate(const AScheduleID: Integer;
                                const ACorrections: TScheduleCorrections): Boolean;
     {Удаление корректировки графика сменности: True - ОК, False - ошибка}
     function ScheduleShiftCorrectionDelete(const ACorrectID: Integer): Boolean;
 
+    {Cписок корректировок персонального графика: True - ОК, False - пусто (ошибка)}
+    function SchedulePersonalCorrectionsLoad(const ATabNumID: Integer;
+                               out ACorrectIDs: TIntVector;
+                               out ACorrections: TScheduleCorrections;
+                               const ABeginDate: TDate = NULDATE;
+                               const AEndDate: TDate = INFDATE): Boolean;
     {Запись или обновление корректировки персонального графика: True - ОК, False - ошибка}
     function SchedulePersonalCorrectionsUpdate(const ATabNumID: Integer;
                                const ACorrections: TScheduleCorrections): Boolean;
+    {Удаление корректировки персонального графика: True - ОК, False - ошибка}
+    function SchedulePersonalCorrectionDelete(const ACorrectID: Integer): Boolean;
 
     {Проверка наличия наименования графика в записи с ID<>AScheduleID: True - да, False - нет}
     function ScheduleShiftIsExists(const AScheduleID: Integer; const AScheduleName: String): Boolean;
@@ -230,14 +241,19 @@ type
     (**************************************************************************
                                       ОТПУСКА
     **************************************************************************)
-    {Информация по отпускам: True - ОК, False - пусто}
+    {Информация по отпускам на год для редактирования: True - ОК, False - пусто}
     function VacationsEditingLoad(const ATabNumID, AYear: Integer;
                                   out ADates: TDateVector;
                                   out ACounts, AAddCounts: TIntVector): Boolean;
-    {Обновление информации по отпускам: True - ОК, False - пусто}
+    {Обновление информации по отпускам на год при редактировании: True - ОК, False - пусто}
     function VacationsEditingUpdate(const ATabNumID, AYear: Integer;
                                   const ADates: TDateVector;
                                   const ACounts, AAddCounts: TIntVector): Boolean;
+    {Информация по отпускам за период для графика/табеля : True - ОК, False - пусто
+     AIsPlane=True - по плану, AIsPlane=False - по факту}
+    function VacationLoad(const ATabNumID: Integer; const ABeginDate, AEndDate: TDate;
+                          out AFirstDates: TDateVector; out ACounts, AAddCounts: TIntVector;
+                          const AIsPlane: Boolean = False): Boolean;
 
     (**************************************************************************
                                       ТАБЕЛИ
@@ -1080,7 +1096,10 @@ function TDataBase.StaffScheduleHistoryLoad(const ATabNumID: Integer;
                           out ABeginDates, AEndDates: TDateVector;
                           out AScheduleNames: TStrVector;
                           const AFromDate: TDate = NULDATE;
-                          const AToDate: TDate = INFDATE): Boolean;
+                          const AToDate: TDate = INFDATE;
+                          const AIsDesc: Boolean = True): Boolean;
+var
+  S: String;
 begin
   AHistoryIDs:= nil;
   AScheduleIDs:= nil;
@@ -1088,6 +1107,10 @@ begin
   ABeginDates:= nil;
   AEndDates:= nil;
   AScheduleNames:= nil;
+
+  S:= EmptyStr;
+  if AIsDesc then
+    S:= ' DESC';
 
   Result:= False;
   QSetQuery(FQuery);
@@ -1099,7 +1122,7 @@ begin
     'WHERE (t1.TabNumID = :TabNumID) AND (' +
            SqlCROSS('t1.BeginDate', 't1.EndDate', ':BD', ':ED') +
            ') ' +
-    'ORDER BY t1.BeginDate DESC'
+    'ORDER BY t1.BeginDate' + S
   );
 
   QParamInt('TabNumID', ATabNumID);
@@ -1256,6 +1279,37 @@ begin
   Result:= Delete('CALENDAR', 'DayDate', ADate);
 end;
 
+function TDataBase.HolidaysLoad(const AYear: Word): TDateVector;
+var
+  BD, ED: TDate;
+begin
+  Result:= nil;
+  //определяем дату начала предшествующего года
+  BD:= FirstDayInYear(AYear-1);
+  //определяем дату конца года
+  ED:= LastDayInYear(AYear);
+
+  QSetQuery(FQuery);
+  QSetSQL(
+    'SELECT DayDate FROM CALENDAR ' +
+    'WHERE (DayDate BETWEEN :BD AND :ED) AND (Status = :Status) ' +
+    'ORDER BY DayDate');
+  QParamDT('BD', BD);
+  QParamDT('ED', ED);
+  QParamInt('Status', DAY_STATUS_HOLIDAY);
+  QOpen;
+  if not QIsEmpty then
+  begin
+    QFirst;
+    while not QEOF do
+    begin
+      VAppend(Result, QFieldDT('DayDate'));
+      QNext;
+    end;
+  end;
+  QClose;
+end;
+
 function TDataBase.ScheduleMainListLoad(out AScheduleIDs, AWeekHours, ACycleCounts: TIntVector;
                                   out AScheduleNames: TStrVector): Boolean;
 begin
@@ -1295,10 +1349,8 @@ function TDataBase.ScheduleParamsLoad(const ATableName, AFindFieldName, AIDField
                                 out ADates: TDateVector;
                                 out ATotalHours, ANightHours, AShiftNums, ADigMarks: TIntVector;
                                 out AStrMarks: TStrVector;
-                                const ABeginDate: TDate = 0;
-                                const AEndDate: TDate = 0): Boolean;
-var
-  SQLStr: String;
+                                const ABeginDate: TDate = NULDATE;
+                                const AEndDate: TDate = INFDATE): Boolean;
 begin
   Result:= False;
 
@@ -1310,19 +1362,16 @@ begin
   ADigMarks:= nil;
   AStrMarks:= nil;
 
-  SQLStr:=
+  QSetQuery(FQuery);
+  QSetSQL(
     'SELECT t1.DayDate, t1.HoursTotal, t1.HoursNight, t1.ShiftNum, t1.DigMark, t2.StrMark, ' +
            't1.' + SqlEsc(AIDFieldName, False) + ' ' +
     'FROM ' + SqlEsc(ATableName) + ' t1 ' +
     'INNER JOIN TIMETABLEMARK t2 ON (t1.DigMark=t2.DigMark) ' +
-    'WHERE (t1.' + SqlEsc(AFindFieldName, False) + ' = :FindValue) ';
-  if (ABeginDate>0) and (AEndDate>0) then
-    SQLStr:= SQLStr + 'AND (t1.DayDate BETWEEN :BD AND :ED) ';
-  SQLStr:= SQLStr +
-    'ORDER BY t1.DayDate';
-
-  QSetQuery(FQuery);
-  QSetSQL(SQLStr);
+    'WHERE (t1.' + SqlEsc(AFindFieldName, False) + ' = :FindValue) AND ' +
+          '(t1.DayDate BETWEEN :BD AND :ED) ' +
+    'ORDER BY t1.DayDate'
+  );
   QParamInt('FindValue', AFindValue);
   QParamDT('BD', ABeginDate);
   QParamDT('ED', AEndDate);
@@ -1362,8 +1411,8 @@ end;
 function TDataBase.ScheduleShiftCorrectionsLoad(const AScheduleID: Integer;
                                out ACorrectIDs: TIntVector;
                                out ACorrections: TScheduleCorrections;
-                               const ABeginDate: TDate = 0;
-                               const AEndDate: TDate = 0): Boolean;
+                               const ABeginDate: TDate = NULDATE;
+                               const AEndDate: TDate = INFDATE): Boolean;
 begin
   ACorrections:= EmptyScheduleCorrections;
   Result:= ScheduleParamsLoad('SCHEDULECORRECT', 'ScheduleID', 'CorrectID', AScheduleID,
@@ -1413,10 +1462,27 @@ begin
   Result:= Delete('SCHEDULECORRECT', 'CorrectID', ACorrectID);
 end;
 
+function TDataBase.SchedulePersonalCorrectionsLoad(const ATabNumID: Integer;
+                               out ACorrectIDs: TIntVector;
+                               out ACorrections: TScheduleCorrections;
+                               const ABeginDate: TDate = NULDATE;
+                               const AEndDate: TDate = INFDATE): Boolean;
+begin
+  ACorrections:= EmptyScheduleCorrections;
+  Result:= ScheduleParamsLoad('PERSONALCORRECT', 'TabNumID', 'CorrectID', ATabNumID,
+    ACorrectIDs, ACorrections.Dates, ACorrections.HoursTotal, ACorrections.HoursNight, ACorrections.ShiftNums,
+    ACorrections.DigMarks, ACorrections.StrMarks, ABeginDate, AEndDate);
+end;
+
 function TDataBase.SchedulePersonalCorrectionsUpdate(const ATabNumID: Integer;
   const ACorrections: TScheduleCorrections): Boolean;
 begin
   Result:= ScheduleCorrectionsUpdate('PERSONALCORRECT', 'TabNumID', ATabNumID, ACorrections);
+end;
+
+function TDataBase.SchedulePersonalCorrectionDelete(const ACorrectID: Integer): Boolean;
+begin
+  Result:= Delete('PERSONALCORRECT', 'CorrectID', ACorrectID);
 end;
 
 function TDataBase.ScheduleShiftIsExists(const AScheduleID: Integer;
@@ -1577,6 +1643,65 @@ begin
   except
     QRollback;
   end;
+end;
+
+function TDataBase.VacationLoad(const ATabNumID: Integer; const ABeginDate, AEndDate: TDate;
+                          out AFirstDates: TDateVector; out ACounts, AAddCounts: TIntVector;
+                          const AIsPlane: Boolean = False): Boolean;
+var
+  BD, ED, D: TDate;
+  S: String;
+begin
+  Result:= False;
+  AFirstDates:= nil;
+  ACounts:= nil;
+  AAddCounts:= nil;
+
+  if AIsPlane then
+    S:= 'Plan'
+  else
+    S:= 'Fact';
+
+  //определяем дату начала года, предшествующего году даты ABeginDate
+  BD:= FirstDayInYear(YearOfDate(ABeginDate)-1);
+  //определяем дату конца года даты AEndDate
+  ED:= LastDayInYear(YearOfDate(AEndDate));
+  QSetQuery(FQuery);
+  QSetSQL(
+    'SELECT ' + S + '1Date, ' + S + '1Count, ' + S + '1CountAdd,  ' +
+                S + '2Date, ' + S + '2Count, ' + S + '2CountAdd  ' +
+    'FROM STAFFVACATION ' +
+    'WHERE (TabNumID = :TabNumID) AND ' +
+          '((' + S + '1Date BETWEEN :BD AND :ED) OR (' + S + '2Date BETWEEN :BD AND :ED))'
+  );
+  QParamInt('TabNumID', ATabNumID);
+  QParamDT('BD', BD);
+  QParamDT('ED', ED);
+  QOpen;
+  if not QIsEmpty then
+  begin
+    QFirst;
+    while not QEOF do
+    begin
+      D:= QFieldDT(S+'1Date');
+      if IsDateInPeriod(D, BD, ED) then
+      begin
+        VAppend(AFirstDates, D);
+        VAppend(ACounts, QFieldInt(S+'1Count'));
+        VAppend(AAddCounts, QFieldInt(S+'1CountAdd'));
+      end;
+      D:= QFieldDT(S+'2Date');
+      if IsDateInPeriod(D, BD, ED) then
+      begin
+        VAppend(AFirstDates, D);
+        VAppend(ACounts, QFieldInt(S+'2Count'));
+        VAppend(AAddCounts, QFieldInt(S+'2CountAdd'));
+      end;
+      QNext;
+    end;
+    Result:= True;
+  end;
+  QClose;
 end;
 
 function TDataBase.TimetableMarkListLoad(out ADigMarks: TIntVector;

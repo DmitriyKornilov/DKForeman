@@ -1,11 +1,11 @@
 object StaffPostlogEditForm: TStaffPostlogEditForm
   Left = 491
-  Height = 155
+  Height = 156
   Top = 258
   Width = 750
   AutoSize = True
   Caption = 'Должность (профессия)'
-  ClientHeight = 155
+  ClientHeight = 156
   ClientWidth = 750
   Constraints.MinHeight = 150
   Constraints.MinWidth = 750
@@ -112,7 +112,7 @@ object StaffPostlogEditForm: TStaffPostlogEditForm
     AnchorSideBottom.Control = Owner
     AnchorSideBottom.Side = asrBottom
     Left = 2
-    Height = 48
+    Height = 49
     Top = 101
     Width = 746
     Align = alCustom
@@ -123,7 +123,7 @@ object StaffPostlogEditForm: TStaffPostlogEditForm
     BorderSpacing.Right = 2
     BorderSpacing.Bottom = 6
     BevelOuter = bvNone
-    ClientHeight = 48
+    ClientHeight = 49
     ClientWidth = 746
     TabOrder = 2
     object CancelButton: TSpeedButton

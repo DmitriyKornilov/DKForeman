@@ -12,7 +12,7 @@ uses
   UScheduleShiftSheet,
   //DK packages utils
   DK_VSTTables, DK_VSTTableTools, DK_Vector, DK_Const, DK_Dialogs,
-  DK_Zoom, DK_DateUtils, DK_Color, DK_SheetExporter,
+  DK_Zoom, DK_DateUtils, DK_Color, DK_SheetExporter, DK_Progress,
   //Forms
   UChooseForm, UScheduleShiftEditForm, UScheduleCorrectionEditForm,
   UScheduleShiftCalendarForm, UScheduleShiftMonthForm;
@@ -610,7 +610,6 @@ begin
   end;
 
   CopySaveButton.Enabled:= Sheet.IsSelected;
-
 end;
 
 procedure TScheduleShiftForm.CopySelect;
@@ -752,11 +751,74 @@ procedure TScheduleShiftForm.ScheduleExport;
 var
   V: TStrVector;
   S: String;
-  i: Integer;
-  TmpSchedule: TShiftSchedule;
-  Exporter: TSheetsExporter;
-  Worksheet: TsWorksheet;
-  ExpScheduleSheet: TShiftScheduleYearSheet;
+  ChooseIndex: Integer;
+
+  procedure ExportSingleSchedule;
+  var
+    Exporter: TSheetsExporter;
+    Worksheet: TsWorksheet;
+    ExpSheet: TShiftScheduleYearSheet;
+  begin
+    ExpSheet:= nil;
+    Exporter:= TSheetsExporter.Create;
+    try
+      Worksheet:= Exporter.AddWorksheet(YearSpinEdit.Text);
+      ScheduleToSheet(ExpSheet, Worksheet, nil, Calendar, Schedule,
+                      ScheduleNames[ScheduleList.SelectedIndex]);
+      Exporter.PageSettings(spoLandscape);
+      Exporter.Save('Выполнено!');
+    finally
+      if Assigned(ExpSheet) then FreeAndNil(ExpSheet);
+      FreeAndNil(Exporter);
+    end;
+  end;
+
+  procedure ExportSeveralSchedules;
+  var
+    Exporter: TBooksExporter;
+    Worksheet: TsWorksheet;
+    ExpSheet: TShiftScheduleYearSheet;
+    TmpSchedule: TShiftSchedule;
+    i: Integer;
+    Progress: TProgress;
+  begin
+    ExpSheet:= nil;
+    Exporter:= TBooksExporter.Create;
+    if not Exporter.BeginExport then
+    begin
+      FreeAndNil(Exporter);
+      Exit;
+    end;
+    try
+      Progress:= TProgress.Create(nil);
+      try
+        Progress.WriteLine1('Экспорт графика');
+        Progress.WriteLine2(EmptyStr);
+        Progress.Show;
+        TmpSchedule:= TShiftSchedule.Create;
+        try
+          for i:=0 to High(ScheduleIDs) do
+          begin
+            Progress.WriteLine2(ScheduleNames[i]);
+            ScheduleShiftByCalendar(ScheduleIDs[i], Calendar, TmpSchedule);
+            Worksheet:= Exporter.AddWorksheet(YearSpinEdit.Text);
+            ScheduleToSheet(ExpSheet, Worksheet, nil, Calendar, TmpSchedule, ScheduleNames[i]);
+            Exporter.PageSettings(spoLandscape);
+            Exporter.Save(ScheduleNames[i]);
+          end;
+        finally
+          FreeAndNil(TmpSchedule);
+        end;
+      finally
+        FreeAndNil(Progress);
+      end;
+      Exporter.EndExport('Выполнено!');
+    finally
+      if Assigned(ExpSheet) then FreeAndNil(ExpSheet);
+      FreeAndNil(Exporter);
+    end;
+  end;
+
 begin
   if not ScheduleList.IsSelected then Exit;
 
@@ -765,39 +827,44 @@ begin
     'График "' + ScheduleNames[ScheduleList.SelectedIndex] + '" на ' + YearSpinEdit.Text + ' год',
     'Все графики на ' + YearSpinEdit.Text + ' год'
   ]);
-  i:= Choose(S, V);
-  if i=0 then Exit;
+  ChooseIndex:= Choose(S, V);
+  if ChooseIndex=0 then Exit;
 
-  Exporter:= TSheetsExporter.Create;
-  try
-    ExpScheduleSheet:= nil;
-    if i=1 then //выбранный график
-    begin
-      Worksheet:= Exporter.AddWorksheet(ScheduleNames[ScheduleList.SelectedIndex]);
-      ScheduleToSheet(ExpScheduleSheet, Worksheet, nil, Calendar, Schedule,
-                      ScheduleNames[ScheduleList.SelectedIndex]);
-      Exporter.PageSettings(spoLandscape);
-    end
-    else begin  //все графики
-      TmpSchedule:= TShiftSchedule.Create;
-      try
-        for i:=0 to High(ScheduleIDs) do
-        begin
-          ScheduleShiftByCalendar(ScheduleIDs[i], Calendar, TmpSchedule);
-          Worksheet:= Exporter.AddWorksheet(ScheduleNames[i]);
-          ScheduleToSheet(ExpScheduleSheet, Worksheet, nil, Calendar, TmpSchedule,
-                          ScheduleNames[i]);
-          Exporter.PageSettings(spoLandscape);
-        end;
-      finally
-        FreeAndNil(TmpSchedule);
-      end;
-    end;
-    Exporter.Save('Выполнено!');
-  finally
-    FreeAndNil(ExpScheduleSheet);
-    FreeAndNil(Exporter);
+  case ChooseIndex of
+  1: ExportSingleSchedule;
+  2: ExportSeveralSchedules;
   end;
+
+  //Exporter:= TSheetsExporter.Create;
+  //try
+  //  ExpScheduleSheet:= nil;
+  //  if i=1 then //выбранный график
+  //  begin
+  //    Worksheet:= Exporter.AddWorksheet(ScheduleNames[ScheduleList.SelectedIndex]);
+  //    ScheduleToSheet(ExpScheduleSheet, Worksheet, nil, Calendar, Schedule,
+  //                    ScheduleNames[ScheduleList.SelectedIndex]);
+  //    Exporter.PageSettings(spoLandscape);
+  //  end
+  //  else begin  //все графики
+  //    TmpSchedule:= TShiftSchedule.Create;
+  //    try
+  //      for i:=0 to High(ScheduleIDs) do
+  //      begin
+  //        ScheduleShiftByCalendar(ScheduleIDs[i], Calendar, TmpSchedule);
+  //        Worksheet:= Exporter.AddWorksheet(ScheduleNames[i]);
+  //        ScheduleToSheet(ExpScheduleSheet, Worksheet, nil, Calendar, TmpSchedule,
+  //                        ScheduleNames[i]);
+  //        Exporter.PageSettings(spoLandscape);
+  //      end;
+  //    finally
+  //      FreeAndNil(TmpSchedule);
+  //    end;
+  //  end;
+  //  Exporter.Save('Выполнено!');
+  //finally
+  //  FreeAndNil(ExpScheduleSheet);
+  //  FreeAndNil(Exporter);
+  //end;
 end;
 
 procedure TScheduleShiftForm.ScheduleCorrectionEditFormOpen(const ADate: TDate);
@@ -805,6 +872,8 @@ var
   ScheduleCorrectionEditForm: TScheduleCorrectionEditForm;
   Ind: Integer;
 begin
+  if not ScheduleList.IsSelected then Exit;
+
   ScheduleCorrectionEditForm:= TScheduleCorrectionEditForm.Create(nil);
   try
     if CycleCounts[ScheduleList.SelectedIndex]>0 then
@@ -944,6 +1013,8 @@ begin
     else
       ListPanel.Visible:= True;
     LeftSplitter.Align:= alLeft;
+
+    ExportButton.Enabled:= ModeType<>mtEditing;
 
     ScheduleListLoad;
 

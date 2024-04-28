@@ -341,6 +341,7 @@ object SchedulePersonalForm: TSchedulePersonalForm
         0000000000000000000000000000000000000000000000000000
       }
       GlyphMargin = 0
+      OnClick = ExportButtonClick
       ParentColor = False
       Rounding.RoundX = 0
       Rounding.RoundY = 0
@@ -921,6 +922,8 @@ object SchedulePersonalForm: TSchedulePersonalForm
         TabOrder = 0
         TabStop = False
         TitleFont.Style = [fsBold]
+        OnDblClick = ViewGridDblClick
+        OnMouseDown = ViewGridMouseDown
       end
       object ZoomPanel: TPanel
         Left = 0
@@ -1658,6 +1661,7 @@ object SchedulePersonalForm: TSchedulePersonalForm
                 00EC007E00FF007E00FF007F00FF007F00FF007F00EC007F0021000000000000
                 0000000000000000000000000000000000000000000000000000
               }
+              OnClick = DayAddButtonClick
               ShowHint = True
               ParentShowHint = False
             end
@@ -1748,6 +1752,7 @@ object SchedulePersonalForm: TSchedulePersonalForm
                 0000000000000000000000000000000000000000000000000000000000000000
                 0000000000000000000000000000000000000000000000000000
               }
+              OnClick = DayDelButtonClick
               ShowHint = True
               ParentShowHint = False
             end
@@ -1838,6 +1843,7 @@ object SchedulePersonalForm: TSchedulePersonalForm
                 0000000000000000000000000000000000000000000000000000000000008869
                 4D0285654994856448F78564488B86674A010000000000000000
               }
+              OnClick = DayEditButtonClick
               ShowHint = True
               ParentShowHint = False
             end
@@ -1928,6 +1934,7 @@ object SchedulePersonalForm: TSchedulePersonalForm
                 8AFFFEC98AFFFEC98AFFFFCA8BFFFFCA8BFFFFCA8BFFFFCA8BFFFFCA8BFFFDA4
                 29F2FD9607470000000000000000000000000000000000000000
               }
+              OnClick = DayCopyButtonClick
               ShowHint = True
               ParentShowHint = False
             end
@@ -1946,6 +1953,7 @@ object SchedulePersonalForm: TSchedulePersonalForm
             Header.Height = 20
             Header.MainColumn = -1
             TabOrder = 1
+            OnNodeDblClick = DayVTNodeDblClick
           end
         end
         object CopyPanel: TPanel
@@ -2060,6 +2068,7 @@ object SchedulePersonalForm: TSchedulePersonalForm
                 BC98C2BBBC98C2BBBC98C2BBBC98C2BBBC98C2BBBC98C2BBBC98C2BBBC98C2BB
                 BC98835716987A4A01987A4A01987949008F7949001000000000
               }
+              OnClick = CopySaveButtonClick
               ShowHint = True
               ParentShowHint = False
             end
@@ -2150,6 +2159,7 @@ object SchedulePersonalForm: TSchedulePersonalForm
                 0000000000000000000000000000000000000000000000000000000000000000
                 0000000000000000000000000000000000000000000000000000
               }
+              OnClick = CopyDelButtonClick
               ShowHint = True
               ParentShowHint = False
             end
@@ -2239,6 +2249,7 @@ object SchedulePersonalForm: TSchedulePersonalForm
                 0000000000000000000000000000000000000000000000000000000000000000
                 0000000000000000000000000000000000000000000000000000
               }
+              OnClick = CopyCancelButtonClick
               ShowHint = True
               ParentShowHint = False
             end
@@ -3087,5 +3098,9 @@ object SchedulePersonalForm: TSchedulePersonalForm
       ResizeAnchor = akBottom
       ResizeStyle = rsLine
     end
+  end
+  object SelectDirectoryDialog1: TSelectDirectoryDialog
+    Left = 184
+    Top = 224
   end
 end
