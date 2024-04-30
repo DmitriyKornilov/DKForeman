@@ -14,10 +14,10 @@ uses
   UStaffForm, UScheduleShiftForm, UVacationPlaneForm, USchedulePersonalForm,
   UTimetableForm, USIZForm, USSOForm, UStudyForm, UConst, UTypes,
   UStaffMainEditForm, UUtils, UCalendar, UWorkHours, UStaffTabNumEditForm,
-  UStaffPostLogEditForm, UCalendarSheet, USchedule, UTimingSheet,
-  UScheduleShiftSheet, UCalendarEditForm, UScheduleCorrectionEditForm, 
+  UStaffPostLogEditForm, UCalendarSheet, USchedule, UDateSheet,
+  UScheduleSheet, UCalendarEditForm, UScheduleCorrectionEditForm, 
 UChooseForm, UScheduleShiftEditForm, UScheduleShiftMonthForm, 
-UScheduleShiftCalendarForm, USchedulePersonalEditForm;
+UScheduleShiftCalendarForm, USchedulePersonalEditForm, UScheduleVacationForm;
 
 {$R *.res}
 

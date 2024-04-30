@@ -254,6 +254,10 @@ type
     function VacationLoad(const ATabNumID: Integer; const ABeginDate, AEndDate: TDate;
                           out AFirstDates: TDateVector; out ACounts, AAddCounts: TIntVector;
                           const AIsPlane: Boolean = False): Boolean;
+    {Данные для графика отпусков (форма Т-7): True - ОК, False - пусто}
+    function VacationScheduleLoad(const AYear: Integer;
+                             out AStaffNames, ATabNums, APostNames: TStrVector;
+                             out AFirstDates: TDateVector; out ATotalCounts: TIntVector): Boolean;
 
     (**************************************************************************
                                       ТАБЕЛИ
@@ -542,7 +546,7 @@ begin
            't2.Name, t2.Patronymic, t2.Family ' +
     'FROM STAFFTABNUM t1 ' +
     'INNER JOIN STAFFMAIN t2 ON (t1.StaffID=t2.StaffID) ' +
-    'WHERE (t1.RecrutDate<= :ED) AND (t1.DismissDate >= :BD) ';
+    'WHERE ((t1.RecrutDate<= :ED) AND (t1.DismissDate >= :BD)) ';
   if not SEmpty(AFilterValue) then
     SQLStr:= SQLStr + 'AND (t2.FullName LIKE :FilterValue) ';
   case AOrderType of
@@ -1702,6 +1706,83 @@ begin
     Result:= True;
   end;
   QClose;
+end;
+
+function TDataBase.VacationScheduleLoad(const AYear: Integer;
+                             out AStaffNames, ATabNums, APostNames: TStrVector;
+                             out AFirstDates: TDateVector; out ATotalCounts: TIntVector): Boolean;
+var
+  BD, ED: TDate;
+  Name, TabNum: String;
+  i, TabNumID: Integer;
+  TabNumIDs: TIntVector;
+
+  procedure VacationAdd(const AVacationName: String);
+  var
+    D: TDate;
+    N: Integer;
+  begin
+    D:= QFieldDT(AVacationName+'Date');
+    N:= QFieldInt(AVacationName+'Count') + QFieldInt(AVacationName+'CountAdd');
+    if (D>0) and (N>0) then
+    begin
+      VAppend(AStaffNames, Name);
+      VAppend(TabNumIDs, TabNumID);
+      VAppend(ATabNums, TabNum);
+      VAppend(AFirstDates, D);
+      VAppend(ATotalCounts, N);
+    end;
+  end;
+
+begin
+  Result:= False;
+  AStaffNames:= nil;
+  ATabNums:= nil;
+  APostNames:= nil;
+  AFirstDates:= nil;
+  ATotalCounts:= nil;
+  TabNumIDs:= nil;
+
+  FirstLastDayInYear(AYear, BD, ED);
+
+  QSetQuery(FQuery);
+  QSetSQL(
+    'SELECT t1.TabNum, t1.TabNumID, ' +
+           't2.Name, t2.Patronymic, t2.Family, ' +
+           't3.Plan1Date, t3.Plan1Count, t3.Plan1CountAdd, ' +
+           't3.Plan2Date, t3.Plan2Count, t3.Plan2CountAdd ' +
+    'FROM STAFFTABNUM t1 ' +
+    'INNER JOIN STAFFMAIN t2 ON (t1.StaffID=t2.StaffID) ' +
+    'LEFT OUTER JOIN STAFFVACATION t3 ON (t1.TabNumID=t3.TabNumID) '  +
+    'WHERE (t1.RecrutDate<= :ED) AND (t1.DismissDate >= :BD) AND (t3.YearNum=:YearNum) ' +
+    'ORDER BY t2.Family, t2.Name, t2.Patronymic'
+  );
+  QParamDT('BD', BD);
+  QParamDT('ED', ED);
+  QParamInt('YearNum', AYear);
+  QOpen;
+  if not QIsEmpty then
+  begin
+    QFirst;
+    while not QEOF do
+    begin
+      Name:= SNameLong(QFieldStr('Family'), QFieldStr('Name'), QFieldStr('Patronymic'));
+      TabNum:= QFieldStr('TabNum');
+      TabNumID:= QFieldInt('TabNumID');
+      VacationAdd('Plan1');
+      VacationAdd('Plan2');
+      QNext;
+    end;
+    Result:= True;
+  end;
+  QClose;
+
+  //актуальные должности и разряды на начало года
+  for i:= 0 to High(TabNumIDs) do
+  begin
+    StaffPostForDate(TabNumIDs[i], BD, TabNumID{tmp}, Name, TabNum{tmp});
+    VAppend(APostNames, Name);
+  end;
 end;
 
 function TDataBase.TimetableMarkListLoad(out ADigMarks: TIntVector;

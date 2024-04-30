@@ -8,7 +8,7 @@ uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls,
   fpspreadsheetgrid, DateTimePicker, DateUtils, Buttons,
   //Project utils
-  UDataBase, UUtils, UTypes, UCalendar, USchedule,  UScheduleShiftSheet,
+  UDataBase, UUtils, UTypes, UCalendar, USchedule,  UScheduleSheet,
   //DK packages utils
   DK_Vector, DK_Dialogs;
 
@@ -36,7 +36,7 @@ type
     ScheduleNames: TStrVector;
     Calendar: TCalendar;
     Schedules: TShiftScheduleVector;
-    Sheet: TShiftScheduleSimpleSheet;
+    Sheet: TShiftSimpleScheduleSheet;
 
     procedure SchedulesUpdate;
   public
@@ -110,7 +110,7 @@ begin
   PrevHistoryID:= -1;
   Calendar:= TCalendar.Create;
   DataBase.ScheduleMainListLoad(ScheduleIDs, V, V, ScheduleNames);
-  Sheet:= TShiftScheduleSimpleSheet.Create(ViewGrid, MainForm.GridFont, ScheduleNames);
+  Sheet:= TShiftSimpleScheduleSheet.Create(ViewGrid, MainForm.GridFont, ScheduleNames);
 end;
 
 procedure TSchedulePersonalEditForm.SchedulesUpdate;

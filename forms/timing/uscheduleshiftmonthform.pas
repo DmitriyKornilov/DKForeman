@@ -12,7 +12,7 @@ uses
   DK_Vector, DK_Fonts, DK_Const, DK_VSTDropDown, DK_DateUtils, DK_StrUtils,
   DK_VSTTableTools, DK_Zoom, DK_SheetExporter,
   //Project utils
-  UDataBase, UConst, UUtils, UCalendar, USchedule, UScheduleShiftSheet,
+  UDataBase, UConst, UUtils, UCalendar, USchedule, UScheduleSheet,
   //Forms
   UChooseForm;
 
@@ -54,7 +54,7 @@ type
     MonthDropDown: TVSTDropDown;
 
     Calendar: TCalendar;
-    Sheet: TShiftScheduleMonthSheet;
+    Sheet: TShiftMonthScheduleSheet;
 
     ScheduleList: TVSTCheckList;
     ScheduleIDs, WeekHours, CycleCounts: TIntVector;
@@ -83,7 +83,7 @@ type
 var
   ScheduleShiftMonthForm: TScheduleShiftMonthForm;
 
-  procedure ScheduleShiftMonthFormCreate(const AYear, AResumeType: Integer;
+  procedure ScheduleShiftMonthFormShow(const AYear, AResumeType: Integer;
          const ANeedNight, ANeedCorrect, ANeedMarks, AScheduleNotWorkColor: Boolean;
          const AColors: TColorVector);
 
@@ -93,24 +93,24 @@ uses UMainForm;
 
 {$R *.lfm}
 
-procedure ScheduleShiftMonthFormCreate(const AYear, AResumeType: Integer;
+procedure ScheduleShiftMonthFormShow(const AYear, AResumeType: Integer;
          const ANeedNight, ANeedCorrect, ANeedMarks, AScheduleNotWorkColor: Boolean;
          const AColors: TColorVector);
 var
-  Frm: TScheduleShiftMonthForm;
+  Form: TScheduleShiftMonthForm;
 begin
-  Frm:= TScheduleShiftMonthForm.Create(nil);
+  Form:= TScheduleShiftMonthForm.Create(nil);
   try
-    Frm.ResumeType:= AResumeType;
-    Frm.NeedNight:= ANeedNight;
-    Frm.NeedCorrect:= ANeedCorrect;
-    Frm.NeedMarks:= ANeedMarks;
-    Frm.ScheduleNotWorkColor:= AScheduleNotWorkColor;
-    Frm.YearSpinEdit.Value:= AYear;
-    Frm.Colors:= AColors;
-    Frm.ShowModal;
+    Form.ResumeType:= AResumeType;
+    Form.NeedNight:= ANeedNight;
+    Form.NeedCorrect:= ANeedCorrect;
+    Form.NeedMarks:= ANeedMarks;
+    Form.ScheduleNotWorkColor:= AScheduleNotWorkColor;
+    Form.YearSpinEdit.Value:= AYear;
+    Form.Colors:= AColors;
+    Form.ShowModal;
   finally
-    FreeAndNil(Frm);
+    FreeAndNil(Form);
   end;
 end;
 
@@ -145,7 +145,7 @@ begin
   CreateZoomControls(50, 150, ZoomPercent, ZoomPanel, @ScheduleDraw, True);
 
   Calendar:= TCalendar.Create;
-  Sheet:= TShiftScheduleMonthSheet.Create(ViewGrid.Worksheet, ViewGrid, MainForm.GridFont, ResumeType);
+  Sheet:= TShiftMonthScheduleSheet.Create(ViewGrid.Worksheet, ViewGrid, MainForm.GridFont, ResumeType);
 
   DataBase.ScheduleMainListLoad(ScheduleIDs, WeekHours, CycleCounts, ScheduleNames);
   ScheduleList:= TVSTCheckList.Create(VT, EmptyStr, ScheduleNames, @ScheduleReDraw);
@@ -268,9 +268,9 @@ var
                             const ACalendar: TCalendar;
                             const ASchedules: TShiftScheduleVector);
   var
-    ExpSheet: TShiftScheduleMonthSheet;
+    ExpSheet: TShiftMonthScheduleSheet;
   begin
-    ExpSheet:= TShiftScheduleMonthSheet.Create(AWorksheet, nil, MainForm.GridFont, ResumeType);
+    ExpSheet:= TShiftMonthScheduleSheet.Create(AWorksheet, nil, MainForm.GridFont, ResumeType);
     try
       ExpSheet.Draw(ACalendar, ASchedules, ScheduleNames,
              NeedNight, NeedCorrect, NeedMarks, ScheduleNotWorkColor,

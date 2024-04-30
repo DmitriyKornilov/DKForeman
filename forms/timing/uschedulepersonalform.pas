@@ -10,12 +10,13 @@ uses
   DateUtils,
   //Project utils
   UDataBase, UConst, UTypes, UUtils, UWorkHours, UCalendar, USchedule,
-  UScheduleShiftSheet,
+  UScheduleSheet,
   //DK packages utils
   DK_VSTTables, DK_VSTTableTools, DK_VSTEdit, DK_Vector, DK_Const, DK_Dialogs,
   DK_Zoom, DK_DateUtils, DK_Color, DK_SheetExporter, DK_StrUtils, DK_Progress,
   //Forms
-  UChooseForm, USchedulePersonalEditForm, UScheduleCorrectionEditForm;
+  UChooseForm, USchedulePersonalEditForm, UScheduleCorrectionEditForm,
+  UScheduleVacationForm;
 
 type
 
@@ -125,6 +126,7 @@ type
     procedure VacationDelButtonClick(Sender: TObject);
     procedure VacationEraseButtonClick(Sender: TObject);
     procedure VacationSaveButtonClick(Sender: TObject);
+    procedure VacationScheduleButtonClick(Sender: TObject);
     procedure ViewGridDblClick(Sender: TObject);
     procedure ViewGridMouseDown(Sender: TObject; Button: TMouseButton;
       {%H-}Shift: TShiftState; X, Y: Integer);
@@ -136,7 +138,7 @@ type
 
     Calendar: TCalendar;
     Schedule: TPersonalSchedule;
-    Sheet: TPersonalScheduleYearSheet;
+    Sheet: TPersonalYearScheduleSheet;
 
     CorrectIDs: TIntVector;
     Corrections: TScheduleCorrections;
@@ -193,7 +195,7 @@ type
 
     procedure ScheduleLoad;
     procedure ScheduleChange;
-    procedure ScheduleToSheet(var ASheet: TPersonalScheduleYearSheet;
+    procedure ScheduleToSheet(var ASheet: TPersonalYearScheduleSheet;
                               const AWorksheet: TsWorksheet;
                               const AGrid: TsWorksheetGrid;
                               const ACalendar: TCalendar;
@@ -496,6 +498,11 @@ begin
   ScheduleChange;
 end;
 
+procedure TSchedulePersonalForm.VacationScheduleButtonClick(Sender: TObject);
+begin
+  ScheduleVacationFormShow(YearSpinEdit.Value);
+end;
+
 procedure TSchedulePersonalForm.ViewGridDblClick(Sender: TObject);
 var
   DayDate: TDate;
@@ -534,10 +541,17 @@ begin
 end;
 
 procedure TSchedulePersonalForm.YearSpinEditChange(Sender: TObject);
+var
+  SelectedTabNumID: Integer;
 begin
   CalendarForYear(YearSpinEdit.Value, Calendar);
   Holidays:= DataBase.HolidaysLoad(YearSpinEdit.Value);
-  ScheduleChange;
+
+  SelectedTabNumID:= -1;
+  if StaffList.IsSelected then
+    SelectedTabNumID:= TabNumIDs[StaffList.SelectedIndex];
+  StaffListLoad(SelectedTabNumID);
+  //ScheduleChange;
 end;
 
 procedure TSchedulePersonalForm.CopyBegin;
@@ -826,6 +840,7 @@ procedure TSchedulePersonalForm.ScheduleLoad;
 begin
   if Assigned(Schedule) then FreeAndNil(Schedule);
   if not StaffList.IsSelected then Exit;
+
   Schedule:= SchedulePersonalByCalendar(TabNumIDs[StaffList.SelectedIndex],
     TabNums[StaffList.SelectedIndex],
     RecrutDates[StaffList.SelectedIndex], DismissDates[StaffList.SelectedIndex],
@@ -844,7 +859,7 @@ begin
   ScheduleRedraw;
 end;
 
-procedure TSchedulePersonalForm.ScheduleToSheet(var ASheet: TPersonalScheduleYearSheet;
+procedure TSchedulePersonalForm.ScheduleToSheet(var ASheet: TPersonalYearScheduleSheet;
                               const AWorksheet: TsWorksheet;
                               const AGrid: TsWorksheetGrid;
                               const ACalendar: TCalendar;
@@ -852,7 +867,7 @@ procedure TSchedulePersonalForm.ScheduleToSheet(var ASheet: TPersonalScheduleYea
                               const AScheduleName: String = '');
 begin
   if Assigned(ASheet) then FreeAndNil(ASheet);
-  ASheet:= TPersonalScheduleYearSheet.Create(AWorksheet, AGrid, MainForm.GridFont,
+  ASheet:= TPersonalYearScheduleSheet.Create(AWorksheet, AGrid, MainForm.GridFont,
                                            CountType.SelectedIndex);
 
   if Assigned(AGrid) then
@@ -895,7 +910,7 @@ var
   var
     Exporter: TSheetsExporter;
     Worksheet: TsWorksheet;
-    ExpSheet: TPersonalScheduleYearSheet;
+    ExpSheet: TPersonalYearScheduleSheet;
   begin
     ExpSheet:= nil;
     Exporter:= TSheetsExporter.Create;
@@ -915,7 +930,7 @@ var
   var
     Exporter: TBooksExporter;
     Worksheet: TsWorksheet;
-    ExpSheet: TPersonalScheduleYearSheet;
+    ExpSheet: TPersonalYearScheduleSheet;
     TmpSchedule: TPersonalSchedule;
     i: Integer;
     Progress: TProgress;

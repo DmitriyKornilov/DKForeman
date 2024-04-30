@@ -9,7 +9,7 @@ uses
   fpspreadsheetgrid, BCPanel, BCButton, VirtualTrees, Spin, DateUtils,
   //Project utils
   UDataBase, UConst, UTypes, UUtils, UWorkHours, UCalendar, USchedule,
-  UScheduleShiftSheet,
+  UScheduleSheet,
   //DK packages utils
   DK_VSTTables, DK_VSTTableTools, DK_Vector, DK_Const, DK_Dialogs,
   DK_Zoom, DK_DateUtils, DK_Color, DK_SheetExporter, DK_Progress,
@@ -121,7 +121,7 @@ type
     Corrections: TScheduleCorrections;
     Cycle: TScheduleCycle;
     Schedule: TShiftSchedule;
-    Sheet: TShiftScheduleYearSheet;
+    Sheet: TShiftYearScheduleSheet;
 
     SelectedHoursTotal, SelectedHoursNight, SelectedDigMark, SelectedShiftNum: Integer;
     SelectedStrMark: String;
@@ -155,7 +155,7 @@ type
     procedure YearChange;
     procedure ScheduleChange(const ANeedCycleLoad: Boolean;
                              const ANeedCorrectionsLoad: Boolean = True);
-    procedure ScheduleToSheet(var ASheet: TShiftScheduleYearSheet;
+    procedure ScheduleToSheet(var ASheet: TShiftYearScheduleSheet;
                               const AWorksheet: TsWorksheet;
                               const AGrid: TsWorksheetGrid;
                               const ACalendar: TCalendar;
@@ -192,7 +192,7 @@ end;
 
 procedure TScheduleShiftForm.CalendarButtonClick(Sender: TObject);
 begin
-  ScheduleShiftCalendarFormCreate(YearSpinEdit.Value,
+  ScheduleShiftCalendarFormShow(YearSpinEdit.Value,
                                   ScheduleIDs[ScheduleList.SelectedIndex],
                                   ScheduleNames[ScheduleList.SelectedIndex]);
 end;
@@ -321,7 +321,7 @@ begin
   V:= nil;
   if ParamList.Checked[3] then
     V:= Colors;
-  ScheduleShiftMonthFormCreate(YearSpinEdit.Value, CountType.SelectedIndex,
+  ScheduleShiftMonthFormShow(YearSpinEdit.Value, CountType.SelectedIndex,
              ParamList.Checked[0], ParamList.Checked[1], ParamList.Checked[2],
              ColorType.SelectedIndex=0, V);
 end;
@@ -701,13 +701,13 @@ begin
   ScheduleRedraw;
 end;
 
-procedure TScheduleShiftForm.ScheduleToSheet(var ASheet: TShiftScheduleYearSheet;
+procedure TScheduleShiftForm.ScheduleToSheet(var ASheet: TShiftYearScheduleSheet;
   const AWorksheet: TsWorksheet; const AGrid: TsWorksheetGrid;
   const ACalendar: TCalendar; const ASchedule: TShiftSchedule;
   const AScheduleName: String = '');
 begin
   if Assigned(ASheet) then FreeAndNil(ASheet);
-  ASheet:= TShiftScheduleYearSheet.Create(AWorksheet, AGrid, MainForm.GridFont,
+  ASheet:= TShiftYearScheduleSheet.Create(AWorksheet, AGrid, MainForm.GridFont,
                                            CountType.SelectedIndex);
 
   if Assigned(AGrid) then
@@ -757,7 +757,7 @@ var
   var
     Exporter: TSheetsExporter;
     Worksheet: TsWorksheet;
-    ExpSheet: TShiftScheduleYearSheet;
+    ExpSheet: TShiftYearScheduleSheet;
   begin
     ExpSheet:= nil;
     Exporter:= TSheetsExporter.Create;
@@ -777,7 +777,7 @@ var
   var
     Exporter: TBooksExporter;
     Worksheet: TsWorksheet;
-    ExpSheet: TShiftScheduleYearSheet;
+    ExpSheet: TShiftYearScheduleSheet;
     TmpSchedule: TShiftSchedule;
     i: Integer;
     Progress: TProgress;

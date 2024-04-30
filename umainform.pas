@@ -119,7 +119,8 @@ const
     {08} ' - [СМЫВАЮЩИЕ И ОБЕЗВРЕЖИВАЮЩИЕ СРЕДСТВА]',
     {09} ' - [ИНСТРУКТАЖИ, АТТЕСТАЦИЯ, ОБУЧЕНИЕ]',
     {10} ' - [ГОДОВОЙ ГРАФИК СМЕННОСТИ]',
-    {11} ' - [СВОДНЫЙ ГРАФИК СМЕННОСТИ НА МЕСЯЦ]'
+    {11} ' - [СВОДНЫЙ ГРАФИК СМЕННОСТИ НА МЕСЯЦ]',
+    {12} ' - [ГРАФИК ОТПУСКОВ]'
   );
 
 implementation
@@ -382,8 +383,8 @@ end;
 procedure TMainForm.SetGridFont;
 begin
   GridFont:= TFont.Create;
-  GridFont.Name:= FontLikeToName(flArial);
-  GridFont.Size:= 8;
+  GridFont.Name:= FontLikeToName(flTimes{flArial});
+  GridFont.Size:= 9{8};
 end;
 
 procedure TMainForm.SafetyButtonClick(Sender: TObject);

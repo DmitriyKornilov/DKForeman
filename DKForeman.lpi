@@ -229,14 +229,14 @@
         <UnitName Value="USchedule"/>
       </Unit>
       <Unit>
-        <Filename Value="utils\timing\utimingsheet.pas"/>
+        <Filename Value="utils\timing\udatesheet.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="UTimingSheet"/>
+        <UnitName Value="UDateSheet"/>
       </Unit>
       <Unit>
-        <Filename Value="utils\timing\uscheduleshiftsheet.pas"/>
+        <Filename Value="utils\timing\uschedulesheet.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="UScheduleShiftSheet"/>
+        <UnitName Value="UScheduleSheet"/>
       </Unit>
       <Unit>
         <Filename Value="forms\uchooseform.pas"/>
@@ -276,6 +276,14 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="USchedulePersonalEditForm"/>
+      </Unit>
+      <Unit>
+        <Filename Value="forms\timing\uschedulevacationform.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="ScheduleVacationForm"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="UScheduleVacationForm"/>
       </Unit>
     </Units>
   </ProjectOptions>

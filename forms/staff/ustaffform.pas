@@ -904,6 +904,7 @@ begin
     StaffList.CanUnselect:= ModeType<>mtEditing;
     StaffList.CanSelect:= ModeType=mtEditing;
     ListToolPanel.Visible:= ModeType=mtEditing;
+    ListOrderToolPanel.Visible:= ModeType=mtEditing;
 
     StaffListUpdate;
 

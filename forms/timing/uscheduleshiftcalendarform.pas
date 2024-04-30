@@ -12,7 +12,7 @@ uses
   DK_Vector, DK_Fonts, DK_Const,
   DK_VSTTypes, DK_VSTEditTools, DK_Zoom, DK_SheetExporter,
   //Project utils
-  UDataBase, UConst, UUtils, UCalendar, USchedule, UScheduleShiftSheet;
+  UDataBase, UConst, UUtils, UCalendar, USchedule, UScheduleSheet;
 
 type
 
@@ -64,7 +64,7 @@ type
     PrevShiftNumber: Integer;
     Calendar: TCalendar;
     Schedule: TShiftSchedule;
-    Sheet: TShiftScheduleCalendarSheet;
+    Sheet: TShiftCalendarScheduleSheet;
 
     procedure PrevShiftNumberLoad;
     procedure ScheduleLoad;
@@ -90,7 +90,7 @@ type
 var
   ScheduleShiftCalendarForm: TScheduleShiftCalendarForm;
 
-  procedure ScheduleShiftCalendarFormCreate(const AYear, AScheduleID: Integer;
+  procedure ScheduleShiftCalendarFormShow(const AYear, AScheduleID: Integer;
                                             const AScheduleName: String);
 
 implementation
@@ -99,18 +99,18 @@ uses UMainForm;
 
 {$R *.lfm}
 
-procedure ScheduleShiftCalendarFormCreate(const AYear, AScheduleID: Integer; const AScheduleName: String);
+procedure ScheduleShiftCalendarFormShow(const AYear, AScheduleID: Integer; const AScheduleName: String);
 var
-  Frm: TScheduleShiftCalendarForm;
+  Form: TScheduleShiftCalendarForm;
 begin
-  Frm:= TScheduleShiftCalendarForm.Create(nil);
+  Form:= TScheduleShiftCalendarForm.Create(nil);
   try
-    Frm.YearSpinEdit.Value:= AYear;
-    Frm.ScheduleID:= AScheduleID;
-    Frm.ScheduleName:= AScheduleName;
-    Frm.ShowModal;
+    Form.YearSpinEdit.Value:= AYear;
+    Form.ScheduleID:= AScheduleID;
+    Form.ScheduleName:= AScheduleName;
+    Form.ShowModal;
   finally
-    FreeAndNil(Frm);
+    FreeAndNil(Form);
   end;
 end;
 
@@ -143,7 +143,7 @@ begin
 
   Calendar:= TCalendar.Create;
   Schedule:= TShiftSchedule.Create;
-  Sheet:= TShiftScheduleCalendarSheet.Create(ViewGrid.Worksheet, ViewGrid, MainForm.GridFont);
+  Sheet:= TShiftCalendarScheduleSheet.Create(ViewGrid.Worksheet, ViewGrid, MainForm.GridFont);
 
   SettingsLoad; //load ZoomPercent;
   CreateZoomControls(50, 150, ZoomPercent, ZoomPanel, @ScheduleDraw, True);

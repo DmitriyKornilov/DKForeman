@@ -1,23 +1,47 @@
-unit UScheduleShiftSheet;
+unit UScheduleSheet;
 
 {$mode objfpc}{$H+}
 
 interface
 
 uses
-  Classes, SysUtils, Graphics, fpspreadsheetgrid, fpspreadsheet, LCLType,
-  Controls, DateUtils,
+  Classes, SysUtils, Graphics, fpspreadsheetgrid, fpspreadsheet, fpstypes,
+  LCLType, Controls, DateUtils,
   //Project utils
-  UUtils, UConst, UTypes, UCalendar, UWorkHours, USchedule, UTimingSheet,
+  UUtils, UConst, UTypes, UCalendar, UWorkHours, USchedule, UDateSheet,
   //DK packages utils
   DK_SheetWriter, DK_Vector, DK_Const, DK_DateUtils, DK_StrUtils, DK_SheetTypes,
   DK_Math, DK_Color;
 
 type
 
-  { TShiftScheduleTableSheet }
+  { TVacationScheduleSheet }
+  //График отпусков (Форма Т-7)
+  TVacationScheduleSheet = class (TCustomSheet)
+  protected
+    function SetWidths: TIntVector; override;
+  private
+    FYear: Word;
+    FStaffNames: TStrVector;
+    FTabNums: TStrVector;
+    FPostNames: TStrVector;
+    FFirstDates: TDateVector;
+    FTotalCounts: TIntVector;
+    procedure CaptionDraw(out ARow: Integer);
+    procedure LineDraw(var ARow: Integer; const AIndex: Integer);
+    procedure BottomDraw(const ARow: Integer);
+  public
+    constructor Create(const AWorksheet: TsWorksheet; const AGrid: TsWorksheetGrid;
+                       const AFont: TFont);
+    procedure Draw(const AYear: Word;
+                   const AStaffNames, ATabNums, APostNames: TStrVector;
+                   const AFirstDates: TDateVector;
+                   const ATotalCounts: TIntVector);
+  end;
 
-  TShiftScheduleTableSheet = class (TDateSheet)
+  { TTableScheduleSheet }
+  //базовый класс для графика в виде таблицы
+  TTableScheduleSheet = class (TDateSheet)
   protected
     function SetWidths: TIntVector; override;
   private
@@ -54,9 +78,9 @@ type
                        const AResumeType: Byte {0-дни, 1-смены, 2-дни и смены});
   end;
 
-  { TShiftScheduleYearCustomSheet }
+  { TCustomYearScheduleSheet }
   // Годовой график в виде таблицы
-  TShiftScheduleYearCustomSheet = class (TShiftScheduleTableSheet)
+  TCustomYearScheduleSheet = class (TTableScheduleSheet)
   private
     FYear: Word;
     FCaption: String;
@@ -76,9 +100,9 @@ type
     procedure Unselect(const ADate: TDate); override;
   end;
 
-  { TShiftScheduleYearSheet }
+  { TShiftYearScheduleSheet }
   // Годовой график сменности в виде таблицы
-  TShiftScheduleYearSheet = class (TShiftScheduleYearCustomSheet)
+  TShiftYearScheduleSheet = class (TCustomYearScheduleSheet)
   private
     FSchedule: TShiftSchedule;
     procedure ScheduleDraw;
@@ -90,9 +114,9 @@ type
                    const ANeedNight, ANeedCorrect, ANeedMarks, AScheduleNotWorkColor: Boolean);
   end;
 
-  { TPersonalScheduleYearSheet }
+  { TPersonalYearScheduleSheet }
   // Годовой персональный график в виде таблицы
-  TPersonalScheduleYearSheet = class (TShiftScheduleYearCustomSheet)
+  TPersonalYearScheduleSheet = class (TCustomYearScheduleSheet)
   private
     FSchedule: TPersonalSchedule;
     FNeedVacation: Boolean;
@@ -109,9 +133,9 @@ type
                    const AUseWorkPeriodInLoadNormHoursAndDays: Boolean = False);
   end;
 
-  { TShiftScheduleMonthSheet }
+  { TShiftMonthScheduleSheet }
   //Сводная таблица графиков сменности на месяц
-  TShiftScheduleMonthSheet = class (TShiftScheduleTableSheet)
+  TShiftMonthScheduleSheet = class (TTableScheduleSheet)
   private
     FSchedules: TShiftScheduleVector;
     FVisible: TBoolVector;
@@ -131,9 +155,9 @@ type
     function DateToGrid(const {%H-}ADate: TDate; out ARow, ACol: Integer): Boolean; override;
   end;
 
-  { TShiftScheduleCalendarSheet }
+  { TShiftCalendarScheduleSheet }
   //Годовой график сменности в виде календаря
-  TShiftScheduleCalendarSheet = class (TCustomSheet)
+  TShiftCalendarScheduleSheet = class (TCustomSheet)
   protected
     function SetWidths: TIntVector; override;
   private
@@ -160,10 +184,9 @@ type
   end;
 
   {Список графиков сменности для назначения работнику }
+  { TShiftSimpleScheduleSheet }
 
-  { TShiftScheduleSimpleSheet }
-
-  TShiftScheduleSimpleSheet = class (TCustomSheet)
+  TShiftSimpleScheduleSheet = class (TCustomSheet)
   protected
     function SetWidths: TIntVector; override;
   private
@@ -215,9 +238,9 @@ begin
   end;
 end;
 
-{ TPersonalScheduleYearSheet }
+{ TPersonalYearScheduleSheet }
 
-procedure TPersonalScheduleYearSheet.ScheduleDraw;
+procedure TPersonalYearScheduleSheet.ScheduleDraw;
 var
   R, C, DeltaR, m: Integer;
   AYear: Word;
@@ -373,14 +396,14 @@ begin
   end;
 end;
 
-function TPersonalScheduleYearSheet.GetCaption: String;
+function TPersonalYearScheduleSheet.GetCaption: String;
 begin
   Result:= EmptyStr;
   if SEmpty(FCaption) then Exit;
   Result:= FCaption + ': график работы на ' + IntToStr(FYear) + ' год';
 end;
 
-procedure TPersonalScheduleYearSheet.Draw(const ACalendar: TCalendar;
+procedure TPersonalYearScheduleSheet.Draw(const ACalendar: TCalendar;
   const ASchedule: TPersonalSchedule;
   const AName: String;
   const ANeedNight, ANeedCorrect, ANeedMarks, ANeedVacation, AScheduleNotWorkColor: Boolean;
@@ -412,9 +435,9 @@ begin
     Writer.SetRowHeight(i, ROW_DEFAULT_HEIGHT);
 end;
 
-{ TShiftScheduleYearCustomSheet }
+{ TCustomYearScheduleSheet }
 
-procedure TShiftScheduleYearCustomSheet.BlankDraw;
+procedure TCustomYearScheduleSheet.BlankDraw;
 const
   C1= 2;
 var
@@ -481,12 +504,12 @@ begin
   Writer.WriteText(R, C+1, R+DeltaR-1, C+31, EmptyStr, cbtOuter);
 end;
 
-function TShiftScheduleYearCustomSheet.GetPeriodColumnName: String;
+function TCustomYearScheduleSheet.GetPeriodColumnName: String;
 begin
   Result:= 'Месяц';
 end;
 
-function TShiftScheduleYearCustomSheet.RowToMonth(const ARow: Integer): Integer;
+function TCustomYearScheduleSheet.RowToMonth(const ARow: Integer): Integer;
 begin
   Result:= 0;
   if FNeedNight then
@@ -524,7 +547,7 @@ begin
   end;
 end;
 
-function TShiftScheduleYearCustomSheet.ColToDay(const ACol, AMonth: Integer): Integer;
+function TCustomYearScheduleSheet.ColToDay(const ACol, AMonth: Integer): Integer;
 begin
   Result:= 0;
   if (not Assigned(FCalendar)) or (not FCalendar.Calculated) then Exit;
@@ -535,7 +558,7 @@ begin
   end;
 end;
 
-function TShiftScheduleYearCustomSheet.DateToRow(const ADate: TDate): Integer;
+function TCustomYearScheduleSheet.DateToRow(const ADate: TDate): Integer;
 var
   M: Integer;
 begin
@@ -575,12 +598,12 @@ begin
   end;
 end;
 
-function TShiftScheduleYearCustomSheet.DateToCol(const ADate: TDate): Integer;
+function TCustomYearScheduleSheet.DateToCol(const ADate: TDate): Integer;
 begin
   Result:= DayOfDate(ADate) + 1;
 end;
 
-function TShiftScheduleYearCustomSheet.GridToDate(const ARow, ACol: Integer;
+function TCustomYearScheduleSheet.GridToDate(const ARow, ACol: Integer;
   out ADate: TDate): Boolean;
 var
   M, D: Integer;
@@ -598,7 +621,7 @@ begin
   end;
 end;
 
-function TShiftScheduleYearCustomSheet.DateToGrid(const ADate: TDate;
+function TCustomYearScheduleSheet.DateToGrid(const ADate: TDate;
   out ARow, ACol: Integer): Boolean;
 begin
   Result:= False;
@@ -611,7 +634,7 @@ begin
   Result:= True;
 end;
 
-procedure TShiftScheduleYearCustomSheet.Select(const ADate: TDate);
+procedure TCustomYearScheduleSheet.Select(const ADate: TDate);
 var
   R, C: Integer;
 begin
@@ -621,7 +644,7 @@ begin
   SelectionAddCell(R+1, C);
 end;
 
-procedure TShiftScheduleYearCustomSheet.Unselect(const ADate: TDate);
+procedure TCustomYearScheduleSheet.Unselect(const ADate: TDate);
 var
   R, C: Integer;
 begin
@@ -631,9 +654,277 @@ begin
   SelectionDelCell(R+1, C);
 end;
 
-{ TShiftScheduleTableSheet }
+{ TVacationScheduleSheet }
 
-function TShiftScheduleTableSheet.SetWidths: TIntVector;
+function TVacationScheduleSheet.SetWidths: TIntVector;
+begin
+  Result:= VCreateInt([
+    {01} 25, //Структурное подразделение
+    {02} 30,
+    {03} 15,
+    {04} 90,
+    {05} 25, //должность
+    {06} 25,
+    {07} 15,
+    {08} 25,
+    {09} 70,
+    {10} 175, //ФИО
+    {11} 15,
+    {12} 60,
+    {13} 50, //Табельный номер
+    {14} 45,
+    {15} 80, //количество календарных дней
+    {16} 55, //запланированная дата
+    {17} 15,
+    {18} 45, //фактическая дата
+    {19} 25,
+    {20} 30, //основание (документ)
+    {21} 15,
+    {22} 15,
+    {23} 35,
+    {24} 40, //дата предполагаемого отпуска
+    {25} 25,
+    {26} 25,
+    {27} 15, //примечание
+    {28} 80
+  ]);
+end;
+
+procedure TVacationScheduleSheet.CaptionDraw(out ARow: Integer);
+var
+  R: Integer;
+begin
+  R:= 1;
+  Writer.SetFont(Font.Name, Font.Size-2, [], clBlack);
+  Writer.SetAlignment(haLeft, vaCenter);
+  Writer.WriteText(R, 24, R, 28, 'Унифицированная форма № Т-7');
+  Writer.SetRowHeight(R, 15);
+  R:= R + 1;
+  Writer.WriteText(R, 24, R, 28, 'Утверждена Постановлением Госкомстата');
+  Writer.SetRowHeight(R, 15);
+  R:= R + 1;
+  Writer.WriteText(R, 24, R, 28, 'России от 05.01.2004 № 1');
+  Writer.SetRowHeight(R, 15);
+
+  R:= R + 2;
+  Writer.SetFont(Font.Name, Font.Size, [], clBlack);
+  Writer.SetAlignment(haCenter, vaCenter);
+  Writer.WriteText(R, 26, R, 28, 'Код', cbtOuter);
+  R:= R + 1;
+  Writer.SetAlignment(haRight, vaCenter);
+  Writer.WriteText(R, 23, R, 25, 'Форма по ОКУД');
+  Writer.SetAlignment(haCenter, vaCenter);
+  Writer.WriteText(R, 26, R, 28, '0301020', cbtOuter);
+  R:= R + 1;
+  Writer.SetAlignment(haRight, vaCenter);
+  Writer.WriteText(R, 23, R, 25, 'по ОКПО');
+  Writer.SetAlignment(haCenter, vaCenter);
+  Writer.WriteText(R, 26, R, 28, '', cbtOuter);
+  Writer.WriteText(R,  1, R, 22, '', cbtBottom);
+
+  R:= R + 1;
+  Writer.SetFont(Font.Name, Font.Size-2, [], clBlack);
+  Writer.SetAlignment(haCenter, vaTop);
+  Writer.WriteText(R,  1, R, 22, '(наименование организации)', cbtTop);
+
+  R:= R + 2;
+  Writer.SetFont(Font.Name, Font.Size, [], clBlack);
+  Writer.SetAlignment(haLeft, vaCenter);
+  Writer.WriteText(R,  1, R, 16, 'Мнение выборного профсоюзного органа');
+  Writer.WriteText(R, 18, R, 28, 'УТВЕРЖДАЮ');
+  R:= R + 1;
+  Writer.SetAlignment(haRight, vaBottom);
+  Writer.WriteText(R, 1, 'от «');
+  Writer.SetAlignment(haCenter, vaBottom);
+  Writer.WriteText(R, 2, '', cbtBottom);
+  Writer.SetAlignment(haLeft, vaBottom);
+  Writer.WriteText(R, 3, '»');
+  Writer.SetAlignment(haCenter, vaBottom);
+  Writer.WriteText(R, 4, '', cbtBottom);
+  Writer.SetAlignment(haRight, vaBottom);
+  Writer.WriteNumber(R, 5, 20);
+  Writer.SetAlignment(haCenter, vaBottom);
+  Writer.WriteText(R, 6, '', cbtBottom);
+  Writer.SetAlignment(haLeft, vaBottom);
+  Writer.WriteText(R, 7, 'г.');
+  Writer.SetAlignment(haRight, vaBottom);
+  Writer.WriteText(R, 8, '№');
+  Writer.SetAlignment(haCenter, vaBottom);
+  Writer.WriteText(R, 9, '', cbtBottom);
+  Writer.SetAlignment(haLeft, vaBottom);
+  Writer.WriteText(R, 10, 'учтено');
+  Writer.WriteText(R, 18, R, 20, 'Руководитель');
+  Writer.SetAlignment(haCenter, vaBottom);
+  Writer.WriteText(R, 21, R, 28, '', cbtBottom);
+
+  R:= R + 1;
+  Writer.SetFont(Font.Name, Font.Size-2, [], clBlack);
+  Writer.SetAlignment(haCenter, vaTop);
+  Writer.WriteText(R, 21, R, 28, '(должность)', cbtTop);
+
+  R:= R + 1;
+  Writer.SetFont(Font.Name, Font.Size, [], clBlack);
+  Writer.SetAlignment(haCenter, vaCenter);
+  Writer.WriteText(R, 12, R, 13, 'Номер документа', cbtOuter);
+  Writer.WriteText(R, 14, R, 15, 'Дата составления', cbtOuter);
+  Writer.WriteText(R, 16, R, 16, 'На год', cbtOuter);
+  Writer.WriteText(R, 18, R, 21, '', cbtBottom);
+  Writer.WriteText(R, 23, R, 28, '', cbtBottom);
+
+  R:= R + 1;
+  Writer.SetFont(Font.Name, Font.Size+2, [fsBold], clBlack);
+  Writer.SetAlignment(haRight, vaCenter);
+  Writer.WriteText(R, 1, R, 10, 'ГРАФИК ОТПУСКОВ');
+  Writer.SetAlignment(haCenter, vaCenter);
+  Writer.SetFont(Font.Name, Font.Size, [], clBlack);
+  Writer.WriteText(R, 12, R, 13, '', cbtOuter);
+  Writer.WriteText(R, 14, R, 15, '', cbtOuter);
+  Writer.SetFont(Font.Name, Font.Size, [fsBold], clBlack);
+  Writer.WriteNumber(R, 16, R, 16, FYear, cbtOuter);
+  Writer.SetFont(Font.Name, Font.Size-2, [], clBlack);
+  Writer.SetAlignment(haCenter, vaTop);
+  Writer.WriteText(R, 18, R, 21, '(личная подпись)', cbtTop);
+  Writer.WriteText(R, 23, R, 28, '(расшифровка подписи)', cbtTop);
+
+  R:= R + 1;
+  Writer.SetFont(Font.Name, Font.Size, [], clBlack);
+  Writer.SetAlignment(haRight, vaBottom);
+  Writer.WriteText(R, 19, 'от «');
+  Writer.SetAlignment(haCenter, vaBottom);
+  Writer.WriteText(R, 20, '', cbtBottom);
+  Writer.SetAlignment(haLeft, vaBottom);
+  Writer.WriteText(R, 21, '»');
+  Writer.SetAlignment(haCenter, vaBottom);
+  Writer.WriteText(R, 22, R, 24, '', cbtBottom);
+  Writer.SetAlignment(haRight, vaBottom);
+  Writer.WriteNumber(R, 25, 20);
+  Writer.SetAlignment(haCenter, vaBottom);
+  Writer.WriteText(R, 26, '', cbtBottom);
+  Writer.SetAlignment(haLeft, vaBottom);
+  Writer.WriteText(R, 27, 'г.');
+
+  R:= R + 2;
+  Writer.SetAlignment(haCenter, vaCenter);
+  Writer.WriteText(R, 1, R+2, 4, 'Структурное'+SYMBOL_BREAK+'подразделение', cbtOuter);
+  Writer.WriteText(R, 5, R+2, 9, 'Должность'+SYMBOL_BREAK+'(специальность, профессия)'+
+                                  SYMBOL_BREAK+'по штатному расписанию', cbtOuter);
+  Writer.WriteText(R, 10, R+2, 12, 'Фамилия, имя, отчество', cbtOuter);
+  Writer.WriteText(R, 13, R+2, 14, 'Табельный'+SYMBOL_BREAK+'номер', cbtOuter);
+  Writer.WriteText(R, 15, R, 26, 'ОТПУСК', cbtOuter);
+  Writer.WriteText(R+1, 15, R+2, 15, 'количество'+SYMBOL_BREAK+'календарных'+
+                                     SYMBOL_BREAK+'дней', cbtOuter);
+  Writer.WriteText(R+1, 16, R+1, 19, 'дата', cbtOuter);
+  Writer.WriteText(R+2, 16, R+2, 17, 'заплани-'+SYMBOL_BREAK+'рованная', cbtOuter);
+  Writer.WriteText(R+2, 18, R+2, 19, 'факти-'+SYMBOL_BREAK+'ческая', cbtOuter);
+  Writer.WriteText(R+1, 20, R+1, 26, 'перенесение отпуска', cbtOuter);
+  Writer.WriteText(R+2, 20, R+2, 23, 'основание'+SYMBOL_BREAK+'(документ)', cbtOuter);
+  Writer.WriteText(R+2, 24, R+2, 26, 'дата предпо-'+SYMBOL_BREAK+'лагаемого'+
+                                     SYMBOL_BREAK+'отпуска', cbtOuter);
+  Writer.WriteText(R, 27, R+2, 28, 'Примечание', cbtOuter);
+  Writer.SetRowHeight(R+2, 50);
+
+  R:= R + 3;
+  Writer.WriteNumber(R, 1,  R, 4,  1, cbtOuter);
+  Writer.WriteNumber(R, 5,  R, 9,  2, cbtOuter);
+  Writer.WriteNumber(R, 10, R, 12, 3, cbtOuter);
+  Writer.WriteNumber(R, 13, R, 14, 4, cbtOuter);
+  Writer.WriteNumber(R, 15, R, 15, 5, cbtOuter);
+  Writer.WriteNumber(R, 16, R, 17, 6, cbtOuter);
+  Writer.WriteNumber(R, 18, R, 19, 7, cbtOuter);
+  Writer.WriteNumber(R, 20, R, 23, 8, cbtOuter);
+  Writer.WriteNumber(R, 24, R, 26, 9, cbtOuter);
+  Writer.WriteNumber(R, 27, R, 28, 10, cbtOuter);
+
+  Writer.DrawBorders(R-3, 1, R, 28, cbtAll);
+
+  ARow:= R + 1;
+end;
+
+procedure TVacationScheduleSheet.LineDraw(var ARow: Integer; const AIndex: Integer);
+var
+  R: Integer;
+begin
+  R:= ARow;
+
+  Writer.SetFont(Font.Name, Font.Size, [], clBlack);
+  Writer.SetAlignment(haLeft, vaCenter);
+  Writer.WriteText(R, 1,  R, 4,  '', cbtOuter, True, True);
+  Writer.WriteText(R, 5,  R, 9,  FPostNames[AIndex], cbtOuter, True, True);
+  Writer.WriteText(R, 10, R, 12, FStaffNames[AIndex], cbtOuter, True, True);
+  Writer.SetAlignment(haCenter, vaCenter);
+  Writer.WriteText(R, 13, R, 14, FTabNums[AIndex], cbtOuter);
+  Writer.WriteNumber(R, 15, R, 15, FTotalCounts[AIndex], cbtOuter);
+  Writer.WriteDate(R, 16, R, 17, FFirstDates[AIndex], cbtOuter);
+  Writer.WriteText(R, 18, R, 19, '', cbtOuter);
+  Writer.WriteText(R, 20, R, 23, '', cbtOuter);
+  Writer.WriteText(R, 24, R, 26, '', cbtOuter);
+  Writer.SetAlignment(haLeft, vaCenter);
+  Writer.WriteText(R, 27, R, 28, '', cbtOuter);
+
+  ARow:= R + 1;
+end;
+
+procedure TVacationScheduleSheet.BottomDraw(const ARow: Integer);
+var
+  R: Integer;
+begin
+  R:= ARow + 1;
+
+  Writer.SetFont(Font.Name, Font.Size, [fsBold], clBlack);
+  Writer.SetAlignment(haLeft, vaBottom);
+  Writer.WriteText(R, 1, R, 6, 'Руководитель кадровой службы');
+  Writer.SetFont(Font.Name, Font.Size, [], clBlack);
+  Writer.WriteText(R, 7, R, 13, '', cbtBottom);
+  Writer.WriteText(R, 15, R, 17, '', cbtBottom);
+  Writer.WriteText(R, 19, R, 28, '', cbtBottom);
+
+  R:= R + 1;
+  Writer.SetFont(Font.Name, Font.Size-2, [], clBlack);
+  Writer.SetAlignment(haCenter, vaTop);
+  Writer.WriteText(R, 7, R, 13, '(должность)', cbtTop);
+  Writer.WriteText(R, 15, R, 17, '(личная подпись)', cbtTop);
+  Writer.WriteText(R, 19, R, 28, '(расшифровка подписи)', cbtTop);
+end;
+
+constructor TVacationScheduleSheet.Create(const AWorksheet: TsWorksheet;
+  const AGrid: TsWorksheetGrid; const AFont: TFont);
+begin
+  inherited Create(AWorksheet, AGrid, AFont, 20);
+end;
+
+procedure TVacationScheduleSheet.Draw(const AYear: Word;
+                   const AStaffNames, ATabNums, APostNames: TStrVector;
+                   const AFirstDates: TDateVector;
+                   const ATotalCounts: TIntVector);
+var
+  i, R, CaptionRowCount: Integer;
+begin
+  FYear:= AYear;
+  FStaffNames:= AStaffNames;
+  FTabNums:= ATabNums;
+  FPostNames:= APostNames;
+  FFirstDates:= AFirstDates;
+  FTotalCounts:= ATotalCounts;
+
+  Writer.BeginEdit;
+  CaptionDraw(R);
+  CaptionRowCount:= R - 1;
+  for i:= 0 to High(FStaffNames) do
+    LineDraw(R, i);
+  BottomDraw(R);
+  //if Writer.HasGrid then
+    Writer.SetFrozenRows(CaptionRowCount);
+  //else begin
+    Writer.SetRepeatedRows(CaptionRowCount-3, CaptionRowCount);
+    Writer.WorkSheet.Font
+    Writer.WorkSheet.PageLayout.Footers[HEADER_FOOTER_INDEX_ALL] := '&R страница &P (из &N)';
+  //end;
+  Writer.EndEdit;
+end;
+
+{ TTableScheduleSheet }
+
+function TTableScheduleSheet.SetWidths: TIntVector;
 var
   i, W: Integer;
 begin
@@ -671,12 +962,12 @@ begin
   end;
 end;
 
-function TShiftScheduleTableSheet.IsNeedCaption: Boolean;
+function TTableScheduleSheet.IsNeedCaption: Boolean;
 begin
   Result:= (not Writer.HasGrid) and (not SEmpty(GetCaption));
 end;
 
-procedure TShiftScheduleTableSheet.CaptionDraw;
+procedure TTableScheduleSheet.CaptionDraw;
 var
   R, C, i,n: Integer;
   S: String;
@@ -731,7 +1022,7 @@ begin
   Writer.SetRowHeight(R, i);
 end;
 
-constructor TShiftScheduleTableSheet.Create(const AWorksheet: TsWorksheet;
+constructor TTableScheduleSheet.Create(const AWorksheet: TsWorksheet;
                        const AGrid: TsWorksheetGrid;
                        const AFont: TFont;
                        const AResumeType: Byte {0-дни, 1-смены, 2-дни и смены});
@@ -740,9 +1031,9 @@ begin
   inherited Create(AWorksheet, AGrid, AFont);
 end;
 
-{ TShiftScheduleYearSheet }
+{ TShiftYearScheduleSheet }
 
-procedure TShiftScheduleYearSheet.ScheduleDraw;
+procedure TShiftYearScheduleSheet.ScheduleDraw;
 var
   R,C,DeltaR,m: Integer;
   AYear: Word;
@@ -863,7 +1154,7 @@ begin
   end;
 end;
 
-procedure TShiftScheduleYearSheet.Draw(const ACalendar: TCalendar;
+procedure TShiftYearScheduleSheet.Draw(const ACalendar: TCalendar;
                    const ASchedule: TShiftSchedule;
                    const AName: String;
                    const ANeedNight, ANeedCorrect, ANeedMarks, AScheduleNotWorkColor: Boolean);
@@ -892,16 +1183,16 @@ begin
     Writer.SetRowHeight(i, ROW_DEFAULT_HEIGHT);
 end;
 
-function TShiftScheduleYearSheet.GetCaption: String;
+function TShiftYearScheduleSheet.GetCaption: String;
 begin
   Result:= EmptyStr;
   if SEmpty(FCaption) then Exit;
   Result:= 'График сменности "' + FCaption + '" на ' + IntToStr(FYear) + ' год';
 end;
 
-{ TShiftScheduleMonthSheet }
+{ TShiftMonthScheduleSheet }
 
-procedure TShiftScheduleMonthSheet.BlankDraw;
+procedure TShiftMonthScheduleSheet.BlankDraw;
 const
   C1= 2;
 var
@@ -929,7 +1220,7 @@ begin
   end;
 end;
 
-procedure TShiftScheduleMonthSheet.ScheduleDraw;
+procedure TShiftMonthScheduleSheet.ScheduleDraw;
 var
   R,RR,C,DeltaR,j,k: Integer;
   Marks: TStrVector;
@@ -1000,19 +1291,19 @@ begin
   end;
 end;
 
-function TShiftScheduleMonthSheet.GetCaption: String;
+function TShiftMonthScheduleSheet.GetCaption: String;
 begin
   Result:= 'Графики сменности на ' +
            MONTHSNOM[MonthOfDate(FCalendar.BeginDate)] +
            FormatDateTime(' yyyy года', FCalendar.BeginDate);
 end;
 
-function TShiftScheduleMonthSheet.GetPeriodColumnName: String;
+function TShiftMonthScheduleSheet.GetPeriodColumnName: String;
 begin
   Result:= 'График';
 end;
 
-procedure TShiftScheduleMonthSheet.Draw(const ACalendar: TCalendar;
+procedure TShiftMonthScheduleSheet.Draw(const ACalendar: TCalendar;
   const ASchedules: TShiftScheduleVector; const ANames: TStrVector;
   const ANeedNight, ANeedCorrect, ANeedMarks, AScheduleNotWorkColor: Boolean;
   const AVisible: TBoolVector = nil);
@@ -1046,14 +1337,14 @@ begin
     Writer.SetRowHeight(i, ROW_DEFAULT_HEIGHT);
 end;
 
-function TShiftScheduleMonthSheet.GridToDate(const ARow, ACol: Integer;
+function TShiftMonthScheduleSheet.GridToDate(const ARow, ACol: Integer;
   out ADate: TDate): Boolean;
 begin
   ADate:= 0;
   Result:= False;
 end;
 
-function TShiftScheduleMonthSheet.DateToGrid(const ADate: TDate;
+function TShiftMonthScheduleSheet.DateToGrid(const ADate: TDate;
   out ARow, ACol: Integer): Boolean;
 begin
   ARow:= 0;
@@ -1061,14 +1352,14 @@ begin
   Result:= False;
 end;
 
-{ TShiftScheduleCalendarSheet }
+{ TShiftCalendarScheduleSheet }
 
-function TShiftScheduleCalendarSheet.SetWidths: TIntVector;
+function TShiftCalendarScheduleSheet.SetWidths: TIntVector;
 begin
   VDim(Result{%H-}, COLUMNS_COUNT, COL_WIDTH);
 end;
 
-procedure TShiftScheduleCalendarSheet.CaptionDraw(const AName: String);
+procedure TShiftCalendarScheduleSheet.CaptionDraw(const AName: String);
 begin
   Writer.SetAlignment(haCenter, vaCenter);
   Writer.SetFont(Font.Name, Font.Size+2, [fsBold], clBlack);
@@ -1076,7 +1367,7 @@ begin
                            FormatDateTime(' на yyyy год', FSchedule.BeginDate)));
 end;
 
-procedure TShiftScheduleCalendarSheet.MonthDraw(const AMonth: Byte);
+procedure TShiftCalendarScheduleSheet.MonthDraw(const AMonth: Byte);
 var
   R,C, i,j, Ind, PrevInd: Integer;
   MonthCalendar: TCalendar;
@@ -1139,7 +1430,7 @@ begin
   end;
 end;
 
-procedure TShiftScheduleCalendarSheet.Draw(const ACalendar: TCalendar;
+procedure TShiftCalendarScheduleSheet.Draw(const ACalendar: TCalendar;
   const ASchedule: TShiftSchedule; const APrevShiftNumber: Integer; const AName: String;
   const ANeedCorrect, AFirstShiftDayColorOnly: Boolean);
 var
@@ -1157,9 +1448,9 @@ begin
   Writer.EndEdit;
 end;
 
-{ TShiftScheduleSimpleSheet }
+{ TShiftSimpleScheduleSheet }
 
-function TShiftScheduleSimpleSheet.SetWidths: TIntVector;
+function TShiftSimpleScheduleSheet.SetWidths: TIntVector;
 var
   i, W: Integer;
 begin
@@ -1171,7 +1462,7 @@ begin
   Result[0]:= W;
 end;
 
-procedure TShiftScheduleSimpleSheet.CaptionDraw;
+procedure TShiftSimpleScheduleSheet.CaptionDraw;
 var
   i: Integer;
 begin
@@ -1183,7 +1474,7 @@ begin
     Writer.WriteText(1, i+2, FormatDateTime('dd.mm.yy', IncDay(FSchedules[0].BeginDate, i)), cbtOuter);
 end;
 
-procedure TShiftScheduleSimpleSheet.LineDraw(const AIndex: Integer; const ASelected: Boolean);
+procedure TShiftSimpleScheduleSheet.LineDraw(const AIndex: Integer; const ASelected: Boolean);
 var
   R,i: Integer;
   WorkHours: TWorkHours;
@@ -1205,12 +1496,12 @@ begin
                      EmptyStr, False, False, True, True);
 end;
 
-function TShiftScheduleSimpleSheet.GetIsSelected: Boolean;
+function TShiftSimpleScheduleSheet.GetIsSelected: Boolean;
 begin
   Result:= FSelectedIndex>=0;
 end;
 
-procedure TShiftScheduleSimpleSheet.MouseDown(Sender: TObject;
+procedure TShiftSimpleScheduleSheet.MouseDown(Sender: TObject;
   Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 var
   R, C: Integer;
@@ -1226,7 +1517,7 @@ begin
   LineDraw(FSelectedIndex, True);
 end;
 
-procedure TShiftScheduleSimpleSheet.KeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+procedure TShiftSimpleScheduleSheet.KeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 begin
   if Key=VK_UP then
     SelectionMove(mdUp)
@@ -1234,7 +1525,7 @@ begin
     SelectionMove(mdDown)
 end;
 
-procedure TShiftScheduleSimpleSheet.SelectionMove(const ADirection: TMoveDirection);
+procedure TShiftSimpleScheduleSheet.SelectionMove(const ADirection: TMoveDirection);
 begin
   if not IsSelected then Exit;
   if ADirection=mdUp then
@@ -1243,7 +1534,7 @@ begin
     SelectedIndex:= SelectedIndex + 1;
 end;
 
-procedure TShiftScheduleSimpleSheet.SetSelectedIndex(const AValue: Integer);
+procedure TShiftSimpleScheduleSheet.SetSelectedIndex(const AValue: Integer);
 begin
   if FSelectedIndex=AValue then Exit;
   if (AValue<0) or (AValue>High(FNames)) then Exit;
@@ -1256,7 +1547,7 @@ begin
   Writer.Grid.Row:= AValue*2 + 3;
 end;
 
-constructor TShiftScheduleSimpleSheet.Create(const AGrid: TsWorksheetGrid;
+constructor TShiftSimpleScheduleSheet.Create(const AGrid: TsWorksheetGrid;
                        const AFont: TFont;
                        const ANames: TStrVector);
 begin
@@ -1268,7 +1559,7 @@ begin
   Writer.SetBordersColor(clBlack);
 end;
 
-procedure TShiftScheduleSimpleSheet.Draw(const ASchedules: TShiftScheduleVector);
+procedure TShiftSimpleScheduleSheet.Draw(const ASchedules: TShiftScheduleVector);
 var
   i: Integer;
 begin
