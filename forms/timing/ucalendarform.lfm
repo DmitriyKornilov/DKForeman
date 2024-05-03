@@ -120,7 +120,7 @@ object CalendarForm: TCalendarForm
       Top = 0
       Width = 2
       Align = alRight
-      BorderSpacing.Left = 2
+      BorderSpacing.Left = 3
       BorderSpacing.Right = 2
       Shape = bsRightLine
     end
@@ -154,18 +154,18 @@ object CalendarForm: TCalendarForm
       end
     end
     object Bevel2: TBevel
-      Left = 69
+      Left = 68
       Height = 36
       Top = 0
       Width = 2
       Align = alLeft
-      BorderSpacing.Left = 4
+      BorderSpacing.Left = 3
       BorderSpacing.Right = 2
       Shape = bsRightLine
     end
     object ExportButton: TBCButton
       Cursor = crHandPoint
-      Left = 73
+      Left = 72
       Height = 34
       Hint = 'Экспорт в формат электронной таблицы XLSX или ODS'
       Top = 1

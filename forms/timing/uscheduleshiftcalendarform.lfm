@@ -123,7 +123,7 @@ object ScheduleShiftCalendarForm: TScheduleShiftCalendarForm
       Top = 0
       Width = 2
       Align = alRight
-      BorderSpacing.Left = 2
+      BorderSpacing.Left = 3
       BorderSpacing.Right = 2
       Shape = bsRightLine
     end
@@ -157,18 +157,18 @@ object ScheduleShiftCalendarForm: TScheduleShiftCalendarForm
       end
     end
     object Bevel2: TBevel
-      Left = 67
+      Left = 68
       Height = 36
       Top = 0
       Width = 2
       Align = alLeft
-      BorderSpacing.Left = 2
+      BorderSpacing.Left = 3
       BorderSpacing.Right = 2
       Shape = bsRightLine
     end
     object ExportButton: TBCButton
       Cursor = crHandPoint
-      Left = 661
+      Left = 662
       Height = 34
       Hint = 'Экспорт в формат электронной таблицы XLSX или ODS'
       Top = 1
@@ -355,7 +355,7 @@ object ScheduleShiftCalendarForm: TScheduleShiftCalendarForm
     end
     object SettingButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 782
+      Left = 781
       Height = 36
       Hint = 'Параметры'
       Top = 0
@@ -446,7 +446,7 @@ object ScheduleShiftCalendarForm: TScheduleShiftCalendarForm
       ParentShowHint = False
     end
     object NeedCorrectionsCheckBox: TCheckBox
-      Left = 75
+      Left = 76
       Height = 36
       Top = 0
       Width = 265
@@ -460,7 +460,7 @@ object ScheduleShiftCalendarForm: TScheduleShiftCalendarForm
       OnChange = NeedCorrectionsCheckBoxChange
     end
     object Bevel3: TBevel
-      Left = 657
+      Left = 658
       Height = 36
       Top = 0
       Width = 2
@@ -470,7 +470,7 @@ object ScheduleShiftCalendarForm: TScheduleShiftCalendarForm
       Shape = bsRightLine
     end
     object FirstShiftDayColorOnlyCheckBox: TCheckBox
-      Left = 346
+      Left = 347
       Height = 36
       Top = 0
       Width = 305

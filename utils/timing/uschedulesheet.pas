@@ -916,7 +916,6 @@ begin
     Writer.SetFrozenRows(CaptionRowCount);
   //else begin
     Writer.SetRepeatedRows(CaptionRowCount-3, CaptionRowCount);
-    Writer.WorkSheet.Font
     Writer.WorkSheet.PageLayout.Footers[HEADER_FOOTER_INDEX_ALL] := '&R страница &P (из &N)';
   //end;
   Writer.EndEdit;

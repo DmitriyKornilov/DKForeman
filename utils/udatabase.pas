@@ -60,14 +60,25 @@ type
      ABeginDate, AEndDate - отчетный период
      AOrderType - сортировка: 0-ФИО, 1-табельный номер, 2-должность
      AIsDescOrder=True - сортировка по убыванию, False - по возрастанию
-     AFilterValue - фильтр по Ф.И.О.}
-    function StaffListForTimingLoad(const AFilterValue: String;
+     AFilterValue - фильтр по Ф.И.О.
+     True - ОК, False - список пуст}
+    function StaffListForPersonalTimingLoad(const AFilterValue: String;
                              const ABeginDate, AEndDate: TDate;
                              const AOrderType: Byte;
                              const AIsDescOrder: Boolean;
                              out ATabNumIDs: TIntVector;
                              out ARecrutDates, ADismissDates: TDateVector;
                              out AFs, ANs, APs, ATabNums, APostNames: TStrVector): Boolean;
+
+    {Cписок сотрудников для общих графиков и табелей
+     ABeginDate, AEndDate - отчетный период
+     AOrderType - сортировка: 0-график, 1-должность, 2-ФИО, 3-табельный номер
+     True - ОК, False - список пуст}
+    function StaffListForCommonTimingLoad(const ABeginDate, AEndDate: TDate;
+                   const AOrderType: Byte;
+                   out ATabNumIDs: TIntVector;
+                   out ARecrutDates, ADismissDates, APostBDs, APostEDs, AScheduleBDs, AScheduleEDs: TDateVector;
+                   out AFs, ANs, APs, ATabNums, APostNames, AScheduleNames: TStrVector): Boolean;
 
 
     {Добавление данных нового человека: True - ОК, False - ошибка}
@@ -517,7 +528,7 @@ begin
   ARanks:= VReplace(ARanks, Indexes);
 end;
 
-function TDataBase.StaffListForTimingLoad(const AFilterValue: String;
+function TDataBase.StaffListForPersonalTimingLoad(const AFilterValue: String;
                              const ABeginDate, AEndDate: TDate;
                              const AOrderType: Byte;
                              const AIsDescOrder: Boolean;
@@ -612,6 +623,92 @@ begin
   ATabNums:= VReplace(ATabNums, Indexes);
   APostNames:= VReplace(APostNames, Indexes);
   //ARanks:= VReplace(ARanks, Indexes);
+end;
+
+function TDataBase.StaffListForCommonTimingLoad(const ABeginDate, AEndDate: TDate;
+                   const AOrderType: Byte;
+                   out ATabNumIDs: TIntVector;
+                   out ARecrutDates, ADismissDates, APostBDs, APostEDs, AScheduleBDs, AScheduleEDs: TDateVector;
+                   out AFs, ANs, APs, ATabNums, APostNames, AScheduleNames: TStrVector): Boolean;
+var
+  SQLStr: String;
+  BD, ED, RecrutDate, DismissDate: TDate;
+begin
+  Result:= False;
+
+  ATabNumIDs:= nil;
+  ARecrutDates:= nil;
+  ADismissDates:= nil;
+  APostBDs:= nil;
+  APostEDs:= nil;
+  AScheduleBDs:= nil;
+  AScheduleEDs:= nil;
+  AFs:= nil;
+  ANs:= nil;
+  APs:= nil;
+  ATabNums:= nil;
+  APostNames:= nil;
+  AScheduleNames:= nil;
+
+  SQLStr:=
+    'SELECT t1.Family, t1.Name, t1.Patronymic, '+
+           't2.TabNumID, t2.TabNum, t2.RecrutDate, t2.DismissDate, ' +
+           't3.ScheduleID, t3.BeginDate AS ScheduleBD, t3.EndDate AS ScheduleED, '+
+           't4.FirstDate AS PostBD, t4.LastDate AS PostED, '+
+           't5.PostName, ' +
+           't6.ScheduleName ' +
+           //'t6.ScheduleName, t6.WeekHours, t6.CycleCount ' +
+    'FROM STAFFMAIN t1 ' +
+    'INNER JOIN STAFFTABNUM t2 ON (t1.StaffID=t2.StaffID) ' +
+    'INNER JOIN STAFFSCHEDULE t3 ON (t2.TabNumID=t3.TabNumID) ' +
+    'INNER JOIN STAFFPOSTLOG t4 ON (t2.TabNumID=t4.TabNumID) ' +
+    'INNER JOIN STAFFPOST t5 ON (t4.PostID=t5.PostID) ' +
+    'INNER JOIN SCHEDULEMAIN t6 ON (t6.ScheduleID=t3.ScheduleID) ' +
+    'WHERE ((t2.RecrutDate<= :ED) AND (t2.DismissDate>= :BD)) AND ' +
+          '((t3.BeginDate<= :ED) AND (t3.EndDate>= :BD)) AND ' +
+          '((t4.FirstDate<= :ED) AND (t4.LastDate>= :BD)) AND (' +
+          SqlCROSS('t3.BeginDate', 't3.EndDate', 't4.FirstDate', 't4.LastDate' ) + ') ';
+  case AOrderType of
+  0:  SQLStr:= SQLStr + 'ORDER BY t6.ScheduleName, t1.Family, t1.Name, t1.Patronymic';
+  1:  SQLStr:= SQLStr + 'ORDER BY t5.PostName, t6.ScheduleName, t1.Family, t1.Name, t1.Patronymic';
+  2:  SQLStr:= SQLStr + 'ORDER BY t1.Family, t1.Name, t1.Patronymic';
+  3:  SQLStr:= SQLStr + 'ORDER BY t2.TabNum';
+  end;
+
+  QSetQuery(FQuery);
+  QSetSQL(SQLStr);
+  QParamDT('BD', ABeginDate);
+  QParamDT('ED', AEndDate);
+  QOpen;
+  if not QIsEmpty then
+  begin
+    QFirst;
+    while not QEOF do
+    begin
+      VAppend(ATabNumIDs, QFieldInt('TabNumID'));
+      VAppend(AFs, QFieldStr('Family'));
+      VAppend(ANs, QFieldStr('Name'));
+      VAppend(APs, QFieldStr('Patronymic'));
+      VAppend(ATabNums, QFieldStr('TabNum'));
+      VAppend(APostNames, QFieldStr('PostName'));
+      VAppend(AScheduleNames, QFieldStr('ScheduleName'));
+
+      RecrutDate:= QFieldDT('RecrutDate');
+      DismissDate:= QFieldDT('DismissDate');
+      VAppend(ARecrutDates, RecrutDate);
+      VAppend(ADismissDates, DismissDate);
+      IsPeriodIntersect(RecrutDate, DismissDate, QFieldDT('PostBD'), QFieldDT('PostED'), BD, ED);
+      VAppend(APostBDs, BD);
+      VAppend(APostEDs, ED);
+      IsPeriodIntersect(RecrutDate, DismissDate, QFieldDT('ScheduleBD'), QFieldDT('ScheduleED'), BD, ED);
+      VAppend(AScheduleBDs, BD);
+      VAppend(AScheduleEDs, ED);
+
+      QNext;
+    end;
+    Result:= True;
+  end;
+  QClose;
 end;
 
 function TDataBase.StaffMainAdd(out AStaffID: Integer;

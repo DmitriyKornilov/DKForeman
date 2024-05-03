@@ -29,6 +29,8 @@ type
     ListOrderToolPanel: TPanel;
     ListTypeVT: TVirtualStringTree;
     NameTypeVT: TVirtualStringTree;
+    OrderButtonBevel: TBevel;
+    OrderButtonPanel: TPanel;
     OrderLabel: TLabel;
     OrderTypeVT: TVirtualStringTree;
     BornDateRadioButton: TRadioButton;

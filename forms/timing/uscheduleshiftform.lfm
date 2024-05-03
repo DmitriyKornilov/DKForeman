@@ -121,7 +121,7 @@ object ScheduleShiftForm: TScheduleShiftForm
       Top = 0
       Width = 2
       Align = alRight
-      BorderSpacing.Left = 2
+      BorderSpacing.Left = 3
       BorderSpacing.Right = 2
       Shape = bsRightLine
     end
@@ -156,18 +156,18 @@ object ScheduleShiftForm: TScheduleShiftForm
       end
     end
     object Bevel2: TBevel
-      Left = 67
+      Left = 68
       Height = 36
       Top = 0
       Width = 2
       Align = alLeft
-      BorderSpacing.Left = 2
+      BorderSpacing.Left = 3
       BorderSpacing.Right = 2
       Shape = bsRightLine
     end
     object ExportButton: TBCButton
       Cursor = crHandPoint
-      Left = 71
+      Left = 72
       Height = 34
       Hint = 'Экспорт в формат электронной таблицы XLSX или ODS'
       Top = 1
@@ -353,18 +353,18 @@ object ScheduleShiftForm: TScheduleShiftForm
       MemoryUsage = bmuHigh
     end
     object Bevel3: TBevel
-      Left = 177
+      Left = 179
       Height = 36
       Top = 0
       Width = 2
       Align = alLeft
-      BorderSpacing.Left = 2
+      BorderSpacing.Left = 3
       BorderSpacing.Right = 2
       Shape = bsRightLine
     end
     object CalendarButton: TBCButton
       Cursor = crHandPoint
-      Left = 181
+      Left = 183
       Height = 34
       Hint = 'Годовой график сменности в виде календаря'
       Top = 1
@@ -551,7 +551,7 @@ object ScheduleShiftForm: TScheduleShiftForm
     end
     object MonthButton: TBCButton
       Cursor = crHandPoint
-      Left = 360
+      Left = 362
       Height = 34
       Hint = 'Сводный график сменности на месяц'
       Top = 1

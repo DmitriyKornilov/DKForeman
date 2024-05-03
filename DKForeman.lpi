@@ -114,6 +114,7 @@
         <Filename Value="forms\timing\uvacationplaneform.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="VacationPlaneForm"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UVacationPlaneForm"/>
       </Unit>
@@ -129,6 +130,7 @@
         <Filename Value="forms\timing\utimetableform.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="TimetableForm"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UTimetableForm"/>
       </Unit>
@@ -242,6 +244,7 @@
         <Filename Value="forms\uchooseform.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="ChooseForm"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UChooseForm"/>
       </Unit>
@@ -284,6 +287,14 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UScheduleVacationForm"/>
+      </Unit>
+      <Unit>
+        <Filename Value="forms\timing\uschedulepersonalmonthform.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="SchedulePersonalMonthForm"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="USchedulePersonalMonthForm"/>
       </Unit>
     </Units>
   </ProjectOptions>

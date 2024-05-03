@@ -16,24 +16,26 @@ uses
   DK_Zoom, DK_DateUtils, DK_Color, DK_SheetExporter, DK_StrUtils, DK_Progress,
   //Forms
   UChooseForm, USchedulePersonalEditForm, UScheduleCorrectionEditForm,
-  UScheduleVacationForm;
+  UScheduleVacationForm, USchedulePersonalMonthForm;
 
 type
 
   { TSchedulePersonalForm }
 
   TSchedulePersonalForm = class(TForm)
-    DescendingButton: TSpeedButton;
+    AscendingButton: TSpeedButton;
     Bevel1: TBevel;
     Bevel2: TBevel;
     Bevel3: TBevel;
     CloseButton: TSpeedButton;
     ColorTypeVT: TVirtualStringTree;
     CopyCancelButton: TSpeedButton;
+    DescendingButton: TSpeedButton;
     FilterEdit: TEditButton;
     FilterLabel: TLabel;
     FilterPanel: TPanel;
-    AscendingButton: TSpeedButton;
+    OrderButtonBevel: TBevel;
+    OrderButtonPanel: TPanel;
     OrderLabel: TLabel;
     ListFilterToolPanel: TPanel;
     ListOrderToolPanel: TPanel;
@@ -120,6 +122,7 @@ type
     procedure HistoryEditButtonClick(Sender: TObject);
     procedure HistoryVTNodeDblClick(Sender: TBaseVirtualTree;
       const {%H-}HitInfo: THitInfo);
+    procedure MonthScheduleButtonClick(Sender: TObject);
     procedure PostRadioButtonClick(Sender: TObject);
     procedure TabNumRadioButtonClick(Sender: TObject);
     procedure VacationCancelButtonClick(Sender: TObject);
@@ -422,6 +425,11 @@ begin
   SchedulePersonalEditFormOpen(etEdit);
 end;
 
+procedure TSchedulePersonalForm.MonthScheduleButtonClick(Sender: TObject);
+begin
+  SchedulePersonalMonthFormOpen(YearSpinEdit.Value);
+end;
+
 procedure TSchedulePersonalForm.PostRadioButtonClick(Sender: TObject);
 begin
   StaffListLoad;
@@ -551,7 +559,6 @@ begin
   if StaffList.IsSelected then
     SelectedTabNumID:= TabNumIDs[StaffList.SelectedIndex];
   StaffListLoad(SelectedTabNumID);
-  //ScheduleChange;
 end;
 
 procedure TSchedulePersonalForm.CopyBegin;
@@ -816,12 +823,12 @@ begin
 
   IsDescOrder:= not DescendingButton.Visible;
 
-  DataBase.StaffListForTimingLoad(STrimLeft(FilterEdit.Text),
+  DataBase.StaffListForPersonalTimingLoad(STrimLeft(FilterEdit.Text),
                        BD, ED, OrderType, IsDescOrder,
                        TabNumIDs, RecrutDates, DismissDates,
                        Families, Names, Patronymics, TabNums, PostNames);
-  StaffLongNames:= StaffNamesForTiming(Families, Names, Patronymics, TabNums, PostNames, True);
-  StaffShortNames:= StaffNamesForTiming(Families, Names, Patronymics, TabNums, PostNames, False);
+  StaffLongNames:= StaffNamesForPersonalTiming(Families, Names, Patronymics, TabNums, PostNames, True);
+  StaffShortNames:= StaffNamesForPersonalTiming(Families, Names, Patronymics, TabNums, PostNames, False);
   ScheduleNames:= StaffNamesForScheduleNames(Families, Names, Patronymics, TabNums, True);
 
   StaffList.Visible:= False;

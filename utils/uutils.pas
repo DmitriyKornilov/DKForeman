@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, Graphics, Controls, BCPanel, BCButton, DateUtils,
   //DK packages utils
-  DK_CtrlUtils, DK_Color, DK_Vector, DK_DateUtils, DK_Const, DK_Fonts,
+  DK_CtrlUtils, DK_Color, DK_Vector, DK_Matrix, DK_DateUtils, DK_Const, DK_Fonts,
   DK_StrUtils, DK_VSTEdit, DK_VSTTables, DK_VSTCore, DK_PPI, DK_VSTDropDownConst,
 
   //Project utils
@@ -28,10 +28,25 @@ uses
   function SettingByName(const AName: String; const ANames: TStrVector;
                          const AValues: TIntVector): Integer;
 
+  function PeriodToStr(const ABeginDate, AEndDate: TDate): String;
+  function VPeriodToStr(const ABeginDates, AEndDates: TDateVector): TStrVector;
+  function MPeriodToStr(const ABeginDates, AEndDates: TDateMatrix): TStrMatrix;
+
   //Staff list
-  function StaffNameForTiming(const AF, AN, AP, ATabNum, APostName: String;
+  function GetStaffListForCommonTiming(const AYear, AMonth, AOrderType: Word;
+                         out ATabNumIDs: TIntVector;
+                         out AStaffNames, ATabNums, APostNames, AScheduleNames: TStrVector;
+                         out ARecrutDates, ADismissDates, APostBDs, APostEDs, AScheduleBDs, AScheduleEDs: TDateVector;
+                         const ANeedLongName: Boolean = False): Boolean;
+  function GetStaffListForCommonTiming(const AYear, AMonth, AOrderType: Word;
+                         out ACategoryNames: TStrVector;
+                         out ATabNumIDs: TIntMatrix;
+                         out AStaffNames, ATabNums, APostNames, AScheduleNames: TStrMatrix;
+                         out ARecrutDates, ADismissDates, APostBDs, APostEDs, AScheduleBDs, AScheduleEDs: TDateMatrix;
+                         const ANeedLongName: Boolean = False): Boolean;
+  function StaffNameForPersonalTiming(const AF, AN, AP, ATabNum, APostName: String;
                               const ANeedLongName: Boolean = False): String;
-  function StaffNamesForTiming(const AFs, ANs, APs, ATabNums, APostNames: TStrVector;
+  function StaffNamesForPersonalTiming(const AFs, ANs, APs, ATabNums, APostNames: TStrVector;
                               const ANeedLongName: Boolean = False): TStrVector;
   function StaffNameForScheduleName(const AF, AN, AP, ATabNum: String;
                               const ANeedLongName: Boolean = True): String;
@@ -116,6 +131,14 @@ uses
                               const ASchedBD: TDate = NULDATE; ASchedED: TDate = INFDATE;
                               const APostBD: TDate = NULDATE; APostED: TDate = INFDATE
                               ): TPersonalSchedule;
+  function SchedulesPersonalByCalendar(const ATabNumIDs: TIntVector; const ATabNums: TStrVector;
+              const ARecrutDates, ADismissDates, ASchedBDs, ASchedEDs, APostBDs, APostEDs: TDateVector;
+              const ACalendar: TCalendar; const AHolidayDates: TDateVector;
+              const AWithPlaneVacation: Boolean = False;
+              const AStrMarkVacationMain: String = STRMARK_VACATIONMAIN;
+              const AStrMarkVacationAddition: String = STRMARK_VACATIONADDITION;
+              const AStrMarkVacationHoliday: String = STRMARK_VACATIONHOLIDAY
+              ): TPersonalScheduleVector;
 
 implementation
 
@@ -204,7 +227,128 @@ begin
   VSameIndexValue(AName, ANames, AValues, Result);
 end;
 
-function StaffNameForTiming(const AF, AN, AP, ATabNum, APostName: String;
+function PeriodToStr(const ABeginDate, AEndDate: TDate): String;
+begin
+  Result:= FormatDateTime('dd.mm.yyyy - ', ABeginDate);
+  if SameDate(AEndDate, INFDATE) then
+    Result:= Result + 'наст. время'
+  else
+    Result:= Result + FormatDateTime('dd.mm.yyyy', AEndDate);
+end;
+
+function VPeriodToStr(const ABeginDates, AEndDates: TDateVector): TStrVector;
+var
+  i: Integer;
+begin
+  Result:= nil;
+  for i:= 0 to High(ABeginDates) do
+    VAppend(Result, PeriodToStr(ABeginDates[i], AEndDates[i]));
+end;
+
+function MPeriodToStr(const ABeginDates, AEndDates: TDateMatrix): TStrMatrix;
+var
+  i: Integer;
+begin
+  Result:= nil;
+  for i:= 0 to High(ABeginDates) do
+    MAppend(Result, VPeriodToStr(ABeginDates[i], AEndDates[i]));
+end;
+
+function GetStaffListForCommonTiming(const AYear, AMonth, AOrderType: Word;
+           out ATabNumIDs: TIntVector;
+           out AStaffNames, ATabNums, APostNames, AScheduleNames: TStrVector;
+           out ARecrutDates, ADismissDates, APostBDs, APostEDs, AScheduleBDs, AScheduleEDs: TDateVector;
+           const ANeedLongName: Boolean = False): Boolean;
+
+var
+  BD, ED: TDate;
+  Fs, Ns, Ps: TStrVector;
+begin
+  FirstLastDayInMonth(AMonth, AYear, BD, ED);
+  Result:= DataBase.StaffListForCommonTimingLoad(BD, ED, AOrderType, ATabNumIDs,
+         ARecrutDates, ADismissDates, APostBDs, APostEDs, AScheduleBDs, AScheduleEDs,
+         Fs, Ns, Ps, ATabNums, APostNames, AScheduleNames);
+  if ANeedLongName then
+    AStaffNames:= VNameLong(Fs, Ns, Ps)
+  else
+    AStaffNames:= VNameShort(Fs, Ns, Ps);
+end;
+
+function GetStaffListForCommonTiming(const AYear, AMonth, AOrderType: Word;
+                         out ACategoryNames: TStrVector;
+                         out ATabNumIDs: TIntMatrix;
+                         out AStaffNames, ATabNums, APostNames, AScheduleNames: TStrMatrix;
+                         out ARecrutDates, ADismissDates, APostBDs, APostEDs, AScheduleBDs, AScheduleEDs: TDateMatrix;
+                         const ANeedLongName: Boolean = False): Boolean;
+var
+  TabNumIDs: TIntVector;
+  StaffNames, TabNums, PostNames, ScheduleNames: TStrVector;
+  RecrutDates, DismissDates, PostBDs, PostEDs, ScheduleBDs, ScheduleEDs: TDateVector;
+  i, N1, N2: Integer;
+  S: String;
+  V: TStrVector;
+
+  procedure AddToMatrix(const AIndex1, AIndex2: Integer);
+  begin
+    MAppend(ATabNumIDs, VCut(TabNumIDs, AIndex1, AIndex2));
+    MAppend(AStaffNames, VCut(StaffNames, AIndex1, AIndex2));
+    MAppend(ATabNums, VCut(TabNums, AIndex1, AIndex2));
+    MAppend(APostNames, VCut(PostNames, AIndex1, AIndex2));
+    MAppend(AScheduleNames, VCut(ScheduleNames, AIndex1, AIndex2));
+
+    MAppend(ARecrutDates, VCut(RecrutDates, AIndex1, AIndex2));
+    MAppend(ADismissDates, VCut(DismissDates, AIndex1, AIndex2));
+    MAppend(APostBDs, VCut(PostBDs, AIndex1, AIndex2));
+    MAppend(APostEDs, VCut(PostEDs, AIndex1, AIndex2));
+    MAppend(AScheduleBDs, VCut(ScheduleBDs, AIndex1, AIndex2));
+    MAppend(AScheduleEDs, VCut(ScheduleEDs, AIndex1, AIndex2));
+  end;
+
+begin
+  ACategoryNames:= nil;
+  ATabNumIDs:= nil;
+  AStaffNames:= nil;
+  ATabNums:= nil;
+  APostNames:= nil;
+  AScheduleNames:= nil;
+  ARecrutDates:= nil;
+  ADismissDates:= nil;
+  APostBDs:= nil;
+  APostEDs:= nil;
+  AScheduleBDs:= nil;
+  AScheduleEDs:= nil;
+
+  Result:= GetStaffListForCommonTiming(AYear, AMonth, AOrderType,
+           TabNumIDs, StaffNames, TabNums, PostNames, ScheduleNames,
+           RecrutDates, DismissDates, PostBDs, PostEDs, ScheduleBDs, ScheduleEDs,
+           ANeedLongName);
+
+  if not Result then Exit;
+
+  if AOrderType=0 then
+    V:= ScheduleNames
+  else
+    V:= PostNames;
+
+  S:= V[0];
+  N1:= 0;
+  for i:= 1 to High(V) do
+  begin
+    if V[i]<>S then
+    begin
+      N2:= i-1;
+      VAppend(ACategoryNames, S);
+      AddToMatrix(N1, N2);
+      N1:= i;
+      S:= V[i];
+    end;
+  end;
+  N2:= High(V);
+  VAppend(ACategoryNames, S);
+  AddToMatrix(N1, N2);
+end;
+
+function StaffNameForPersonalTiming(const AF, AN, AP, ATabNum, APostName: String;
                             const ANeedLongName: Boolean = False): String;
 begin
   Result:= StaffNameForScheduleName(AF, AN, AP, ATabNum, ANeedLongName) + ' - ';
@@ -214,7 +358,7 @@ begin
     Result:= Result + APostName;
 end;
 
-function StaffNamesForTiming(const AFs, ANs, APs, ATabNums, APostNames: TStrVector;
+function StaffNamesForPersonalTiming(const AFs, ANs, APs, ATabNums, APostNames: TStrVector;
                             const ANeedLongName: Boolean = False): TStrVector;
 var
   i: Integer;
@@ -223,7 +367,7 @@ begin
   if VIsNil(ATabNums) then Exit;
   VDim(Result, Length(ATabNums));
   for i:= 0 to High(Result) do
-    Result[i]:= StaffNameForTiming(AFs[i], ANs[i], APs[i], ATabNums[i], APostNames[i], ANeedLongName);
+    Result[i]:= StaffNameForPersonalTiming(AFs[i], ANs[i], APs[i], ATabNums[i], APostNames[i], ANeedLongName);
 end;
 
 function StaffNameForScheduleName(const AF, AN, AP, ATabNum: String;
@@ -731,6 +875,32 @@ begin
        Result.Add(PostSchedules[i], i=High(PostSchedules));
   finally
     VSDel(PostSchedules);
+  end;
+end;
+
+function SchedulesPersonalByCalendar(const ATabNumIDs: TIntVector; const ATabNums: TStrVector;
+          const ARecrutDates, ADismissDates, ASchedBDs, ASchedEDs, APostBDs, APostEDs: TDateVector;
+          const ACalendar: TCalendar; const AHolidayDates: TDateVector;
+          const AWithPlaneVacation: Boolean = False;
+          const AStrMarkVacationMain: String = STRMARK_VACATIONMAIN;
+          const AStrMarkVacationAddition: String = STRMARK_VACATIONADDITION;
+          const AStrMarkVacationHoliday: String = STRMARK_VACATIONHOLIDAY
+          ): TPersonalScheduleVector;
+var
+  i: Integer;
+  Schedule: TPersonalSchedule;
+begin
+  Result:= nil;
+  if VIsNil(ATabNumIDs) then Exit;
+
+  for i:= 0 to High(ATabNumIDs) do
+  begin
+    Schedule:= SchedulePersonalByCalendar(ATabNumIDs[i], ATabNums[i],
+       ARecrutDates[i], ADismissDates[i],
+       ACalendar, AHolidayDates, AWithPlaneVacation,
+       AStrMarkVacationMain, AStrMarkVacationAddition, AStrMarkVacationHoliday,
+       ASchedBDs[i], ASchedEDs[i], APostBDs[i], APostEDs[i]);
+    VSAppend(Result, Schedule);
   end;
 end;
 

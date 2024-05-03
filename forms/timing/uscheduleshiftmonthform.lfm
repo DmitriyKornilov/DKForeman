@@ -124,7 +124,7 @@ object ScheduleShiftMonthForm: TScheduleShiftMonthForm
       Top = 0
       Width = 2
       Align = alRight
-      BorderSpacing.Left = 2
+      BorderSpacing.Left = 3
       BorderSpacing.Right = 2
       Shape = bsRightLine
     end
@@ -267,18 +267,18 @@ object ScheduleShiftMonthForm: TScheduleShiftMonthForm
       end
     end
     object Bevel2: TBevel
-      Left = 269
+      Left = 270
       Height = 36
       Top = 0
       Width = 2
       Align = alLeft
-      BorderSpacing.Left = 2
+      BorderSpacing.Left = 3
       BorderSpacing.Right = 2
       Shape = bsRightLine
     end
     object ExportButton: TBCButton
       Cursor = crHandPoint
-      Left = 359
+      Left = 360
       Height = 34
       Hint = 'Экспорт в формат электронной таблицы XLSX или ODS'
       Top = 1
@@ -464,7 +464,7 @@ object ScheduleShiftMonthForm: TScheduleShiftMonthForm
       MemoryUsage = bmuHigh
     end
     object Bevel3: TBevel
-      Left = 355
+      Left = 356
       Height = 36
       Top = 0
       Width = 2
@@ -475,7 +475,7 @@ object ScheduleShiftMonthForm: TScheduleShiftMonthForm
     end
     object CheckAllButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 273
+      Left = 274
       Height = 36
       Hint = 'Выбрать все графики'
       Top = 0
@@ -565,7 +565,7 @@ object ScheduleShiftMonthForm: TScheduleShiftMonthForm
     end
     object UncheckAllButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 313
+      Left = 314
       Height = 36
       Hint = 'Снять выбор со всех графиков'
       Top = 0
