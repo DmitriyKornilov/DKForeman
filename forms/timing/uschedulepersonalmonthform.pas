@@ -21,7 +21,11 @@ type
     Bevel1: TBevel;
     Bevel2: TBevel;
     Bevel3: TBevel;
+    Bevel4: TBevel;
     CheckAllButton: TSpeedButton;
+    RowUpButton: TSpeedButton;
+    RowSplitButton: TSpeedButton;
+    RowDownButton: TSpeedButton;
     CloseButton: TSpeedButton;
     ExportButton: TBCButton;
     ScheduleToolPanel: TPanel;
@@ -140,7 +144,8 @@ begin
   ]);
 
   SetToolButtons([
-    CloseButton
+    CloseButton, CheckAllButton, UncheckAllButton,
+    RowUpButton, RowDownButton, RowSplitButton
   ]);
 
   SetCategoryButtons([
