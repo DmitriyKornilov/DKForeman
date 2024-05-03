@@ -127,10 +127,10 @@ type
     function GetCaption: String; override;
   public
     procedure Draw(const ACalendar: TCalendar;
-                   const ASchedule: TPersonalSchedule;
-                   const AName: String;
-                   const ANeedNight, ANeedCorrect, ANeedMarks, ANeedVacation, AScheduleNotWorkColor: Boolean;
-                   const AUseWorkPeriodInLoadNormHoursAndDays: Boolean = False);
+      const ASchedule: TPersonalSchedule;
+      const AName: String;
+      const ANeedNight, ANeedCorrect, ANeedMarks, ANeedVacation, AScheduleNotWorkColor: Boolean;
+      const AUseWorkPeriodInLoadNormHoursAndDays: Boolean = False);
   end;
 
   { TShiftMonthScheduleSheet }
@@ -152,6 +152,54 @@ type
                    const AVisible: TBoolVector = nil);
     //not used
     function GridToDate(const {%H-}ARow, {%H-}ACol: Integer; out ADate: TDate): Boolean; override;
+    function DateToGrid(const {%H-}ADate: TDate; out ARow, ACol: Integer): Boolean; override;
+  end;
+
+
+  { TPersonalMonthScheduleSheet }
+  //Сводная таблица персональных графиков на месяц
+  TPersonalMonthScheduleSheet = class (TTableScheduleSheet)
+  protected
+    function SetWidths: TIntVector; override;
+  private
+    const
+      ORDERNUM_COLUMN_WIDTH = 30;     //ширина столбца №п/п
+      DAY_COLUMN_WIDTH = 32;          //ширина столбцов дней месяца
+      STAFFNAME_COLUMN_WIDTH = 110;   //ширина столбца ФИО
+      POSTNAME_COLUMN_WIDTH = 200;    //ширина столбца должности
+    var
+      FYear, FMonth: Word;
+      FSchedules: TPersonalScheduleVector;
+      FNeedVacation: Boolean;
+      FExtraColumns: TBoolVector;
+      FPeriodType: Byte;
+      FSignatureType: Byte;
+  public
+    constructor Create(const AWorksheet: TsWorksheet;
+                       const AGrid: TsWorksheetGrid;
+                       const AFont: TFont;
+                       const AResumeType: Byte {0-дни, 1-смены, 2-дни и смены};
+                       const APeriodType: Byte {0-год, 1-квартал, 2-месяц};
+                       const ASignatureType: Byte {0-нет, 1-столбцы дата/подпись, 2-список под таблицей};
+                       const AExtraColumns: TBoolVector
+                        //AExtraColumns:
+                        //0 - Порядковый номер,
+                        //1 - Должность (профессия)
+                        //2 - Табельный номер
+                        //3 - Количество дней/часов за месяц
+                        //4 - Сумма часов за учетный период
+                        //5 - Норма часов за учетный период
+                        //6 - Отклонение от нормы часов
+                       );
+
+    procedure Draw(const ACalendar: TCalendar;
+      const ASchedules: TPersonalScheduleVector;
+      const AStaffNames: String;
+      const ANeedNight, ANeedCorrect, ANeedMarks, ANeedVacation, AScheduleNotWorkColor: Boolean
+      );
+
+    function GridToDate(const {%H-}ARow, {%H-}ACol: Integer; out ADate: TDate): Boolean; override;
+    //not used
     function DateToGrid(const {%H-}ADate: TDate; out ARow, ACol: Integer): Boolean; override;
   end;
 
@@ -236,6 +284,59 @@ begin
     SC:= TSS.ShiftCountDefault;
     Marks:= VCut(TSS.MarkSTRDefault);
   end;
+end;
+
+{ TPersonalMonthScheduleSheet }
+
+function TPersonalMonthScheduleSheet.SetWidths: TIntVector;
+begin
+  Result:=inherited SetWidths;
+end;
+
+constructor TPersonalMonthScheduleSheet.Create(const AWorksheet: TsWorksheet;
+                       const AGrid: TsWorksheetGrid;
+                       const AFont: TFont;
+                       const AResumeType: Byte {0-дни, 1-смены, 2-дни и смены};
+                       const APeriodType: Byte {0-год, 1-квартал, 2-месяц};
+                       const ASignatureType: Byte {0-нет, 1-столбцы дата/подпись, 2-список под таблицей};
+                       const AExtraColumns: TBoolVector
+                        //AExtraColumns:
+                        //0 - Порядковый номер,
+                        //1 - Должность (профессия)
+                        //2 - Табельный номер
+                        //3 - Количество дней/часов за месяц
+                        //4 - Сумма часов за учетный период
+                        //5 - Норма часов за учетный период
+                        //6 - Отклонение от нормы часов
+                       );
+begin
+  FPeriodType:= APeriodType;
+  FSignatureType:= ASignatureType;
+  FExtraColumns:= AExtraColumns;
+  inherited Create(AWorksheet, AGrid, AFont, AResumeType);
+end;
+
+procedure TPersonalMonthScheduleSheet.Draw(const ACalendar: TCalendar;
+      const ASchedules: TPersonalScheduleVector;
+      const AStaffNames: String;
+      const ANeedNight, ANeedCorrect, ANeedMarks, ANeedVacation, AScheduleNotWorkColor: Boolean
+     );
+begin
+  FCalendar:= ACalendar;
+  FYear:= YearOfDate(FCalendar.BeginDate);
+  FMonth:= MonthOfDate(FCalendar.BeginDate);
+end;
+
+function TPersonalMonthScheduleSheet.GridToDate(const ARow, ACol: Integer; out ADate: TDate): Boolean;
+begin
+
+end;
+
+function TPersonalMonthScheduleSheet.DateToGrid(const ADate: TDate; out ARow, ACol: Integer): Boolean;
+begin
+  ARow:= 0;
+  ACol:= 0;
+  Result:= False;
 end;
 
 { TPersonalYearScheduleSheet }
@@ -1336,15 +1437,13 @@ begin
     Writer.SetRowHeight(i, ROW_DEFAULT_HEIGHT);
 end;
 
-function TShiftMonthScheduleSheet.GridToDate(const ARow, ACol: Integer;
-  out ADate: TDate): Boolean;
+function TShiftMonthScheduleSheet.GridToDate(const ARow, ACol: Integer; out ADate: TDate): Boolean;
 begin
   ADate:= 0;
   Result:= False;
 end;
 
-function TShiftMonthScheduleSheet.DateToGrid(const ADate: TDate;
-  out ARow, ACol: Integer): Boolean;
+function TShiftMonthScheduleSheet.DateToGrid(const ADate: TDate; out ARow, ACol: Integer): Boolean;
 begin
   ARow:= 0;
   ACol:= 0;
