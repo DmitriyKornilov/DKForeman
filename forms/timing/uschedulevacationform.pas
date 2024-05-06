@@ -75,7 +75,7 @@ end;
 procedure TScheduleVacationForm.FormCreate(Sender: TObject);
 begin
   Caption:= MAIN_CAPTION + MAIN_DESCRIPTION[12];
-  Height:= 300; Width:= 500; //for normal form maximizing
+  //Height:= 300; Width:= 500; //for normal form maximizing
 
   SetToolPanels([
     ToolPanel
@@ -128,12 +128,14 @@ end;
 procedure TScheduleVacationForm.ScheduleDraw(const AZoomPercent: Integer);
 begin
   ViewGrid.Visible:= False;
+  Screen.Cursor:= crHourGlass;
   try
     ZoomPercent:= AZoomPercent;
     Sheet.Zoom(ZoomPercent);
     Sheet.Draw(YearSpinEdit.Value, StaffNames, TabNums, PostNames, FirstDates, TotalCounts);
   finally
     ViewGrid.Visible:= True;
+    Screen.Cursor:= crDefault;
   end;
 end;
 

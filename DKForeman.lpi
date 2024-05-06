@@ -138,6 +138,7 @@
         <Filename Value="forms\siz\usizform.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="SIZForm"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="USIZForm"/>
       </Unit>
@@ -145,6 +146,7 @@
         <Filename Value="forms\sso\ussoform.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="SSOForm"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="USSOForm"/>
       </Unit>
@@ -152,6 +154,7 @@
         <Filename Value="forms\study\ustudyform.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="StudyForm"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UStudyForm"/>
       </Unit>

@@ -7,7 +7,7 @@ object TimetableForm: TTimetableForm
   ClientHeight = 240
   ClientWidth = 605
   DesignTimePPI = 120
-  LCLVersion = '2.2.6.0'
+  LCLVersion = '3.2.0.0'
   object ToolPanel: TPanel
     Left = 2
     Height = 40
@@ -21,8 +21,6 @@ object TimetableForm: TTimetableForm
     BorderStyle = bsSingle
     ClientHeight = 36
     ClientWidth = 597
-    Constraints.MaxHeight = 40
-    Constraints.MinHeight = 40
     ParentFont = False
     TabOrder = 0
     object CloseButton: TSpeedButton

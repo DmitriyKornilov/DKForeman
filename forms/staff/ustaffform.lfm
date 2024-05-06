@@ -24,8 +24,6 @@ object StaffForm: TStaffForm
     BorderStyle = bsSingle
     ClientHeight = 36
     ClientWidth = 1104
-    Constraints.MaxHeight = 40
-    Constraints.MinHeight = 40
     ParentFont = False
     TabOrder = 0
     object CloseButton: TSpeedButton
@@ -404,10 +402,10 @@ object StaffForm: TStaffForm
       object OrderTypeVT: TVirtualStringTree
         Left = 0
         Height = 79
-        Top = 91
+        Top = 85
         Width = 296
         Align = alTop
-        BorderSpacing.Top = 12
+        BorderSpacing.Top = 6
         BorderStyle = bsNone
         DefaultText = 'Node'
         Header.AutoSizeIndex = 0
@@ -418,10 +416,10 @@ object StaffForm: TStaffForm
       object ColumnsListVT: TVirtualStringTree
         Left = 0
         Height = 79
-        Top = 182
+        Top = 170
         Width = 296
         Align = alTop
-        BorderSpacing.Top = 12
+        BorderSpacing.Top = 6
         BorderStyle = bsNone
         DefaultText = 'Node'
         Header.AutoSizeIndex = 0
@@ -432,10 +430,10 @@ object StaffForm: TStaffForm
       object NameTypeVT: TVirtualStringTree
         Left = 0
         Height = 79
-        Top = 273
+        Top = 255
         Width = 296
         Align = alTop
-        BorderSpacing.Top = 12
+        BorderSpacing.Top = 6
         BorderStyle = bsNone
         DefaultText = 'Node'
         Header.AutoSizeIndex = 0
@@ -504,8 +502,6 @@ object StaffForm: TStaffForm
         BorderStyle = bsSingle
         ClientHeight = 36
         ClientWidth = 576
-        Constraints.MaxHeight = 40
-        Constraints.MinHeight = 40
         ParentBackground = False
         ParentColor = False
         ParentFont = False
@@ -1231,8 +1227,6 @@ object StaffForm: TStaffForm
           BorderStyle = bsSingle
           ClientHeight = 36
           ClientWidth = 208
-          Constraints.MaxHeight = 40
-          Constraints.MinHeight = 40
           ParentFont = False
           TabOrder = 0
           object TabNumAddButton: TSpeedButton
@@ -1782,8 +1776,6 @@ object StaffForm: TStaffForm
           BorderStyle = bsSingle
           ClientHeight = 36
           ClientWidth = 208
-          Constraints.MaxHeight = 40
-          Constraints.MinHeight = 40
           ParentFont = False
           TabOrder = 0
           object PostLogAddButton: TSpeedButton

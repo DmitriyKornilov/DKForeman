@@ -119,7 +119,7 @@ end;
 procedure TScheduleShiftMonthForm.FormCreate(Sender: TObject);
 begin
   Caption:= MAIN_CAPTION + MAIN_DESCRIPTION[11];
-  Height:= 300; Width:= 500; //for normal form maximizing
+  //Height:= 300; Width:= 500; //for normal form maximizing
 
   SetToolPanels([
     ToolPanel
@@ -233,6 +233,7 @@ begin
   if not CanDrawSchedule then Exit;
 
   ViewGrid.Visible:= False;
+  Screen.Cursor:= crHourGlass;
   try
     ZoomPercent:= AZoomPercent;
     Sheet.Zoom(ZoomPercent);
@@ -243,6 +244,7 @@ begin
       Sheet.ColorsUpdate(Colors);
   finally
     ViewGrid.Visible:= True;
+    Screen.Cursor:= crDefault;
   end;
 end;
 

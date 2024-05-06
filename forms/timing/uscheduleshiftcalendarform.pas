@@ -22,20 +22,20 @@ type
     Bevel1: TBevel;
     Bevel2: TBevel;
     Bevel3: TBevel;
-    ColorCaptionPanel: TBCPanel;
-    ListToolPanel: TPanel;
-    NeedCorrectionsCheckBox: TCheckBox;
-    FirstShiftDayColorOnlyCheckBox: TCheckBox;
     CloseButton: TSpeedButton;
+    ColorCaptionPanel: TBCPanel;
     ExportButton: TBCButton;
+    FirstShiftDayColorOnlyCheckBox: TCheckBox;
+    ListToolPanel: TPanel;
     LeftPanel: TPanel;
     LeftSplitter: TSplitter;
     AddButton: TSpeedButton;
     DelButton: TSpeedButton;
     EditButton: TSpeedButton;
+    NeedCorrectionsCheckBox: TCheckBox;
     SettingButton: TSpeedButton;
-    SheetPanel: TPanel;
     ToolPanel: TPanel;
+    SheetPanel: TPanel;
     ColorVT: TVirtualStringTree;
     ViewGrid: TsWorksheetGrid;
     YearPanel: TPanel;
@@ -53,6 +53,7 @@ type
     procedure FormShow(Sender: TObject);
     procedure NeedCorrectionsCheckBoxChange(Sender: TObject);
     procedure SettingButtonClick(Sender: TObject);
+    procedure YearSpinEditChange(Sender: TObject);
   private
     ZoomPercent: Integer;
     CanDrawSchedule: Boolean;
@@ -119,7 +120,7 @@ end;
 procedure TScheduleShiftCalendarForm.FormCreate(Sender: TObject);
 begin
   Caption:= MAIN_CAPTION + MAIN_DESCRIPTION[10];
-  Height:= 300; Width:= 500; //for normal form maximizing
+  //Height:= 300; Width:= 500; //for normal form maximizing
 
   SetToolPanels([
     ToolPanel, ListToolPanel
@@ -187,6 +188,11 @@ begin
   end;
 end;
 
+procedure TScheduleShiftCalendarForm.YearSpinEditChange(Sender: TObject);
+begin
+  //ScheduleRefresh;
+end;
+
 procedure TScheduleShiftCalendarForm.PrevShiftNumberLoad;
 var
   PrevSched: TShiftSchedule;
@@ -225,6 +231,7 @@ procedure TScheduleShiftCalendarForm.ScheduleDraw(const AZoomPercent: Integer);
 begin
   if not CanDrawSchedule then Exit;
   ViewGrid.Visible:= False;
+  Screen.Cursor:= crHourGlass;
   try
     ZoomPercent:= AZoomPercent;
     Sheet.Zoom(ZoomPercent);
@@ -233,6 +240,7 @@ begin
     Sheet.ColorsUpdate(Colors);
   finally
     ViewGrid.Visible:= True;
+    Screen.Cursor:= crDefault;
   end;
 end;
 

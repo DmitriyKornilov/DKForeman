@@ -7,7 +7,7 @@ object SSOForm: TSSOForm
   ClientHeight = 240
   ClientWidth = 647
   DesignTimePPI = 120
-  LCLVersion = '2.2.6.0'
+  LCLVersion = '3.2.0.0'
   object ToolPanel: TPanel
     Left = 2
     Height = 40
@@ -21,8 +21,6 @@ object SSOForm: TSSOForm
     BorderStyle = bsSingle
     ClientHeight = 36
     ClientWidth = 639
-    Constraints.MaxHeight = 40
-    Constraints.MinHeight = 40
     ParentFont = False
     TabOrder = 0
     object CloseButton: TSpeedButton

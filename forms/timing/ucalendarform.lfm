@@ -23,8 +23,6 @@ object CalendarForm: TCalendarForm
     BorderStyle = bsSingle
     ClientHeight = 36
     ClientWidth = 732
-    Constraints.MaxHeight = 40
-    Constraints.MinHeight = 40
     ParentFont = False
     TabOrder = 0
     object CloseButton: TSpeedButton
@@ -432,8 +430,6 @@ object CalendarForm: TCalendarForm
         BorderStyle = bsSingle
         ClientHeight = 36
         ClientWidth = 396
-        Constraints.MaxHeight = 40
-        Constraints.MinHeight = 40
         ParentFont = False
         TabOrder = 0
         object DayAddButton: TSpeedButton
@@ -838,8 +834,6 @@ object CalendarForm: TCalendarForm
         BorderStyle = bsSingle
         ClientHeight = 36
         ClientWidth = 396
-        Constraints.MaxHeight = 40
-        Constraints.MinHeight = 40
         ParentFont = False
         TabOrder = 0
         object CopySaveButton: TSpeedButton

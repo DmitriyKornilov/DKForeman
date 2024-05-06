@@ -53,6 +53,8 @@ uses
   function StaffNamesForScheduleNames(const AFs, ANs, APs, ATabNums: TStrVector;
                               const ANeedLongName: Boolean = True): TStrVector;
 
+
+
   //Calendar
   procedure CalendarForPeriod(const ABeginDate, AEndDate: TDate; var ACalendar: TCalendar);
   procedure CalendarForYear(const AYear: Word; var ACalendar: TCalendar);
@@ -139,6 +141,15 @@ uses
               const AStrMarkVacationAddition: String = STRMARK_VACATIONADDITION;
               const AStrMarkVacationHoliday: String = STRMARK_VACATIONHOLIDAY
               ): TPersonalScheduleVector;
+
+  //Учетный период, включающий в себя указанный отчетный месяц
+  procedure AccountingPeriodWithMonth(const AMonth, AYear: Word;
+                            const AccountingType: Byte; //0-год, 1-квартал, 2 - месяц
+                            out ABeginDate, AEndDate: TDate);
+  //Часть учетного периода до указанного отчетного месяца
+  function AccountingPeriodBeforeMonth(const AMonth, AYear: Word;
+                            const AccountingType: Byte; //0-год, 1-квартал, 2 - месяц
+                            out ABeginDate, AEndDate: TDate): Boolean;
 
 implementation
 
@@ -390,6 +401,41 @@ begin
   VDim(Result, Length(ATabNums));
   for i:= 0 to High(Result) do
     Result[i]:= StaffNameForScheduleName(AFs[i], ANs[i], APs[i], ATabNums[i], ANeedLongName);
+end;
+
+procedure AccountingPeriodWithMonth(const AMonth, AYear: Word;
+                          const AccountingType: Byte; //0-год, 1-квартал, 2 - месяц
+                          out ABeginDate, AEndDate: TDate);
+begin
+  case AccountingType of
+    0: FirstLastDayInYear(AYear, ABeginDate, AEndDate);  //год
+    1: FirstLastDayInQuarter(QuarterNumber(AMonth), AYear, ABeginDate, AEndDate); //квартал
+    2: FirstLastDayInMonth(AMonth, AYear, ABeginDate, AEndDate); //месяц
+  end;
+end;
+
+function AccountingPeriodBeforeMonth(const AMonth, AYear: Word;
+                            const AccountingType: Byte; //0-год, 1-квартал, 2 - месяц
+                            out ABeginDate, AEndDate: TDate): Boolean;
+begin
+  Result:= False;
+  ABeginDate:= NULDATE;
+  AEndDate:= NULDATE;
+  if AccountingType>1 then Exit;
+  case AccountingType of
+  0:
+    begin //год
+      if AMonth=1 then Exit; //1-ый месяц в году, до него ничего нет
+      ABeginDate:= FirstDayInYear(AYear);
+    end;
+  1:
+    begin //квартал
+      if MonthNumberInQuarter(AMonth)=1 then Exit;  //1-ый месяц в квартале, до него ничего нет
+      ABeginDate:= FirstDayInQuarter(QuarterNumber(AMonth), AYear);
+    end;
+  end;
+  AEndDate:= LastDayInMonth(AMonth-1, AYear);
+  Result:= True;
 end;
 
 procedure CalendarForPeriod(const ABeginDate, AEndDate: TDate; var ACalendar: TCalendar);

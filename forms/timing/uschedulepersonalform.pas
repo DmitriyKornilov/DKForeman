@@ -624,11 +624,11 @@ var
   V: TStrVector;
 begin
   V:= VCreateStr([
-    'Отображать строку ночных часов',
-    'Учитывать корректировки графика',
-    'Коды табеля для нерабочих дней',
-    'Учитывать отпуск',
-    'Использовать цвета'
+    'отображать строку ночных часов',
+    'учитывать корректировки графика',
+    'коды табеля для нерабочих дней',
+    'учитывать отпуск',
+    'использовать цвета'
   ]);
   ParamList:= TVSTCheckList.Create(ParamListVT, VIEW_PARAMS_CAPTION, V, @ScheduleRedraw);
 end;
@@ -894,11 +894,13 @@ begin
   if (not Assigned(Schedule)) or (not Schedule.Calculated) then Exit;
 
   ViewGrid.Visible:= False;
+  Screen.Cursor:= crHourGlass;
   try
     ZoomPercent:= AZoomPercent;
     ScheduleToSheet(Sheet, ViewGrid.Worksheet, ViewGrid, Calendar, Schedule);
   finally
     ViewGrid.Visible:= True;
+    Screen.Cursor:= crDefault;
   end;
 end;
 

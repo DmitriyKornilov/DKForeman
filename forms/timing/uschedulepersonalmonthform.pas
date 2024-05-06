@@ -9,9 +9,11 @@ uses
   BCPanel, Buttons, Spin, StdCtrls, VirtualTrees, fpspreadsheetgrid,
   //DK packages utils
   DK_Vector, DK_Matrix, DK_Fonts, DK_Const, DK_VSTDropDown, DK_DateUtils,
-  DK_StrUtils, DK_VSTTables, DK_Zoom, DK_SheetExporter,
+  DK_VSTTables, DK_VSTTableTools, DK_Zoom, DK_SheetExporter, DK_Progress,
   //Project utils
-  UDataBase, UConst, UUtils, UCalendar, USchedule, UScheduleSheet;
+  UDataBase, UConst, UUtils, UCalendar, USchedule, UScheduleSheet,
+  //Forms
+  UScheduleCorrectionEditForm;
 
 type
 
@@ -23,18 +25,29 @@ type
     Bevel3: TBevel;
     Bevel4: TBevel;
     CheckAllButton: TSpeedButton;
-    RowUpButton: TSpeedButton;
-    RowSplitButton: TSpeedButton;
+    CountTypeVT: TVirtualStringTree;
+    DayEditButton: TSpeedButton;
+    EditPanel: TPanel;
+    ExtraColumnListVT: TVirtualStringTree;
     RowDownButton: TSpeedButton;
+    RowSplitButton: TSpeedButton;
+    RowUpButton: TSpeedButton;
+    SignTypeVT: TVirtualStringTree;
+    ExportParamListVT: TVirtualStringTree;
+    ViewParamListVT: TVirtualStringTree;
+    PeriodTypeVT: TVirtualStringTree;
+    SettingButton: TSpeedButton;
+    SettingSplitter: TSplitter;
+    RightPanel: TPanel;
     CloseButton: TSpeedButton;
     ExportButton: TBCButton;
+    ScheduleCaptionPanel: TBCPanel;
     ScheduleToolPanel: TPanel;
     ScheduleButton: TBCButton;
     FIORadioButton: TRadioButton;
     ListToolPanel: TPanel;
     MonthBCButton: TBCButton;
     ListButton: TBCButton;
-    ScheduleCaptionPanel: TBCPanel;
     SchedulePanel: TPanel;
     ScheduleRadioButton: TRadioButton;
     ListCaptionPanel: TBCPanel;
@@ -42,12 +55,15 @@ type
     ListPanel: TPanel;
     OrderLabel: TLabel;
     PostRadioButton: TRadioButton;
+    SettingCaptionPanel: TBCPanel;
+    SettingClientPanel: TPanel;
+    SettingPanel: TPanel;
     SheetPanel: TPanel;
     TabNumRadioButton: TRadioButton;
     ToolPanel: TPanel;
     UncheckAllButton: TSpeedButton;
-    ViewGrid: TsWorksheetGrid;
     MStaffListVT: TVirtualStringTree;
+    ViewGrid: TsWorksheetGrid;
     VStaffListVT: TVirtualStringTree;
     YearPanel: TPanel;
     YearSpinEdit: TSpinEdit;
@@ -55,6 +71,7 @@ type
     ZoomPanel: TPanel;
     procedure CheckAllButtonClick(Sender: TObject);
     procedure CloseButtonClick(Sender: TObject);
+    procedure DayEditButtonClick(Sender: TObject);
     procedure FIORadioButtonClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -63,18 +80,29 @@ type
     procedure PostRadioButtonClick(Sender: TObject);
     procedure ScheduleButtonClick(Sender: TObject);
     procedure ScheduleRadioButtonClick(Sender: TObject);
+    procedure SettingButtonClick(Sender: TObject);
     procedure TabNumRadioButtonClick(Sender: TObject);
     procedure UncheckAllButtonClick(Sender: TObject);
+    procedure ViewGridDblClick(Sender: TObject);
     procedure YearSpinEditChange(Sender: TObject);
   private
-    CanLoadStaffList: Boolean;
+    CanLoadAndDraw: Boolean;
     ZoomPercent: Integer;
     MonthDropDown: TVSTDropDown;
     OrderType: Integer;
 
     Holidays: TDateVector;
-    Calendar: TCalendar;
+    Calendar, BeforeCalendar, YearCalendar: TCalendar;
     Schedules: TPersonalScheduleVector;
+    BeforeSchedules: TPersonalScheduleVector; //для расчета часов за учетный период
+    Sheet: TPersonalMonthScheduleSheet;
+
+    ViewParamList: TVSTCheckList;
+    CountType: TVSTStringList;
+    PeriodType: TVSTStringList;
+    ExtraColumnList: TVSTCheckList;
+    SignType: TVSTStringList;
+    ExportParamList: TVSTCheckList;
 
     VStaffList: TVSTCheckTable;
     MStaffList: TVSTCategoryCheckTable;
@@ -88,18 +116,34 @@ type
     MStaffNames, MTabNums, MPostNames, MScheduleNames: TStrMatrix;
     MRecrutDates, MDismissDates, MPostBDs, MPostEDs, MScheduleBDs, MScheduleEDs: TDateMatrix;
 
-    TabNumIDs: TIntVector;
-    StaffNames, TabNums, PostNames, ScheduleNames: TStrVector;
+    TabNumIDs, NormHours: TIntVector;
+    StaffNames, TabNums, PostNames: TStrVector;
     RecrutDates, DismissDates, PostBDs, PostEDs, ScheduleBDs, ScheduleEDs: TDateVector;
+    PeriodBD, PeriodED: TDate;
+
+    procedure ViewParamListCreate;
+    procedure CountTypeCreate;
+    procedure PeriodTypeCreate;
+    procedure ExtraColumnListCreate;
+    procedure SignTypeCreate;
+    procedure ExportParamListCreate;
 
     function OrderTypeChange: Boolean;
 
     procedure StaffListCreate;
     procedure StaffListLoad;
 
+    procedure ScheduleCreate(const AIndex: Integer);
     procedure ScheduleLoad;
-
     procedure ScheduleDraw(const AZoomPercent: Integer);
+    procedure ScheduleRedraw;
+    procedure ScheduleRecreate;
+    procedure ScheduleSelect;
+
+    procedure ScheduleCorrectionFormOpen;
+
+    procedure SettingsSave;
+    procedure SettingsLoad;
   public
 
   end;
@@ -133,14 +177,14 @@ end;
 procedure TSchedulePersonalMonthForm.FormCreate(Sender: TObject);
 begin
   Caption:= MAIN_CAPTION + MAIN_DESCRIPTION[13];
-  Height:= 300; Width:= 500; //for normal form maximizing
+  //Height:= 300; Width:= 500; //for normal form maximizing
 
   SetToolPanels([
     ToolPanel, ListOrderToolPanel
   ]);
 
   SetCaptionPanels([
-    ListCaptionPanel, ScheduleCaptionPanel
+    ListCaptionPanel, SettingCaptionPanel, ScheduleCaptionPanel
   ]);
 
   SetToolButtons([
@@ -152,9 +196,18 @@ begin
     ExportButton
   ]);
 
-  CanLoadStaffList:= False;
+  CanLoadAndDraw:= False;
 
   Calendar:= TCalendar.Create;
+  BeforeCalendar:= TCalendar.Create;
+  YearCalendar:= TCalendar.Create;
+
+  ViewParamListCreate;
+  CountTypeCreate;
+  PeriodTypeCreate;
+  ExtraColumnListCreate;
+  SignTypeCreate;
+  ExportParamListCreate;
 
   MonthDropDown:= TVSTDropDown.Create(MonthBCButton);
   MonthDropDown.OnChange:= @StaffListLoad;
@@ -162,12 +215,42 @@ begin
   MonthDropDown.ItemIndex:= MonthOfDate(Date) - 1;
   MonthDropDown.DropDownCount:= 12;
 
-  ZoomPercent:= 100;//SettingsLoad; //load ZoomPercent
+  SettingsLoad; //load ZoomPercent
   CreateZoomControls(50, 150, ZoomPercent, ZoomPanel, @ScheduleDraw, True);
 
   StaffListCreate;
 
-  CanLoadStaffList:= True;
+  CanLoadAndDraw:= True;
+end;
+
+procedure TSchedulePersonalMonthForm.FormDestroy(Sender: TObject);
+begin
+  SettingsSave;
+
+  FreeAndNil(ViewParamList);
+  FreeAndNil(CountType);
+  FreeAndNil(PeriodType);
+  FreeAndNil(ExtraColumnList);
+  FreeAndNil(SignType);
+  FreeAndNil(ExportParamList);
+
+  FreeAndNil(Calendar);
+  FreeAndNil(BeforeCalendar);
+  FreeAndNil(YearCalendar);
+  FreeAndNil(MonthDropDown);
+  FreeAndNil(VStaffList);
+  FreeAndNil(MStaffList);
+  FreeAndNil(Sheet);
+
+  VSDel(Schedules);
+  VSDel(BeforeSchedules);
+end;
+
+procedure TSchedulePersonalMonthForm.FormShow(Sender: TObject);
+begin
+  MonthBCButton.Width:= GetBCButtonWidth(MonthBCButton, MONTHSNOM[9]);
+  OrderType:= 0;
+  StaffListLoad;
 end;
 
 procedure TSchedulePersonalMonthForm.CheckAllButtonClick(Sender: TObject);
@@ -186,9 +269,103 @@ begin
     VStaffList.CheckAll(False);
 end;
 
+procedure TSchedulePersonalMonthForm.ViewGridDblClick(Sender: TObject);
+begin
+  ScheduleCorrectionFormOpen;
+end;
+
 procedure TSchedulePersonalMonthForm.YearSpinEditChange(Sender: TObject);
 begin
   StaffListLoad;
+end;
+
+procedure TSchedulePersonalMonthForm.ViewParamListCreate;
+var
+  V: TStrVector;
+begin
+  V:= VCreateStr([
+    'отображать строку ночных часов',
+    'учитывать корректировки графика',
+    'коды табеля для нерабочих дней',
+    'учитывать отпуск'
+  ]);
+  ViewParamList:= TVSTCheckList.Create(ViewParamListVT, VIEW_PARAMS_CAPTION, V, @ScheduleRedraw);
+end;
+
+procedure TSchedulePersonalMonthForm.CountTypeCreate;
+var
+  S: String;
+  V: TStrVector;
+begin
+  S:= 'Отображать в итогах количество:';
+  V:= VCreateStr([
+    'дней',
+    'смен',
+    'дней и смен'
+  ]);
+  CountType:= TVSTStringList.Create(CountTypeVT, S, @ScheduleRecreate);
+  CountType.Update(V);
+end;
+
+procedure TSchedulePersonalMonthForm.PeriodTypeCreate;
+var
+  S: String;
+  V: TStrVector;
+begin
+  S:= 'Учетный период:';
+  V:= VCreateStr([
+    'год',
+    'квартал',
+    'месяц'
+  ]);
+  PeriodType:= TVSTStringList.Create(PeriodTypeVT, S, @ScheduleRedraw);
+  PeriodType.Update(V);
+end;
+
+procedure TSchedulePersonalMonthForm.ExtraColumnListCreate;
+var
+  S: String;
+  V: TStrVector;
+begin
+  S:= 'Дополнительные столбцы:';
+  V:= VCreateStr([
+    'Порядковый номер',
+    'Должность (профессия)',
+    'Табельный номер',
+    'Количество дней/часов за месяц',
+    'Сумма часов за учетный период',
+    'Норма часов за учетный период',
+    'Отклонение от нормы часов'
+  ]);
+  ExtraColumnList:= TVSTCheckList.Create(ExtraColumnListVT, S, V, @ScheduleRecreate);
+end;
+
+procedure TSchedulePersonalMonthForm.SignTypeCreate;
+var
+  S: String;
+  V: TStrVector;
+begin
+  S:= 'Ознакомление с графиком:';
+  V:= VCreateStr([
+    'не выводить',
+    'столбцы Дата/Подпись',
+    'список под таблицей'
+  ]);
+  SignType:= TVSTStringList.Create(SignTypeVT, S, @ScheduleRecreate);
+  SignType.Update(V);
+end;
+
+procedure TSchedulePersonalMonthForm.ExportParamListCreate;
+var
+  S: String;
+  V: TStrVector;
+begin
+  S:= 'Параметры экспорта:';
+  V:= VCreateStr([
+    'заголовок таблицы на каждой странице',
+    'номера страниц в нижнем колонтитуле'
+  ]);
+  ExportParamList:= TVSTCheckList.Create(ExportParamListVT, S, V, nil);
 end;
 
 procedure TSchedulePersonalMonthForm.CloseButtonClick(Sender: TObject);
@@ -196,22 +373,9 @@ begin
   Close;
 end;
 
-procedure TSchedulePersonalMonthForm.FormDestroy(Sender: TObject);
+procedure TSchedulePersonalMonthForm.DayEditButtonClick(Sender: TObject);
 begin
-  //SettingsSave;
-  FreeAndNil(Calendar);
-  FreeAndNil(MonthDropDown);
-  FreeAndNil(VStaffList);
-  FreeAndNil(MStaffList);
-  //FreeAndNil(Sheet);
-  VSDel(Schedules);
-end;
-
-procedure TSchedulePersonalMonthForm.FormShow(Sender: TObject);
-begin
-  MonthBCButton.Width:= GetBCButtonWidth(MonthBCButton, MONTHSNOM[9]);
-  OrderType:= 0;
-  StaffListLoad;
+  ScheduleCorrectionFormOpen;
 end;
 
 procedure TSchedulePersonalMonthForm.ListButtonClick(Sender: TObject);
@@ -222,6 +386,7 @@ begin
   SchedulePanel.Align:= alBottom;
   ListPanel.Align:= alClient;
   ListPanel.Visible:= True;
+  SettingButton.Visible:= False;
 end;
 
 procedure TSchedulePersonalMonthForm.ScheduleButtonClick(Sender: TObject);
@@ -232,8 +397,10 @@ begin
   ListPanel.Align:= alBottom;
   SchedulePanel.Align:= alClient;
   SchedulePanel.Visible:= True;
+  SettingButton.Visible:= True;
 
   ScheduleLoad;
+  ScheduleRecreate;
 end;
 
 procedure TSchedulePersonalMonthForm.FIORadioButtonClick(Sender: TObject);
@@ -252,6 +419,24 @@ procedure TSchedulePersonalMonthForm.ScheduleRadioButtonClick(Sender: TObject);
 begin
   if not OrderTypeChange then Exit;
   StaffListLoad;
+end;
+
+procedure TSchedulePersonalMonthForm.SettingButtonClick(Sender: TObject);
+begin
+  Sheet.CanSelect:= not SettingButton.Down;
+  if SettingButton.Down then
+  begin
+    SettingPanel.Visible:= True;
+    SettingSplitter.Visible:= True;
+    SheetPanel.AnchorToNeighbour(akLeft, 0, SettingSplitter);
+    ScheduleCaptionPanel.AnchorToNeighbour(akLeft, 0, SettingSplitter);
+  end
+  else begin
+    SettingSplitter.Visible:= False;
+    SettingPanel.Visible:= False;
+    SheetPanel.AnchorToNeighbour(akLeft, 2, Self);
+    ScheduleCaptionPanel.AnchorToNeighbour(akLeft, 2, Self);
+  end;
 end;
 
 procedure TSchedulePersonalMonthForm.TabNumRadioButtonClick(Sender: TObject);
@@ -351,7 +536,10 @@ procedure TSchedulePersonalMonthForm.StaffListLoad;
   end;
 
 begin
-  if not CanLoadStaffList then Exit;
+  if not CanLoadAndDraw then Exit;
+
+  ScheduleCaptionPanel.Caption:= 'График работы на ' + MonthDropDown.Text + ' ' +
+                                 YearSpinEdit.Text + ' года';
 
   VStaffList.Visible:= False;
   MStaffList.Visible:= False;
@@ -376,7 +564,37 @@ begin
   end;
 end;
 
+procedure TSchedulePersonalMonthForm.ScheduleCreate(const AIndex: Integer);
+var
+  d, h: Integer;
+  Schedule: TPersonalSchedule;
+begin
+  Schedule:= SchedulePersonalByCalendar(TabNumIDs[AIndex], TabNums[AIndex],
+     RecrutDates[AIndex], DismissDates[AIndex], Calendar, Holidays, False{fact vacations},
+     STRMARK_VACATIONMAIN, STRMARK_VACATIONADDITION, STRMARK_VACATIONHOLIDAY,
+     ScheduleBDs[AIndex], ScheduleEDs[AIndex], PostBDs[AIndex], PostEDs[AIndex]);
+  Schedules[AIndex]:= Schedule;
+
+  NormHoursAndWorkDaysCounInPeriod(TabNumIDs[AIndex], PeriodBD, PeriodED, YearCalendar, d, h);
+  NormHours[AIndex]:= h;
+
+  if Length(BeforeSchedules)=0 then Exit;
+
+  Schedule:= SchedulePersonalByCalendar(TabNumIDs[AIndex], TabNums[AIndex],
+     RecrutDates[AIndex], DismissDates[AIndex], BeforeCalendar, Holidays, False{fact vacations},
+     STRMARK_VACATIONMAIN, STRMARK_VACATIONADDITION, STRMARK_VACATIONHOLIDAY,
+     ScheduleBDs[AIndex], ScheduleEDs[AIndex], PostBDs[AIndex], PostEDs[AIndex]);
+  BeforeSchedules[AIndex]:= Schedule;
+end;
+
 procedure TSchedulePersonalMonthForm.ScheduleLoad;
+var
+  i: Integer;
+  S: String;
+  BD, ED: TDate;
+  Y, M: Word;
+  IsBeforePeriodExists: Boolean;
+  Progress: TProgress;
 
   procedure GetCategoryValues;
   var
@@ -413,25 +631,125 @@ procedure TSchedulePersonalMonthForm.ScheduleLoad;
   end;
 
 begin
-  CalendarForMonth(MonthDropDown.ItemIndex+1, YearSpinEdit.Value, Calendar);
-  Holidays:= DataBase.HolidaysLoad(YearSpinEdit.Value);
+  VSDel(Schedules);
+  VSDel(BeforeSchedules);
+  NormHours:= nil;
 
   if OrderType<=1 then
     GetCategoryValues
   else
     GetSimpleValues;
 
-  VSDel(Schedules);
-  Schedules:= SchedulesPersonalByCalendar(TabNumIDs, TabNums,
-              RecrutDates, DismissDates, ScheduleBDs, ScheduleEDs, PostBDs, PostEDs,
-              Calendar, Holidays, False{fact vacations},
-              STRMARK_VACATIONMAIN, STRMARK_VACATIONADDITION, STRMARK_VACATIONHOLIDAY);
+  if VIsNil(TabNumIDs) then Exit;
 
+  Y:= YearSpinEdit.Value;
+  M:= MonthDropDown.ItemIndex + 1;
+  Holidays:= DataBase.HolidaysLoad(Y);
+
+  CalendarForYear(Y, YearCalendar);
+
+  SetLength(Schedules, Length(TabNumIDs));
+  SetLength(NormHours, Length(TabNumIDs));
+  IsBeforePeriodExists:= (PeriodType.ItemIndex<2 {учетный период<>месяц}) and
+               AccountingPeriodBeforeMonth(M, Y, PeriodType.ItemIndex, BD, ED);
+  if IsBeforePeriodExists then
+  begin
+    SetLength(BeforeSchedules, Length(TabNumIDs));
+    YearCalendar.Cut(BD, ED, BeforeCalendar);
+  end;
+
+  FirstLastDayInMonth(M, Y, BD, ED);
+  YearCalendar.Cut(BD, ED, Calendar);
+  AccountingPeriodWithMonth(M, Y, PeriodType.ItemIndex, PeriodBD, PeriodED);
+
+  Progress:= TProgress.Create(nil);
+  try
+    Progress.WriteLine1('Расчет графиков');
+    Progress.WriteLine2(EmptyStr);
+    Progress.Show;
+    for i:= 0 to High(TabNumIDs) do
+    begin
+      S:= StaffNames[i] + ' [таб.№ ' + TabNums[i] + '] - ' + PostNames[i];
+      Progress.WriteLine2(S);
+      ScheduleCreate(i);
+    end;
+  finally
+    FreeAndNil(Progress);
+  end;
 end;
 
 procedure TSchedulePersonalMonthForm.ScheduleDraw(const AZoomPercent: Integer);
 begin
+  ViewGrid.Visible:= False;
+  Screen.Cursor:= crHourGlass;
+  try
+    ZoomPercent:= AZoomPercent;
+    Sheet.Zoom(ZoomPercent);
+    Sheet.Draw(Calendar, Schedules, BeforeSchedules,
+               StaffNames, TabNums, PostNames, NormHours,
+               ViewParamList.Selected, ExportParamList.Selected);
+  finally
+    ViewGrid.Visible:= True;
+    Screen.Cursor:= crDefault;
+  end;
+end;
 
+procedure TSchedulePersonalMonthForm.ScheduleRedraw;
+begin
+  if not CanLoadAndDraw then Exit;
+  ScheduleDraw(ZoomPercent);
+end;
+
+procedure TSchedulePersonalMonthForm.ScheduleRecreate;
+begin
+  if not CanLoadAndDraw then Exit;
+
+  if Assigned(Sheet) then FreeAndNil(Sheet);
+  Sheet:= TPersonalMonthScheduleSheet.Create(ViewGrid.Worksheet, ViewGrid, MainForm.GridFont,
+     CountType.ItemIndex, PeriodType.ItemIndex, SignType.ItemIndex, ExtraColumnList.Selected);
+  Sheet.OnSelect:= @ScheduleSelect;
+
+  ScheduleRedraw;
+end;
+
+procedure TSchedulePersonalMonthForm.ScheduleSelect;
+begin
+  DayEditButton.Enabled:= Sheet.IsDateSelected;
+  RowUpButton.Enabled:= Sheet.IsRowSelected;
+  RowDownButton.Enabled:= Sheet.IsRowSelected;
+  RowSplitButton.Enabled:= Sheet.IsDoubleRowSelected;
+end;
+
+procedure TSchedulePersonalMonthForm.ScheduleCorrectionFormOpen;
+var
+  ScheduleCorrectionEditForm: TScheduleCorrectionEditForm;
+begin
+  if not Sheet.IsDateSelected then Exit;
+
+  //ScheduleCorrectionEditForm:= TScheduleCorrectionEditForm.Create(nil);
+  try
+
+    //if ScheduleCorrectionEditForm.ShowModal=mrOK then
+    //begin
+      FreeAndNil(Schedules[Sheet.SelectedIndex]);
+      if Length(BeforeSchedules)>0 then
+         FreeAndNil(BeforeSchedules[Sheet.SelectedIndex]);
+      ScheduleCreate(Sheet.SelectedIndex);
+      Sheet.LineDraw(Sheet.SelectedIndex);
+    //end;
+  finally
+    //FreeAndNil(ScheduleCorrectionEditForm);
+  end;
+end;
+
+procedure TSchedulePersonalMonthForm.SettingsSave;
+begin
+
+end;
+
+procedure TSchedulePersonalMonthForm.SettingsLoad;
+begin
+  ZoomPercent:= 100;
 end;
 
 end.

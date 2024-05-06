@@ -158,22 +158,74 @@ type
 
   { TPersonalMonthScheduleSheet }
   //Сводная таблица персональных графиков на месяц
-  TPersonalMonthScheduleSheet = class (TTableScheduleSheet)
+  TPersonalMonthScheduleSheet = class (TCustomSheet)
   protected
     function SetWidths: TIntVector; override;
   private
     const
-      ORDERNUM_COLUMN_WIDTH = 30;     //ширина столбца №п/п
-      DAY_COLUMN_WIDTH = 32;          //ширина столбцов дней месяца
-      STAFFNAME_COLUMN_WIDTH = 110;   //ширина столбца ФИО
-      POSTNAME_COLUMN_WIDTH = 200;    //ширина столбца должности
+      FWriteTotalIfZero = False;
+      FWriteNightIfZero = False;
+      FWriteDaysCountIfZero = True;
+      FWriteSumTotalIfZero = True;
+      FWriteSumNightIfZero = True;
+      ORDERNUM_COLUMN_WIDTH = 30;    //№п/п
+      DAY_COLUMN_WIDTH = 33;         //ширина столбцов дней месяца
+      STAFFNAME_COLUMN_WIDTH = 110;  //ширина столбца "ФИО"
+      POSTNAME_COLUMN_WIDTH = 200;
+      TABNUM_COLUMN_WIDTH = 70;
+      SUMDAYS_COLUMN_WITH = 35;      //--кол-ва дней
+      SUMHOURS_COLUMN_WITH = 50;     //--кол-ва часов
+      DATE_COLUMN_WIDTH = 70;
+      SIGN_COLUMN_WIDTH = 70;
+      HOURS_COLUMN_WIDTH1 = 90;
+      HOURS_COLUMN_WIDTH2 = 70;
+      HOURS_COLUMN_WIDTH3 = 80;
+      //FIRSTROW_TITLE_HEIGHT = 45; 3*SHeight
     var
       FYear, FMonth: Word;
+      FCalendar: TCalendar;
       FSchedules: TPersonalScheduleVector;
-      FNeedVacation: Boolean;
+      FBeforeSchedules: TPersonalScheduleVector;
+      FViewParams: TBoolVector;
       FExtraColumns: TBoolVector;
+      FExportParams: TBoolVector;
+      FResumeType: Byte;
       FPeriodType: Byte;
       FSignatureType: Byte;
+      FStaffNames, FTabNums, FPostNames: TStrVector;
+      FNormHours: TIntVector;
+
+      FSelectedRowIndex1: Integer;
+      FSelectedRowIndex2: Integer;
+      FSelectedDate: TDate;
+
+      FCanSelect: Boolean;
+      FOnSelect: TSheetEvent;
+
+    procedure CaptionDraw;
+
+
+    function GetIsDateSelected: Boolean;
+    function GetIsDoubleRowSelected: Boolean;
+    function GetIsRowSelected: Boolean;
+
+    procedure SetCanSelect(const AValue: Boolean);
+
+    function IndexToRow(const AIndex: Integer): Integer;
+    function RowToIndex(const ARow: Integer): Integer;
+
+    function FirstDateCol: Integer;
+    function ColToDate(const ACol: Integer): TDate;
+    function DateToCol(const ADate: TDate): Integer;
+
+    procedure UnSelectDate;
+    procedure SelectDate(const ADate: TDate);
+
+    procedure UnSelectRow;
+    procedure SelectRow(const AIndex: Integer);
+    procedure SelectRow1(const AIndex: Integer);
+    procedure SelectRow2(const AIndex: Integer);
+    procedure MouseDown(Sender: TObject; Button: TMouseButton; {%H-}Shift: TShiftState; X, Y: Integer);
   public
     constructor Create(const AWorksheet: TsWorksheet;
                        const AGrid: TsWorksheetGrid;
@@ -193,14 +245,29 @@ type
                        );
 
     procedure Draw(const ACalendar: TCalendar;
-      const ASchedules: TPersonalScheduleVector;
-      const AStaffNames: String;
-      const ANeedNight, ANeedCorrect, ANeedMarks, ANeedVacation, AScheduleNotWorkColor: Boolean
-      );
+                   const ASchedules, ABeforeSchedules: TPersonalScheduleVector;
+                   const AStaffNames, ATabNums, APostNames: TStrVector;
+                   const ANormHours: TIntVector;
+                   const AViewParams: TBoolVector;
+                    //AViewParams:
+                    //0 - Отображать строку ночных часов,
+                    //1 - Учитывать корректировки графика
+                    //2 - Коды табеля для нерабочих дней
+                    //3 - Учитывать отпуск
+                   const AExportParams: TBoolVector
+                    //AExportParams:
+                    //0 - заголовок таблицы на каждой странице
+                    //1 - номера страниц в нижнем колонтитуле
+                   );
+    procedure LineDraw(const AIndex: Integer);
+    procedure SelectionClear; override;
 
-    function GridToDate(const {%H-}ARow, {%H-}ACol: Integer; out ADate: TDate): Boolean; override;
-    //not used
-    function DateToGrid(const {%H-}ADate: TDate; out ARow, ACol: Integer): Boolean; override;
+    property IsDateSelected: Boolean read GetIsDateSelected;
+    property IsRowSelected: Boolean read GetIsRowSelected;
+    property IsDoubleRowSelected: Boolean read GetIsDoubleRowSelected;
+    property SelectedIndex: Integer read FSelectedRowIndex1;
+    property CanSelect: Boolean read FCanSelect write SetCanSelect;
+    property OnSelect: TSheetEvent read FOnSelect write FOnSelect;
   end;
 
   { TShiftCalendarScheduleSheet }
@@ -289,8 +356,371 @@ end;
 { TPersonalMonthScheduleSheet }
 
 function TPersonalMonthScheduleSheet.SetWidths: TIntVector;
+var
+  i: Integer;
 begin
-  Result:=inherited SetWidths;
+  Result:=  nil;
+  if FExtraColumns[0] then //0 - Порядковый номер
+    VAppend(Result, ORDERNUM_COLUMN_WIDTH);
+  VAppend(Result, STAFFNAME_COLUMN_WIDTH);
+  if FExtraColumns[1] then //1 - Должность (профессия)
+    VAppend(Result, POSTNAME_COLUMN_WIDTH);
+  if FExtraColumns[2] then //2 - Табельный номер
+    VAppend(Result, TABNUM_COLUMN_WIDTH);
+  for i:= 1 to 31 do
+    VAppend(Result, DAY_COLUMN_WIDTH);
+  if FExtraColumns[3] then //3 - Количество дней/часов за месяц
+  begin
+    VAppend(Result, SUMDAYS_COLUMN_WITH);
+    if FResumeType=2 then
+      VAppend(Result, SUMDAYS_COLUMN_WITH);
+    VAppend(Result, SUMHOURS_COLUMN_WITH);
+  end;
+  if FExtraColumns[4] then //4 - Сумма часов за учетный период
+  begin
+    if FPeriodType<2 then
+      VAppend(Result, HOURS_COLUMN_WIDTH1);
+  end;
+  if FExtraColumns[5] then //5 - Норма часов за учетный период
+    VAppend(Result, HOURS_COLUMN_WIDTH2);
+  if FExtraColumns[6] then //6 - Отклонение от нормы часов
+    VAppend(Result, HOURS_COLUMN_WIDTH3);
+  if FSignatureType=1 then
+  begin
+    VAppend(Result, DATE_COLUMN_WIDTH);
+    VAppend(Result, SIGN_COLUMN_WIDTH);
+  end;
+end;
+
+procedure TPersonalMonthScheduleSheet.CaptionDraw;
+var
+  R, C, i: Integer;
+  S: String;
+begin
+  C:= 0;
+  R:= 1;
+  Writer.SetAlignment(haCenter, vaCenter);
+  Writer.SetFont(Font.Name, Font.Size, [fsBold], clBlack);
+  if FExtraColumns[0] then //0 - Порядковый номер
+  begin
+    C:= C + 1;
+    Writer.WriteText(R, C, R+1, C, '№ п/п', cbtOuter);
+  end;
+  C:= C + 1;
+  Writer.WriteText(R, C, R+1, C, 'Ф.И.О.', cbtOuter);
+  if FExtraColumns[1] then //1 - Должность (профессия)
+  begin
+    C:= C + 1;
+    Writer.WriteText(R, C, R+1, C, 'Должность (профессия)', cbtOuter);
+  end;
+  if FExtraColumns[2] then //2 - Табельный номер
+  begin
+    C:= C + 1;
+    Writer.WriteText(R, C, R+1, C, 'Табельный номер', cbtOuter);
+  end;
+  S:= 'Часов за день';
+  if FViewParams[0] then //0 - Отображать строку ночных часов
+    S:= S + ', в том числе ночных';
+  Writer.WriteText(R, C+1, R, C+31, S, cbtOuter);
+  for i:= C+1 to C+FCalendar.DaysCount do
+    Writer.WriteNumber(R+1, i, i-C, cbtOuter);
+  for i:= C+FCalendar.DaysCount+1 to C+31 do
+    Writer.WriteText(R+1, i, STRMARK_NONEXISTENT, cbtOuter);
+  C:= C+31;
+  if FExtraColumns[3] then //3 - Количество дней/часов за месяц
+  begin
+    C:= C + 1;
+    Writer.WriteText(R, C, R, C+1+Ord(FResumeType=2), 'По графику', cbtOuter);
+    Writer.WriteText(R+1, C, 'дней', cbtOuter);
+    if FResumeType=1 then
+      Writer.WriteText(R+1, C, 'смен', cbtOuter);
+    if FResumeType=2 then
+    begin
+      C:= C + 1;
+      Writer.WriteText(R+1, C, 'смен', cbtOuter);
+    end;
+    C:= C + 1;
+    Writer.WriteText(R+1, C, 'часов', cbtOuter);
+  end;
+  if FExtraColumns[4] then  //4 - Сумма часов за учетный период
+  begin
+    if FPeriodType<2 then
+    begin
+      C:= C + 1;
+      if FPeriodType=0 then
+        Writer.WriteText(R, C, R+1, C, 'Часы, отработанные с нарастанием за ' +
+                         FormatDateTime('yyyy год', FCalendar.BeginDate), cbtOuter)
+      else if FPeriodType=1 then
+        Writer.WriteText(R, C, R+1, C, 'Часы, отработанные с нарастанием за ' +
+                         QuarterNumberToRome(QuarterNumber(FMonth)) + ' квартал', cbtOuter);
+    end;
+  end;
+  if FExtraColumns[5] then //5 - Норма часов за учетный период
+  begin
+    C:= C + 1;
+    S:= 'Норма часов на ';
+    case FPeriodType of
+      2: S:= S + MONTHSNOM[FMonth] + ' ' + IntToStr(FYear) + ' года';
+      1: S:= S + SYMBOL_BREAK + QuarterNumberToRome(QuarterNumber(FMonth)) + ' квартал ' + IntToStr(FYear) + ' года';
+      0: S:= S + IntToStr(FYear) + ' год';
+    end;
+    Writer.WriteText(R, C, R+1, C, S, cbtOuter);
+  end;
+  if FExtraColumns[6] then  //6 - Отклонение от нормы часов
+  begin
+    C:= C + 1;
+    S:= 'Отклонение от ';
+    case FPeriodType of
+      2: S:= S + ' месячной ';
+      1: S:= S + ' квартальной ';
+      0: S:= S + ' годовой ';
+    end;
+    S:= S + 'нормы';
+    Writer.WriteText(R, C, R+1, C, S, cbtOuter);
+  end;
+  if FSignatureType=1 then
+  begin
+    C:= C + 1;
+    Writer.WriteText(R, C, R, C+1, 'Ознакомлен', cbtOuter);
+    Writer.WriteText(R+1, C, 'дата', cbtOuter);
+    Writer.WriteText(R+1, C+1, 'подпись', cbtOuter);
+  end;
+  Writer.SetRowHeight(R, 3*SHeight(Font));
+end;
+
+function TPersonalMonthScheduleSheet.GetIsDateSelected: Boolean;
+begin
+  Result:= FSelectedDate>0;
+end;
+
+function TPersonalMonthScheduleSheet.GetIsDoubleRowSelected: Boolean;
+begin
+  Result:= (FSelectedRowIndex1>=0) and (FSelectedRowIndex2>=0);
+end;
+
+function TPersonalMonthScheduleSheet.GetIsRowSelected: Boolean;
+begin
+  Result:= (FSelectedRowIndex1>=0) and (FSelectedRowIndex2<0);
+end;
+
+procedure TPersonalMonthScheduleSheet.LineDraw(const AIndex: Integer);
+var
+  R, C, i, n, d, s, SHTotal, SHNight: Integer;
+  BeforeSchedule: TPersonalSchedule;
+  WorkHours, WorkHoursBefore: TWorkHours;
+  Marks: TStrVector;
+begin
+  Writer.SetBackgroundDefault;
+  Writer.SetFont(Font.Name, Font.Size, [], clBlack);
+
+  C:= 0;
+  n:= Ord(FViewParams[0]); //0 - Отображать строку ночных часов
+  R:= IndexToRow(AIndex);
+
+  if FExtraColumns[0] then //0 - Порядковый номер
+  begin
+    Writer.SetAlignment(haCenter, vaCenter);
+    C:= C + 1;
+    Writer.WriteNumber(R, C, R+n, C, AIndex+1, cbtOuter);
+  end;
+
+  Writer.SetAlignment(haLeft, vaCenter);
+  C:= C + 1;
+  Writer.WriteText(R, C, R+n, C, FStaffNames[AIndex], cbtOuter);
+
+  if FExtraColumns[1] then //1 - Должность (профессия)
+  begin
+    Writer.SetAlignment(haLeft, vaCenter);
+    C:= C + 1;
+    Writer.WriteText(R, C, R+n, C, FPostNames[AIndex], cbtOuter);
+  end;
+
+  if FExtraColumns[2] then //2 - Табельный номер
+  begin
+    Writer.SetAlignment(haCenter, vaCenter);
+    C:= C + 1;
+    Writer.WriteText(R, C, R+n, C, FTabNums[AIndex], cbtOuter);
+  end;
+
+  ChoosePersonalScheduleData(FSchedules[AIndex],
+                             FViewParams[1], //1 - Учитывать корректировки графика
+                             FViewParams[3], //3 - Учитывать отпуск
+                             WorkHours, d,s, Marks);
+  Writer.SetAlignment(haCenter, vaCenter);
+  for i:= 0 to FCalendar.DaysCount - 1 do
+    DrawPersonalHoursOrMarks(Writer, R, C+i+1,
+                FSchedules[AIndex].IsExists[i], FSchedules[AIndex].IsDefine[i],
+                FSchedules[AIndex].IsVacation[i],
+                WorkHours.Total[i], WorkHours.Night[i], Marks[i], EmptyStr,
+                FWriteTotalIfZero, FWriteNightIfZero,
+                FViewParams[0], //0 - Отображать строку ночных часов
+                FViewParams[2], //2 - Коды табеля для нерабочих дней
+                FViewParams[3], //3 - Учитывать отпуск
+                FSchedules[AIndex].StrMarkVacationMain,
+                FSchedules[AIndex].StrMarkVacationAddition,
+                FSchedules[AIndex].StrMarkVacationHoliday);
+  for i:= FCalendar.DaysCount to 30 do
+    Writer.WriteText(R, C+i+1, STRMARK_NONEXISTENT, cbtOuter);
+  if FViewParams[0] then //0 - Отображать строку ночных часов
+    for i:= FCalendar.DaysCount to 30 do
+      Writer.WriteText(R+1, C+i+1, STRMARK_NONEXISTENT, cbtOuter);
+
+  C:= C+31;
+  if FExtraColumns[3] then  //3 - Количество дней/часов за месяц
+  begin
+    C:= C + 1;
+    case FResumeType of
+    0: if (d>0) or FWriteDaysCountIfZero then
+         Writer.WriteNumber(R, C, R+n, C, d, cbtOuter)
+       else
+         {%H-}Writer.WriteText(R, C, R+n, C, EmptyStr, cbtOuter);
+    1: if (s>0) or FWriteDaysCountIfZero then
+         Writer.WriteNumber(R, C, R+n, C, s, cbtOuter)
+       else
+         {%H-}Writer.WriteText(R, C, R+n, C, EmptyStr, cbtOuter);
+    2: begin
+         if (d>0) or FWriteDaysCountIfZero then
+           Writer.WriteNumber(R, C, R+n, C, d, cbtOuter)
+         else
+           {%H-}Writer.WriteText(R, C, R+n, C, EmptyStr, cbtOuter);
+         C:= C + 1;
+         if (s>0) or FWriteDaysCountIfZero then
+           Writer.WriteNumber(R, C, R+n, C, s, cbtOuter)
+         else
+           {%H-}Writer.WriteText(R, C, R+n, C, EmptyStr, cbtOuter);
+       end;
+    end;
+    C:= C + 1;
+    DrawHours(Writer, R, C, WorkHours.SumTotal, WorkHours.SumNight,
+              FWriteSumTotalIfZero, FWriteSumNightIfZero,
+              FViewParams[0]); //0 - Отображать строку ночных часов
+
+  end;
+
+  SHTotal:= WorkHours.SumTotal;
+  SHNight:= WorkHours.SumNight;
+  BeforeSchedule:= nil;
+  if Assigned(FBeforeSchedules) then
+    BeforeSchedule:= FBeforeSchedules[AIndex];
+  if (FPeriodType<2) and Assigned(BeforeSchedule) then
+  begin
+    ChoosePersonalScheduleData(BeforeSchedule,
+                               FViewParams[1], //1 - Учитывать корректировки графика
+                               FViewParams[3], //3 - Учитывать отпуск
+                               WorkHoursBefore, d,s, Marks);
+    SHTotal:= WorkHours.SumTotal+WorkHoursBefore.SumTotal;
+    SHNight:= WorkHours.SumNight+WorkHoursBefore.SumNight;
+  end;
+
+  if (FPeriodType<2) and FExtraColumns[4] then  //4 - Сумма часов за учетный период
+  begin
+    C:= C + 1;
+    DrawHours(Writer, R, C, SHTotal, SHNight,
+              FWriteSumTotalIfZero, FWriteSumNightIfZero,
+              FViewParams[0]); //0 - Отображать строку ночных часов
+  end;
+
+  if FExtraColumns[5] then  //5 - Норма часов за учетный период
+  begin
+    C:= C + 1;
+    WriteCellHours(Writer, R, C, R+n, C, FNormHours[AIndex]);
+  end;
+
+  if FExtraColumns[6] then //6 - Отклонение от нормы часов
+  begin
+    C:= C + 1;
+    WriteCellHours(Writer, R, C, R+n, C, SHTotal-FNormHours[AIndex]);
+  end;
+
+  if FSignatureType=1 then
+  begin
+    C:= C + 1;
+    Writer.WriteText(R, C, R+n, C, EmptyStr, cbtOuter);
+    C:= C + 1;
+    Writer.WriteText(R, C, R+n, C, EmptyStr, cbtOuter);
+  end;
+
+  if not FViewParams[0] then //0 - Отображать строку ночных часов
+    Writer.SetRowHeight(R, Trunc(1.6*Writer.RowHeightDefault));
+end;
+
+procedure TPersonalMonthScheduleSheet.SetCanSelect(const AValue: Boolean);
+begin
+  if FCanSelect=AValue then Exit;
+  FCanSelect:= AValue;
+  if not AValue then SelectionClear;
+end;
+
+function TPersonalMonthScheduleSheet.IndexToRow(const AIndex: Integer): Integer;
+begin
+  Result:= 3 + (1 + Ord(FViewParams[0])) * AIndex;
+end;
+
+function TPersonalMonthScheduleSheet.RowToIndex(const ARow: Integer): Integer;
+begin
+  Result:= (ARow - 3) div (1 + Ord(FViewParams[0])); //FViewParams: 0 - Отображать строку ночных часов
+end;
+
+function TPersonalMonthScheduleSheet.FirstDateCol: Integer;
+begin
+  //FExtraColumns: 0 - Порядковый номер, 1 - Должность (профессия), 2 - Табельный номер
+  Result:= 2+Ord(FExtraColumns[0])+ Ord(FExtraColumns[1]) + Ord(FExtraColumns[2]);
+end;
+
+function TPersonalMonthScheduleSheet.ColToDate(const ACol: Integer): TDate;
+var
+  C1, C2: Integer;
+begin
+  Result:= 0;
+  C1:= FirstDateCol;
+  C2:= C1 + DaysInAMonth(FYear, FMonth) - 1;
+  if (ACol<C1) or (ACol>C2) then Exit;
+  Result:= EncodeDate(FYear, FMonth, ACol - C1 + 1);
+end;
+
+function TPersonalMonthScheduleSheet.DateToCol(const ADate: TDate): Integer;
+begin
+  Result:= FirstDateCol + DayOf(ADate) - 1;
+end;
+
+procedure TPersonalMonthScheduleSheet.MouseDown(Sender: TObject;
+  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+var
+  R, C, Index: Integer;
+  D: TDate;
+begin
+  if Length(FSchedules)=0 then Exit;
+
+  if Button=mbLeft then
+  begin
+    (Sender as TsWorksheetGrid).MouseToCell(X, Y, C, R);
+    if (R <= 2) or (R >= IndexToRow(Length(FSchedules))) then Exit;
+    D:= ColToDate(C);
+    Index:= RowToIndex(R);
+    if IsDoubleRowSelected then
+    begin
+      if (Index<>FSelectedRowIndex1) and (Index<>FSelectedRowIndex2) then
+        SelectRow1(Index);
+      SelectDate(D);
+    end
+    else begin
+      if Index=FSelectedRowIndex1 then
+        SelectDate(D)
+      else begin
+        if IsRowSelected and SSame(FTabNums[Index], FTabNums[FSelectedRowIndex1]) then
+        begin
+          UnselectDate;
+          SelectRow2(Index);
+        end
+        else begin
+          SelectRow1(Index);
+          SelectDate(D);
+        end;
+      end;
+    end;
+  end
+  else if Button=mbRight then
+    UnSelectRow;
 end;
 
 constructor TPersonalMonthScheduleSheet.Create(const AWorksheet: TsWorksheet;
@@ -310,33 +740,144 @@ constructor TPersonalMonthScheduleSheet.Create(const AWorksheet: TsWorksheet;
                         //6 - Отклонение от нормы часов
                        );
 begin
+  FResumeType:= AResumeType;
   FPeriodType:= APeriodType;
   FSignatureType:= ASignatureType;
   FExtraColumns:= AExtraColumns;
-  inherited Create(AWorksheet, AGrid, AFont, AResumeType);
+  inherited Create(AWorksheet, AGrid, AFont);
+  FSelectedRowIndex1:= -1;
+  FSelectedRowIndex2:= -1;
+  FSelectedDate:= 0;
+  FCanSelect:= True;
+  if Writer.HasGrid then
+    Writer.Grid.OnMouseDown:= @MouseDown;
 end;
 
 procedure TPersonalMonthScheduleSheet.Draw(const ACalendar: TCalendar;
-      const ASchedules: TPersonalScheduleVector;
-      const AStaffNames: String;
-      const ANeedNight, ANeedCorrect, ANeedMarks, ANeedVacation, AScheduleNotWorkColor: Boolean
-     );
+                   const ASchedules, ABeforeSchedules: TPersonalScheduleVector;
+                   const AStaffNames, ATabNums, APostNames: TStrVector;
+                   const ANormHours: TIntVector;
+                   const AViewParams: TBoolVector;
+                    //AViewParams:
+                    //0 - Отображать строку ночных часов
+                    //1 - Учитывать корректировки графика
+                    //2 - Коды табеля для нерабочих дней
+                    //3 - Учитывать отпуск
+                   const AExportParams: TBoolVector
+                    //AExportParams:
+                    //0 - заголовок таблицы на каждой странице
+                    //1 - номера страниц в нижнем колонтитуле
+                   );
+var
+  X, W, i: Integer;
 begin
   FCalendar:= ACalendar;
   FYear:= YearOfDate(FCalendar.BeginDate);
   FMonth:= MonthOfDate(FCalendar.BeginDate);
+  FSchedules:= ASchedules;
+  FBeforeSchedules:= ABeforeSchedules;
+  FViewParams:= AViewParams;
+  FExportParams:= AExportParams;
+  FStaffNames:= AStaffNames;
+  FTabNums:= ATabNums;
+  FPostNames:= APostNames;
+  FNormHours:= ANormHours;
+
+  Writer.BeginEdit;
+  W:= VMaxWidth(FStaffNames, Font.Name, Font.Size+1, [], STAFFNAME_COLUMN_WIDTH);
+
+  X:= 1+Ord(FExtraColumns[0]); //FExtraColumns: 0 - Порядковый номер
+  Writer.SetColWidth(X, W);
+  if FExtraColumns[2] then //FExtraColumns: 2 - Табельный номер
+  begin
+    W:= VMaxWidth(FTabNums, Font.Name, Font.Size+1, [], TABNUM_COLUMN_WIDTH);
+    X:= 2+Ord(FExtraColumns[0])+Ord(FExtraColumns[1]); //FExtraColumns: 0 - Порядковый номер, 1 - Должность (профессия)
+    Writer.SetColWidth(X, W);
+  end;
+
+  CaptionDraw;
+  for i:=0 to High(FSchedules) do
+    LineDraw(i);
+
+  //if FSignatureType=2 then
+  //  DrawSignatureList(AFIOs);
+
+  Writer.SetFrozenRows(2);
+  if FExportParams[0] then //FExportParams: 0 - заголовок таблицы на каждой странице
+    Writer.SetRepeatedRows(1, 2);
+  if FExportParams[1] then //FExportParams: 1 - номера страниц в нижнем колонтитуле
+    Writer.WorkSheet.PageLayout.Footers[HEADER_FOOTER_INDEX_ALL] := '&X страница &P (из &N)';
+
+  X:= IndexToRow(Length(FSchedules));
+  for i:= 1 to Writer.ColCount do
+    Writer.WriteText(X, i, EmptyStr, cbtTop);
+
+  Writer.EndEdit;
 end;
 
-function TPersonalMonthScheduleSheet.GridToDate(const ARow, ACol: Integer; out ADate: TDate): Boolean;
+procedure TPersonalMonthScheduleSheet.SelectDate(const ADate: TDate);
+var
+  R, C: Integer;
 begin
+  if (ADate=0) or SameDate(ADate, FSelectedDate) then Exit;
+  if IsDoubleRowSelected then Exit;
+  if IsRowSelected and
+     (FSchedules[FSelectedRowIndex1].IsExists[DayOf(ADate)-1]=EXISTS_NO) then Exit;
 
+  SelectionExtraClear;
+  FSelectedDate:= ADate;
+  R:= IndexToRow(FSelectedRowIndex1);
+  C:= DateToCol(FSelectedDate);
+  SelectionExtraAddCell(R, C);
+  if FViewParams[0] then //строка ночных часов
+    SelectionExtraAddCell(R+1, C);
+
+  if Assigned(FOnSelect) then FOnSelect;
 end;
 
-function TPersonalMonthScheduleSheet.DateToGrid(const ADate: TDate; out ARow, ACol: Integer): Boolean;
+procedure TPersonalMonthScheduleSheet.UnSelectDate;
 begin
-  ARow:= 0;
-  ACol:= 0;
-  Result:= False;
+  SelectionExtraClear;
+  FSelectedDate:= 0;
+  if Assigned(FOnSelect) then FOnSelect;
+end;
+
+procedure TPersonalMonthScheduleSheet.SelectionClear;
+begin
+  inherited SelectionClear;
+  FSelectedRowIndex1:= -1;
+  FSelectedRowIndex2:= -1;
+  FSelectedDate:= 0;
+end;
+
+procedure TPersonalMonthScheduleSheet.UnSelectRow;
+begin
+  SelectionClear;
+  if Assigned(FOnSelect) then FOnSelect;
+end;
+
+procedure TPersonalMonthScheduleSheet.SelectRow(const AIndex: Integer);
+var
+  R, i, j: Integer;
+begin
+  if Assigned(FOnSelect) then FOnSelect;
+  R:= IndexToRow(AIndex);
+  for i:= R to R + Ord(FViewParams[0]) do
+    for j:= 1 to Writer.ColCount do
+      SelectionAddCell(i, j);
+end;
+
+procedure TPersonalMonthScheduleSheet.SelectRow1(const AIndex: Integer);
+begin
+  SelectionClear;
+  FSelectedRowIndex1:= AIndex;
+  SelectRow(AIndex);
+end;
+
+procedure TPersonalMonthScheduleSheet.SelectRow2(const AIndex: Integer);
+begin
+  FSelectedRowIndex2:= AIndex;
+  SelectRow(AIndex);
 end;
 
 { TPersonalYearScheduleSheet }
@@ -1550,13 +2091,11 @@ end;
 
 function TShiftSimpleScheduleSheet.SetWidths: TIntVector;
 var
-  i, W: Integer;
+  W: Integer;
 begin
   W:= Max(DAY_COLUMN_WIDTH, SWidth('00.00.00', Font.Name, Font.Size, [fsBold]));
   VDim(Result{%H-}, 11, W);
-  W:= NAME_COLUMN_WIDTH;
-  for i:= 0 to High(FNames) do
-    W:= Max(W, SWidth(FNames[i], Font.Name, Font.Size, [fsBold]));
+  W:= VMaxWidth(FNames, Font.Name, Font.Size, [fsBold], NAME_COLUMN_WIDTH);
   Result[0]:= W;
 end;
 

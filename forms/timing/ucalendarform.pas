@@ -463,6 +463,7 @@ end;
 procedure TCalendarForm.CalendarDraw(const AZoomPercent: Integer);
 begin
   ViewGrid.Visible:= False;
+  Screen.Cursor:= crHourGlass;
   try
     ZoomPercent:= AZoomPercent;
     CalendarSheet.Zoom(ZoomPercent);
@@ -470,6 +471,7 @@ begin
     CalendarSheet.ColorsUpdate(Colors);
   finally
     ViewGrid.Visible:= True;
+    Screen.Cursor:= crDefault;
   end;
 end;
 

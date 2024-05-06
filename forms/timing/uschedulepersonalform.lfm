@@ -24,8 +24,6 @@ object SchedulePersonalForm: TSchedulePersonalForm
     BorderStyle = bsSingle
     ClientHeight = 36
     ClientWidth = 1697
-    Constraints.MaxHeight = 40
-    Constraints.MinHeight = 40
     ParentFont = False
     TabOrder = 0
     object CloseButton: TSpeedButton
@@ -827,10 +825,10 @@ object SchedulePersonalForm: TSchedulePersonalForm
       object CountTypeVT: TVirtualStringTree
         Left = 0
         Height = 79
-        Top = 137
+        Top = 131
         Width = 346
         Align = alTop
-        BorderSpacing.Top = 12
+        BorderSpacing.Top = 6
         BorderStyle = bsNone
         DefaultText = 'Node'
         Header.AutoSizeIndex = 0
@@ -841,10 +839,10 @@ object SchedulePersonalForm: TSchedulePersonalForm
       object ColorTypeVT: TVirtualStringTree
         Left = 0
         Height = 79
-        Top = 228
+        Top = 216
         Width = 346
         Align = alTop
-        BorderSpacing.Top = 12
+        BorderSpacing.Top = 6
         BorderStyle = bsNone
         DefaultText = 'Node'
         Header.AutoSizeIndex = 0
@@ -1596,8 +1594,6 @@ object SchedulePersonalForm: TSchedulePersonalForm
             BorderStyle = bsSingle
             ClientHeight = 36
             ClientWidth = 646
-            Constraints.MaxHeight = 40
-            Constraints.MinHeight = 40
             ParentFont = False
             TabOrder = 0
             object DayAddButton: TSpeedButton
@@ -2002,8 +1998,6 @@ object SchedulePersonalForm: TSchedulePersonalForm
             BorderStyle = bsSingle
             ClientHeight = 36
             ClientWidth = 646
-            Constraints.MaxHeight = 40
-            Constraints.MinHeight = 40
             ParentFont = False
             TabOrder = 0
             object CopySaveButton: TSpeedButton
@@ -2371,8 +2365,6 @@ object SchedulePersonalForm: TSchedulePersonalForm
           BorderStyle = bsSingle
           ClientHeight = 36
           ClientWidth = 646
-          Constraints.MaxHeight = 40
-          Constraints.MinHeight = 40
           ParentFont = False
           TabOrder = 1
           object VacationSaveButton: TSpeedButton
@@ -2819,8 +2811,6 @@ object SchedulePersonalForm: TSchedulePersonalForm
         BorderStyle = bsSingle
         ClientHeight = 36
         ClientWidth = 646
-        Constraints.MaxHeight = 40
-        Constraints.MinHeight = 40
         ParentFont = False
         TabOrder = 1
         object HistoryDelButton: TSpeedButton
