@@ -1247,6 +1247,7 @@ object SchedulePersonalMonthForm: TSchedulePersonalMonthForm
             0000000000000000000000000000000000000000000000000000000000000000
             0000000000000000000000000000000000000000000000000000
           }
+          OnClick = RowUpButtonClick
           ShowHint = True
           ParentShowHint = False
         end
@@ -1337,6 +1338,7 @@ object SchedulePersonalMonthForm: TSchedulePersonalMonthForm
             0070666600706666007066660070666600706666007066660034000000006666
             0063666600706666007066660070666600706666007066660070
           }
+          OnClick = RowDownButtonClick
           ShowHint = True
           ParentShowHint = False
         end

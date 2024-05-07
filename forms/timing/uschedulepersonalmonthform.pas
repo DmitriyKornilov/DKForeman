@@ -6,12 +6,13 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, BCButton,
-  BCPanel, Buttons, Spin, StdCtrls, VirtualTrees, fpspreadsheetgrid,
+  BCPanel, Buttons, Spin, StdCtrls, VirtualTrees, fpspreadsheetgrid, DateUtils,
   //DK packages utils
   DK_Vector, DK_Matrix, DK_Fonts, DK_Const, DK_VSTDropDown, DK_DateUtils,
   DK_VSTTables, DK_VSTTableTools, DK_Zoom, DK_SheetExporter, DK_Progress,
   //Project utils
-  UDataBase, UConst, UUtils, UCalendar, USchedule, UScheduleSheet,
+  UDataBase, UConst, UUtils, UCalendar, USchedule, UScheduleSheet, UWorkHours,
+  UTypes,
   //Forms
   UScheduleCorrectionEditForm;
 
@@ -78,6 +79,8 @@ type
     procedure FormShow(Sender: TObject);
     procedure ListButtonClick(Sender: TObject);
     procedure PostRadioButtonClick(Sender: TObject);
+    procedure RowDownButtonClick(Sender: TObject);
+    procedure RowUpButtonClick(Sender: TObject);
     procedure ScheduleButtonClick(Sender: TObject);
     procedure ScheduleRadioButtonClick(Sender: TObject);
     procedure SettingButtonClick(Sender: TObject);
@@ -141,6 +144,7 @@ type
     procedure ScheduleSelect;
 
     procedure ScheduleCorrectionFormOpen;
+    procedure SelectionMove(const ADirection: TMoveDirection);
 
     procedure SettingsSave;
     procedure SettingsLoad;
@@ -413,6 +417,16 @@ procedure TSchedulePersonalMonthForm.PostRadioButtonClick(Sender: TObject);
 begin
   if not OrderTypeChange then Exit;
   StaffListLoad;
+end;
+
+procedure TSchedulePersonalMonthForm.RowDownButtonClick(Sender: TObject);
+begin
+  SelectionMove(mdDown);
+end;
+
+procedure TSchedulePersonalMonthForm.RowUpButtonClick(Sender: TObject);
+begin
+  SelectionMove(mdUp);
 end;
 
 procedure TSchedulePersonalMonthForm.ScheduleRadioButtonClick(Sender: TObject);
@@ -715,31 +729,78 @@ end;
 procedure TSchedulePersonalMonthForm.ScheduleSelect;
 begin
   DayEditButton.Enabled:= Sheet.IsDateSelected;
-  RowUpButton.Enabled:= Sheet.IsRowSelected;
-  RowDownButton.Enabled:= Sheet.IsRowSelected;
+  RowUpButton.Enabled:= Sheet.IsRowSelected and (Sheet.SelectedIndex>0);
+  RowDownButton.Enabled:= Sheet.IsRowSelected and (Sheet.SelectedIndex<High(Schedules));
   RowSplitButton.Enabled:= Sheet.IsDoubleRowSelected;
 end;
 
 procedure TSchedulePersonalMonthForm.ScheduleCorrectionFormOpen;
 var
+  i: Integer;
   ScheduleCorrectionEditForm: TScheduleCorrectionEditForm;
+  CorrectIDs: TIntVector;
+  Corrections: TScheduleCorrections;
 begin
   if not Sheet.IsDateSelected then Exit;
 
-  //ScheduleCorrectionEditForm:= TScheduleCorrectionEditForm.Create(nil);
+  ScheduleCorrectionEditForm:= TScheduleCorrectionEditForm.Create(nil);
   try
+    ScheduleCorrectionEditForm.TabNumID:= TabNumIDs[Sheet.SelectedIndex];
+    ScheduleCorrectionEditForm.FirstDatePicker.Date:= Sheet.SelectedDate;
+    if DataBase.SchedulePersonalCorrectionsLoad(TabNumIDs[Sheet.SelectedIndex],
+            CorrectIDs, Corrections, Sheet.SelectedDate, Sheet.SelectedDate) then
+    begin
+      ScheduleCorrectionEditForm.DigMark:= Corrections.DigMarks[0];
+      ScheduleCorrectionEditForm.TotalHoursSpinEdit.Value:= WorkHoursIntToFrac(Corrections.HoursTotal[0]);
+      ScheduleCorrectionEditForm.NightHoursSpinEdit.Value:= WorkHoursIntToFrac(Corrections.HoursNight[0]);
+      ScheduleCorrectionEditForm.ShiftNumSpinEdit.Value:= Corrections.ShiftNums[0];
+    end
+    else begin
+      i:= DayOf(Sheet.SelectedDate)-1;
+      ScheduleCorrectionEditForm.DigMark:= Schedules[Sheet.SelectedIndex].MarkDIGDefault[i];
+      ScheduleCorrectionEditForm.TotalHoursSpinEdit.Value:= WorkHoursIntToFrac(Schedules[Sheet.SelectedIndex].HoursDefault.Total[i]);
+      ScheduleCorrectionEditForm.NightHoursSpinEdit.Value:= WorkHoursIntToFrac(Schedules[Sheet.SelectedIndex].HoursDefault.Night[i]);
+      ScheduleCorrectionEditForm.ShiftNumSpinEdit.Value:= Schedules[Sheet.SelectedIndex].ShiftNumbersDefault[i];
+    end;
 
-    //if ScheduleCorrectionEditForm.ShowModal=mrOK then
-    //begin
+    if ScheduleCorrectionEditForm.ShowModal=mrOK then
+    begin
       FreeAndNil(Schedules[Sheet.SelectedIndex]);
       if Length(BeforeSchedules)>0 then
          FreeAndNil(BeforeSchedules[Sheet.SelectedIndex]);
       ScheduleCreate(Sheet.SelectedIndex);
       Sheet.LineDraw(Sheet.SelectedIndex);
-    //end;
+    end;
   finally
-    //FreeAndNil(ScheduleCorrectionEditForm);
+    FreeAndNil(ScheduleCorrectionEditForm);
   end;
+end;
+
+procedure TSchedulePersonalMonthForm.SelectionMove(const ADirection: TMoveDirection);
+var
+  OldSelectedIndex, NewSelectedIndex: Integer;
+begin
+  if ADirection=mdUp then
+    NewSelectedIndex:= Sheet.SelectedIndex - 1
+  else if ADirection=mdDown then
+    NewSelectedIndex:= Sheet.SelectedIndex + 1
+  else Exit;
+  OldSelectedIndex:= Sheet.SelectedIndex;
+
+  VSwap(StaffNames, OldSelectedIndex, NewSelectedIndex);
+  VSwap(PostNames, OldSelectedIndex, NewSelectedIndex);
+  VSwap(TabNumIDs, OldSelectedIndex, NewSelectedIndex);
+  VSwap(TabNums, OldSelectedIndex, NewSelectedIndex);
+  VSwap(NormHours, OldSelectedIndex, NewSelectedIndex);
+  VSwap(PostBDs, OldSelectedIndex, NewSelectedIndex);
+  VSwap(PostEDs, OldSelectedIndex, NewSelectedIndex);
+  VSwap(ScheduleBDs, OldSelectedIndex, NewSelectedIndex);
+  VSwap(ScheduleEDs, OldSelectedIndex, NewSelectedIndex);
+  VSwap(RecrutDates, OldSelectedIndex, NewSelectedIndex);
+  VSwap(DismissDates, OldSelectedIndex, NewSelectedIndex);
+  VSSwap(BeforeSchedules, OldSelectedIndex, NewSelectedIndex);
+  VSSwap(Schedules, OldSelectedIndex, NewSelectedIndex);
+  Sheet.SelectionMove(NewSelectedIndex);
 end;
 
 procedure TSchedulePersonalMonthForm.SettingsSave;

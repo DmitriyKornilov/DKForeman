@@ -428,6 +428,7 @@ end;
 procedure TSchedulePersonalForm.MonthScheduleButtonClick(Sender: TObject);
 begin
   SchedulePersonalMonthFormOpen(YearSpinEdit.Value);
+  ScheduleChange;
 end;
 
 procedure TSchedulePersonalForm.PostRadioButtonClick(Sender: TObject);
@@ -1152,7 +1153,6 @@ begin
 
   ScheduleCorrectionEditForm:= TScheduleCorrectionEditForm.Create(nil);
   try
-    ScheduleCorrectionEditForm.ShiftNumSpinEdit.MaxValue:= 365;
     ScheduleCorrectionEditForm.Year:= YearSpinEdit.Value;
     ScheduleCorrectionEditForm.TabNumID:= TabNumIDs[StaffList.SelectedIndex];
     ScheduleCorrectionEditForm.FirstDatePicker.Date:= ADate;
@@ -1161,7 +1161,7 @@ begin
     begin
       ScheduleCorrectionEditForm.DigMark:= Corrections.DigMarks[VSTDays.SelectedIndex];
       ScheduleCorrectionEditForm.TotalHoursSpinEdit.Value:= WorkHoursIntToFrac(Corrections.HoursTotal[VSTDays.SelectedIndex]);
-      ScheduleCorrectionEditForm.NightHoursSpinEdit.Value:= WorkHoursIntToFrac(Corrections.HoursNight[VSTDays.SelectedIndex]);;
+      ScheduleCorrectionEditForm.NightHoursSpinEdit.Value:= WorkHoursIntToFrac(Corrections.HoursNight[VSTDays.SelectedIndex]);
       ScheduleCorrectionEditForm.ShiftNumSpinEdit.Value:= Corrections.ShiftNums[VSTDays.SelectedIndex];
     end;
     if ScheduleCorrectionEditForm.ShowModal=mrOK then
@@ -1174,7 +1174,7 @@ end;
 procedure TSchedulePersonalForm.SchedulePersonalEditFormOpen(const AEditingType: TEditingType);
 var
   SchedulePersonalEditForm: TSchedulePersonalEditForm;
-  ThisBeginDate, PrevBeginDate, NextBeginDate: TDate;
+  ThisBeginDate, PrevBeginDate, NextBeginDate, D: TDate;
 begin
   SchedulePersonalEditForm:= TSchedulePersonalEditForm.Create(nil);
   try
@@ -1186,8 +1186,9 @@ begin
     case AEditingType of
       etAdd: //перевод с последнего графика
         begin
-          SchedulePersonalEditForm.FirstDatePicker.Date:= IncDay(ThisBeginDate, 1);
-          SchedulePersonalEditForm.FirstDatePicker.MinDate:= SchedulePersonalEditForm.FirstDatePicker.Date;
+          D:= IncDay(ThisBeginDate, 1);
+          SchedulePersonalEditForm.FirstDatePicker.Date:= MaxDate(Date, D);
+          SchedulePersonalEditForm.FirstDatePicker.MinDate:= D;
           SchedulePersonalEditForm.FirstDatePicker.MaxDate:= IncDay(INFDATE, -1);
         end;
       etEdit: //редактирование графика

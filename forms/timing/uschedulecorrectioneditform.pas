@@ -65,6 +65,7 @@ begin
   ScheduleID:= -1;
   TabNumID:= -1;
   MarkDropDown:= TVSTDropDown.Create(MarkBCButton);
+  ShiftNumSpinEdit.MaxValue:= 365;
 end;
 
 procedure TScheduleCorrectionEditForm.FormDestroy(Sender: TObject);

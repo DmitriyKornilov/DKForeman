@@ -261,11 +261,13 @@ type
                    );
     procedure LineDraw(const AIndex: Integer);
     procedure SelectionClear; override;
+    procedure SelectionMove(const ANewIndex: Integer);
 
     property IsDateSelected: Boolean read GetIsDateSelected;
     property IsRowSelected: Boolean read GetIsRowSelected;
     property IsDoubleRowSelected: Boolean read GetIsDoubleRowSelected;
     property SelectedIndex: Integer read FSelectedRowIndex1;
+    property SelectedDate: TDate read FSelectedDate;
     property CanSelect: Boolean read FCanSelect write SetCanSelect;
     property OnSelect: TSheetEvent read FOnSelect write FOnSelect;
   end;
@@ -510,7 +512,12 @@ var
   WorkHours, WorkHoursBefore: TWorkHours;
   Marks: TStrVector;
 begin
-  Writer.SetBackgroundDefault;
+  UnSelectDate;
+
+  if AIndex in [FSelectedRowIndex1, FSelectedRowIndex2] then
+    Writer.SetBackground(DefaultSelectionBGColor)
+  else
+    Writer.SetBackgroundDefault;
   Writer.SetFont(Font.Name, Font.Size, [], clBlack);
 
   C:= 0;
@@ -837,6 +844,7 @@ end;
 
 procedure TPersonalMonthScheduleSheet.UnSelectDate;
 begin
+  if not IsDateSelected then Exit;
   SelectionExtraClear;
   FSelectedDate:= 0;
   if Assigned(FOnSelect) then FOnSelect;
@@ -848,6 +856,17 @@ begin
   FSelectedRowIndex1:= -1;
   FSelectedRowIndex2:= -1;
   FSelectedDate:= 0;
+end;
+
+procedure TPersonalMonthScheduleSheet.SelectionMove(const ANewIndex: Integer);
+var
+  OldIndex: Integer;
+begin
+  OldIndex:= FSelectedRowIndex1;
+  SelectionClear;
+  LineDraw(OldIndex);
+  LineDraw(ANewIndex);
+  SelectRow1(ANewIndex);
 end;
 
 procedure TPersonalMonthScheduleSheet.UnSelectRow;
