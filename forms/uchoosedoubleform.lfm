@@ -1,13 +1,12 @@
-object ChooseForm: TChooseForm
-  Left = 578
+object ChooseDoubleForm: TChooseDoubleForm
+  Left = 562
   Height = 200
-  Top = 255
+  Top = 298
   Width = 480
   Caption = 'Выбор'
   ClientHeight = 200
   ClientWidth = 480
   OnShow = FormShow
-  Position = poScreenCenter
   LCLVersion = '2.2.4.0'
   object ButtonPanel: TPanel
     AnchorSideTop.Side = asrBottom
@@ -224,7 +223,7 @@ object ChooseForm: TChooseForm
       Shape = bsTopLine
     end
   end
-  object VT: TVirtualStringTree
+  object MainPanel: TPanel
     AnchorSideLeft.Control = Owner
     AnchorSideTop.Control = Owner
     AnchorSideRight.Control = Owner
@@ -238,10 +237,40 @@ object ChooseForm: TChooseForm
     BorderSpacing.Left = 6
     BorderSpacing.Top = 6
     BorderSpacing.Right = 6
-    DefaultText = 'Node'
-    Header.AutoSizeIndex = 0
-    Header.Columns = <>
-    Header.MainColumn = -1
+    BorderSpacing.Bottom = 6
+    BevelOuter = bvNone
+    BorderStyle = bsSingle
+    ClientHeight = 143
+    ClientWidth = 464
     TabOrder = 1
+    object VT1: TVirtualStringTree
+      AnchorSideBottom.Control = ButtonPanel
+      Left = 0
+      Height = 67
+      Top = 0
+      Width = 464
+      Align = alTop
+      Anchors = [akTop, akLeft, akBottom]
+      BorderStyle = bsNone
+      DefaultText = 'Node'
+      Header.AutoSizeIndex = 0
+      Header.Columns = <>
+      Header.MainColumn = -1
+      TabOrder = 0
+    end
+    object VT2: TVirtualStringTree
+      Left = 0
+      Height = 76
+      Top = 67
+      Width = 464
+      Align = alClient
+      Anchors = [akTop, akLeft, akBottom]
+      BorderStyle = bsNone
+      DefaultText = 'Node'
+      Header.AutoSizeIndex = 0
+      Header.Columns = <>
+      Header.MainColumn = -1
+      TabOrder = 1
+    end
   end
 end

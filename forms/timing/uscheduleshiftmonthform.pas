@@ -309,12 +309,11 @@ begin
     'Сводный график на ' + MonthDropDown.Text + ' ' + YearSpinEdit.Text + ' года',
     'Сводные графики на все месяцы ' + YearSpinEdit.Text + ' года'
   ]);
-  i:= Choose(S, V);
-  if i=0 then Exit;
+  if not Choose(S, V, i) then Exit;
 
   Exporter:= TSheetsExporter.Create;
   try
-    if i=1 then //график на выбранный месяц
+    if i=0 then //график на выбранный месяц
       ExportMonth(MonthDropDown.ItemIndex+1, YearSpinEdit.Value)
     else begin //график на все месяцы
       for i:= 1 to 12 do

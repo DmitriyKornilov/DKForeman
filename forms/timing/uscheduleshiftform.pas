@@ -829,44 +829,12 @@ begin
     'График "' + ScheduleNames[ScheduleList.SelectedIndex] + '" на ' + YearSpinEdit.Text + ' год',
     'Все графики на ' + YearSpinEdit.Text + ' год'
   ]);
-  ChooseIndex:= Choose(S, V);
-  if ChooseIndex=0 then Exit;
+  if not Choose(S, V, ChooseIndex) then Exit;
 
   case ChooseIndex of
-  1: ExportSingleSchedule;
-  2: ExportSeveralSchedules;
+  0: ExportSingleSchedule;
+  1: ExportSeveralSchedules;
   end;
-
-  //Exporter:= TSheetsExporter.Create;
-  //try
-  //  ExpScheduleSheet:= nil;
-  //  if i=1 then //выбранный график
-  //  begin
-  //    Worksheet:= Exporter.AddWorksheet(ScheduleNames[ScheduleList.SelectedIndex]);
-  //    ScheduleToSheet(ExpScheduleSheet, Worksheet, nil, Calendar, Schedule,
-  //                    ScheduleNames[ScheduleList.SelectedIndex]);
-  //    Exporter.PageSettings(spoLandscape);
-  //  end
-  //  else begin  //все графики
-  //    TmpSchedule:= TShiftSchedule.Create;
-  //    try
-  //      for i:=0 to High(ScheduleIDs) do
-  //      begin
-  //        ScheduleShiftByCalendar(ScheduleIDs[i], Calendar, TmpSchedule);
-  //        Worksheet:= Exporter.AddWorksheet(ScheduleNames[i]);
-  //        ScheduleToSheet(ExpScheduleSheet, Worksheet, nil, Calendar, TmpSchedule,
-  //                        ScheduleNames[i]);
-  //        Exporter.PageSettings(spoLandscape);
-  //      end;
-  //    finally
-  //      FreeAndNil(TmpSchedule);
-  //    end;
-  //  end;
-  //  Exporter.Save('Выполнено!');
-  //finally
-  //  FreeAndNil(ExpScheduleSheet);
-  //  FreeAndNil(Exporter);
-  //end;
 end;
 
 procedure TScheduleShiftForm.ScheduleCorrectionEditFormOpen(const ADate: TDate);

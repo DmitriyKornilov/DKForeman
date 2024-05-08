@@ -992,12 +992,11 @@ begin
     ScheduleNames[StaffList.SelectedIndex] + ': график работы на ' + YearSpinEdit.Text + ' год',
     'Графики работы всех сотрудников на ' + YearSpinEdit.Text + ' год'
   ]);
-  ChooseIndex:= Choose(S, V);
-  if ChooseIndex=0 then Exit;
+  if not Choose(S, V, ChooseIndex) then Exit;
 
   case ChooseIndex of
-  1: ExportSingleSchedule;
-  2: ExportSeveralSchedules;
+  0: ExportSingleSchedule;
+  1: ExportSeveralSchedules;
   end;
 end;
 

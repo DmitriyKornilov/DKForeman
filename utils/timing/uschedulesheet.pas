@@ -696,6 +696,7 @@ var
   R, C, Index: Integer;
   D: TDate;
 begin
+  if not CanSelect then Exit;
   if Length(FSchedules)=0 then Exit;
 
   if Button=mbLeft then

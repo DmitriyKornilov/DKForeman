@@ -110,19 +110,19 @@ uses
                                const ARecrutDate: TDate = NULDATE;
                                const ADismissDate: TDate = INFDATE);
 
-  function SchedulesPostByCalendar(const ATabNumID: Integer; const ACalendar: TCalendar;
+  function PostSchedulesByCalendar(const ATabNumID: Integer; const ACalendar: TCalendar;
                           const ASchedBD: TDate = NULDATE; ASchedED: TDate = INFDATE;
                           const APostBD: TDate = NULDATE; APostED: TDate = INFDATE
                           ): TPostScheduleVector;
-  //function PersonalScheduleByPostSchedules(const ATabNumID: Integer; const ATabNum: String;
-  //                            const ARecrutDate, ADismissDate: TDate;
-  //                            const ACalendar: TCalendar; const AHolidayDates: TDateVector;
-  //                            const APostSchedules: TPostScheduleVector;
-  //                            const AWithPlaneVacation: Boolean = False;
-  //                            const AStrMarkVacationMain: String = STRMARK_VACATIONMAIN;
-  //                            const AStrMarkVacationAddition: String = STRMARK_VACATIONADDITION;
-  //                            const AStrMarkVacationHoliday: String = STRMARK_VACATIONHOLIDAY
-  //                            ): TPersonalSchedule;
+  function PersonalScheduleByPostSchedules(const ATabNumID: Integer; const ATabNum: String;
+                              const ARecrutDate, ADismissDate: TDate;
+                              const ACalendar: TCalendar; const AHolidayDates: TDateVector;
+                              const APostSchedules: TPostScheduleVector;
+                              const AWithPlaneVacation: Boolean = False;
+                              const AStrMarkVacationMain: String = STRMARK_VACATIONMAIN;
+                              const AStrMarkVacationAddition: String = STRMARK_VACATIONADDITION;
+                              const AStrMarkVacationHoliday: String = STRMARK_VACATIONHOLIDAY
+                              ): TPersonalSchedule;
   function SchedulePersonalByCalendar(const ATabNumID: Integer; const ATabNum: String;
                               const ARecrutDate, ADismissDate: TDate;
                               const ACalendar: TCalendar; const AHolidayDates: TDateVector;
@@ -133,14 +133,6 @@ uses
                               const ASchedBD: TDate = NULDATE; ASchedED: TDate = INFDATE;
                               const APostBD: TDate = NULDATE; APostED: TDate = INFDATE
                               ): TPersonalSchedule;
-  function SchedulesPersonalByCalendar(const ATabNumIDs: TIntVector; const ATabNums: TStrVector;
-              const ARecrutDates, ADismissDates, ASchedBDs, ASchedEDs, APostBDs, APostEDs: TDateVector;
-              const ACalendar: TCalendar; const AHolidayDates: TDateVector;
-              const AWithPlaneVacation: Boolean = False;
-              const AStrMarkVacationMain: String = STRMARK_VACATIONMAIN;
-              const AStrMarkVacationAddition: String = STRMARK_VACATIONADDITION;
-              const AStrMarkVacationHoliday: String = STRMARK_VACATIONHOLIDAY
-              ): TPersonalScheduleVector;
 
   //Учетный период, включающий в себя указанный отчетный месяц
   procedure AccountingPeriodWithMonth(const AMonth, AYear: Word;
@@ -812,7 +804,7 @@ begin
     ANormHours:= ANormHours + ACalendar.SumWorkHoursInt(WeekHours[i], BDs[i], EDs[i]);
 end;
 
-function SchedulesPostByCalendar(const ATabNumID: Integer; const ACalendar: TCalendar;
+function PostSchedulesByCalendar(const ATabNumID: Integer; const ACalendar: TCalendar;
                           const ASchedBD: TDate = NULDATE; ASchedED: TDate = INFDATE;
                           const APostBD: TDate = NULDATE; APostED: TDate = INFDATE ): TPostScheduleVector;
 var
@@ -853,34 +845,33 @@ begin
   end;
 end;
 
-
-//function PersonalScheduleByPostSchedules(const ATabNumID: Integer; const ATabNum: String;
-//                              const ARecrutDate, ADismissDate: TDate;
-//                              const ACalendar: TCalendar; const AHolidayDates: TDateVector;
-//                              const APostSchedules: TPostScheduleVector;
-//                              const AWithPlaneVacation: Boolean = False;
-//                              const AStrMarkVacationMain: String = STRMARK_VACATIONMAIN;
-//                              const AStrMarkVacationAddition: String = STRMARK_VACATIONADDITION;
-//                              const AStrMarkVacationHoliday: String = STRMARK_VACATIONHOLIDAY ): TPersonalSchedule;
-//var
-//  i: Integer;
-//  Vac, V: TIntVector;
-//  PersonalCorrect: TScheduleCorrections;
-//begin
-//  Result:= nil;
-//  //загружаем персональные корректировки
-//  DataBase.SchedulePersonalCorrectionsLoad(ATabNumID, V, PersonalCorrect,
-//                                        ACalendar.BeginDate, ACalendar.EndDate);
-//  //загружаем вектор статусов отпуска
-//  Vac:= VacationForPeriod(ATabNumID, ACalendar.BeginDate, ACalendar.EndDate,
-//                          AHolidayDates, AWithPlaneVacation);
-//  //создаем персональный график
-//  Result:= TPersonalSchedule.Create(ATabNumID, ATabNum, ARecrutDate, ADismissDate,
-//    Vac, PersonalCorrect, AStrMarkVacationMain, AStrMarkVacationAddition, AStrMarkVacationHoliday);
-//  //заполняем персональный график
-//  for i:= 0 to High(APostSchedules) do
-//     Result.Add(APostSchedules[i], i=High(APostSchedules));
-//end;
+function PersonalScheduleByPostSchedules(const ATabNumID: Integer; const ATabNum: String;
+                              const ARecrutDate, ADismissDate: TDate;
+                              const ACalendar: TCalendar; const AHolidayDates: TDateVector;
+                              const APostSchedules: TPostScheduleVector;
+                              const AWithPlaneVacation: Boolean = False;
+                              const AStrMarkVacationMain: String = STRMARK_VACATIONMAIN;
+                              const AStrMarkVacationAddition: String = STRMARK_VACATIONADDITION;
+                              const AStrMarkVacationHoliday: String = STRMARK_VACATIONHOLIDAY ): TPersonalSchedule;
+var
+  i: Integer;
+  Vac, V: TIntVector;
+  PersonalCorrect: TScheduleCorrections;
+begin
+  Result:= nil;
+  //загружаем персональные корректировки
+  DataBase.SchedulePersonalCorrectionsLoad(ATabNumID, V, PersonalCorrect,
+                                        ACalendar.BeginDate, ACalendar.EndDate);
+  //загружаем вектор статусов отпуска
+  Vac:= VacationForPeriod(ATabNumID, ACalendar.BeginDate, ACalendar.EndDate,
+                          AHolidayDates, AWithPlaneVacation);
+  //создаем персональный график
+  Result:= TPersonalSchedule.Create(ATabNumID, ATabNum, ARecrutDate, ADismissDate,
+    Vac, PersonalCorrect, AStrMarkVacationMain, AStrMarkVacationAddition, AStrMarkVacationHoliday);
+  //заполняем персональный график
+  for i:= 0 to High(APostSchedules) do
+     Result.Add(APostSchedules[i], i=High(APostSchedules));
+end;
 
 function SchedulePersonalByCalendar(const ATabNumID: Integer; const ATabNum: String;
                 const ARecrutDate, ADismissDate: TDate;
@@ -892,61 +883,19 @@ function SchedulePersonalByCalendar(const ATabNumID: Integer; const ATabNum: Str
                 const ASchedBD: TDate = NULDATE; ASchedED: TDate = INFDATE;
                 const APostBD: TDate = NULDATE; APostED: TDate = INFDATE): TPersonalSchedule;
 var
-  i: Integer;
-  Vac, V: TIntVector;
-  PersonalCorrect: TScheduleCorrections;
   PostSchedules: TPostScheduleVector;
 begin
   Result:= nil;
   //загружаем графики работы в должности и "в графике"
-  PostSchedules:= SchedulesPostByCalendar(ATabNumID, ACalendar, ASchedBD, ASchedED, APostBD, APostED);
+  PostSchedules:= PostSchedulesByCalendar(ATabNumID, ACalendar, ASchedBD, ASchedED, APostBD, APostED);
   if Length(PostSchedules)=0 then Exit;
   try
-    //Result:= PersonalScheduleByPostSchedules(ATabNumID, ATabNum, ARecrutDate, ADismissDate,
-    //                            ACalendar, AHolidayDates, PostSchedules, AWithPlaneVacation,
-    //                           AStrMarkVacationMain, AStrMarkVacationAddition,
-    //                           AStrMarkVacationHoliday);
-
-    //загружаем персональные корректировки
-    DataBase.SchedulePersonalCorrectionsLoad(ATabNumID, V, PersonalCorrect,
-                                          ACalendar.BeginDate, ACalendar.EndDate);
-    //загружаем вектор статусов отпуска
-    Vac:= VacationForPeriod(ATabNumID, ACalendar.BeginDate, ACalendar.EndDate,
-                            AHolidayDates, AWithPlaneVacation);
-    //создаем персональный график
-    Result:= TPersonalSchedule.Create(ATabNumID, ATabNum, ARecrutDate, ADismissDate,
-      Vac, PersonalCorrect, AStrMarkVacationMain, AStrMarkVacationAddition, AStrMarkVacationHoliday);
-    //заполняем персональный график
-    for i:= 0 to High(PostSchedules) do
-       Result.Add(PostSchedules[i], i=High(PostSchedules));
+    Result:= PersonalScheduleByPostSchedules(ATabNumID, ATabNum, ARecrutDate, ADismissDate,
+                                ACalendar, AHolidayDates, PostSchedules, AWithPlaneVacation,
+                               AStrMarkVacationMain, AStrMarkVacationAddition,
+                               AStrMarkVacationHoliday);
   finally
     VSDel(PostSchedules);
-  end;
-end;
-
-function SchedulesPersonalByCalendar(const ATabNumIDs: TIntVector; const ATabNums: TStrVector;
-          const ARecrutDates, ADismissDates, ASchedBDs, ASchedEDs, APostBDs, APostEDs: TDateVector;
-          const ACalendar: TCalendar; const AHolidayDates: TDateVector;
-          const AWithPlaneVacation: Boolean = False;
-          const AStrMarkVacationMain: String = STRMARK_VACATIONMAIN;
-          const AStrMarkVacationAddition: String = STRMARK_VACATIONADDITION;
-          const AStrMarkVacationHoliday: String = STRMARK_VACATIONHOLIDAY
-          ): TPersonalScheduleVector;
-var
-  i: Integer;
-  Schedule: TPersonalSchedule;
-begin
-  Result:= nil;
-  if VIsNil(ATabNumIDs) then Exit;
-
-  for i:= 0 to High(ATabNumIDs) do
-  begin
-    Schedule:= SchedulePersonalByCalendar(ATabNumIDs[i], ATabNums[i],
-       ARecrutDates[i], ADismissDates[i],
-       ACalendar, AHolidayDates, AWithPlaneVacation,
-       AStrMarkVacationMain, AStrMarkVacationAddition, AStrMarkVacationHoliday,
-       ASchedBDs[i], ASchedEDs[i], APostBDs[i], APostEDs[i]);
-    VSAppend(Result, Schedule);
   end;
 end;
 

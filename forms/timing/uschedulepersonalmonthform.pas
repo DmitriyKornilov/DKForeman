@@ -28,16 +28,17 @@ type
     CheckAllButton: TSpeedButton;
     CountTypeVT: TVirtualStringTree;
     DayEditButton: TSpeedButton;
+    EditingButton: TSpeedButton;
     EditPanel: TPanel;
     ExtraColumnListVT: TVirtualStringTree;
     RowDownButton: TSpeedButton;
     RowSplitButton: TSpeedButton;
     RowUpButton: TSpeedButton;
+    SettingButton: TSpeedButton;
     SignTypeVT: TVirtualStringTree;
     ExportParamListVT: TVirtualStringTree;
     ViewParamListVT: TVirtualStringTree;
     PeriodTypeVT: TVirtualStringTree;
-    SettingButton: TSpeedButton;
     SettingSplitter: TSplitter;
     RightPanel: TPanel;
     CloseButton: TSpeedButton;
@@ -73,6 +74,7 @@ type
     procedure CheckAllButtonClick(Sender: TObject);
     procedure CloseButtonClick(Sender: TObject);
     procedure DayEditButtonClick(Sender: TObject);
+    procedure EditingButtonClick(Sender: TObject);
     procedure FIORadioButtonClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -98,6 +100,7 @@ type
     Calendar, BeforeCalendar, YearCalendar: TCalendar;
     Schedules: TPersonalScheduleVector;
     BeforeSchedules: TPersonalScheduleVector; //для расчета часов за учетный период
+    PostSchedules: TPostScheduleMatrix;
     Sheet: TPersonalMonthScheduleSheet;
 
     ViewParamList: TVSTCheckList;
@@ -248,6 +251,7 @@ begin
 
   VSDel(Schedules);
   VSDel(BeforeSchedules);
+  MSDel(PostSchedules);
 end;
 
 procedure TSchedulePersonalMonthForm.FormShow(Sender: TObject);
@@ -382,6 +386,12 @@ begin
   ScheduleCorrectionFormOpen;
 end;
 
+procedure TSchedulePersonalMonthForm.EditingButtonClick(Sender: TObject);
+begin
+  EditPanel.Visible:= EditingButton.Down;
+  Sheet.CanSelect:= EditingButton.Down;
+end;
+
 procedure TSchedulePersonalMonthForm.ListButtonClick(Sender: TObject);
 begin
   ScheduleToolPanel.Visible:= False;
@@ -437,7 +447,7 @@ end;
 
 procedure TSchedulePersonalMonthForm.SettingButtonClick(Sender: TObject);
 begin
-  Sheet.CanSelect:= not SettingButton.Down;
+  Sheet.CanSelect:= False;
   if SettingButton.Down then
   begin
     SettingPanel.Visible:= True;
@@ -582,11 +592,15 @@ procedure TSchedulePersonalMonthForm.ScheduleCreate(const AIndex: Integer);
 var
   d, h: Integer;
   Schedule: TPersonalSchedule;
+  PostScheduleVector: TPostScheduleVector;
 begin
-  Schedule:= SchedulePersonalByCalendar(TabNumIDs[AIndex], TabNums[AIndex],
-     RecrutDates[AIndex], DismissDates[AIndex], Calendar, Holidays, False{fact vacations},
-     STRMARK_VACATIONMAIN, STRMARK_VACATIONADDITION, STRMARK_VACATIONHOLIDAY,
+  PostScheduleVector:= PostSchedulesByCalendar(TabNumIDs[AIndex], Calendar,
      ScheduleBDs[AIndex], ScheduleEDs[AIndex], PostBDs[AIndex], PostEDs[AIndex]);
+  PostSchedules[AIndex]:= PostScheduleVector;
+  Schedule:= PersonalScheduleByPostSchedules(TabNumIDs[AIndex], TabNums[AIndex],
+     RecrutDates[AIndex], DismissDates[AIndex],
+     Calendar, Holidays, PostScheduleVector, False{fact vacations},
+     STRMARK_VACATIONMAIN, STRMARK_VACATIONADDITION, STRMARK_VACATIONHOLIDAY);
   Schedules[AIndex]:= Schedule;
 
   NormHoursAndWorkDaysCounInPeriod(TabNumIDs[AIndex], PeriodBD, PeriodED, YearCalendar, d, h);
@@ -647,6 +661,7 @@ var
 begin
   VSDel(Schedules);
   VSDel(BeforeSchedules);
+  MSDel(PostSchedules);
   NormHours:= nil;
 
   if OrderType<=1 then
@@ -662,6 +677,7 @@ begin
 
   CalendarForYear(Y, YearCalendar);
 
+  SetLength(PostSchedules, Length(TabNumIDs));
   SetLength(Schedules, Length(TabNumIDs));
   SetLength(NormHours, Length(TabNumIDs));
   IsBeforePeriodExists:= (PeriodType.ItemIndex<2 {учетный период<>месяц}) and
@@ -721,6 +737,7 @@ begin
   if Assigned(Sheet) then FreeAndNil(Sheet);
   Sheet:= TPersonalMonthScheduleSheet.Create(ViewGrid.Worksheet, ViewGrid, MainForm.GridFont,
      CountType.ItemIndex, PeriodType.ItemIndex, SignType.ItemIndex, ExtraColumnList.Selected);
+  Sheet.CanSelect:= EditingButton.Down;
   Sheet.OnSelect:= @ScheduleSelect;
 
   ScheduleRedraw;
@@ -800,6 +817,7 @@ begin
   VSwap(DismissDates, OldSelectedIndex, NewSelectedIndex);
   VSSwap(BeforeSchedules, OldSelectedIndex, NewSelectedIndex);
   VSSwap(Schedules, OldSelectedIndex, NewSelectedIndex);
+  MSSwap(PostSchedules, OldSelectedIndex, NewSelectedIndex);
   Sheet.SelectionMove(NewSelectedIndex);
 end;
 

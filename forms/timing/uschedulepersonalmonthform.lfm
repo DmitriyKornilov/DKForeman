@@ -1,20 +1,19 @@
 object SchedulePersonalMonthForm: TSchedulePersonalMonthForm
-  Left = 279
+  Left = 351
   Height = 636
-  Top = 84
+  Top = 82
   Width = 1461
   Caption = 'SchedulePersonalMonthForm'
   ClientHeight = 636
   ClientWidth = 1461
-  DesignTimePPI = 120
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
-  LCLVersion = '3.2.0.0'
+  LCLVersion = '2.2.4.0'
   WindowState = wsMaximized
   object ToolPanel: TPanel
     Left = 2
-    Height = 40
+    Height = 32
     Top = 2
     Width = 1457
     Align = alTop
@@ -23,21 +22,21 @@ object SchedulePersonalMonthForm: TSchedulePersonalMonthForm
     BorderSpacing.Right = 2
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 36
+    ClientHeight = 28
     ClientWidth = 1453
-    Constraints.MaxHeight = 40
-    Constraints.MinHeight = 40
+    Constraints.MaxHeight = 32
+    Constraints.MinHeight = 32
     ParentFont = False
     TabOrder = 0
     object CloseButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 1413
-      Height = 36
+      Left = 1421
+      Height = 28
       Top = 0
-      Width = 40
+      Width = 32
       Align = alRight
-      Constraints.MaxWidth = 40
-      Constraints.MinWidth = 40
+      Constraints.MaxWidth = 32
+      Constraints.MinWidth = 32
       Glyph.Data = {
         36090000424D3609000000000000360000002800000018000000180000000100
         2000000000000009000064000000640000000000000000000000000000000000
@@ -117,8 +116,8 @@ object SchedulePersonalMonthForm: TSchedulePersonalMonthForm
       OnClick = CloseButtonClick
     end
     object Bevel1: TBevel
-      Left = 1409
-      Height = 36
+      Left = 1417
+      Height = 28
       Top = 0
       Width = 2
       Align = alRight
@@ -128,33 +127,33 @@ object SchedulePersonalMonthForm: TSchedulePersonalMonthForm
     end
     object ListToolPanel: TPanel
       Left = 0
-      Height = 36
+      Height = 28
       Top = 0
-      Width = 566
+      Width = 465
       Align = alLeft
       AutoSize = True
       BevelOuter = bvNone
-      ClientHeight = 36
-      ClientWidth = 566
+      ClientHeight = 28
+      ClientWidth = 465
       TabOrder = 0
       object YearPanel: TPanel
         Left = 0
-        Height = 36
+        Height = 28
         Top = 0
-        Width = 267
+        Width = 214
         Align = alLeft
         AutoSize = True
         BevelOuter = bvNone
-        ClientHeight = 36
-        ClientWidth = 267
+        ClientHeight = 28
+        ClientWidth = 214
         TabOrder = 0
         object YearSpinEdit: TSpinEdit
           AnchorSideTop.Control = YearPanel
           AnchorSideTop.Side = asrCenter
           Left = 2
-          Height = 28
-          Top = 4
-          Width = 63
+          Height = 23
+          Top = 3
+          Width = 50
           Align = alCustom
           Alignment = taCenter
           BorderSpacing.Left = 2
@@ -174,10 +173,10 @@ object SchedulePersonalMonthForm: TSchedulePersonalMonthForm
           AnchorSideRight.Side = asrBottom
           AnchorSideBottom.Control = YearSpinEdit
           AnchorSideBottom.Side = asrBottom
-          Left = 67
-          Height = 28
-          Top = 4
-          Width = 200
+          Left = 54
+          Height = 23
+          Top = 3
+          Width = 160
           Anchors = [akTop, akLeft, akBottom]
           StateClicked.Background.Gradient1.StartColor = 8404992
           StateClicked.Background.Gradient1.EndColor = 4194304
@@ -276,25 +275,25 @@ object SchedulePersonalMonthForm: TSchedulePersonalMonthForm
         end
       end
       object Bevel2: TBevel
-        Left = 271
-        Height = 36
+        Left = 217
+        Height = 28
         Top = 0
         Width = 2
         Align = alLeft
-        BorderSpacing.Left = 4
+        BorderSpacing.Left = 3
         BorderSpacing.Right = 1
         Shape = bsRightLine
       end
       object CheckAllButton: TSpeedButton
         Cursor = crHandPoint
-        Left = 274
-        Height = 36
+        Left = 220
+        Height = 28
         Hint = 'Выбрать все графики'
         Top = 0
-        Width = 40
+        Width = 32
         Align = alLeft
-        Constraints.MaxWidth = 40
-        Constraints.MinWidth = 40
+        Constraints.MaxWidth = 32
+        Constraints.MinWidth = 32
         Glyph.Data = {
           36090000424D3609000000000000360000002800000018000000180000000100
           2000000000000009000064000000640000000000000000000000000000000071
@@ -377,14 +376,14 @@ object SchedulePersonalMonthForm: TSchedulePersonalMonthForm
       end
       object UncheckAllButton: TSpeedButton
         Cursor = crHandPoint
-        Left = 314
-        Height = 36
+        Left = 252
+        Height = 28
         Hint = 'Снять выбор со всех графиков'
         Top = 0
-        Width = 40
+        Width = 32
         Align = alLeft
-        Constraints.MaxWidth = 40
-        Constraints.MinWidth = 40
+        Constraints.MaxWidth = 32
+        Constraints.MinWidth = 32
         Glyph.Data = {
           36090000424D3609000000000000360000002800000018000000180000000100
           2000000000000009000064000000640000000000000000000000000000000071
@@ -466,8 +465,8 @@ object SchedulePersonalMonthForm: TSchedulePersonalMonthForm
         ParentShowHint = False
       end
       object Bevel3: TBevel
-        Left = 356
-        Height = 36
+        Left = 286
+        Height = 28
         Top = 0
         Width = 2
         Align = alLeft
@@ -477,11 +476,11 @@ object SchedulePersonalMonthForm: TSchedulePersonalMonthForm
       end
       object ScheduleButton: TBCButton
         Cursor = crHandPoint
-        Left = 360
-        Height = 34
+        Left = 290
+        Height = 26
         Hint = 'Сформировать график на месяц'
         Top = 1
-        Width = 206
+        Width = 175
         Align = alLeft
         AutoSize = True
         StateClicked.Background.Color = 16245964
@@ -664,24 +663,24 @@ object SchedulePersonalMonthForm: TSchedulePersonalMonthForm
       end
     end
     object ScheduleToolPanel: TPanel
-      Left = 566
-      Height = 36
+      Left = 465
+      Height = 28
       Top = 0
-      Width = 443
+      Width = 373
       Align = alLeft
       AutoSize = True
       BevelOuter = bvNone
-      ClientHeight = 36
-      ClientWidth = 443
+      ClientHeight = 28
+      ClientWidth = 373
       TabOrder = 1
       Visible = False
       object ListButton: TBCButton
         Cursor = crHandPoint
         Left = 1
-        Height = 34
+        Height = 26
         Hint = 'Вернуться к выбору месяца и списка сотрудников'
         Top = 1
-        Width = 169
+        Width = 143
         Align = alLeft
         AutoSize = True
         StateClicked.Background.Color = 16245964
@@ -864,11 +863,11 @@ object SchedulePersonalMonthForm: TSchedulePersonalMonthForm
       end
       object ExportButton: TBCButton
         Cursor = crHandPoint
-        Left = 172
-        Height = 34
+        Left = 146
+        Height = 26
         Hint = 'Экспорт в формат электронной таблицы XLSX или ODS'
         Top = 1
-        Width = 104
+        Width = 93
         Align = alLeft
         AutoSize = True
         StateClicked.Background.Color = 16245964
@@ -1048,37 +1047,28 @@ object SchedulePersonalMonthForm: TSchedulePersonalMonthForm
         DropDownStyle = bdsCommon
         MemoryUsage = bmuHigh
       end
-      object Bevel4: TBevel
-        Left = 280
-        Height = 36
-        Top = 0
-        Width = 2
-        Align = alLeft
-        BorderSpacing.Left = 4
-        BorderSpacing.Right = 1
-        Shape = bsRightLine
-      end
       object EditPanel: TPanel
-        Left = 283
-        Height = 36
+        Left = 239
+        Height = 28
         Top = 0
-        Width = 160
+        Width = 134
         Align = alLeft
         AutoSize = True
         BevelOuter = bvNone
-        ClientHeight = 36
-        ClientWidth = 160
+        ClientHeight = 28
+        ClientWidth = 134
         TabOrder = 0
+        Visible = False
         object DayEditButton: TSpeedButton
           Cursor = crHandPoint
-          Left = 0
-          Height = 36
+          Left = 6
+          Height = 28
           Hint = 'Редактировать'
           Top = 0
-          Width = 40
+          Width = 32
           Align = alLeft
-          Constraints.MaxWidth = 40
-          Constraints.MinWidth = 40
+          Constraints.MaxWidth = 32
+          Constraints.MinWidth = 32
           Enabled = False
           Glyph.Data = {
             36090000424D3609000000000000360000002800000018000000180000000100
@@ -1162,14 +1152,14 @@ object SchedulePersonalMonthForm: TSchedulePersonalMonthForm
         end
         object RowUpButton: TSpeedButton
           Cursor = crHandPoint
-          Left = 40
-          Height = 36
+          Left = 38
+          Height = 28
           Hint = 'Переместить строку вверх'
           Top = 0
-          Width = 40
+          Width = 32
           Align = alLeft
-          Constraints.MaxWidth = 40
-          Constraints.MinWidth = 40
+          Constraints.MaxWidth = 32
+          Constraints.MinWidth = 32
           Enabled = False
           Glyph.Data = {
             36090000424D3609000000000000360000002800000018000000180000000100
@@ -1253,14 +1243,14 @@ object SchedulePersonalMonthForm: TSchedulePersonalMonthForm
         end
         object RowDownButton: TSpeedButton
           Cursor = crHandPoint
-          Left = 80
-          Height = 36
+          Left = 70
+          Height = 28
           Hint = 'Переместить строку вниз'
           Top = 0
-          Width = 40
+          Width = 32
           Align = alLeft
-          Constraints.MaxWidth = 40
-          Constraints.MinWidth = 40
+          Constraints.MaxWidth = 32
+          Constraints.MinWidth = 32
           Enabled = False
           Glyph.Data = {
             36090000424D3609000000000000360000002800000018000000180000000100
@@ -1344,14 +1334,14 @@ object SchedulePersonalMonthForm: TSchedulePersonalMonthForm
         end
         object RowSplitButton: TSpeedButton
           Cursor = crHandPoint
-          Left = 120
-          Height = 36
+          Left = 102
+          Height = 28
           Hint = 'Объединить строки'
           Top = 0
-          Width = 40
+          Width = 32
           Align = alLeft
-          Constraints.MaxWidth = 40
-          Constraints.MinWidth = 40
+          Constraints.MaxWidth = 32
+          Constraints.MinWidth = 32
           Enabled = False
           Glyph.Data = {
             36090000424D3609000000000000360000002800000018000000180000000100
@@ -1432,19 +1422,121 @@ object SchedulePersonalMonthForm: TSchedulePersonalMonthForm
           ShowHint = True
           ParentShowHint = False
         end
+        object Bevel4: TBevel
+          Left = 3
+          Height = 28
+          Top = 0
+          Width = 2
+          Align = alLeft
+          BorderSpacing.Left = 3
+          BorderSpacing.Right = 1
+          Shape = bsRightLine
+        end
       end
+    end
+    object EditingButton: TSpeedButton
+      Cursor = crHandPoint
+      Left = 1351
+      Height = 28
+      Hint = 'Редактирование'
+      Top = 0
+      Width = 32
+      Align = alRight
+      AllowAllUp = True
+      Constraints.MaxWidth = 32
+      Constraints.MinWidth = 32
+      Glyph.Data = {
+        36090000424D3609000000000000360000002800000018000000180000000100
+        20000000000000090000640000006400000000000000000000005D4E46E65C4F
+        46CA5D4F469390AEB45DB1E9F926B6ECFA010000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        00000000000000000000000000000000000000000000000000005D4F46CA5D4E
+        45FF7B8888FFAFE8F7FFB0EAF9FFA2E6F8ED18C4EF5300000000000000000000
+        0000C7C3BC6DC7C3BDC2C7C3BDC2C6C2BC6D0000000000000000000000000000
+        00000000000000000000000000000000000000000000000000005D4F46937B88
+        88FFAFE8F7FFB0EAF9FFB0EAF9FF82DEF6FF18C4EFFA18C4EF5300000000C8C4
+        BC48C7C3BCFAC6C2BCFFC7C3BDFFC7C3BDFAC7C3BD4900000000000000000000
+        00000000000000000000000000000000000000000000000000008FABB15DAFE8
+        F7FFB0EAF9FF95D4E7FF49C5E7FF1BC4F0FF19C4F0FF18C4EFFA84C3D0D3C7C3
+        BDFFC7C3BDFFC7C3BDFFC7C3BDFFC7C3BDFFC7C3BDFFC7C3BDD2C6C2BC69C6C2
+        BD50C7C3BC6FC6C2BC0600000000000000000000000000000000B0EAF926B0EA
+        F9FFB0EAF9FF48C5E7FF3E99BCFF20BBE5FF19C4F0FF19C4F0FF1CC3EEFF8FC3
+        CDFDC7C3BDFFC7C3BCFAC6C2BDFAC7C3BDFFC7C3BDFFC7C3BDFFC7C3BDFFC7C3
+        BDFFC7C3BDFFC6C2BCB0C6C2BC06000000000000000000000000B0E9F901A2E6
+        F8EC82DEF6FF1BC4F0FF20BBE5FF3E99BCFF20BBE5FF18C3EFFF18C3EFFF1CC3
+        EEFF50C3DF75C6C2BC02C4C1BC02C8C4BB23C7C3BD70C7C3BCE0C7C3BDFFC7C3
+        BDFFC7C3BDFFC7C3BDFFC7C3BC6F0000000000000000000000000000000019C4
+        F05319C4F0FA19C4F0FF19C4F0FF20BBE5FF3E99BCFF20BBE5FF19C4F0FF19C4
+        F0FF18C4EFFA18C4EF54000000000000000000000000C6C3BC0AC6C2BC9EC7C3
+        BDFFC7C3BDFFC7C3BDFFC7C3BC51000000000000000000000000000000000000
+        000019C4F05319C4F0FA19C4F0FF19C4F0FF20BBE5FF3E99BCFF20BBE5FF19C4
+        F0FF19C4F0FF18C4EFFA18C4EF53000000000000000000000000C5C3B201C7C3
+        BC9FC7C3BDFFC7C3BDFFC6C2BC69000000000000000000000000000000000000
+        00000000000084C3D0D31CC3EEFE18C3EFFF18C3EFFF20BBE5FF3E99BCFF20BB
+        E5FF18C3EFFF18C3EFFF18C4EFFA18C4EF53000000000000000000000000C7C3
+        BD0BC7C3BDE3C7C3BDFFC7C3BCD2000000000000000000000000000000000000
+        0000C7C3BD48C7C3BDFF8FC3CDFD1CC3EEFE19C4F0FF19C4F0FF20BBE5FF3E99
+        BCFF20BBE5FF19C4F0FF19C4F0FF18C4EFFA18C4EF5400000000000000000000
+        0000C7C3BD74C7C3BDFFC7C3BDFFC7C3BD48000000000000000000000000C7C3
+        BC6DC7C3BDFAC7C3BDFFC7C3BDFF50C4DF7419C4F0FA19C4F0FF19C4F0FF20BB
+        E5FF3E99BCFF20BBE5FF19C4F0FF19C4F0FF18C4EFFA18C4EF53000000000000
+        0000C6C3BC29C7C3BDFFC7C3BDFFC7C3BCFAC7C3BC6D0000000000000000C7C3
+        BDC1C6C2BCFFC7C3BDFFC6C2BCFAC6C2BD0219C4F05319C4F0FA18C3EFFF18C3
+        EFFF20BBE5FF3E99BCFF20BBE5FF19C4F0FF19C4F0FF18C4EFFA18C4EF530000
+        0000C7C2BC06C6C3BDFEC7C3BDFFC7C3BDFFC7C3BDC10000000000000000C6C2
+        BCC1C6C2BCFFC6C2BCFFC6C2BCFAC5C2BC020000000019C4F05319C4F0FA18C3
+        EFFF18C3EFFF20BBE5FF3E99BCFF20BBE5FF19C4F0FF19C4F0FF18C4EFFA18C4
+        EF54C7C3BC06C7C3BDFEC7C3BDFFC7C3BDFFC7C3BDC10000000000000000C7C3
+        BD6DC7C3BDFAC6C2BCFFC6C2BCFFC8C4BE23000000000000000019C4F05319C3
+        F0FA18C3EFFF18C3EFFF20BBE5FF3E99BCFF20BBE5FF18C3EFFF19C4F0FF18C4
+        EFFA58C3DD7DC7C3BDFFC7C3BDFFC7C3BDFAC6C2BD6D00000000000000000000
+        0000C7C3BD48C7C3BDFFC7C3BDFFC7C3BD7000000000000000000000000019C3
+        F05319C3F0FA18C3EFFF19C4F0FF20BBE5FF3E99BCFF20BBE5FF19C4F0FF19C4
+        F0FF6AC3D8FFC7C3BDFFC7C3BDFFC7C3BC480000000000000000000000000000
+        000000000000C7C3BDD2C6C2BCFFC6C2BCE0C6C3BC0A00000000000000000000
+        000019C3F05319C3F0FA19C4F0FF19C4F0FF20BBE5FF3E99BCFF20BBE5FF21C3
+        EDFFB5C3C2FFC7C3BDFFC4C0BED5000000000000000000000000000000000000
+        000000000000C7C3BC69C6C2BCFFC6C2BCFFC6C3BD9EC4C2B801000000000000
+        00000000000019C3F05319C3F0FA19C4F0FF19C4EFFF20BBE5FF3E99BCFF8BC0
+        CBFFC6C2BCFFC7C3BDFF8D81E3FA6352FE530000000000000000000000000000
+        000000000000C7C3BC51C7C3BDFFC6C2BCFFC6C2BCFFC7C3BD9FC5C1BC0B0000
+        0000000000000000000019C3F05319C3F0FA19C4F0FF21C3EDFF8BC0CBFFC7C3
+        BDFFC7C3BDFFC7C3BDFF8376EAFF6352FFFA6352FF5300000000000000000000
+        000000000000C7C3BC6FC6C2BCFFC6C2BCFFC6C2BCFFC6C2BCFFC7C3BDE3C7C3
+        BD74C6C2BC29C6C2BC06C8C5BF0658C3DD7C6AC3D8FFB5C3C2FFC7C3BDFFC7C3
+        BDFFC7C3BDFFC7C3BDFF8E83E2FF6452FFFF6352FFFA6352FE53000000000000
+        000000000000C6C3BD06C6C3BDB0C6C2BCFFC6C2BCFFC6C2BCFFC6C2BCFFC6C2
+        BCFFC6C2BCFFC6C3BCFEC6C3BCFEC7C3BDFFC7C3BDFFC7C3BDFFC7C3BDFFC7C3
+        BDFFC7C3BDFFA8A0D1FF6655FDFF6453FFFF6453FFFF6352FEF2000000000000
+        00000000000000000000C6C3BD06C7C3BC6FC6C2BC51C6C2BC69C7C3BDD2C6C2
+        BCFFC6C2BCFFC6C2BCFFC7C3BDFFC7C3BDFFC7C3BDFFC4C0BED68D81E3FA8376
+        EAFF8E83E2FF6655FDFF6453FFFF6453FFFF6453FFFF6453FEAD000000000000
+        000000000000000000000000000000000000000000000000000000000000C8C4
+        BC48C7C3BCFAC6C2BCFFC7C3BDFFC7C3BCFAC7C3BD49000000006453FF536453
+        FFFA6453FFFF6453FFFF6453FFFF6453FFFF6453FFB46453FE07000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000C7C3BC6DC6C2BCC2C7C3BDC2C7C3BD6D0000000000000000000000006453
+        FF536453FFFA6453FFFF6453FFFF6453FFB46453FF0700000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        00006352FF536453FFF26453FFAD6453FF070000000000000000
+      }
+      GroupIndex = 2
+      OnClick = EditingButtonClick
+      ShowHint = True
+      ParentShowHint = False
     end
     object SettingButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 1367
-      Height = 36
+      Left = 1383
+      Height = 28
       Hint = 'Параметры'
       Top = 0
-      Width = 40
+      Width = 32
       Align = alRight
       AllowAllUp = True
-      Constraints.MaxWidth = 40
-      Constraints.MinWidth = 40
+      Constraints.MaxWidth = 32
+      Constraints.MinWidth = 32
       Glyph.Data = {
         36090000424D3609000000000000360000002800000018000000180000000100
         2000000000000009000064000000640000000000000000000000000000000000
@@ -1522,7 +1614,6 @@ object SchedulePersonalMonthForm: TSchedulePersonalMonthForm
         000000000000B56F3648B47236BBB47237C2B472365A00000000
       }
       GroupIndex = 2
-      Visible = False
       OnClick = SettingButtonClick
       ShowHint = True
       ParentShowHint = False
@@ -1530,8 +1621,8 @@ object SchedulePersonalMonthForm: TSchedulePersonalMonthForm
   end
   object ListPanel: TPanel
     Left = 2
-    Height = 164
-    Top = 44
+    Height = 257
+    Top = 36
     Width = 1457
     Align = alClient
     BorderSpacing.Left = 2
@@ -1539,12 +1630,12 @@ object SchedulePersonalMonthForm: TSchedulePersonalMonthForm
     BorderSpacing.Right = 2
     BorderSpacing.Bottom = 2
     BevelOuter = bvNone
-    ClientHeight = 164
+    ClientHeight = 257
     ClientWidth = 1457
     TabOrder = 1
     object ListCaptionPanel: TBCPanel
       Left = 0
-      Height = 30
+      Height = 24
       Top = 0
       Width = 1457
       Align = alTop
@@ -1589,26 +1680,26 @@ object SchedulePersonalMonthForm: TSchedulePersonalMonthForm
     end
     object ListOrderToolPanel: TPanel
       Left = 0
-      Height = 40
-      Top = 124
+      Height = 32
+      Top = 225
       Width = 1457
       Align = alBottom
       BorderSpacing.Top = 2
       BevelOuter = bvNone
       BorderStyle = bsSingle
-      ClientHeight = 36
+      ClientHeight = 28
       ClientWidth = 1453
       TabOrder = 1
       object OrderLabel: TLabel
         AnchorSideLeft.Control = ListOrderToolPanel
         AnchorSideTop.Control = ListOrderToolPanel
         AnchorSideTop.Side = asrCenter
-        Left = 6
-        Height = 20
-        Top = 8
-        Width = 115
+        Left = 5
+        Height = 15
+        Top = 7
+        Width = 91
         Align = alCustom
-        BorderSpacing.Left = 6
+        BorderSpacing.Left = 5
         Caption = 'Сортировать по:'
         ParentColor = False
       end
@@ -1617,64 +1708,64 @@ object SchedulePersonalMonthForm: TSchedulePersonalMonthForm
         AnchorSideLeft.Side = asrBottom
         AnchorSideTop.Control = ListOrderToolPanel
         AnchorSideTop.Side = asrCenter
-        Left = 340
-        Height = 24
-        Top = 6
-        Width = 63
-        BorderSpacing.Left = 6
+        Left = 274
+        Height = 19
+        Top = 5
+        Width = 56
+        BorderSpacing.Left = 5
         Caption = 'Ф.И.О.'
-        TabOrder = 1
         OnClick = FIORadioButtonClick
+        TabOrder = 1
       end
       object PostRadioButton: TRadioButton
         AnchorSideLeft.Control = FIORadioButton
         AnchorSideLeft.Side = asrBottom
         AnchorSideTop.Control = ListOrderToolPanel
         AnchorSideTop.Side = asrCenter
-        Left = 409
-        Height = 24
-        Top = 6
-        Width = 188
-        BorderSpacing.Left = 6
+        Left = 335
+        Height = 19
+        Top = 5
+        Width = 154
+        BorderSpacing.Left = 5
         Caption = 'должности (профессии)'
-        TabOrder = 0
         OnClick = PostRadioButtonClick
+        TabOrder = 0
       end
       object TabNumRadioButton: TRadioButton
         AnchorSideLeft.Control = PostRadioButton
         AnchorSideLeft.Side = asrBottom
         AnchorSideTop.Control = ListOrderToolPanel
         AnchorSideTop.Side = asrCenter
-        Left = 603
-        Height = 24
-        Top = 6
-        Width = 161
-        BorderSpacing.Left = 6
+        Left = 494
+        Height = 19
+        Top = 5
+        Width = 131
+        BorderSpacing.Left = 5
         Caption = 'табельному номеру'
-        TabOrder = 2
         OnClick = TabNumRadioButtonClick
+        TabOrder = 2
       end
       object ScheduleRadioButton: TRadioButton
         AnchorSideLeft.Control = OrderLabel
         AnchorSideLeft.Side = asrBottom
         AnchorSideTop.Control = ListOrderToolPanel
         AnchorSideTop.Side = asrCenter
-        Left = 127
-        Height = 24
-        Top = 6
-        Width = 207
-        BorderSpacing.Left = 6
+        Left = 101
+        Height = 19
+        Top = 5
+        Width = 168
+        BorderSpacing.Left = 5
         Caption = 'графику на начало месяца'
         Checked = True
+        OnClick = ScheduleRadioButtonClick
         TabOrder = 3
         TabStop = True
-        OnClick = ScheduleRadioButtonClick
       end
     end
     object VStaffListVT: TVirtualStringTree
       Left = 0
-      Height = 48
-      Top = 74
+      Height = 38
+      Top = 185
       Width = 1457
       Align = alBottom
       DefaultText = 'Node'
@@ -1685,8 +1776,8 @@ object SchedulePersonalMonthForm: TSchedulePersonalMonthForm
     end
     object MStaffListVT: TVirtualStringTree
       Left = 0
-      Height = 42
-      Top = 32
+      Height = 159
+      Top = 26
       Width = 1457
       Align = alClient
       DefaultText = 'Node'
@@ -1698,31 +1789,31 @@ object SchedulePersonalMonthForm: TSchedulePersonalMonthForm
   end
   object SchedulePanel: TPanel
     Left = 0
-    Height = 426
-    Top = 210
+    Height = 341
+    Top = 295
     Width = 1461
     Align = alBottom
     BorderSpacing.Top = 2
     BevelOuter = bvNone
-    ClientHeight = 426
+    ClientHeight = 341
     ClientWidth = 1461
     TabOrder = 2
     Visible = False
     object RightPanel: TPanel
-      Left = 358
-      Height = 426
+      Left = 287
+      Height = 341
       Top = 0
-      Width = 1103
+      Width = 1174
       Align = alClient
       BevelOuter = bvNone
-      ClientHeight = 426
-      ClientWidth = 1103
+      ClientHeight = 341
+      ClientWidth = 1174
       TabOrder = 0
       object ScheduleCaptionPanel: TBCPanel
         Left = 0
-        Height = 30
+        Height = 24
         Top = 0
-        Width = 1101
+        Width = 1172
         Align = alTop
         BorderSpacing.Right = 2
         BorderSpacing.Bottom = 2
@@ -1766,26 +1857,26 @@ object SchedulePersonalMonthForm: TSchedulePersonalMonthForm
       end
       object SheetPanel: TPanel
         Left = 0
-        Height = 392
-        Top = 32
-        Width = 1101
+        Height = 313
+        Top = 26
+        Width = 1172
         Align = alClient
         BorderSpacing.Top = 2
         BorderSpacing.Right = 2
         BorderSpacing.Bottom = 2
         BevelOuter = bvNone
         BorderStyle = bsSingle
-        ClientHeight = 388
-        ClientWidth = 1097
+        ClientHeight = 309
+        ClientWidth = 1168
         Color = clWhite
         ParentBackground = False
         ParentColor = False
         TabOrder = 1
         object ViewGrid: TsWorksheetGrid
           Left = 0
-          Height = 364
+          Height = 289
           Top = 0
-          Width = 1097
+          Width = 1168
           AutoExpand = []
           DisplayFixedColRow = False
           FrozenBorderPen.Style = psClear
@@ -1819,9 +1910,9 @@ object SchedulePersonalMonthForm: TSchedulePersonalMonthForm
         end
         object ZoomPanel: TPanel
           Left = 0
-          Height = 22
-          Top = 366
-          Width = 1097
+          Height = 18
+          Top = 291
+          Width = 1168
           Align = alBottom
           BevelOuter = bvNone
           Color = clWhite
@@ -1832,8 +1923,8 @@ object SchedulePersonalMonthForm: TSchedulePersonalMonthForm
         object ZoomBevel: TBevel
           Left = 0
           Height = 2
-          Top = 364
-          Width = 1097
+          Top = 289
+          Width = 1168
           Align = alBottom
           Shape = bsBottomLine
           Style = bsRaised
@@ -1842,15 +1933,15 @@ object SchedulePersonalMonthForm: TSchedulePersonalMonthForm
     end
     object SettingPanel: TPanel
       Left = 2
-      Height = 424
+      Height = 339
       Top = 0
-      Width = 350
+      Width = 280
       Align = alLeft
       BorderSpacing.Left = 2
       BorderSpacing.Bottom = 2
       BevelOuter = bvNone
-      ClientHeight = 424
-      ClientWidth = 350
+      ClientHeight = 339
+      ClientWidth = 280
       Color = clWindow
       ParentBackground = False
       ParentColor = False
@@ -1858,9 +1949,9 @@ object SchedulePersonalMonthForm: TSchedulePersonalMonthForm
       Visible = False
       object SettingCaptionPanel: TBCPanel
         Left = 0
-        Height = 30
+        Height = 24
         Top = 0
-        Width = 350
+        Width = 280
         Align = alTop
         BorderSpacing.Bottom = 2
         Background.Color = clBtnFace
@@ -1903,21 +1994,21 @@ object SchedulePersonalMonthForm: TSchedulePersonalMonthForm
       end
       object SettingClientPanel: TPanel
         Left = 0
-        Height = 392
-        Top = 32
-        Width = 350
+        Height = 313
+        Top = 26
+        Width = 280
         Align = alClient
         BevelOuter = bvNone
         BorderStyle = bsSingle
-        ClientHeight = 388
-        ClientWidth = 346
+        ClientHeight = 309
+        ClientWidth = 276
         ParentBackground = False
         TabOrder = 1
         object ViewParamListVT: TVirtualStringTree
           Left = 0
-          Height = 50
+          Height = 40
           Top = 0
-          Width = 346
+          Width = 276
           Align = alTop
           BorderStyle = bsNone
           DefaultText = 'Node'
@@ -1928,11 +2019,11 @@ object SchedulePersonalMonthForm: TSchedulePersonalMonthForm
         end
         object CountTypeVT: TVirtualStringTree
           Left = 0
-          Height = 50
-          Top = 56
-          Width = 346
+          Height = 40
+          Top = 45
+          Width = 276
           Align = alTop
-          BorderSpacing.Top = 6
+          BorderSpacing.Top = 5
           BorderStyle = bsNone
           DefaultText = 'Node'
           Header.AutoSizeIndex = 0
@@ -1942,11 +2033,11 @@ object SchedulePersonalMonthForm: TSchedulePersonalMonthForm
         end
         object PeriodTypeVT: TVirtualStringTree
           Left = 0
-          Height = 50
-          Top = 112
-          Width = 346
+          Height = 40
+          Top = 90
+          Width = 276
           Align = alTop
-          BorderSpacing.Top = 6
+          BorderSpacing.Top = 5
           BorderStyle = bsNone
           DefaultText = 'Node'
           Header.AutoSizeIndex = 0
@@ -1956,11 +2047,11 @@ object SchedulePersonalMonthForm: TSchedulePersonalMonthForm
         end
         object ExtraColumnListVT: TVirtualStringTree
           Left = 0
-          Height = 50
-          Top = 168
-          Width = 346
+          Height = 40
+          Top = 135
+          Width = 276
           Align = alTop
-          BorderSpacing.Top = 6
+          BorderSpacing.Top = 5
           BorderStyle = bsNone
           DefaultText = 'Node'
           Header.AutoSizeIndex = 0
@@ -1970,11 +2061,11 @@ object SchedulePersonalMonthForm: TSchedulePersonalMonthForm
         end
         object SignTypeVT: TVirtualStringTree
           Left = 0
-          Height = 50
-          Top = 224
-          Width = 346
+          Height = 40
+          Top = 180
+          Width = 276
           Align = alTop
-          BorderSpacing.Top = 6
+          BorderSpacing.Top = 5
           BorderStyle = bsNone
           DefaultText = 'Node'
           Header.AutoSizeIndex = 0
@@ -1984,11 +2075,11 @@ object SchedulePersonalMonthForm: TSchedulePersonalMonthForm
         end
         object ExportParamListVT: TVirtualStringTree
           Left = 0
-          Height = 50
-          Top = 280
-          Width = 346
+          Height = 40
+          Top = 225
+          Width = 276
           Align = alTop
-          BorderSpacing.Top = 6
+          BorderSpacing.Top = 5
           BorderStyle = bsNone
           DefaultText = 'Node'
           Header.AutoSizeIndex = 0
@@ -1999,10 +2090,10 @@ object SchedulePersonalMonthForm: TSchedulePersonalMonthForm
       end
     end
     object SettingSplitter: TSplitter
-      Left = 352
-      Height = 426
+      Left = 282
+      Height = 341
       Top = 0
-      Width = 6
+      Width = 5
       ResizeStyle = rsLine
       Visible = False
     end

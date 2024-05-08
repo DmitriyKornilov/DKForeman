@@ -1,40 +1,39 @@
 object SchedulePersonalForm: TSchedulePersonalForm
   Left = 153
-  Height = 702
+  Height = 562
   Top = 161
-  Width = 1705
+  Width = 1364
   Caption = 'SchedulePersonalForm'
-  ClientHeight = 702
-  ClientWidth = 1705
-  DesignTimePPI = 120
+  ClientHeight = 562
+  ClientWidth = 1364
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
-  LCLVersion = '3.2.0.0'
+  LCLVersion = '2.2.4.0'
   object ToolPanel: TPanel
     Left = 2
-    Height = 40
+    Height = 32
     Top = 2
-    Width = 1701
+    Width = 1360
     Align = alTop
     BorderSpacing.Left = 2
     BorderSpacing.Top = 2
     BorderSpacing.Right = 2
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 36
-    ClientWidth = 1697
+    ClientHeight = 28
+    ClientWidth = 1356
     ParentFont = False
     TabOrder = 0
     object CloseButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 1657
-      Height = 36
+      Left = 1324
+      Height = 28
       Top = 0
-      Width = 40
+      Width = 32
       Align = alRight
-      Constraints.MaxWidth = 40
-      Constraints.MinWidth = 40
+      Constraints.MaxWidth = 32
+      Constraints.MinWidth = 32
       Glyph.Data = {
         36090000424D3609000000000000360000002800000018000000180000000100
         2000000000000009000064000000640000000000000000000000000000000000
@@ -114,33 +113,33 @@ object SchedulePersonalForm: TSchedulePersonalForm
       OnClick = CloseButtonClick
     end
     object Bevel1: TBevel
-      Left = 1653
-      Height = 36
+      Left = 1320
+      Height = 28
       Top = 0
       Width = 2
       Align = alRight
-      BorderSpacing.Left = 3
+      BorderSpacing.Left = 2
       BorderSpacing.Right = 2
       Shape = bsRightLine
     end
     object YearPanel: TPanel
       Left = 0
-      Height = 36
+      Height = 28
       Top = 0
-      Width = 65
+      Width = 52
       Align = alLeft
       AutoSize = True
       BevelOuter = bvNone
-      ClientHeight = 36
-      ClientWidth = 65
+      ClientHeight = 28
+      ClientWidth = 52
       TabOrder = 0
       object YearSpinEdit: TSpinEdit
         AnchorSideTop.Control = YearPanel
         AnchorSideTop.Side = asrCenter
         Left = 2
-        Height = 28
-        Top = 4
-        Width = 63
+        Height = 23
+        Top = 3
+        Width = 50
         Align = alCustom
         Alignment = taCenter
         BorderSpacing.Left = 2
@@ -154,22 +153,22 @@ object SchedulePersonalForm: TSchedulePersonalForm
       end
     end
     object Bevel2: TBevel
-      Left = 68
-      Height = 36
+      Left = 54
+      Height = 28
       Top = 0
       Width = 2
       Align = alLeft
-      BorderSpacing.Left = 3
+      BorderSpacing.Left = 2
       BorderSpacing.Right = 2
       Shape = bsRightLine
     end
     object ExportButton: TBCButton
       Cursor = crHandPoint
-      Left = 72
-      Height = 34
+      Left = 58
+      Height = 26
       Hint = 'Экспорт в формат электронной таблицы XLSX или ODS'
       Top = 1
-      Width = 104
+      Width = 93
       Align = alLeft
       AutoSize = True
       StateClicked.Background.Color = 16245964
@@ -351,22 +350,22 @@ object SchedulePersonalForm: TSchedulePersonalForm
       MemoryUsage = bmuHigh
     end
     object Bevel3: TBevel
-      Left = 179
-      Height = 36
+      Left = 153
+      Height = 28
       Top = 0
       Width = 2
       Align = alLeft
-      BorderSpacing.Left = 3
+      BorderSpacing.Left = 2
       BorderSpacing.Right = 2
       Shape = bsRightLine
     end
     object MonthScheduleButton: TBCButton
       Cursor = crHandPoint
-      Left = 183
-      Height = 34
+      Left = 157
+      Height = 26
       Hint = 'Общий график работы на месяц'
       Top = 1
-      Width = 219
+      Width = 185
       Align = alLeft
       AutoSize = True
       StateClicked.Background.Color = 16245964
@@ -549,11 +548,11 @@ object SchedulePersonalForm: TSchedulePersonalForm
     end
     object VacationScheduleButton: TBCButton
       Cursor = crHandPoint
-      Left = 404
-      Height = 34
+      Left = 344
+      Height = 26
       Hint = 'Общий график работы на месяц'
       Top = 1
-      Width = 164
+      Width = 142
       Align = alLeft
       AutoSize = True
       StateClicked.Background.Color = 16245964
@@ -736,17 +735,17 @@ object SchedulePersonalForm: TSchedulePersonalForm
     end
   end
   object SettingPanel: TPanel
-    Left = 584
-    Height = 624
-    Top = 76
-    Width = 350
+    Left = 468
+    Height = 498
+    Top = 62
+    Width = 280
     Align = alLeft
     BorderSpacing.Left = 2
     BorderSpacing.Top = 2
     BorderSpacing.Bottom = 2
     BevelOuter = bvNone
-    ClientHeight = 624
-    ClientWidth = 350
+    ClientHeight = 498
+    ClientWidth = 280
     Color = clWindow
     ParentBackground = False
     ParentColor = False
@@ -754,9 +753,9 @@ object SchedulePersonalForm: TSchedulePersonalForm
     Visible = False
     object SettingCaptionPanel: TBCPanel
       Left = 0
-      Height = 30
+      Height = 24
       Top = 0
-      Width = 350
+      Width = 280
       Align = alTop
       BorderSpacing.Bottom = 2
       Background.Color = clBtnFace
@@ -799,21 +798,21 @@ object SchedulePersonalForm: TSchedulePersonalForm
     end
     object SettingClientPanel: TPanel
       Left = 0
-      Height = 592
-      Top = 32
-      Width = 350
+      Height = 472
+      Top = 26
+      Width = 280
       Align = alClient
       BevelOuter = bvNone
       BorderStyle = bsSingle
-      ClientHeight = 588
-      ClientWidth = 346
+      ClientHeight = 468
+      ClientWidth = 276
       ParentBackground = False
       TabOrder = 1
       object ParamListVT: TVirtualStringTree
         Left = 0
-        Height = 125
+        Height = 100
         Top = 0
-        Width = 346
+        Width = 276
         Align = alTop
         BorderStyle = bsNone
         DefaultText = 'Node'
@@ -824,11 +823,11 @@ object SchedulePersonalForm: TSchedulePersonalForm
       end
       object CountTypeVT: TVirtualStringTree
         Left = 0
-        Height = 79
-        Top = 131
-        Width = 346
+        Height = 63
+        Top = 105
+        Width = 276
         Align = alTop
-        BorderSpacing.Top = 6
+        BorderSpacing.Top = 5
         BorderStyle = bsNone
         DefaultText = 'Node'
         Header.AutoSizeIndex = 0
@@ -838,11 +837,11 @@ object SchedulePersonalForm: TSchedulePersonalForm
       end
       object ColorTypeVT: TVirtualStringTree
         Left = 0
-        Height = 79
-        Top = 216
-        Width = 346
+        Height = 63
+        Top = 173
+        Width = 276
         Align = alTop
-        BorderSpacing.Top = 6
+        BorderSpacing.Top = 5
         BorderStyle = bsNone
         DefaultText = 'Node'
         Header.AutoSizeIndex = 0
@@ -853,46 +852,46 @@ object SchedulePersonalForm: TSchedulePersonalForm
     end
   end
   object LeftSplitter: TSplitter
-    Left = 1586
-    Height = 628
-    Top = 74
-    Width = 6
+    Left = 1270
+    Height = 502
+    Top = 60
+    Width = 5
     ResizeStyle = rsLine
   end
   object MainPanel: TPanel
-    Left = 1592
-    Height = 626
-    Top = 76
-    Width = 113
+    Left = 1275
+    Height = 500
+    Top = 62
+    Width = 89
     Align = alClient
     BorderSpacing.Top = 2
     BevelOuter = bvNone
     Caption = 'MainPanel'
-    ClientHeight = 626
-    ClientWidth = 113
+    ClientHeight = 500
+    ClientWidth = 89
     TabOrder = 3
     object SheetPanel: TPanel
       Left = 0
-      Height = 592
-      Top = 32
-      Width = 111
+      Height = 472
+      Top = 26
+      Width = 87
       Align = alClient
       BorderSpacing.Top = 2
       BorderSpacing.Right = 2
       BorderSpacing.Bottom = 2
       BevelOuter = bvNone
       BorderStyle = bsSingle
-      ClientHeight = 588
-      ClientWidth = 107
+      ClientHeight = 468
+      ClientWidth = 83
       Color = clWhite
       ParentBackground = False
       ParentColor = False
       TabOrder = 0
       object ViewGrid: TsWorksheetGrid
         Left = 0
-        Height = 564
+        Height = 448
         Top = 0
-        Width = 107
+        Width = 83
         AutoExpand = []
         DisplayFixedColRow = False
         FrozenBorderPen.Style = psClear
@@ -927,9 +926,9 @@ object SchedulePersonalForm: TSchedulePersonalForm
       end
       object ZoomPanel: TPanel
         Left = 0
-        Height = 22
-        Top = 566
-        Width = 107
+        Height = 18
+        Top = 450
+        Width = 83
         Align = alBottom
         BevelOuter = bvNone
         Color = clWhite
@@ -940,8 +939,8 @@ object SchedulePersonalForm: TSchedulePersonalForm
       object ZoomBevel: TBevel
         Left = 0
         Height = 2
-        Top = 564
-        Width = 107
+        Top = 448
+        Width = 83
         Align = alBottom
         Shape = bsBottomLine
         Style = bsRaised
@@ -949,9 +948,9 @@ object SchedulePersonalForm: TSchedulePersonalForm
     end
     object SheetCaptionPanel: TBCPanel
       Left = 0
-      Height = 30
+      Height = 24
       Top = 0
-      Width = 111
+      Width = 87
       Align = alTop
       BorderSpacing.Right = 2
       BorderSpacing.Bottom = 2
@@ -996,9 +995,9 @@ object SchedulePersonalForm: TSchedulePersonalForm
   end
   object StaffCaptionPanel: TBCPanel
     Left = 2
-    Height = 30
-    Top = 44
-    Width = 1701
+    Height = 24
+    Top = 36
+    Width = 1360
     Align = alTop
     BorderSpacing.Left = 2
     BorderSpacing.Top = 2
@@ -1043,22 +1042,22 @@ object SchedulePersonalForm: TSchedulePersonalForm
   end
   object ListPanel: TPanel
     Left = 2
-    Height = 624
-    Top = 76
-    Width = 580
+    Height = 498
+    Top = 62
+    Width = 464
     Align = alLeft
     BorderSpacing.Left = 2
     BorderSpacing.Top = 2
     BorderSpacing.Bottom = 2
     BevelOuter = bvNone
-    ClientHeight = 624
-    ClientWidth = 580
+    ClientHeight = 498
+    ClientWidth = 464
     TabOrder = 5
     object ListCaptionPanel: TBCPanel
       Left = 0
-      Height = 30
+      Height = 24
       Top = 0
-      Width = 580
+      Width = 464
       Align = alTop
       BorderSpacing.Bottom = 2
       Background.Color = clBtnFace
@@ -1101,30 +1100,30 @@ object SchedulePersonalForm: TSchedulePersonalForm
     end
     object StaffListVT: TVirtualStringTree
       Left = 0
-      Height = 508
-      Top = 74
-      Width = 580
+      Height = 404
+      Top = 60
+      Width = 464
       Align = alClient
       DefaultText = 'Node'
       Header.AutoSizeIndex = 0
       Header.Columns = <>
       Header.MainColumn = -1
-      Margin = 50
+      Margin = 40
       TabOrder = 1
     end
     object ListFilterToolPanel: TPanel
       Left = 0
-      Height = 40
-      Top = 32
-      Width = 580
+      Height = 32
+      Top = 26
+      Width = 464
       Align = alTop
       BorderSpacing.Bottom = 2
       BevelOuter = bvNone
       BorderStyle = bsSingle
-      ClientHeight = 36
-      ClientWidth = 576
-      Constraints.MaxHeight = 40
-      Constraints.MinHeight = 40
+      ClientHeight = 28
+      ClientWidth = 460
+      Constraints.MaxHeight = 32
+      Constraints.MinHeight = 32
       ParentBackground = False
       ParentColor = False
       ParentFont = False
@@ -1133,26 +1132,26 @@ object SchedulePersonalForm: TSchedulePersonalForm
         AnchorSideRight.Control = ListFilterToolPanel
         AnchorSideRight.Side = asrBottom
         Left = 0
-        Height = 36
+        Height = 28
         Top = 0
-        Width = 576
+        Width = 460
         Align = alLeft
         Anchors = [akTop, akLeft, akRight, akBottom]
         AutoSize = True
         BevelOuter = bvNone
-        ClientHeight = 36
-        ClientWidth = 576
+        ClientHeight = 28
+        ClientWidth = 460
         ParentBackground = False
         TabOrder = 0
         object FilterLabel: TLabel
           AnchorSideLeft.Control = FilterPanel
           AnchorSideTop.Control = FilterPanel
           AnchorSideTop.Side = asrCenter
-          Left = 6
-          Height = 20
-          Top = 8
-          Width = 122
-          BorderSpacing.Left = 6
+          Left = 5
+          Height = 15
+          Top = 7
+          Width = 100
+          BorderSpacing.Left = 5
           Caption = 'Фильтр по Ф.И.О.:'
           ParentColor = False
         end
@@ -1164,15 +1163,15 @@ object SchedulePersonalForm: TSchedulePersonalForm
           AnchorSideRight.Control = FilterPanel
           AnchorSideRight.Side = asrBottom
           AnchorSideBottom.Side = asrBottom
-          Left = 136
-          Height = 28
-          Top = 4
-          Width = 438
+          Left = 111
+          Height = 23
+          Top = 3
+          Width = 347
           Anchors = [akTop, akLeft, akRight]
-          BorderSpacing.Left = 8
+          BorderSpacing.Left = 6
           BorderSpacing.Right = 2
           ButtonCursor = crHandPoint
-          ButtonWidth = 29
+          ButtonWidth = 23
           CharCase = ecUppercase
           Glyph.Data = {
             36040000424D3604000000000000360000002800000010000000100000000100
@@ -1222,93 +1221,94 @@ object SchedulePersonalForm: TSchedulePersonalForm
     end
     object ListOrderToolPanel: TPanel
       Left = 0
-      Height = 40
-      Top = 584
-      Width = 580
+      Height = 32
+      Top = 466
+      Width = 464
       Align = alBottom
       BorderSpacing.Top = 2
       BevelOuter = bvNone
       BorderStyle = bsSingle
-      ClientHeight = 36
-      ClientWidth = 576
+      ClientHeight = 28
+      ClientWidth = 460
       TabOrder = 3
       object OrderLabel: TLabel
         AnchorSideLeft.Control = OrderButtonPanel
         AnchorSideLeft.Side = asrBottom
         AnchorSideTop.Control = ListOrderToolPanel
         AnchorSideTop.Side = asrCenter
-        Left = 92
-        Height = 20
-        Top = 8
-        Width = 115
-        BorderSpacing.Left = 6
+        Left = 75
+        Height = 15
+        Top = 7
+        Width = 91
+        BorderSpacing.Left = 5
         Caption = 'Сортировать по:'
+        ParentColor = False
       end
       object FIORadioButton: TRadioButton
         AnchorSideLeft.Control = OrderLabel
         AnchorSideLeft.Side = asrBottom
         AnchorSideTop.Control = ListOrderToolPanel
         AnchorSideTop.Side = asrCenter
-        Left = 213
-        Height = 24
-        Top = 6
-        Width = 63
-        BorderSpacing.Left = 6
+        Left = 171
+        Height = 19
+        Top = 5
+        Width = 56
+        BorderSpacing.Left = 5
         Caption = 'Ф.И.О.'
         Checked = True
+        OnClick = FIORadioButtonClick
         TabOrder = 1
         TabStop = True
-        OnClick = FIORadioButtonClick
       end
       object PostRadioButton: TRadioButton
         AnchorSideLeft.Control = FIORadioButton
         AnchorSideLeft.Side = asrBottom
         AnchorSideTop.Control = ListOrderToolPanel
         AnchorSideTop.Side = asrCenter
-        Left = 282
-        Height = 24
-        Top = 6
-        Width = 97
-        BorderSpacing.Left = 6
+        Left = 232
+        Height = 19
+        Top = 5
+        Width = 81
+        BorderSpacing.Left = 5
         Caption = 'должности'
-        TabOrder = 0
         OnClick = PostRadioButtonClick
+        TabOrder = 0
       end
       object TabNumRadioButton: TRadioButton
         AnchorSideLeft.Control = PostRadioButton
         AnchorSideLeft.Side = asrBottom
         AnchorSideTop.Control = ListOrderToolPanel
         AnchorSideTop.Side = asrCenter
-        Left = 385
-        Height = 24
-        Top = 6
-        Width = 161
-        BorderSpacing.Left = 6
+        Left = 318
+        Height = 19
+        Top = 5
+        Width = 131
+        BorderSpacing.Left = 5
         Caption = 'табельному номеру'
-        TabOrder = 2
         OnClick = TabNumRadioButtonClick
+        TabOrder = 2
       end
       object OrderButtonPanel: TPanel
         Left = 0
-        Height = 36
+        Height = 28
         Top = 0
-        Width = 86
+        Width = 70
         Align = alLeft
         AutoSize = True
         BevelOuter = bvNone
-        ClientHeight = 36
-        ClientWidth = 86
+        ClientHeight = 28
+        ClientWidth = 70
         TabOrder = 3
         object AscendingButton: TSpeedButton
           Cursor = crHandPoint
           Left = 0
-          Height = 36
+          Height = 28
           Hint = 'Изменить порядок сортировки'
           Top = 0
-          Width = 40
+          Width = 32
           Align = alLeft
-          Constraints.MaxWidth = 40
-          Constraints.MinWidth = 40
+          Constraints.MaxWidth = 32
+          Constraints.MinWidth = 32
           Glyph.Data = {
             36090000424D3609000000000000360000002800000018000000180000000100
             2000000000000009000064000000640000000000000000000000000000000000
@@ -1392,14 +1392,14 @@ object SchedulePersonalForm: TSchedulePersonalForm
         end
         object DescendingButton: TSpeedButton
           Cursor = crHandPoint
-          Left = 40
-          Height = 36
+          Left = 32
+          Height = 28
           Hint = 'Изменить порядок сортировки'
           Top = 0
-          Width = 40
+          Width = 32
           Align = alLeft
-          Constraints.MaxWidth = 40
-          Constraints.MinWidth = 40
+          Constraints.MaxWidth = 32
+          Constraints.MinWidth = 32
           Glyph.Data = {
             36090000424D3609000000000000360000002800000018000000180000000100
             2000000000000009000064000000640000000000000000000000000000000000
@@ -1481,8 +1481,8 @@ object SchedulePersonalForm: TSchedulePersonalForm
           ParentShowHint = False
         end
         object OrderButtonBevel: TBevel
-          Left = 82
-          Height = 36
+          Left = 66
+          Height = 28
           Top = 0
           Width = 2
           Align = alLeft
@@ -1494,46 +1494,46 @@ object SchedulePersonalForm: TSchedulePersonalForm
     end
   end
   object EditingPanel: TPanel
-    Left = 936
-    Height = 624
-    Top = 76
-    Width = 650
+    Left = 750
+    Height = 498
+    Top = 62
+    Width = 520
     Align = alLeft
     BorderSpacing.Left = 2
     BorderSpacing.Top = 2
     BorderSpacing.Bottom = 2
     BevelOuter = bvNone
-    ClientHeight = 624
-    ClientWidth = 650
+    ClientHeight = 498
+    ClientWidth = 520
     TabOrder = 6
     Visible = False
     object BottomEditingPanel: TPanel
       Left = 0
-      Height = 422
-      Top = 202
-      Width = 650
+      Height = 338
+      Top = 160
+      Width = 520
       Align = alBottom
       BevelOuter = bvNone
-      ClientHeight = 422
-      ClientWidth = 650
+      ClientHeight = 338
+      ClientWidth = 520
       TabOrder = 0
       object CorrectionsPanel: TPanel
         Left = 0
-        Height = 240
-        Top = 182
-        Width = 650
+        Height = 192
+        Top = 146
+        Width = 520
         Align = alClient
         BevelOuter = bvNone
-        ClientHeight = 240
-        ClientWidth = 650
+        ClientHeight = 192
+        ClientWidth = 520
         ParentBackground = False
         ParentColor = False
         TabOrder = 0
         object CorrectionsCaptionPanel: TBCPanel
           Left = 0
-          Height = 30
+          Height = 24
           Top = 0
-          Width = 650
+          Width = 520
           Align = alTop
           BorderSpacing.Bottom = 2
           Background.Color = clBtnFace
@@ -1576,36 +1576,36 @@ object SchedulePersonalForm: TSchedulePersonalForm
         end
         object DayPanel: TPanel
           Left = 0
-          Height = 108
-          Top = 32
-          Width = 650
+          Height = 86
+          Top = 26
+          Width = 520
           Align = alClient
           BevelOuter = bvNone
-          ClientHeight = 108
-          ClientWidth = 650
+          ClientHeight = 86
+          ClientWidth = 520
           TabOrder = 1
           object DayToolPanel: TPanel
             Left = 0
-            Height = 40
+            Height = 32
             Top = 0
-            Width = 650
+            Width = 520
             Align = alTop
             BevelOuter = bvNone
             BorderStyle = bsSingle
-            ClientHeight = 36
-            ClientWidth = 646
+            ClientHeight = 28
+            ClientWidth = 516
             ParentFont = False
             TabOrder = 0
             object DayAddButton: TSpeedButton
               Cursor = crHandPoint
               Left = 0
-              Height = 36
+              Height = 28
               Hint = 'Добавить'
               Top = 0
-              Width = 40
+              Width = 32
               Align = alLeft
-              Constraints.MaxWidth = 40
-              Constraints.MinWidth = 40
+              Constraints.MaxWidth = 32
+              Constraints.MinWidth = 32
               Glyph.Data = {
                 36090000424D3609000000000000360000002800000018000000180000000100
                 2000000000000009000064000000640000000000000000000000000000000000
@@ -1688,14 +1688,14 @@ object SchedulePersonalForm: TSchedulePersonalForm
             end
             object DayDelButton: TSpeedButton
               Cursor = crHandPoint
-              Left = 40
-              Height = 36
+              Left = 32
+              Height = 28
               Hint = 'Удалить'
               Top = 0
-              Width = 40
+              Width = 32
               Align = alLeft
-              Constraints.MaxWidth = 40
-              Constraints.MinWidth = 40
+              Constraints.MaxWidth = 32
+              Constraints.MinWidth = 32
               Enabled = False
               Glyph.Data = {
                 36090000424D3609000000000000360000002800000018000000180000000100
@@ -1779,14 +1779,14 @@ object SchedulePersonalForm: TSchedulePersonalForm
             end
             object DayEditButton: TSpeedButton
               Cursor = crHandPoint
-              Left = 80
-              Height = 36
+              Left = 64
+              Height = 28
               Hint = 'Редактировать'
               Top = 0
-              Width = 40
+              Width = 32
               Align = alLeft
-              Constraints.MaxWidth = 40
-              Constraints.MinWidth = 40
+              Constraints.MaxWidth = 32
+              Constraints.MinWidth = 32
               Enabled = False
               Glyph.Data = {
                 36090000424D3609000000000000360000002800000018000000180000000100
@@ -1870,14 +1870,14 @@ object SchedulePersonalForm: TSchedulePersonalForm
             end
             object DayCopyButton: TSpeedButton
               Cursor = crHandPoint
-              Left = 120
-              Height = 36
+              Left = 96
+              Height = 28
               Hint = 'Копировать'
               Top = 0
-              Width = 40
+              Width = 32
               Align = alLeft
-              Constraints.MaxWidth = 40
-              Constraints.MinWidth = 40
+              Constraints.MaxWidth = 32
+              Constraints.MinWidth = 32
               Enabled = False
               Glyph.Data = {
                 36090000424D3609000000000000360000002800000018000000180000000100
@@ -1962,16 +1962,16 @@ object SchedulePersonalForm: TSchedulePersonalForm
           end
           object DayVT: TVirtualStringTree
             Left = 0
-            Height = 66
-            Top = 42
-            Width = 650
+            Height = 52
+            Top = 34
+            Width = 520
             Align = alClient
             BorderSpacing.Top = 2
-            DefaultNodeHeight = 31
+            DefaultNodeHeight = 25
             DefaultText = 'Node'
             Header.AutoSizeIndex = 0
             Header.Columns = <>
-            Header.Height = 20
+            Header.Height = 16
             Header.MainColumn = -1
             TabOrder = 1
             OnNodeDblClick = DayVTNodeDblClick
@@ -1979,37 +1979,37 @@ object SchedulePersonalForm: TSchedulePersonalForm
         end
         object CopyPanel: TPanel
           Left = 0
-          Height = 100
-          Top = 140
-          Width = 650
+          Height = 80
+          Top = 112
+          Width = 520
           Align = alBottom
           BevelOuter = bvNone
-          ClientHeight = 100
-          ClientWidth = 650
+          ClientHeight = 80
+          ClientWidth = 520
           TabOrder = 2
           Visible = False
           object CopyToolPanel: TPanel
             Left = 0
-            Height = 40
+            Height = 32
             Top = 0
-            Width = 650
+            Width = 520
             Align = alTop
             BevelOuter = bvNone
             BorderStyle = bsSingle
-            ClientHeight = 36
-            ClientWidth = 646
+            ClientHeight = 28
+            ClientWidth = 516
             ParentFont = False
             TabOrder = 0
             object CopySaveButton: TSpeedButton
               Cursor = crHandPoint
               Left = 0
-              Height = 36
+              Height = 28
               Hint = 'Сохранить'
               Top = 0
-              Width = 40
+              Width = 32
               Align = alLeft
-              Constraints.MaxWidth = 40
-              Constraints.MinWidth = 40
+              Constraints.MaxWidth = 32
+              Constraints.MinWidth = 32
               Enabled = False
               Glyph.Data = {
                 36090000424D3609000000000000360000002800000018000000180000000100
@@ -2093,14 +2093,14 @@ object SchedulePersonalForm: TSchedulePersonalForm
             end
             object CopyDelButton: TSpeedButton
               Cursor = crHandPoint
-              Left = 40
-              Height = 36
+              Left = 32
+              Height = 28
               Hint = 'Удалить'
               Top = 0
-              Width = 40
+              Width = 32
               Align = alLeft
-              Constraints.MaxWidth = 40
-              Constraints.MinWidth = 40
+              Constraints.MaxWidth = 32
+              Constraints.MinWidth = 32
               Enabled = False
               Glyph.Data = {
                 36090000424D3609000000000000360000002800000018000000180000000100
@@ -2184,14 +2184,14 @@ object SchedulePersonalForm: TSchedulePersonalForm
             end
             object CopyCancelButton: TSpeedButton
               Cursor = crHandPoint
-              Left = 80
-              Height = 36
+              Left = 64
+              Height = 28
               Hint = 'Отменить'
               Top = 0
-              Width = 40
+              Width = 32
               Align = alLeft
-              Constraints.MaxWidth = 40
-              Constraints.MinWidth = 40
+              Constraints.MaxWidth = 32
+              Constraints.MinWidth = 32
               Glyph.Data = {
                 36090000424D3609000000000000360000002800000018000000180000000100
                 2000000000000009000064000000640000000000000000000000000000000000
@@ -2275,16 +2275,16 @@ object SchedulePersonalForm: TSchedulePersonalForm
           end
           object CopyVT: TVirtualStringTree
             Left = 0
-            Height = 58
-            Top = 42
-            Width = 650
+            Height = 46
+            Top = 34
+            Width = 520
             Align = alClient
             BorderSpacing.Top = 2
-            DefaultNodeHeight = 31
+            DefaultNodeHeight = 25
             DefaultText = 'Node'
             Header.AutoSizeIndex = 0
             Header.Columns = <>
-            Header.Height = 20
+            Header.Height = 16
             Header.MainColumn = -1
             TabOrder = 1
           end
@@ -2293,28 +2293,28 @@ object SchedulePersonalForm: TSchedulePersonalForm
       object Splitter2: TSplitter
         Cursor = crVSplit
         Left = 0
-        Height = 6
-        Top = 176
-        Width = 650
+        Height = 5
+        Top = 141
+        Width = 520
         Align = alTop
         ResizeAnchor = akTop
         ResizeStyle = rsLine
       end
       object VacationPanel: TPanel
         Left = 0
-        Height = 176
+        Height = 141
         Top = 0
-        Width = 650
+        Width = 520
         Align = alTop
         BevelOuter = bvNone
-        ClientHeight = 176
-        ClientWidth = 650
+        ClientHeight = 141
+        ClientWidth = 520
         TabOrder = 2
         object VacationCaptionPanel: TBCPanel
           Left = 0
-          Height = 30
+          Height = 24
           Top = 0
-          Width = 650
+          Width = 520
           Align = alTop
           BorderSpacing.Bottom = 2
           Background.Color = clBtnFace
@@ -2357,26 +2357,26 @@ object SchedulePersonalForm: TSchedulePersonalForm
         end
         object VacationToolPanel: TPanel
           Left = 0
-          Height = 40
-          Top = 32
-          Width = 650
+          Height = 32
+          Top = 26
+          Width = 520
           Align = alTop
           BevelOuter = bvNone
           BorderStyle = bsSingle
-          ClientHeight = 36
-          ClientWidth = 646
+          ClientHeight = 28
+          ClientWidth = 516
           ParentFont = False
           TabOrder = 1
           object VacationSaveButton: TSpeedButton
             Cursor = crHandPoint
             Left = 0
-            Height = 36
+            Height = 28
             Hint = 'Сохранить'
             Top = 0
-            Width = 40
+            Width = 32
             Align = alLeft
-            Constraints.MaxWidth = 40
-            Constraints.MinWidth = 40
+            Constraints.MaxWidth = 32
+            Constraints.MinWidth = 32
             Enabled = False
             Glyph.Data = {
               36090000424D3609000000000000360000002800000018000000180000000100
@@ -2460,14 +2460,14 @@ object SchedulePersonalForm: TSchedulePersonalForm
           end
           object VacationDelButton: TSpeedButton
             Cursor = crHandPoint
-            Left = 40
-            Height = 36
+            Left = 32
+            Height = 28
             Hint = 'Удалить'
             Top = 0
-            Width = 40
+            Width = 32
             Align = alLeft
-            Constraints.MaxWidth = 40
-            Constraints.MinWidth = 40
+            Constraints.MaxWidth = 32
+            Constraints.MinWidth = 32
             Enabled = False
             Glyph.Data = {
               36090000424D3609000000000000360000002800000018000000180000000100
@@ -2551,14 +2551,14 @@ object SchedulePersonalForm: TSchedulePersonalForm
           end
           object VacationCancelButton: TSpeedButton
             Cursor = crHandPoint
-            Left = 120
-            Height = 36
+            Left = 96
+            Height = 28
             Hint = 'Отменить'
             Top = 0
-            Width = 40
+            Width = 32
             Align = alLeft
-            Constraints.MaxWidth = 40
-            Constraints.MinWidth = 40
+            Constraints.MaxWidth = 32
+            Constraints.MinWidth = 32
             Enabled = False
             Glyph.Data = {
               36090000424D3609000000000000360000002800000018000000180000000100
@@ -2642,14 +2642,14 @@ object SchedulePersonalForm: TSchedulePersonalForm
           end
           object VacationEraseButton: TSpeedButton
             Cursor = crHandPoint
-            Left = 80
-            Height = 36
+            Left = 64
+            Height = 28
             Hint = 'Очистить'
             Top = 0
-            Width = 40
+            Width = 32
             Align = alLeft
-            Constraints.MaxWidth = 40
-            Constraints.MinWidth = 40
+            Constraints.MaxWidth = 32
+            Constraints.MinWidth = 32
             Glyph.Data = {
               36090000424D3609000000000000360000002800000018000000180000000100
               2000000000000009000064000000640000000000000000000000000000000000
@@ -2733,9 +2733,9 @@ object SchedulePersonalForm: TSchedulePersonalForm
         end
         object VacationVT: TVirtualStringTree
           Left = 0
-          Height = 102
-          Top = 74
-          Width = 650
+          Height = 81
+          Top = 60
+          Width = 520
           Align = alClient
           BorderSpacing.Top = 2
           DefaultText = 'Node'
@@ -2748,19 +2748,19 @@ object SchedulePersonalForm: TSchedulePersonalForm
     end
     object HistoryPanel: TPanel
       Left = 0
-      Height = 196
+      Height = 155
       Top = 0
-      Width = 650
+      Width = 520
       Align = alClient
       BevelOuter = bvNone
-      ClientHeight = 196
-      ClientWidth = 650
+      ClientHeight = 155
+      ClientWidth = 520
       TabOrder = 1
       object HistoryCaptionPanel: TBCPanel
         Left = 0
-        Height = 30
+        Height = 24
         Top = 0
-        Width = 650
+        Width = 520
         Align = alTop
         BorderSpacing.Bottom = 2
         Background.Color = clBtnFace
@@ -2803,26 +2803,26 @@ object SchedulePersonalForm: TSchedulePersonalForm
       end
       object HistoryToolPanel: TPanel
         Left = 0
-        Height = 40
-        Top = 32
-        Width = 650
+        Height = 32
+        Top = 26
+        Width = 520
         Align = alTop
         BevelOuter = bvNone
         BorderStyle = bsSingle
-        ClientHeight = 36
-        ClientWidth = 646
+        ClientHeight = 28
+        ClientWidth = 516
         ParentFont = False
         TabOrder = 1
         object HistoryDelButton: TSpeedButton
           Cursor = crHandPoint
-          Left = 40
-          Height = 36
+          Left = 32
+          Height = 28
           Hint = 'Удалить'
           Top = 0
-          Width = 40
+          Width = 32
           Align = alLeft
-          Constraints.MaxWidth = 40
-          Constraints.MinWidth = 40
+          Constraints.MaxWidth = 32
+          Constraints.MinWidth = 32
           Enabled = False
           Glyph.Data = {
             36090000424D3609000000000000360000002800000018000000180000000100
@@ -2906,14 +2906,14 @@ object SchedulePersonalForm: TSchedulePersonalForm
         end
         object HistoryEditButton: TSpeedButton
           Cursor = crHandPoint
-          Left = 80
-          Height = 36
+          Left = 64
+          Height = 28
           Hint = 'Редактировать'
           Top = 0
-          Width = 40
+          Width = 32
           Align = alLeft
-          Constraints.MaxWidth = 40
-          Constraints.MinWidth = 40
+          Constraints.MaxWidth = 32
+          Constraints.MinWidth = 32
           Enabled = False
           Glyph.Data = {
             36090000424D3609000000000000360000002800000018000000180000000100
@@ -2998,13 +2998,13 @@ object SchedulePersonalForm: TSchedulePersonalForm
         object HistoryAddButton: TSpeedButton
           Cursor = crHandPoint
           Left = 0
-          Height = 36
+          Height = 28
           Hint = 'Перевести'
           Top = 0
-          Width = 40
+          Width = 32
           Align = alLeft
-          Constraints.MaxWidth = 40
-          Constraints.MinWidth = 40
+          Constraints.MaxWidth = 32
+          Constraints.MinWidth = 32
           Enabled = False
           Glyph.Data = {
             36090000424D3609000000000000360000002800000018000000180000000100
@@ -3089,16 +3089,16 @@ object SchedulePersonalForm: TSchedulePersonalForm
       end
       object HistoryVT: TVirtualStringTree
         Left = 0
-        Height = 122
-        Top = 74
-        Width = 650
+        Height = 95
+        Top = 60
+        Width = 520
         Align = alClient
         BorderSpacing.Top = 2
         DefaultText = 'Node'
         Header.AutoSizeIndex = 0
         Header.Columns = <>
         Header.MainColumn = -1
-        Margin = 50
+        Margin = 40
         TabOrder = 2
         OnNodeDblClick = HistoryVTNodeDblClick
       end
@@ -3106,16 +3106,16 @@ object SchedulePersonalForm: TSchedulePersonalForm
     object Splitter3: TSplitter
       Cursor = crVSplit
       Left = 0
-      Height = 6
-      Top = 196
-      Width = 650
+      Height = 5
+      Top = 155
+      Width = 520
       Align = alBottom
       ResizeAnchor = akBottom
       ResizeStyle = rsLine
     end
   end
   object SelectDirectoryDialog1: TSelectDirectoryDialog
-    Left = 184
-    Top = 224
+    Left = 147
+    Top = 179
   end
 end

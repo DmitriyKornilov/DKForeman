@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, Buttons,
-  StdCtrls, VirtualTrees,
+  VirtualTrees,
   //DK packages utils
   DK_Vector, DK_VSTTableTools, DK_CtrlUtils;
 
@@ -18,49 +18,60 @@ type
     ButtonPanel: TPanel;
     ButtonPanelBevel: TBevel;
     CancelButton: TSpeedButton;
-    TitleLabel: TLabel;
     SaveButton: TSpeedButton;
     VT: TVirtualStringTree;
-    procedure CancelButtonClick(Sender: TObject);
-    procedure FormCreate(Sender: TObject);
-    procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure CancelButtonClick(Sender: TObject);
     procedure SaveButtonClick(Sender: TObject);
   private
-    ChooseList: TVSTStringList;
+
   public
-    ChooseItems: TStrVector;
-    ChooseResult: Integer;
+
   end;
 
 var
   ChooseForm: TChooseForm;
 
   function Choose(const ATitle: String; const AItems: TStrVector;
+                  out AChooseIndex: Integer;
                   const AWidth: Integer = 0;
-                  const AHeight: Integer = 0): Integer;
+                  const AHeight: Integer = 0): Boolean;
 
 implementation
 
 function Choose(const ATitle: String; const AItems: TStrVector;
+                out AChooseIndex: Integer;
                 const AWidth: Integer = 0;
-                const AHeight: Integer = 0): Integer;
+                const AHeight: Integer = 0): Boolean;
 var
-  CF: TChooseForm;
+  Form: TChooseForm;
+  List: TVSTStringList;
 begin
-  CF:= TChooseForm.Create(nil);
+  Result:= False;
+  AChooseIndex:= -1;
+  Form:= TChooseForm.Create(nil);
   try
-    CF.ChooseItems:= AItems;
-    CF.TitleLabel.Caption:= ATitle;
-    if AWidth>0 then
-      CF.Width:= AWidth;
-    if AHeight>0 then
-      CF.Height:= AHeight;
-    Result:= 0;
-    if CF.ShowModal=mrOK then
-      Result:= CF.ChooseResult;
+    List:= TVSTStringList.Create(Form.VT, ATitle, nil);
+    try
+      List.Update(AItems);
+      Form.VT.BorderStyle:= bsSingle;
+
+      if AWidth>0 then
+        Form.Width:= AWidth;
+      if AHeight>0 then
+        Form.Height:= AHeight;
+
+      if Form.ShowModal=mrOK then
+      begin
+        AChooseIndex:= List.SelectedIndex;
+        Result:= True;
+      end;
+
+    finally
+      FreeAndNil(List);
+    end;
   finally
-    FreeAndNil(CF)
+    FreeAndNil(Form);
   end;
 end;
 
@@ -71,30 +82,16 @@ end;
 procedure TChooseForm.FormShow(Sender: TObject);
 begin
   FormToScreenCenter(Self);
-  ChooseList.Update(ChooseItems);
-  VT.BorderStyle:= bsSingle;
 end;
 
 procedure TChooseForm.SaveButtonClick(Sender: TObject);
 begin
-  ChooseResult:= ChooseList.SelectedIndex + 1;
   ModalResult:= mrOK;
-end;
-
-procedure TChooseForm.FormCreate(Sender: TObject);
-begin
-  ChooseList:= TVSTStringList.Create(VT, EmptyStr, nil);
 end;
 
 procedure TChooseForm.CancelButtonClick(Sender: TObject);
 begin
-  ChooseResult:= 0;
   ModalResult:= mrCancel;
-end;
-
-procedure TChooseForm.FormDestroy(Sender: TObject);
-begin
-  FreeAndNil(ChooseList);
 end;
 
 end.
