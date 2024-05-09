@@ -798,10 +798,11 @@ begin
   AWorkDaysCount:= ACalendar.WorkDaysCount(BD, ED);
   //достаем из базы список рабочих часов в неделю с соответствующими периодами
   if not DataBase.StaffScheduleHistoryLoad(ATabNumID, IDs, ScheduleIDs, WeekHours,
-    BDs, EDs, ScheduleNames, ABeginDate, AEndDate) then Exit;
-  //суммируем кол-во рабочих часов по вытащенным периодам
+    BDs, EDs, ScheduleNames, BD, ED) then Exit;
+  //суммируем кол-во рабочих часов по полученным периодам
   for i:=0 to High(WeekHours) do
-    ANormHours:= ANormHours + ACalendar.SumWorkHoursInt(WeekHours[i], BDs[i], EDs[i]);
+    ANormHours:= ANormHours +
+      ACalendar.SumWorkHoursInt(WeekHours[i], MaxDate(BD, BDs[i]), MinDate(ED, EDs[i]));
 end;
 
 function PostSchedulesByCalendar(const ATabNumID: Integer; const ACalendar: TCalendar;

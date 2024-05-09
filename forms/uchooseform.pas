@@ -18,11 +18,13 @@ type
     ButtonPanel: TPanel;
     ButtonPanelBevel: TBevel;
     CancelButton: TSpeedButton;
+    MainPanel: TPanel;
     SaveButton: TSpeedButton;
-    VT: TVirtualStringTree;
+    VT1: TVirtualStringTree;
+    VT2: TVirtualStringTree;
     procedure FormShow(Sender: TObject);
-    procedure CancelButtonClick(Sender: TObject);
     procedure SaveButtonClick(Sender: TObject);
+    procedure CancelButtonClick(Sender: TObject);
   private
 
   public
@@ -37,50 +39,90 @@ var
                   const AWidth: Integer = 0;
                   const AHeight: Integer = 0): Boolean;
 
+  function Choose(const ATitle1, ATitle2: String;
+                  const AItems1, AItems2: TStrVector;
+                  out AChooseIndex1, AChooseIndex2: Integer;
+                  const AWidth: Integer = 0;
+                  const AHeight: Integer = 0): Boolean;
+
 implementation
 
+{$R *.lfm}
+
+const
+  MIN_FORM_WIDTH = 500;
+  MIN_FORM_HEIGHT = 250;
+
 function Choose(const ATitle: String; const AItems: TStrVector;
-                out AChooseIndex: Integer;
+                  out AChooseIndex: Integer;
+                  const AWidth: Integer = 0;
+                  const AHeight: Integer = 0): Boolean;
+var
+  i: Integer;
+begin
+  Result:= Choose(ATitle, EmptyStr, AItems, nil, AChooseIndex, i, AWidth, AHeight);
+end;
+
+function Choose(const ATitle1, ATitle2: String;
+                const AItems1, AItems2: TStrVector;
+                out AChooseIndex1, AChooseIndex2: Integer;
                 const AWidth: Integer = 0;
                 const AHeight: Integer = 0): Boolean;
 var
   Form: TChooseForm;
-  List: TVSTStringList;
+  List1, List2: TVSTStringList;
 begin
   Result:= False;
-  AChooseIndex:= -1;
+  AChooseIndex1:= -1;
+  AChooseIndex1:= -2;
+
   Form:= TChooseForm.Create(nil);
   try
-    List:= TVSTStringList.Create(Form.VT, ATitle, nil);
+    List1:= TVSTStringList.Create(Form.VT1, ATitle1, nil);
+    List2:= TVSTStringList.Create(Form.VT2, ATitle2, nil);
     try
-      List.Update(AItems);
-      Form.VT.BorderStyle:= bsSingle;
+      List1.AutoHeight:= True;
+      List1.Update(AItems1);
+      if VIsNil(AItems2) then
+        Form.VT2.Visible:= False
+      else begin
+        List2.AutoHeight:= True;
+        List2.Update(AItems2);
+      end;
 
-      if AWidth>0 then
+      if AWidth>MIN_FORM_WIDTH then
         Form.Width:= AWidth;
-      if AHeight>0 then
+      if AHeight>MIN_FORM_HEIGHT then
         Form.Height:= AHeight;
 
       if Form.ShowModal=mrOK then
       begin
-        AChooseIndex:= List.SelectedIndex;
+        AChooseIndex1:= List1.SelectedIndex;
+        AChooseIndex2:= List2.SelectedIndex;
         Result:= True;
       end;
 
     finally
-      FreeAndNil(List);
+      FreeAndNil(List1);
+      FreeAndNil(List2);
     end;
   finally
     FreeAndNil(Form);
   end;
 end;
 
-{$R *.lfm}
-
 { TChooseForm }
 
 procedure TChooseForm.FormShow(Sender: TObject);
+var
+  H: Integer;
 begin
+  H:= ButtonPanel.Height + VT1.Height + 50;
+  if VT2.Visible then
+    H:= H + VT2.Height;
+
+  if H>MIN_FORM_HEIGHT then
+    ClientHeight:= H;
   FormToScreenCenter(Self);
 end;
 

@@ -8,13 +8,13 @@ uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, BCButton,
   BCPanel, Buttons, Spin, StdCtrls, VirtualTrees, fpspreadsheetgrid, DateUtils,
   //DK packages utils
-  DK_Vector, DK_Matrix, DK_Fonts, DK_Const, DK_VSTDropDown, DK_DateUtils,
-  DK_VSTTables, DK_VSTTableTools, DK_Zoom, DK_SheetExporter, DK_Progress,
+  DK_Vector, DK_Matrix, DK_Math, DK_Fonts, DK_Const, DK_VSTDropDown, DK_DateUtils,
+  DK_StrUtils, DK_VSTTables, DK_VSTTableTools, DK_Zoom, DK_SheetExporter, DK_Progress,
   //Project utils
   UDataBase, UConst, UUtils, UCalendar, USchedule, UScheduleSheet, UWorkHours,
   UTypes,
   //Forms
-  UScheduleCorrectionEditForm;
+  UScheduleCorrectionEditForm, UChooseForm;
 
 type
 
@@ -82,6 +82,7 @@ type
     procedure ListButtonClick(Sender: TObject);
     procedure PostRadioButtonClick(Sender: TObject);
     procedure RowDownButtonClick(Sender: TObject);
+    procedure RowSplitButtonClick(Sender: TObject);
     procedure RowUpButtonClick(Sender: TObject);
     procedure ScheduleButtonClick(Sender: TObject);
     procedure ScheduleRadioButtonClick(Sender: TObject);
@@ -125,7 +126,6 @@ type
     TabNumIDs, NormHours: TIntVector;
     StaffNames, TabNums, PostNames: TStrVector;
     RecrutDates, DismissDates, PostBDs, PostEDs, ScheduleBDs, ScheduleEDs: TDateVector;
-    PeriodBD, PeriodED: TDate;
 
     procedure ViewParamListCreate;
     procedure CountTypeCreate;
@@ -134,7 +134,10 @@ type
     procedure SignTypeCreate;
     procedure ExportParamListCreate;
 
+    procedure PeriodTypeSelect;
+
     function OrderTypeChange: Boolean;
+    procedure EditButtonsEnabled;
 
     procedure StaffListCreate;
     procedure StaffListLoad;
@@ -147,10 +150,14 @@ type
     procedure ScheduleSelect;
 
     procedure ScheduleCorrectionFormOpen;
+
     procedure SelectionMove(const ADirection: TMoveDirection);
+    procedure RowsMerge;
 
     procedure SettingsSave;
     procedure SettingsLoad;
+
+    procedure ViewUpdate;
   public
 
   end;
@@ -326,7 +333,7 @@ begin
     'квартал',
     'месяц'
   ]);
-  PeriodType:= TVSTStringList.Create(PeriodTypeVT, S, @ScheduleRedraw);
+  PeriodType:= TVSTStringList.Create(PeriodTypeVT, S, @PeriodTypeSelect);
   PeriodType.Update(V);
 end;
 
@@ -376,6 +383,41 @@ begin
   ExportParamList:= TVSTCheckList.Create(ExportParamListVT, S, V, nil);
 end;
 
+procedure TSchedulePersonalMonthForm.PeriodTypeSelect;
+var
+  i, d, h: Integer;
+  BD, ED: TDate;
+begin
+  if not CanLoadAndDraw then Exit;
+
+  Screen.Cursor:= crHandPoint;
+  try
+    AccountingPeriodWithMonth(MonthDropDown.ItemIndex + 1, YearSpinEdit.Value,
+                              PeriodType.ItemIndex, BD, ED);
+    for i:= 0 to High(TabNumIDs) do
+    begin
+      NormHoursAndWorkDaysCounInPeriod(TabNumIDs[i], BD, ED, YearCalendar, d, h);
+      NormHours[i]:= h;
+    end;
+
+    if Length(BeforeSchedules)>0 then
+    begin
+      AccountingPeriodBeforeMonth(MonthDropDown.ItemIndex + 1, YearSpinEdit.Value,
+                              PeriodType.ItemIndex, BD, ED);
+      YearCalendar.Cut(BD, ED, BeforeCalendar);
+      for i:= 0 to High(TabNumIDs) do
+        BeforeSchedules[i]:= SchedulePersonalByCalendar(TabNumIDs[i], TabNums[i],
+          RecrutDates[i], DismissDates[i], BeforeCalendar, Holidays, False{fact vacations},
+          STRMARK_VACATIONMAIN, STRMARK_VACATIONADDITION, STRMARK_VACATIONHOLIDAY,
+          ScheduleBDs[i], ScheduleEDs[i], PostBDs[i], PostEDs[i]);
+    end;
+
+    ScheduleRecreate;
+  finally
+    Screen.Cursor:= crDefault;
+  end;
+end;
+
 procedure TSchedulePersonalMonthForm.CloseButtonClick(Sender: TObject);
 begin
   Close;
@@ -388,8 +430,7 @@ end;
 
 procedure TSchedulePersonalMonthForm.EditingButtonClick(Sender: TObject);
 begin
-  EditPanel.Visible:= EditingButton.Down;
-  Sheet.CanSelect:= EditingButton.Down;
+  ViewUpdate;
 end;
 
 procedure TSchedulePersonalMonthForm.ListButtonClick(Sender: TObject);
@@ -400,7 +441,11 @@ begin
   SchedulePanel.Align:= alBottom;
   ListPanel.Align:= alClient;
   ListPanel.Visible:= True;
+  EditingButton.Down:= False;
+  SettingButton.Down:= False;
+  EditingButton.Visible:= False;
   SettingButton.Visible:= False;
+  ViewUpdate;
 end;
 
 procedure TSchedulePersonalMonthForm.ScheduleButtonClick(Sender: TObject);
@@ -412,9 +457,12 @@ begin
   SchedulePanel.Align:= alClient;
   SchedulePanel.Visible:= True;
   SettingButton.Visible:= True;
+  EditingButton.Visible:= True;
 
   ScheduleLoad;
   ScheduleRecreate;
+  ViewUpdate;
+  EditButtonsEnabled;
 end;
 
 procedure TSchedulePersonalMonthForm.FIORadioButtonClick(Sender: TObject);
@@ -434,6 +482,11 @@ begin
   SelectionMove(mdDown);
 end;
 
+procedure TSchedulePersonalMonthForm.RowSplitButtonClick(Sender: TObject);
+begin
+  RowsMerge;
+end;
+
 procedure TSchedulePersonalMonthForm.RowUpButtonClick(Sender: TObject);
 begin
   SelectionMove(mdUp);
@@ -447,20 +500,7 @@ end;
 
 procedure TSchedulePersonalMonthForm.SettingButtonClick(Sender: TObject);
 begin
-  Sheet.CanSelect:= False;
-  if SettingButton.Down then
-  begin
-    SettingPanel.Visible:= True;
-    SettingSplitter.Visible:= True;
-    SheetPanel.AnchorToNeighbour(akLeft, 0, SettingSplitter);
-    ScheduleCaptionPanel.AnchorToNeighbour(akLeft, 0, SettingSplitter);
-  end
-  else begin
-    SettingSplitter.Visible:= False;
-    SettingPanel.Visible:= False;
-    SheetPanel.AnchorToNeighbour(akLeft, 2, Self);
-    ScheduleCaptionPanel.AnchorToNeighbour(akLeft, 2, Self);
-  end;
+  ViewUpdate;
 end;
 
 procedure TSchedulePersonalMonthForm.TabNumRadioButtonClick(Sender: TObject);
@@ -518,6 +558,14 @@ begin
 
   OrderType:= NewOrderType;
   Result:= True;
+end;
+
+procedure TSchedulePersonalMonthForm.EditButtonsEnabled;
+begin
+  DayEditButton.Enabled:= Sheet.IsDateSelected;
+  RowUpButton.Enabled:= Sheet.IsRowSelected and (Sheet.SelectedIndex>0);
+  RowDownButton.Enabled:= Sheet.IsRowSelected and (Sheet.SelectedIndex<High(Schedules));
+  RowSplitButton.Enabled:= Sheet.IsDoubleRowSelected;
 end;
 
 procedure TSchedulePersonalMonthForm.StaffListLoad;
@@ -591,28 +639,27 @@ end;
 procedure TSchedulePersonalMonthForm.ScheduleCreate(const AIndex: Integer);
 var
   d, h: Integer;
-  Schedule: TPersonalSchedule;
-  PostScheduleVector: TPostScheduleVector;
+  PeriodBD, PeriodED: TDate;
 begin
-  PostScheduleVector:= PostSchedulesByCalendar(TabNumIDs[AIndex], Calendar,
+  PostSchedules[AIndex]:= PostSchedulesByCalendar(TabNumIDs[AIndex], Calendar,
      ScheduleBDs[AIndex], ScheduleEDs[AIndex], PostBDs[AIndex], PostEDs[AIndex]);
-  PostSchedules[AIndex]:= PostScheduleVector;
-  Schedule:= PersonalScheduleByPostSchedules(TabNumIDs[AIndex], TabNums[AIndex],
-     RecrutDates[AIndex], DismissDates[AIndex],
-     Calendar, Holidays, PostScheduleVector, False{fact vacations},
-     STRMARK_VACATIONMAIN, STRMARK_VACATIONADDITION, STRMARK_VACATIONHOLIDAY);
-  Schedules[AIndex]:= Schedule;
 
+  Schedules[AIndex]:= PersonalScheduleByPostSchedules(TabNumIDs[AIndex], TabNums[AIndex],
+     RecrutDates[AIndex], DismissDates[AIndex],
+     Calendar, Holidays, PostSchedules[AIndex], False{fact vacations},
+     STRMARK_VACATIONMAIN, STRMARK_VACATIONADDITION, STRMARK_VACATIONHOLIDAY);
+
+  AccountingPeriodWithMonth(MonthDropDown.ItemIndex + 1, YearSpinEdit.Value,
+                            PeriodType.ItemIndex, PeriodBD, PeriodED);
   NormHoursAndWorkDaysCounInPeriod(TabNumIDs[AIndex], PeriodBD, PeriodED, YearCalendar, d, h);
   NormHours[AIndex]:= h;
 
   if Length(BeforeSchedules)=0 then Exit;
 
-  Schedule:= SchedulePersonalByCalendar(TabNumIDs[AIndex], TabNums[AIndex],
+  BeforeSchedules[AIndex]:= SchedulePersonalByCalendar(TabNumIDs[AIndex], TabNums[AIndex],
      RecrutDates[AIndex], DismissDates[AIndex], BeforeCalendar, Holidays, False{fact vacations},
      STRMARK_VACATIONMAIN, STRMARK_VACATIONADDITION, STRMARK_VACATIONHOLIDAY,
      ScheduleBDs[AIndex], ScheduleEDs[AIndex], PostBDs[AIndex], PostEDs[AIndex]);
-  BeforeSchedules[AIndex]:= Schedule;
 end;
 
 procedure TSchedulePersonalMonthForm.ScheduleLoad;
@@ -659,6 +706,8 @@ var
   end;
 
 begin
+  if not CanLoadAndDraw then Exit;
+
   VSDel(Schedules);
   VSDel(BeforeSchedules);
   MSDel(PostSchedules);
@@ -690,7 +739,6 @@ begin
 
   FirstLastDayInMonth(M, Y, BD, ED);
   YearCalendar.Cut(BD, ED, Calendar);
-  AccountingPeriodWithMonth(M, Y, PeriodType.ItemIndex, PeriodBD, PeriodED);
 
   Progress:= TProgress.Create(nil);
   try
@@ -745,10 +793,7 @@ end;
 
 procedure TSchedulePersonalMonthForm.ScheduleSelect;
 begin
-  DayEditButton.Enabled:= Sheet.IsDateSelected;
-  RowUpButton.Enabled:= Sheet.IsRowSelected and (Sheet.SelectedIndex>0);
-  RowDownButton.Enabled:= Sheet.IsRowSelected and (Sheet.SelectedIndex<High(Schedules));
-  RowSplitButton.Enabled:= Sheet.IsDoubleRowSelected;
+  EditButtonsEnabled;
 end;
 
 procedure TSchedulePersonalMonthForm.ScheduleCorrectionFormOpen;
@@ -818,17 +863,126 @@ begin
   VSSwap(BeforeSchedules, OldSelectedIndex, NewSelectedIndex);
   VSSwap(Schedules, OldSelectedIndex, NewSelectedIndex);
   MSSwap(PostSchedules, OldSelectedIndex, NewSelectedIndex);
+
   Sheet.SelectionMove(NewSelectedIndex);
 end;
 
-procedure TSchedulePersonalMonthForm.SettingsSave;
-begin
+procedure TSchedulePersonalMonthForm.RowsMerge;
+var
+  ChooseIndex1, ChooseIndex2: Integer;
+  V1, V2: TStrVector;
+  RowIndexes: TIntVector;
+  PostName: String;
 
+  procedure Merge(const AResultIndex, ADeleteIndex: Integer; const APostName: String);
+  begin
+    //должность, в результирующей строке
+    PostNames[AResultIndex]:= APostName;
+    //график в результирующей строке
+    VSAppend(PostSchedules[AResultIndex], PostSchedules[ADeleteIndex]);
+    FreeAndNil(Schedules[AResultIndex]);
+    Schedules[AResultIndex]:= PersonalScheduleByPostSchedules(TabNumIDs[AResultIndex],
+      TabNums[AResultIndex], RecrutDates[AResultIndex], DismissDates[AResultIndex],
+      Calendar, Holidays, PostSchedules[AResultIndex], False{fact vacations},
+      STRMARK_VACATIONMAIN, STRMARK_VACATIONADDITION, STRMARK_VACATIONHOLIDAY);
+    //удаляем элементы векторов
+    VDel(StaffNames, ADeleteIndex);
+    VDel(PostNames, ADeleteIndex);
+    VDel(TabNumIDs, ADeleteIndex);
+    VDel(TabNums, ADeleteIndex);
+    VDel(NormHours, ADeleteIndex);
+    VDel(PostBDs, ADeleteIndex);
+    VDel(PostEDs, ADeleteIndex);
+    VDel(ScheduleBDs, ADeleteIndex);
+    VDel(ScheduleEDs, ADeleteIndex);
+    VDel(RecrutDates, ADeleteIndex);
+    VDel(DismissDates, ADeleteIndex);
+    VSDel(BeforeSchedules, ADeleteIndex);
+    VSDel(Schedules, ADeleteIndex);
+    MSDel(PostSchedules,ADeleteIndex, -1, False);
+
+    ScheduleRedraw;
+    Sheet.Select(AResultIndex - Ord(AResultIndex>ADeleteIndex));
+  end;
+
+begin
+  RowIndexes:= VCreateInt([
+    Min(Sheet.SelectedIndex, Sheet.SelectedIndex2),
+    Max(Sheet.SelectedIndex, Sheet.SelectedIndex2)
+  ]);
+
+  V1:= VCreateStr(['№ ' + IntToStr(RowIndexes[0]+1), '№ ' + IntToStr(RowIndexes[1]+1)]);
+  V2:= nil;
+  if not SSame(PostNames[RowIndexes[0]], PostNames[RowIndexes[1]]) then
+    V2:= VCreateStr([PostNames[RowIndexes[0]], PostNames[RowIndexes[1]]]);
+  if not Choose('Записать объединенные данные в строку:',
+                'Записать в результирующую строку должность (профессию):',
+                V1, V2, ChooseIndex1, ChooseIndex2) then Exit;
+
+
+  if ChooseIndex2>=0 then
+    PostName:= PostNames[RowIndexes[ChooseIndex2]]
+  else
+    PostName:= PostNames[RowIndexes[0]];
+
+  if ChooseIndex1=1 then
+    VSwap(RowIndexes, 0, 1);
+
+  Screen.Cursor:= crHourGlass;
+  try
+    Merge(RowIndexes[0], RowIndexes[1], PostName);
+  finally
+    Screen.Cursor:= crDefault;
+  end;
+end;
+
+procedure TSchedulePersonalMonthForm.SettingsSave;
+var
+  SettingValues: TIntVector;
+begin
+  SettingValues:= nil;
+  VAppend(SettingValues, ZoomPercent);
+  SettingValues:= VAdd(SettingValues, VBoolToInt(ViewParamList.Selected));
+  VAppend(SettingValues, CountType.ItemIndex);
+  VAppend(SettingValues, PeriodType.ItemIndex);
+  SettingValues:= VAdd(SettingValues, VBoolToInt(ExtraColumnList.Selected));
+  VAppend(SettingValues, SignType.ItemIndex);
+  SettingValues:= VAdd(SettingValues, VBoolToInt(ExportParamList.Selected));
+  DataBase.SettingsUpdate(SETTING_NAMES_SCHEDULEPERSONALMONTHFORM, SettingValues);
 end;
 
 procedure TSchedulePersonalMonthForm.SettingsLoad;
+var
+  SettingValues: TIntVector;
 begin
-  ZoomPercent:= 100;
+  SettingValues:= DataBase.SettingsLoad(SETTING_NAMES_SCHEDULEPERSONALMONTHFORM);
+  ZoomPercent:= SettingValues[0];
+  ViewParamList.Selected:= VIntToBool(VCut(SettingValues, 1, 4));
+  CountType.ItemIndex:= SettingValues[5];
+  PeriodType.ItemIndex:= SettingValues[6];
+  ExtraColumnList.Selected:= VIntToBool(VCut(SettingValues, 7, 13));
+  SignType.ItemIndex:= SettingValues[14];
+  ExportParamList.Selected:= VIntToBool(VCut(SettingValues, 15, 16));
+end;
+
+procedure TSchedulePersonalMonthForm.ViewUpdate;
+begin
+  EditPanel.Visible:= EditingButton.Down;
+  Sheet.CanSelect:= EditingButton.Down;
+
+  if SettingButton.Down then
+  begin
+    SettingPanel.Visible:= True;
+    SettingSplitter.Visible:= True;
+    SheetPanel.AnchorToNeighbour(akLeft, 0, SettingSplitter);
+    ScheduleCaptionPanel.AnchorToNeighbour(akLeft, 0, SettingSplitter);
+  end
+  else begin
+    SettingSplitter.Visible:= False;
+    SettingPanel.Visible:= False;
+    SheetPanel.AnchorToNeighbour(akLeft, 2, Self);
+    ScheduleCaptionPanel.AnchorToNeighbour(akLeft, 2, Self);
+  end;
 end;
 
 end.

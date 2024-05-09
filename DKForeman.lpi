@@ -244,14 +244,6 @@
         <UnitName Value="UScheduleSheet"/>
       </Unit>
       <Unit>
-        <Filename Value="forms\uchooseform.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="ChooseForm"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-        <UnitName Value="UChooseForm"/>
-      </Unit>
-      <Unit>
         <Filename Value="forms\timing\uscheduleshifteditform.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="ScheduleShiftEditForm"/>
@@ -300,11 +292,12 @@
         <UnitName Value="USchedulePersonalMonthForm"/>
       </Unit>
       <Unit>
-        <Filename Value="forms\uchoosedoubleform.pas"/>
+        <Filename Value="forms\uchooseform.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="ChooseDoubleForm"/>
+        <ComponentName Value="ChooseForm"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <UnitName Value="UChooseDoubleForm"/>
+        <UnitName Value="UChooseForm"/>
       </Unit>
     </Units>
   </ProjectOptions>

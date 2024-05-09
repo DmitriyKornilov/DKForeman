@@ -10,10 +10,10 @@ uses
   //Project utils
   UDataBase, UConst, UTypes, UUtils,
   //DK packages utils
-  DK_VSTTypes, DK_VSTTables, DK_VSTTableTools, DK_Vector, DK_StrUtils, DK_Const, DK_Dialogs,
+  DK_VSTTypes, DK_VSTTables, DK_VSTTableTools, DK_Vector, DK_StrUtils, DK_Const,
+  DK_Dialogs, DK_DateUtils,
   //Forms
   UStaffMainEditForm, UStaffTabNumEditForm, UStaffPostlogEditForm;
-
 
 type
 
@@ -830,7 +830,7 @@ end;
 procedure TStaffForm.StaffPostLogEditFormOpen(const AEditingType: TEditingType);
 var
   StaffPostLogEditForm: TStaffPostLogEditForm;
-  ThisFirstDate, PrevFirstDate, NextFirstDate: TDate;
+  ThisFirstDate, PrevFirstDate, NextFirstDate, D: TDate;
 begin
   StaffPostLogEditForm:= TStaffPostLogEditForm.Create(nil);
   try
@@ -842,8 +842,9 @@ begin
     case AEditingType of
       etAdd: //перевод с последней должности
         begin
-          StaffPostLogEditForm.FirstDatePicker.Date:= IncDay(ThisFirstDate, 1);
-          StaffPostLogEditForm.FirstDatePicker.MinDate:= StaffPostLogEditForm.FirstDatePicker.Date;
+          D:= IncDay(ThisFirstDate, 1);
+          StaffPostLogEditForm.FirstDatePicker.Date:= MaxDate(Date, D);
+          StaffPostLogEditForm.FirstDatePicker.MinDate:= D;
           StaffPostLogEditForm.FirstDatePicker.MaxDate:= IncDay(INFDATE, -1);
         end;
       etEdit: //редактирование должности

@@ -204,7 +204,6 @@ type
 
     procedure CaptionDraw;
 
-
     function GetIsDateSelected: Boolean;
     function GetIsDoubleRowSelected: Boolean;
     function GetIsRowSelected: Boolean;
@@ -260,6 +259,7 @@ type
                     //1 - номера страниц в нижнем колонтитуле
                    );
     procedure LineDraw(const AIndex: Integer);
+    procedure Select(const AIndex: Integer);
     procedure SelectionClear; override;
     procedure SelectionMove(const ANewIndex: Integer);
 
@@ -267,6 +267,7 @@ type
     property IsRowSelected: Boolean read GetIsRowSelected;
     property IsDoubleRowSelected: Boolean read GetIsDoubleRowSelected;
     property SelectedIndex: Integer read FSelectedRowIndex1;
+    property SelectedIndex2: Integer read FSelectedRowIndex2;
     property SelectedDate: TDate read FSelectedDate;
     property CanSelect: Boolean read FCanSelect write SetCanSelect;
     property OnSelect: TSheetEvent read FOnSelect write FOnSelect;
@@ -651,6 +652,11 @@ begin
     Writer.SetRowHeight(R, Trunc(1.6*Writer.RowHeightDefault));
 end;
 
+procedure TPersonalMonthScheduleSheet.Select(const AIndex: Integer);
+begin
+  SelectRow1(AIndex);
+end;
+
 procedure TPersonalMonthScheduleSheet.SetCanSelect(const AValue: Boolean);
 begin
   if FCanSelect=AValue then Exit;
@@ -882,7 +888,7 @@ var
 begin
   if Assigned(FOnSelect) then FOnSelect;
   R:= IndexToRow(AIndex);
-  for i:= R to R + Ord(FViewParams[0]) do
+  for i:= R to R + Ord(FViewParams[0]) do  //FViewParams: 0 - Отображать строку ночных часов
     for j:= 1 to Writer.ColCount do
       SelectionAddCell(i, j);
 end;
