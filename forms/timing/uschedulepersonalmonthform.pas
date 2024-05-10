@@ -75,6 +75,7 @@ type
     procedure CloseButtonClick(Sender: TObject);
     procedure DayEditButtonClick(Sender: TObject);
     procedure EditingButtonClick(Sender: TObject);
+    procedure ExportButtonClick(Sender: TObject);
     procedure FIORadioButtonClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -148,6 +149,7 @@ type
     procedure ScheduleRedraw;
     procedure ScheduleRecreate;
     procedure ScheduleSelect;
+    procedure ScheduleExport;
 
     procedure ScheduleCorrectionFormOpen;
 
@@ -431,6 +433,11 @@ end;
 procedure TSchedulePersonalMonthForm.EditingButtonClick(Sender: TObject);
 begin
   ViewUpdate;
+end;
+
+procedure TSchedulePersonalMonthForm.ExportButtonClick(Sender: TObject);
+begin
+  ScheduleExport;
 end;
 
 procedure TSchedulePersonalMonthForm.ListButtonClick(Sender: TObject);
@@ -794,6 +801,33 @@ end;
 procedure TSchedulePersonalMonthForm.ScheduleSelect;
 begin
   EditButtonsEnabled;
+end;
+
+procedure TSchedulePersonalMonthForm.ScheduleExport;
+var
+  Exporter: TSheetsExporter;
+  Worksheet: TsWorksheet;
+  ExpSheet: TPersonalMonthScheduleSheet;
+begin
+  Exporter:= TSheetsExporter.Create;
+  try
+    Worksheet:= Exporter.AddWorksheet(SUpper(MONTHSNOM[MonthDropDown.ItemIndex+1]) +
+                                      ' ' + YearSpinEdit.Text);
+    ExpSheet:= TPersonalMonthScheduleSheet.Create(Worksheet, nil, MainForm.GridFont,
+                               CountType.ItemIndex, PeriodType.ItemIndex,
+                               SignType.ItemIndex, ExtraColumnList.Selected);
+    try
+      ExpSheet.Draw(Calendar, Schedules, BeforeSchedules,
+               StaffNames, TabNums, PostNames, NormHours,
+               ViewParamList.Selected, ExportParamList.Selected);
+    finally
+      FreeAndNil(ExpSheet);
+    end;
+    Exporter.PageSettings(spoLandscape);
+    Exporter.Save('Выполнено!');
+  finally
+    FreeAndNil(Exporter);
+  end;
 end;
 
 procedure TSchedulePersonalMonthForm.ScheduleCorrectionFormOpen;

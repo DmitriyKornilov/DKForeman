@@ -203,6 +203,7 @@ type
       FOnSelect: TSheetEvent;
 
     procedure CaptionDraw;
+    procedure SignatureListDraw;
 
     function GetIsDateSelected: Boolean;
     function GetIsDoubleRowSelected: Boolean;
@@ -489,6 +490,49 @@ begin
     Writer.WriteText(R+1, C+1, 'подпись', cbtOuter);
   end;
   Writer.SetRowHeight(R, 3*SHeight(Font));
+end;
+
+procedure TPersonalMonthScheduleSheet.SignatureListDraw;
+var
+  i, N, R, C: Integer;
+
+  procedure SignatureLineDraw(const ARow, ACol: Integer; const AStaffName: String);
+  begin
+    Writer.SetAlignment(haLeft, vaBottom);
+    Writer.WriteText(ARow, ACol+1, ARow, ACol+4, AStaffName);
+    Writer.WriteText(ARow, ACol+5, ARow, ACol+6, EmptyStr, cbtBottom);
+    Writer.SetAlignment(haRight, vaBottom);
+    Writer.WriteText(ARow, ACol+7, '«');
+    Writer.WriteText(ARow, ACol+8,  EmptyStr, cbtBottom);
+    Writer.SetAlignment(haLeft, vaBottom);
+    Writer.WriteText(ARow, ACol+9, '»');
+    Writer.WriteText(ARow, ACol+10, ARow, ACol+12, EmptyStr, cbtBottom);
+    Writer.SetAlignment(haRight, vaBottom);
+    Writer.WriteText(ARow, ACol+13, '20');
+    Writer.WriteText(ARow, ACol+14,  EmptyStr, cbtBottom);
+    Writer.SetAlignment(haLeft, vaBottom);
+    Writer.WriteText(ARow, ACol+15, 'г.');
+  end;
+
+begin
+  Writer.SetBackgroundDefault;
+  Writer.SetFont(Font.Name, Font.Size, [], clBlack);
+
+  N:= Length(FStaffNames);
+  R:= 3 + (1+Ord(FViewParams[0]))*N + 1;
+  C:= 1 + Ord(FExtraColumns[0]) + Ord(FExtraColumns[1]) + Ord(FExtraColumns[2]);
+  if (N mod 2)=0 then
+    N:= N div 2
+  else
+    N:= (N div 2) + 1;
+  Writer.SetAlignment(haRight, vaBottom);
+  Writer.WriteText(R, 1, R, C,  'Ознакомлен:');
+  R:= R + 1;
+  for i:= 0 to N-1 do
+    SignatureLineDraw(R+i*2, C, FStaffNames[i]);
+  C:= C+16;
+  for i:= N to High(FStaffNames) do
+    SignatureLineDraw(R+(i-N)*2, C, FStaffNames[i]);
 end;
 
 function TPersonalMonthScheduleSheet.GetIsDateSelected: Boolean;
@@ -813,14 +857,14 @@ begin
   for i:=0 to High(FSchedules) do
     LineDraw(i);
 
-  //if FSignatureType=2 then
-  //  DrawSignatureList(AFIOs);
+  if FSignatureType=2 then //2-список ознакомления под таблицей
+    SignatureListDraw;
 
   Writer.SetFrozenRows(2);
   if FExportParams[0] then //FExportParams: 0 - заголовок таблицы на каждой странице
     Writer.SetRepeatedRows(1, 2);
   if FExportParams[1] then //FExportParams: 1 - номера страниц в нижнем колонтитуле
-    Writer.WorkSheet.PageLayout.Footers[HEADER_FOOTER_INDEX_ALL] := '&X страница &P (из &N)';
+    Writer.WorkSheet.PageLayout.Footers[HEADER_FOOTER_INDEX_ALL] := '&R страница &P (из &N)';
 
   X:= IndexToRow(Length(FSchedules));
   for i:= 1 to Writer.ColCount do

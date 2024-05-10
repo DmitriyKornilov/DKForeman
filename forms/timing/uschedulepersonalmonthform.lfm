@@ -1038,6 +1038,7 @@ object SchedulePersonalMonthForm: TSchedulePersonalMonthForm
           0000000000000000000000000000000000000000000000000000
         }
         GlyphMargin = 0
+        OnClick = ExportButtonClick
         ParentColor = False
         Rounding.RoundX = 0
         Rounding.RoundY = 0
