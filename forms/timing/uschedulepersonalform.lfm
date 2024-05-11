@@ -1,7 +1,7 @@
 object SchedulePersonalForm: TSchedulePersonalForm
-  Left = 153
+  Left = 309
   Height = 702
-  Top = 161
+  Top = 150
   Width = 1705
   Caption = 'SchedulePersonalForm'
   ClientHeight = 702
@@ -859,7 +859,7 @@ object SchedulePersonalForm: TSchedulePersonalForm
     Width = 6
     ResizeStyle = rsLine
   end
-  object MainPanel: TPanel
+  object ViewPanel: TPanel
     Left = 1592
     Height = 626
     Top = 76
@@ -867,11 +867,11 @@ object SchedulePersonalForm: TSchedulePersonalForm
     Align = alClient
     BorderSpacing.Top = 2
     BevelOuter = bvNone
-    Caption = 'MainPanel'
+    Caption = 'ViewPanel'
     ClientHeight = 626
     ClientWidth = 113
     TabOrder = 3
-    object SheetPanel: TPanel
+    object ViewGridPanel: TPanel
       Left = 0
       Height = 592
       Top = 32
@@ -947,7 +947,7 @@ object SchedulePersonalForm: TSchedulePersonalForm
         Style = bsRaised
       end
     end
-    object SheetCaptionPanel: TBCPanel
+    object ViewCaptionPanel: TBCPanel
       Left = 0
       Height = 30
       Top = 0

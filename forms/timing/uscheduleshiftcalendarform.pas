@@ -56,7 +56,7 @@ type
     procedure YearSpinEditChange(Sender: TObject);
   private
     ZoomPercent: Integer;
-    CanDrawSchedule: Boolean;
+    CanDraw: Boolean;
 
     ColorNames: TStrVector;
     ColorValues: TColorVector;
@@ -135,7 +135,7 @@ begin
     ExportButton
   ]);
 
-  CanDrawSchedule:= False;
+  CanDraw:= False;
 
   ColorList:= TVSTColorList.Create(ColorVT);
   ColorVT.BorderStyle:= bsSingle;
@@ -149,7 +149,7 @@ begin
   SettingsLoad; //load ZoomPercent;
   CreateZoomControls(50, 150, ZoomPercent, ZoomPanel, @ScheduleDraw, True);
 
-  CanDrawSchedule:= True;
+  CanDraw:= True;
 end;
 
 procedure TScheduleShiftCalendarForm.FormDestroy(Sender: TObject);
@@ -229,7 +229,7 @@ end;
 
 procedure TScheduleShiftCalendarForm.ScheduleDraw(const AZoomPercent: Integer);
 begin
-  if not CanDrawSchedule then Exit;
+  if not CanDraw then Exit;
   ViewGrid.Visible:= False;
   Screen.Cursor:= crHourGlass;
   try

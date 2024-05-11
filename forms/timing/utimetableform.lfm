@@ -1,18 +1,21 @@
 object TimetableForm: TTimetableForm
-  Left = 408
-  Height = 240
-  Top = 250
-  Width = 605
+  Left = 226
+  Height = 712
+  Top = 141
+  Width = 1710
   Caption = 'TimetableForm'
-  ClientHeight = 240
-  ClientWidth = 605
+  ClientHeight = 712
+  ClientWidth = 1710
   DesignTimePPI = 120
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  OnShow = FormShow
   LCLVersion = '3.2.0.0'
   object ToolPanel: TPanel
     Left = 2
     Height = 40
     Top = 2
-    Width = 601
+    Width = 1706
     Align = alTop
     BorderSpacing.Left = 2
     BorderSpacing.Top = 2
@@ -20,12 +23,12 @@ object TimetableForm: TTimetableForm
     BevelOuter = bvNone
     BorderStyle = bsSingle
     ClientHeight = 36
-    ClientWidth = 597
+    ClientWidth = 1702
     ParentFont = False
     TabOrder = 0
     object CloseButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 557
+      Left = 1662
       Height = 36
       Top = 0
       Width = 40
@@ -111,14 +114,2075 @@ object TimetableForm: TTimetableForm
       OnClick = CloseButtonClick
     end
     object Bevel1: TBevel
-      Left = 553
+      Left = 1658
       Height = 36
       Top = 0
       Width = 2
       Align = alRight
-      BorderSpacing.Left = 3
+      BorderSpacing.Left = 2
       BorderSpacing.Right = 2
       Shape = bsRightLine
+    end
+    object YearPanel: TPanel
+      Left = 0
+      Height = 36
+      Top = 0
+      Width = 65
+      Align = alLeft
+      AutoSize = True
+      BevelOuter = bvNone
+      ClientHeight = 36
+      ClientWidth = 65
+      TabOrder = 0
+      object YearSpinEdit: TSpinEdit
+        AnchorSideTop.Control = YearPanel
+        AnchorSideTop.Side = asrCenter
+        Left = 2
+        Height = 28
+        Top = 4
+        Width = 63
+        Align = alCustom
+        Alignment = taCenter
+        BorderSpacing.Left = 2
+        BorderSpacing.Top = 2
+        BorderSpacing.Bottom = 2
+        MinValue = 2010
+        TabStop = False
+        TabOrder = 0
+        Value = 2022
+      end
+    end
+    object Bevel2: TBevel
+      Left = 67
+      Height = 36
+      Top = 0
+      Width = 2
+      Align = alLeft
+      BorderSpacing.Left = 2
+      BorderSpacing.Right = 2
+      Shape = bsRightLine
+    end
+    object ExportButton: TBCButton
+      Cursor = crHandPoint
+      Left = 71
+      Height = 34
+      Hint = 'Экспорт в формат электронной таблицы XLSX или ODS'
+      Top = 1
+      Width = 104
+      Align = alLeft
+      AutoSize = True
+      StateClicked.Background.Color = 16245964
+      StateClicked.Background.Gradient1.StartColor = 16577765
+      StateClicked.Background.Gradient1.EndColor = 16180676
+      StateClicked.Background.Gradient1.GradientType = gtLinear
+      StateClicked.Background.Gradient1.Point1XPercent = 0
+      StateClicked.Background.Gradient1.Point1YPercent = 0
+      StateClicked.Background.Gradient1.Point2XPercent = 0
+      StateClicked.Background.Gradient1.Point2YPercent = 100
+      StateClicked.Background.Gradient2.StartColor = 15716760
+      StateClicked.Background.Gradient2.EndColor = 14398312
+      StateClicked.Background.Gradient2.GradientType = gtLinear
+      StateClicked.Background.Gradient2.Point1XPercent = 0
+      StateClicked.Background.Gradient2.Point1YPercent = 0
+      StateClicked.Background.Gradient2.Point2XPercent = 0
+      StateClicked.Background.Gradient2.Point2YPercent = 100
+      StateClicked.Background.Gradient1EndPercent = 55
+      StateClicked.Background.Style = bbsColor
+      StateClicked.Border.Color = 10048512
+      StateClicked.Border.LightColor = clBlack
+      StateClicked.Border.LightOpacity = 100
+      StateClicked.Border.Style = bboSolid
+      StateClicked.FontEx.Color = clBlack
+      StateClicked.FontEx.FontQuality = fqSystemClearType
+      StateClicked.FontEx.Shadow = False
+      StateClicked.FontEx.ShadowRadius = 5
+      StateClicked.FontEx.ShadowOffsetX = 5
+      StateClicked.FontEx.ShadowOffsetY = 5
+      StateClicked.FontEx.Style = []
+      StateHover.Background.Color = 16511461
+      StateHover.Background.Gradient1.StartColor = 16643818
+      StateHover.Background.Gradient1.EndColor = 16576729
+      StateHover.Background.Gradient1.GradientType = gtLinear
+      StateHover.Background.Gradient1.Point1XPercent = 0
+      StateHover.Background.Gradient1.Point1YPercent = 0
+      StateHover.Background.Gradient1.Point2XPercent = 0
+      StateHover.Background.Gradient1.Point2YPercent = 100
+      StateHover.Background.Gradient2.StartColor = 16639678
+      StateHover.Background.Gradient2.EndColor = 16112039
+      StateHover.Background.Gradient2.GradientType = gtLinear
+      StateHover.Background.Gradient2.Point1XPercent = 0
+      StateHover.Background.Gradient2.Point1YPercent = 0
+      StateHover.Background.Gradient2.Point2XPercent = 0
+      StateHover.Background.Gradient2.Point2YPercent = 100
+      StateHover.Background.Gradient1EndPercent = 50
+      StateHover.Background.Style = bbsColor
+      StateHover.Border.Color = 14120960
+      StateHover.Border.LightOpacity = 200
+      StateHover.Border.Style = bboSolid
+      StateHover.FontEx.Color = clBlack
+      StateHover.FontEx.FontQuality = fqSystemClearType
+      StateHover.FontEx.Shadow = False
+      StateHover.FontEx.ShadowRadius = 5
+      StateHover.FontEx.ShadowOffsetX = 5
+      StateHover.FontEx.ShadowOffsetY = 5
+      StateHover.FontEx.Style = []
+      StateNormal.Background.Color = 14803425
+      StateNormal.Background.Gradient1.StartColor = 15921906
+      StateNormal.Background.Gradient1.EndColor = 15461355
+      StateNormal.Background.Gradient1.GradientType = gtLinear
+      StateNormal.Background.Gradient1.Point1XPercent = 0
+      StateNormal.Background.Gradient1.Point1YPercent = 0
+      StateNormal.Background.Gradient1.Point2XPercent = 0
+      StateNormal.Background.Gradient1.Point2YPercent = 100
+      StateNormal.Background.Gradient2.StartColor = 14540253
+      StateNormal.Background.Gradient2.EndColor = 13619151
+      StateNormal.Background.Gradient2.GradientType = gtLinear
+      StateNormal.Background.Gradient2.Point1XPercent = 0
+      StateNormal.Background.Gradient2.Point1YPercent = 0
+      StateNormal.Background.Gradient2.Point2XPercent = 0
+      StateNormal.Background.Gradient2.Point2YPercent = 100
+      StateNormal.Background.Gradient1EndPercent = 50
+      StateNormal.Background.Style = bbsColor
+      StateNormal.Border.Color = 11382189
+      StateNormal.Border.LightOpacity = 200
+      StateNormal.Border.Style = bboSolid
+      StateNormal.FontEx.Color = clBlack
+      StateNormal.FontEx.FontQuality = fqSystemClearType
+      StateNormal.FontEx.Shadow = False
+      StateNormal.FontEx.ShadowRadius = 5
+      StateNormal.FontEx.ShadowOffsetX = 5
+      StateNormal.FontEx.ShadowOffsetY = 5
+      StateNormal.FontEx.Style = []
+      BorderSpacing.Left = 1
+      BorderSpacing.Top = 1
+      BorderSpacing.Bottom = 1
+      Caption = 'Экспорт'
+      Color = clNone
+      DropDownWidth = 16
+      DropDownArrowSize = 8
+      GlobalOpacity = 255
+      Glyph.Data = {
+        36090000424D3609000000000000360000002800000018000000180000000100
+        2000000000000009000064000000640000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        000000000000007C0003007B0022007B00390000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        000000000000000000000000000000000000007C0005007B002B007C005C007C
+        008D007B00BE007C00ED007C00FF007C00C10000000000000000000000000000
+        000000000000000000000000000000000000000000000000000000000000007C
+        0009007C0034007C0066007C0097007C00C8007C00F4007C00FF007C00FF007C
+        00FF007C00FF007C00FF007C00FF007C00C10000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000007C0039007C
+        00F9007C00FF007C00FF007C00FF007C00FF007C00FF007B00FF007C00FF007C
+        00FF007B00FF007C00FF007C00FF007C00C1007C004E007C00C0007C00C0007C
+        00C0007C00C0007C00C0007C00C0007C00C0007C00BA007B001C007C0040007C
+        00FF007C00FF007C00FF007C00FF007C00FF007C00FF007B00FF007C00FF007C
+        00FF007B00FF007C00FF007C00FF007C00C1007C0068007C00FF007C00FF007C
+        00FF007C00FF007C00FF007C00FF007C00FF007C00FF007B0040007C0040007C
+        00FF007C00FF007C00FF007C00FF007C00FF007C00FF007C00FF007C00FF007C
+        00FF007C00FF007C00FF007C00FF007C00C1007C005C007C00E2007C00E2007C
+        00FA007C00E4007C00E2007C00E2007C00F1007C00FF007B0040007C0040007C
+        00FF007C00FF007C00FF007C00FF007C00FF007C00FF007B00FF007C00FF007C
+        00FF007B00FF007C00FF007C00FF007C00C1000000000000000000000000007C
+        00D0007C00100000000000000000007C0081007C00FF007B0040007C0040007C
+        00FF007C00FF007C00B0007C0083007C00B0007C00FF007B00FF007C00EE007C
+        0083007B0083007C00F0007C00FF007C00C1007C002E007C0071007C0071007C
+        00E5007C007A007C0071007C0071007C00B9007C00FF007B0040007C0040007C
+        00FF007C00FF007C00D1007C0006007C000E007C00EA007C00FF007C00780000
+        0000007C0056007C00FF007C00FF007C00C1007C0068007C00FF007C00FF007C
+        00FF007C00FF007C00FF007C00FF007C00FF007C00FF007B0040007C0040007C
+        00FF007C00FF007C00FF007C007B00000000007C006E007B00E4007C000B007C
+        000F007B00E3007C00FF007C00FF007C00C1007C0021007C0050007C0050007C
+        00DF007C005B007C0050007C0050007C00A9007C00FF007B0040007C0040007C
+        00FF007C00FF007C00FF007C00F6007C0027007C0008007B005A00000000007C
+        008E007B00FF007C00FF007C00FF007C00C1007C0001007C0003007C0003007C
+        00D0007C0013007C0003007C0003007C0083007C00FF007B0040007C0040007C
+        00FF007C00FF007C00FF007C00FF007C00BE007C000100000000007C002F007C
+        00FB007C00FF007C00FF007C00FF007C00C1007C0064007C00F5007C00F5007C
+        00FD007C00F6007C00F5007C00F5007C00FA007C00FF007C0040007B0040007B
+        00FF007B00FF007B00FF007B00FF007B00A600000000007B0004007B0020007B
+        00F5007B00FF007C00FF007C00FF007C00C1007C0052007C00C8007C00C8007C
+        00F5007C00CC007C00C8007C00C8007C00E4007C00FF007B0040007B0040007B
+        00FF007B00FF007B00FF007B00F3007B001D007B0006007B007F00000000007B
+        007C007B00FF007C00FF007C00FF007B00C1000000000000000000000000007C
+        00D0007C00100000000000000000007C0081007B00FF007B0040007B0040007C
+        00FF007B00FF007C00FF007C007C00000000007B005D007B00F8007B0023007B
+        0008007B00D8007C00FF007C00FF007C00C1007C0034007C0080007C0080007C
+        00E7007C0088007C0080007C0080007C00C0007C00FF007B0040007B0040007B
+        00FF007B00FF007B00DD007B0009007B0003007C00D4007B00FF007B00A40000
+        0000007B0047007C00FE007C00FF007C00C1007C0068007C00FF007C00FF007C
+        00FF007C00FF007C00FF007C00FF007C00FF007C00FF007B0040007B0040007B
+        00FF007B00FF007B00E1007B00BE007B00C6007C00FF007B00FF007B00FD007B
+        00BE007B00BE007C00F8007C00FF007B00C1007C001B007C0042007B0042007C
+        00DC007C004E007B0042007C0042007C00A2007B00FF007B0040007C0040007C
+        00FF007C00FF007C00FF007C00FF007C00FF007C00FF007C00FF007C00FF007C
+        00FF007C00FF007C00FF007C00FF007C00C1007C0003007C0008007C0008007C
+        00D1007C0022007C0013007C0013007C008B007C00FF007C0040007B0040007B
+        00FF007B00FF007B00FF007B00FF007B00FF007C00FF007B00FF007B00FF007B
+        00FF007B00FF007C00FF007C00FF007C00C1007C0068007C00FF007C00FF007C
+        00FF007C00FF007C00FF007C00FF007C00FF007C00FF007B0040007B0040007B
+        00FF007B00FF007B00FF007B00FF007B00FF007C00FF007B00FF007B00FF007B
+        00FF007B00FF007C00FF007C00FF007C00C1007C0068007C00FF007C00FF007C
+        00FF007C00FF007C00FF007C00FF007C00FF007C00FF007B0040007C002D007C
+        00D2007C00FA007C00FF007C00FF007B00FF007C00FF007B00FF007B00FF007B
+        00FF007B00FF007C00FF007C00FF007C00C1007C003B007C0090007C0090007C
+        0090007C0090007C0090007C0090007C0090007C008A007B0010000000000000
+        0000007C000A007C0035007B0067007B0098007C00C9007B00F4007B00FF007B
+        00FF007B00FF007C00FF007C00FF007C00C10000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        00000000000000000000000000000000000000000000007B0006007B002C007B
+        005D007B008F007C00C0007C00EE007C00C10000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        00000000000000000000007C0003007C00150000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000
+      }
+      GlyphMargin = 0
+      ParentColor = False
+      Rounding.RoundX = 0
+      Rounding.RoundY = 0
+      RoundingDropDown.RoundX = 1
+      RoundingDropDown.RoundY = 1
+      ShowHint = True
+      TextApplyGlobalOpacity = False
+      DropDownStyle = bdsCommon
+      MemoryUsage = bmuHigh
+    end
+    object Bevel3: TBevel
+      Left = 177
+      Height = 36
+      Top = 0
+      Width = 2
+      Align = alLeft
+      BorderSpacing.Left = 2
+      BorderSpacing.Right = 2
+      Shape = bsRightLine
+    end
+    object MonthTimetableButton: TBCButton
+      Cursor = crHandPoint
+      Left = 181
+      Height = 34
+      Hint = 'Общий табель учета рабочего времени на месяц'
+      Top = 1
+      Width = 217
+      Align = alLeft
+      AutoSize = True
+      StateClicked.Background.Color = 16245964
+      StateClicked.Background.Gradient1.StartColor = 16577765
+      StateClicked.Background.Gradient1.EndColor = 16180676
+      StateClicked.Background.Gradient1.GradientType = gtLinear
+      StateClicked.Background.Gradient1.Point1XPercent = 0
+      StateClicked.Background.Gradient1.Point1YPercent = 0
+      StateClicked.Background.Gradient1.Point2XPercent = 0
+      StateClicked.Background.Gradient1.Point2YPercent = 100
+      StateClicked.Background.Gradient2.StartColor = 15716760
+      StateClicked.Background.Gradient2.EndColor = 14398312
+      StateClicked.Background.Gradient2.GradientType = gtLinear
+      StateClicked.Background.Gradient2.Point1XPercent = 0
+      StateClicked.Background.Gradient2.Point1YPercent = 0
+      StateClicked.Background.Gradient2.Point2XPercent = 0
+      StateClicked.Background.Gradient2.Point2YPercent = 100
+      StateClicked.Background.Gradient1EndPercent = 55
+      StateClicked.Background.Style = bbsColor
+      StateClicked.Border.Color = 10048512
+      StateClicked.Border.LightColor = clBlack
+      StateClicked.Border.LightOpacity = 100
+      StateClicked.Border.Style = bboSolid
+      StateClicked.FontEx.Color = clBlack
+      StateClicked.FontEx.FontQuality = fqSystemClearType
+      StateClicked.FontEx.Shadow = False
+      StateClicked.FontEx.ShadowRadius = 5
+      StateClicked.FontEx.ShadowOffsetX = 5
+      StateClicked.FontEx.ShadowOffsetY = 5
+      StateClicked.FontEx.Style = []
+      StateHover.Background.Color = 16511461
+      StateHover.Background.Gradient1.StartColor = 16643818
+      StateHover.Background.Gradient1.EndColor = 16576729
+      StateHover.Background.Gradient1.GradientType = gtLinear
+      StateHover.Background.Gradient1.Point1XPercent = 0
+      StateHover.Background.Gradient1.Point1YPercent = 0
+      StateHover.Background.Gradient1.Point2XPercent = 0
+      StateHover.Background.Gradient1.Point2YPercent = 100
+      StateHover.Background.Gradient2.StartColor = 16639678
+      StateHover.Background.Gradient2.EndColor = 16112039
+      StateHover.Background.Gradient2.GradientType = gtLinear
+      StateHover.Background.Gradient2.Point1XPercent = 0
+      StateHover.Background.Gradient2.Point1YPercent = 0
+      StateHover.Background.Gradient2.Point2XPercent = 0
+      StateHover.Background.Gradient2.Point2YPercent = 100
+      StateHover.Background.Gradient1EndPercent = 50
+      StateHover.Background.Style = bbsColor
+      StateHover.Border.Color = 14120960
+      StateHover.Border.LightOpacity = 200
+      StateHover.Border.Style = bboSolid
+      StateHover.FontEx.Color = clBlack
+      StateHover.FontEx.FontQuality = fqSystemClearType
+      StateHover.FontEx.Shadow = False
+      StateHover.FontEx.ShadowRadius = 5
+      StateHover.FontEx.ShadowOffsetX = 5
+      StateHover.FontEx.ShadowOffsetY = 5
+      StateHover.FontEx.Style = []
+      StateNormal.Background.Color = 14803425
+      StateNormal.Background.Gradient1.StartColor = 15921906
+      StateNormal.Background.Gradient1.EndColor = 15461355
+      StateNormal.Background.Gradient1.GradientType = gtLinear
+      StateNormal.Background.Gradient1.Point1XPercent = 0
+      StateNormal.Background.Gradient1.Point1YPercent = 0
+      StateNormal.Background.Gradient1.Point2XPercent = 0
+      StateNormal.Background.Gradient1.Point2YPercent = 100
+      StateNormal.Background.Gradient2.StartColor = 14540253
+      StateNormal.Background.Gradient2.EndColor = 13619151
+      StateNormal.Background.Gradient2.GradientType = gtLinear
+      StateNormal.Background.Gradient2.Point1XPercent = 0
+      StateNormal.Background.Gradient2.Point1YPercent = 0
+      StateNormal.Background.Gradient2.Point2XPercent = 0
+      StateNormal.Background.Gradient2.Point2YPercent = 100
+      StateNormal.Background.Gradient1EndPercent = 50
+      StateNormal.Background.Style = bbsColor
+      StateNormal.Border.Color = 11382189
+      StateNormal.Border.LightOpacity = 200
+      StateNormal.Border.Style = bboSolid
+      StateNormal.FontEx.Color = clBlack
+      StateNormal.FontEx.FontQuality = fqSystemClearType
+      StateNormal.FontEx.Shadow = False
+      StateNormal.FontEx.ShadowRadius = 5
+      StateNormal.FontEx.ShadowOffsetX = 5
+      StateNormal.FontEx.ShadowOffsetY = 5
+      StateNormal.FontEx.Style = []
+      BorderSpacing.Left = 2
+      BorderSpacing.Top = 1
+      BorderSpacing.Bottom = 1
+      Caption = 'Общий табель на месяц'
+      Color = clNone
+      DropDownWidth = 16
+      DropDownArrowSize = 8
+      GlobalOpacity = 255
+      Glyph.Data = {
+        36090000424D3609000000000000360000002800000018000000180000000100
+        2000000000000009000064000000640000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000A98C51A2AA8C
+        51AFA98B51AFAA8C51AFAA8C51AFA98B51AFA98B51AFA98B51AFA98B51AFA98B
+        51AFA98B51AFC5AF88C4F3E8E3CBF3E8E3CB9B8E87CBF3E8E3CBF3E8E3CBF3E8
+        E3CBF3E8E3CBA89C95CBE3D8D2CBF3E8E3CBF3E8E3CBF2E7E3C5AA8C51FAAA8C
+        51FFB49966FFB9A070FFAA8C51FFAA8C51FFAA8C51FFAA8C51FFAA8C51FFAA8C
+        51FFAA8C51FFBCA376FFF3E8E3FFF3E8E3FF998D85FFF3E8E3FFF3E8E3FFF3E8
+        E3FFF3E8E3FFA89C95FFE4D8D3FFF3E8E3FFF3E8E3FFF2E7E2FFA98C51FAB297
+        62FFFAF9F6FFFDFDFDFFC0A97EFFA98B50FFBCA577FFCBB995FFCBB995FFC9B6
+        91FFAA8C51FFBCA376FFF3E8E3FFF3E8E3FF998D85FFF3E8E3FFF3E8E3FFF3E8
+        E3FFF3E8E3FFA89C95FFE4D8D3FFF3E8E3FFF3E8E3FFF2E7E2FFA98C51FAB399
+        65FFFCFBFAFFFDFDFDFFC2AD83FFA98B50FFBEA77AFFCDBC9AFFCDBC9AFFCBB9
+        96FFAA8C52FFAC9265FFB3A7A0FFB3A7A0FF83776EFFB3A7A0FFB3A7A0FFB3A7
+        A0FFB3A7A0FF8B7F77FFAB9F98FFB3A7A0FFB3A7A0FFB3A7A0FFAA8C51FAAA8C
+        51FFB9A171FFC0AA7EFFAA8C51FFAA8C51FFAA8C51FFAA8C51FFAA8C51FFAA8C
+        51FFAA8C51FFB69C6FFFD9CEC8FFD9CEC8FF90847CFFD9CEC8FFD9CEC8FFD9CE
+        C8FFD9CEC8FF9D9089FFCDC1BBFFD9CEC8FFD9CEC8FFD9CEC8FF9D8355FC9D83
+        55FF9D8355FF9D8355FF9D8355FF9D8355FF9D8355FF9D8355FF9D8355FF9D83
+        55FF9D8355FFB29C78FFF3E8E3FFF3E8E3FF998D85FFF3E8E3FFF3E8E3FFF3E8
+        E3FFF3E8E3FFA89C95FFE4D8D3FFF3E8E3FFF3E8E3FFF2E7E2FFA68952FAA689
+        52FFAB905CFFAE9462FFA68952FFA68952FFA68952FFA68952FFA68952FFA689
+        52FFA68952FFB89F75FFECE1DCFFECE1DCFF978B83FFECE1DCFFECE1DCFFECE1
+        DCFFECE1DCFFA59992FFDED3CDFFECE1DCFFECE1DCFFECE1DCFFAA8C51FAB095
+        5EFFF7F5F0FFFCFBFAFFBCA577FFAA8C51FFB79D6CFFC2AD84FFC2AD84FFC0AB
+        80FFAA8C51FFA78E60FFA0938CFFA0938CFF7D7068FFA0938CFFA0938CFFA093
+        8CFFA0938CFF83766EFF9A8E86FFA0938CFFA0938CFFA0938CFFA98C51FAB59A
+        67FFFCFCFBFFFEFEFEFFC4AF87FFA98B50FFC3AE85FFD6C7ABFFD6C7ABFFD4C5
+        A7FFAA8D52FFBCA376FFF3E8E3FFF3E8E3FF998D85FFF3E8E3FFF3E8E3FFF3E8
+        E3FFF3E8E3FFA89C95FFE4D8D3FFF3E8E3FFF3E8E3FFF2E7E2FFA98C51FAAA8C
+        50FFBCA577FFC3AE86FFAA8C51FFA98B50FFA98B50FFA98B50FFA98B50FFA98B
+        50FFA98B50FFBCA376FFF3E8E3FFF3E8E3FF998D85FFF3E8E3FFF3E8E3FFF3E8
+        E3FFF3E8E3FFA89C95FFE4D8D3FFF3E8E3FFF3E8E3FFF2E7E2FF9A8256FC9A81
+        56FF9A8156FF9A8156FF9A8156FF9A8156FF9A8156FF9A8156FF9A8156FF9A81
+        56FF9A8156FF9B8663FF9E918AFF9E918AFF7C6F67FF9E918AFF9E918AFF9E91
+        8AFF9E918AFF82756DFF988C84FF9E918AFF9E918AFF9D918AFFA98B51FAA98B
+        51FFAC8F57FFAE925CFFA98B51FFA98B51FFA98B51FFA98B51FFA98B51FFA98B
+        51FFA98B51FFBAA175FFEEE3DEFFEEE3DEFF988B84FFEEE3DEFFEEE3DEFFEEE3
+        DEFFEEE3DEFFA69A93FFE0D5CFFFEEE3DEFFEEE3DEFFEEE3DEFFA98C51FAAF93
+        5CFFF5F2ECFFFBFAF8FFBAA272FFA98B50FFB19661FFBAA272FFBAA272FFB89F
+        6EFFA98B50FFBCA376FFF3E8E3FFF3E8E3FF998D85FFF3E8E3FFF3E8E3FFF3E8
+        E3FFF3E8E3FFA89C95FFE4D8D3FFF3E8E3FFF3E8E3FFF2E7E2FFA98C51FAB69D
+        6BFFFDFDFDFFFDFDFDFFC7B38CFFA98B50FFC8B590FFDED3BDFFDED3BDFFDCD0
+        B8FFAB8D53FFB59C6EFFD7CBC6FFD7CBC6FF90837BFFD7CBC6FFD7CBC6FFD7CB
+        C6FFD7CBC6FF9C8F88FFCBBFB9FFD7CBC6FFD7CBC6FFD7CBC6FFA98C51FAA98B
+        50FFC4AF87FFCCBA97FFAA8D53FFA98B50FFA98B50FFA98B50FFA98B50FFA98B
+        50FFA98B50FFAC9365FFB5A9A2FFB5A9A2FF84776FFFB5A9A2FFB5A9A2FFB5A9
+        A2FFB5A9A2FF8C8078FFADA19AFFB5A9A2FFB5A9A2FFB5A9A2FFAA8C51F8AA8C
+        50FFA98B50FFAA8C51FFAA8C51FFA98B50FFA98B50FFA98B50FFA98B50FFA98B
+        50FFA98B50FFBDA477FFF3E8E3FFF3E8E3FF998D85FFF3E8E3FFF3E8E3FFF3E8
+        E3FFF3E8E3FFA89C95FFE4D8D3FFF3E8E3FFF3E8E3FFF2E7E2FFAB8E501EAA8C
+        5125AA8C5125AA8C5125D3C0A45FE8DACDFFE8DACDFFE8DACDFFE8DACDFFE8DA
+        CDFFE8DACDFFEDE0D7FFF3E8E3FFF3E8E3FF998D85FFF3E8E3FFF3E8E3FFF3E8
+        E3FFF3E8E3FFA89C95FFE4D8D3FFF3E8E3FFF3E8E3FFF2E7E2FF000000000000
+        000000000000000000008F8CF6448380F8FF8380F8FF8380F8FF8380F8FF8380
+        F8FF8380F8FF8380F8FF8380F8FF8380F8FF6F6DE4FF8380F8FF8380F8FF8380
+        F8FF8380F8FF7370E7FF807DF5FF8380F8FF8380F8FF8683F8FF000000000000
+        000000000000000000006464FF446363FEFF6363FEFF6363FEFF6363FEFF6363
+        FEFF6363FEFF6363FEFF6464FFFF6464FFFF6464FFFF6464FFFF6464FFFF6464
+        FFFF6464FFFF6464FFFF6464FFFF6464FFFF6464FFFF6363FEFF000000000000
+        000000000000000000006363FE306464FECB6363FECB6363FECB6363FECB6363
+        FECB6363FECB6363FECB6464FFCB6464FFCB6464FFCB6464FFCB6464FFCB6464
+        FFCB6464FFCB6464FFCB6464FFCB6464FFCB6464FFCB6464FEC5000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000
+      }
+      GlyphMargin = 0
+      ParentColor = False
+      Rounding.RoundX = 0
+      Rounding.RoundY = 0
+      RoundingDropDown.RoundX = 1
+      RoundingDropDown.RoundY = 1
+      ShowHint = True
+      TextApplyGlobalOpacity = False
+      DropDownStyle = bdsCommon
+      MemoryUsage = bmuHigh
+    end
+  end
+  object StaffCaptionPanel: TBCPanel
+    Left = 2
+    Height = 30
+    Top = 44
+    Width = 1706
+    Align = alTop
+    BorderSpacing.Left = 2
+    BorderSpacing.Top = 2
+    BorderSpacing.Right = 2
+    Background.Color = clBtnFace
+    Background.Gradient1.StartColor = clWhite
+    Background.Gradient1.EndColor = clBlack
+    Background.Gradient1.GradientType = gtLinear
+    Background.Gradient1.Point1XPercent = 0
+    Background.Gradient1.Point1YPercent = 0
+    Background.Gradient1.Point2XPercent = 0
+    Background.Gradient1.Point2YPercent = 100
+    Background.Gradient2.StartColor = clWhite
+    Background.Gradient2.EndColor = clBlack
+    Background.Gradient2.GradientType = gtLinear
+    Background.Gradient2.Point1XPercent = 0
+    Background.Gradient2.Point1YPercent = 0
+    Background.Gradient2.Point2XPercent = 0
+    Background.Gradient2.Point2YPercent = 100
+    Background.Gradient1EndPercent = 35
+    Background.Style = bbsColor
+    BevelInner = bvNone
+    BevelOuter = bvNone
+    BevelWidth = 1
+    Border.Color = clActiveBorder
+    Border.Style = bboSolid
+    BorderBCStyle = bpsBorder
+    Caption = 'Сотрудник'
+    FontEx.Color = clDefault
+    FontEx.FontQuality = fqSystemClearType
+    FontEx.Shadow = False
+    FontEx.ShadowRadius = 5
+    FontEx.ShadowOffsetX = 5
+    FontEx.ShadowOffsetY = 5
+    FontEx.Style = [fsBold]
+    FontEx.PaddingLeft = 10
+    ParentBackground = False
+    Rounding.RoundX = 1
+    Rounding.RoundY = 1
+    TabOrder = 1
+    Visible = False
+  end
+  object ListPanel: TPanel
+    Left = 2
+    Height = 634
+    Top = 76
+    Width = 580
+    Align = alLeft
+    BorderSpacing.Left = 2
+    BorderSpacing.Top = 2
+    BorderSpacing.Bottom = 2
+    BevelOuter = bvNone
+    ClientHeight = 634
+    ClientWidth = 580
+    TabOrder = 2
+    object ListCaptionPanel: TBCPanel
+      Left = 0
+      Height = 30
+      Top = 0
+      Width = 580
+      Align = alTop
+      BorderSpacing.Bottom = 2
+      Background.Color = clBtnFace
+      Background.Gradient1.StartColor = clWhite
+      Background.Gradient1.EndColor = clBlack
+      Background.Gradient1.GradientType = gtLinear
+      Background.Gradient1.Point1XPercent = 0
+      Background.Gradient1.Point1YPercent = 0
+      Background.Gradient1.Point2XPercent = 0
+      Background.Gradient1.Point2YPercent = 100
+      Background.Gradient2.StartColor = clWhite
+      Background.Gradient2.EndColor = clBlack
+      Background.Gradient2.GradientType = gtLinear
+      Background.Gradient2.Point1XPercent = 0
+      Background.Gradient2.Point1YPercent = 0
+      Background.Gradient2.Point2XPercent = 0
+      Background.Gradient2.Point2YPercent = 100
+      Background.Gradient1EndPercent = 35
+      Background.Style = bbsColor
+      BevelInner = bvNone
+      BevelOuter = bvNone
+      BevelWidth = 1
+      Border.Color = clActiveBorder
+      Border.Style = bboSolid
+      BorderBCStyle = bpsBorder
+      Caption = 'Список сотрудников'
+      FontEx.Color = clDefault
+      FontEx.FontQuality = fqSystemClearType
+      FontEx.Shadow = False
+      FontEx.ShadowRadius = 5
+      FontEx.ShadowOffsetX = 5
+      FontEx.ShadowOffsetY = 5
+      FontEx.Style = [fsBold]
+      FontEx.TextAlignment = bcaLeftCenter
+      FontEx.PaddingLeft = 10
+      ParentBackground = False
+      Rounding.RoundX = 1
+      Rounding.RoundY = 1
+      TabOrder = 0
+    end
+    object StaffListVT: TVirtualStringTree
+      Left = 0
+      Height = 518
+      Top = 74
+      Width = 580
+      Align = alClient
+      DefaultText = 'Node'
+      Header.AutoSizeIndex = 0
+      Header.Columns = <>
+      Header.MainColumn = -1
+      Margin = 50
+      TabOrder = 1
+    end
+    object ListFilterToolPanel: TPanel
+      Left = 0
+      Height = 40
+      Top = 32
+      Width = 580
+      Align = alTop
+      BorderSpacing.Bottom = 2
+      BevelOuter = bvNone
+      BorderStyle = bsSingle
+      ClientHeight = 36
+      ClientWidth = 576
+      Constraints.MaxHeight = 40
+      Constraints.MinHeight = 40
+      ParentBackground = False
+      ParentColor = False
+      ParentFont = False
+      TabOrder = 2
+      object FilterPanel: TPanel
+        AnchorSideRight.Control = ListFilterToolPanel
+        AnchorSideRight.Side = asrBottom
+        Left = 0
+        Height = 36
+        Top = 0
+        Width = 576
+        Align = alLeft
+        Anchors = [akTop, akLeft, akRight, akBottom]
+        AutoSize = True
+        BevelOuter = bvNone
+        ClientHeight = 36
+        ClientWidth = 576
+        ParentBackground = False
+        TabOrder = 0
+        object FilterLabel: TLabel
+          AnchorSideLeft.Control = FilterPanel
+          AnchorSideTop.Control = FilterPanel
+          AnchorSideTop.Side = asrCenter
+          Left = 6
+          Height = 20
+          Top = 8
+          Width = 122
+          BorderSpacing.Left = 6
+          Caption = 'Фильтр по Ф.И.О.:'
+          ParentColor = False
+        end
+        object FilterEdit: TEditButton
+          AnchorSideLeft.Control = FilterLabel
+          AnchorSideLeft.Side = asrBottom
+          AnchorSideTop.Control = FilterPanel
+          AnchorSideTop.Side = asrCenter
+          AnchorSideRight.Control = FilterPanel
+          AnchorSideRight.Side = asrBottom
+          AnchorSideBottom.Side = asrBottom
+          Left = 136
+          Height = 28
+          Top = 4
+          Width = 438
+          Anchors = [akTop, akLeft, akRight]
+          BorderSpacing.Left = 8
+          BorderSpacing.Right = 2
+          ButtonCursor = crHandPoint
+          ButtonWidth = 29
+          CharCase = ecUppercase
+          Glyph.Data = {
+            36040000424D3604000000000000360000002800000010000000100000000100
+            2000000000000004000064000000640000000000000000000000000000000000
+            E5020000E59E0000E5E80000E52F000000000000000000000000000000000000
+            0000000000000000E52F0000E5E80000E59E0000E502000000000000E5020000
+            E5A10000E5FF0000E5FF0000E5EC0000E52F0000000000000000000000000000
+            00000000E52F0000E5EC0000E5FF0000E5FF0000E5A10000E5020000E59E0000
+            E5FF0000E5FF0000E5FF0000E5FF0000E5EC0000E52F00000000000000000000
+            E52F0000E5EC0000E5FF0000E5FF0000E5FF0000E5FF0000E59E0000E5E80000
+            E5FF0000E5FF0000E5FF0000E5FF0000E5FF0000E5EC0000E52F0000E52F0000
+            E5EC0000E5FF0000E5FF0000E5FF0000E5FF0000E5FF0000E5E80000E52F0000
+            E5EC0000E5FF0000E5FF0000E5FF0000E5FF0000E5FF0000E5EC0000E5EC0000
+            E5FF0000E5FF0000E5FF0000E5FF0000E5FF0000E5EC0000E52F000000000000
+            E52F0000E5EC0000E5FF0000E5FF0000E5FF0000E5FF0000E5FF0000E5FF0000
+            E5FF0000E5FF0000E5FF0000E5FF0000E5EC0000E52F00000000000000000000
+            00000000E52F0000E5EC0000E5FF0000E5FF0000E5FF0000E5FF0000E5FF0000
+            E5FF0000E5FF0000E5FF0000E5EC0000E52F0000000000000000000000000000
+            0000000000000000E52F0000E5EC0000E5FF0000E5FF0000E5FF0000E5FF0000
+            E5FF0000E5FF0000E5EC0000E52F000000000000000000000000000000000000
+            0000000000000000E52F0000E5EC0000E5FF0000E5FF0000E5FF0000E5FF0000
+            E5FF0000E5FF0000E5EC0000E52F000000000000000000000000000000000000
+            00000000E52F0000E5EC0000E5FF0000E5FF0000E5FF0000E5FF0000E5FF0000
+            E5FF0000E5FF0000E5FF0000E5EC0000E52F0000000000000000000000000000
+            E52F0000E5EC0000E5FF0000E5FF0000E5FF0000E5FF0000E5FF0000E5FF0000
+            E5FF0000E5FF0000E5FF0000E5FF0000E5EC0000E52F000000000000E52F0000
+            E5EC0000E5FF0000E5FF0000E5FF0000E5FF0000E5FF0000E5EC0000E5EC0000
+            E5FF0000E5FF0000E5FF0000E5FF0000E5FF0000E5EC0000E52F0000E5E80000
+            E5FF0000E5FF0000E5FF0000E5FF0000E5FF0000E5EC0000E52F0000E52F0000
+            E5EC0000E5FF0000E5FF0000E5FF0000E5FF0000E5FF0000E5E80000E59E0000
+            E5FF0000E5FF0000E5FF0000E5FF0000E5EC0000E52F00000000000000000000
+            E52F0000E5EC0000E5FF0000E5FF0000E5FF0000E5FF0000E59E0000E5020000
+            E5A10000E5FF0000E5FF0000E5EC0000E52F0000000000000000000000000000
+            00000000E52F0000E5EC0000E5FF0000E5FF0000E5A10000E502000000000000
+            E5020000E59E0000E5E80000E52F000000000000000000000000000000000000
+            0000000000000000E52F0000E5E80000E59E0000E50200000000
+          }
+          ImageIndex = 0
+          MaxLength = 0
+          NumGlyphs = 1
+          PasswordChar = #0
+          TabOrder = 0
+        end
+      end
+    end
+    object ListOrderToolPanel: TPanel
+      Left = 0
+      Height = 40
+      Top = 594
+      Width = 580
+      Align = alBottom
+      BorderSpacing.Top = 2
+      BevelOuter = bvNone
+      BorderStyle = bsSingle
+      ClientHeight = 36
+      ClientWidth = 576
+      TabOrder = 3
+      object OrderLabel: TLabel
+        AnchorSideLeft.Control = OrderButtonPanel
+        AnchorSideLeft.Side = asrBottom
+        AnchorSideTop.Control = ListOrderToolPanel
+        AnchorSideTop.Side = asrCenter
+        Left = 92
+        Height = 20
+        Top = 8
+        Width = 115
+        BorderSpacing.Left = 6
+        Caption = 'Сортировать по:'
+        ParentColor = False
+      end
+      object FIORadioButton: TRadioButton
+        AnchorSideLeft.Control = OrderLabel
+        AnchorSideLeft.Side = asrBottom
+        AnchorSideTop.Control = ListOrderToolPanel
+        AnchorSideTop.Side = asrCenter
+        Left = 213
+        Height = 24
+        Top = 6
+        Width = 63
+        BorderSpacing.Left = 6
+        Caption = 'Ф.И.О.'
+        Checked = True
+        TabOrder = 1
+        TabStop = True
+      end
+      object PostRadioButton: TRadioButton
+        AnchorSideLeft.Control = FIORadioButton
+        AnchorSideLeft.Side = asrBottom
+        AnchorSideTop.Control = ListOrderToolPanel
+        AnchorSideTop.Side = asrCenter
+        Left = 282
+        Height = 24
+        Top = 6
+        Width = 97
+        BorderSpacing.Left = 6
+        Caption = 'должности'
+        TabOrder = 0
+      end
+      object TabNumRadioButton: TRadioButton
+        AnchorSideLeft.Control = PostRadioButton
+        AnchorSideLeft.Side = asrBottom
+        AnchorSideTop.Control = ListOrderToolPanel
+        AnchorSideTop.Side = asrCenter
+        Left = 385
+        Height = 24
+        Top = 6
+        Width = 161
+        BorderSpacing.Left = 6
+        Caption = 'табельному номеру'
+        TabOrder = 2
+      end
+      object OrderButtonPanel: TPanel
+        Left = 0
+        Height = 36
+        Top = 0
+        Width = 86
+        Align = alLeft
+        AutoSize = True
+        BevelOuter = bvNone
+        ClientHeight = 36
+        ClientWidth = 86
+        TabOrder = 3
+        object AscendingButton: TSpeedButton
+          Cursor = crHandPoint
+          Left = 0
+          Height = 36
+          Hint = 'Изменить порядок сортировки'
+          Top = 0
+          Width = 40
+          Align = alLeft
+          Constraints.MaxWidth = 40
+          Constraints.MinWidth = 40
+          Glyph.Data = {
+            36090000424D3609000000000000360000002800000018000000180000000100
+            2000000000000009000064000000640000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000009900
+            002D9900007F9900007F9900007F9900007F9900007F9900007F9900007F9900
+            007F9900007F9900007F9900007F9900007F9900007F9900007F9900007F9900
+            0029000000000000000000000000000000000000000000000000000000009900
+            0080980000FF990000FF990000FF980000FF980000FF980000FF980000FF9800
+            00FF980000FF980000FF990000FF990000FF990000FF990000FF990000FF9900
+            0077000000000000000000000000000000000000000000000000000000009900
+            0080990000FF990000FF990000FF990000FF990000FF980000FF990000FF9900
+            00FF980000FF990000FF990000FF990000FF990000FF990000FF990000FF9900
+            0077000000000000000000000000000000000000000000000000000000009900
+            0030990000869900008699000086990000869900008699000086990000869900
+            0086990000869900008699000086990000869900008699000086990000869900
+            002C000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000009900
+            00159900004C9900004C9900004C9900004C9900004C9800004C9900004C9900
+            004C9800004C9900004C9900004C990000190000000000000000990000179900
+            003F9900003F9900001200000000000000000000000000000000000000009900
+            007E990000FF990000FF990000FF990000FF990000FF990000FF990000FF9900
+            00FF990000FF990000FF990000FF9900008C0000000000000000990000919900
+            00FF990000FF9900007C00000000000000000000000000000000000000009900
+            0080980000FF990000FF990000FF980000FF980000FF980000FF980000FF9800
+            00FF980000FF980000FF990000FF9900008E0000000000000000990000939900
+            00FF990000FF9900007E00000000000000000000000000000000000000009900
+            004A990000BA990000BA990000BA990000BA990000BA980000BA990000BA9900
+            00BA980000BA990000BA990000BA990000540000000000000000990000939900
+            00FF990000FF9900007E00000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000990000939900
+            00FF990000FF9900007E00000000000000000000000000000000000000009900
+            0003980000199900001A9900001A980000199800001998000019980000199800
+            0017000000000000000000000000000000000000000000000000990000939900
+            00FF990000FF9900007E00000000000000000000000000000000000000009800
+            0076980000FF980000FF980000FF980000FF980000FF980000FF980000FF9800
+            00FF980000380000000000000000000000000000000000000000990000939900
+            00FF990000FF9900007E00000000000000000000000000000000000000009800
+            0080980000FF980000FF980000FF980000FF980000FF980000FF980000FF9800
+            00FF980000420000000000000000000000000000000000000000990000939800
+            00FF980000FF9900007E00000000000000000000000000000000000000009900
+            0063980000ED990000ED990000ED980000ED980000ED980000ED980000ED9800
+            00EA9800002D0000000000000000000000000000000000000000990000939900
+            00FF990000FF9900007E00000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000990000939900
+            00FF990000FF9900007E00000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000990000329800004F98000015990000959800
+            00FF980000FF9900007F98000019980000549900002800000000000000009900
+            0060980000E6990000E6990000E6980000E6980000E09800001A000000000000
+            00000000000000000000000000009900005E990000FF990000FD990000FA9900
+            00FF990000FF990000F9990000FE990000FD9900004800000000000000009800
+            0080980000FF980000FF980000FF980000FF980000FF9800002B000000000000
+            00000000000000000000000000000000000099000093990000FF990000FF9900
+            00FF990000FF990000FF990000FF9900007D0000000000000000000000009800
+            0077980000FF980000FF980000FF980000FF980000FE98000023000000000000
+            00000000000000000000000000000000000099000005990000BC990000FF9900
+            00FF990000FF990000FF990000A9990000010000000000000000000000009900
+            00059800001F9900001F9900001F9800001F9800001A00000000000000000000
+            0000000000000000000000000000000000000000000099000013990000DB9900
+            00FF990000FF990000CD9900000B000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            00000000000000000000000000000000000000000000000000009900002B9900
+            00F1990000E79900001D00000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000009900
+            003D990000320000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000
+          }
+          Visible = False
+          ShowHint = True
+          ParentShowHint = False
+        end
+        object DescendingButton: TSpeedButton
+          Cursor = crHandPoint
+          Left = 40
+          Height = 36
+          Hint = 'Изменить порядок сортировки'
+          Top = 0
+          Width = 40
+          Align = alLeft
+          Constraints.MaxWidth = 40
+          Constraints.MinWidth = 40
+          Glyph.Data = {
+            36090000424D3609000000000000360000002800000018000000180000000100
+            2000000000000009000064000000640000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000009900
+            003D990000320000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            00000000000000000000000000000000000000000000000000009900002B9900
+            00F1990000E79900001D00000000000000000000000000000000000000009900
+            0006990000219900002199000021990000219900001B00000000000000000000
+            0000000000000000000000000000000000000000000099000013990000DB9900
+            00FF990000FF990000CD9900000B000000000000000000000000000000009900
+            0077990000FF990000FF990000FF990000FF990000FE99000023000000000000
+            00000000000000000000000000000000000099000005990000BC990000FF9900
+            00FF990000FF990000FF990000A9990000010000000000000000000000009900
+            0080980000FF990000FF990000FF980000FF980000FF9800002B000000000000
+            00000000000000000000000000000000000099000093990000FF990000FF9900
+            00FF990000FF990000FF990000FF9900007D0000000000000000000000009900
+            0060990000E5990000E6990000E6990000E6990000E09800001A000000000000
+            00000000000000000000000000009900005E990000FF990000FD990000FA9900
+            00FF990000FF990000F9990000FE990000FD9900004800000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000990000329900004F99000015990000959900
+            00FF990000FF9900007F99000019990000549900002800000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000990000939900
+            00FF990000FF9900007E00000000000000000000000000000000000000009900
+            0063990000ED990000ED990000ED990000ED990000ED980000ED990000ED9900
+            00EA9800002D0000000000000000000000000000000000000000990000939900
+            00FF990000FF9900007E00000000000000000000000000000000000000009900
+            0080990000FF990000FF990000FF990000FF990000FF990000FF990000FF9900
+            00FF990000420000000000000000000000000000000000000000990000939900
+            00FF990000FF9900007E00000000000000000000000000000000000000009900
+            0076980000FF990000FF990000FF980000FF980000FF980000FF980000FF9800
+            00FF980000380000000000000000000000000000000000000000990000939900
+            00FF990000FF9900007E00000000000000000000000000000000000000009800
+            0003980000199800001A9800001A980000199800001998000019980000199800
+            0017000000000000000000000000000000000000000000000000990000939900
+            00FF990000FF9900007E00000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000990000939800
+            00FF980000FF9900007E00000000000000000000000000000000000000009900
+            004A980000BA990000BA990000BA980000BA980000BA980000BA980000BA9800
+            00BA980000BA980000BA990000BA990000540000000000000000990000939900
+            00FF990000FF9900007E00000000000000000000000000000000000000009800
+            0080980000FF980000FF980000FF980000FF980000FF980000FF980000FF9800
+            00FF980000FF980000FF990000FF9900008E0000000000000000990000939900
+            00FF990000FF9900007E00000000000000000000000000000000000000009800
+            007E980000FF980000FF980000FF980000FF980000FF980000FF980000FF9800
+            00FF980000FF980000FF980000FF9900008C0000000000000000990000929800
+            00FF980000FF9900007C00000000000000000000000000000000000000009900
+            00159800004C9900004C9900004C9800004C9800004C9800004C9800004C9800
+            004C9800004C9800004C9900004C990000190000000000000000990000179900
+            003F9900003F9900001200000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000009800
+            0030980000869800008698000086980000869800008698000086980000869800
+            0086980000869800008699000086990000869900008699000086990000869900
+            002C000000000000000000000000000000000000000000000000000000009900
+            0080980000FF990000FF990000FF980000FF980000FF980000FF980000FF9800
+            00FF980000FF980000FF990000FF990000FF990000FF990000FF990000FF9900
+            0077000000000000000000000000000000000000000000000000000000009800
+            0080980000FF980000FF980000FF980000FF980000FF980000FF980000FF9800
+            00FF980000FF980000FF990000FF990000FF990000FF990000FF990000FF9900
+            0077000000000000000000000000000000000000000000000000000000009800
+            002D9800007F98000080990000809800007F9800007F9800007F9800007F9800
+            007F9800007F9800007F990000809900008099000080990000809900007F9900
+            0029000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000
+          }
+          ShowHint = True
+          ParentShowHint = False
+        end
+        object OrderButtonBevel: TBevel
+          Left = 82
+          Height = 36
+          Top = 0
+          Width = 2
+          Align = alLeft
+          BorderSpacing.Left = 2
+          BorderSpacing.Right = 2
+          Shape = bsRightLine
+        end
+      end
+    end
+  end
+  object SettingPanel: TPanel
+    Left = 584
+    Height = 634
+    Top = 76
+    Width = 350
+    Align = alLeft
+    BorderSpacing.Left = 2
+    BorderSpacing.Top = 2
+    BorderSpacing.Bottom = 2
+    BevelOuter = bvNone
+    ClientHeight = 634
+    ClientWidth = 350
+    Color = clWindow
+    ParentBackground = False
+    ParentColor = False
+    TabOrder = 3
+    Visible = False
+    object SettingCaptionPanel: TBCPanel
+      Left = 0
+      Height = 30
+      Top = 0
+      Width = 350
+      Align = alTop
+      BorderSpacing.Bottom = 2
+      Background.Color = clBtnFace
+      Background.Gradient1.StartColor = clWhite
+      Background.Gradient1.EndColor = clBlack
+      Background.Gradient1.GradientType = gtLinear
+      Background.Gradient1.Point1XPercent = 0
+      Background.Gradient1.Point1YPercent = 0
+      Background.Gradient1.Point2XPercent = 0
+      Background.Gradient1.Point2YPercent = 100
+      Background.Gradient2.StartColor = clWhite
+      Background.Gradient2.EndColor = clBlack
+      Background.Gradient2.GradientType = gtLinear
+      Background.Gradient2.Point1XPercent = 0
+      Background.Gradient2.Point1YPercent = 0
+      Background.Gradient2.Point2XPercent = 0
+      Background.Gradient2.Point2YPercent = 100
+      Background.Gradient1EndPercent = 35
+      Background.Style = bbsColor
+      BevelInner = bvNone
+      BevelOuter = bvNone
+      BevelWidth = 1
+      Border.Color = clActiveBorder
+      Border.Style = bboSolid
+      BorderBCStyle = bpsBorder
+      Caption = 'Параметры'
+      FontEx.Color = clDefault
+      FontEx.FontQuality = fqSystemClearType
+      FontEx.Shadow = False
+      FontEx.ShadowRadius = 5
+      FontEx.ShadowOffsetX = 5
+      FontEx.ShadowOffsetY = 5
+      FontEx.Style = [fsBold]
+      FontEx.TextAlignment = bcaLeftCenter
+      FontEx.PaddingLeft = 10
+      ParentBackground = False
+      Rounding.RoundX = 1
+      Rounding.RoundY = 1
+      TabOrder = 0
+    end
+    object SettingClientPanel: TPanel
+      Left = 0
+      Height = 602
+      Top = 32
+      Width = 350
+      Align = alClient
+      BevelOuter = bvNone
+      BorderStyle = bsSingle
+      ClientHeight = 598
+      ClientWidth = 346
+      ParentBackground = False
+      TabOrder = 1
+      object ParamListVT: TVirtualStringTree
+        Left = 0
+        Height = 125
+        Top = 0
+        Width = 346
+        Align = alTop
+        BorderStyle = bsNone
+        DefaultText = 'Node'
+        Header.AutoSizeIndex = 0
+        Header.Columns = <>
+        Header.MainColumn = -1
+        TabOrder = 0
+      end
+      object CountTypeVT: TVirtualStringTree
+        Left = 0
+        Height = 79
+        Top = 131
+        Width = 346
+        Align = alTop
+        BorderSpacing.Top = 6
+        BorderStyle = bsNone
+        DefaultText = 'Node'
+        Header.AutoSizeIndex = 0
+        Header.Columns = <>
+        Header.MainColumn = -1
+        TabOrder = 1
+      end
+      object ColorTypeVT: TVirtualStringTree
+        Left = 0
+        Height = 79
+        Top = 216
+        Width = 346
+        Align = alTop
+        BorderSpacing.Top = 6
+        BorderStyle = bsNone
+        DefaultText = 'Node'
+        Header.AutoSizeIndex = 0
+        Header.Columns = <>
+        Header.MainColumn = -1
+        TabOrder = 2
+      end
+    end
+  end
+  object EditingPanel: TPanel
+    Left = 936
+    Height = 634
+    Top = 76
+    Width = 650
+    Align = alLeft
+    BorderSpacing.Left = 2
+    BorderSpacing.Top = 2
+    BorderSpacing.Bottom = 2
+    BevelOuter = bvNone
+    ClientHeight = 634
+    ClientWidth = 650
+    TabOrder = 4
+    Visible = False
+    object EditingCaptionPanel: TBCPanel
+      Left = 0
+      Height = 30
+      Top = 0
+      Width = 650
+      Align = alTop
+      BorderSpacing.Bottom = 2
+      Background.Color = clBtnFace
+      Background.Gradient1.StartColor = clWhite
+      Background.Gradient1.EndColor = clBlack
+      Background.Gradient1.GradientType = gtLinear
+      Background.Gradient1.Point1XPercent = 0
+      Background.Gradient1.Point1YPercent = 0
+      Background.Gradient1.Point2XPercent = 0
+      Background.Gradient1.Point2YPercent = 100
+      Background.Gradient2.StartColor = clWhite
+      Background.Gradient2.EndColor = clBlack
+      Background.Gradient2.GradientType = gtLinear
+      Background.Gradient2.Point1XPercent = 0
+      Background.Gradient2.Point1YPercent = 0
+      Background.Gradient2.Point2XPercent = 0
+      Background.Gradient2.Point2YPercent = 100
+      Background.Gradient1EndPercent = 35
+      Background.Style = bbsColor
+      BevelInner = bvNone
+      BevelOuter = bvNone
+      BevelWidth = 1
+      Border.Color = clActiveBorder
+      Border.Style = bboSolid
+      BorderBCStyle = bpsBorder
+      Caption = 'Редактирование'
+      FontEx.Color = clDefault
+      FontEx.FontQuality = fqSystemClearType
+      FontEx.Shadow = False
+      FontEx.ShadowRadius = 5
+      FontEx.ShadowOffsetX = 5
+      FontEx.ShadowOffsetY = 5
+      FontEx.Style = [fsBold]
+      FontEx.TextAlignment = bcaLeftCenter
+      FontEx.PaddingLeft = 10
+      ParentBackground = False
+      Rounding.RoundX = 1
+      Rounding.RoundY = 1
+      TabOrder = 0
+    end
+    object DayPanel: TPanel
+      Left = 0
+      Height = 502
+      Top = 32
+      Width = 650
+      Align = alClient
+      BevelOuter = bvNone
+      ClientHeight = 502
+      ClientWidth = 650
+      TabOrder = 1
+      object DayToolPanel: TPanel
+        Left = 0
+        Height = 40
+        Top = 0
+        Width = 650
+        Align = alTop
+        BevelOuter = bvNone
+        BorderStyle = bsSingle
+        ClientHeight = 36
+        ClientWidth = 646
+        ParentFont = False
+        TabOrder = 0
+        object MonthPanel: TPanel
+          Left = 0
+          Height = 36
+          Top = 0
+          Width = 202
+          Align = alLeft
+          AutoSize = True
+          BevelOuter = bvNone
+          ClientHeight = 36
+          ClientWidth = 202
+          TabOrder = 0
+          object MonthBCButton: TBCButton
+            Tag = -1
+            AnchorSideLeft.Side = asrBottom
+            AnchorSideRight.Side = asrBottom
+            AnchorSideBottom.Side = asrBottom
+            Left = 2
+            Height = 28
+            Top = 4
+            Width = 200
+            Anchors = [akTop, akLeft, akBottom]
+            StateClicked.Background.Gradient1.StartColor = 8404992
+            StateClicked.Background.Gradient1.EndColor = 4194304
+            StateClicked.Background.Gradient1.GradientType = gtRadial
+            StateClicked.Background.Gradient1.Point1XPercent = 50
+            StateClicked.Background.Gradient1.Point1YPercent = 100
+            StateClicked.Background.Gradient1.Point2XPercent = 0
+            StateClicked.Background.Gradient1.Point2YPercent = 0
+            StateClicked.Background.Gradient2.StartColor = clWhite
+            StateClicked.Background.Gradient2.EndColor = clBlack
+            StateClicked.Background.Gradient2.GradientType = gtLinear
+            StateClicked.Background.Gradient2.Point1XPercent = 0
+            StateClicked.Background.Gradient2.Point1YPercent = 0
+            StateClicked.Background.Gradient2.Point2XPercent = 0
+            StateClicked.Background.Gradient2.Point2YPercent = 100
+            StateClicked.Background.Gradient1EndPercent = 100
+            StateClicked.Background.Style = bbsGradient
+            StateClicked.Border.Style = bboNone
+            StateClicked.FontEx.Color = 16770790
+            StateClicked.FontEx.FontQuality = fqSystemClearType
+            StateClicked.FontEx.Shadow = True
+            StateClicked.FontEx.ShadowRadius = 2
+            StateClicked.FontEx.ShadowOffsetX = 1
+            StateClicked.FontEx.ShadowOffsetY = 1
+            StateClicked.FontEx.Style = [fsBold]
+            StateHover.Background.Color = clWindow
+            StateHover.Background.Gradient1.StartColor = 16744448
+            StateHover.Background.Gradient1.EndColor = 8404992
+            StateHover.Background.Gradient1.GradientType = gtRadial
+            StateHover.Background.Gradient1.Point1XPercent = 50
+            StateHover.Background.Gradient1.Point1YPercent = 100
+            StateHover.Background.Gradient1.Point2XPercent = 0
+            StateHover.Background.Gradient1.Point2YPercent = 0
+            StateHover.Background.Gradient2.StartColor = clWhite
+            StateHover.Background.Gradient2.EndColor = clBlack
+            StateHover.Background.Gradient2.GradientType = gtLinear
+            StateHover.Background.Gradient2.Point1XPercent = 0
+            StateHover.Background.Gradient2.Point1YPercent = 0
+            StateHover.Background.Gradient2.Point2XPercent = 0
+            StateHover.Background.Gradient2.Point2YPercent = 100
+            StateHover.Background.Gradient1EndPercent = 100
+            StateHover.Background.Style = bbsColor
+            StateHover.Border.Color = clWindowFrame
+            StateHover.Border.Style = bboSolid
+            StateHover.FontEx.Color = clWindowText
+            StateHover.FontEx.FontQuality = fqSystemClearType
+            StateHover.FontEx.Shadow = False
+            StateHover.FontEx.ShadowRadius = 2
+            StateHover.FontEx.ShadowOffsetX = 1
+            StateHover.FontEx.ShadowOffsetY = 1
+            StateHover.FontEx.Style = []
+            StateHover.FontEx.TextAlignment = bcaLeftCenter
+            StateHover.FontEx.PaddingLeft = 5
+            StateNormal.Background.Color = clWindow
+            StateNormal.Background.Gradient1.StartColor = 4194304
+            StateNormal.Background.Gradient1.EndColor = 8405056
+            StateNormal.Background.Gradient1.GradientType = gtLinear
+            StateNormal.Background.Gradient1.Point1XPercent = 0
+            StateNormal.Background.Gradient1.Point1YPercent = 0
+            StateNormal.Background.Gradient1.Point2XPercent = 0
+            StateNormal.Background.Gradient1.Point2YPercent = 100
+            StateNormal.Background.Gradient2.StartColor = 8405056
+            StateNormal.Background.Gradient2.EndColor = 4194304
+            StateNormal.Background.Gradient2.GradientType = gtRadial
+            StateNormal.Background.Gradient2.Point1XPercent = 50
+            StateNormal.Background.Gradient2.Point1YPercent = 100
+            StateNormal.Background.Gradient2.Point2XPercent = 0
+            StateNormal.Background.Gradient2.Point2YPercent = 0
+            StateNormal.Background.Gradient1EndPercent = 60
+            StateNormal.Background.Style = bbsColor
+            StateNormal.Border.Color = clWindowFrame
+            StateNormal.Border.Style = bboSolid
+            StateNormal.FontEx.Color = clWindowText
+            StateNormal.FontEx.FontQuality = fqSystemClearType
+            StateNormal.FontEx.Shadow = False
+            StateNormal.FontEx.ShadowRadius = 2
+            StateNormal.FontEx.ShadowOffsetX = 1
+            StateNormal.FontEx.ShadowOffsetY = 1
+            StateNormal.FontEx.Style = []
+            StateNormal.FontEx.TextAlignment = bcaLeftCenter
+            StateNormal.FontEx.PaddingLeft = 5
+            BorderSpacing.Left = 2
+            Color = clNone
+            DropDownWidth = 16
+            DropDownArrowSize = 8
+            GlobalOpacity = 255
+            ParentColor = False
+            Rounding.RoundX = 0
+            Rounding.RoundY = 0
+            RoundingDropDown.RoundX = 1
+            RoundingDropDown.RoundY = 1
+            Style = bbtDropDown
+            TextApplyGlobalOpacity = False
+            DropDownStyle = bdsCommon
+            MemoryUsage = bmuHigh
+          end
+        end
+        object Bevel4: TBevel
+          Left = 206
+          Height = 36
+          Top = 0
+          Width = 2
+          Align = alLeft
+          BorderSpacing.Left = 4
+          BorderSpacing.Right = 1
+          Shape = bsRightLine
+        end
+        object WriteButton: TSpeedButton
+          Cursor = crHandPoint
+          Left = 209
+          Height = 36
+          Hint = 'Заполнить месяц по персональному графику'
+          Top = 0
+          Width = 40
+          Align = alLeft
+          Constraints.MaxWidth = 40
+          Constraints.MinWidth = 40
+          Glyph.Data = {
+            36090000424D3609000000000000360000002800000018000000180000000100
+            2000000000000009000064000000640000000000000000000000DFD2CD3FDFD2
+            CD92DFD2CD93DFD2CD93DFD2CD93DFD2CD93DFD2CD93DFD2CD93DFD2CD93DFD2
+            CD93DFD2CD93DFD2CD93DFD2CD93DFD2CD93DFD2CD93DFD2CD93DFD2CD93DFD2
+            CD93DFD2CD93DFD2CD93DFD2CD93DFD2CD93DFD2CD93DFD2CD47E2D5D0EEE1D4
+            CFFFE1D4CFFFE1D4CFFFE1D4CFFFE1D4CFFFE1D4CFFFE1D4CFFFE1D4CFFFE1D4
+            CFFFE1D4CFFFE1D4CFFFE1D4CFFFE1D4CFFFE1D4CFFFDFD2CDFFDFD2CDFFDFD2
+            CDFFDFD2CDFFDFD2CDFFDFD2CDFFDFD2CDFFDFD2CDFFDFD2CDF3F3E8E4FFF4E9
+            E4FFF4CECDFFF4C4C5FFF4DFDBFFF3E8E3FFF4DBD8FFF4C4C5FFF4D2D0FFF3E8
+            E3FFF4E7E2FFF4C5C5FFF4C6C6FFF4E8E3FFF4E9E4FFF4D0CEFFEFBFBFFFE6CE
+            CAFFDFD2CDFFDFD2CDFFDFD2CDFFDFD2CDFFDFD2CDFFDED1CCFFF4E9E4FFF4E9
+            E4FFF6828CFFF76C7AFFF5BCBEFFF4E9E4FFF5AEB2FFF76C7AFFF69098FFF4E9
+            E4FFF4DAD7FFF76C7AFFF76C7AFFF4E0DDFFF4E9E4FFF68A93FFF76C7AFFF5B4
+            B7FFEEE3DEFFE0D3CEFFDFD2CDFFDFD2CDFFDFD2CDFFDED1CCFFF4E9E4FFF4E9
+            E4FFF69099FFF67A85FFF4C4C5FFF4E9E4FFF5B8BAFFF67A85FFF59DA3FFF4E9
+            E4FFF4DEDBFFF67A86FFF67B87FFF4E3DFFFF4E9E4FFF5979FFFF67A85FFF5BD
+            BFFFF4E9E4FFEFE4DFFFDFD2CDFFDFD2CDFFDFD2CDFFDED2CDFFF3E8E4FFF4E9
+            E4FFF3E8E3FFF4E9E4FFF4E9E4FFF3E8E3FFF3E8E3FFF3E8E3FFF3E8E3FFF3E8
+            E3FFF3E8E3FFF3E8E3FFF4E9E4FFF4E9E4FFF4E9E4FFF4E9E4FFF4E9E4FFF4E9
+            E4FFF4E9E4FFF4E9E4FFEADED9FFDFD2CDFFDFD2CDFFDED1CCFFF4E9E4FFF4E9
+            E4FFF3E8E3FFF3E8E3FFF4E9E4FFF4E9E4FFF4E9E4FFF3E8E3FFF4E9E4FFF4E9
+            E4FFF4E9E4FFF3E8E3FFF4E9E4FFF4E9E4FFF4E9E4FFF1E7E4FFF3E8E4FFF2E7
+            E4FFF4E9E4FFF4E9E4FFF3E8E3FFE0D3CEFFDFD2CDFFDED1CCFFF4E9E4FFF3E8
+            E3FFA5CE89FF9FCC81FFF2E8E1FFF4E9E4FFCEDCB9FF85C364FFE1E2CFFFF4E9
+            E4FFE9E5D8FF8BC56BFFC0D7A9FFF4E9E4FFF4E9E4FF9491F5FF9894F5FFBEB7
+            EEFFF4E9E4FFF5BCBEFFF67480FFF08A93FFDFD2CDFFDED2CDFFF3E8E4FFE9E5
+            D8FFC2D8AAFFC1D8A9FFA0CC83FFF3E8E3FFBDD6A5FFDDE1C9FF8DC66DFFE6E4
+            D3FFD3DDBDFFD7DFC2FF9FCC81FFC5D9ADFFF4E9E4FFA6A1F2FF7776FBFFD3CB
+            EAFFF4E9E4FFF5B6B9FFF76C7AFFF1838CFFDFD2CDFFDED1CCFFF4E9E4FFF4E9
+            E4FFF4E9E4FFF4E9E4FFDFE2CCFFF4E9E4FFF4E9E4FFF4E9E4FFE6E4D4FFECE6
+            DBFFF4E9E4FFF4E9E4FFF2E8E2FFE1E2CEFFF4E9E4FFD4CCE9FFEBE1E5FFDCD3
+            E8FFF4E9E4FFF4DFDCFFF4CACAFFEBCAC8FFDFD2CDFFDED1CCFFF4E9E4FFF4E9
+            E4FFF4E9E4FFF4E9E4FFF4E9E4FFF4E9E4FFF4E9E4FFF4E9E4FFF4E9E4FFF4E9
+            E4FFF4E9E4FFF4E9E4FFF4E9E4FFF4E9E4FFF4E9E4FFF4E9E4FFF4E9E4FFF4E9
+            E4FFF4E9E4FFF4E9E4FFF4E9E4FFEADED9FFDFD2CDFFDED2CDFFF3E8E4FFF4E9
+            E4FFF5ADB1FFF59DA4FFF4D1CFFFF3E8E3FFE8E5D6FFB0D295FFF1E8E1FFF3E8
+            E3FFF3E8E3FFB6D49DFFE0E2CDFFF4E9E4FFF4E9E4FFD3DEBEFFC3D8ABFFF4E9
+            E4FFF4E9E4FFC5BEECFFC7BFECFFA49EEBFFDFD2CDFFDED1CCFFF3E8E3FFF3E8
+            E3FFF6828CFFF66B79FFF5BCBEFFF3E8E3FFA3CE87FFB1D297FF9CCB7EFFF1E8
+            E1FFC9DAB2FFACD091FF8DC66DFFE0E2CDFFEEE7DDFF97C978FF9FCC82FFBED6
+            A5FFF4E9E4FFE4DAE6FF6868FEFFAAA3E6FFDFD2CDFFDED1CCFFF3E8E3FFF3E8
+            E3FFF5B0B4FFF5A1A7FFF4D2D0FFF3E8E3FFF3E8E3FFF3E8E3FFC8DAB1FFE1E2
+            CEFFF3E8E3FFF3E8E3FFE4E3D1FFC5D9AEFFF3E8E3FFF3E8E3FFF2E8E2FFB7D4
+            9DFFF3E8E3FFC7BFECFFCBC3EBFFA7A1EBFFDFD2CDFFDED1CCFFF3E8E4FFF4E9
+            E4FFF3E8E3FFF4E9E4FFF4E9E4FFF3E8E3FFF3E8E3FFF3E8E3FFF3E8E3FFF3E8
+            E3FFF3E8E3FFF3E8E3FFF4E9E4FFF4E9E4FFF4E9E4FFF4E9E4FFF4E9E4FFF4E9
+            E4FFF4E9E4FFF4E9E4FFF4E9E4FFEADED9FFDFD2CDFFDED1CCFFB9B2EEFEB9B2
+            EEFFB9B2EEFFB9B2EEFFB9B2EEFFB9B2EEFFB9B2EEFFB9B2EEFFB9B2EEFFB9B2
+            EEFFB9B2EEFFB9B2EEFFB9B2EEFFB9B2EEFFB9B2EEFFB9B2EEFFB9B2EEFFB9B2
+            EEFFB9B2EEFFB9B2EEFFB9B2EEFFADA6E5FFA098DAFF9F98DAFF6363FEFF6363
+            FEFF6363FEFF6363FEFF6363FEFF6363FEFF6363FEFF6363FEFF6363FEFF6363
+            FEFF6363FEFF6363FEFF6363FEFF6464FFFF6464FEFF6363FEFF6464FFFF6464
+            FEFF6363FEFF6464FFFF6464FEFF5555F6FF4545EDFF4444ECFF6363FEFF6464
+            FFFF6363FEFF6464FFFF6464FFFF6363FEFF6363FEFF6363FEFF6363FEFF6363
+            FEFF6363FEFF6363FEFF6464FFFF6464FFFF6464FFFF6464FFFF6464FFFF6464
+            FFFF6464FFFF6464FFFF6464FFFF5555F6FF4545EDFF4444ECFF6363FEFF6363
+            FEFF6363FEFF6363FEFF6363FEFF6363FEFF6363FEFF6363FEFF6363FEFF6363
+            FEFF6363FEFF6363FEFF6464FFFF6464FFFF6464FFFF6464FFFF6464FFFF6464
+            FFFF6464FFFF6464FFFF6464FFFF5555F6FF4545EDFF4444ECFF6363FEFF6363
+            FEFF6363FEFF6363FEFF6661B9FF6A5E69FF6562D6FF6363FEFF6363FEFF6363
+            FEFF6363FEFF6363FEFF6464FFFF6464FFFF6464FFFF6464FFFF6464FFFF6562
+            D0FF6A5E68FF6661C0FF6464FFFF5555F6FF4545EDFF4545EDFF6363FEDC6464
+            FFFF6363FEFF6464FFFF685F89FF6A5D54FF6761ACFF6363FEFF6363FEFF6363
+            FEFF6363FEFF6363FEFF6464FFFF6464FFFF6464FFFF6464FFFF6464FFFF6760
+            A4FF6B5E55FF686091FF6464FFFF5050F3FF4545EDFF4646EDDB6363FE1D6363
+            FE636363FE666363FE66695E6ED06A5D54FF685F88B06363FE666363FE666363
+            FE666363FE666363FE666464FF666464FF666464FF666464FF666464FF66695F
+            81B76B5E55FF695F73C95B5BFA684646ED694646ED654A4AF01A000000000000
+            000000000000000000006B5E54AC6A5D54FF6A5D547600000000000000000000
+            0000000000000000000000000000000000000000000000000000000000006B5E
+            55836B5E55FF6B5E559F00000000000000000000000000000000000000000000
+            000000000000000000006B5E552F6A5D54886A5D541600000000000000000000
+            0000000000000000000000000000000000000000000000000000000000006B5E
+            551B6B5E55896B5E552900000000000000000000000000000000
+          }
+          ShowHint = True
+          ParentShowHint = False
+        end
+        object EraseButton: TSpeedButton
+          Cursor = crHandPoint
+          Left = 249
+          Height = 36
+          Hint = 'Очистить месяц'
+          Top = 0
+          Width = 40
+          Align = alLeft
+          Constraints.MaxWidth = 40
+          Constraints.MinWidth = 40
+          Glyph.Data = {
+            36090000424D3609000000000000360000002800000018000000180000000100
+            2000000000000009000064000000640000000000000000000000000000000000
+            0000000000000000000000000000000000001538DB7B1539DAF61538DBA31538
+            DA05000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            00000000000000000000000000003457F9813558FAFF294CEEFF4B6CE5FF7D9E
+            EEACB1CFF7050000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            00000000000000000000375AFC81365AFBFF3659FBFF8DA1FDFFEEF9FEFFA5C4
+            F6FF7191ECAC4567E40500000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            000000000000375AFC81365AFCFF375AFCFF8DA1FDFFFEFEFEFFB1BEFDFF2C4F
+            EFFF1639DBFF1638DBAD1638DB05000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000375AFC80365AFCFF375AFCFF8DA1FDFFFEFEFEFFB1BEFDFF385BFCFF375A
+            FCFF2345E3FF102DACFF102CAAAD102AA4050000000000000000000000000000
+            000000000000000000000000000000000000000000000000000000000000375A
+            FC80375AFBFF375AFCFF8DA1FDFFFEFEFEFFB1BEFDFF385BFCFF3659FBFF2C4F
+            F1FF1639DBFF1333C6FF102BA4FF102AA4AC102AA40500000000000000000000
+            00000000000000000000000000000000000000000000000000003659FC7B375A
+            FCFF375AFCFF8DA1FDFFFEFEFEFFB1BEFDFF385BFCFF375AFCFF2C4FF1FF1639
+            DBFF1639DBFF1639DBFF1333C6FF102BA4FF102AA4AD102AA405000000000000
+            0000000000000000000000000000000000000000000000000000375AFCF6375A
+            FCFF8DA1FDFFFEFEFEFFB1BEFDFF385BFCFF375AFCFF2C4FF1FF1639DBFF1639
+            DBFF1639DBFF1639DBFF1639DBFF1333C6FF102BA4FF102AA4AC102AA4050000
+            0000000000000000000000000000000000000000000000000000365AFCA36E88
+            FCFFFEFEFEFFB1BEFDFF385BFCFF3659FBFF2C4FF1FF1639DBFF1538DAFF1538
+            DAFF1538DAFF1538DAFF1639DBFF1639DBFF1333C6FF102BA4FF102AA4AC102A
+            A405000000000000000000000000000000000000000000000000375AFC05A4B4
+            FDACCDD6FEFF385BFCFF375AFCFF2C4FF1FF1639DBFF1639DBFF1639DBFF1639
+            DBFF1639DBFF1639DBFF1639DBFF1639DBFF1639DBFF1333C6FF102BA4FF102A
+            A4AD40357E05000000000000000000000000000000000000000000000000DAE1
+            FE0597A9FDAC375AFCFF2C4FF1FF1639DBFF1639DBFF1639DBFF1639DBFF1639
+            DBFF1639DBFF1639DBFF1639DBFF1639DBFF1639DBFF1639DBFF1333C6FF563B
+            6DFFBB531DACBC541C0500000000000000000000000000000000000000000000
+            00006983FC05375AFCAC1A3DDFFF1538DAFF1538DAFF1538DAFF1538DAFF1538
+            DAFF1538DAFF1538DAFF1639DBFF1639DBFF1639DBFF1639DBFF62559FFFC96E
+            39FFBD541DFFBC541CACBC541C05000000000000000000000000000000000000
+            000000000000365AFB05193CDEAC1538DAFF1538DAFF1538DAFF1538DAFF1538
+            DAFF1538DAFF1538DAFF1639DBFF1639DBFF1639DBFF62559FFFD17D48FFD27E
+            48FFCA6E38FFBD541DFFBC541CADBC531C050000000000000000000000000000
+            000000000000000000001539DA051539DAAC1538DAFF1538DAFF1538DAFF1538
+            DAFF1538DAFF1538DAFF1538DAFF1639DBFF62559FFFD17D48FFD27E48FFD27D
+            47FFD17D47FFCA6E38FFBD541DFFBC531CACBC541C0500000000000000000000
+            00000000000000000000000000001539DA051539DAAC1538DAFF1538DAFF1538
+            DAFF1538DAFF1538DAFF1639DBFF62559FFFD07D48FFD27E48FFD27E48FFD27E
+            48FFD27E48FFD27E48FFCA6E38FFBD541DFFBC541CACBC531C05000000000000
+            0000000000000000000000000000000000001539DA051539DAAC1538DAFF1538
+            DAFF1538DAFF1538DAFF62559FFFD17D48FFD27E48FFD27E47FFD27E48FFD27E
+            48FFD27E47FFD27E48FFD27E48FFCA6E38FFBD541DFFBC541CA3000000000000
+            000000000000000000000000000000000000000000001538DB051538DAAC1538
+            DAFF1538DAFF62559FFFD17D48FFD27E48FFD27D47FFD17D47FFD27E48FFD27D
+            47FFD17D47FFD27E48FFD27D47FFD17D47FFC96C36FFBC541CF6000000000000
+            00000000000000000000000000000000000000000000000000001538DA051538
+            DAAC62559FFFD17D48FFD27E48FFD27E48FFD27E48FFD27E48FFD27E48FFD27E
+            48FFD27E48FFD27E48FFD27E48FFD27E48FFD07B45FFBD531C7C000000000000
+            000000000000000000000000000000000000000000000000000000000000494B
+            B105D07D49ACD17D47FFD27E47FFD27E48FFD27E48FFD27E47FFD27E48FFD27E
+            48FFD27E47FFD27E48FFD27E48FFD27E48FFD07B458100000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000D17D4705D17D47ACD27E48FFD27E48FFD27E48FFD27E48FFD27E48FFD27E
+            48FFD27E48FFD27E48FFD27E48FFD27E48810000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            000000000000D17D4705D17E48ACD27E48FFD27E48FFD27E48FFD27E48FFD27E
+            48FFD27E48FFD27E48FFD27E4881000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            00000000000000000000D17E4805D17E48ACD27E48FFD27E48FFD27E48FFD27E
+            48FFD27E47FFD27E478100000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000D17E4805D17E48ACD27E48FFD27E48FFD27E
+            48FFD27E47810000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            000000000000000000000000000000000000D17E4805D17D48A3D27D48F6D27D
+            477C000000000000000000000000000000000000000000000000
+          }
+          ShowHint = True
+          ParentShowHint = False
+        end
+        object EditButton: TSpeedButton
+          Cursor = crHandPoint
+          Left = 289
+          Height = 36
+          Hint = 'Редактировать день'
+          Top = 0
+          Width = 40
+          Align = alLeft
+          Constraints.MaxWidth = 40
+          Constraints.MinWidth = 40
+          Glyph.Data = {
+            36090000424D3609000000000000360000002800000018000000180000000100
+            20000000000000090000640000006400000000000000000000007F6046DF6F55
+            3EBA654D394B5B47340200000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000856448B98464
+            48FF826B57FFA9C7E2D9B1DBFF6BB3DCFF0C0000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            00000000000000000000000000000000000000000000000000008564484A8F74
+            5DFFD3DCE6FFDAECFFFFBEE0FFFFB2DBFEEFB2DBFE8CB3DBFE20000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            00000000000000000000000000000000000000000000000000008C5D4302D3DA
+            E4D8E0EFFFFFE0EFFFFFDFEEFFFFCDE7FFFFB4DCFFFFB2DBFFFCBAA48B93C46E
+            1702000000000000000000000000000000000000000000000000000000000000
+            000000000000000000000000000000000000000000000000000000000000E0EF
+            FF6BE0EFFFFFE0EFFFFFE0EFFFFFE0EFFFFFDAECFFFFBFE0FFFFBD9367FFC46C
+            149DC46E17020000000000000000000000000000000000000000000000000000
+            000000000000000000000000000000000000000000000000000000000000E0EF
+            FF0CE0EFFEEFE0EFFFFFE0EFFFFFDEDFDAFFDBAA60FFDAA554FFCE862AFFC46C
+            13FFC46C149DC46E170200000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000E0EFFF8BE0EFFFFFE0EFFFFFDBAA60FFD98811FFD98811FFD98811FFCF7B
+            12FFC46C13FFC46C149DC46E1702000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000E0EFFF20E0EEFFFCE0EFFFFFDAA554FFD98710FFD98710FFD98710FFD987
+            10FFD07B12FFC46C13FFC36C149DBF6F15020000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            000000000000E9CC8392EBC15EFFE39F24FFD88710FFD88710FFD88710FFD887
+            10FFD88710FFD07B12FFC46C13FFC36C149DBF6F150200000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            000000000000F6AD0302F2A9049CF1A805FFE3960BFFD98811FFD98811FFD988
+            11FFD98811FFD98811FFD07B12FFC46C13FFC36C149DBF6F1502000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            00000000000000000000F7AE0302F2A9049CF1A805FFE3960BFFD98710FFD987
+            10FFD98710FFD98710FFD98710FFD07B12FFC46C13FFC36C149DBF6F15020000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000F7AE0302F2A9049CF1A805FFE3960BFFD887
+            10FFD88710FFD88710FFD98811FFD98811FFD07B12FFC46C13FFC36B149DC16B
+            1402000000000000000000000000000000000000000000000000000000000000
+            000000000000000000000000000000000000F7AE0302F2A9049CF1A805FFE396
+            0BFFD88710FFD88710FFD98811FFD98811FFD98811FFD07B12FFC6711BFFEDCE
+            A99DFFFAE5020000000000000000000000000000000000000000000000000000
+            00000000000000000000000000000000000000000000F7AE0302F2A9049CF1A8
+            05FFE3960BFFD88710FFD88710FFD98811FFD88710FFDA8C19FFF2D9B7FFFBF4
+            E4FF9785729D6A50390200000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000F7AE0302F2A9
+            049CF1A805FFE3960BFFD98811FFD98811FFDA8C19FFF4DEBEFFFCFBFAFFA18C
+            79FF664E3AFF664E399D6A503902000000000000000000000000000000000000
+            000000000000000000000000000000000000000000000000000000000000F7AE
+            0302F2A9049CF1A805FFE3960BFFDA8C19FFF4DEBEFFFCFBFAFFAA9481FF8465
+            49FF775B42FF664E3AFF664E399D6A5039020000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000F7AE0302F2A9049CF2AB0DFFF7E2BDFFFCFBFAFFAA9481FF856549FF8465
+            48FF846448FF775B42FF664E3AFF664E399D6A50390200000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            000000000000F7AE0302FBE5B59DFCFBFAFFAA9481FF856549FF856549FF8565
+            49FF856549FF856549FF775B42FF664E3AFF664E399D6A503902000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            00000000000000000000FFFFFF02AC97849D846549FF856548FF856549FF8465
+            49FF856548FF856549FF846549FF775B42FF664E3AFF664E3A94000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            000000000000000000000000000088694E028565499D856549FF856549FF8565
+            49FF856549FF856549FF856549FF856549FF765A42FF654D39F7000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            00000000000000000000000000000000000088684D028565499D856549FF8565
+            49FF856549FF856549FF856549FF856549FF836348FF654D398B000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000088694E028565499D8565
+            49FF856549FF856549FF856549FF856549FF82624793694B3801000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            000000000000000000000000000000000000000000000000000088694E028565
+            499D856549FF856549FF856549FF8565499386674A0100000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000008869
+            4D0285654994856448F78564488B86674A010000000000000000
+          }
+          ShowHint = True
+          ParentShowHint = False
+        end
+        object CopyButton: TSpeedButton
+          Cursor = crHandPoint
+          Left = 329
+          Height = 36
+          Hint = 'Копировать день'
+          Top = 0
+          Width = 40
+          Align = alLeft
+          Constraints.MaxWidth = 40
+          Constraints.MinWidth = 40
+          Glyph.Data = {
+            36090000424D3609000000000000360000002800000018000000180000000100
+            2000000000000009000064000000640000000000000000000000000000000000
+            0000FEDBB4BCFEE0BEFFFEECD8FFFEECD8FFFEECD8FFFEECD8FFFEECD8FFFEEC
+            D8FFFEECD8FFFEECD8FFFEECD8FFFEECD8FFFEECD8FFFEECD8FFFEEDD9C70000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000FFDBB4D7FFE2C2FFFFEDD9FFFFEDD9FFFFEDD9FFFFEDD9FFFFEDD9FFFFED
+            D9FFFFEDD9FFFFEDD9FFFFEDD9FFFFEDD9FFFFEDD9FFFFEDD9FFFFEDD8E40000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000FEDAB3D7FFE2C2FFFFEDD9FFFEECD8FFFEECD8FFFEECD8FFFEECD8FFFEEC
+            D8FFFEECD8FFFEECD8FFFFEDD9FFFFEDD9FFFFEDD9FFFFEDD9FFFFEDD8E40000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000FFDBB4D7FFE2C2FFFFEAD2FFFFD7A9FFFFD7A8FFFFD7A8FFFFD7A8FFFFD7
+            A8FFFFD7A8FFFFD7A8FFFFD7A8FFFFD7A9FFFFE9D0FFFFEDD9FFFFE7CDFCFFB8
+            60E5FFC886E3FFCA8AE2FFCA8AE2FFC98BB70000000000000000000000000000
+            0000FFDBB4D7FFE2C2FFFFEBD5FFFFE1C0FFFFE1C0FFFFE1C0FFFFE1C0FFFFE1
+            C0FFFFE1C0FFFFE1C0FFFFE1C0FFFFE1C0FFFFEAD4FFFFEDD9FFFFE7CCFFFFB8
+            60FFFFC886FFFFCA8BFFFFCA8AFFFFCA8AEF0000000000000000000000000000
+            0000FEDAB3D7FFE2C2FFFFECD8FFFEE5C9FFFEE5C8FFFEE5C8FFFEE5C8FFFEE5
+            C8FFFEE5C8FFFEE5C8FFFFE5C8FFFFE5C8FFFFECD8FFFFEDD9FFFFE7CCFFFFB8
+            60FFFFC886FFFFCA8BFFFFCA8BFFFFCA8BEF0000000000000000000000000000
+            0000FFDBB4D7FFE2C2FFFFE8D0FFFFD3A0FFFFD3A0FFFFD3A0FFFFD3A0FFFFD3
+            A0FFFFD3A0FFFFD3A0FFFFD3A0FFFFD3A0FFFFE7CDFFFFEDD9FFFEE5C6FFFDA5
+            2EFFFDAD42FFFEC47DFFFFCA8BFFFFCA8BEF0000000000000000000000000000
+            0000FFDBB4D7FFE2C2FFFFEDD9FFFFEDD9FFFFEDD9FFFFEDD9FFFFEDD9FFFFED
+            D9FFFFEDD9FFFFEDD9FFFFEDD9FFFFEDD9FFFFEDD9FFFFEDD9FFFEE5C7FFFEA8
+            33FFFEB044FFFEC47BFFFFCA8AFFFFCA8AEF0000000000000000000000000000
+            0000FEDAB3D7FFE2C2FFFFE9D0FFFED19BFFFED09AFFFED09AFFFED09AFFFED0
+            9AFFFED09AFFFED09AFFFFD09AFFFFD19BFFFFE7CDFFFFEDD9FFFEE7CBFFFEB4
+            56FFFEC379FFFEC98AFFFFCA8BFFFFCA8BEF0000000000000000000000000000
+            0000FFDBB4D7FFE2C2FFFFECD8FFFFE8CEFFFFE8CEFFFFE8CEFFFFE8CEFFFFE8
+            CEFFFFE8CEFFFFE8CEFFFFE8CEFFFFE8CEFFFFECD7FFFFEDD9FFFEE4C3FFFD9A
+            0BFFFD9A0DFFFEBF6EFFFFCA8BFFFFCA8BEF0000000000000000000000000000
+            0000FFDBB4D7FFE2C2FFFFEBD6FFFFDFBBFFFFDFBAFFFFDFBAFFFFDFBAFFFFDF
+            BAFFFFDFBAFFFFDFBAFFFFDFBAFFFFDFBAFFFFEBD5FFFFEDD9FFFFE7CCFFFFB8
+            60FFFFC886FFFFCA8BFFFFCA8AFFFFCA8AEF0000000000000000000000000000
+            0000FEDAB3D7FFE2C2FFFFE9D2FFFED9AEFFFED9AEFFFED9AEFFFED9AEFFFED9
+            AEFFFED9AEFFFED9AEFFFFD9AEFFFFD9AEFFFFE8D0FFFFEDD9FFFEE4C5FFFD9F
+            1DFFFDA429FFFEC276FFFFCA8BFFFFCA8BEF0000000000000000000000000000
+            0000FEDAB3D7FEE2C2FFFEECD8FFFEECD8FFFEECD8FFFEECD8FFFEECD8FFFEEC
+            D8FFFEECD8FFFEECD8FFFFECD8FFFFECD8FFFFEDD9FFFFEDD9FFFEE6C9FFFEAF
+            44FFFEB95CFFFEC783FFFFCA8BFFFFCA8BEF0000000000000000000000000000
+            0000FEDAB3D7FEE2C2FFFEE8CFFFFECD94FFFECD93FFFECD93FFFECD93FFFECD
+            93FFFECD93FFFECD93FFFECD93FFFFCD94FFFEE7CCFFFEECD8FFFEE6C9FFFEAD
+            45FFFEB961FFFEC886FFFECA8AFFFEC98AEF0000000000000000000000000000
+            0000FEDAB3D7FFE2C2FFFFECD8FFFEEBD6FFFEEBD5FFFEEBD5FFFEEBD5FFFEEB
+            D5FFFEEBD5FFFEEBD5FFFFEBD5FFFFEBD5FFFFECD8FFFFEDD9FFFEE4C5FFFDA0
+            1DFFFDA325FFFEC073FFFFCA8BFFFFCA8BEF0000000000000000000000000000
+            0000FEDAB3D7FEE2C2FFFEECD8FFFEECD8FFFEECD8FFFEECD8FFFEECD8FFFEEC
+            D8FFFEECD8FFFEECD8FFFFEDD9FFFFEDD9FFFFEDD9FFFFEDD9FFFFE7CCFFFFB8
+            60FFFFC886FFFFCA8BFFFFCA8BFFFFCA8BEF0000000000000000000000000000
+            0000FEDAB3D7FEE2C2FFFEECD8FFFEECD8FFFEECD8FFFEECD8FFFEECD8FFFEEC
+            D8FFFEECD8FFFEECD8FFFEDBB0FFFFD4A3FFFEDFBCFFFEDFBCFFFED39EFFFD99
+            0EFFFD9C13FFFEBF70FFFECA8AFFFEC98AEF0000000000000000000000000000
+            0000FEDAB3D7FFE2C2FFFFEDD9FFFEECD8FFFEECD8FFFEECD8FFFEECD8FFFEEC
+            D8FFFEECD8FFFEECD8FFFFD29DFFFFCF97FFFFDBB4FFFFD8ADFFFFBC69FFFFBF
+            6EFFFEC376FFFEC989FFFFCA8BFFFFCA8BEF0000000000000000000000000000
+            0000FEDAB3D7FEE2C2FFFEECD8FFFEECD8FFFEECD8FFFEECD8FFFEECD8FFFEEC
+            D8FFFEECD8FFFEECD8FFFFD29DFFFFCF97FFFFD8ADFFFFBE6FFFFFC47DFFFFCA
+            8BFFFFCA8BFFFFCA8BFFFFCA8BFFFFCA8BEF0000000000000000000000000000
+            0000FEDAB3D7FEE2C2FFFEECD8FFFEECD8FFFEECD8FFFEECD8FFFEECD8FFFEEC
+            D8FFFEECD8FFFEECD8FFFFD29DFFFFCC91FFFFBE6FFFFFC47DFFFFCA8BFFFEB4
+            53FFFDA833FFFEB245FFFFB346FFFFB348E50000000000000000000000000000
+            0000FEDBB5A5FFE0BEE5FFECD8E3FEECD8E2FEECD8E2FEE8CDFAFEE7CDFFFEE9
+            D0FFFEE9D0FFFEE9D0FFFFD19CFFFFC177FFFFC47EFFFFCA8BFFFFCA8BFFFDA3
+            26FFFD9909FFFFA722FFFFA722F7FFA829470000000000000000000000000000
+            00000000000000000000000000000000000000000000FEB860CFFEBE6FFFFEC9
+            8AFFFEC98AFFFEC98AFFFFCA8BFFFFCA8BFFFFCA8BFFFFCA8BFFFFCA8BFFFDA3
+            26FFFD9909FFFFA722F7FFA82A47000000000000000000000000000000000000
+            00000000000000000000000000000000000000000000FEB860CFFEBE6FFFFEC9
+            8AFFFEC98AFFFEC98AFFFFCA8BFFFFCA8BFFFFCA8BFFFFCA8BFFFFCA8BFFFDA3
+            26FFFD9809F7FFA82A4700000000000000000000000000000000000000000000
+            00000000000000000000000000000000000000000000FEB861B2FEBC6AFFFEC9
+            8AFFFEC98AFFFEC98AFFFFCA8BFFFFCA8BFFFFCA8BFFFFCA8BFFFFCA8BFFFDA4
+            29F2FD9607470000000000000000000000000000000000000000
+          }
+          ShowHint = True
+          ParentShowHint = False
+        end
+      end
+      object DayVT: TVirtualStringTree
+        Left = 0
+        Height = 460
+        Top = 42
+        Width = 650
+        Align = alClient
+        BorderSpacing.Top = 2
+        DefaultText = 'Node'
+        Header.AutoSizeIndex = 0
+        Header.Columns = <>
+        Header.MainColumn = -1
+        Margin = 50
+        TabOrder = 1
+      end
+    end
+    object CopyPanel: TPanel
+      Left = 0
+      Height = 100
+      Top = 534
+      Width = 650
+      Align = alBottom
+      BevelOuter = bvNone
+      ClientHeight = 100
+      ClientWidth = 650
+      TabOrder = 2
+      Visible = False
+      object CopyToolPanel: TPanel
+        Left = 0
+        Height = 40
+        Top = 0
+        Width = 650
+        Align = alTop
+        BevelOuter = bvNone
+        BorderStyle = bsSingle
+        ClientHeight = 36
+        ClientWidth = 646
+        ParentFont = False
+        TabOrder = 0
+        object CopySaveButton: TSpeedButton
+          Cursor = crHandPoint
+          Left = 0
+          Height = 36
+          Hint = 'Сохранить'
+          Top = 0
+          Width = 40
+          Align = alLeft
+          Constraints.MaxWidth = 40
+          Constraints.MinWidth = 40
+          Enabled = False
+          Glyph.Data = {
+            36090000424D3609000000000000360000002800000018000000180000000100
+            200000000000000900006400000064000000000000000000000078480026794A
+            0096794A0098794A0098794A0098794A0098794A0098794A0098794A0098794A
+            0098794A0098794A0098794A0098794A0198794A0198794A0198794A0198794A
+            0198794A0198794A0198794A0198794A01987A4A00977849002B7949009B7A4A
+            01FF7A4A01FF80530FFFA18960FFA48D65FFA48D65FFA48D65FFA48D65FFA48D
+            65FFA48D65FFA48D65FFA48D65FFA48D65FFA48D65FFA48D65FFA48D65FFA48D
+            65FFA48D65FFA38B63FF845B1AFF7A4A01FF7A4A01FF7949009B7949009B7A4A
+            01FF794A01FFB1A184FFDDE6EDFFDDE6EDFFDDE6EDFFDDE6EDFFDDE6EDFFDDE6
+            EDFFDDE6EDFFDDE6EDFFDDE6EDFFDDE6EDFFDDE6EDFFDDE6EDFFDDE6EDFFDDE6
+            EDFFDDE6EDFFDDE6EDFFBFB8A6FF7A4A01FF7A4A01FF7949009B7A49009B7A4A
+            01FF7A4A01FFB6AA92FFDDE6EDFFDDE6EDFFDDE6EDFFDDE6EDFFDDE6EDFFDDE6
+            EDFFDDE6EDFFDDE6EDFFDDE6EDFFDDE6EDFFDDE6EDFFDDE6EDFFDDE6EDFFDDE6
+            EDFFDDE6EDFFDDE6EDFFC4C0B3FF7A4A01FF7A4A01FF7949009B7A49009B7A4A
+            01FF7A4A01FFB6AA92FFD9E1E4FFA58E68FFA58E68FFA58E68FFA58E68FFA58E
+            68FFA58E68FFA58E68FFA58E68FFA58E68FFA58E68FFA58E68FFA58E68FFA58E
+            68FFAA9673FFDDE6EDFFC4C0B3FF7A4A01FF7A4A01FF7949009B7A49009B7A4A
+            01FF7A4A01FFB6AA92FFDDE6EDFFDDE6EDFFDDE6EDFFDDE6EDFFDDE6EDFFDDE6
+            EDFFDDE6EDFFDDE6EDFFDDE6EDFFDDE6EDFFDDE6EDFFDDE6EDFFDDE6EDFFDDE6
+            EDFFDDE6EDFFDDE6EDFFC4C0B3FF7A4A01FF7A4A01FF7949009B7A49009B7A4A
+            01FF7A4A01FFB6AA92FFDDE6EDFFDDE6EDFFDDE6EDFFDDE6EDFFDDE6EDFFDDE6
+            EDFFDDE6EDFFDDE6EDFFDDE6EDFFDDE6EDFFDDE6EDFFDDE6EDFFDDE6EDFFDDE6
+            EDFFDDE6EDFFDDE6EDFFC5C0B3FF7A4A01FF7A4A01FF7949009B7A49009B7A4A
+            01FF7A4A01FFB6AA92FFDDE6EDFFC7C4B9FFC6C3B7FFC6C3B7FFC6C3B7FFC6C3
+            B7FFC6C3B7FFC6C3B7FFC6C3B7FFC6C3B7FFC6C3B7FFC6C3B7FFC6C3B7FFC6C3
+            B7FFC6C3B8FFDCE6EBFFC5C0B3FF7A4A01FF7A4A01FF7949009B7949009B7A4A
+            01FF794A01FFB6AA92FFDDE6EDFFBCB4A0FFBBB29DFFBBB29DFFBBB29DFFBBB2
+            9DFFBBB29DFFBBB29DFFBBB29DFFBBB29DFFBBB29DFFBBB29DFFBBB29DFFBBB2
+            9DFFBBB29EFFDCE5EBFFC5C0B3FF7A4A01FF7A4A01FF7949009B7A49009B7A4A
+            01FF7A4A01FFB6AA92FFDDE6EDFFDDE6EDFFDDE6EDFFDDE6EDFFDDE6EDFFDDE6
+            EDFFDDE6EDFFDDE6EDFFDDE6EDFFDDE6EDFFDDE6EDFFDDE6EDFFDDE6EDFFDDE6
+            EDFFDDE6EDFFDDE6EDFFC4C0B3FF7A4A01FF7A4A01FF7949009B7A49009B7A4A
+            01FF7A4A01FFB6AA92FFDDE6EDFFDDE6EDFFDDE6EDFFDDE6EDFFDDE6EDFFDDE6
+            EDFFDDE6EDFFDDE6EDFFDDE6EDFFDDE6EDFFDDE6EDFFDDE6EDFFDDE6EDFFDDE6
+            EDFFDDE6EDFFDDE6EDFFC4C0B3FF7A4A01FF7A4A01FF7949009B7A49009B7A4A
+            01FF7A4A01FFB6AA92FFDBE5EAFFA6906AFFA58F69FFA58F69FFA58F69FFA58F
+            69FFA58F69FFA58F69FFA58F69FFA58F69FFA58F69FFA58F69FFA58F69FFA58F
+            69FFA7926DFFDDE6EDFFC4C0B3FF7A4A01FF7A4A01FF7949009B7949009B794A
+            01FF794A01FFB6AA92FFDDE6EDFFDDE6EDFFDCE6EDFFDDE6EDFFDCE6EDFFDCE6
+            EDFFDDE6EDFFDCE6EDFFDCE6EDFFDDE6EDFFDDE6EDFFDDE6EDFFDDE6EDFFDDE6
+            EDFFDDE6EDFFDDE6EDFFC4C0B3FF7A4A01FF7A4A01FF7949009B7A49009B7A4A
+            01FF7A4A01FFB6A990FFDDE6EDFFDDE6EDFFDDE6EDFFDDE6EDFFDDE6EDFFDDE6
+            EDFFDDE6EDFFDDE6EDFFDDE6EDFFDDE6EDFFDDE6EDFFDDE6EDFFDDE6EDFFDDE6
+            EDFFDDE6EDFFDDE6EDFFC4BFB2FF7A4A01FF7A4A01FF7949009B7949009B794A
+            00FF794A00FF906D36FFC4BFB1FFC6C3B7FFC6C3B7FFC6C3B7FFC6C3B7FFC6C3
+            B7FFC6C3B7FFC6C3B7FFC6C3B7FFC6C3B7FFC6C3B7FFC6C3B7FFC6C3B7FFC6C3
+            B7FFC6C3B7FFC5C1B5FF997C4DFF7A4A01FF7A4A01FF7949009B7949009B794A
+            01FF794A01FF7A4A01FF7A4A01FF7A4A01FF7A4A00FF7B4B02FF7B4B03FF7B4B
+            03FF7B4B03FF7B4B03FF7B4B03FF7B4B03FF7B4B03FF7B4B03FF7B4B03FF7A4A
+            01FF794A01FF794A01FF794A01FF794A01FF794A01FF7949009B7949009B794A
+            01FF794A01FFA86701FFC57A01FFC67A01FFC48F3EFFC2B8B5FFC2BAB9FFC2BA
+            B9FFC2BAB9FFC2BAB9FFC2BAB9FFC2BAB9FFC2BAB9FFC2BAB9FFC2BAB9FFB5A5
+            98FF7B4C05FF7A4A01FF794A01FF794A01FF7A4A01FF7949009B7949009B794A
+            00FF794A01FFBD7501FFC77B02FFC77B01FFC4A06EFFC2BBBCFFC2BBBCFFC2BB
+            BCFFC2BBBCFFC2BBBCFFC2BBBCFFC6831AFFC67D09FFC68011FFC2BBBCFFC2BB
+            BCFF835717FF7A4A01FF794A01FF794A01FF7A4A01FF7949009B7949009B794A
+            01FF794A01FFBD7501FFC77B02FFC77B02FFC4A06EFFC2BBBCFFC2BBBCFFC2BB
+            BCFFC2BBBCFFC2BBBCFFC2BBBCFFC68013FFC77B02FFC67D0AFFC2BBBCFFC2BB
+            BCFF835817FF7A4A01FF7A4A01FF7A4A01FF7A4A01FF7949009B7A49009B7A4A
+            01FF7A4A01FFBD7501FFC77B02FFC77B02FFC4A06EFFC2BBBCFFC2BBBCFFC2BB
+            BCFFC2BBBCFFC2BBBCFFC2BBBCFFC68013FFC77B02FFC67D0AFFC2BBBCFFC2BB
+            BCFF835817FF7A4A01FF7A4A01FF7A4A01FF7A4A01FF7949009B7949009B794A
+            01FF794A01FFBD7501FFC77B02FFC77B02FFC4A06EFFC2BBBCFFC2BBBCFFC2BB
+            BCFFC2BBBCFFC2BBBCFFC2BBBCFFC68013FFC77B02FFC67D0AFFC2BBBCFFC2BB
+            BCFF835817FF7A4A01FF7A4A01FF7A4A01FF7A4A01FF7949009B7949009B794A
+            01FF794A01FFBD7501FFC77B02FFC77B02FFC4A06EFFC2BBBCFFC2BBBCFFC2BB
+            BCFFC2BBBCFFC2BBBCFFC2BBBCFFC68013FFC77B02FFC67D0AFFC2BBBCFFC2BB
+            BCFF835817FF7A4A01FF794A01FF794A01FF7A4A01FF7A4900987949009B794A
+            00FF794A01FFBD7501FFC77B02FFC77B01FFC4A06EFFC2BBBCFFC2BBBCFFC2BB
+            BCFFC2BBBCFFC2BBBCFFC2BBBCFFC49C62FFC59959FFC59A5DFFC2BBBCFFC2BB
+            BCFF835817FF7A4A01FF7A4A01FF7A4A01FF794A00D17A4A001A7949002F7949
+            00967A4A0198BD750198C77B0298C77B0298C4A06E98C2BBBC98C2BBBC98C2BB
+            BC98C2BBBC98C2BBBC98C2BBBC98C2BBBC98C2BBBC98C2BBBC98C2BBBC98C2BB
+            BC98835716987A4A01987A4A01987949008F7949001000000000
+          }
+          ShowHint = True
+          ParentShowHint = False
+        end
+        object CopyDelButton: TSpeedButton
+          Cursor = crHandPoint
+          Left = 40
+          Height = 36
+          Hint = 'Удалить'
+          Top = 0
+          Width = 40
+          Align = alLeft
+          Constraints.MaxWidth = 40
+          Constraints.MinWidth = 40
+          Enabled = False
+          Glyph.Data = {
+            36090000424D3609000000000000360000002800000018000000180000000100
+            2000000000000009000064000000640000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            00000000000000000000000000000000000000000000000000000000E5210000
+            E5480000E5480000E5480000E5480000E5480000E5480000E5480000E5480000
+            E5480000E5480000E5480000E5480000E5480000E5480000E5480000E5480000
+            E5480000E5480000E5480000E5480000E5480000E5480000E4210000E5EC0000
+            E5FF0000E5FF0000E5FF0000E5FF0000E5FF0000E5FF0000E5FF0000E5FF0000
+            E5FF0000E5FF0000E5FF0000E5FF0000E5FF0000E5FF0000E5FF0000E5FF0000
+            E5FF0000E5FF0000E5FF0000E5FF0000E5FF0000E5FF0000E4EC0000E5FF0000
+            E5FF0000E5FF0000E5FF0000E5FF0000E5FF0000E5FF0000E4FF0000E5FF0000
+            E5FF0000E4FF0000E5FF0000E5FF0000E5FF0000E5FF0000E5FF0000E5FF0000
+            E5FF0000E5FF0000E5FF0000E5FF0000E5FF0000E5FF0000E4FF0000E5FF0000
+            E5FF0000E5FF0000E5FF0000E5FF0000E5FF0000E5FF0000E5FF0000E5FF0000
+            E5FF0000E5FF0000E5FF0000E5FF0000E5FF0000E5FF0000E5FF0000E5FF0000
+            E5FF0000E5FF0000E5FF0000E5FF0000E5FF0000E5FF0000E4FF0000E4FF0000
+            E4FF0000E4FF0000E4FF0000E4FF0000E4FF0000E4FF0000E4FF0000E4FF0000
+            E4FF0000E4FF0000E4FF0000E5FF0000E5FF0000E5FF0000E5FF0000E5FF0000
+            E5FF0000E5FF0000E5FF0000E5FF0000E5FF0000E5FF0000E4FF0000E4FF0000
+            E4FF0000E4FF0000E4FF0000E4FF0000E4FF0000E4FF0000E4FF0000E4FF0000
+            E4FF0000E4FF0000E4FF0000E5FF0000E4FF0000E5FF0000E5FF0000E4FF0000
+            E5FF0000E5FF0000E4FF0000E5FF0000E5FF0000E4FF0000E4FF0000E5EC0000
+            E5FF0000E4FF0000E5FF0000E5FF0000E4FF0000E4FF0000E4FF0000E4FF0000
+            E4FF0000E4FF0000E4FF0000E5FF0000E5FF0000E5FF0000E5FF0000E5FF0000
+            E5FF0000E5FF0000E5FF0000E5FF0000E5FF0000E5FF0000E4EC0000E4210000
+            E4480000E4480000E4480000E4480000E4480000E4480000E4480000E4480000
+            E4480000E4480000E4480000E5480000E5480000E5480000E5480000E5480000
+            E5480000E5480000E5480000E5480000E5480000E5480000E421000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000
+          }
+          ShowHint = True
+          ParentShowHint = False
+        end
+        object CopyCancelButton: TSpeedButton
+          Cursor = crHandPoint
+          Left = 80
+          Height = 36
+          Hint = 'Отменить'
+          Top = 0
+          Width = 40
+          Align = alLeft
+          Constraints.MaxWidth = 40
+          Constraints.MinWidth = 40
+          Glyph.Data = {
+            36090000424D3609000000000000360000002800000018000000180000000100
+            2000000000000009000064000000640000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            00000000000000000000000000000000000000000000000000000000000012AB
+            E06112ABE07F12ABE07F12ABE07F12ABE07F12ABE07F12ABE07F12ABE07512AB
+            E04D12ABE00E0000000000000000000000000000000000000000000000000000
+            00000000000000000000000000000000000000000000000000000000000012AA
+            DFFE12AADFFF12AADFFF12ABE0FF12ABE0FF12ABE0FF12ABE0FF12ABE0FF12AB
+            E0FF12ABE0F512ABE09412ABE013000000000000000000000000000000000000
+            00000000000000000000000000000000000000000000000000000000000012AB
+            E0FF12ABE0FF12ABE0FF12ABE0FF12ABE0FF12ABE0FF12ABE0FF12ABE0FF12AB
+            E0FF12ABE0FF12ABE0FF12ABE0E512ABE0330000000000000000000000000000
+            00000000000000000000000000000000000000000000000000000000000012AB
+            E0FF12ABE0FF12ABE0FF12ABE0FF12ABE0FF12ABE0FF12ABE0FF12ABE0FF12AB
+            E0FF12ABE0FF12ABE0FF12ABE0FF12ABE0EE12ABE02700000000000000000000
+            00000000000000000000000000000000000000000000000000000000000012AA
+            DFDF12AADFFF12AADFFF12ABE0FF12ABE0FF12ABE0FF12ABE0FF12ABE0FF12AB
+            E0FF12ABE0FF12ABE0FF12ABE0FF12ABE0FF12ABE0CA12AADF02000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            000000000000000000000000000000000000000000000000000012ABE01712AB
+            E07312ABE0F512ABE0FF12ABE0FF12ABE0FF12ABE0FF12AADF51000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            000012ABE04812ABE0FE12ABE0FF12ABE0FF12ABE0FF12ABDFAC000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            00000000000012ABE0BA12ABE0FF12ABE0FF12ABE0FF12AADFE5000000000000
+            00000000000000000000000000000000000012ABE00712ABE09B12ABE0DE0000
+            0000000000000000000000000000000000000000000000000000000000000000
+            00000000000012ABE08512ABE0FF12ABE0FF12ABE0FF12AADFFC000000000000
+            000000000000000000000000000012ABE01B12ABE0C812ABE0FF12ABE0FF0000
+            0000000000000000000000000000000000000000000000000000000000000000
+            00000000000012ABE09712ABE0FF12ABE0FF12ABE0FF12ABDFF4000000000000
+            0000000000000000000012ABE03C12AADFE712AADFFF12AADFFF12AADFFF0000
+            0000000000000000000000000000000000000000000000000000000000000000
+            000012ABE00F12ABE0E912ABE0FF12ABE0FF12ABE0FF12AADFCC000000000000
+            00000000000012AADF6A12AADFF912AADFFF12AADFFF12AADFFF12AADFFF0000
+            00000000000000000000000000000000000000000000000000000000000012AB
+            E01312ABE0BC12ABE0FF12ABE0FF12ABE0FF12ABE0FF12AADF810000000012AA
+            DF0712AADF9C12AADFFF12AADFFF12AADFFF12AADFFF12AADFFF12AADFFF12AA
+            DF7F12AADF7F12AADF7F12AADF7F12ABE07F12ABDF7F12AADF8112ABE0A012AB
+            DFF012AADFFF12ABE0FF12ABDFFF12AADFFF12ABE0F412AADF1912AADF1B12AB
+            E0C812AADFFF12ABE0FF12ABE0FF12AADFFF12AADFFF12AADFFF12AADFFF12AA
+            DFFF12AADFFF12AADFFF12ABE0FF12ABE0FF12ABE0FF12ABE0FF12ABE0FF12AB
+            E0FF12ABE0FF12ABE0FF12ABE0FF12ABE0FF12ABE06A0000000012AADFE112AA
+            DFFF12AADFFF12AADFFF12AADFFF12AADFFF12AADFFF12AADFFF12AADFFF12AA
+            DFFF12AADFFF12AADFFF12ABE0FF12ABE0FF12ABE0FF12ABE0FF12ABE0FF12AB
+            E0FF12ABE0FF12ABE0FF12ABE0FF12ABE089000000000000000012AADF7E12AA
+            DFFE12AADFFF12AADFFF12AADFFF12AADFFF12AADFFF12AADFFF12AADFFF12AA
+            DFFF12AADFFF12AADFFF12AADFFF12ABE0FF12ABDFFF12AADFFF12ABE0FF12AB
+            DFFF12AADFFF12ABE0EB12ABDF5C0000000000000000000000000000000012AB
+            E05012AADFF212ABE0FF12ABE0FF12AADFFF12AADFFF12AADFFF12AADFFF12AA
+            DFFF12AADFFF12AADFFF12ABE0FF12ABE0FF12ABE0FF12ABE0FD12ABE0EA12AB
+            E0BA12ABE06B12ABE00E00000000000000000000000000000000000000000000
+            000012AADF2912AADFD912AADFFF12AADFFF12AADFFF12AADFFF12AADFFF0000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            00000000000012AADF0F12AADFB312AADFFF12AADFFF12AADFFF12AADFFF0000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000012ABE00212AADF8212AADFFE12AADFFF12AADFFF0000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            00000000000000000000000000000000000012AADF5112AADFF212AADFFE0000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000012AADF2812AADF5F0000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000
+          }
+          ShowHint = True
+          ParentShowHint = False
+        end
+      end
+      object CopyVT: TVirtualStringTree
+        Left = 0
+        Height = 58
+        Top = 42
+        Width = 650
+        Align = alClient
+        BorderSpacing.Top = 2
+        DefaultNodeHeight = 31
+        DefaultText = 'Node'
+        Header.AutoSizeIndex = 0
+        Header.Columns = <>
+        Header.Height = 20
+        Header.MainColumn = -1
+        TabOrder = 1
+      end
+    end
+  end
+  object LeftSplitter: TSplitter
+    Left = 1586
+    Height = 638
+    Top = 74
+    Width = 6
+    ResizeStyle = rsLine
+  end
+  object ViewPanel: TPanel
+    Left = 1592
+    Height = 636
+    Top = 76
+    Width = 118
+    Align = alClient
+    BorderSpacing.Top = 2
+    BevelOuter = bvNone
+    Caption = 'ViewPanel'
+    ClientHeight = 636
+    ClientWidth = 118
+    TabOrder = 6
+    object ViewGridPanel: TPanel
+      Left = 0
+      Height = 602
+      Top = 32
+      Width = 116
+      Align = alClient
+      BorderSpacing.Top = 2
+      BorderSpacing.Right = 2
+      BorderSpacing.Bottom = 2
+      BevelOuter = bvNone
+      BorderStyle = bsSingle
+      ClientHeight = 598
+      ClientWidth = 112
+      Color = clWhite
+      ParentBackground = False
+      ParentColor = False
+      TabOrder = 0
+      object ViewGrid: TsWorksheetGrid
+        Left = 0
+        Height = 574
+        Top = 0
+        Width = 112
+        AutoExpand = []
+        DisplayFixedColRow = False
+        FrozenBorderPen.Style = psClear
+        FrozenCols = 0
+        FrozenRows = 0
+        PageBreakPen.Color = clBlue
+        PageBreakPen.Style = psDash
+        ReadFormulas = False
+        SelectionPen.Color = clWindow
+        SelectionPen.Style = psClear
+        SelectionPen.Width = 0
+        ShowGridLines = False
+        ShowHeaders = False
+        WorkbookSource = ViewGrid.internal
+        Align = alClient
+        AutoAdvance = aaNone
+        AutoEdit = False
+        BorderStyle = bsNone
+        Color = clWhite
+        DefaultColWidth = 40
+        DefaultRowHeight = 20
+        ExtendedSelect = False
+        Flat = True
+        MouseWheelOption = mwGrid
+        Options = [goFixedVertLine, goFixedHorzLine, goSmoothScroll]
+        ParentFont = False
+        TabOrder = 0
+        TabStop = False
+        TitleFont.Style = [fsBold]
+      end
+      object ZoomPanel: TPanel
+        Left = 0
+        Height = 22
+        Top = 576
+        Width = 112
+        Align = alBottom
+        BevelOuter = bvNone
+        Color = clWhite
+        ParentBackground = False
+        ParentColor = False
+        TabOrder = 1
+      end
+      object ZoomBevel: TBevel
+        Left = 0
+        Height = 2
+        Top = 574
+        Width = 112
+        Align = alBottom
+        Shape = bsBottomLine
+        Style = bsRaised
+      end
+    end
+    object ViewCaptionPanel: TBCPanel
+      Left = 0
+      Height = 30
+      Top = 0
+      Width = 116
+      Align = alTop
+      BorderSpacing.Right = 2
+      BorderSpacing.Bottom = 2
+      Background.Color = clBtnFace
+      Background.Gradient1.StartColor = clWhite
+      Background.Gradient1.EndColor = clBlack
+      Background.Gradient1.GradientType = gtLinear
+      Background.Gradient1.Point1XPercent = 0
+      Background.Gradient1.Point1YPercent = 0
+      Background.Gradient1.Point2XPercent = 0
+      Background.Gradient1.Point2YPercent = 100
+      Background.Gradient2.StartColor = clWhite
+      Background.Gradient2.EndColor = clBlack
+      Background.Gradient2.GradientType = gtLinear
+      Background.Gradient2.Point1XPercent = 0
+      Background.Gradient2.Point1YPercent = 0
+      Background.Gradient2.Point2XPercent = 0
+      Background.Gradient2.Point2YPercent = 100
+      Background.Gradient1EndPercent = 35
+      Background.Style = bbsColor
+      BevelInner = bvNone
+      BevelOuter = bvNone
+      BevelWidth = 1
+      Border.Color = clActiveBorder
+      Border.Style = bboSolid
+      BorderBCStyle = bpsBorder
+      Caption = 'Табель:'
+      FontEx.Color = clDefault
+      FontEx.FontQuality = fqSystemClearType
+      FontEx.Shadow = False
+      FontEx.ShadowRadius = 5
+      FontEx.ShadowOffsetX = 5
+      FontEx.ShadowOffsetY = 5
+      FontEx.Style = [fsBold]
+      FontEx.TextAlignment = bcaLeftCenter
+      FontEx.PaddingLeft = 10
+      ParentBackground = False
+      Rounding.RoundX = 1
+      Rounding.RoundY = 1
+      TabOrder = 1
     end
   end
 end

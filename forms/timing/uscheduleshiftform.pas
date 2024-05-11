@@ -98,7 +98,7 @@ type
       {%H-}Shift: TShiftState; X, Y: Integer);
     procedure YearSpinEditChange(Sender: TObject);
   private
-    CanDrawSchedule: Boolean;
+    CanDraw: Boolean;
     ZoomPercent: Integer;
     ModeType: TModeType;
 
@@ -271,7 +271,7 @@ begin
   Calendar:= TCalendar.Create;
   Schedule:= TShiftSchedule.Create;
 
-  CanDrawSchedule:= False;
+  CanDraw:= False;
 
   ScheduleListCreate;
   ParamListCreate;
@@ -285,7 +285,7 @@ begin
   SettingsLoad; //load ZoomPercent
   CreateZoomControls(50, 150, ZoomPercent, ZoomPanel, @ScheduleDraw, True);
 
-  CanDrawSchedule:= True;
+  CanDraw:= True;
 end;
 
 procedure TScheduleShiftForm.FormDestroy(Sender: TObject);
@@ -694,7 +694,7 @@ end;
 procedure TScheduleShiftForm.ScheduleChange(const ANeedCycleLoad: Boolean;
                              const ANeedCorrectionsLoad: Boolean = True);
 begin
-  if not CanDrawSchedule then Exit;
+  if not CanDraw then Exit;
   if ANeedCycleLoad then CycleLoad;
   if ANeedCorrectionsLoad then CorrectionsLoad;
   ScheduleLoad;
@@ -723,15 +723,14 @@ end;
 
 procedure TScheduleShiftForm.ScheduleDraw(const AZoomPercent: Integer);
 begin
-  if not CanDrawSchedule then Exit;
+  if not CanDraw then Exit;
   if not Calendar.Calculated then Exit;
   if not Schedule.Calculated then Exit;
 
-  SheetCaptionPanel.Caption:= 'График: ';
+  SheetCaptionPanel.Caption:= 'График сменности на ' + YearSpinEdit.Text + ' год: ';
   if not ScheduleList.IsSelected then Exit;
   SheetCaptionPanel.Caption:= SheetCaptionPanel.Caption +
-                              ScheduleNames[ScheduleList.SelectedIndex] +
-                              ' на ' + YearSpinEdit.Text + ' год';
+                              ScheduleNames[ScheduleList.SelectedIndex];
 
   ViewGrid.Visible:= False;
   Screen.Cursor:= crHourGlass;

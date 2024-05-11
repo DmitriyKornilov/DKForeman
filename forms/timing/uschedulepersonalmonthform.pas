@@ -8,7 +8,7 @@ uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, BCButton,
   BCPanel, Buttons, Spin, StdCtrls, VirtualTrees, fpspreadsheetgrid, DateUtils,
   //DK packages utils
-  DK_Vector, DK_Matrix, DK_Math, DK_Fonts, DK_Const, DK_VSTDropDown, DK_DateUtils,
+  DK_Vector, DK_Matrix, DK_Math, DK_Fonts, DK_Const, DK_DateUtils,
   DK_StrUtils, DK_VSTTables, DK_VSTTableTools, DK_Zoom, DK_SheetExporter, DK_Progress,
   //Project utils
   UDataBase, UConst, UUtils, UCalendar, USchedule, UScheduleSheet, UWorkHours,
@@ -95,7 +95,7 @@ type
   private
     CanLoadAndDraw: Boolean;
     ZoomPercent: Integer;
-    MonthDropDown: TVSTDropDown;
+    MonthDropDown: TMonthDropDown;
     OrderType: Integer;
 
     Holidays: TDateVector;
@@ -225,11 +225,7 @@ begin
   SignTypeCreate;
   ExportParamListCreate;
 
-  MonthDropDown:= TVSTDropDown.Create(MonthBCButton);
-  MonthDropDown.OnChange:= @StaffListLoad;
-  MonthDropDown.Items:= VCreateStr(MONTHSNOM);
-  MonthDropDown.ItemIndex:= MonthOfDate(Date) - 1;
-  MonthDropDown.DropDownCount:= 12;
+  MonthDropDown:= TMonthDropDown.Create(MonthBCButton, @StaffListLoad);
 
   SettingsLoad; //load ZoomPercent
   CreateZoomControls(50, 150, ZoomPercent, ZoomPanel, @ScheduleDraw, True);
@@ -265,7 +261,7 @@ end;
 
 procedure TSchedulePersonalMonthForm.FormShow(Sender: TObject);
 begin
-  MonthBCButton.Width:= GetBCButtonWidth(MonthBCButton, MONTHSNOM[9]);
+  MonthDropDown.AutoWidth;
   OrderType:= 0;
   StaffListLoad;
 end;
@@ -394,7 +390,7 @@ begin
 
   Screen.Cursor:= crHandPoint;
   try
-    AccountingPeriodWithMonth(MonthDropDown.ItemIndex + 1, YearSpinEdit.Value,
+    AccountingPeriodWithMonth(MonthDropDown.Month, YearSpinEdit.Value,
                               PeriodType.ItemIndex, BD, ED);
     for i:= 0 to High(TabNumIDs) do
     begin
@@ -404,7 +400,7 @@ begin
 
     if Length(BeforeSchedules)>0 then
     begin
-      AccountingPeriodBeforeMonth(MonthDropDown.ItemIndex + 1, YearSpinEdit.Value,
+      AccountingPeriodBeforeMonth(MonthDropDown.Month, YearSpinEdit.Value,
                               PeriodType.ItemIndex, BD, ED);
       YearCalendar.Cut(BD, ED, BeforeCalendar);
       for i:= 0 to High(TabNumIDs) do
@@ -579,7 +575,7 @@ procedure TSchedulePersonalMonthForm.StaffListLoad;
 
   procedure CategoryListLoad;
   begin
-    GetStaffListForCommonTiming(YearSpinEdit.Value, MonthDropDown.ItemIndex+1,
+    GetStaffListForCommonTiming(YearSpinEdit.Value, MonthDropDown.Month,
                      OrderType, CategoryNames, MTabNumIDs,
                      MStaffNames, MTabNums, MPostNames, MScheduleNames,
                      MRecrutDates, MDismissDates, MPostBDs, MPostEDs, MScheduleBDs, MScheduleEDs,
@@ -599,7 +595,7 @@ procedure TSchedulePersonalMonthForm.StaffListLoad;
 
   procedure SimpleListLoad;
   begin
-    GetStaffListForCommonTiming(YearSpinEdit.Value, MonthDropDown.ItemIndex+1,
+    GetStaffListForCommonTiming(YearSpinEdit.Value, MonthDropDown.Month,
                      OrderType, VTabNumIDs,
                      VStaffNames, VTabNums, VPostNames, VScheduleNames,
                      VRecrutDates, VDismissDates, VPostBDs, VPostEDs, VScheduleBDs, VScheduleEDs,
@@ -656,7 +652,7 @@ begin
      Calendar, Holidays, PostSchedules[AIndex], False{fact vacations},
      STRMARK_VACATIONMAIN, STRMARK_VACATIONADDITION, STRMARK_VACATIONHOLIDAY);
 
-  AccountingPeriodWithMonth(MonthDropDown.ItemIndex + 1, YearSpinEdit.Value,
+  AccountingPeriodWithMonth(MonthDropDown.Month, YearSpinEdit.Value,
                             PeriodType.ItemIndex, PeriodBD, PeriodED);
   NormHoursAndWorkDaysCounInPeriod(TabNumIDs[AIndex], PeriodBD, PeriodED, YearCalendar, d, h);
   NormHours[AIndex]:= h;
@@ -728,7 +724,7 @@ begin
   if VIsNil(TabNumIDs) then Exit;
 
   Y:= YearSpinEdit.Value;
-  M:= MonthDropDown.ItemIndex + 1;
+  M:= MonthDropDown.Month;
   Holidays:= DataBase.HolidaysLoad(Y);
 
   CalendarForYear(Y, YearCalendar);
@@ -811,8 +807,7 @@ var
 begin
   Exporter:= TSheetsExporter.Create;
   try
-    Worksheet:= Exporter.AddWorksheet(SUpper(MONTHSNOM[MonthDropDown.ItemIndex+1]) +
-                                      ' ' + YearSpinEdit.Text);
+    Worksheet:= Exporter.AddWorksheet(SUpper(MonthDropDown.Text) + ' ' + YearSpinEdit.Text);
     ExpSheet:= TPersonalMonthScheduleSheet.Create(Worksheet, nil, MainForm.GridFont,
                                CountType.ItemIndex, PeriodType.ItemIndex,
                                SignType.ItemIndex, ExtraColumnList.Selected);

@@ -68,6 +68,11 @@ const
   VACATION_EDIT_ROW_NAMES: array of String  =
     ('Планируемый (1 часть)', 'Фактический (1 часть)', 'Планируемый (2 часть)', 'Фактический (2 часть)');
 
+  TIMETABLE_CORRECTION_COLUMN_NAMES: array of String  =
+    ('Дата', 'Табель', 'График сменности', '№ смены');
+  TIMETABLE_CORRECTION_COLUMN_WIDTHS: array of Integer =
+    (70,     150,       150,                70       );
+
   COLOR_CALENDAR_MONTHNAME = COLOR_WHITE; //цвет ячейки с названием месяца
   COLOR_CALENDAR_DAYNAME   = COLOR_WHITE; //цвет ячеек с названиями дней недели
   COLOR_CALENDAR_QUARTER   = COLOR_GREEN;

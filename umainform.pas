@@ -192,7 +192,7 @@ begin
     3: (CategoryForm as TScheduleShiftForm).ViewUpdate(ModeType);
     4: ;
     5: (CategoryForm as TSchedulePersonalForm).ViewUpdate(ModeType);
-    6: ;
+    6: (CategoryForm as TTimetableForm).ViewUpdate(ModeType);
     7: ;
     8: ;
     9: ;
@@ -211,7 +211,7 @@ begin
     3: (CategoryForm as TScheduleShiftForm).SettingsSave;
     4: ;
     5: (CategoryForm as TSchedulePersonalForm).SettingsSave;
-    6: ;
+    6: (CategoryForm as TTimetableForm).SettingsSave;
     7: ;
     8: ;
     9: ;

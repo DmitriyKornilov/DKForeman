@@ -77,14 +77,14 @@ type
     Splitter2: TSplitter;
     Splitter3: TSplitter;
     StaffCaptionPanel: TBCPanel;
-    MainPanel: TPanel;
+    ViewPanel: TPanel;
     MonthScheduleButton: TBCButton;
     ParamListVT: TVirtualStringTree;
     SettingCaptionPanel: TBCPanel;
     SettingClientPanel: TPanel;
     SettingPanel: TPanel;
-    SheetCaptionPanel: TBCPanel;
-    SheetPanel: TPanel;
+    ViewCaptionPanel: TBCPanel;
+    ViewGridPanel: TPanel;
     ListPanel: TPanel;
     StaffListVT: TVirtualStringTree;
     ToolPanel: TPanel;
@@ -135,7 +135,7 @@ type
       {%H-}Shift: TShiftState; X, Y: Integer);
     procedure YearSpinEditChange(Sender: TObject);
   private
-    CanDrawSchedule: Boolean;
+    CanDraw: Boolean;
     ZoomPercent: Integer;
     ModeType: TModeType;
 
@@ -171,7 +171,6 @@ type
     StaffLongNames, StaffShortNames, ScheduleNames: TStrVector;
     RecrutDates, DismissDates, Holidays: TDateVector;
     Families, Names, Patronymics, TabNums, PostNames: TStrVector;
-
 
     SelectedHoursTotal, SelectedHoursNight, SelectedDigMark, SelectedShiftNum: Integer;
     SelectedStrMark: String;
@@ -334,7 +333,7 @@ begin
   ]);
   SetCaptionPanels([
     StaffCaptionPanel, SettingCaptionPanel, ListCaptionPanel, HistoryCaptionPanel,
-    VacationCaptionPanel, CorrectionsCaptionPanel, SheetCaptionPanel
+    VacationCaptionPanel, CorrectionsCaptionPanel, ViewCaptionPanel
   ]);
   SetToolButtons([
     CloseButton, AscendingButton, DescendingButton,
@@ -349,7 +348,7 @@ begin
 
   Calendar:= TCalendar.Create;
 
-  CanDrawSchedule:= False;
+  CanDraw:= False;
 
   VacationEditCreate;
   HistoryCreate;
@@ -366,7 +365,7 @@ begin
   SettingsLoad; //load ZoomPercent
   CreateZoomControls(50, 150, ZoomPercent, ZoomPanel, @ScheduleDraw, True);
 
-  CanDrawSchedule:= True;
+  CanDraw:= True;
 end;
 
 procedure TSchedulePersonalForm.FormDestroy(Sender: TObject);
@@ -667,7 +666,6 @@ procedure TSchedulePersonalForm.EditingTablesCreate;
 var
   i: Integer;
 begin
-
   VSTDays:= TVSTTable.Create(DayVT);
   VSTDays.OnSelect:= @CorrectionSelect;
   VSTDays.OnDelKeyDown:= @CorrectionDelete;
@@ -858,7 +856,7 @@ end;
 
 procedure TSchedulePersonalForm.ScheduleChange;
 begin
-  if not CanDrawSchedule then Exit;
+  if not CanDraw then Exit;
   CaptionsUpdate;
   HistoryLoad;
   VacationEditLoad;
@@ -989,7 +987,7 @@ begin
 
   S:= 'Сохранить в файл:';
   V:= VCreateStr([
-    ScheduleNames[StaffList.SelectedIndex] + ': график работы на ' + YearSpinEdit.Text + ' год',
+    'График работы на ' + YearSpinEdit.Text + ' год: ' + ScheduleNames[StaffList.SelectedIndex],
     'Графики работы всех сотрудников на ' + YearSpinEdit.Text + ' год'
   ]);
   if not Choose(S, V, ChooseIndex) then Exit;
@@ -1234,7 +1232,7 @@ end;
 procedure TSchedulePersonalForm.CaptionsUpdate;
 begin
   StaffCaptionPanel.Caption:= EmptyStr;
-  SheetCaptionPanel.Caption:= 'График: ';
+  ViewCaptionPanel.Caption:= 'График: ';
   CorrectionsCaptionPanel.Caption:= 'Корректировки графика на ' + YearSpinEdit.Text + ' год';
   VacationCaptionPanel.Caption:= 'График отпусков на ' + YearSpinEdit.Text + ' год';
 
@@ -1243,10 +1241,10 @@ begin
   StaffCaptionPanel.Caption:= StaffLongNames[StaffList.SelectedIndex];
   StaffCaptionPanel.Visible:= ModeType=mtEditing;
 
-  SheetCaptionPanel.Caption:= 'График работы на ' + YearSpinEdit.Text + ' год';
+  ViewCaptionPanel.Caption:= 'График работы на ' + YearSpinEdit.Text + ' год: ';
   if ModeType<>mtEditing then
-    SheetCaptionPanel.Caption:= StaffLongNames[StaffList.SelectedIndex] + ': ' +
-                                SheetCaptionPanel.Caption;
+    ViewCaptionPanel.Caption:= ViewCaptionPanel.Caption +
+                                StaffLongNames[StaffList.SelectedIndex];
 end;
 
 procedure TSchedulePersonalForm.SettingsLoad;
@@ -1282,7 +1280,7 @@ end;
 
 procedure TSchedulePersonalForm.ViewUpdate(const AModeType: TModeType);
 begin
-  MainPanel.Visible:= False;
+  ViewPanel.Visible:= False;
   SettingPanel.Visible:= False;
   ListPanel.Visible:= False;
   EditingPanel.Visible:= False;
@@ -1303,7 +1301,7 @@ begin
     CaptionsUpdate;
 
   finally
-    MainPanel.Visible:= True;
+    ViewPanel.Visible:= True;
   end;
 end;
 

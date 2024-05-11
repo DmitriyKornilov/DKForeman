@@ -18,8 +18,6 @@ uses
   procedure SetCaptionPanels(const AControls: array of TBCPanel);
   procedure SetToolButtons(const AControls: array of TControl);
   procedure SetCategoryButtons(const AControls: array of TBCButton);
-  function GetControlCaptionWidth(const AControl: TControl; const ACaption: String): Integer;
-  function GetBCButtonWidth(const AControl: TControl; const ACaption: String): Integer;
 
   //ID for TVSTTable.ReSelect
   function GetSelectedID(const ATable: TVSTTable; const AIDValues: TIntVector;
@@ -52,8 +50,6 @@ uses
                               const ANeedLongName: Boolean = True): String;
   function StaffNamesForScheduleNames(const AFs, ANs, APs, ATabNums: TStrVector;
                               const ANeedLongName: Boolean = True): TStrVector;
-
-
 
   //Calendar
   procedure CalendarForPeriod(const ABeginDate, AEndDate: TDate; var ACalendar: TCalendar);
@@ -191,27 +187,6 @@ begin
     AControls[i].StateNormal.Background.Color:= c;
     AControls[i].StateNormal.Border.Color:= clActiveBorder;
   end;
-end;
-
-function GetControlCaptionWidth(const AControl: TControl; const ACaption: String): Integer;
-var
-  AFontName: String;
-  AFontSize: Single;
-  DesignTimePPI: Integer;
-begin
-  LoadFontFromControl(AControl, AFontName, AFontSize);
-  Result:= SWidth(ACaption, AFontName, AFontSize);
-  DesignTimePPI:= ControlDesignTimePPI(AControl);
-  Result:= SizeFromDefaultToDesignTime(Result, DesignTimePPI);
-end;
-
-function GetBCButtonWidth(const AControl: TControl; const ACaption: String): Integer;
-var
-  DesignTimePPI: Integer;
-begin
-  DesignTimePPI:= ControlDesignTimePPI(AControl);
-  Result:= GetControlCaptionWidth(AControl, ACaption) +
-           SizeFromDefaultToDesignTime(DROPDOWN_WIDTH_DEFAULT, DesignTimePPI);
 end;
 
 function GetSelectedID(const ATable: TVSTTable; const AIDValues: TIntVector;
