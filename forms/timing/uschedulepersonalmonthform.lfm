@@ -1,7 +1,7 @@
 object SchedulePersonalMonthForm: TSchedulePersonalMonthForm
-  Left = 351
+  Left = 469
   Height = 636
-  Top = 82
+  Top = 85
   Width = 1224
   Caption = 'SchedulePersonalMonthForm'
   ClientHeight = 636
@@ -2001,93 +2001,8 @@ object SchedulePersonalMonthForm: TSchedulePersonalMonthForm
         Align = alClient
         BevelOuter = bvNone
         BorderStyle = bsSingle
-        ClientHeight = 388
-        ClientWidth = 346
         ParentBackground = False
         TabOrder = 1
-        object ViewParamListVT: TVirtualStringTree
-          Left = 0
-          Height = 50
-          Top = 0
-          Width = 346
-          Align = alTop
-          BorderStyle = bsNone
-          DefaultText = 'Node'
-          Header.AutoSizeIndex = 0
-          Header.Columns = <>
-          Header.MainColumn = -1
-          TabOrder = 0
-        end
-        object CountTypeVT: TVirtualStringTree
-          Left = 0
-          Height = 50
-          Top = 56
-          Width = 346
-          Align = alTop
-          BorderSpacing.Top = 6
-          BorderStyle = bsNone
-          DefaultText = 'Node'
-          Header.AutoSizeIndex = 0
-          Header.Columns = <>
-          Header.MainColumn = -1
-          TabOrder = 1
-        end
-        object PeriodTypeVT: TVirtualStringTree
-          Left = 0
-          Height = 50
-          Top = 112
-          Width = 346
-          Align = alTop
-          BorderSpacing.Top = 6
-          BorderStyle = bsNone
-          DefaultText = 'Node'
-          Header.AutoSizeIndex = 0
-          Header.Columns = <>
-          Header.MainColumn = -1
-          TabOrder = 2
-        end
-        object ExtraColumnListVT: TVirtualStringTree
-          Left = 0
-          Height = 50
-          Top = 168
-          Width = 346
-          Align = alTop
-          BorderSpacing.Top = 6
-          BorderStyle = bsNone
-          DefaultText = 'Node'
-          Header.AutoSizeIndex = 0
-          Header.Columns = <>
-          Header.MainColumn = -1
-          TabOrder = 3
-        end
-        object SignTypeVT: TVirtualStringTree
-          Left = 0
-          Height = 50
-          Top = 224
-          Width = 346
-          Align = alTop
-          BorderSpacing.Top = 6
-          BorderStyle = bsNone
-          DefaultText = 'Node'
-          Header.AutoSizeIndex = 0
-          Header.Columns = <>
-          Header.MainColumn = -1
-          TabOrder = 4
-        end
-        object ExportParamListVT: TVirtualStringTree
-          Left = 0
-          Height = 50
-          Top = 280
-          Width = 346
-          Align = alTop
-          BorderSpacing.Top = 6
-          BorderStyle = bsNone
-          DefaultText = 'Node'
-          Header.AutoSizeIndex = 0
-          Header.Columns = <>
-          Header.MainColumn = -1
-          TabOrder = 5
-        end
       end
     end
     object SettingSplitter: TSplitter

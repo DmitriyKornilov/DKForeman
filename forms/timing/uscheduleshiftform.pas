@@ -11,7 +11,7 @@ uses
   UDataBase, UConst, UTypes, UUtils, UWorkHours, UCalendar, USchedule,
   UScheduleSheet,
   //DK packages utils
-  DK_VSTTables, DK_VSTTableTools, DK_Vector, DK_Const, DK_Dialogs,
+  DK_VSTTables, DK_VSTParamList, DK_Vector, DK_Const, DK_Dialogs,
   DK_Zoom, DK_DateUtils, DK_Color, DK_SheetExporter, DK_Progress,
   //Forms
   UChooseForm, UScheduleShiftEditForm, UScheduleCorrectionEditForm,
@@ -26,8 +26,6 @@ type
     Bevel2: TBevel;
     Bevel3: TBevel;
     MonthButton: TBCButton;
-    ColorTypeVT: TVirtualStringTree;
-    CountTypeVT: TVirtualStringTree;
     ExportButton: TBCButton;
     CorrectionsCaptionPanel: TBCPanel;
     CloseButton: TSpeedButton;
@@ -37,7 +35,6 @@ type
     CopySaveButton: TSpeedButton;
     CopyToolPanel: TPanel;
     CalendarButton: TBCButton;
-    ParamListVT: TVirtualStringTree;
     SettingClientPanel: TPanel;
     SettingCaptionPanel: TBCPanel;
     SheetCaptionPanel: TBCPanel;
@@ -104,9 +101,7 @@ type
 
     Colors: TColorVector;
 
-    ParamList: TVSTCheckList;
-    CountType: TVSTStringList;
-    ColorType: TVSTStringList;
+    ParamList: TVSTParamList;
 
     ScheduleList: TVSTTable;
     Structure: TVSTTable;
@@ -134,8 +129,6 @@ type
     procedure ColorsLoad;
 
     procedure ParamListCreate;
-    procedure CountTypeCreate;
-    procedure ColorTypeCreate;
 
     procedure EditingTablesCreate;
     procedure CorrectionsLoad(const SelectedID: Integer = -1);
@@ -148,7 +141,6 @@ type
     procedure ScheduleListSelect;
     procedure ScheduleListLoad(const SelectedID: Integer = -1);
     procedure ScheduleListDelItem;
-
 
     procedure CycleLoad;
     procedure ScheduleLoad;
@@ -275,8 +267,6 @@ begin
 
   ScheduleListCreate;
   ParamListCreate;
-  CountTypeCreate;
-  ColorTypeCreate;
   EditingTablesCreate;
   YearSpinEdit.Value:= YearOfDate(Date);
   IsCopyDates:= False;
@@ -291,9 +281,6 @@ end;
 procedure TScheduleShiftForm.FormDestroy(Sender: TObject);
 begin
   FreeAndNil(ParamList);
-  FreeAndNil(CountType);
-  FreeAndNil(ColorType);
-
   FreeAndNil(ScheduleList);
 
   FreeAndNil(Structure);
@@ -309,6 +296,7 @@ procedure TScheduleShiftForm.FormShow(Sender: TObject);
 var
   H: Integer;
 begin
+  ParamList.Show;
   H:= MainPanel.Height div 3;
   EditingPanel.Height:= 2*H;
   CorrectionsPanel.Height:= H;
@@ -319,11 +307,15 @@ var
   V: TColorVector;
 begin
   V:= nil;
-  if ParamList.Checked[3] then
+  if ParamList.Checked['ViewParams', 3] then
     V:= Colors;
-  ScheduleShiftMonthFormShow(YearSpinEdit.Value, CountType.SelectedIndex,
-             ParamList.Checked[0], ParamList.Checked[1], ParamList.Checked[2],
-             ColorType.SelectedIndex=0, V);
+  ScheduleShiftMonthFormShow(YearSpinEdit.Value,
+             ParamList.Selected['CountType'],
+             ParamList.Checked['ViewParams', 0],
+             ParamList.Checked['ViewParams', 1],
+             ParamList.Checked['ViewParams', 2],
+             ParamList.Selected['ColorType']=0,
+             V);
 end;
 
 procedure TScheduleShiftForm.ScheduleAddButtonClick(Sender: TObject);
@@ -458,6 +450,38 @@ begin
   Colors[TITLE_COLOR_INDEX]:= COLOR_SCHEDULE_TITLE;
   Colors[OUTSIDEMONTH_COLOR_INDEX]:= COLOR_SCHEDULE_OUTSIDEMONTH;
   Colors[HIGHLIGHT_COLOR_INDEX]:= DefaultSelectionBGColor;
+end;
+
+procedure TScheduleShiftForm.ParamListCreate;
+var
+  S: String;
+  V: TStrVector;
+begin
+  ParamList:= TVSTParamList.Create(SettingClientPanel);
+
+  S:= VIEW_PARAMS_CAPTION;
+  V:= VCreateStr([
+    'отображать строку ночных часов',
+    'учитывать корректировки графика',
+    'коды табеля для нерабочих дней',
+    'использовать цвета'
+  ]);
+  ParamList.AddCheckList('ViewParams', S, V, @ScheduleRedraw);
+
+  S:= 'Отображать в итогах количество:';
+  V:= VCreateStr([
+    'дней',
+    'смен',
+    'дней и смен'
+  ]);
+  ParamList.AddStringList('CountType', S, V, @ScheduleRedraw);
+
+  S:= 'Выделять цветом нерабочие дни:';
+  V:= VCreateStr([
+    'по графику сменности',
+    'по производственному календарю'
+  ]);
+  ParamList.AddStringList('ColorType', S, V, @ScheduleRedraw);
 end;
 
 procedure TScheduleShiftForm.ScheduleLoad;
@@ -643,48 +667,6 @@ begin
   ScheduleChange(True{cycle load});
 end;
 
-procedure TScheduleShiftForm.ParamListCreate;
-var
-  V: TStrVector;
-begin
-  V:= VCreateStr([
-    'Отображать строку ночных часов',
-    'Учитывать корректировки графика',
-    'Коды табеля для нерабочих дней',
-    'Использовать цвета'
-  ]);
-  ParamList:= TVSTCheckList.Create(ParamListVT, VIEW_PARAMS_CAPTION, V, @ScheduleRedraw);
-end;
-
-procedure TScheduleShiftForm.CountTypeCreate;
-var
-  S: String;
-  V: TStrVector;
-begin
-  S:= 'Отображать в итогах количество:';
-  V:= VCreateStr([
-    'дней',
-    'смен',
-    'дней и смен'
-  ]);
-  CountType:= TVSTStringList.Create(CountTypeVT, S, @ScheduleRedraw);
-  CountType.Update(V);
-end;
-
-procedure TScheduleShiftForm.ColorTypeCreate;
-var
-  S: String;
-  V: TStrVector;
-begin
-  S:= 'Выделять цветом нерабочие дни:';
-  V:= VCreateStr([
-    'по графику сменности',
-    'по производственному календарю'
-  ]);
-  ColorType:= TVSTStringList.Create(ColorTypeVT, S, @ScheduleRedraw);
-  ColorType.Update(V);
-end;
-
 procedure TScheduleShiftForm.YearChange;
 begin
   CalendarForYear(YearSpinEdit.Value, Calendar);
@@ -708,14 +690,16 @@ procedure TScheduleShiftForm.ScheduleToSheet(var ASheet: TShiftYearScheduleSheet
 begin
   if Assigned(ASheet) then FreeAndNil(ASheet);
   ASheet:= TShiftYearScheduleSheet.Create(AWorksheet, AGrid, MainForm.GridFont,
-                                           CountType.SelectedIndex);
+                                          ParamList.Selected['CountType']);
 
   if Assigned(AGrid) then
     ASheet.Zoom(ZoomPercent);
   ASheet.Draw(ACalendar, ASchedule, AScheduleName,
-              ParamList.Checked[0], ParamList.Checked[1], ParamList.Checked[2],
-              ColorType.SelectedIndex=0);
-  if ParamList.Checked[3] then
+              ParamList.Checked['ViewParams', 0],
+              ParamList.Checked['ViewParams', 1],
+              ParamList.Checked['ViewParams', 2],
+              ParamList.Selected['ColorType']=0);
+  if ParamList.Checked['ViewParams', 3] then
     ASheet.ColorsUpdate(Colors)
   else
     ASheet.ColorsClear;
@@ -930,26 +914,16 @@ var
 begin
   SettingValues:= DataBase.SettingsLoad(SETTING_NAMES_SCHEDULESHIFTFORM);
   ZoomPercent:= SettingValues[0];
-  ParamList.Checked[0]:= SettingValues[1]=1;
-  ParamList.Checked[1]:= SettingValues[2]=1;
-  ParamList.Checked[2]:= SettingValues[3]=1;
-  ParamList.Checked[3]:= SettingValues[4]=1;
-  CountType.ItemIndex:= SettingValues[5];
-  ColorType.ItemIndex:= SettingValues[6];
+  ParamList.Params:= VCut(SettingValues, 1);
 end;
 
 procedure TScheduleShiftForm.SettingsSave;
 var
   SettingValues: TIntVector;
 begin
-  SettingValues:= VCreateInt([ZoomPercent,
-                              Ord(ParamList.Checked[0]),
-                              Ord(ParamList.Checked[1]),
-                              Ord(ParamList.Checked[2]),
-                              Ord(ParamList.Checked[3]),
-                              CountType.ItemIndex,
-                              ColorType.ItemIndex
-                             ]);
+  SettingValues:= nil;
+  VAppend(SettingValues, ZoomPercent);
+  SettingValues:= VAdd(SettingValues, ParamList.Params);
   DataBase.SettingsUpdate(SETTING_NAMES_SCHEDULESHIFTFORM, SettingValues);
 end;
 

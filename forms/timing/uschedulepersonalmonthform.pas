@@ -9,7 +9,7 @@ uses
   BCPanel, Buttons, Spin, StdCtrls, VirtualTrees, fpspreadsheetgrid, DateUtils,
   //DK packages utils
   DK_Vector, DK_Matrix, DK_Math, DK_Fonts, DK_Const, DK_DateUtils,
-  DK_StrUtils, DK_VSTTables, DK_VSTTableTools, DK_Zoom, DK_SheetExporter, DK_Progress,
+  DK_StrUtils, DK_VSTTables, DK_VSTParamList, DK_Zoom, DK_SheetExporter, DK_Progress,
   //Project utils
   UDataBase, UConst, UUtils, UCalendar, USchedule, UScheduleSheet, UWorkHours,
   UTypes,
@@ -26,19 +26,13 @@ type
     Bevel3: TBevel;
     Bevel4: TBevel;
     CheckAllButton: TSpeedButton;
-    CountTypeVT: TVirtualStringTree;
     DayEditButton: TSpeedButton;
     EditingButton: TSpeedButton;
     EditPanel: TPanel;
-    ExtraColumnListVT: TVirtualStringTree;
     RowDownButton: TSpeedButton;
     RowSplitButton: TSpeedButton;
     RowUpButton: TSpeedButton;
     SettingButton: TSpeedButton;
-    SignTypeVT: TVirtualStringTree;
-    ExportParamListVT: TVirtualStringTree;
-    ViewParamListVT: TVirtualStringTree;
-    PeriodTypeVT: TVirtualStringTree;
     SettingSplitter: TSplitter;
     RightPanel: TPanel;
     CloseButton: TSpeedButton;
@@ -105,12 +99,7 @@ type
     PostSchedules: TPostScheduleMatrix;
     Sheet: TPersonalMonthScheduleSheet;
 
-    ViewParamList: TVSTCheckList;
-    CountType: TVSTStringList;
-    PeriodType: TVSTStringList;
-    ExtraColumnList: TVSTCheckList;
-    SignType: TVSTStringList;
-    ExportParamList: TVSTCheckList;
+    ParamList: TVSTParamList;
 
     VStaffList: TVSTCheckTable;
     MStaffList: TVSTCategoryCheckTable;
@@ -128,20 +117,16 @@ type
     StaffNames, TabNums, PostNames: TStrVector;
     RecrutDates, DismissDates, PostBDs, PostEDs, ScheduleBDs, ScheduleEDs: TDateVector;
 
-    procedure ViewParamListCreate;
-    procedure CountTypeCreate;
-    procedure PeriodTypeCreate;
-    procedure ExtraColumnListCreate;
-    procedure SignTypeCreate;
-    procedure ExportParamListCreate;
+    procedure ParamListCreate;
 
     procedure PeriodTypeSelect;
-
     function OrderTypeChange: Boolean;
     procedure EditButtonsEnabled;
 
     procedure StaffListCreate;
     procedure StaffListLoad;
+    procedure VStaffListSelect;
+    procedure MStaffListSelect;
 
     procedure ScheduleCreate(const AIndex: Integer);
     procedure ScheduleLoad;
@@ -218,12 +203,7 @@ begin
   BeforeCalendar:= TCalendar.Create;
   YearCalendar:= TCalendar.Create;
 
-  ViewParamListCreate;
-  CountTypeCreate;
-  PeriodTypeCreate;
-  ExtraColumnListCreate;
-  SignTypeCreate;
-  ExportParamListCreate;
+  ParamListCreate;
 
   MonthDropDown:= TMonthDropDown.Create(MonthBCButton, @StaffListLoad);
 
@@ -239,12 +219,7 @@ procedure TSchedulePersonalMonthForm.FormDestroy(Sender: TObject);
 begin
   SettingsSave;
 
-  FreeAndNil(ViewParamList);
-  FreeAndNil(CountType);
-  FreeAndNil(PeriodType);
-  FreeAndNil(ExtraColumnList);
-  FreeAndNil(SignType);
-  FreeAndNil(ExportParamList);
+  FreeAndNil(ParamList);
 
   FreeAndNil(Calendar);
   FreeAndNil(BeforeCalendar);
@@ -261,6 +236,7 @@ end;
 
 procedure TSchedulePersonalMonthForm.FormShow(Sender: TObject);
 begin
+  ParamList.Show;
   MonthDropDown.AutoWidth;
   OrderType:= 0;
   StaffListLoad;
@@ -292,54 +268,38 @@ begin
   StaffListLoad;
 end;
 
-procedure TSchedulePersonalMonthForm.ViewParamListCreate;
+procedure TSchedulePersonalMonthForm.ParamListCreate;
 var
+  S: String;
   V: TStrVector;
 begin
+  ParamList:= TVSTParamList.Create(SettingClientPanel);
+
+  S:= VIEW_PARAMS_CAPTION;
   V:= VCreateStr([
     'отображать строку ночных часов',
     'учитывать корректировки графика',
     'коды табеля для нерабочих дней',
     'учитывать отпуск'
   ]);
-  ViewParamList:= TVSTCheckList.Create(ViewParamListVT, VIEW_PARAMS_CAPTION, V, @ScheduleRedraw);
-end;
+  ParamList.AddCheckList('ViewParams', S, V, @ScheduleRedraw);
 
-procedure TSchedulePersonalMonthForm.CountTypeCreate;
-var
-  S: String;
-  V: TStrVector;
-begin
   S:= 'Отображать в итогах количество:';
   V:= VCreateStr([
     'дней',
     'смен',
     'дней и смен'
   ]);
-  CountType:= TVSTStringList.Create(CountTypeVT, S, @ScheduleRecreate);
-  CountType.Update(V);
-end;
+  ParamList.AddStringList('CountType', S, V, @ScheduleRecreate);
 
-procedure TSchedulePersonalMonthForm.PeriodTypeCreate;
-var
-  S: String;
-  V: TStrVector;
-begin
   S:= 'Учетный период:';
   V:= VCreateStr([
     'год',
     'квартал',
     'месяц'
   ]);
-  PeriodType:= TVSTStringList.Create(PeriodTypeVT, S, @PeriodTypeSelect);
-  PeriodType.Update(V);
-end;
+  ParamList.AddStringList('PeriodType', S, V, @PeriodTypeSelect);
 
-procedure TSchedulePersonalMonthForm.ExtraColumnListCreate;
-var
-  S: String;
-  V: TStrVector;
-begin
   S:= 'Дополнительные столбцы:';
   V:= VCreateStr([
     'Порядковый номер',
@@ -350,35 +310,22 @@ begin
     'Норма часов за учетный период',
     'Отклонение от нормы часов'
   ]);
-  ExtraColumnList:= TVSTCheckList.Create(ExtraColumnListVT, S, V, @ScheduleRecreate);
-end;
+  ParamList.AddCheckList('ExtraColumns', S, V, @ScheduleRecreate);
 
-procedure TSchedulePersonalMonthForm.SignTypeCreate;
-var
-  S: String;
-  V: TStrVector;
-begin
   S:= 'Ознакомление с графиком:';
   V:= VCreateStr([
     'не выводить',
     'столбцы Дата/Подпись',
     'список под таблицей'
   ]);
-  SignType:= TVSTStringList.Create(SignTypeVT, S, @ScheduleRecreate);
-  SignType.Update(V);
-end;
+  ParamList.AddStringList('SignType', S, V, @ScheduleRecreate);
 
-procedure TSchedulePersonalMonthForm.ExportParamListCreate;
-var
-  S: String;
-  V: TStrVector;
-begin
   S:= 'Параметры экспорта:';
   V:= VCreateStr([
     'заголовок таблицы на каждой странице',
     'номера страниц в нижнем колонтитуле'
   ]);
-  ExportParamList:= TVSTCheckList.Create(ExportParamListVT, S, V, nil);
+  ParamList.AddCheckList('ExportParams', S, V, nil);
 end;
 
 procedure TSchedulePersonalMonthForm.PeriodTypeSelect;
@@ -391,7 +338,7 @@ begin
   Screen.Cursor:= crHandPoint;
   try
     AccountingPeriodWithMonth(MonthDropDown.Month, YearSpinEdit.Value,
-                              PeriodType.ItemIndex, BD, ED);
+                              ParamList.Selected['PeriodType'], BD, ED);
     for i:= 0 to High(TabNumIDs) do
     begin
       NormHoursAndWorkDaysCounInPeriod(TabNumIDs[i], BD, ED, YearCalendar, d, h);
@@ -401,7 +348,7 @@ begin
     if Length(BeforeSchedules)>0 then
     begin
       AccountingPeriodBeforeMonth(MonthDropDown.Month, YearSpinEdit.Value,
-                              PeriodType.ItemIndex, BD, ED);
+                              ParamList.Selected['PeriodType'], BD, ED);
       YearCalendar.Cut(BD, ED, BeforeCalendar);
       for i:= 0 to High(TabNumIDs) do
         BeforeSchedules[i]:= SchedulePersonalByCalendar(TabNumIDs[i], TabNums[i],
@@ -515,6 +462,7 @@ end;
 procedure TSchedulePersonalMonthForm.StaffListCreate;
 begin
   VStaffList:= TVSTCheckTable.Create(VStaffListVT);
+  VStaffList.OnSelect:= @VStaffListSelect;
   VStaffList.StopSelectEventWhileCheckAll:= True;
   VStaffList.SetSingleFont(MainForm.GridFont);
   VStaffList.SelectedBGColor:= VStaffListVT.Color;
@@ -529,6 +477,7 @@ begin
   VStaffList.Draw;
 
   MStaffList:= TVSTCategoryCheckTable.Create(MStaffListVT);
+  MStaffList.OnSelect:= @MStaffListSelect;
   MStaffList.TreeLinesVisible:= False;
   MStaffList.StopSelectEventWhileCheckAll:= True;
   MStaffList.SetSingleFont(MainForm.GridFont);
@@ -639,6 +588,16 @@ begin
   end;
 end;
 
+procedure TSchedulePersonalMonthForm.VStaffListSelect;
+begin
+  ScheduleButton.Enabled:= VStaffList.IsSelected;
+end;
+
+procedure TSchedulePersonalMonthForm.MStaffListSelect;
+begin
+  ScheduleButton.Enabled:= MStaffList.IsSelected;
+end;
+
 procedure TSchedulePersonalMonthForm.ScheduleCreate(const AIndex: Integer);
 var
   d, h: Integer;
@@ -653,7 +612,7 @@ begin
      STRMARK_VACATIONMAIN, STRMARK_VACATIONADDITION, STRMARK_VACATIONHOLIDAY);
 
   AccountingPeriodWithMonth(MonthDropDown.Month, YearSpinEdit.Value,
-                            PeriodType.ItemIndex, PeriodBD, PeriodED);
+                            ParamList.Selected['PeriodType'], PeriodBD, PeriodED);
   NormHoursAndWorkDaysCounInPeriod(TabNumIDs[AIndex], PeriodBD, PeriodED, YearCalendar, d, h);
   NormHours[AIndex]:= h;
 
@@ -732,8 +691,8 @@ begin
   SetLength(PostSchedules, Length(TabNumIDs));
   SetLength(Schedules, Length(TabNumIDs));
   SetLength(NormHours, Length(TabNumIDs));
-  IsBeforePeriodExists:= (PeriodType.ItemIndex<2 {учетный период<>месяц}) and
-               AccountingPeriodBeforeMonth(M, Y, PeriodType.ItemIndex, BD, ED);
+  IsBeforePeriodExists:= (ParamList.Selected['PeriodType']<2 {учетный период<>месяц}) and
+               AccountingPeriodBeforeMonth(M, Y, ParamList.Selected['PeriodType'], BD, ED);
   if IsBeforePeriodExists then
   begin
     SetLength(BeforeSchedules, Length(TabNumIDs));
@@ -768,7 +727,8 @@ begin
     Sheet.Zoom(ZoomPercent);
     Sheet.Draw(Calendar, Schedules, BeforeSchedules,
                StaffNames, TabNums, PostNames, NormHours,
-               ViewParamList.Selected, ExportParamList.Selected);
+               ParamList.Checkeds['ViewParams'],
+               ParamList.Checkeds['ExportParams']);
   finally
     ViewGrid.Visible:= True;
     Screen.Cursor:= crDefault;
@@ -787,7 +747,10 @@ begin
 
   if Assigned(Sheet) then FreeAndNil(Sheet);
   Sheet:= TPersonalMonthScheduleSheet.Create(ViewGrid.Worksheet, ViewGrid, MainForm.GridFont,
-     CountType.ItemIndex, PeriodType.ItemIndex, SignType.ItemIndex, ExtraColumnList.Selected);
+     ParamList.Selected['CountType'],
+     ParamList.Selected['PeriodType'],
+     ParamList.Selected['SignType'],
+     ParamList.Checkeds['ExtraColumns']);
   Sheet.CanSelect:= EditingButton.Down;
   Sheet.OnSelect:= @ScheduleSelect;
 
@@ -809,12 +772,15 @@ begin
   try
     Worksheet:= Exporter.AddWorksheet(SUpper(MonthDropDown.Text) + ' ' + YearSpinEdit.Text);
     ExpSheet:= TPersonalMonthScheduleSheet.Create(Worksheet, nil, MainForm.GridFont,
-                               CountType.ItemIndex, PeriodType.ItemIndex,
-                               SignType.ItemIndex, ExtraColumnList.Selected);
+                               ParamList.Selected['CountType'],
+                               ParamList.Selected['PeriodType'],
+                               ParamList.Selected['SignType'],
+                               ParamList.Checkeds['ExtraColumns']);
     try
       ExpSheet.Draw(Calendar, Schedules, BeforeSchedules,
                StaffNames, TabNums, PostNames, NormHours,
-               ViewParamList.Selected, ExportParamList.Selected);
+               ParamList.Checkeds['ViewParams'],
+               ParamList.Checkeds['ExportParams']);
     finally
       FreeAndNil(ExpSheet);
     end;
@@ -971,12 +937,7 @@ var
 begin
   SettingValues:= nil;
   VAppend(SettingValues, ZoomPercent);
-  SettingValues:= VAdd(SettingValues, VBoolToInt(ViewParamList.Selected));
-  VAppend(SettingValues, CountType.ItemIndex);
-  VAppend(SettingValues, PeriodType.ItemIndex);
-  SettingValues:= VAdd(SettingValues, VBoolToInt(ExtraColumnList.Selected));
-  VAppend(SettingValues, SignType.ItemIndex);
-  SettingValues:= VAdd(SettingValues, VBoolToInt(ExportParamList.Selected));
+  SettingValues:= VAdd(SettingValues, ParamList.Params);
   DataBase.SettingsUpdate(SETTING_NAMES_SCHEDULEPERSONALMONTHFORM, SettingValues);
 end;
 
@@ -986,12 +947,7 @@ var
 begin
   SettingValues:= DataBase.SettingsLoad(SETTING_NAMES_SCHEDULEPERSONALMONTHFORM);
   ZoomPercent:= SettingValues[0];
-  ViewParamList.Selected:= VIntToBool(VCut(SettingValues, 1, 4));
-  CountType.ItemIndex:= SettingValues[5];
-  PeriodType.ItemIndex:= SettingValues[6];
-  ExtraColumnList.Selected:= VIntToBool(VCut(SettingValues, 7, 13));
-  SignType.ItemIndex:= SettingValues[14];
-  ExportParamList.Selected:= VIntToBool(VCut(SettingValues, 15, 16));
+  ParamList.Params:= VCut(SettingValues, 1);
 end;
 
 procedure TSchedulePersonalMonthForm.ViewUpdate;

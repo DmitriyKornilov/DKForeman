@@ -10,7 +10,7 @@ uses
   //Project utils
   UDataBase, UConst, UTypes, UUtils,
   //DK packages utils
-  DK_VSTTypes, DK_VSTTables, DK_VSTTableTools, DK_Vector, DK_StrUtils, DK_Const,
+  DK_VSTTypes, DK_VSTTables, DK_VSTParamList, DK_Vector, DK_StrUtils, DK_Const,
   DK_Dialogs, DK_DateUtils,
   //Forms
   UStaffMainEditForm, UStaffTabNumEditForm, UStaffPostlogEditForm;
@@ -21,18 +21,14 @@ type
 
   TStaffForm = class(TForm)
     AscendingButton: TSpeedButton;
-    ColumnsListVT: TVirtualStringTree;
     DescendingButton: TSpeedButton;
     ExportButton: TBCButton;
     FIORadioButton: TRadioButton;
     ListCaptionPanel: TBCPanel;
     ListOrderToolPanel: TPanel;
-    ListTypeVT: TVirtualStringTree;
-    NameTypeVT: TVirtualStringTree;
     OrderButtonBevel: TBevel;
     OrderButtonPanel: TPanel;
     OrderLabel: TLabel;
-    OrderTypeVT: TVirtualStringTree;
     BornDateRadioButton: TRadioButton;
     SettingClientPanel: TPanel;
     SettingCaptionPanel: TBCPanel;
@@ -101,12 +97,7 @@ type
     //ZoomPercent: Integer;
     ModeType: TModeType;
 
-    SettingValues: TIntVector;
-
-    OrderType: TVSTStringList;
-    ListType: TVSTStringList;
-    ColumnsList: TVSTCheckTable;
-    NameType: TVSTStringList;
+    ParamList: TVSTParamList;
 
     StaffList: TVSTTable;
     StaffIDs, TabNumIDs, Genders: TIntVector;
@@ -123,13 +114,11 @@ type
     PostLogFirstDates, PostLogLastDates: TDateVector;
     PostLogPostNames, PostLogRanks: TStrVector;
 
-    procedure OrderTypeCreate;
+    procedure ParamListCreate;
+    procedure ParamsSelect;
     procedure OrderTypeSelect;
-    procedure ListTypeCreate;
     procedure ListTypeSelect;
-    procedure ColumnsListCreate;
     procedure ColumnsListSelect;
-    procedure NameTypeCreate;
     procedure NameTypeSelect;
 
     procedure StaffListCreate;
@@ -206,7 +195,6 @@ begin
                   ctDate,    //дата увольнения
                   ctString,  //разряд
                   ctString   //должность
-
   ]);
 end;
 
@@ -249,10 +237,7 @@ begin
 
   CanLoadStaffList:= False;
   StaffListCreate;
-  ListTypeCreate;
-  OrderTypeCreate;
-  ColumnsListCreate;
-  NameTypeCreate;
+  ParamListCreate;
   SettingsLoad;
   TabNumListCreate;
   PostLogCreate;
@@ -263,35 +248,25 @@ end;
 
 procedure TStaffForm.SettingsLoad;
 begin
-  SettingValues:= DataBase.SettingsLoad(SETTING_NAMES_STAFFORM);
-  ListType.Select(SettingValues[0]);  //STAFFORM.LISTTYPE
-  OrderType.Select(SettingValues[1]); //STAFFORM.ORDERTYPE
-  ColumnsList.Selected:= VIntToBool(VCut(SettingValues, 2, 10)); //columns
-  NameType.Select(SettingValues[11]); //STAFFORM.NAMETYPE
+  ParamList.Params:= DataBase.SettingsLoad(SETTING_NAMES_STAFFORM);
 end;
 
 procedure TStaffForm.SettingsSave;
 begin
-  SettingValues[0]:= ListType.SelectedIndex;  //STAFFORM.LISTTYPE
-  SettingValues[1]:= OrderType.SelectedIndex; //STAFFORM.ORDERTYPE
-  VChangeIn(SettingValues, VBoolToInt(ColumnsList.Selected), 2, 10); //columns
-  SettingValues[11]:= NameType.SelectedIndex; //STAFFORM.NAMETYPE
-  DataBase.SettingsUpdate(SETTING_NAMES_STAFFORM, SettingValues);
+  DataBase.SettingsUpdate(SETTING_NAMES_STAFFORM, ParamList.Params);
 end;
 
 procedure TStaffForm.FormDestroy(Sender: TObject);
 begin
   FreeAndNil(StaffList);
-  FreeAndNil(OrderType);
-  FreeAndNil(ListType);
-  FreeAndNil(ColumnsList);
-  FreeAndNil(NameType);
+  FreeAndNil(ParamList);
   FreeAndNil(TabNumList);
   FreeAndNil(PostLog);
 end;
 
 procedure TStaffForm.FormShow(Sender: TObject);
 begin
+  ParamList.Show;
   EditingPanel.Width:= Round(ClientWidth*2/3);
 end;
 
@@ -395,21 +370,13 @@ begin
     StaffTabNumDismissCancel;
 end;
 
-procedure TStaffForm.TabNumDismissButtonClick(Sender: TObject);
-begin
-  StaffTabNumEditFormOpen(etCustom);
-end;
-
-procedure TStaffForm.TabNumDismissCancelButtonClick(Sender: TObject);
-begin
-  StaffTabNumDismissCancel;
-end;
-
-procedure TStaffForm.OrderTypeCreate;
+procedure TStaffForm.ParamListCreate;
 var
   S: String;
   V: TStrVector;
 begin
+  ParamList:= TVSTParamList.Create(SettingClientPanel);
+
   S:= 'Сортировать список по:';
   V:= VCreateStr([
     'Ф.И.О.',
@@ -419,20 +386,8 @@ begin
     'дате приема',
     'дате увольнения'
   ]);
-  OrderType:= TVSTStringList.Create(OrderTypeVT, S, @OrderTypeSelect);
-  OrderType.Update(V);
-end;
+  ParamList.AddStringList('OrderType', S, V, @OrderTypeSelect);
 
-procedure TStaffForm.OrderTypeSelect;
-begin
-  StaffListLoad;
-end;
-
-procedure TStaffForm.ListTypeCreate;
-var
-  S: String;
-  V: TStrVector;
-begin
   S:= 'Включать в список:';
   V:= VCreateStr([
     'всех',
@@ -440,21 +395,8 @@ begin
     'уволенных на текущую дату',
     'без табельного номера'
   ]);
-  ListType:= TVSTStringList.Create(ListTypeVT, S, @ListTypeSelect);
-  ListType.Update(V);
-  ListType.Select(1);
-end;
+  ParamList.AddStringList('ListType', S, V, @ListTypeSelect, 1);
 
-procedure TStaffForm.ListTypeSelect;
-begin
-  StaffListLoad;
-end;
-
-procedure TStaffForm.ColumnsListCreate;
-var
-  S: String;
-  V: TStrVector;
-begin
   S:= 'Отображать столбцы:';
   V:= VCreateStr([
     '№ п/п',
@@ -467,34 +409,52 @@ begin
     'разряд',
     'должность'
   ]);
-  ColumnsList:= TVSTCheckList.Create(ColumnsListVT, S, V, @ColumnsListSelect);
-end;
+  ParamList.AddCheckList('ColumnsList', S, V, @ColumnsListSelect);
 
-procedure TStaffForm.ColumnsListSelect;
-begin
-  StaffList.ColumnVisibles:= ColumnsList.Selected;
-end;
-
-procedure TStaffForm.NameTypeCreate;
-var
-  S: String;
-  V: TStrVector;
-begin
   S:= 'Формат имени:';
   V:= VCreateStr([
     'Фамилия Имя Отчество',
     'Фамилия И.О.'
   ]);
-  NameType:= TVSTStringList.Create(NameTypeVT, S, @NameTypeSelect);
-  NameType.Update(V);
+  ParamList.AddStringList('NameType', S, V, @NameTypeSelect);
+end;
+
+procedure TStaffForm.ParamsSelect;
+begin
+  StaffListLoad;
+end;
+
+procedure TStaffForm.TabNumDismissButtonClick(Sender: TObject);
+begin
+  StaffTabNumEditFormOpen(etCustom);
+end;
+
+procedure TStaffForm.TabNumDismissCancelButtonClick(Sender: TObject);
+begin
+  StaffTabNumDismissCancel;
+end;
+
+procedure TStaffForm.OrderTypeSelect;
+begin
+  StaffListLoad;
+end;
+
+procedure TStaffForm.ListTypeSelect;
+begin
+  StaffListLoad;
+end;
+
+procedure TStaffForm.ColumnsListSelect;
+begin
+  StaffList.ColumnVisibles:= ParamList.Checkeds['ColumnsList'];
 end;
 
 procedure TStaffForm.NameTypeSelect;
 begin
-  if not NameType.IsSelected then Exit;
+  if not ParamList.IsSelected['NameType'] then Exit;
   if ModeType=mtEditing then
     FullNames:= VNameLong(Families, Names, Patronymics)
-  else if (NameType.SelectedIndex=1)  then
+  else if (ParamList.Selected['NameType']=1)  then
     FullNames:= VNameShort(Families, Names, Patronymics)
   else
     FullNames:= VNameLong(Families, Names, Patronymics);
@@ -557,7 +517,6 @@ begin
 
   SelectedStaffID:= GetSelectedID(StaffList, StaffIDs, SelectedID);
 
-  if (not Assigned(OrderType)) or (not Assigned(ListType)) then Exit;
   if ModeType=mtEditing then
   begin
     if FIORadioButton.Checked then
@@ -569,7 +528,8 @@ begin
                        StaffIDs, Genders, Families, Names, Patronymics, BornDates);
   end
   else
-    DataBase.StaffListLoad(OrderType.SelectedIndex, ListType.SelectedIndex,
+    DataBase.StaffListLoad(ParamList.Selected['OrderType'],
+                           ParamList.Selected['ListType'],
                            StaffIDs, TabNumIDs, Genders,
                            BornDates, RecrutDates, DismissDates,
                            Families, Names, Patronymics, TabNums, PostNames, Ranks);
@@ -597,7 +557,7 @@ begin
     if ModeType=mtEditing then
       StaffList.ReSelect(StaffIDs, SelectedStaffID, True)  //возвращаем выделение строки
     else
-      StaffList.ColumnVisibles:= ColumnsList.Selected;
+      StaffList.ColumnVisibles:= ParamList.Checkeds['ColumnsList'];
   finally
     StaffList.Visible:= True;
   end;

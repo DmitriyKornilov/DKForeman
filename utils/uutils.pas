@@ -8,7 +8,7 @@ uses
   Classes, SysUtils, Graphics, Controls, BCPanel, BCButton, DateUtils,
   //DK packages utils
   DK_CtrlUtils, DK_Color, DK_Vector, DK_Matrix, DK_DateUtils, DK_Const, DK_Fonts,
-  DK_StrUtils, DK_VSTEdit, DK_VSTTables, DK_VSTCore, DK_PPI, DK_VSTDropDownConst,
+  DK_StrUtils, DK_VSTEdit, DK_VSTTables, DK_VSTCore, DK_VSTDropDownConst,
 
   //Project utils
   UDataBase, UConst, UWorkHours, UCalendar, USchedule;

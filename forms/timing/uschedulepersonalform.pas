@@ -12,7 +12,7 @@ uses
   UDataBase, UConst, UTypes, UUtils, UWorkHours, UCalendar, USchedule,
   UScheduleSheet,
   //DK packages utils
-  DK_VSTTables, DK_VSTTableTools, DK_VSTEdit, DK_Vector, DK_Const, DK_Dialogs,
+  DK_VSTTables, DK_VSTParamList, DK_VSTEdit, DK_Vector, DK_Const, DK_Dialogs,
   DK_Zoom, DK_DateUtils, DK_Color, DK_SheetExporter, DK_StrUtils, DK_Progress,
   //Forms
   UChooseForm, USchedulePersonalEditForm, UScheduleCorrectionEditForm,
@@ -28,7 +28,6 @@ type
     Bevel2: TBevel;
     Bevel3: TBevel;
     CloseButton: TSpeedButton;
-    ColorTypeVT: TVirtualStringTree;
     CopyCancelButton: TSpeedButton;
     DescendingButton: TSpeedButton;
     FilterEdit: TEditButton;
@@ -56,7 +55,6 @@ type
     CopyVT: TVirtualStringTree;
     CorrectionsCaptionPanel: TBCPanel;
     CorrectionsPanel: TPanel;
-    CountTypeVT: TVirtualStringTree;
     DayAddButton: TSpeedButton;
     DayCopyButton: TSpeedButton;
     DayDelButton: TSpeedButton;
@@ -79,7 +77,6 @@ type
     StaffCaptionPanel: TBCPanel;
     ViewPanel: TPanel;
     MonthScheduleButton: TBCButton;
-    ParamListVT: TVirtualStringTree;
     SettingCaptionPanel: TBCPanel;
     SettingClientPanel: TPanel;
     SettingPanel: TPanel;
@@ -148,9 +145,7 @@ type
 
     Colors: TColorVector;
 
-    ParamList: TVSTCheckList;
-    CountType: TVSTStringList;
-    ColorType: TVSTStringList;
+    ParamList: TVSTParamList;
 
     StaffList: TVSTTable;
     VSTDays: TVSTTable;
@@ -181,8 +176,6 @@ type
     function DayInListSelect(const ADate: TDate): Boolean;
 
     procedure ParamListCreate;
-    procedure CountTypeCreate;
-    procedure ColorTypeCreate;
 
     procedure EditingTablesCreate;
     procedure CorrectionsLoad(const SelectedID: Integer = -1);
@@ -354,8 +347,6 @@ begin
   HistoryCreate;
   StaffListCreate;
   ParamListCreate;
-  CountTypeCreate;
-  ColorTypeCreate;
   EditingTablesCreate;
   YearSpinEdit.Value:= YearOfDate(Date);
 
@@ -371,8 +362,6 @@ end;
 procedure TSchedulePersonalForm.FormDestroy(Sender: TObject);
 begin
   FreeAndNil(ParamList);
-  FreeAndNil(CountType);
-  FreeAndNil(ColorType);
 
   FreeAndNil(VacationEdit);
   FreeAndNil(StaffList);
@@ -390,6 +379,7 @@ procedure TSchedulePersonalForm.FormShow(Sender: TObject);
 var
   H: Integer;
 begin
+  ParamList.Show;
   H:= Round(0.6*(ClientHeight - ToolPanel.Height - StaffCaptionPanel.Height));
   BottomEditingPanel.Height:= H;
   H:= VacationCaptionPanel.Height + VacationToolPanel.Height + VacationEdit.TotalHeight + 10;
@@ -621,8 +611,12 @@ end;
 
 procedure TSchedulePersonalForm.ParamListCreate;
 var
+  S: String;
   V: TStrVector;
 begin
+  ParamList:= TVSTParamList.Create(SettingClientPanel);
+
+  S:= VIEW_PARAMS_CAPTION;
   V:= VCreateStr([
     'отображать строку ночных часов',
     'учитывать корректировки графика',
@@ -630,36 +624,22 @@ begin
     'учитывать отпуск',
     'использовать цвета'
   ]);
-  ParamList:= TVSTCheckList.Create(ParamListVT, VIEW_PARAMS_CAPTION, V, @ScheduleRedraw);
-end;
+  ParamList.AddCheckList('ViewParams', S, V, @ScheduleRedraw);
 
-procedure TSchedulePersonalForm.CountTypeCreate;
-var
-  S: String;
-  V: TStrVector;
-begin
   S:= 'Отображать в итогах количество:';
   V:= VCreateStr([
     'дней',
     'смен',
     'дней и смен'
   ]);
-  CountType:= TVSTStringList.Create(CountTypeVT, S, @ScheduleRedraw);
-  CountType.Update(V);
-end;
+  ParamList.AddStringList('CountType', S, V, @ScheduleRedraw);
 
-procedure TSchedulePersonalForm.ColorTypeCreate;
-var
-  S: String;
-  V: TStrVector;
-begin
   S:= 'Выделять цветом нерабочие дни:';
   V:= VCreateStr([
     'по графику сменности',
     'по производственному календарю'
   ]);
-  ColorType:= TVSTStringList.Create(ColorTypeVT, S, @ScheduleRedraw);
-  ColorType.Update(V);
+  ParamList.AddStringList('ColorType', S, V, @ScheduleRedraw);
 end;
 
 procedure TSchedulePersonalForm.EditingTablesCreate;
@@ -874,14 +854,17 @@ procedure TSchedulePersonalForm.ScheduleToSheet(var ASheet: TPersonalYearSchedul
 begin
   if Assigned(ASheet) then FreeAndNil(ASheet);
   ASheet:= TPersonalYearScheduleSheet.Create(AWorksheet, AGrid, MainForm.GridFont,
-                                           CountType.SelectedIndex);
+                                           ParamList.Selected['CountType']);
 
   if Assigned(AGrid) then
     ASheet.Zoom(ZoomPercent);
   ASheet.Draw(ACalendar, ASchedule, AScheduleName,
-              ParamList.Checked[0], ParamList.Checked[1], ParamList.Checked[2],
-              ParamList.Checked[3], ColorType.SelectedIndex=0);
-  if ParamList.Checked[4] then
+              ParamList.Checked['ViewParams', 0],
+              ParamList.Checked['ViewParams', 1],
+              ParamList.Checked['ViewParams', 2],
+              ParamList.Checked['ViewParams', 3],
+              ParamList.Selected['ColorType']=0);
+  if ParamList.Checked['ViewParams', 4] then
     ASheet.ColorsUpdate(Colors)
   else
     ASheet.ColorsClear;
@@ -1253,28 +1236,16 @@ var
 begin
   SettingValues:= DataBase.SettingsLoad(SETTING_NAMES_SCHEDULEPERSONALFORM);
   ZoomPercent:= SettingValues[0];
-  ParamList.Checked[0]:= SettingValues[1]=1;
-  ParamList.Checked[1]:= SettingValues[2]=1;
-  ParamList.Checked[2]:= SettingValues[3]=1;
-  ParamList.Checked[3]:= SettingValues[4]=1;
-  ParamList.Checked[4]:= SettingValues[5]=1;
-  CountType.ItemIndex:= SettingValues[6];
-  ColorType.ItemIndex:= SettingValues[7];
+  ParamList.Params:= VCut(SettingValues, 1);
 end;
 
 procedure TSchedulePersonalForm.SettingsSave;
 var
   SettingValues: TIntVector;
 begin
-  SettingValues:= VCreateInt([ZoomPercent,
-                              Ord(ParamList.Checked[0]),
-                              Ord(ParamList.Checked[1]),
-                              Ord(ParamList.Checked[2]),
-                              Ord(ParamList.Checked[3]),
-                              Ord(ParamList.Checked[4]),
-                              CountType.ItemIndex,
-                              ColorType.ItemIndex
-                             ]);
+  SettingValues:= nil;
+  VAppend(SettingValues, ZoomPercent);
+  SettingValues:= VAdd(SettingValues, ParamList.Params);
   DataBase.SettingsUpdate(SETTING_NAMES_SCHEDULEPERSONALFORM, SettingValues);
 end;
 

@@ -381,66 +381,8 @@ object StaffForm: TStaffForm
       Align = alClient
       BevelOuter = bvNone
       BorderStyle = bsSingle
-      ClientHeight = 537
-      ClientWidth = 296
       ParentBackground = False
       TabOrder = 1
-      object ListTypeVT: TVirtualStringTree
-        Left = 0
-        Height = 79
-        Top = 0
-        Width = 296
-        Align = alTop
-        BorderStyle = bsNone
-        DefaultText = 'Node'
-        Header.AutoSizeIndex = 0
-        Header.Columns = <>
-        Header.MainColumn = -1
-        Margin = 50
-        TabOrder = 0
-      end
-      object OrderTypeVT: TVirtualStringTree
-        Left = 0
-        Height = 79
-        Top = 85
-        Width = 296
-        Align = alTop
-        BorderSpacing.Top = 6
-        BorderStyle = bsNone
-        DefaultText = 'Node'
-        Header.AutoSizeIndex = 0
-        Header.Columns = <>
-        Header.MainColumn = -1
-        TabOrder = 1
-      end
-      object ColumnsListVT: TVirtualStringTree
-        Left = 0
-        Height = 79
-        Top = 170
-        Width = 296
-        Align = alTop
-        BorderSpacing.Top = 6
-        BorderStyle = bsNone
-        DefaultText = 'Node'
-        Header.AutoSizeIndex = 0
-        Header.Columns = <>
-        Header.MainColumn = -1
-        TabOrder = 2
-      end
-      object NameTypeVT: TVirtualStringTree
-        Left = 0
-        Height = 79
-        Top = 255
-        Width = 296
-        Align = alTop
-        BorderSpacing.Top = 6
-        BorderStyle = bsNone
-        DefaultText = 'Node'
-        Header.AutoSizeIndex = 0
-        Header.Columns = <>
-        Header.MainColumn = -1
-        TabOrder = 3
-      end
     end
   end
   object LeftSplitter: TSplitter
