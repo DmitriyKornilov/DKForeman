@@ -1067,6 +1067,7 @@ begin
                      FSchedule.StrMarkVacationMain, FSchedule.StrMarkVacationAddition,
                      FSchedule.StrMarkVacationHoliday);
     try
+      Writer.SetFont(Font.Name, Font.Size, [], clBlack);
       AYear:= YearOfDate(FSchedule.BeginDate);
       DeltaR:= 1 + Ord(FNeedNight);
       R:= 3 + Ord(not Writer.HasGrid);
@@ -1826,6 +1827,7 @@ begin
   CutSchedule:= TShiftSchedule.Create;
   CutCalendar:= TCalendar.Create;
   try
+    Writer.SetFont(Font.Name, Font.Size, [], clBlack);
     AYear:= YearOfDate(FSchedule.BeginDate);
     DeltaR:= 1 + Ord(FNeedNight);
     R:= 3 + Ord(IsNeedCaption);
@@ -1987,6 +1989,7 @@ var
   end;
 
 begin
+  Writer.SetFont(Font.Name, Font.Size, [], clBlack);
   DeltaR:= 1 + Ord(FNeedNight);
   RR:= 3 + Ord(not Writer.HasGrid);
   C:= 2;
