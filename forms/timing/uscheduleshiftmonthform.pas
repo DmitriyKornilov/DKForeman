@@ -9,8 +9,8 @@ uses
   Buttons, Spin, VirtualTrees, fpspreadsheetgrid,
 
   //DK packages utils
-  DK_Vector, DK_Fonts, DK_Const, DK_DateUtils, DK_StrUtils,
-  DK_VSTTableTools, DK_Zoom, DK_SheetExporter,
+  DK_Vector, DK_Fonts, DK_Const, DK_StrUtils, DK_VSTTableTools, DK_Zoom,
+  DK_SheetExporter,
   //Project utils
   UDataBase, UConst, UTypes, UUtils, UCalendar, USchedule, UScheduleSheet,
   //Forms

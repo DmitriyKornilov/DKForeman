@@ -12,7 +12,7 @@ uses
   UDataBase, UConst, UTypes, UUtils, UWorkHours, UCalendar, USchedule,
 
   //DK packages utils
-  DK_VSTTables, DK_VSTTableTools, DK_Vector, DK_Const, DK_Dialogs,
+  DK_VSTTables, DK_VSTParamList, DK_Vector, DK_Const, DK_Dialogs,
   DK_Zoom, DK_DateUtils, DK_Color, DK_SheetExporter, DK_StrUtils, DK_Progress,
   //Forms
   UChooseForm;
@@ -28,7 +28,6 @@ type
     Bevel3: TBevel;
     Bevel4: TBevel;
     CloseButton: TSpeedButton;
-    ColorTypeVT: TVirtualStringTree;
     CopyButton: TSpeedButton;
     CopyCancelButton: TSpeedButton;
     CopyDelButton: TSpeedButton;
@@ -36,7 +35,6 @@ type
     CopySaveButton: TSpeedButton;
     CopyToolPanel: TPanel;
     CopyVT: TVirtualStringTree;
-    CountTypeVT: TVirtualStringTree;
     DescendingButton: TSpeedButton;
     EditButton: TSpeedButton;
     EditingPanel: TPanel;
@@ -65,7 +63,6 @@ type
     OrderButtonBevel: TBevel;
     OrderButtonPanel: TPanel;
     OrderLabel: TLabel;
-    ParamListVT: TVirtualStringTree;
     PostRadioButton: TRadioButton;
     SettingCaptionPanel: TBCPanel;
     SettingClientPanel: TPanel;
@@ -89,6 +86,8 @@ type
     ModeType: TModeType;
     MonthDropDown: TMonthDropDown;
 
+    ParamList: TVSTParamList;
+
     StaffList: TVSTTable;
     VSTDays: TVSTTable;
     VSTCopy: TVSTTable;
@@ -103,6 +102,8 @@ type
     procedure CopyBegin;
     procedure CopyEnd(const ANeedSave: Boolean);
 
+    procedure ParamListCreate;
+
     procedure StaffListCreate;
     procedure StaffListSelect;
     procedure StaffListLoad(const SelectedID: Integer = -1);
@@ -110,6 +111,7 @@ type
     procedure EditingTablesCreate;
 
     procedure TimetableDraw(const AZoomPercent: Integer);
+    procedure TimetableRedraw;
 
     procedure CaptionsUpdate;
     procedure SettingsLoad;
@@ -156,6 +158,7 @@ begin
 
   CanDraw:= False;
 
+  ParamListCreate;
   StaffListCreate;
   EditingTablesCreate;
   YearSpinEdit.Value:= YearOfDate(Date);
@@ -171,6 +174,7 @@ end;
 
 procedure TTimetableForm.FormDestroy(Sender: TObject);
 begin
+  FreeAndNil(ParamList);
   FreeAndNil(StaffList);
   FreeAndNil(MonthDropDown);
 
@@ -180,6 +184,7 @@ end;
 
 procedure TTimetableForm.FormShow(Sender: TObject);
 begin
+  ParamList.Show;
   MonthDropDown.AutoWidth;
   StaffListLoad;
 end;
@@ -192,6 +197,28 @@ end;
 procedure TTimetableForm.CopyEnd(const ANeedSave: Boolean);
 begin
 
+end;
+
+procedure TTimetableForm.ParamListCreate;
+var
+  S: String;
+  V: TStrVector;
+begin
+  ParamList:= TVSTParamList.Create(SettingClientPanel);
+
+  S:= VIEW_PARAMS_CAPTION;
+  V:= VCreateStr([
+    'использовать цвета'
+  ]);
+  ParamList.AddCheckList('ViewParams', S, V, @TimetableRedraw);
+
+   S:= 'Отображать в итогах количество:';
+  V:= VCreateStr([
+    'дней',
+    'смен',
+    'дней и смен'
+  ]);
+  ParamList.AddStringList('CountType', S, V, @TimetableRedraw);
 end;
 
 procedure TTimetableForm.StaffListCreate;
@@ -284,6 +311,11 @@ procedure TTimetableForm.TimetableDraw(const AZoomPercent: Integer);
 begin
   ZoomPercent:= AZoomPercent;
 
+end;
+
+procedure TTimetableForm.TimetableRedraw;
+begin
+  TimetableDraw(ZoomPercent);
 end;
 
 procedure TTimetableForm.CaptionsUpdate;
