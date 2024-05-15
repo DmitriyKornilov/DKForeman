@@ -1,11 +1,11 @@
 object TimetableForm: TTimetableForm
-  Left = 226
-  Height = 712
-  Top = 141
-  Width = 1710
+  Left = 491
+  Height = 681
+  Top = 299
+  Width = 1363
   Caption = 'TimetableForm'
-  ClientHeight = 712
-  ClientWidth = 1710
+  ClientHeight = 681
+  ClientWidth = 1363
   DesignTimePPI = 120
   OnCreate = FormCreate
   OnDestroy = FormDestroy
@@ -15,7 +15,7 @@ object TimetableForm: TTimetableForm
     Left = 2
     Height = 40
     Top = 2
-    Width = 1706
+    Width = 1359
     Align = alTop
     BorderSpacing.Left = 2
     BorderSpacing.Top = 2
@@ -23,12 +23,12 @@ object TimetableForm: TTimetableForm
     BevelOuter = bvNone
     BorderStyle = bsSingle
     ClientHeight = 36
-    ClientWidth = 1702
+    ClientWidth = 1355
     ParentFont = False
     TabOrder = 0
     object CloseButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 1662
+      Left = 1315
       Height = 36
       Top = 0
       Width = 40
@@ -114,7 +114,7 @@ object TimetableForm: TTimetableForm
       OnClick = CloseButtonClick
     end
     object Bevel1: TBevel
-      Left = 1658
+      Left = 1311
       Height = 36
       Top = 0
       Width = 2
@@ -549,7 +549,7 @@ object TimetableForm: TTimetableForm
     Left = 2
     Height = 30
     Top = 44
-    Width = 1706
+    Width = 1359
     Align = alTop
     BorderSpacing.Left = 2
     BorderSpacing.Top = 2
@@ -594,7 +594,7 @@ object TimetableForm: TTimetableForm
   end
   object ListPanel: TPanel
     Left = 2
-    Height = 634
+    Height = 603
     Top = 76
     Width = 580
     Align = alLeft
@@ -602,7 +602,7 @@ object TimetableForm: TTimetableForm
     BorderSpacing.Top = 2
     BorderSpacing.Bottom = 2
     BevelOuter = bvNone
-    ClientHeight = 634
+    ClientHeight = 603
     ClientWidth = 580
     TabOrder = 2
     object ListCaptionPanel: TBCPanel
@@ -652,7 +652,7 @@ object TimetableForm: TTimetableForm
     end
     object StaffListVT: TVirtualStringTree
       Left = 0
-      Height = 518
+      Height = 487
       Top = 74
       Width = 580
       Align = alClient
@@ -772,7 +772,7 @@ object TimetableForm: TTimetableForm
     object ListOrderToolPanel: TPanel
       Left = 0
       Height = 40
-      Top = 594
+      Top = 563
       Width = 580
       Align = alBottom
       BorderSpacing.Top = 2
@@ -1040,7 +1040,7 @@ object TimetableForm: TTimetableForm
   end
   object SettingPanel: TPanel
     Left = 584
-    Height = 634
+    Height = 603
     Top = 76
     Width = 350
     Align = alLeft
@@ -1048,7 +1048,7 @@ object TimetableForm: TTimetableForm
     BorderSpacing.Top = 2
     BorderSpacing.Bottom = 2
     BevelOuter = bvNone
-    ClientHeight = 634
+    ClientHeight = 603
     ClientWidth = 350
     Color = clWindow
     ParentBackground = False
@@ -1102,7 +1102,7 @@ object TimetableForm: TTimetableForm
     end
     object SettingClientPanel: TPanel
       Left = 0
-      Height = 602
+      Height = 571
       Top = 32
       Width = 350
       Align = alClient
@@ -1114,7 +1114,7 @@ object TimetableForm: TTimetableForm
   end
   object EditingPanel: TPanel
     Left = 936
-    Height = 634
+    Height = 603
     Top = 76
     Width = 650
     Align = alLeft
@@ -1122,7 +1122,7 @@ object TimetableForm: TTimetableForm
     BorderSpacing.Top = 2
     BorderSpacing.Bottom = 2
     BevelOuter = bvNone
-    ClientHeight = 634
+    ClientHeight = 603
     ClientWidth = 650
     TabOrder = 4
     Visible = False
@@ -1173,12 +1173,12 @@ object TimetableForm: TTimetableForm
     end
     object DayPanel: TPanel
       Left = 0
-      Height = 502
+      Height = 471
       Top = 32
       Width = 650
       Align = alClient
       BevelOuter = bvNone
-      ClientHeight = 502
+      ClientHeight = 471
       ClientWidth = 650
       TabOrder = 1
       object DayToolPanel: TPanel
@@ -1679,7 +1679,7 @@ object TimetableForm: TTimetableForm
       end
       object DayVT: TVirtualStringTree
         Left = 0
-        Height = 460
+        Height = 429
         Top = 42
         Width = 650
         Align = alClient
@@ -1695,7 +1695,7 @@ object TimetableForm: TTimetableForm
     object CopyPanel: TPanel
       Left = 0
       Height = 100
-      Top = 534
+      Top = 503
       Width = 650
       Align = alBottom
       BevelOuter = bvNone
@@ -2003,46 +2003,46 @@ object TimetableForm: TTimetableForm
     end
   end
   object LeftSplitter: TSplitter
-    Left = 1586
-    Height = 638
+    Left = 1363
+    Height = 607
     Top = 74
     Width = 6
     ResizeStyle = rsLine
   end
   object ViewPanel: TPanel
-    Left = 1592
-    Height = 636
+    Left = 1363
+    Height = 605
     Top = 76
-    Width = 118
+    Width = 0
     Align = alClient
     BorderSpacing.Top = 2
     BevelOuter = bvNone
     Caption = 'ViewPanel'
-    ClientHeight = 636
-    ClientWidth = 118
+    ClientHeight = 605
+    ClientWidth = 0
     TabOrder = 6
     object ViewGridPanel: TPanel
-      Left = 0
-      Height = 602
+      Left = -1
+      Height = 571
       Top = 32
-      Width = 116
+      Width = 0
       Align = alClient
       BorderSpacing.Top = 2
       BorderSpacing.Right = 2
       BorderSpacing.Bottom = 2
       BevelOuter = bvNone
       BorderStyle = bsSingle
-      ClientHeight = 598
-      ClientWidth = 112
+      ClientHeight = 571
+      ClientWidth = 0
       Color = clWhite
       ParentBackground = False
       ParentColor = False
       TabOrder = 0
       object ViewGrid: TsWorksheetGrid
         Left = 0
-        Height = 574
+        Height = 547
         Top = 0
-        Width = 112
+        Width = 0
         AutoExpand = []
         DisplayFixedColRow = False
         FrozenBorderPen.Style = psClear
@@ -2076,8 +2076,8 @@ object TimetableForm: TTimetableForm
       object ZoomPanel: TPanel
         Left = 0
         Height = 22
-        Top = 576
-        Width = 112
+        Top = 549
+        Width = 0
         Align = alBottom
         BevelOuter = bvNone
         Color = clWhite
@@ -2088,18 +2088,18 @@ object TimetableForm: TTimetableForm
       object ZoomBevel: TBevel
         Left = 0
         Height = 2
-        Top = 574
-        Width = 112
+        Top = 547
+        Width = 0
         Align = alBottom
         Shape = bsBottomLine
         Style = bsRaised
       end
     end
     object ViewCaptionPanel: TBCPanel
-      Left = 0
+      Left = -1
       Height = 30
       Top = 0
-      Width = 116
+      Width = 0
       Align = alTop
       BorderSpacing.Right = 2
       BorderSpacing.Bottom = 2

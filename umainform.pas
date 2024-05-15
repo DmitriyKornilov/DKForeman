@@ -353,7 +353,7 @@ end;
 procedure TMainForm.FormCreate(Sender: TObject);
 begin
   HeapTraceOutputFile('trace.trc');
-  Height:= 300; Width:= 500; //for normal form maximizing
+  //Height:= 300; Width:= 500; //for normal form maximizing
   Caption:= MAIN_CAPTION;
 
   SetToolPanels([

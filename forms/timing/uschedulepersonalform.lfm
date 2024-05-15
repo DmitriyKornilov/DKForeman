@@ -1,11 +1,11 @@
 object SchedulePersonalForm: TSchedulePersonalForm
-  Left = 188
-  Height = 702
-  Top = 96
-  Width = 1705
+  Left = 469
+  Height = 681
+  Top = 298
+  Width = 1363
   Caption = 'SchedulePersonalForm'
-  ClientHeight = 702
-  ClientWidth = 1705
+  ClientHeight = 681
+  ClientWidth = 1363
   DesignTimePPI = 120
   OnCreate = FormCreate
   OnDestroy = FormDestroy
@@ -15,7 +15,7 @@ object SchedulePersonalForm: TSchedulePersonalForm
     Left = 2
     Height = 40
     Top = 2
-    Width = 1701
+    Width = 1359
     Align = alTop
     BorderSpacing.Left = 2
     BorderSpacing.Top = 2
@@ -23,12 +23,12 @@ object SchedulePersonalForm: TSchedulePersonalForm
     BevelOuter = bvNone
     BorderStyle = bsSingle
     ClientHeight = 36
-    ClientWidth = 1697
+    ClientWidth = 1355
     ParentFont = False
     TabOrder = 0
     object CloseButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 1657
+      Left = 1315
       Height = 36
       Top = 0
       Width = 40
@@ -114,7 +114,7 @@ object SchedulePersonalForm: TSchedulePersonalForm
       OnClick = CloseButtonClick
     end
     object Bevel1: TBevel
-      Left = 1653
+      Left = 1311
       Height = 36
       Top = 0
       Width = 2
@@ -737,7 +737,7 @@ object SchedulePersonalForm: TSchedulePersonalForm
   end
   object SettingPanel: TPanel
     Left = 584
-    Height = 624
+    Height = 603
     Top = 76
     Width = 350
     Align = alLeft
@@ -745,7 +745,7 @@ object SchedulePersonalForm: TSchedulePersonalForm
     BorderSpacing.Top = 2
     BorderSpacing.Bottom = 2
     BevelOuter = bvNone
-    ClientHeight = 624
+    ClientHeight = 603
     ClientWidth = 350
     Color = clWindow
     ParentBackground = False
@@ -799,7 +799,7 @@ object SchedulePersonalForm: TSchedulePersonalForm
     end
     object SettingClientPanel: TPanel
       Left = 0
-      Height = 592
+      Height = 571
       Top = 32
       Width = 350
       Align = alClient
@@ -810,46 +810,46 @@ object SchedulePersonalForm: TSchedulePersonalForm
     end
   end
   object LeftSplitter: TSplitter
-    Left = 1586
-    Height = 628
+    Left = 1363
+    Height = 607
     Top = 74
     Width = 6
     ResizeStyle = rsLine
   end
   object ViewPanel: TPanel
-    Left = 1592
-    Height = 626
+    Left = 1363
+    Height = 605
     Top = 76
-    Width = 113
+    Width = 0
     Align = alClient
     BorderSpacing.Top = 2
     BevelOuter = bvNone
     Caption = 'ViewPanel'
-    ClientHeight = 626
-    ClientWidth = 113
+    ClientHeight = 605
+    ClientWidth = 0
     TabOrder = 3
     object ViewGridPanel: TPanel
-      Left = 0
-      Height = 592
+      Left = -1
+      Height = 571
       Top = 32
-      Width = 111
+      Width = 0
       Align = alClient
       BorderSpacing.Top = 2
       BorderSpacing.Right = 2
       BorderSpacing.Bottom = 2
       BevelOuter = bvNone
       BorderStyle = bsSingle
-      ClientHeight = 588
-      ClientWidth = 107
+      ClientHeight = 571
+      ClientWidth = 0
       Color = clWhite
       ParentBackground = False
       ParentColor = False
       TabOrder = 0
       object ViewGrid: TsWorksheetGrid
         Left = 0
-        Height = 564
+        Height = 547
         Top = 0
-        Width = 107
+        Width = 0
         AutoExpand = []
         DisplayFixedColRow = False
         FrozenBorderPen.Style = psClear
@@ -885,8 +885,8 @@ object SchedulePersonalForm: TSchedulePersonalForm
       object ZoomPanel: TPanel
         Left = 0
         Height = 22
-        Top = 566
-        Width = 107
+        Top = 549
+        Width = 0
         Align = alBottom
         BevelOuter = bvNone
         Color = clWhite
@@ -897,18 +897,18 @@ object SchedulePersonalForm: TSchedulePersonalForm
       object ZoomBevel: TBevel
         Left = 0
         Height = 2
-        Top = 564
-        Width = 107
+        Top = 547
+        Width = 0
         Align = alBottom
         Shape = bsBottomLine
         Style = bsRaised
       end
     end
     object ViewCaptionPanel: TBCPanel
-      Left = 0
+      Left = -1
       Height = 30
       Top = 0
-      Width = 111
+      Width = 0
       Align = alTop
       BorderSpacing.Right = 2
       BorderSpacing.Bottom = 2
@@ -955,7 +955,7 @@ object SchedulePersonalForm: TSchedulePersonalForm
     Left = 2
     Height = 30
     Top = 44
-    Width = 1701
+    Width = 1359
     Align = alTop
     BorderSpacing.Left = 2
     BorderSpacing.Top = 2
@@ -1000,7 +1000,7 @@ object SchedulePersonalForm: TSchedulePersonalForm
   end
   object ListPanel: TPanel
     Left = 2
-    Height = 624
+    Height = 603
     Top = 76
     Width = 580
     Align = alLeft
@@ -1008,7 +1008,7 @@ object SchedulePersonalForm: TSchedulePersonalForm
     BorderSpacing.Top = 2
     BorderSpacing.Bottom = 2
     BevelOuter = bvNone
-    ClientHeight = 624
+    ClientHeight = 603
     ClientWidth = 580
     TabOrder = 5
     object ListCaptionPanel: TBCPanel
@@ -1058,7 +1058,7 @@ object SchedulePersonalForm: TSchedulePersonalForm
     end
     object StaffListVT: TVirtualStringTree
       Left = 0
-      Height = 508
+      Height = 487
       Top = 74
       Width = 580
       Align = alClient
@@ -1180,7 +1180,7 @@ object SchedulePersonalForm: TSchedulePersonalForm
     object ListOrderToolPanel: TPanel
       Left = 0
       Height = 40
-      Top = 584
+      Top = 563
       Width = 580
       Align = alBottom
       BorderSpacing.Top = 2
@@ -1453,7 +1453,7 @@ object SchedulePersonalForm: TSchedulePersonalForm
   end
   object EditingPanel: TPanel
     Left = 936
-    Height = 624
+    Height = 603
     Top = 76
     Width = 650
     Align = alLeft
@@ -1461,14 +1461,14 @@ object SchedulePersonalForm: TSchedulePersonalForm
     BorderSpacing.Top = 2
     BorderSpacing.Bottom = 2
     BevelOuter = bvNone
-    ClientHeight = 624
+    ClientHeight = 603
     ClientWidth = 650
     TabOrder = 6
     Visible = False
     object BottomEditingPanel: TPanel
       Left = 0
       Height = 422
-      Top = 202
+      Top = 181
       Width = 650
       Align = alBottom
       BevelOuter = bvNone
@@ -2706,12 +2706,12 @@ object SchedulePersonalForm: TSchedulePersonalForm
     end
     object HistoryPanel: TPanel
       Left = 0
-      Height = 196
+      Height = 175
       Top = 0
       Width = 650
       Align = alClient
       BevelOuter = bvNone
-      ClientHeight = 196
+      ClientHeight = 175
       ClientWidth = 650
       TabOrder = 1
       object HistoryCaptionPanel: TBCPanel
@@ -3047,7 +3047,7 @@ object SchedulePersonalForm: TSchedulePersonalForm
       end
       object HistoryVT: TVirtualStringTree
         Left = 0
-        Height = 122
+        Height = 101
         Top = 74
         Width = 650
         Align = alClient
@@ -3065,7 +3065,7 @@ object SchedulePersonalForm: TSchedulePersonalForm
       Cursor = crVSplit
       Left = 0
       Height = 6
-      Top = 196
+      Top = 175
       Width = 650
       Align = alBottom
       ResizeAnchor = akBottom
