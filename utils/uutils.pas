@@ -5,19 +5,23 @@ unit UUtils;
 interface
 
 uses
-  Classes, SysUtils, Graphics, Controls, BCPanel, BCButton, DateUtils,
+  Classes, SysUtils, Graphics, Controls, BCPanel, BCButton, DateUtils, Forms,
+  Buttons,
   //DK packages utils
   DK_CtrlUtils, DK_Color, DK_Vector, DK_Matrix, DK_DateUtils, DK_Const, DK_Fonts,
   DK_StrUtils, DK_VSTEdit, DK_VSTTables, DK_VSTCore,
 
   //Project utils
-  UDataBase, UConst, UWorkHours, UCalendar, USchedule;
+  UImages, UDataBase, UConst, UWorkHours, UCalendar, USchedule;
 
   //UI
   procedure SetToolPanels(const AControls: array of TControl);
   procedure SetCaptionPanels(const AControls: array of TBCPanel);
   procedure SetToolButtons(const AControls: array of TControl);
+  procedure SetToolButtonsNew(const AControls: array of TSpeedButton);
   procedure SetCategoryButtons(const AControls: array of TBCButton);
+  procedure SetCategoryButtonsNew(const AControls: array of TBCButton);
+  function ImageListForScreen: TImageList;
 
   //ID for TVSTTable.ReSelect
   function GetSelectedID(const ATable: TVSTTable; const AIDValues: TIntVector;
@@ -175,6 +179,19 @@ begin
     ControlWidth(AControls[i], TOOL_BUTTON_WIDTH_DEFAULT);
 end;
 
+procedure SetToolButtonsNew(const AControls: array of TSpeedButton);
+var
+  i: Integer;
+  ImageList: TImageList;
+begin
+  ImageList:= ImageListForScreen;
+  for i:= 0 to High(AControls) do
+  begin
+    ControlWidth(AControls[i], TOOL_BUTTON_WIDTH_DEFAULT);
+    AControls[i].Images:= ImageList;
+  end;
+end;
+
 procedure SetCategoryButtons(const AControls: array of TBCButton);
 var
   i: Integer;
@@ -186,6 +203,33 @@ begin
   begin
     AControls[i].StateNormal.Background.Color:= c;
     AControls[i].StateNormal.Border.Color:= clActiveBorder;
+  end;
+end;
+
+procedure SetCategoryButtonsNew(const AControls: array of TBCButton);
+var
+  i: Integer;
+  c: TColor;
+  ImageList: TImageList;
+begin
+  c:= cl3DLight;
+  //c:= ColorIncLightness(clBtnFace, -15);
+  ImageList:= ImageListForScreen;
+  for i:= 0 to High(AControls) do
+  begin
+    AControls[i].Images:= ImageList;
+    AControls[i].StateNormal.Background.Color:= c;
+    AControls[i].StateNormal.Border.Color:= clActiveBorder;
+  end;
+end;
+
+function ImageListForScreen: TImageList;
+begin
+  case Screen.PixelsPerInch of
+    96 : Result:= Images.PX24;
+    120: Result:= Images.PX30;
+    144: Result:= Images.PX36;
+    168: Result:= Images.PX42;
   end;
 end;
 

@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, Buttons,
-  StdCtrls, EditBtn, VirtualTrees, BCPanel, BCButton, DateUtils,
+  StdCtrls, EditBtn, DividerBevel, VirtualTrees, BCPanel, BCButton, DateUtils,
   //Project utils
   UDataBase, UConst, UTypes, UUtils,
   //DK packages utils
@@ -22,6 +22,7 @@ type
   TStaffForm = class(TForm)
     AscendingButton: TSpeedButton;
     DescendingButton: TSpeedButton;
+    DividerBevel1: TDividerBevel;
     ExportButton: TBCButton;
     FIORadioButton: TRadioButton;
     ListCaptionPanel: TBCPanel;
@@ -33,7 +34,6 @@ type
     SettingClientPanel: TPanel;
     SettingCaptionPanel: TBCPanel;
     TabNumCaptionPanel: TBCPanel;
-    Bevel1: TBevel;
     Bevel2: TBevel;
     CloseButton: TSpeedButton;
     FilterEdit: TEditButton;
@@ -231,7 +231,13 @@ begin
     TabNumAddButton, TabNumDelButton, TabNumEditButton, TabNumDismissButton, TabNumDismissCancelButton,
     PostLogAddButton, PostLogDelButton, PostLogEditButton
   ]);
-  SetCategoryButtons([
+  SetToolButtonsNew([
+    CloseButton{, AscendingButton, DescendingButton,
+    ListAddButton, ListDelButton, ListEditButton,
+    TabNumAddButton, TabNumDelButton, TabNumEditButton, TabNumDismissButton, TabNumDismissCancelButton,
+    PostLogAddButton, PostLogDelButton, PostLogEditButton}
+  ]);
+  SetCategoryButtonsNew([
     ExportButton
   ]);
 

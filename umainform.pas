@@ -12,7 +12,7 @@ uses
   DK_Const, DK_LCLStrRus, DK_HeapTrace, DK_CtrlUtils, DK_Fonts, DK_VSTTypes,
   DK_Vector,
   //Project utils
-  UDataBase, UUtils, UConst, UTypes,
+  UDataBase, UUtils, UConst, UTypes, UImages, DividerBevel,
   //Forms
   UStaffForm,
   UCalendarForm, UScheduleShiftForm, UVacationPlaneForm,
@@ -27,8 +27,10 @@ type
 
   TMainForm = class(TForm)
     AboutButton: TSpeedButton;
-    Bevel4: TBevel;
     CalendarMenuItem: TMenuItem;
+    DividerBevel1: TDividerBevel;
+    DividerBevel2: TDividerBevel;
+    DividerBevel3: TDividerBevel;
     TimetableMarkMenuItem: TMenuItem;
     SIZListMenuItem: TMenuItem;
     SIZUnitMenuItem: TMenuItem;
@@ -55,8 +57,6 @@ type
     TimingButton: TBCButton;
     StaffButton: TBCButton;
     RefreshButton: TSpeedButton;
-    Bevel1: TBevel;
-    Bevel2: TBevel;
     SettingButton: TSpeedButton;
     ExitButton: TSpeedButton;
     EditingButton: TSpeedButton;
@@ -353,18 +353,23 @@ end;
 procedure TMainForm.FormCreate(Sender: TObject);
 begin
   HeapTraceOutputFile('trace.trc');
-  //Height:= 300; Width:= 500; //for normal form maximizing
   Caption:= MAIN_CAPTION;
+
+  Images:= TImages.Create(Self);
 
   SetToolPanels([
     ToolPanel
   ]);
-  SetToolButtons([
+  SetToolButtonsNew([
     EditingButton, SettingButton, RefreshButton, AboutButton, ExitButton
   ]);
-  SetCategoryButtons([
+  SetCategoryButtonsNew([
     StaffButton, TimingButton, SafetyButton, DictionaryButton
   ]);
+
+  TimingMenu.Images:= ImageListForScreen;
+  SafetyMenu.Images:= TimingMenu.Images;
+  DictionaryMenu.Images:= TimingMenu.Images;
 
   SetGridFont;
   DBConnect;

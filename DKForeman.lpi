@@ -26,6 +26,9 @@
     </RunParams>
     <RequiredPackages>
       <Item>
+        <PackageName Value="LazControlDsgn"/>
+      </Item>
+      <Item>
         <PackageName Value="DKZoom"/>
       </Item>
       <Item>
@@ -298,6 +301,14 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UChooseForm"/>
+      </Unit>
+      <Unit>
+        <Filename Value="uimages.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="Images"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="DataModule"/>
+        <UnitName Value="UImages"/>
       </Unit>
     </Units>
   </ProjectOptions>
