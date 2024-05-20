@@ -131,7 +131,8 @@ object StaffMainEditForm: TStaffMainEditForm
         0000000000000000000000000000000000000000000000000000000000000000
         0000000000000000000000000000000000000000000000000000
       }
-      ImageIndex = 4
+      Images = Images.PX24
+      ImageIndex = 8
       OnClick = CancelButtonClick
       ParentFont = False
     end
@@ -225,7 +226,8 @@ object StaffMainEditForm: TStaffMainEditForm
         BC98C2BBBC98C2BBBC98C2BBBC98C2BBBC98C2BBBC98C2BBBC98C2BBBC98C2BB
         BC98835716987A4A01987A4A01987949008F7949001000000000
       }
-      ImageIndex = 3
+      Images = Images.PX24
+      ImageIndex = 7
       OnClick = SaveButtonClick
       ParentFont = False
     end

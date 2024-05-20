@@ -298,7 +298,7 @@ object MainForm: TMainForm
       }
       GroupIndex = 2
       Images = Images.PX24
-      ImageIndex = 22
+      ImageIndex = 24
       OnClick = SettingButtonClick
       ShowHint = True
       ParentShowHint = False
@@ -392,7 +392,7 @@ object MainForm: TMainForm
       }
       GroupIndex = 2
       Images = Images.PX24
-      ImageIndex = 21
+      ImageIndex = 23
       OnClick = EditingButtonClick
       ShowHint = True
       ParentShowHint = False
@@ -598,7 +598,7 @@ object MainForm: TMainForm
       TextApplyGlobalOpacity = False
       DropDownStyle = bdsCommon
       Images = Images.PX24
-      ImageIndex = 23
+      ImageIndex = 25
       MemoryUsage = bmuHigh
     end
     object TimingButton: TBCButton
@@ -712,7 +712,7 @@ object MainForm: TMainForm
       DropDownMenu = TimingMenu
       DropDownStyle = bdsCommon
       Images = Images.PX24
-      ImageIndex = 24
+      ImageIndex = 26
       MemoryUsage = bmuHigh
     end
     object SafetyButton: TBCButton
@@ -826,7 +826,7 @@ object MainForm: TMainForm
       DropDownMenu = SafetyMenu
       DropDownStyle = bdsCommon
       Images = Images.PX24
-      ImageIndex = 25
+      ImageIndex = 27
       MemoryUsage = bmuHigh
     end
     object DictionaryButton: TBCButton
@@ -938,7 +938,7 @@ object MainForm: TMainForm
       TextApplyGlobalOpacity = False
       DropDownStyle = bdsCommon
       Images = Images.PX24
-      ImageIndex = 26
+      ImageIndex = 28
       MemoryUsage = bmuHigh
     end
     object DividerBevel1: TDividerBevel
@@ -993,27 +993,27 @@ object MainForm: TMainForm
     Top = 48
     object CalendarMenuItem: TMenuItem
       Caption = 'Производственный календарь'
-      ImageIndex = 27
+      ImageIndex = 29
       OnClick = CalendarMenuItemClick
     end
     object ShiftScheduleMenuItem: TMenuItem
       Caption = 'Графики сменности'
-      ImageIndex = 28
+      ImageIndex = 30
       OnClick = ShiftScheduleMenuItemClick
     end
     object VacationPlaneMenuItem: TMenuItem
       Caption = 'Планирование отпусков'
-      ImageIndex = 29
+      ImageIndex = 31
       OnClick = VacationPlaneMenuItemClick
     end
     object PersonalScheduleMenuItem: TMenuItem
       Caption = 'Графики работы'
-      ImageIndex = 30
+      ImageIndex = 32
       OnClick = PersonalScheduleMenuItemClick
     end
     object TimetableMenuItem: TMenuItem
       Caption = 'Табели учета рабочего времени'
-      ImageIndex = 31
+      ImageIndex = 33
       OnClick = TimetableMenuItemClick
     end
   end
@@ -1023,17 +1023,17 @@ object MainForm: TMainForm
     Top = 112
     object SIZMenuItem: TMenuItem
       Caption = 'Средства индивидуальной защиты'
-      ImageIndex = 32
+      ImageIndex = 34
       OnClick = SIZMenuItemClick
     end
     object SSOMenuItem: TMenuItem
       Caption = 'Средства смывающие и обезвреживающие'
-      ImageIndex = 33
+      ImageIndex = 35
       OnClick = SSOMenuItemClick
     end
     object StudyMenuItem: TMenuItem
       Caption = 'Инструктажи, аттестация и обучение'
-      ImageIndex = 34
+      ImageIndex = 36
       OnClick = StudyMenuItemClick
     end
   end
@@ -1043,12 +1043,12 @@ object MainForm: TMainForm
     Top = 176
     object PostListMenuItem: TMenuItem
       Caption = 'Перечень должностей (профессий)'
-      ImageIndex = 35
+      ImageIndex = 37
       OnClick = PostListMenuItemClick
     end
     object TimetableMarkMenuItem: TMenuItem
       Caption = 'Коды табеля учета рабочего времени'
-      ImageIndex = 36
+      ImageIndex = 38
       OnClick = TimetableMarkMenuItemClick
     end
     object Separator1: TMenuItem
@@ -1056,22 +1056,22 @@ object MainForm: TMainForm
     end
     object SIZListMenuItem: TMenuItem
       Caption = 'Перечень средств индивидуальной защиты'
-      ImageIndex = 32
+      ImageIndex = 34
       OnClick = SIZListMenuItemClick
     end
     object SIZUnitMenuItem: TMenuItem
       Caption = 'Единицы измерения средств индивидуальной защиты'
-      ImageIndex = 37
+      ImageIndex = 39
       OnClick = SIZUnitMenuItemClick
     end
     object SIZReasonMenuItem: TMenuItem
       Caption = 'Дополнительные условия выдачи средств индивидуальной защиты'
-      ImageIndex = 38
+      ImageIndex = 40
       OnClick = SIZReasonMenuItemClick
     end
     object SIZSpecLifeMenuItem: TMenuItem
       Caption = 'Особые сроки службы средств индивидуальной защиты'
-      ImageIndex = 39
+      ImageIndex = 41
       OnClick = SIZSpecLifeMenuItemClick
     end
     object Separator2: TMenuItem
@@ -1079,12 +1079,12 @@ object MainForm: TMainForm
     end
     object SSOListMenuItem: TMenuItem
       Caption = 'Перечень смывающих и обезвреживающих средств'
-      ImageIndex = 33
+      ImageIndex = 35
       OnClick = SSOListMenuItemClick
     end
     object SSOUnitMenuItem: TMenuItem
       Caption = 'Единицы измерения смывающих и обезвреживающих средств'
-      ImageIndex = 37
+      ImageIndex = 39
       OnClick = SSOUnitMenuItemClick
     end
   end

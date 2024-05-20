@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, Buttons,
-  StdCtrls, EditBtn, DividerBevel, VirtualTrees, BCPanel, BCButton, DateUtils,
+  StdCtrls, DividerBevel, VirtualTrees, BCPanel, BCButton, DateUtils,
   //Project utils
   UDataBase, UConst, UTypes, UUtils,
   //DK packages utils
@@ -23,20 +23,21 @@ type
     AscendingButton: TSpeedButton;
     DescendingButton: TSpeedButton;
     DividerBevel1: TDividerBevel;
+    DividerBevel2: TDividerBevel;
+    DividerBevel3: TDividerBevel;
+    FilterEdit: TEdit;
     ExportButton: TBCButton;
     FIORadioButton: TRadioButton;
     ListCaptionPanel: TBCPanel;
+    FilterButton: TSpeedButton;
     ListOrderToolPanel: TPanel;
-    OrderButtonBevel: TBevel;
     OrderButtonPanel: TPanel;
     OrderLabel: TLabel;
     BornDateRadioButton: TRadioButton;
     SettingClientPanel: TPanel;
     SettingCaptionPanel: TBCPanel;
     TabNumCaptionPanel: TBCPanel;
-    Bevel2: TBevel;
     CloseButton: TSpeedButton;
-    FilterEdit: TEditButton;
     FilterLabel: TLabel;
     FilterPanel: TPanel;
     ListAddButton: TSpeedButton;
@@ -72,7 +73,7 @@ type
     procedure CloseButtonClick(Sender: TObject);
     procedure DescendingButtonClick(Sender: TObject);
     procedure ExportButtonClick(Sender: TObject);
-    procedure FilterEditButtonClick(Sender: TObject);
+    procedure FilterButtonClick(Sender: TObject);
     procedure FilterEditChange(Sender: TObject);
     procedure FIORadioButtonClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -198,13 +199,14 @@ begin
   ]);
 end;
 
-procedure TStaffForm.FilterEditButtonClick(Sender: TObject);
+procedure TStaffForm.FilterButtonClick(Sender: TObject);
 begin
   FilterEdit.Text:= EmptyStr;
 end;
 
 procedure TStaffForm.FilterEditChange(Sender: TObject);
 begin
+  FilterButton.Enabled:= not SEmpty(FilterEdit.Text);
   StaffListLoad;
 end;
 
@@ -225,17 +227,11 @@ begin
   SetCaptionPanels([
     SettingCaptionPanel, ListCaptionPanel, TabNumCaptionPanel, PostLogCaptionPanel
   ]);
-  SetToolButtons([
+  SetToolButtonsNew([
     CloseButton, AscendingButton, DescendingButton,
     ListAddButton, ListDelButton, ListEditButton,
     TabNumAddButton, TabNumDelButton, TabNumEditButton, TabNumDismissButton, TabNumDismissCancelButton,
     PostLogAddButton, PostLogDelButton, PostLogEditButton
-  ]);
-  SetToolButtonsNew([
-    CloseButton{, AscendingButton, DescendingButton,
-    ListAddButton, ListDelButton, ListEditButton,
-    TabNumAddButton, TabNumDelButton, TabNumEditButton, TabNumDismissButton, TabNumDismissCancelButton,
-    PostLogAddButton, PostLogDelButton, PostLogEditButton}
   ]);
   SetCategoryButtonsNew([
     ExportButton

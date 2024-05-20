@@ -10,7 +10,7 @@ uses
   //DK packages utils
   DK_Vector, DK_StrUtils, DK_Dialogs, DK_Const, DK_VSTDropDown,
   //Project utils
-  UDataBase, UTypes, UConst;
+  UDataBase, UTypes, UConst, UUtils;
 
 type
 
@@ -60,6 +60,8 @@ end;
 procedure TStaffPostlogEditForm.FormCreate(Sender: TObject);
 begin
   PrevPostLogID:= -1;
+  SaveButton.Images:= ImageListForScreen;
+  CancelButton.Images:= SaveButton.Images;
   StatusDropDown:= TVSTDropDown.Create(StatusBCButton);
   StatusDropDown.Items:= POST_STATUS_PICKS;
   StatusDropDown.ItemIndex:= 0;

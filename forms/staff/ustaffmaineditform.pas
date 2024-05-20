@@ -10,7 +10,7 @@ uses
   //DK packages utils
   DK_StrUtils, DK_Dialogs, DK_VSTDropDown,
   //Project utils
-  UDataBase, UTypes, UConst;
+  UDataBase, UTypes, UConst, UUtils;
 
 type
 
@@ -59,6 +59,8 @@ implementation
 procedure TStaffMainEditForm.FormCreate(Sender: TObject);
 begin
   StaffID:= -1;
+  SaveButton.Images:= ImageListForScreen;
+  CancelButton.Images:= SaveButton.Images;
   GenderDropDown:= TVSTDropDown.Create(GenderBCButton);
   GenderDropDown.Items:= GENDER_PICKS;
   GenderDropDown.ItemIndex:= 1;

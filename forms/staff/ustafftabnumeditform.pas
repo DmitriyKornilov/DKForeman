@@ -10,7 +10,7 @@ uses
   //DK packages utils
   DK_StrUtils, DK_Dialogs, DK_Const,
   //Project utils
-  UDataBase, UTypes;
+  UDataBase, UTypes, UUtils;
 
 type
 
@@ -51,7 +51,8 @@ procedure TStaffTabNumEditForm.FormCreate(Sender: TObject);
 begin
   StaffID:= -1;
   TabNumID:= -1;
-
+  SaveButton.Images:= ImageListForScreen;
+  CancelButton.Images:= SaveButton.Images;
   RecrutDatePicker.MinDate:= NUlDATE;
   DismissDatePicker.MinDate:= NUlDATE;
 end;
