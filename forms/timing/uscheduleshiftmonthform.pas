@@ -123,10 +123,10 @@ begin
   SetToolPanels([
     ToolPanel
   ]);
-  SetToolButtonsNew([
+  SetToolButtons([
     CloseButton, CheckAllButton, UncheckAllButton
   ]);
-  SetCategoryButtonsNew([
+  SetCategoryButtons([
     ExportButton
   ]);
 

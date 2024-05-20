@@ -188,12 +188,12 @@ begin
     ListCaptionPanel, SettingCaptionPanel, ScheduleCaptionPanel
   ]);
 
-  SetToolButtonsNew([
+  SetToolButtons([
     CloseButton, CheckAllButton, UncheckAllButton, EditingButton, SettingButton,
     DayEditButton, RowUpButton, RowDownButton, RowMergeButton
   ]);
 
-  SetCategoryButtonsNew([
+  SetCategoryButtons([
     ExportButton, ScheduleButton, ListButton
   ]);
 

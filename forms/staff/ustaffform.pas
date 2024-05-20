@@ -227,13 +227,13 @@ begin
   SetCaptionPanels([
     SettingCaptionPanel, ListCaptionPanel, TabNumCaptionPanel, PostLogCaptionPanel
   ]);
-  SetToolButtonsNew([
+  SetToolButtons([
     CloseButton, FilterButton, AscendingButton, DescendingButton,
     ListAddButton, ListDelButton, ListEditButton,
     TabNumAddButton, TabNumDelButton, TabNumEditButton, TabNumDismissButton, TabNumDismissCancelButton,
     PostLogAddButton, PostLogDelButton, PostLogEditButton
   ]);
-  SetCategoryButtonsNew([
+  SetCategoryButtons([
     ExportButton
   ]);
 

@@ -360,10 +360,10 @@ begin
   SetToolPanels([
     ToolPanel
   ]);
-  SetToolButtonsNew([
+  SetToolButtons([
     EditingButton, SettingButton, RefreshButton, AboutButton, ExitButton
   ]);
-  SetCategoryButtonsNew([
+  SetCategoryButtons([
     StaffButton, TimingButton, SafetyButton, DictionaryButton
   ]);
 

@@ -17,10 +17,8 @@ uses
   //UI
   procedure SetToolPanels(const AControls: array of TControl);
   procedure SetCaptionPanels(const AControls: array of TBCPanel);
-  procedure SetToolButtons(const AControls: array of TControl);
-  procedure SetToolButtonsNew(const AControls: array of TSpeedButton);
+  procedure SetToolButtons(const AControls: array of TSpeedButton);
   procedure SetCategoryButtons(const AControls: array of TBCButton);
-  procedure SetCategoryButtonsNew(const AControls: array of TBCButton);
   function ImageListForScreen: TImageList;
 
   //ID for TVSTTable.ReSelect
@@ -171,15 +169,7 @@ begin
   end;
 end;
 
-procedure SetToolButtons(const AControls: array of TControl);
-var
-  i: Integer;
-begin
-  for i:= 0 to High(AControls) do
-    ControlWidth(AControls[i], TOOL_BUTTON_WIDTH_DEFAULT);
-end;
-
-procedure SetToolButtonsNew(const AControls: array of TSpeedButton);
+procedure SetToolButtons(const AControls: array of TSpeedButton);
 var
   i: Integer;
   ImageList: TImageList;
@@ -193,20 +183,6 @@ begin
 end;
 
 procedure SetCategoryButtons(const AControls: array of TBCButton);
-var
-  i: Integer;
-  c: TColor;
-begin
-  c:= cl3DLight;
-  //c:= ColorIncLightness(clBtnFace, -15);
-  for i:= 0 to High(AControls) do
-  begin
-    AControls[i].StateNormal.Background.Color:= c;
-    AControls[i].StateNormal.Border.Color:= clActiveBorder;
-  end;
-end;
-
-procedure SetCategoryButtonsNew(const AControls: array of TBCButton);
 var
   i: Integer;
   c: TColor;

@@ -129,10 +129,10 @@ begin
   SetCaptionPanels([
     ColorCaptionPanel
   ]);
-  SetToolButtonsNew([
+  SetToolButtons([
     CloseButton, SettingButton, AddButton, DelButton, EditButton
   ]);
-  SetCategoryButtonsNew([
+  SetCategoryButtons([
     ExportButton
   ]);
 

@@ -79,10 +79,10 @@ begin
   SetToolPanels([
     ToolPanel
   ]);
-  SetToolButtonsNew([
+  SetToolButtons([
     CloseButton
   ]);
-  SetCategoryButtonsNew([
+  SetCategoryButtons([
     ExportButton
   ]);
 

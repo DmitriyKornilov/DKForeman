@@ -251,13 +251,13 @@ begin
     SettingCaptionPanel, ListCaptionPanel, StructureCaptionPanel, CorrectionsCaptionPanel,
     SheetCaptionPanel
   ]);
-  SetToolButtonsNew([
+  SetToolButtons([
     CloseButton,
     ScheduleAddButton, ScheduleDelButton, ScheduleEditButton,
     DayAddButton, DayDelButton, DayEditButton, DayCopyButton,
     CopySaveButton, CopyDelButton,CopyCancelButton
   ]);
-  SetCategoryButtonsNew([
+  SetCategoryButtons([
     ExportButton, CalendarButton, MonthButton
   ]);
 

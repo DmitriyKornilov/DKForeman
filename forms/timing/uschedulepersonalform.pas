@@ -330,14 +330,14 @@ begin
     StaffCaptionPanel, SettingCaptionPanel, ListCaptionPanel, HistoryCaptionPanel,
     VacationCaptionPanel, CorrectionsCaptionPanel, ViewCaptionPanel
   ]);
-  SetToolButtonsNew([
+  SetToolButtons([
     CloseButton, FilterButton, AscendingButton, DescendingButton,
     HistoryAddButton, HistoryDelButton, HistoryEditButton,
     VacationSaveButton, VacationDelButton, VacationEraseButton, VacationCancelButton,
     DayAddButton, DayDelButton, DayEditButton, DayCopyButton,
     CopySaveButton, CopyDelButton,CopyCancelButton
   ]);
-  SetCategoryButtonsNew([
+  SetCategoryButtons([
     ExportButton, MonthScheduleButton
   ]);
 

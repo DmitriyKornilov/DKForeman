@@ -148,12 +148,12 @@ begin
     StaffCaptionPanel, SettingCaptionPanel, ListCaptionPanel, EditingCaptionPanel,
     ViewCaptionPanel
   ]);
-  SetToolButtonsNew([
+  SetToolButtons([
     CloseButton, FilterButton, AscendingButton, DescendingButton,
     WriteButton, EraseButton, EditButton, CopyButton,
     CopySaveButton, CopyDelButton,CopyCancelButton
   ]);
-  SetCategoryButtonsNew([
+  SetCategoryButtons([
     ExportButton, MonthTimetableButton
   ]);
 

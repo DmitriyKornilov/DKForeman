@@ -206,12 +206,12 @@ begin
   SetCaptionPanels([
     CaptionPanel
   ]);
-  SetToolButtonsNew([
+  SetToolButtons([
     CloseButton,
     DayAddButton, DayDelButton, DayEditButton, DayCopyButton,
     CopySaveButton, CopyDelButton,CopyCancelButton
   ]);
-  SetCategoryButtonsNew([
+  SetCategoryButtons([
     ExportButton
   ]);
 
