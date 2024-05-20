@@ -4,6 +4,7 @@ object StaffMainEditForm: TStaffMainEditForm
   Top = 261
   Width = 350
   AutoSize = True
+  BorderIcons = [biSystemMenu]
   BorderStyle = bsSizeToolWin
   Caption = 'Сотрудник'
   ClientHeight = 238

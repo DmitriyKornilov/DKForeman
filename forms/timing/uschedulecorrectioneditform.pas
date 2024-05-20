@@ -64,6 +64,8 @@ begin
   DigMark:= -1;
   ScheduleID:= -1;
   TabNumID:= -1;
+  SaveButton.Images:= ImageListForScreen;
+  CancelButton.Images:= SaveButton.Images;
   MarkDropDown:= TVSTDropDown.Create(MarkBCButton);
   ShiftNumSpinEdit.MaxValue:= 365;
 end;

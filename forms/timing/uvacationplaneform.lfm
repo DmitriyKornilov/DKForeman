@@ -23,6 +23,18 @@ object VacationPlaneForm: TVacationPlaneForm
     ClientWidth = 312
     ParentFont = False
     TabOrder = 0
+    object DividerBevel1: TDividerBevel
+      Left = 252
+      Height = 36
+      Top = 0
+      Width = 20
+      Caption = 'DividerBevel1'
+      Align = alRight
+      BevelWidth = 1
+      Font.Style = [fsBold]
+      Orientation = trVertical
+      ParentFont = False
+    end
     object CloseButton: TSpeedButton
       Cursor = crHandPoint
       Left = 272
@@ -108,17 +120,9 @@ object VacationPlaneForm: TVacationPlaneForm
         FEBC1E1EFEE71F1FFEFC1F1FFFFC1E1EFFE71E1EFFBC1F1FFF7B1E1EFF230000
         0000000000000000000000000000000000000000000000000000
       }
+      Images = Images.PX24
+      ImageIndex = 3
       OnClick = CloseButtonClick
-    end
-    object Bevel1: TBevel
-      Left = 268
-      Height = 36
-      Top = 0
-      Width = 2
-      Align = alRight
-      BorderSpacing.Left = 3
-      BorderSpacing.Right = 2
-      Shape = bsRightLine
     end
   end
 end

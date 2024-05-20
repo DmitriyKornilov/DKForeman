@@ -3,6 +3,8 @@ object StaffTabNumEditForm: TStaffTabNumEditForm
   Height = 118
   Top = 250
   Width = 750
+  AutoSize = True
+  BorderIcons = [biSystemMenu]
   Caption = 'Табельный номер'
   ClientHeight = 118
   ClientWidth = 750

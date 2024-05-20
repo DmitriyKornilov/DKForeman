@@ -98,6 +98,9 @@ end;
 
 procedure TCalendarEditForm.FormCreate(Sender: TObject);
 begin
+  SaveButton.Images:= ImageListForScreen;
+  CancelButton.Images:= SaveButton.Images;
+
   SwapDayDropDown:= TVSTDropDown.Create(SwapDayBCButton);
   SwapDayDropDown.Items:= DAY_NAME_PICKS;
   SwapDayDropDown.ItemIndex:= 0;

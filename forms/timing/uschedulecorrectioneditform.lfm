@@ -4,6 +4,7 @@ object ScheduleCorrectionEditForm: TScheduleCorrectionEditForm
   Top = 251
   Width = 721
   AutoSize = True
+  BorderIcons = [biSystemMenu]
   Caption = 'Корректировка графика'
   ClientHeight = 191
   ClientWidth = 721
@@ -325,7 +326,8 @@ object ScheduleCorrectionEditForm: TScheduleCorrectionEditForm
         0000000000000000000000000000000000000000000000000000000000000000
         0000000000000000000000000000000000000000000000000000
       }
-      ImageIndex = 4
+      Images = Images.PX24
+      ImageIndex = 8
       OnClick = CancelButtonClick
       ParentFont = False
     end
@@ -419,7 +421,8 @@ object ScheduleCorrectionEditForm: TScheduleCorrectionEditForm
         BC98C2BBBC98C2BBBC98C2BBBC98C2BBBC98C2BBBC98C2BBBC98C2BBBC98C2BB
         BC98835716987A4A01987A4A01987949008F7949001000000000
       }
-      ImageIndex = 3
+      Images = Images.PX24
+      ImageIndex = 7
       OnClick = SaveButtonClick
       ParentFont = False
     end

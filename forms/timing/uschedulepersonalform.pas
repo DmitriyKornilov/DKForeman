@@ -6,8 +6,8 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, Buttons,
-  fpspreadsheetgrid, BCPanel, BCButton, VirtualTrees, Spin, EditBtn, StdCtrls,
-  DateUtils,
+  fpspreadsheetgrid, BCPanel, BCButton, VirtualTrees, Spin, StdCtrls,
+  DividerBevel, DateUtils,
   //Project utils
   UDataBase, UConst, UTypes, UUtils, UWorkHours, UCalendar, USchedule,
   UScheduleSheet,
@@ -24,16 +24,17 @@ type
 
   TSchedulePersonalForm = class(TForm)
     AscendingButton: TSpeedButton;
-    Bevel1: TBevel;
-    Bevel2: TBevel;
-    Bevel3: TBevel;
     CloseButton: TSpeedButton;
     CopyCancelButton: TSpeedButton;
     DescendingButton: TSpeedButton;
-    FilterEdit: TEditButton;
+    DividerBevel1: TDividerBevel;
+    DividerBevel2: TDividerBevel;
+    DividerBevel3: TDividerBevel;
+    DividerBevel4: TDividerBevel;
+    FilterButton: TSpeedButton;
+    FilterEdit: TEdit;
     FilterLabel: TLabel;
     FilterPanel: TPanel;
-    OrderButtonBevel: TBevel;
     OrderButtonPanel: TPanel;
     OrderLabel: TLabel;
     ListFilterToolPanel: TPanel;
@@ -108,7 +109,7 @@ type
     procedure CloseButtonClick(Sender: TObject);
     procedure AscendingButtonClick(Sender: TObject);
     procedure ExportButtonClick(Sender: TObject);
-    procedure FilterEditButtonClick(Sender: TObject);
+    procedure FilterButtonClick(Sender: TObject);
     procedure FilterEditChange(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -306,13 +307,14 @@ begin
   ScheduleExport;
 end;
 
-procedure TSchedulePersonalForm.FilterEditButtonClick(Sender: TObject);
+procedure TSchedulePersonalForm.FilterButtonClick(Sender: TObject);
 begin
   FilterEdit.Text:= EmptyStr;
 end;
 
 procedure TSchedulePersonalForm.FilterEditChange(Sender: TObject);
 begin
+  FilterButton.Enabled:= not SEmpty(FilterEdit.Text);
   StaffListLoad;
 end;
 
@@ -328,14 +330,14 @@ begin
     StaffCaptionPanel, SettingCaptionPanel, ListCaptionPanel, HistoryCaptionPanel,
     VacationCaptionPanel, CorrectionsCaptionPanel, ViewCaptionPanel
   ]);
-  SetToolButtons([
-    CloseButton, AscendingButton, DescendingButton,
+  SetToolButtonsNew([
+    CloseButton, FilterButton, AscendingButton, DescendingButton,
     HistoryAddButton, HistoryDelButton, HistoryEditButton,
-    VacationSaveButton, VacationDelButton, VacationCancelButton,
+    VacationSaveButton, VacationDelButton, VacationEraseButton, VacationCancelButton,
     DayAddButton, DayDelButton, DayEditButton, DayCopyButton,
     CopySaveButton, CopyDelButton,CopyCancelButton
   ]);
-  SetCategoryButtons([
+  SetCategoryButtonsNew([
     ExportButton, MonthScheduleButton
   ]);
 

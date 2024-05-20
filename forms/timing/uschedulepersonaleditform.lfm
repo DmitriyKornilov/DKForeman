@@ -3,6 +3,7 @@ object SchedulePersonalEditForm: TSchedulePersonalEditForm
   Height = 502
   Top = 211
   Width = 1125
+  BorderIcons = [biSystemMenu, biMaximize]
   Caption = 'График работы'
   ClientHeight = 502
   ClientWidth = 1125
@@ -160,7 +161,8 @@ object SchedulePersonalEditForm: TSchedulePersonalEditForm
         0000000000000000000000000000000000000000000000000000000000000000
         0000000000000000000000000000000000000000000000000000
       }
-      ImageIndex = 4
+      Images = Images.PX24
+      ImageIndex = 8
       OnClick = CancelButtonClick
       ParentFont = False
     end
@@ -254,7 +256,8 @@ object SchedulePersonalEditForm: TSchedulePersonalEditForm
         BC98C2BBBC98C2BBBC98C2BBBC98C2BBBC98C2BBBC98C2BBBC98C2BBBC98C2BB
         BC98835716987A4A01987A4A01987949008F7949001000000000
       }
-      ImageIndex = 3
+      Images = Images.PX24
+      ImageIndex = 7
       OnClick = SaveButtonClick
       ParentFont = False
     end

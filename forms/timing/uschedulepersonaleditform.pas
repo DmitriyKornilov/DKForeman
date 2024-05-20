@@ -109,6 +109,8 @@ var
 begin
   PrevHistoryID:= -1;
   Calendar:= TCalendar.Create;
+  SaveButton.Images:= ImageListForScreen;
+  CancelButton.Images:= SaveButton.Images;
   DataBase.ScheduleMainListLoad(ScheduleIDs, V, V, ScheduleNames);
   Sheet:= TShiftSimpleScheduleSheet.Create(ViewGrid, MainForm.GridFont, ScheduleNames);
 end;

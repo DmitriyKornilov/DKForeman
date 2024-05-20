@@ -8,6 +8,7 @@ object ChooseForm: TChooseForm
   ClientHeight = 250
   ClientWidth = 600
   DesignTimePPI = 120
+  OnCreate = FormCreate
   OnShow = FormShow
   LCLVersion = '3.2.0.0'
   object ButtonPanel: TPanel
@@ -118,7 +119,8 @@ object ChooseForm: TChooseForm
         0000000000000000000000000000000000000000000000000000000000000000
         0000000000000000000000000000000000000000000000000000
       }
-      ImageIndex = 4
+      Images = Images.PX24
+      ImageIndex = 8
       OnClick = CancelButtonClick
       ParentFont = False
     end
@@ -212,7 +214,8 @@ object ChooseForm: TChooseForm
         0000000000000000000000000000000000000000000000000000000000000000
         0000000000000000000000000000000000000000000000000000
       }
-      ImageIndex = 3
+      Images = Images.PX24
+      ImageIndex = 14
       OnClick = SaveButtonClick
       ParentFont = False
     end

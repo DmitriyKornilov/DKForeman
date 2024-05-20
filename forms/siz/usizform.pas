@@ -5,15 +5,16 @@ unit USIZForm;
 interface
 
 uses
-  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, Buttons;
+  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, Buttons,
+  DividerBevel;
 
 type
 
   { TSIZForm }
 
   TSIZForm = class(TForm)
-    Bevel1: TBevel;
     CloseButton: TSpeedButton;
+    DividerBevel1: TDividerBevel;
     ToolPanel: TPanel;
     procedure CloseButtonClick(Sender: TObject);
   private

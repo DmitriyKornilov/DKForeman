@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, BCButton,
-  Buttons, Spin, VirtualTrees, fpspreadsheetgrid,
+  Buttons, Spin, DividerBevel, VirtualTrees, fpspreadsheetgrid,
 
   //DK packages utils
   DK_Vector, DK_Fonts, DK_Const, DK_StrUtils, DK_VSTTableTools, DK_Zoom,
@@ -21,10 +21,10 @@ type
   { TScheduleShiftMonthForm }
 
   TScheduleShiftMonthForm = class(TForm)
-    Bevel1: TBevel;
-    Bevel2: TBevel;
-    Bevel3: TBevel;
     CloseButton: TSpeedButton;
+    DividerBevel1: TDividerBevel;
+    DividerBevel2: TDividerBevel;
+    DividerBevel3: TDividerBevel;
     ExportButton: TBCButton;
     LeftSplitter: TSplitter;
     MonthBCButton: TBCButton;
@@ -119,17 +119,14 @@ end;
 procedure TScheduleShiftMonthForm.FormCreate(Sender: TObject);
 begin
   Caption:= MAIN_CAPTION + MAIN_DESCRIPTION[11];
-  //Height:= 300; Width:= 500; //for normal form maximizing
 
   SetToolPanels([
     ToolPanel
   ]);
-
-  SetToolButtons([
-    CloseButton
+  SetToolButtonsNew([
+    CloseButton, CheckAllButton, UncheckAllButton
   ]);
-
-  SetCategoryButtons([
+  SetCategoryButtonsNew([
     ExportButton
   ]);
 

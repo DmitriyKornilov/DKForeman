@@ -108,17 +108,21 @@ object SSOForm: TSSOForm
         FEBC1E1EFEE71F1FFEFC1F1FFFFC1E1EFFE71E1EFFBC1F1FFF7B1E1EFF230000
         0000000000000000000000000000000000000000000000000000
       }
+      Images = Images.PX24
+      ImageIndex = 3
       OnClick = CloseButtonClick
     end
-    object Bevel1: TBevel
-      Left = 595
+    object DividerBevel1: TDividerBevel
+      Left = 579
       Height = 36
       Top = 0
-      Width = 2
+      Width = 20
+      Caption = 'DividerBevel1'
       Align = alRight
-      BorderSpacing.Left = 3
-      BorderSpacing.Right = 2
-      Shape = bsRightLine
+      BevelWidth = 1
+      Font.Style = [fsBold]
+      Orientation = trVertical
+      ParentFont = False
     end
   end
 end

@@ -8,7 +8,9 @@ uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, Buttons,
   VirtualTrees,
   //DK packages utils
-  DK_Vector, DK_VSTTableTools, DK_CtrlUtils;
+  DK_Vector, DK_VSTTableTools, DK_CtrlUtils,
+  //Project utils
+  UUtils;
 
 type
 
@@ -22,6 +24,7 @@ type
     SaveButton: TSpeedButton;
     VT1: TVirtualStringTree;
     VT2: TVirtualStringTree;
+    procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure SaveButtonClick(Sender: TObject);
     procedure CancelButtonClick(Sender: TObject);
@@ -124,6 +127,12 @@ begin
   if H>MIN_FORM_HEIGHT then
     ClientHeight:= H;
   FormToScreenCenter(Self);
+end;
+
+procedure TChooseForm.FormCreate(Sender: TObject);
+begin
+  SaveButton.Images:= ImageListForScreen;
+  CancelButton.Images:= SaveButton.Images;
 end;
 
 procedure TChooseForm.SaveButtonClick(Sender: TObject);

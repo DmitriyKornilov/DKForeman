@@ -3,6 +3,7 @@ object ScheduleShiftEditForm: TScheduleShiftEditForm
   Height = 524
   Top = 215
   Width = 630
+  BorderIcons = [biSystemMenu, biMaximize]
   Caption = 'График сменности'
   ClientHeight = 524
   ClientWidth = 630
@@ -409,7 +410,8 @@ object ScheduleShiftEditForm: TScheduleShiftEditForm
         0000000000000000000000000000000000000000000000000000000000000000
         0000000000000000000000000000000000000000000000000000
       }
-      ImageIndex = 4
+      Images = Images.PX24
+      ImageIndex = 8
       OnClick = CancelButtonClick
       ParentFont = False
     end
@@ -503,7 +505,8 @@ object ScheduleShiftEditForm: TScheduleShiftEditForm
         BC98C2BBBC98C2BBBC98C2BBBC98C2BBBC98C2BBBC98C2BBBC98C2BBBC98C2BB
         BC98835716987A4A01987A4A01987949008F7949001000000000
       }
-      ImageIndex = 3
+      Images = Images.PX24
+      ImageIndex = 7
       OnClick = SaveButtonClick
       ParentFont = False
     end

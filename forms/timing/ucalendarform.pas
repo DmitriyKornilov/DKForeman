@@ -6,7 +6,8 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, Buttons,
-  Spin, StdCtrls, fpspreadsheetgrid, VirtualTrees, BCPanel, BCButton, DateUtils,
+  Spin, StdCtrls, DividerBevel, fpspreadsheetgrid, VirtualTrees, BCPanel,
+  BCButton, DateUtils,
   //Project utils
   UConst, UTypes, UUtils, UCalendar, UCalendarSheet,
   //DK packages utils
@@ -20,12 +21,12 @@ type
   { TCalendarForm }
 
   TCalendarForm = class(TForm)
-    Bevel1: TBevel;
-    Bevel2: TBevel;
+    CloseButton: TSpeedButton;
+    DividerBevel1: TDividerBevel;
+    DividerBevel2: TDividerBevel;
     ExportButton: TBCButton;
     ZoomBevel: TBevel;
     ViewGrid: TsWorksheetGrid;
-    CloseButton: TSpeedButton;
     CopySaveButton: TSpeedButton;
     CopyDelButton: TSpeedButton;
     CopyCancelButton: TSpeedButton;
@@ -205,12 +206,12 @@ begin
   SetCaptionPanels([
     CaptionPanel
   ]);
-  SetToolButtons([
+  SetToolButtonsNew([
     CloseButton,
     DayAddButton, DayDelButton, DayEditButton, DayCopyButton,
     CopySaveButton, CopyDelButton,CopyCancelButton
   ]);
-  SetCategoryButtons([
+  SetCategoryButtonsNew([
     ExportButton
   ]);
 

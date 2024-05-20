@@ -6,7 +6,8 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, BCButton,
-  BCPanel, Buttons, Spin, StdCtrls, VirtualTrees, fpspreadsheetgrid, DateUtils,
+  BCPanel, Buttons, Spin, StdCtrls, DividerBevel, VirtualTrees,
+  fpspreadsheetgrid, DateUtils,
   //DK packages utils
   DK_Vector, DK_Matrix, DK_Math, DK_Fonts, DK_Const, DK_DateUtils,
   DK_StrUtils, DK_VSTTables, DK_VSTParamList, DK_Zoom, DK_SheetExporter, DK_Progress,
@@ -21,21 +22,21 @@ type
   { TSchedulePersonalMonthForm }
 
   TSchedulePersonalMonthForm = class(TForm)
-    Bevel1: TBevel;
-    Bevel2: TBevel;
-    Bevel3: TBevel;
-    Bevel4: TBevel;
     CheckAllButton: TSpeedButton;
+    CloseButton: TSpeedButton;
     DayEditButton: TSpeedButton;
+    DividerBevel1: TDividerBevel;
+    DividerBevel2: TDividerBevel;
+    DividerBevel3: TDividerBevel;
+    DividerBevel4: TDividerBevel;
     EditingButton: TSpeedButton;
     EditPanel: TPanel;
     RowDownButton: TSpeedButton;
-    RowSplitButton: TSpeedButton;
+    RowMergeButton: TSpeedButton;
     RowUpButton: TSpeedButton;
     SettingButton: TSpeedButton;
     SettingSplitter: TSplitter;
     RightPanel: TPanel;
-    CloseButton: TSpeedButton;
     ExportButton: TBCButton;
     ScheduleCaptionPanel: TBCPanel;
     ScheduleToolPanel: TPanel;
@@ -77,7 +78,7 @@ type
     procedure ListButtonClick(Sender: TObject);
     procedure PostRadioButtonClick(Sender: TObject);
     procedure RowDownButtonClick(Sender: TObject);
-    procedure RowSplitButtonClick(Sender: TObject);
+    procedure RowMergeButtonClick(Sender: TObject);
     procedure RowUpButtonClick(Sender: TObject);
     procedure ScheduleButtonClick(Sender: TObject);
     procedure ScheduleRadioButtonClick(Sender: TObject);
@@ -178,7 +179,6 @@ end;
 procedure TSchedulePersonalMonthForm.FormCreate(Sender: TObject);
 begin
   Caption:= MAIN_CAPTION + MAIN_DESCRIPTION[13];
-  //Height:= 300; Width:= 500; //for normal form maximizing
 
   SetToolPanels([
     ToolPanel, ListOrderToolPanel
@@ -188,13 +188,13 @@ begin
     ListCaptionPanel, SettingCaptionPanel, ScheduleCaptionPanel
   ]);
 
-  SetToolButtons([
-    CloseButton, CheckAllButton, UncheckAllButton,
-    RowUpButton, RowDownButton, RowSplitButton
+  SetToolButtonsNew([
+    CloseButton, CheckAllButton, UncheckAllButton, EditingButton, SettingButton,
+    DayEditButton, RowUpButton, RowDownButton, RowMergeButton
   ]);
 
-  SetCategoryButtons([
-    ExportButton
+  SetCategoryButtonsNew([
+    ExportButton, ScheduleButton, ListButton
   ]);
 
   CanLoadAndDraw:= False;
@@ -432,7 +432,7 @@ begin
   SelectionMove(mdDown);
 end;
 
-procedure TSchedulePersonalMonthForm.RowSplitButtonClick(Sender: TObject);
+procedure TSchedulePersonalMonthForm.RowMergeButtonClick(Sender: TObject);
 begin
   RowsMerge;
 end;
@@ -517,7 +517,7 @@ begin
   DayEditButton.Enabled:= Sheet.IsDateSelected;
   RowUpButton.Enabled:= Sheet.IsRowSelected and (Sheet.SelectedIndex>0);
   RowDownButton.Enabled:= Sheet.IsRowSelected and (Sheet.SelectedIndex<High(Schedules));
-  RowSplitButton.Enabled:= Sheet.IsDoubleRowSelected;
+  RowMergeButton.Enabled:= Sheet.IsDoubleRowSelected;
 end;
 
 procedure TSchedulePersonalMonthForm.StaffListLoad;

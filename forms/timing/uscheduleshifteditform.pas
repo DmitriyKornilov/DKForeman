@@ -65,6 +65,9 @@ procedure TScheduleShiftEditForm.FormCreate(Sender: TObject);
 begin
   Cycle:= ScheduleCycleEmpty;
 
+  SaveButton.Images:= ImageListForScreen;
+  CancelButton.Images:= SaveButton.Images;
+
   DataBase.TimetableMarkListLoad(KeyMarks, PickMarks, True{ DigMark>0});
 
   Structure:= TVSTEdit.Create(VT);

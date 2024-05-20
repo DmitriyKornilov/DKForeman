@@ -228,7 +228,7 @@ begin
     SettingCaptionPanel, ListCaptionPanel, TabNumCaptionPanel, PostLogCaptionPanel
   ]);
   SetToolButtonsNew([
-    CloseButton, AscendingButton, DescendingButton,
+    CloseButton, FilterButton, AscendingButton, DescendingButton,
     ListAddButton, ListDelButton, ListEditButton,
     TabNumAddButton, TabNumDelButton, TabNumEditButton, TabNumDismissButton, TabNumDismissCancelButton,
     PostLogAddButton, PostLogDelButton, PostLogEditButton

@@ -6,7 +6,8 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, Buttons,
-  BCButton, BCPanel, Spin, StdCtrls, VirtualTrees, fpspreadsheetgrid, DateUtils,
+  BCButton, BCPanel, Spin, StdCtrls, DividerBevel, VirtualTrees,
+  fpspreadsheetgrid, DateUtils,
 
   //DK packages utils
   DK_Vector, DK_Fonts, DK_Const,
@@ -19,11 +20,11 @@ type
   { TScheduleShiftCalendarForm }
 
   TScheduleShiftCalendarForm = class(TForm)
-    Bevel1: TBevel;
-    Bevel2: TBevel;
-    Bevel3: TBevel;
     CloseButton: TSpeedButton;
     ColorCaptionPanel: TBCPanel;
+    DividerBevel1: TDividerBevel;
+    DividerBevel2: TDividerBevel;
+    DividerBevel3: TDividerBevel;
     ExportButton: TBCButton;
     FirstShiftDayColorOnlyCheckBox: TCheckBox;
     ListToolPanel: TPanel;
@@ -128,10 +129,10 @@ begin
   SetCaptionPanels([
     ColorCaptionPanel
   ]);
-  SetToolButtons([
+  SetToolButtonsNew([
     CloseButton, SettingButton, AddButton, DelButton, EditButton
   ]);
-  SetCategoryButtons([
+  SetCategoryButtonsNew([
     ExportButton
   ]);
 

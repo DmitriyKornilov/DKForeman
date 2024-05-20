@@ -4,6 +4,7 @@ object StaffPostlogEditForm: TStaffPostlogEditForm
   Top = 258
   Width = 750
   AutoSize = True
+  BorderIcons = [biSystemMenu]
   Caption = 'Должность (профессия)'
   ClientHeight = 156
   ClientWidth = 750

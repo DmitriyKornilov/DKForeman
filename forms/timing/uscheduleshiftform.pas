@@ -6,7 +6,8 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, Buttons,
-  fpspreadsheetgrid, BCPanel, BCButton, VirtualTrees, Spin, DateUtils,
+  fpspreadsheetgrid, BCPanel, BCButton, VirtualTrees, Spin, DividerBevel,
+  DateUtils,
   //Project utils
   UDataBase, UConst, UTypes, UUtils, UWorkHours, UCalendar, USchedule,
   UScheduleSheet,
@@ -22,13 +23,13 @@ type
   { TScheduleShiftForm }
 
   TScheduleShiftForm = class(TForm)
-    Bevel1: TBevel;
-    Bevel2: TBevel;
-    Bevel3: TBevel;
+    CloseButton: TSpeedButton;
+    DividerBevel1: TDividerBevel;
+    DividerBevel2: TDividerBevel;
+    DividerBevel3: TDividerBevel;
     MonthButton: TBCButton;
     ExportButton: TBCButton;
     CorrectionsCaptionPanel: TBCPanel;
-    CloseButton: TSpeedButton;
     CopyCancelButton: TSpeedButton;
     CopyDelButton: TSpeedButton;
     CopyPanel: TPanel;
@@ -250,13 +251,13 @@ begin
     SettingCaptionPanel, ListCaptionPanel, StructureCaptionPanel, CorrectionsCaptionPanel,
     SheetCaptionPanel
   ]);
-  SetToolButtons([
+  SetToolButtonsNew([
     CloseButton,
     ScheduleAddButton, ScheduleDelButton, ScheduleEditButton,
     DayAddButton, DayDelButton, DayEditButton, DayCopyButton,
     CopySaveButton, CopyDelButton,CopyCancelButton
   ]);
-  SetCategoryButtons([
+  SetCategoryButtonsNew([
     ExportButton, CalendarButton, MonthButton
   ]);
 

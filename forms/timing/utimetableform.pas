@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, Buttons,
   fpspreadsheetgrid, BCPanel, BCButton, VirtualTrees, Spin, EditBtn, StdCtrls,
-  DateUtils,
+  DividerBevel, DateUtils,
   //Project utils
   UDataBase, UConst, UTypes, UUtils, UWorkHours, UCalendar, USchedule,
 
@@ -23,10 +23,6 @@ type
 
   TTimetableForm = class(TForm)
     AscendingButton: TSpeedButton;
-    Bevel1: TBevel;
-    Bevel2: TBevel;
-    Bevel3: TBevel;
-    Bevel4: TBevel;
     CloseButton: TSpeedButton;
     CopyButton: TSpeedButton;
     CopyCancelButton: TSpeedButton;
@@ -36,12 +32,18 @@ type
     CopyToolPanel: TPanel;
     CopyVT: TVirtualStringTree;
     DescendingButton: TSpeedButton;
+    DividerBevel1: TDividerBevel;
+    DividerBevel2: TDividerBevel;
+    DividerBevel3: TDividerBevel;
+    DividerBevel4: TDividerBevel;
+    DividerBevel5: TDividerBevel;
     EditButton: TSpeedButton;
     EditingPanel: TPanel;
     DayToolPanel: TPanel;
     EraseButton: TSpeedButton;
     ExportButton: TBCButton;
-    FilterEdit: TEditButton;
+    FilterButton: TSpeedButton;
+    FilterEdit: TEdit;
     FilterLabel: TLabel;
     FilterPanel: TPanel;
     FIORadioButton: TRadioButton;
@@ -60,7 +62,6 @@ type
     ListOrderToolPanel: TPanel;
     ListPanel: TPanel;
     MonthTimetableButton: TBCButton;
-    OrderButtonBevel: TBevel;
     OrderButtonPanel: TPanel;
     OrderLabel: TLabel;
     PostRadioButton: TRadioButton;
@@ -147,12 +148,12 @@ begin
     StaffCaptionPanel, SettingCaptionPanel, ListCaptionPanel, EditingCaptionPanel,
     ViewCaptionPanel
   ]);
-  SetToolButtons([
-    CloseButton, AscendingButton, DescendingButton,
+  SetToolButtonsNew([
+    CloseButton, FilterButton, AscendingButton, DescendingButton,
     WriteButton, EraseButton, EditButton, CopyButton,
     CopySaveButton, CopyDelButton,CopyCancelButton
   ]);
-  SetCategoryButtons([
+  SetCategoryButtonsNew([
     ExportButton, MonthTimetableButton
   ]);
 

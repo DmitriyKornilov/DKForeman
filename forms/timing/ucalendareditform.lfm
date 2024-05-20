@@ -4,6 +4,7 @@ object CalendarEditForm: TCalendarEditForm
   Top = 243
   Width = 386
   AutoSize = True
+  BorderIcons = [biSystemMenu]
   Caption = 'Календарь'
   ClientHeight = 202
   ClientWidth = 386
@@ -240,7 +241,8 @@ object CalendarEditForm: TCalendarEditForm
         0000000000000000000000000000000000000000000000000000000000000000
         0000000000000000000000000000000000000000000000000000
       }
-      ImageIndex = 4
+      Images = Images.PX24
+      ImageIndex = 8
       OnClick = CancelButtonClick
       ParentFont = False
     end
@@ -334,7 +336,8 @@ object CalendarEditForm: TCalendarEditForm
         BC98C2BBBC98C2BBBC98C2BBBC98C2BBBC98C2BBBC98C2BBBC98C2BBBC98C2BB
         BC98835716987A4A01987A4A01987949008F7949001000000000
       }
-      ImageIndex = 3
+      Images = Images.PX24
+      ImageIndex = 7
       OnClick = SaveButtonClick
       ParentFont = False
     end

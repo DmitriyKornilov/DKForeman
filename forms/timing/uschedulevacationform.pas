@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, BCButton,
-  Buttons, Spin, fpspreadsheetgrid,
+  Buttons, Spin, DividerBevel, fpspreadsheetgrid,
   //DK packages utils
   DK_Vector, DK_Zoom,
   //Project utils
@@ -17,9 +17,9 @@ type
   { TScheduleVacationForm }
 
   TScheduleVacationForm = class(TForm)
-    Bevel1: TBevel;
-    Bevel3: TBevel;
     CloseButton: TSpeedButton;
+    DividerBevel1: TDividerBevel;
+    DividerBevel2: TDividerBevel;
     ExportButton: TBCButton;
     SheetPanel: TPanel;
     ToolPanel: TPanel;
@@ -75,15 +75,14 @@ end;
 procedure TScheduleVacationForm.FormCreate(Sender: TObject);
 begin
   Caption:= MAIN_CAPTION + MAIN_DESCRIPTION[12];
-  //Height:= 300; Width:= 500; //for normal form maximizing
 
   SetToolPanels([
     ToolPanel
   ]);
-  SetToolButtons([
+  SetToolButtonsNew([
     CloseButton
   ]);
-  SetCategoryButtons([
+  SetCategoryButtonsNew([
     ExportButton
   ]);
 
