@@ -310,6 +310,11 @@
         <ResourceBaseClass Value="DataModule"/>
         <UnitName Value="UImages"/>
       </Unit>
+      <Unit>
+        <Filename Value="utils\timing\utimetable.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="UTimetable"/>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

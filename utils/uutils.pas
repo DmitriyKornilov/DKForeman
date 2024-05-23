@@ -141,6 +141,22 @@ uses
                             const AccountingType: Byte; //0-год, 1-квартал, 2 - месяц
                             out ABeginDate, AEndDate: TDate): Boolean;
 
+  //Timetable
+  {Актуализация записей табеля за период}
+  function TimetableForPeriodUpdate(const ATabNumID: Integer;
+                                   const ABeginDate, AEndDate: TDate): Boolean;
+  {Сумма отработанных часов за период }
+  function TimetableSumTotalHoursInPeriod(const ATabNumID: Integer;
+                                   const ABeginDate, AEndDate: TDate): Integer;
+  {Загрузка из базы векторов данных табеля: True - ОК, False - пусто}
+  function TimetableDataVectorsLoad(const ATabNumID: Integer; //таб номер
+                               const ABeginDate, AEndDate: TDate; //период запроса
+                               out ASheduleIDs, AShiftNums,
+                                 ATotalHours, ANightHours, AOverHours,
+                                 ASkipHours, ASchedHours, AMainMarkDig,
+                                 ASkipMarkDig, AManualChanged, AAbsence, AIsDayInBase: TIntVector;
+                               out AMainMarkStr, ASkipMarkStr: TStrVector): Boolean;
+
 implementation
 
 procedure SetToolPanels(const AControls: array of TControl);
@@ -423,6 +439,65 @@ begin
   end;
   AEndDate:= LastDayInMonth(AMonth-1, AYear);
   Result:= True;
+end;
+
+
+
+
+function TimetableForPeriodUpdate(const ATabNumID: Integer;
+  const ABeginDate, AEndDate: TDate): Boolean;
+var
+  FirtsWritedDate, LastWritedDate, RecrutDate, DismissDate, BD, ED: TDate;
+  HolidayDates: TDateVector;
+  Calendar: TCalendar;
+  Schedule: TPersonalSchedule;
+begin
+  Result:= False;
+  Schedule:= nil;
+  Calendar:= nil;
+  //получаем даты приема увольнения
+  if not DataBase.StaffTabNumWorkPeriodLoad(ATabNumID, RecrutDate, DismissDate) then Exit;
+  //ограничене периода на время работы
+  if not IsPeriodIntersect(ABeginDate, AEndDate, RecrutDate, DismissDate, BD, ED) then Exit;
+  //первая и последняя даты записанного  в базу табеля
+  if not DataBase.TimetableFirstLastWritedDatesLoad(ATabNumID, FirtsWritedDate, LastWritedDate) then Exit;
+  //ограничение периода
+  if not IsPeriodIntersect(BD, ED, FirtsWritedDate, LastWritedDate, BD, ED) then Exit;
+  HolidayDates:= DataBase.HolidaysLoad(YearOfDate(BD));
+  //расчет календаря
+  Calendar:= nil;
+  CalendarForPeriod(BD, ED, Calendar);
+  //расчет графика
+  Schedule:= SchedulePersonalByCalendar(ATabNumID, EmptyStr,
+                         RecrutDate, DismissDate, Calendar, HolidayDates);
+
+  try
+    if Schedule.Calculated then
+      Result:= DataBase.TimetableByScheduleUpdate(ATabNumID, Calendar, Schedule);
+  finally
+    FreeAndNil(Schedule);
+    FreeAndNil(Calendar);
+  end;
+end;
+
+function TimetableSumTotalHoursInPeriod(const ATabNumID: Integer;
+  const ABeginDate, AEndDate: TDate): Integer;
+begin
+  Result:= DataBase.TimetableSumTotalHoursInPeriodLoad(ATabNumID, ABeginDate, AEndDate);
+end;
+
+function TimetableDataVectorsLoad(const ATabNumID: Integer; //таб номер
+                               const ABeginDate, AEndDate: TDate; //период запроса
+                               out ASheduleIDs, AShiftNums,
+                                 ATotalHours, ANightHours, AOverHours,
+                                 ASkipHours, ASchedHours, AMainMarkDig,
+                                 ASkipMarkDig, AManualChanged, AAbsence, AIsDayInBase: TIntVector;
+                               out AMainMarkStr, ASkipMarkStr: TStrVector): Boolean;
+begin
+  Result:= DataBase.TimetableDataVectorsLoad(ATabNumID, ABeginDate, AEndDate,
+                  ASheduleIDs, AShiftNums, ATotalHours, ANightHours, AOverHours,
+                  ASkipHours, ASchedHours, AMainMarkDig, ASkipMarkDig,
+                  AManualChanged, AAbsence, AIsDayInBase, AMainMarkStr, ASkipMarkStr);
 end;
 
 procedure CalendarForPeriod(const ABeginDate, AEndDate: TDate; var ACalendar: TCalendar);
