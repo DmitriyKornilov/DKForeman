@@ -9,7 +9,7 @@ uses
   fpspreadsheetgrid, BCPanel, BCButton, VirtualTrees, Spin, StdCtrls,
   DividerBevel, DateUtils,
   //Project utils
-  UDataBase, UConst, UTypes, UUtils, UWorkHours, UCalendar, USchedule,
+  UDataBase, UConst, UTypes, UUtils, UWorkHours, UCalendar, UTimetable,
 
   //DK packages utils
   DK_VSTTables, DK_VSTParamList, DK_Vector, DK_Const, DK_Dialogs,
@@ -78,9 +78,13 @@ type
     ZoomBevel: TBevel;
     ZoomPanel: TPanel;
     procedure CloseButtonClick(Sender: TObject);
+    procedure FIORadioButtonClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure PostRadioButtonClick(Sender: TObject);
+    procedure TabNumRadioButtonChange(Sender: TObject);
+    procedure YearSpinEditChange(Sender: TObject);
   private
     CanDraw: Boolean;
     ZoomPercent: Integer;
@@ -100,6 +104,10 @@ type
     RecrutDates, DismissDates, Holidays: TDateVector;
     Families, Names, Patronymics, TabNums, PostNames: TStrVector;
 
+    Calendar: TCalendar;
+    TimetableTotals: TTimetableTotals;
+    Timetables: TTimetableVector;
+
     procedure CopyBegin;
     procedure CopyEnd(const ANeedSave: Boolean);
 
@@ -110,6 +118,8 @@ type
     procedure StaffListLoad(const SelectedID: Integer = -1);
 
     procedure EditingTablesCreate;
+
+    procedure TimetableLoad;
 
     procedure TimetableDraw(const AZoomPercent: Integer);
     procedure TimetableRedraw;
@@ -131,11 +141,6 @@ uses UMainForm;
 {$R *.lfm}
 
 { TTimetableForm }
-
-procedure TTimetableForm.CloseButtonClick(Sender: TObject);
-begin
-  MainForm.CategorySelect(0);
-end;
 
 procedure TTimetableForm.FormCreate(Sender: TObject);
 begin
@@ -181,6 +186,9 @@ begin
 
   FreeAndNil(VSTDays);
   FreeAndNil(VSTCopy);
+
+  FreeAndNil(Calendar);
+  VTDel(Timetables);
 end;
 
 procedure TTimetableForm.FormShow(Sender: TObject);
@@ -188,6 +196,39 @@ begin
   ParamList.Show;
   MonthDropDown.AutoWidth;
   StaffListLoad;
+end;
+
+procedure TTimetableForm.CloseButtonClick(Sender: TObject);
+begin
+  MainForm.CategorySelect(0);
+end;
+
+procedure TTimetableForm.FIORadioButtonClick(Sender: TObject);
+begin
+  StaffListLoad;
+end;
+
+procedure TTimetableForm.PostRadioButtonClick(Sender: TObject);
+begin
+  StaffListLoad;
+end;
+
+procedure TTimetableForm.TabNumRadioButtonChange(Sender: TObject);
+begin
+  StaffListLoad;
+end;
+
+procedure TTimetableForm.YearSpinEditChange(Sender: TObject);
+var
+  SelectedTabNumID: Integer;
+begin
+  CalendarForYear(YearSpinEdit.Value, Calendar);
+  Holidays:= DataBase.HolidaysLoad(YearSpinEdit.Value);
+
+  SelectedTabNumID:= -1;
+  if StaffList.IsSelected then
+    SelectedTabNumID:= TabNumIDs[StaffList.SelectedIndex];
+  StaffListLoad(SelectedTabNumID);
 end;
 
 procedure TTimetableForm.CopyBegin;
@@ -306,6 +347,38 @@ begin
   VSTCopy.AutosizeColumnEnable(2);
   VSTCopy.Draw;
 
+end;
+
+procedure TTimetableForm.TimetableLoad;
+var
+  i: Integer;
+  Timetable: TTimetable;
+  MonthCalendar: TCalendar;
+  BD, ED: TDate;
+begin
+  VTDel(Timetables);
+  if not StaffList.IsSelected then Exit;
+
+  MonthCalendar:= TCalendar.Create;
+  try
+    for i:=1 to 12 do
+    begin
+      FirstLastDayInMonth(i, YearSpinEdit.Value, BD,ED);
+      Calendar.Cut(BD,ED, MonthCalendar);
+      Timetable:= TTimetable.Create(TabNumIDs[StaffList.SelectedIndex],
+        TabNums[StaffList.SelectedIndex],
+        RecrutDates[StaffList.SelectedIndex], DismissDates[StaffList.SelectedIndex],
+        Holidays, MonthCalendar
+        );
+      VTAppend(Timetables, Timetable);
+    end;
+  finally
+    FreeAndNil(MonthCalendar);
+  end;
+
+  //итоговые данные
+  TimetableTotals:= TimetableYearTotalsLoad(TabNumIDs[StaffList.SelectedIndex],
+                                            YearSpinEdit.Value);
 end;
 
 procedure TTimetableForm.TimetableDraw(const AZoomPercent: Integer);

@@ -12,7 +12,7 @@ uses
   DK_StrUtils, DK_VSTEdit, DK_VSTTables, DK_VSTCore,
 
   //Project utils
-  UImages, UDataBase, UConst, UWorkHours, UCalendar, USchedule;
+  UImages, UDataBase, UConst, UWorkHours, UCalendar, USchedule, UTimetable;
 
   //UI
   procedure SetToolPanels(const AControls: array of TControl);
@@ -144,7 +144,8 @@ uses
   //Timetable
   {Актуализация записей табеля за период}
   function TimetableForPeriodUpdate(const ATabNumID: Integer;
-                                   const ABeginDate, AEndDate: TDate): Boolean;
+                                   const ABeginDate, AEndDate: TDate;
+                                   const AHolidayDates: TDateVector): Boolean;
   {Сумма отработанных часов за период }
   function TimetableSumTotalHoursInPeriod(const ATabNumID: Integer;
                                    const ABeginDate, AEndDate: TDate): Integer;
@@ -156,6 +157,8 @@ uses
                                  ASkipHours, ASchedHours, AMainMarkDig,
                                  ASkipMarkDig, AManualChanged, AAbsence, AIsDayInBase: TIntVector;
                                out AMainMarkStr, ASkipMarkStr: TStrVector): Boolean;
+  //расчет итогов годового табеля
+  function TimetableYearTotalsLoad(const ATabNumID, AYear: Integer): TTimetableTotals;
 
 implementation
 
@@ -441,14 +444,11 @@ begin
   Result:= True;
 end;
 
-
-
-
 function TimetableForPeriodUpdate(const ATabNumID: Integer;
-  const ABeginDate, AEndDate: TDate): Boolean;
+                            const ABeginDate, AEndDate: TDate;
+                            const AHolidayDates: TDateVector): Boolean;
 var
   FirtsWritedDate, LastWritedDate, RecrutDate, DismissDate, BD, ED: TDate;
-  HolidayDates: TDateVector;
   Calendar: TCalendar;
   Schedule: TPersonalSchedule;
 begin
@@ -463,13 +463,12 @@ begin
   if not DataBase.TimetableFirstLastWritedDatesLoad(ATabNumID, FirtsWritedDate, LastWritedDate) then Exit;
   //ограничение периода
   if not IsPeriodIntersect(BD, ED, FirtsWritedDate, LastWritedDate, BD, ED) then Exit;
-  HolidayDates:= DataBase.HolidaysLoad(YearOfDate(BD));
   //расчет календаря
   Calendar:= nil;
   CalendarForPeriod(BD, ED, Calendar);
   //расчет графика
   Schedule:= SchedulePersonalByCalendar(ATabNumID, EmptyStr,
-                         RecrutDate, DismissDate, Calendar, HolidayDates);
+                         RecrutDate, DismissDate, Calendar, AHolidayDates);
 
   try
     if Schedule.Calculated then
@@ -498,6 +497,29 @@ begin
                   ASheduleIDs, AShiftNums, ATotalHours, ANightHours, AOverHours,
                   ASkipHours, ASchedHours, AMainMarkDig, ASkipMarkDig,
                   AManualChanged, AAbsence, AIsDayInBase, AMainMarkStr, ASkipMarkStr);
+end;
+
+function TimetableYearTotalsLoad(const ATabNumID, AYear: Integer): TTimetableTotals;
+var
+  i: Integer;
+  BD, ED: TDate;
+begin
+  //данные за кварталы с 1 по 4; 5,6 - 1 и 2 полугодие; 7 - за год
+  for i:= 1 to 7 do
+  begin
+    case i of
+    1..4: FirstLastDayInQuarter(i, AYear, BD, ED);
+    5,6:  FirstLastDayInHalfYear(i-4, AYear, BD, ED);
+    7:    FirstLastDayInYear(AYear, BD, ED);
+    end;
+    DataBase.TimetableDataInPeriodLoad(ATabNumID, BD, ED,
+                          Result.ShiftCount[i], Result.WorkDaysCount[i],
+                          Result.NotWorkDaysCount[i], Result.TotalHours[i],
+                          Result.NightHours[i], Result.OverHours[i],
+                          Result.HolidayHours[i], Result.SkipDaysCount[i],
+                          Result.SkipHours[i], Result.SkipMarksStr[i],
+                          Result.SkipDaysHoursStr[i]);
+  end;
 end;
 
 procedure CalendarForPeriod(const ABeginDate, AEndDate: TDate; var ACalendar: TCalendar);

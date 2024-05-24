@@ -832,8 +832,7 @@ begin
   Schedule:= SchedulePersonalByCalendar(TabNumIDs[StaffList.SelectedIndex],
     TabNums[StaffList.SelectedIndex],
     RecrutDates[StaffList.SelectedIndex], DismissDates[StaffList.SelectedIndex],
-    Calendar, Holidays, False,
-    STRMARK_VACATIONMAIN, STRMARK_VACATIONADDITION, STRMARK_VACATIONHOLIDAY);
+    Calendar, Holidays, False);
 end;
 
 procedure TSchedulePersonalForm.ScheduleChange;
@@ -945,8 +944,7 @@ var
         begin
           Progress.WriteLine2(ScheduleNames[i]);
           TmpSchedule:= SchedulePersonalByCalendar(TabNumIDs[i], TabNums[i],
-                 RecrutDates[i], DismissDates[i], Calendar, Holidays, False,
-                 STRMARK_VACATIONMAIN, STRMARK_VACATIONADDITION, STRMARK_VACATIONHOLIDAY);
+                 RecrutDates[i], DismissDates[i], Calendar, Holidays, False);
           try
             Worksheet:= Exporter.AddWorksheet(YearSpinEdit.Text);
             ScheduleToSheet(ExpSheet, Worksheet, nil, Calendar, TmpSchedule, ScheduleNames[i]);

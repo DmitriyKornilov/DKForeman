@@ -139,8 +139,9 @@ type
       FSumHoursQuartHalfMonth: Integer; //отработано часов за текущий квартал с учетом половины текущего месяца
       FSumHoursYearFullMonth : Integer; //отработано часов за текущий год с учетом полного текущего месяца
       FSumHoursYearHalfMonth : Integer; //отработано часов за текущий год с учетом половины текущего месяца
-      FScheduleIDs: TIntVector; //вектор знаяений ID графиков на каждый день
-      FShiftNums: TIntVector; //вектор знаяений номеров смен на каждый день
+      FScheduleIDs: TIntVector;   //вектор знаяений ID графиков на каждый день
+      FShiftNums: TIntVector;     //вектор знаяений номеров смен на каждый день
+      FHolidayDates: TDateVector; //вектор дат нерабочих праздничных дней в этом и предыдущем году
       procedure GetSkipStrings(ABeginInd, AEndInd: Integer;
                                out AMarksSkipStr, ADaysHoursSkipStr: String);
       procedure Calc(const ANeedUpdate: Boolean);
@@ -149,6 +150,7 @@ type
     public
       constructor Create(const ATabNumID: Integer; const ATabNum: String;
                          const ARecrutDate, ADismissDate: TDate;
+                         const AHolidayDates: TDateVector;
                          const AMonthCalendar: TCalendar;
                          const ANightMarkStr: String = STRMARK_NIGHT;
                          const AOverMarkStr: String = STRMARK_OVER;
@@ -293,6 +295,7 @@ end;
 
 constructor TTimetable.Create(const ATabNumID: Integer; const ATabNum: String;
                          const ARecrutDate, ADismissDate: TDate;
+                         const AHolidayDates: TDateVector;
                          const AMonthCalendar: TCalendar;
                          const ANightMarkStr: String = STRMARK_NIGHT;
                          const AOverMarkStr: String = STRMARK_OVER;
@@ -313,14 +316,15 @@ begin
   FPostED:= APostEndDate;
   FNightMarkStr:= ANightMarkStr;
   FOverMarkStr:= AOverMarkStr;
-  //AMonthCalendar.Cut(AMonthCalendar.BeginDate, AMonthCalendar.EndDate, FMonthCalendar);
-  FMonthCalendar:= AMonthCalendar;
+  FMonthCalendar:= nil;
+  AMonthCalendar.Cut(AMonthCalendar.BeginDate, AMonthCalendar.EndDate, FMonthCalendar);
+  FHolidayDates:= AHolidayDates;
   Calc(ANeedUpdate);
 end;
 
 destructor TTimetable.Destroy;
 begin
-  //FreeAndNil(FMonthCalendar);
+  FreeAndNil(FMonthCalendar);
   inherited Destroy;
 end;
 
@@ -499,7 +503,8 @@ var
 begin
   //обновляем записи в базе по графику, если они есть для этого месяца
   if ANeedUpdate then
-    TimetableForPeriodUpdate(FTabNumID, FMonthCalendar.BeginDate, FMonthCalendar.EndDate);
+    TimetableForPeriodUpdate(FTabNumID,
+      FMonthCalendar.BeginDate, FMonthCalendar.EndDate, FHolidayDates);
   //дефолтные значения векторов данных
   N1:= FMonthCalendar.DaysCount;
   VDim(FIsManualChanged, N1, MANUAL_NO);

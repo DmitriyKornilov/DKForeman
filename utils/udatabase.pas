@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, DateUtils,
   //Project utils
-  UCalendar, UConst, USchedule, UTimetable,
+  UCalendar, UConst, USchedule, UTimetable, UWorkHours,
   //DK packages utils
   DK_SQLite3, DK_SQLUtils, DK_Vector, DK_StrUtils, DK_Const, DK_DateUtils,
   DK_VSTDropDown;
@@ -320,6 +320,22 @@ type
                                  ASkipHours, ASchedHours, AMainMarkDig,
                                  ASkipMarkDig, AManualChanged, AAbsence, AIsDayInBase: TIntVector;
                                out AMainMarkStr, ASkipMarkStr: TStrVector): Boolean;
+
+    //загрузка итоговых данных табеля за период
+    procedure TimetableDataInPeriodLoad(const ATabNumID: Integer;
+                               const ABeginDate, AEndDate: TDate; //период запроса
+                               out AShiftCount,               //отработано смен
+                                 AWorkDaysCount,              //отработано дней
+                                 ANotWorkDaysCount,           //выходных, праздничных дней
+                                 ATotalHours,                 //отработано часов всего
+                                 ANightHours,                 //из них ночных
+                                 AOverHours,                  //из них сверхурочных
+                                 AHolidayHours,               //из них праздничных (выходных)
+                                 ASkipDaysCount,              //пропущено дней
+                                 ASkipHours: Integer;         //пропущено часов
+                               out ASkipMarksStr,             //перечень кодов отсутствия
+                                 ASkipDaysHoursStr:           //перечень дней (часов) отсутствия
+                               String);
   end;
 
 var
@@ -2253,6 +2269,225 @@ begin
     Result:= True;
   end;
   QClose;
+end;
+
+procedure TDataBase.TimetableDataInPeriodLoad(const ATabNumID: Integer;
+                               const ABeginDate, AEndDate: TDate; //период запроса
+                               out AShiftCount,               //отработано смен
+                                 AWorkDaysCount,              //отработано дней
+                                 ANotWorkDaysCount,           //выходных, праздничных дней
+                                 ATotalHours,                 //отработано часов всего
+                                 ANightHours,                 //из них ночных
+                                 AOverHours,                  //из них сверхурочных
+                                 AHolidayHours,               //из них праздничных (выходных)
+                                 ASkipDaysCount,              //пропущено дней
+                                 ASkipHours: Integer;         //пропущено часов
+                               out ASkipMarksStr,             //перечень кодов отсутствия
+                                 ASkipDaysHoursStr:           //перечень дней (часов) отсутствия
+                               String);
+
+  procedure SetSQLParams;
+  begin
+    QParamInt('TabNumID', ATabNumID);
+    QParamDT('BD', ABeginDate);
+    QParamDT('ED', AEndDate);
+  end;
+
+  procedure GetShiftVectors(out AScheduleIDs, AShiftNums: TIntVector);
+  begin
+    AScheduleIDs:= nil;
+    AShiftNums:= nil;
+    QSetSQL(
+      'SELECT SchedID, ShiftNum ' +
+      'FROM TIMETABLELOG ' +
+      'WHERE (TabNumID = :TabNumID) AND (DayDate BETWEEN :BD AND :ED) ' +
+      'ORDER BY DayDate'
+    );
+    SetSQLParams;
+    QOpen;
+    if not QIsEmpty then
+    begin
+      QFirst;
+      while not QEOF do
+      begin
+        VAppend(AScheduleIDs, QFieldInt('SchedID'));
+        VAppend(AShiftNums, QFieldInt('ShiftNum'));
+        QNext;
+      end;
+    end;
+    QClose;
+  end;
+
+  procedure GetShiftCount;
+  var
+    ScheduleIDs, ShiftNums: TIntVector;
+  begin
+    GetShiftVectors(ScheduleIDs, ShiftNums);
+    if VIsNil(ScheduleIDs) then Exit;
+    AShiftCount:= TTimetable.CalcShiftCount(ScheduleIDs, ShiftNums, 0, High(ScheduleIDs));
+  end;
+
+  procedure GetWorkDaysAndTotalNightOverHours;
+  begin
+    QSetSQL(
+      'SELECT COUNT(TotalHours) AS AWorkDaysCount, SUM(TotalHours) AS ATotalHours, '+
+             'SUM(NightHours) AS ANightHours, SUM(OverHours) AS AOverHours '+
+      'FROM TIMETABLELOG ' +
+      'WHERE (TabNumID = :TabNumID) AND (DayDate BETWEEN :BD AND :ED) AND (TotalHours>0)'
+    );
+    SetSQLParams;
+    QOpen;
+    if not QIsEmpty then
+    begin
+      AWorkDaysCount:= QFieldInt('AWorkDaysCount');
+      ATotalHours:= QFieldInt('ATotalHours');
+      ANightHours:= QFieldInt('ANightHours');
+      AOverHours:= QFieldInt('AOverHours');
+    end;
+    QClose;
+  end;
+
+  procedure GetNotWorkDaysCount;
+  begin
+    QSetSQL(
+      'SELECT COUNT(TotalHours) AS ANotWorkDaysCount ' +
+      'FROM TIMETABLELOG '+
+      'WHERE (TabNumID = :TabNumID) AND (DayDate BETWEEN :BD AND :ED) AND ((TotalHours=0) AND (SkipMark=0))'
+    );
+    SetSQLParams;
+    QOpen;
+    if not QIsEmpty then
+      ANotWorkDaysCount:= QFieldInt('ANotWorkDaysCount');
+    QClose;
+  end;
+
+  procedure GetHolidayHours;
+  begin
+    QSetSQL(
+      'SELECT SUM(TotalHours) AS AHolidayHours ' +
+      'FROM TIMETABLELOG '+
+      'WHERE (TabNumID = :TabNumID) AND (DayDate BETWEEN :BD AND :ED) AND (DigMark=3)' {3=PB}
+    );
+    SetSQLParams;
+    QOpen;
+    if not QIsEmpty then
+      AHolidayHours:= QFieldInt('AHolidayHours');
+    QClose;
+  end;
+
+  procedure GetSkipDaysCount(out D: Integer; const ASkipMark: Integer = -1);
+  var
+    S: String;
+  begin
+    D:= 0;
+    S:= 'SELECT COUNT(SkipMark) AS ASkipDaysCount ' +
+        'FROM TIMETABLELOG '+
+        'WHERE (TabNumID = :TabNumID) AND (DayDate BETWEEN :BD AND :ED) AND (SkipMark';
+    if ASkipMark=-1 then
+      S:= S+'<>0)'
+    else
+      S:= S+'= :SkipMark)';
+      //S:= S+'='+ IntToStr(ASkipMark) +')';
+    QSetSQL(S);
+    SetSQLParams;
+    QParamInt('SkipMark', ASkipMark);
+    QOpen;
+    if not QIsEmpty then
+      D:= QFieldInt('ASkipDaysCount');
+    QClose;
+  end;
+
+  procedure GetSkipHours(out H: Integer; const ASkipMark: Integer = -1);
+  var
+    S: String;
+  begin
+    H:= 0;
+    S:= 'SELECT SUM(SkipHours) AS ASkipHours ' +
+        'FROM TIMETABLELOG '+
+        'WHERE (TabNumID = :TabNumID) AND (DayDate BETWEEN :BD AND :ED) AND (SkipHours>0)';
+    if ASkipMark>=0 then
+      S:= S + ' AND (SkipMark = :SkipMark)';
+      //S:= S + ' AND (SkipMark = '+ IntToStr(ASkipMark) +')';
+    QSetSQL(S);
+    SetSQLParams;
+    QParamInt('SkipMark', ASkipMark);
+    QOpen;
+    if not QIsEmpty then
+      H:= H + QFieldInt('ASkipHours');
+    QClose;
+    S:= 'SELECT SUM(SchedHours) AS ASkipHours ' +
+        'FROM TIMETABLELOG '+
+        'WHERE (TabNumID = :TabNumID) AND (DayDate BETWEEN :BD AND :ED) AND (SkipHours=-1)';
+    if ASkipMark>=0 then
+      S:= S + ' AND (SkipMark = :SkipMark)';
+      //S:= S + ' AND (SkipMark = '+ IntToStr(ASkipMark) +')';
+    QSetSQL(S);
+    SetSQLParams;
+    QParamInt('SkipMark', ASkipMark);
+    QOpen;
+    if not QIsEmpty then
+      H:= H + QFieldInt('ASkipHours');
+    QClose;
+  end;
+
+  procedure GetSkipMarksDaysHoursStr;
+  var
+    SkipMarksDig: TIntVector;
+    D,H,i: Integer;
+  begin
+    SkipMarksDig:= nil;
+    //получаем список из уникальных кодов неявок
+    QSetSQL(
+      'SELECT DISTINCT t1.SkipMark, t2.StrMark ' +
+      'FROM TIMETABLELOG t1 '+
+      'INNER JOIN TIMETABLEMARK t2 ON (t1.SkipMark=t2.DigMark) '  +
+      'WHERE (TabNumID = :TabNumID) AND (DayDate BETWEEN :BD AND :ED) AND (SkipMark>0)');
+    SetSQLParams;
+    QOpen;
+    if not QIsEmpty then
+    begin
+      QFirst;
+      while not QEOF do
+      begin
+        ASkipMarksStr:= ASkipMarksStr + HYPHSYMBOLDEFAULT + QFieldStr('StrMark');
+        VAppend(SkipMarksDig, QFieldInt('SkipMark'));
+        QNext;
+      end;
+    end;
+    QClose;
+    ASkipMarksStr:= STrim(ASkipMarksStr);
+    for i:=0 to High(SkipMarksDig) do
+    begin
+      GetSkipDaysCount(D, SkipMarksDig[i]);
+      GetSkipHours(H, SkipMarksDig[i]);
+      ASkipDaysHoursStr:= ASkipDaysHoursStr + HYPHSYMBOLDEFAULT +
+                            IntToStr(D) + ' (' + WorkHoursIntToFracStr(H) + ')';
+    end;
+    ASkipDaysHoursStr:= STrim(ASkipDaysHoursStr);
+  end;
+
+begin
+  AShiftCount:= 0;
+  AWorkDaysCount:= 0;
+  ATotalHours:= 0;
+  ANightHours:= 0;
+  AOverHours:= 0;
+  ANotWorkDaysCount:= 0;
+  AHolidayHours:= 0;
+  ASkipDaysCount:= 0;
+  ASkipHours:= 0;
+  ASkipMarksStr:= EmptyStr;
+  ASkipDaysHoursStr:= EmptyStr;
+
+  QSetQuery(FQuery);
+
+  GetShiftCount;
+  GetWorkDaysAndTotalNightOverHours;
+  GetNotWorkDaysCount;
+  GetHolidayHours;
+  GetSkipDaysCount(ASkipDaysCount);
+  GetSkipHours(ASkipHours);
+  GetSkipMarksDaysHoursStr;
 end;
 
 end.
