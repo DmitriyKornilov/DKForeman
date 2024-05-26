@@ -445,7 +445,7 @@ end;
 procedure TScheduleShiftForm.ColorsLoad;
 begin
   Colors:= nil;
-  VDim(Colors, 6);
+  VDim(Colors, SHIFT_COLOR_COUNT);
   Colors[CORRECT_COLOR_INDEX]:= COLOR_SCHEDULE_CORRECTION;
   Colors[NOTWORK_COLOR_INDEX]:= COLOR_SCHEDULE_NOTWORK;
   Colors[TITLE_COLOR_INDEX]:= COLOR_SCHEDULE_TITLE;
@@ -709,7 +709,7 @@ end;
 procedure TScheduleShiftForm.ScheduleDraw(const AZoomPercent: Integer);
 begin
   if not CanDraw then Exit;
-  if not Calendar.Calculated then Exit;
+  if not Calendar.IsCalculated then Exit;
   if not Schedule.Calculated then Exit;
 
   SheetCaptionPanel.Caption:= 'График сменности на ' + YearSpinEdit.Text + ' год: ';

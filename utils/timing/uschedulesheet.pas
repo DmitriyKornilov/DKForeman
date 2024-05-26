@@ -1263,7 +1263,7 @@ end;
 function TCustomYearScheduleSheet.ColToDay(const ACol, AMonth: Integer): Integer;
 begin
   Result:= 0;
-  if (not Assigned(FCalendar)) or (not FCalendar.Calculated) then Exit;
+  if (not Assigned(FCalendar)) or (not FCalendar.IsCalculated) then Exit;
   if (ACol>=2) and (ACol<=32) then
   begin
     if (ACol-1)<=DaysInPeriod(AMonth, YearOfDate(FCalendar.BeginDate)) then
@@ -1323,7 +1323,7 @@ var
 begin
   Result:= False;
   ADate:= NULDATE;
-  if (not Assigned(FCalendar)) or (not FCalendar.Calculated) then Exit;
+  if (not Assigned(FCalendar)) or (not FCalendar.IsCalculated) then Exit;
   M:= RowToMonth(ARow);
   D:= 0;
   if M>0 then D:= ColToDay(ACol, M);
@@ -1340,7 +1340,7 @@ begin
   Result:= False;
   ARow:= 0;
   ACol:= 0;
-  if (not Assigned(FCalendar)) or (not FCalendar.Calculated) then Exit;
+  if (not Assigned(FCalendar)) or (not FCalendar.IsCalculated) then Exit;
   if YearOfDate(ADate)<>YearOfDate(FCalendar.BeginDate) then Exit;
   ARow:= DateToRow(ADate);
   ACol:= DateToCol(ADate);

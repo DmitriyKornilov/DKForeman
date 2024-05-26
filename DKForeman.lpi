@@ -26,10 +26,10 @@
     </RunParams>
     <RequiredPackages>
       <Item>
-        <PackageName Value="LazControlDsgn"/>
+        <PackageName Value="DKUIUtils"/>
       </Item>
       <Item>
-        <PackageName Value="DKZoom"/>
+        <PackageName Value="LazControlDsgn"/>
       </Item>
       <Item>
         <PackageName Value="laz_fpspreadsheet_visual_dsgn"/>
@@ -51,9 +51,6 @@
       </Item>
       <Item>
         <PackageName Value="virtualtreeview_package"/>
-      </Item>
-      <Item>
-        <PackageName Value="DKProgress"/>
       </Item>
       <Item>
         <PackageName Value="bgracontrols"/>
@@ -314,6 +311,11 @@
         <Filename Value="utils\timing\utimetable.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="UTimetable"/>
+      </Unit>
+      <Unit>
+        <Filename Value="utils\timing\utimetablesheet.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="UTimetableSheet"/>
       </Unit>
     </Units>
   </ProjectOptions>

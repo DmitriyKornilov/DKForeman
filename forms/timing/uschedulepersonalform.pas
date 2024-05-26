@@ -873,7 +873,7 @@ end;
 
 procedure TSchedulePersonalForm.ScheduleDraw(const AZoomPercent: Integer);
 begin
-  if not Calendar.Calculated then Exit;
+  if not Calendar.IsCalculated then Exit;
   if (not Assigned(Schedule)) or (not Schedule.Calculated) then Exit;
 
   ViewGrid.Visible:= False;
@@ -1203,7 +1203,7 @@ end;
 procedure TSchedulePersonalForm.ColorsLoad;
 begin
   Colors:= nil;
-  VDim(Colors, 7);
+  VDim(Colors, PERSONAL_COLOR_COUNT);
   Colors[CORRECT_COLOR_INDEX]:= COLOR_SCHEDULE_CORRECTION;
   Colors[NOTWORK_COLOR_INDEX]:= COLOR_SCHEDULE_NOTWORK;
   Colors[TITLE_COLOR_INDEX]:= COLOR_SCHEDULE_TITLE;

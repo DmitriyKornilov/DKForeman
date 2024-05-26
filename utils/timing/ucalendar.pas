@@ -30,6 +30,7 @@ const
   QUARTER_COLOR_INDEX   = 8;
   HALFYEAR_COLOR_INDEX  = 9;
   YEAR_COLOR_INDEX      = 10;
+  CALENDAR_COLOR_COUNT  = 11;
 
 type
 
@@ -39,7 +40,7 @@ type
 
   TCustomCalendar = class (TObject)
   protected
-    FCalculated         : Boolean;     //рассчитан ли календарь
+    FIsCalculated         : Boolean;     //рассчитан ли календарь
     FDates              : TDateVector; //вектор дат
     FDayStatuses        : TIntVector;  //статус дня: 2 - выходной 4 - будний (обычный рабочий)
     FDayNumsInWeek      : TIntVector;  //номер дня в неделе
@@ -53,7 +54,7 @@ type
   public
     procedure Clear;
     procedure Calc(const ABeginDate, AEndDate: TDate);
-    property Calculated: Boolean read FCalculated;
+    property IsCalculated: Boolean read FIsCalculated;
     property BeginDate: TDate read GetBeginDate;   //начальная дата
     property EndDate: TDate read GetEndDate;       //конечная дата
     property Dates: TDateVector read FDates;
@@ -145,7 +146,7 @@ end;
 
 procedure TCustomCalendar.Clear;
 begin
-  FCalculated:= False;
+  FIsCalculated:= False;
   FDates:= nil;
   FDayStatuses:= nil;
   FDayNumsInWeek:= nil;
@@ -172,7 +173,7 @@ begin
       else
         FDayStatuses[i]:= DAY_STATUS_OFFDAY;
   end;
-  FCalculated:= True;
+  FIsCalculated:= True;
 end;
 
 function TCustomCalendar.GetBeginDate: TDate;
@@ -246,7 +247,7 @@ var
 begin
   Clear;
   inherited Calc(ABeginDate, AEndDate);
-  FCalculated:= False;
+  FIsCalculated:= False;
   VDim(FSwapDays, DaysCount, 0);
   for i:= 0 to High(ACorrections.Dates) do
   begin
@@ -258,7 +259,7 @@ begin
       FSwapDays[n]:= ACorrections.SwapDays[i];
     end;
   end;
-  FCalculated:= True;
+  FIsCalculated:= True;
 end;
 
 function TCalendar.Cut(const ABeginDate, AEndDate: TDate; var ACutCalendar: TCalendar): Boolean;
@@ -267,7 +268,7 @@ var
 begin
   Result:= False;
   //проверяем, рассчиатн ли исходный календарь
-  if not FCalculated then Exit;
+  if not FIsCalculated then Exit;
   //определяем индексы среза
   if not GetIntersectionIndexes(ABeginDate, AEndDate, I1, I2) then Exit;
   //проверяем на существование календаря-среза, создаем при отсутствии
@@ -281,7 +282,7 @@ begin
   ACutCalendar.FDayStatuses:= VCut(FDayStatuses, I1, I2);
   ACutCalendar.FDayNumsInWeek:= VCut(FDayNumsInWeek, I1, I2);
   ACutCalendar.FWeekNumsInMonth:= VCut(FWeekNumsInMonth, I1, I2) ;
-  ACutCalendar.FCalculated:= True;
+  ACutCalendar.FIsCalculated:= True;
   Result:= True;
 end;
 

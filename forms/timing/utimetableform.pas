@@ -10,7 +10,7 @@ uses
   DividerBevel, DateUtils,
   //Project utils
   UDataBase, UConst, UTypes, UUtils, UWorkHours, UCalendar, UTimetable,
-
+  UTimetableSheet,
   //DK packages utils
   DK_VSTTables, DK_VSTParamList, DK_Vector, DK_Const, DK_Dialogs,
   DK_Zoom, DK_DateUtils, DK_Color, DK_SheetExporter, DK_StrUtils, DK_Progress,
@@ -51,6 +51,7 @@ type
     DayVT: TVirtualStringTree;
     MonthBCButton: TBCButton;
     MonthPanel: TPanel;
+    Timer1: TTimer;
     ViewCaptionPanel: TBCPanel;
     ViewGrid: TsWorksheetGrid;
     ViewGridPanel: TPanel;
@@ -78,20 +79,25 @@ type
     ZoomBevel: TBevel;
     ZoomPanel: TPanel;
     procedure CloseButtonClick(Sender: TObject);
+    procedure FilterButtonClick(Sender: TObject);
+    procedure FilterEditChange(Sender: TObject);
     procedure FIORadioButtonClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure PostRadioButtonClick(Sender: TObject);
     procedure TabNumRadioButtonChange(Sender: TObject);
+    procedure Timer1Timer(Sender: TObject);
     procedure YearSpinEditChange(Sender: TObject);
   private
     CanDraw: Boolean;
+    CanApplyFilter: Boolean;
     ZoomPercent: Integer;
     ModeType: TModeType;
     MonthDropDown: TMonthDropDown;
 
     ParamList: TVSTParamList;
+    Colors: TColorVector;
 
     StaffList: TVSTTable;
     VSTDays: TVSTTable;
@@ -107,6 +113,7 @@ type
     Calendar: TCalendar;
     TimetableTotals: TTimetableTotals;
     Timetables: TTimetableVector;
+    TimetableSheet: TYearTimetableSheet;
 
     procedure CopyBegin;
     procedure CopyEnd(const ANeedSave: Boolean);
@@ -120,10 +127,11 @@ type
     procedure EditingTablesCreate;
 
     procedure TimetableLoad;
-
+    procedure TimetableChange;
     procedure TimetableDraw(const AZoomPercent: Integer);
     procedure TimetableRedraw;
 
+    procedure ColorsLoad;
     procedure CaptionsUpdate;
     procedure SettingsLoad;
   public
@@ -167,11 +175,13 @@ begin
   ParamListCreate;
   StaffListCreate;
   EditingTablesCreate;
+  Calendar:= TCalendar.Create;
+  TimetableSheet:= TYearTimetableSheet.Create(ViewGrid.Worksheet, ViewGrid, MainForm.GridFont);
   YearSpinEdit.Value:= YearOfDate(Date);
   MonthDropDown:= TMonthDropDown.Create(MonthBCButton, nil{@MonthTimetableLoad});
 
   IsCopyDates:= False;
-  //ColorsLoad;
+  ColorsLoad;
   SettingsLoad; //load ZoomPercent
   CreateZoomControls(50, 150, ZoomPercent, ZoomPanel, @TimetableDraw, True);
 
@@ -189,6 +199,7 @@ begin
 
   FreeAndNil(Calendar);
   VTDel(Timetables);
+  FreeAndNil(TimetableSheet);
 end;
 
 procedure TTimetableForm.FormShow(Sender: TObject);
@@ -201,6 +212,36 @@ end;
 procedure TTimetableForm.CloseButtonClick(Sender: TObject);
 begin
   MainForm.CategorySelect(0);
+end;
+
+procedure TTimetableForm.FilterButtonClick(Sender: TObject);
+begin
+  FilterEdit.Text:= EmptyStr;
+end;
+
+procedure TTimetableForm.FilterEditChange(Sender: TObject);
+begin
+  CanApplyFilter:= False;
+  if Timer1.Enabled then
+    Timer1.Enabled:= False;
+
+  Timer1.Enabled:= True;
+
+  CanApplyFilter:= True;
+
+  //while Timer1.Enabled do
+  //  Application.ProcessMessages;
+
+  //FilterButton.Enabled:= not SEmpty(FilterEdit.Text);
+  //StaffListLoad;
+end;
+
+procedure TTimetableForm.Timer1Timer(Sender: TObject);
+begin
+  Timer1.Enabled:= False;
+  if not CanApplyFilter then Exit;
+  FilterButton.Enabled:= not SEmpty(FilterEdit.Text);
+  StaffListLoad;
 end;
 
 procedure TTimetableForm.FIORadioButtonClick(Sender: TObject);
@@ -280,7 +321,7 @@ end;
 
 procedure TTimetableForm.StaffListSelect;
 begin
-
+  TimetableChange;
 end;
 
 procedure TTimetableForm.StaffListLoad(const SelectedID: Integer);
@@ -355,41 +396,99 @@ var
   Timetable: TTimetable;
   MonthCalendar: TCalendar;
   BD, ED: TDate;
+  Progress: TProgress;
 begin
   VTDel(Timetables);
   if not StaffList.IsSelected then Exit;
+  if not Calendar.IsCalculated then Exit;
 
-  MonthCalendar:= TCalendar.Create;
+  Screen.Cursor:= crHourGlass;
   try
-    for i:=1 to 12 do
-    begin
-      FirstLastDayInMonth(i, YearSpinEdit.Value, BD,ED);
-      Calendar.Cut(BD,ED, MonthCalendar);
-      Timetable:= TTimetable.Create(TabNumIDs[StaffList.SelectedIndex],
-        TabNums[StaffList.SelectedIndex],
-        RecrutDates[StaffList.SelectedIndex], DismissDates[StaffList.SelectedIndex],
-        Holidays, MonthCalendar
-        );
-      VTAppend(Timetables, Timetable);
+    Progress:= TProgress.Create(nil);
+    try
+      MonthCalendar:= TCalendar.Create;
+      try
+        Progress.WriteLine1('Актуализация и расчет табеля');
+        Progress.WriteLine2(EmptyStr);
+        Progress.Show;
+        for i:=1 to 12 do
+        begin
+          Progress.WriteLine2(MONTHSNOM[i] + ' ' + YearSpinEdit.Text);
+          FirstLastDayInMonth(i, YearSpinEdit.Value, BD,ED);
+          Calendar.Cut(BD,ED, MonthCalendar);
+          Timetable:= TTimetable.Create(TabNumIDs[StaffList.SelectedIndex],
+            TabNums[StaffList.SelectedIndex],
+            RecrutDates[StaffList.SelectedIndex], DismissDates[StaffList.SelectedIndex],
+            Holidays, MonthCalendar
+            );
+          VTAppend(Timetables, Timetable);
+        end;
+      finally
+        FreeAndNil(MonthCalendar);
+      end;
+
+      //итоговые данные
+      TimetableTotals:= TimetableYearTotalsLoad(TabNumIDs[StaffList.SelectedIndex],
+                                                YearSpinEdit.Value);
+
+    finally
+      FreeAndNil(Progress);
     end;
   finally
-    FreeAndNil(MonthCalendar);
+    Screen.Cursor:= crDefault;
   end;
+end;
 
-  //итоговые данные
-  TimetableTotals:= TimetableYearTotalsLoad(TabNumIDs[StaffList.SelectedIndex],
-                                            YearSpinEdit.Value);
+procedure TTimetableForm.TimetableChange;
+begin
+  if not CanDraw then Exit;
+
+  CaptionsUpdate;
+  TimetableLoad;
+  TimetableRedraw;
 end;
 
 procedure TTimetableForm.TimetableDraw(const AZoomPercent: Integer);
 begin
-  ZoomPercent:= AZoomPercent;
+  if Length(Timetables)=0 then Exit;
 
+  ViewGrid.Visible:= False;
+  Screen.Cursor:= crHourGlass;
+  try
+    ZoomPercent:= AZoomPercent;
+    TimetableSheet.Zoom(ZoomPercent);
+    TimetableSheet.Draw(Timetables, TimetableTotals, YearSpinEdit.Value,
+                        EmptyStr{StaffLongNames[StaffList.SelectedIndex]},
+                        RecrutDates[StaffList.SelectedIndex],
+                        DismissDates[StaffList.SelectedIndex],
+                        ParamList.Selected['CountType']);
+    if ParamList.Checked['ViewParams', 0] then
+      TimetableSheet.ColorsUpdate(Colors)
+    else
+      TimetableSheet.ColorsClear;
+  finally
+    ViewGrid.Visible:= True;
+    Screen.Cursor:= crDefault;
+  end;
 end;
 
 procedure TTimetableForm.TimetableRedraw;
 begin
   TimetableDraw(ZoomPercent);
+end;
+
+procedure TTimetableForm.ColorsLoad;
+begin
+  Colors:= nil;
+  VDim(Colors, TIMETABLE_COLOR_COUNT);
+  Colors[MANUAL_COLOR_INDEX]:= COLOR_TIMETABLE_MANUAL;
+  Colors[HOLIDAY_COLOR_INDEX]:= COLOR_TIMETABLE_HOLIDAY;
+  Colors[BEFORE_COLOR_INDEX]:= COLOR_TIMETABLE_BEFORE;
+  Colors[TITLE_COLOR_INDEX]:= COLOR_TIMETABLE_TITLE;
+  Colors[OUTSIDEMONTH_COLOR_INDEX]:= COLOR_TIMETABLE_OUTSIDEMONTH;
+  Colors[NOTDEFINE_COLOR_INDEX]:= COLOR_TIMETABLE_NOTDEFINE;
+  Colors[HIGHLIGHT_COLOR_INDEX]:= DefaultSelectionBGColor;
+  Colors[NOTWORK_COLOR_INDEX]:= COLOR_TIMETABLE_NOTWORK;
 end;
 
 procedure TTimetableForm.CaptionsUpdate;
@@ -402,7 +501,7 @@ begin
   StaffCaptionPanel.Caption:= StaffLongNames[StaffList.SelectedIndex];
   StaffCaptionPanel.Visible:= ModeType=mtEditing;
 
-  ViewCaptionPanel.Caption:= 'Табель учета рабочего времени за ' + YearSpinEdit.Text + ' год: ';
+  ViewCaptionPanel.Caption:= 'Табель за ' + YearSpinEdit.Text + ' год: ';
   if ModeType<>mtEditing then
     ViewCaptionPanel.Caption:= ViewCaptionPanel.Caption +
                                StaffLongNames[StaffList.SelectedIndex];

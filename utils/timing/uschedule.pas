@@ -16,8 +16,8 @@ const
   CORRECTION_NO  = 0;
   CORRECTION_YES = 1;
   {флаги существования}
-  EXISTS_NO      = 0;
-  EXISTS_YES     = 1;
+  EXISTS_NO  = 0;
+  EXISTS_YES = 1;
   {флаги заданности графика}
   DEFINE_NO      = 0;
   DEFINE_YES     = 1;
@@ -41,9 +41,14 @@ const
   TITLE_COLOR_INDEX        = 3;
   OUTSIDEMONTH_COLOR_INDEX = 4;
   HIGHLIGHT_COLOR_INDEX    = 5;
+  SHIFT_COLOR_COUNT        = 6;
+
   NOTDEFINE_COLOR_INDEX    = 6;
+  PERSONAL_COLOR_COUNT     = 7;
+
   MONTHNAME_COLOR_INDEX    = 366;
   DAYNAME_COLOR_INDEX      = 367;
+
 
 type
   {Цикл графика}

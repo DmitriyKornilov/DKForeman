@@ -18,7 +18,7 @@ uses
   UTimetable, UCalendarEditForm, UScheduleCorrectionEditForm,
   UScheduleShiftEditForm, UScheduleShiftMonthForm, UScheduleShiftCalendarForm,
   USchedulePersonalEditForm, UScheduleVacationForm, USchedulePersonalMonthForm,
-  UChooseForm, UImages;
+  UChooseForm, UImages, UTimetableSheet;
 
 {$R *.res}
 

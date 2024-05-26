@@ -2449,7 +2449,7 @@ procedure TDataBase.TimetableDataInPeriodLoad(const ATabNumID: Integer;
       QFirst;
       while not QEOF do
       begin
-        ASkipMarksStr:= ASkipMarksStr + HYPHSYMBOLDEFAULT + QFieldStr('StrMark');
+        ASkipMarksStr:= ASkipMarksStr + SYMBOL_BREAK + QFieldStr('StrMark');
         VAppend(SkipMarksDig, QFieldInt('SkipMark'));
         QNext;
       end;
@@ -2460,7 +2460,7 @@ procedure TDataBase.TimetableDataInPeriodLoad(const ATabNumID: Integer;
     begin
       GetSkipDaysCount(D, SkipMarksDig[i]);
       GetSkipHours(H, SkipMarksDig[i]);
-      ASkipDaysHoursStr:= ASkipDaysHoursStr + HYPHSYMBOLDEFAULT +
+      ASkipDaysHoursStr:= ASkipDaysHoursStr + SYMBOL_BREAK +
                             IntToStr(D) + ' (' + WorkHoursIntToFracStr(H) + ')';
     end;
     ASkipDaysHoursStr:= STrim(ASkipDaysHoursStr);

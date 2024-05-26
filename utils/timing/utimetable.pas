@@ -15,7 +15,6 @@ const
   SPACE1 = ' ';
   SPACE2 = '/';//'   ';
   SPACE3 = '/';
-  HYPHSYMBOLDEFAULT = #13;
   {типы меток табеля}
   MARKTYPE_UNKNOWN  = 0;
   MARKTYPE_PRESENCE = 1; //явка
@@ -31,9 +30,25 @@ const
   {флаг наличия в базе}
   INBASE_NO   = 0;
   INBASE_YES  = 1;
+  {флаги существования}
+  EXISTS_NO  = 0;
+  EXISTS_YES = 1;
 
-  STRMARK_NIGHT = 'Н';
-  STRMARK_OVER  = 'С';
+  STRMARK_NIGHT       = 'Н';
+  STRMARK_OVER        = 'С';
+  OUTSIDEMONTHSTR     = 'X'; //метка дня за пределом месяца
+  STRMARK_NONEXISTENT = 'X';
+
+  GRID_COLOR_INDEX         = 0;
+  MANUAL_COLOR_INDEX       = 1;
+  HOLIDAY_COLOR_INDEX      = 2;
+  BEFORE_COLOR_INDEX       = 3;
+  TITLE_COLOR_INDEX        = 4;
+  OUTSIDEMONTH_COLOR_INDEX = 5;
+  NOTDEFINE_COLOR_INDEX    = 6;
+  HIGHLIGHT_COLOR_INDEX    = 7;
+  NOTWORK_COLOR_INDEX      = 8;
+  TIMETABLE_COLOR_COUNT    = 9;
 
 type
   TTimetableDay = record
@@ -152,9 +167,9 @@ type
                          const ARecrutDate, ADismissDate: TDate;
                          const AHolidayDates: TDateVector;
                          const AMonthCalendar: TCalendar;
+                         const ANeedUpdate: Boolean = True;
                          const ANightMarkStr: String = STRMARK_NIGHT;
                          const AOverMarkStr: String = STRMARK_OVER;
-                         const ANeedUpdate: Boolean = True;
                          const ATimetableBeginDate: TDate = NULDATE;
                          const ATimetableEndDate: TDate = INFDATE; //период работы в графике
                          const APostBeginDate: TDate = NULDATE;
@@ -297,9 +312,9 @@ constructor TTimetable.Create(const ATabNumID: Integer; const ATabNum: String;
                          const ARecrutDate, ADismissDate: TDate;
                          const AHolidayDates: TDateVector;
                          const AMonthCalendar: TCalendar;
+                         const ANeedUpdate: Boolean = True;
                          const ANightMarkStr: String = STRMARK_NIGHT;
                          const AOverMarkStr: String = STRMARK_OVER;
-                         const ANeedUpdate: Boolean = True;
                          const ATimetableBeginDate: TDate = NULDATE;
                          const ATimetableEndDate: TDate = INFDATE;
                          const APostBeginDate: TDate = NULDATE;
@@ -607,7 +622,7 @@ begin
   end;
   for i:= 0 to N-1 do  //пробегаем по списку уникальных кодов
   begin
-    AMarksSkipStr:= AMarksSkipStr + HYPHSYMBOLDEFAULT + SkipMarkStr[i]; //запись строки буквенных кодов
+    AMarksSkipStr:= AMarksSkipStr + SYMBOL_BREAK + SkipMarkStr[i]; //запись строки буквенных кодов
     SumSkipDays:= 0;
     SumSkipHours:= 0;
     for j:= ABeginInd to AEndInd do //подсчитываем кол-во дней и часов соответствующей неявки
@@ -622,7 +637,7 @@ begin
       end;
     end;
     //запись строки дней (часов) неявок
-    ADaysHoursSkipStr:= ADaysHoursSkipStr + HYPHSYMBOLDEFAULT +
+    ADaysHoursSkipStr:= ADaysHoursSkipStr + SYMBOL_BREAK +
                         IntToStr(SumSkipDays) + ' (' + WorkHoursIntToFracStr(SumSkipHours) + ')';
   end;
   AMarksSkipStr:= STrim(AMarksSkipStr);
