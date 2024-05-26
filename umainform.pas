@@ -149,6 +149,8 @@ implementation
 
 {SQLITE_CONSTRAINT_UNIQUE!!!!!!!!!!!!!!!}
 
+{TODO в итогах годового табеля не отрисовываются часы и коды отсутствия при ручной правке}
+
 
 { TMainForm }
 

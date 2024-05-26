@@ -13,7 +13,8 @@ uses
   UTimetableSheet,
   //DK packages utils
   DK_VSTTables, DK_VSTParamList, DK_Vector, DK_Const, DK_Dialogs,
-  DK_Zoom, DK_DateUtils, DK_Color, DK_SheetExporter, DK_StrUtils, DK_Progress,
+  DK_DateUtils, DK_Color, DK_SheetExporter, DK_StrUtils,
+  DK_Progress, DK_Zoom, DK_Filter,
   //Forms
   UChooseForm;
 
@@ -42,16 +43,12 @@ type
     DayToolPanel: TPanel;
     EraseButton: TSpeedButton;
     ExportButton: TBCButton;
-    FilterButton: TSpeedButton;
-    FilterEdit: TEdit;
-    FilterLabel: TLabel;
     FilterPanel: TPanel;
     FIORadioButton: TRadioButton;
     DayPanel: TPanel;
     DayVT: TVirtualStringTree;
     MonthBCButton: TBCButton;
     MonthPanel: TPanel;
-    Timer1: TTimer;
     ViewCaptionPanel: TBCPanel;
     ViewGrid: TsWorksheetGrid;
     ViewGridPanel: TPanel;
@@ -79,20 +76,17 @@ type
     ZoomBevel: TBevel;
     ZoomPanel: TPanel;
     procedure CloseButtonClick(Sender: TObject);
-    procedure FilterButtonClick(Sender: TObject);
-    procedure FilterEditChange(Sender: TObject);
     procedure FIORadioButtonClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure PostRadioButtonClick(Sender: TObject);
     procedure TabNumRadioButtonChange(Sender: TObject);
-    procedure Timer1Timer(Sender: TObject);
     procedure YearSpinEditChange(Sender: TObject);
   private
     CanDraw: Boolean;
-    CanApplyFilter: Boolean;
     ZoomPercent: Integer;
+    FilterString: String;
     ModeType: TModeType;
     MonthDropDown: TMonthDropDown;
 
@@ -120,6 +114,7 @@ type
 
     procedure ParamListCreate;
 
+    procedure StaffListFilter(const AFilterString: String);
     procedure StaffListCreate;
     procedure StaffListSelect;
     procedure StaffListLoad(const SelectedID: Integer = -1);
@@ -162,7 +157,7 @@ begin
     ViewCaptionPanel
   ]);
   SetToolButtons([
-    CloseButton, FilterButton, AscendingButton, DescendingButton,
+    CloseButton, AscendingButton, DescendingButton,
     WriteButton, EraseButton, EditButton, CopyButton,
     CopySaveButton, CopyDelButton,CopyCancelButton
   ]);
@@ -184,6 +179,7 @@ begin
   ColorsLoad;
   SettingsLoad; //load ZoomPercent
   CreateZoomControls(50, 150, ZoomPercent, ZoomPanel, @TimetableDraw, True);
+  CreateFilterControls('Фильтр по Ф.И.О.:', FilterPanel, @StaffListFilter, 1000 {1c});
 
   CanDraw:= True;
 end;
@@ -212,36 +208,6 @@ end;
 procedure TTimetableForm.CloseButtonClick(Sender: TObject);
 begin
   MainForm.CategorySelect(0);
-end;
-
-procedure TTimetableForm.FilterButtonClick(Sender: TObject);
-begin
-  FilterEdit.Text:= EmptyStr;
-end;
-
-procedure TTimetableForm.FilterEditChange(Sender: TObject);
-begin
-  CanApplyFilter:= False;
-  if Timer1.Enabled then
-    Timer1.Enabled:= False;
-
-  Timer1.Enabled:= True;
-
-  CanApplyFilter:= True;
-
-  //while Timer1.Enabled do
-  //  Application.ProcessMessages;
-
-  //FilterButton.Enabled:= not SEmpty(FilterEdit.Text);
-  //StaffListLoad;
-end;
-
-procedure TTimetableForm.Timer1Timer(Sender: TObject);
-begin
-  Timer1.Enabled:= False;
-  if not CanApplyFilter then Exit;
-  FilterButton.Enabled:= not SEmpty(FilterEdit.Text);
-  StaffListLoad;
 end;
 
 procedure TTimetableForm.FIORadioButtonClick(Sender: TObject);
@@ -304,6 +270,12 @@ begin
   ParamList.AddStringList('CountType', S, V, @TimetableRedraw);
 end;
 
+procedure TTimetableForm.StaffListFilter(const AFilterString: String);
+begin
+  FilterString:= AFilterString;
+  StaffListLoad;
+end;
+
 procedure TTimetableForm.StaffListCreate;
 begin
   StaffList:= TVSTTable.Create(StaffListVT);
@@ -343,7 +315,7 @@ begin
 
   IsDescOrder:= not DescendingButton.Visible;
 
-  DataBase.StaffListForPersonalTimingLoad(STrimLeft(FilterEdit.Text),
+  DataBase.StaffListForPersonalTimingLoad(STrimLeft(FilterString),
                        BD, ED, OrderType, IsDescOrder,
                        TabNumIDs, RecrutDates, DismissDates,
                        Families, Names, Patronymics, TabNums, PostNames);

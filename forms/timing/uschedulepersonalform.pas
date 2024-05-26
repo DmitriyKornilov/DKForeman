@@ -13,7 +13,8 @@ uses
   UScheduleSheet,
   //DK packages utils
   DK_VSTTables, DK_VSTParamList, DK_VSTEdit, DK_Vector, DK_Const, DK_Dialogs,
-  DK_Zoom, DK_DateUtils, DK_Color, DK_SheetExporter, DK_StrUtils, DK_Progress,
+  DK_DateUtils, DK_Color, DK_SheetExporter, DK_StrUtils,
+  DK_Zoom, DK_Progress, DK_Filter,
   //Forms
   UChooseForm, USchedulePersonalEditForm, UScheduleCorrectionEditForm,
   UScheduleVacationForm, USchedulePersonalMonthForm;
@@ -31,9 +32,6 @@ type
     DividerBevel2: TDividerBevel;
     DividerBevel3: TDividerBevel;
     DividerBevel4: TDividerBevel;
-    FilterButton: TSpeedButton;
-    FilterEdit: TEdit;
-    FilterLabel: TLabel;
     FilterPanel: TPanel;
     OrderButtonPanel: TPanel;
     OrderLabel: TLabel;
@@ -109,8 +107,6 @@ type
     procedure CloseButtonClick(Sender: TObject);
     procedure AscendingButtonClick(Sender: TObject);
     procedure ExportButtonClick(Sender: TObject);
-    procedure FilterButtonClick(Sender: TObject);
-    procedure FilterEditChange(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -135,6 +131,7 @@ type
   private
     CanDraw: Boolean;
     ZoomPercent: Integer;
+    FilterString: String;
     ModeType: TModeType;
 
     Calendar: TCalendar;
@@ -185,6 +182,7 @@ type
     procedure CopyListLoad(const ASelectedDate: TDate = 0);
     procedure CopySelect;
 
+    procedure StaffListFilter(const AFilterString: String);
     procedure StaffListCreate;
     procedure StaffListSelect;
     procedure StaffListLoad(const SelectedID: Integer = -1);
@@ -307,17 +305,6 @@ begin
   ScheduleExport;
 end;
 
-procedure TSchedulePersonalForm.FilterButtonClick(Sender: TObject);
-begin
-  FilterEdit.Text:= EmptyStr;
-end;
-
-procedure TSchedulePersonalForm.FilterEditChange(Sender: TObject);
-begin
-  FilterButton.Enabled:= not SEmpty(FilterEdit.Text);
-  StaffListLoad;
-end;
-
 procedure TSchedulePersonalForm.FormCreate(Sender: TObject);
 begin
   ModeType:= mtView;
@@ -331,7 +318,7 @@ begin
     VacationCaptionPanel, CorrectionsCaptionPanel, ViewCaptionPanel
   ]);
   SetToolButtons([
-    CloseButton, FilterButton, AscendingButton, DescendingButton,
+    CloseButton, AscendingButton, DescendingButton,
     HistoryAddButton, HistoryDelButton, HistoryEditButton,
     VacationSaveButton, VacationDelButton, VacationEraseButton, VacationCancelButton,
     DayAddButton, DayDelButton, DayEditButton, DayCopyButton,
@@ -357,6 +344,7 @@ begin
   ColorsLoad;
   SettingsLoad; //load ZoomPercent
   CreateZoomControls(50, 150, ZoomPercent, ZoomPanel, @ScheduleDraw, True);
+  CreateFilterControls('Фильтр по Ф.И.О.:', FilterPanel, @StaffListFilter, 300);
 
   CanDraw:= True;
 end;
@@ -764,6 +752,12 @@ begin
   CopyDelButton.Enabled:= VSTCopy.IsSelected;
 end;
 
+procedure TSchedulePersonalForm.StaffListFilter(const AFilterString: String);
+begin
+  FilterString:= AFilterString;
+  StaffListLoad;
+end;
+
 procedure TSchedulePersonalForm.StaffListCreate;
 begin
   StaffList:= TVSTTable.Create(StaffListVT);
@@ -804,7 +798,7 @@ begin
 
   IsDescOrder:= not DescendingButton.Visible;
 
-  DataBase.StaffListForPersonalTimingLoad(STrimLeft(FilterEdit.Text),
+  DataBase.StaffListForPersonalTimingLoad(STrimLeft(FilterString),
                        BD, ED, OrderType, IsDescOrder,
                        TabNumIDs, RecrutDates, DismissDates,
                        Families, Names, Patronymics, TabNums, PostNames);

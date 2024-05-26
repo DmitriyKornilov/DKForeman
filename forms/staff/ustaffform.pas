@@ -11,7 +11,7 @@ uses
   UDataBase, UConst, UTypes, UUtils,
   //DK packages utils
   DK_VSTTypes, DK_VSTTables, DK_VSTParamList, DK_Vector, DK_StrUtils, DK_Const,
-  DK_Dialogs, DK_DateUtils,
+  DK_Dialogs, DK_DateUtils, DK_Filter,
   //Forms
   UStaffMainEditForm, UStaffTabNumEditForm, UStaffPostlogEditForm;
 
@@ -25,11 +25,9 @@ type
     DividerBevel1: TDividerBevel;
     DividerBevel2: TDividerBevel;
     DividerBevel3: TDividerBevel;
-    FilterEdit: TEdit;
     ExportButton: TBCButton;
     FIORadioButton: TRadioButton;
     ListCaptionPanel: TBCPanel;
-    FilterButton: TSpeedButton;
     ListOrderToolPanel: TPanel;
     OrderButtonPanel: TPanel;
     OrderLabel: TLabel;
@@ -38,7 +36,6 @@ type
     SettingCaptionPanel: TBCPanel;
     TabNumCaptionPanel: TBCPanel;
     CloseButton: TSpeedButton;
-    FilterLabel: TLabel;
     FilterPanel: TPanel;
     ListAddButton: TSpeedButton;
     PostLogCaptionPanel: TBCPanel;
@@ -73,8 +70,6 @@ type
     procedure CloseButtonClick(Sender: TObject);
     procedure DescendingButtonClick(Sender: TObject);
     procedure ExportButtonClick(Sender: TObject);
-    procedure FilterButtonClick(Sender: TObject);
-    procedure FilterEditChange(Sender: TObject);
     procedure FIORadioButtonClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -96,6 +91,7 @@ type
   private
     CanLoadStaffList: Boolean;
     //ZoomPercent: Integer;
+    FilterString: String;
     ModeType: TModeType;
 
     ParamList: TVSTParamList;
@@ -122,6 +118,7 @@ type
     procedure ColumnsListSelect;
     procedure NameTypeSelect;
 
+    procedure StaffListFilter(const AFilterString: String);
     procedure StaffListCreate;
     procedure StaffListColumnSet;
     procedure StaffListLoad(const SelectedID: Integer = -1);
@@ -199,17 +196,6 @@ begin
   ]);
 end;
 
-procedure TStaffForm.FilterButtonClick(Sender: TObject);
-begin
-  FilterEdit.Text:= EmptyStr;
-end;
-
-procedure TStaffForm.FilterEditChange(Sender: TObject);
-begin
-  FilterButton.Enabled:= not SEmpty(FilterEdit.Text);
-  StaffListLoad;
-end;
-
 procedure TStaffForm.FIORadioButtonClick(Sender: TObject);
 begin
   StaffListLoad;
@@ -228,7 +214,7 @@ begin
     SettingCaptionPanel, ListCaptionPanel, TabNumCaptionPanel, PostLogCaptionPanel
   ]);
   SetToolButtons([
-    CloseButton, FilterButton, AscendingButton, DescendingButton,
+    CloseButton, AscendingButton, DescendingButton,
     ListAddButton, ListDelButton, ListEditButton,
     TabNumAddButton, TabNumDelButton, TabNumEditButton, TabNumDismissButton, TabNumDismissCancelButton,
     PostLogAddButton, PostLogDelButton, PostLogEditButton
@@ -243,6 +229,7 @@ begin
   SettingsLoad;
   TabNumListCreate;
   PostLogCreate;
+  CreateFilterControls('Фильтр по Ф.И.О.:', FilterPanel, @StaffListFilter);
   CanLoadStaffList:= True;
 
   ViewUpdate(mtView);
@@ -464,6 +451,12 @@ begin
   StaffList.Refresh;
 end;
 
+procedure TStaffForm.StaffListFilter(const AFilterString: String);
+begin
+  FilterString:= AFilterString;
+  StaffListLoad;
+end;
+
 procedure TStaffForm.StaffListUpdate;
 var
   SelectedID: Integer;
@@ -526,7 +519,7 @@ begin
     else
       ListOrderType:= 1;
     IsDescOrder:= not DescendingButton.Visible;
-    DataBase.StaffMainListLoad(STrimLeft(FilterEdit.Text), ListOrderType, IsDescOrder,
+    DataBase.StaffMainListLoad(STrimLeft(FilterString), ListOrderType, IsDescOrder,
                        StaffIDs, Genders, Families, Names, Patronymics, BornDates);
   end
   else
