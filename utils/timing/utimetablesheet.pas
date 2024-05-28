@@ -628,13 +628,21 @@ begin
 end;
 
 procedure TYearTimetableSheet.Select(const ADate: TDate);
+var
+  R, C: Integer;
 begin
   inherited Select(ADate);
+  if not DateToGrid(ADate, R, C) then Exit;
+  SelectionAddCell(R+1, C);
 end;
 
 procedure TYearTimetableSheet.Unselect(const ADate: TDate);
+var
+  R, C: Integer;
 begin
   inherited Unselect(ADate);
+  if not DateToGrid(ADate, R, C) then Exit;
+  SelectionDelCell(R+1, C);
 end;
 
 end.
