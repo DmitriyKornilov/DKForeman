@@ -10,7 +10,7 @@ uses
   //Project utils
   {UUtils,  UTypes,  UWorkHours,} UConst, UCalendar, UTimetable, UDateSheet,
   //DK packages utils
-  DK_SheetWriter, DK_Vector, DK_Const, {DK_DateUtils,} DK_StrUtils, DK_SheetTypes,
+  DK_SheetWriter, DK_Vector, DK_Const, DK_DateUtils, DK_StrUtils, DK_SheetTypes,
   DK_Math;
 
 type
@@ -56,7 +56,8 @@ type
     procedure TotalsQuartAndYearDraw;
     procedure MonthDraw(const AMonth: Byte);
 
-    function MonthFirstRow(const AMonth: Byte): Integer;
+    function MonthToFirstRow(const AMonth: Byte): Integer;
+    function RowToMonth(const ARow: Integer): Integer;
   public
     procedure Draw(const AMonthTimetables: TTimetableVector;
                    const ATimetableTotals: TTimetableTotals;
@@ -66,6 +67,9 @@ type
     procedure MonthRedraw(const AMonth: Integer;
                         const AMonthTimetable: TTimetable;
                         const ATimetableTotals: TTimetableTotals);
+
+    function GridToDate(const ARow, ACol: Integer; out ADate: TDate): Boolean; override;
+    function DateToGrid(const ADate: TDate; out ARow, ACol: Integer): Boolean; override;
   end;
 
 implementation
@@ -444,7 +448,7 @@ begin
   Timetable:= FTimetables[AMonth-1];
 
   FirstCol:= 2;
-  R:= MonthFirstRow(AMonth);
+  R:= MonthToFirstRow(AMonth);
 
   Writer.SetFont(Font.Name, Font.Size, [{fsBold}], clBlack);
   for i:=0 to 14 do
@@ -465,23 +469,42 @@ begin
              Timetable.MarksSkipStrMonth, Timetable.DaysHoursSkipStrMonth, True);
 end;
 
-function TYearTimetableSheet.MonthFirstRow(const AMonth: Byte): Integer;
+function TYearTimetableSheet.MonthToFirstRow(const AMonth: Byte): Integer;
 begin
   case AMonth of
-  1: Result:= 5;
-  2: Result:= 9;
-  3: Result:= 13;
-  4: Result:= 19;
-  5: Result:= 23;
-  6: Result:= 27;
-  7: Result:= 35;
-  8: Result:= 39;
-  9: Result:= 43;
-  10: Result:= 49;
-  11: Result:= 53;
-  12: Result:= 57;
+    1: Result:= 5;
+    2: Result:= 9;
+    3: Result:= 13;
+    4: Result:= 19;
+    5: Result:= 23;
+    6: Result:= 27;
+    7: Result:= 35;
+    8: Result:= 39;
+    9: Result:= 43;
+    10: Result:= 49;
+    11: Result:= 53;
+    12: Result:= 57;
   end;
   Result:= Result + Ord(IsNeedCaption);
+end;
+
+function TYearTimetableSheet.RowToMonth(const ARow: Integer): Integer;
+begin
+  Result:= 0;
+  case ARow of
+    5..8:   Result:=1;
+    9..12:  Result:=2;
+    13..16: Result:=3;
+    19..22: Result:=4;
+    23..26: Result:=5;
+    27..30: Result:=6;
+    35..38: Result:=7;
+    39..42: Result:=8;
+    43..46: Result:=9;
+    49..52: Result:=10;
+    53..56: Result:=11;
+    57..60: Result:=12;
+  end;
 end;
 
 procedure TYearTimetableSheet.Draw(const AMonthTimetables: TTimetableVector;
@@ -523,6 +546,64 @@ begin
   FTimetableTotals:= ATimetableTotals;
   MonthDraw(AMonth);
   TotalsQuartAndYearDraw;
+end;
+
+function TYearTimetableSheet.GridToDate(const ARow, ACol: Integer; out ADate: TDate): Boolean;
+var
+  M, D: Integer;
+
+  function ColToDay(AFirstRow: Integer; out ADay: Integer): Boolean;
+  var
+    NHalf: Integer;
+  begin
+    ColToDay:= False;
+    ADay:= 0;
+    NHalf:= (ARow-AFirstRow) div 2;
+    if NHalf=0 then //первая половина
+    begin
+      if (ACol>=2) and (ACol<=16) then
+      begin
+        ADay:= ACol-1;
+        Result:= True;
+      end;
+    end else  //вторая половина
+    begin
+      if (ACol>=2) and (ACol<=DaysInAMonth(FYear, M)-14) then
+      begin
+        ADay:= ACol+14;
+        Result:= True;
+      end;
+    end;
+  end;
+
+begin
+  Result:= False;
+  ADate:= 0;
+  M:= RowToMonth(ARow);
+  case ARow of
+    5..8:   Result:= ColToDay(5, D);
+    9..12:  Result:= ColToDay(9, D);
+    13..16: Result:= ColToDay(13, D);
+    19..22: Result:= ColToDay(19, D);
+    23..26: Result:= ColToDay(23, D);
+    27..30: Result:= ColToDay(27, D);
+    35..38: Result:= ColToDay(35, D);
+    39..42: Result:= ColToDay(39, D);
+    43..46: Result:= ColToDay(43, D);
+    49..52: Result:= ColToDay(49, D);
+    53..56: Result:= ColToDay(53, D);
+    57..60: Result:= ColToDay(57, D);
+  end;
+  if Result then
+  begin
+    ADate:= EncodeDate(FYear, M, D);
+    Result:= IsDateInPeriod(ADate, FRecrutDate, FDismissDate);
+  end;
+end;
+
+function TYearTimetableSheet.DateToGrid(const ADate: TDate; out ARow, ACol: Integer): Boolean;
+begin
+
 end;
 
 end.

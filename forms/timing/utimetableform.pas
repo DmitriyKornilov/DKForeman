@@ -380,7 +380,7 @@ begin
     try
       MonthCalendar:= TCalendar.Create;
       try
-        Progress.WriteLine1('Актуализация и расчет табеля');
+        Progress.WriteLine1('Актуализация и расчет табеля:');
         Progress.WriteLine2(EmptyStr);
         Progress.Show;
         for i:=1 to 12 do
