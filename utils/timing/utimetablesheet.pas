@@ -5,7 +5,7 @@ unit UTimetableSheet;
 interface
 
 uses
-  Classes, SysUtils, Graphics, fpspreadsheetgrid, fpspreadsheet, fpstypes,
+  Classes, SysUtils, Graphics, fpspreadsheetgrid, {fpspreadsheet,} fpstypes,
   DateUtils,
   //Project utils
   {UUtils,  UTypes,  UWorkHours,} UConst, UCalendar, UTimetable, UDateSheet,
@@ -70,6 +70,9 @@ type
 
     function GridToDate(const ARow, ACol: Integer; out ADate: TDate): Boolean; override;
     function DateToGrid(const ADate: TDate; out ARow, ACol: Integer): Boolean; override;
+
+    procedure Select(const ADate: TDate); override;
+    procedure Unselect(const ADate: TDate); override;
   end;
 
 implementation
@@ -469,44 +472,6 @@ begin
              Timetable.MarksSkipStrMonth, Timetable.DaysHoursSkipStrMonth, True);
 end;
 
-function TYearTimetableSheet.MonthToFirstRow(const AMonth: Byte): Integer;
-begin
-  case AMonth of
-    1: Result:= 5;
-    2: Result:= 9;
-    3: Result:= 13;
-    4: Result:= 19;
-    5: Result:= 23;
-    6: Result:= 27;
-    7: Result:= 35;
-    8: Result:= 39;
-    9: Result:= 43;
-    10: Result:= 49;
-    11: Result:= 53;
-    12: Result:= 57;
-  end;
-  Result:= Result + Ord(IsNeedCaption);
-end;
-
-function TYearTimetableSheet.RowToMonth(const ARow: Integer): Integer;
-begin
-  Result:= 0;
-  case ARow of
-    5..8:   Result:=1;
-    9..12:  Result:=2;
-    13..16: Result:=3;
-    19..22: Result:=4;
-    23..26: Result:=5;
-    27..30: Result:=6;
-    35..38: Result:=7;
-    39..42: Result:=8;
-    43..46: Result:=9;
-    49..52: Result:=10;
-    53..56: Result:=11;
-    57..60: Result:=12;
-  end;
-end;
-
 procedure TYearTimetableSheet.Draw(const AMonthTimetables: TTimetableVector;
                    const ATimetableTotals: TTimetableTotals;
                    const AYear: Word; const AName: String;
@@ -548,6 +513,44 @@ begin
   TotalsQuartAndYearDraw;
 end;
 
+function TYearTimetableSheet.MonthToFirstRow(const AMonth: Byte): Integer;
+begin
+  case AMonth of
+    1: Result:= 5;
+    2: Result:= 9;
+    3: Result:= 13;
+    4: Result:= 19;
+    5: Result:= 23;
+    6: Result:= 27;
+    7: Result:= 35;
+    8: Result:= 39;
+    9: Result:= 43;
+    10: Result:= 49;
+    11: Result:= 53;
+    12: Result:= 57;
+  end;
+  Result:= Result + Ord(IsNeedCaption);
+end;
+
+function TYearTimetableSheet.RowToMonth(const ARow: Integer): Integer;
+begin
+  Result:= 0;
+  case ARow of
+    5..8:   Result:=1;
+    9..12:  Result:=2;
+    13..16: Result:=3;
+    19..22: Result:=4;
+    23..26: Result:=5;
+    27..30: Result:=6;
+    35..38: Result:=7;
+    39..42: Result:=8;
+    43..46: Result:=9;
+    49..52: Result:=10;
+    53..56: Result:=11;
+    57..60: Result:=12;
+  end;
+end;
+
 function TYearTimetableSheet.GridToDate(const ARow, ACol: Integer; out ADate: TDate): Boolean;
 var
   M, D: Integer;
@@ -556,7 +559,7 @@ var
   var
     NHalf: Integer;
   begin
-    ColToDay:= False;
+    Result:= False;
     ADay:= 0;
     NHalf:= (ARow-AFirstRow) div 2;
     if NHalf=0 then //первая половина
@@ -602,8 +605,36 @@ begin
 end;
 
 function TYearTimetableSheet.DateToGrid(const ADate: TDate; out ARow, ACol: Integer): Boolean;
+var
+  D, M, Y: Word;
 begin
+  Result:= False;
+  ARow:= 0;
+  ACol:= 0;
 
+  DecodeDate(ADate, Y, M, D);
+  if Y<>FYear then Exit;
+
+  ARow:= MonthToFirstRow(M);
+  if D>15 then
+  begin
+    ARow:= ARow + 2;
+    ACol:= D - 14;
+  end
+  else
+    ACol:= D + 1;
+
+  Result:= True;
+end;
+
+procedure TYearTimetableSheet.Select(const ADate: TDate);
+begin
+  inherited Select(ADate);
+end;
+
+procedure TYearTimetableSheet.Unselect(const ADate: TDate);
+begin
+  inherited Unselect(ADate);
 end;
 
 end.
