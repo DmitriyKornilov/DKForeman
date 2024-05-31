@@ -300,7 +300,7 @@ type
                           out AIsManualChangedDay: Boolean): Boolean;
     {Запись дня табеля}
     procedure TimetableDayAdd(const ATabNumID: Integer; const ADate: TDate;
-                          const AStatus: Integer; const ATimetableDay: TTimetableDay);
+                              const ATimetableDay: TTimetableDay);
     {Удаление дня из табеля: True - ОК, False - ошибка}
     procedure TimetableDayDelete(const ATabNumID: Integer; const ADate: TDate);
     {Обновление часов по графику}
@@ -312,17 +312,24 @@ type
                              const ACalendar: TCalendar;
                              const ASchedule: TPersonalSchedule): Boolean;
 
+    {Данные табеля за месяц для редактирования: True - ОК, False - пусто}
+    function TimetableDataMonthForEditLoad(const ATabNumID, AMonth, AYear: Integer;
+                       out ADates: TDateVector;
+                       out ATimetableStrings, AScheduleNames: TStrVector;
+                       out ATotalHours, ANightHours, AOverHours, ASkipHours, ASchedHours,
+                           AMainMarks, ASkipMarks, AShiftNums: TIntVector): Boolean;
+
     {Загрузка из базы векторов данных табеля: True - ОК, False - пусто}
     function TimetableDataVectorsLoad(const ATabNumID: Integer; //таб номер
                                const ABeginDate, AEndDate: TDate; //период запроса
                                out ASheduleIDs, AShiftNums,
                                  ATotalHours, ANightHours, AOverHours,
                                  ASkipHours, ASchedHours, AMainMarkDig,
-                                 ASkipMarkDig, AManualChanged, AAbsence, AIsDayInBase: TIntVector;
+                                 ASkipMarkDig, AIsManualChanged, AIsAbsence, AIsDayInBase: TIntVector;
                                out AMainMarkStr, ASkipMarkStr: TStrVector): Boolean;
 
-    //загрузка итоговых данных табеля за период
-    procedure TimetableDataInPeriodLoad(const ATabNumID: Integer;
+    {Загрузка итоговых данных табеля за период}
+    procedure TimetableDataTotalsLoad(const ATabNumID: Integer;
                                const ABeginDate, AEndDate: TDate; //период запроса
                                out AShiftCount,               //отработано смен
                                  AWorkDaysCount,              //отработано дней
@@ -2094,7 +2101,7 @@ begin
   Result:= False;
   QSetQuery(FQuery);
   QSetSQL(
-    'SELECT SchedHours, Status ' +
+    'SELECT SchedHours, SchedID ' +
     'FROM TIMETABLELOG ' +
     'WHERE (TabNumID = :TabNumID) AND (DayDate = :DayDate)');
   QParamInt('TabNumID', ATabNumID);
@@ -2102,7 +2109,7 @@ begin
   QOpen;
   if not QIsEmpty then
   begin
-    AIsManualChangedDay:= QFieldInt('Status')=MANUAL_YES;
+    AIsManualChangedDay:= QFieldInt('SchedID')=MANUAL_SCHEDULEID;
     AWritedScheduleHours:= QFieldInt('SchedHours');
     Result:= True;
   end;
@@ -2110,18 +2117,17 @@ begin
 end;
 
 procedure TDataBase.TimetableDayAdd(const ATabNumID: Integer; const ADate: TDate;
-                          const AStatus: Integer; const ATimetableDay: TTimetableDay);
+                                    const ATimetableDay: TTimetableDay);
 begin
   QSetQuery(FQuery);
   QSetSQL(
     sqlINSERT('TIMETABLELOG', ['TabNumID', 'DayDate', 'SchedHours',
                                'TotalHours', 'NightHours', 'OverHours',
-                               'SkipHours', 'DigMark', 'Status', 'SkipMark',
+                               'SkipHours', 'DigMark', 'SkipMark',
                                'SchedID', 'ShiftNum'])
     );
   QParamInt('TabNumID', ATabNumID);
   QParamDT('DayDate', ADate);
-  QParamInt('Status', AStatus);
   QParamInt('SchedHours', ATimetableDay.ScheduleHours);
   QParamInt('TotalHours', ATimetableDay.TotalHours);
   QParamInt('NightHours', ATimetableDay.NightHours);
@@ -2190,7 +2196,7 @@ begin
           //определяем данные за день
           TimetableDay:= TimetableDayDataFromSchedule(ASchedule, ACalendar.DayStatuses[i], i);
           //записываем данные за день
-          TimetableDayAdd(ATabNumID, ACalendar.Dates[i], MANUAL_NO, TimetableDay);
+          TimetableDayAdd(ATabNumID, ACalendar.Dates[i], TimetableDay);
         end;
       end;
     end;
@@ -2201,12 +2207,85 @@ begin
   end;
 end;
 
+function TDataBase.TimetableDataMonthForEditLoad(const ATabNumID, AMonth, AYear: Integer;
+             out ADates: TDateVector;
+             out ATimetableStrings, AScheduleNames: TStrVector;
+             out ATotalHours, ANightHours, AOverHours, ASkipHours, ASchedHours,
+                 AMainMarks, ASkipMarks, AShiftNums: TIntVector): Boolean;
+var
+  BD, ED: TDate;
+  X: Integer;
+  S: String;
+begin
+  Result:= False;
+  ADates:= nil;
+  ATimetableStrings:= nil;
+  AScheduleNames:= nil;
+  ATotalHours:= nil;
+  ANightHours:= nil;
+  AOverHours:= nil;
+  ASkipHours:= nil;
+  ASchedHours:= nil;
+  AMainMarks:= nil;
+  ASkipMarks:= nil;
+  AShiftNums:= nil;
+
+  FirstLastDayInMonth(AMonth, AYear, BD, ED);
+
+  QSetQuery(FQuery);
+  QSetSQL(
+    'SELECT t1.DayDate, t1.TotalHours, t1.NightHours, t1.OverHours, t1.SkipHours, ' +
+           't1.SchedHours, t1.SchedID, t1.ShiftNum, '+
+           't1.DigMark AS MainMarkDig, t1.SkipMark AS SkipMarkDig, '+
+           't2.StrMark AS MainMarkStr, t3.StrMark AS SkipMarkStr, t2.TypeMark, ' +
+           't4.ScheduleName ' +
+    'FROM TIMETABLELOG t1 ' +
+    'INNER JOIN TIMETABLEMARK t2 ON (t1.DigMark=t2.DigMark) ' +
+    'INNER JOIN TIMETABLEMARK t3 ON (t1.SkipMark=t3.DigMark) ' +
+    'INNER JOIN SCHEDULEMAIN t4 ON (t1.SchedID=t4.ScheduleID) ' +
+    'WHERE (t1.TabNumID = :TabNumID) AND (t1.DayDate BETWEEN :BD AND :ED) ' +
+    'ORDER BY t1.DayDate'
+  );
+  QParamInt('TabNumID', ATabNumID);
+  QParamDT('BD', BD);
+  QParamDT('ED', ED);
+  QOpen;
+  if not QIsEmpty then
+  begin
+    QFirst;
+    while not QEOF do
+    begin
+      VAppend(ADates, QFieldDT('DayDate'));
+      VAppend(ATotalHours, QFieldInt('TotalHours'));
+      VAppend(ANightHours, QFieldInt('NightHours'));
+      VAppend(AOverHours, QFieldInt('OverHours'));
+      VAppend(ASkipHours, QFieldInt('SkipHours'));
+      VAppend(ASchedHours, QFieldInt('SchedHours'));
+      VAppend(AShiftNums, QFieldInt('ShiftNum'));
+      VAppend(AScheduleNames, QFieldStr('ScheduleName'));
+
+      X:= VLast(ASkipHours);
+      if X=FULLSHIFT_SKIPHOURS then
+        X:= VLast(ASchedHours);
+      S:= TimetableDataToDayStr(QFieldStr('MainMarkStr'), QFieldStr('SkipMarkStr'),
+                                STRMARK_NIGHT, STRMARK_OVER,
+                                VLast(ATotalHours), VLast(ANightHours),
+                                VLast(AOverHours), X);
+      VAppend(ATimetableStrings, S);
+
+      QNext;
+    end;
+    Result:= True;
+  end;
+  QClose;
+end;
+
 function TDataBase.TimetableDataVectorsLoad(const ATabNumID: Integer;
                                const ABeginDate, AEndDate: TDate; //период запроса
                                out ASheduleIDs, AShiftNums,
                                  ATotalHours, ANightHours, AOverHours,
                                  ASkipHours, ASchedHours, AMainMarkDig,
-                                 ASkipMarkDig, AManualChanged, AAbsence, AIsDayInBase: TIntVector;
+                                 ASkipMarkDig, AIsManualChanged, AIsAbsence, AIsDayInBase: TIntVector;
                                out AMainMarkStr, ASkipMarkStr: TStrVector): Boolean;
 var
   N: Integer;
@@ -2224,13 +2303,13 @@ begin
   VDim(ASkipMarkDig{%H-}, N, 0);
   VDim(AMainMarkStr{%H-}, N, EmptyStr);
   VDim(ASkipMarkStr{%H-}, N, EmptyStr);
-  VDim(AManualChanged{%H-}, N, MANUAL_NO);
-  VDim(AAbsence{%H-}, N, ABSENCE_NO);
+  VDim(AIsManualChanged{%H-}, N, MANUAL_NO);
+  VDim(AIsAbsence{%H-}, N, ABSENCE_NO);
   VDim(AIsDayInBase{%H-}, N, INBASE_NO);
   QSetQuery(FQuery);
   QSetSQL(
     'SELECT t1.DayDate, t1.TotalHours, t1.NightHours, t1.OverHours, t1.SkipHours, ' +
-           't1.SchedHours, t1.Status, t1.SchedID, t1.ShiftNum, '+
+           't1.SchedHours, t1.SchedID, t1.ShiftNum, '+
            't1.DigMark AS MainMarkDig, t1.SkipMark AS SkipMarkDig, '+
            't2.StrMark AS MainMarkStr, t3.StrMark AS SkipMarkStr, t2.TypeMark ' +
     'FROM TIMETABLELOG t1 ' +
@@ -2250,10 +2329,9 @@ begin
     begin
       N:= DaysBetweenDates(ABeginDate, QFieldDT('DayDate'));
       AIsDayInBase[N]:= INBASE_YES;
-      if QFieldInt('TypeMark') = MARKTYPE_ABSENCE then
-        AAbsence[N]:= ABSENCE_YES;
-      AManualChanged[N]:= QFieldInt('Status');
-      ASheduleIDs[N]:= QFieldInt('SCHEDID');
+      AIsAbsence[N]:= TimetableIsAbsence(QFieldInt('TypeMark'));
+      ASheduleIDs[N]:= QFieldInt('SchedID');
+      AIsManualChanged[N]:= TimetableIsManualChanged(ASheduleIDs[N]);
       AShiftNums[N]:= QFieldInt('ShiftNum');
       ATotalHours[N]:= QFieldInt('TotalHours');
       ANightHours[N]:= QFieldInt('NightHours');
@@ -2271,7 +2349,7 @@ begin
   QClose;
 end;
 
-procedure TDataBase.TimetableDataInPeriodLoad(const ATabNumID: Integer;
+procedure TDataBase.TimetableDataTotalsLoad(const ATabNumID: Integer;
                                const ABeginDate, AEndDate: TDate; //период запроса
                                out AShiftCount,               //отработано смен
                                  AWorkDaysCount,              //отработано дней
@@ -2387,7 +2465,6 @@ procedure TDataBase.TimetableDataInPeriodLoad(const ATabNumID: Integer;
       S:= S+'<>0)'
     else
       S:= S+'= :SkipMark)';
-      //S:= S+'='+ IntToStr(ASkipMark) +')';
     QSetSQL(S);
     SetSQLParams;
     QParamInt('SkipMark', ASkipMark);
@@ -2407,7 +2484,6 @@ procedure TDataBase.TimetableDataInPeriodLoad(const ATabNumID: Integer;
         'WHERE (TabNumID = :TabNumID) AND (DayDate BETWEEN :BD AND :ED) AND (SkipHours>0)';
     if ASkipMark>=0 then
       S:= S + ' AND (SkipMark = :SkipMark)';
-      //S:= S + ' AND (SkipMark = '+ IntToStr(ASkipMark) +')';
     QSetSQL(S);
     SetSQLParams;
     QParamInt('SkipMark', ASkipMark);
@@ -2417,13 +2493,13 @@ procedure TDataBase.TimetableDataInPeriodLoad(const ATabNumID: Integer;
     QClose;
     S:= 'SELECT SUM(SchedHours) AS ASkipHours ' +
         'FROM TIMETABLELOG '+
-        'WHERE (TabNumID = :TabNumID) AND (DayDate BETWEEN :BD AND :ED) AND (SkipHours=-1)';
+        'WHERE (TabNumID = :TabNumID) AND (DayDate BETWEEN :BD AND :ED) AND (SkipHours= :SkipHours)';
     if ASkipMark>=0 then
       S:= S + ' AND (SkipMark = :SkipMark)';
-      //S:= S + ' AND (SkipMark = '+ IntToStr(ASkipMark) +')';
     QSetSQL(S);
     SetSQLParams;
     QParamInt('SkipMark', ASkipMark);
+    QParamInt('SkipHours', FULLSHIFT_SKIPHOURS);
     QOpen;
     if not QIsEmpty then
       H:= H + QFieldInt('ASkipHours');

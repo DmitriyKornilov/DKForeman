@@ -109,6 +109,11 @@ type
     Timetables: TTimetableVector;
     TimetableSheet: TYearTimetableSheet;
 
+    MonthDates: TDateVector;
+    MonthTimetableStrings, MonthScheduleNames: TStrVector;
+    MonthTotalHours, MonthNightHours, MonthOverHours, MonthSkipHours,
+    MonthSchedHours, MonthMainMarks, MonthSkipMarks, MonthShiftNums: TIntVector;
+
     procedure CopyBegin;
     procedure CopyEnd(const ANeedSave: Boolean);
 
@@ -120,6 +125,7 @@ type
     procedure StaffListLoad(const SelectedID: Integer = -1);
 
     procedure EditingTablesCreate;
+    procedure MonthTimetableLoad;
 
     procedure TimetableLoad;
     procedure TimetableChange;
@@ -173,7 +179,7 @@ begin
   Calendar:= TCalendar.Create;
   TimetableSheet:= TYearTimetableSheet.Create(ViewGrid.Worksheet, ViewGrid, MainForm.GridFont);
   YearSpinEdit.Value:= YearOfDate(Date);
-  MonthDropDown:= TMonthDropDown.Create(MonthBCButton, nil{@MonthTimetableLoad});
+  MonthDropDown:= TMonthDropDown.Create(MonthBCButton, @MonthTimetableLoad);
 
   IsCopyDates:= False;
   ColorsLoad;
@@ -362,6 +368,38 @@ begin
 
 end;
 
+procedure TTimetableForm.MonthTimetableLoad;
+var
+  Dates, ShiftNums: TStrVector;
+begin
+  if not CanDraw then Exit;
+  VSTDays.ValuesClear;
+  if not StaffList.IsSelected then Exit;
+
+  DataBase.TimetableDataMonthForEditLoad(TabNumIDs[StaffList.SelectedIndex],
+                      MonthDropDown.Month, YearSpinEdit.Value,
+                      MonthDates, MonthTimetableStrings, MonthScheduleNames,
+                      MonthTotalHours, MonthNightHours, MonthOverHours, MonthSkipHours,
+                      MonthSchedHours, MonthMainMarks, MonthSkipMarks, MonthShiftNums);
+
+  ShiftNums:= VIntToStr(MonthShiftNums);
+  VChangeIf(ShiftNums, '0', EMPTY_MARK);
+  Dates:= VDateToStr(MonthDates);
+
+  VSTDays.Visible:= False;
+  try
+    VSTDays.ValuesClear;
+    VSTDays.SetColumn(TIMETABLE_CORRECTION_COLUMN_NAMES[0], Dates);
+    VSTDays.SetColumn(TIMETABLE_CORRECTION_COLUMN_NAMES[1], MonthTimetableStrings);
+    VSTDays.SetColumn(TIMETABLE_CORRECTION_COLUMN_NAMES[2], MonthScheduleNames);
+    VSTDays.SetColumn(TIMETABLE_CORRECTION_COLUMN_NAMES[3], ShiftNums);
+    VSTDays.Draw;
+    //VSTDays.ReSelect(CorrectIDs, SelectedCorrectionID);
+  finally
+    VSTDays.Visible:= True;
+  end;
+end;
+
 procedure TTimetableForm.TimetableLoad;
 var
   i: Integer;
@@ -418,6 +456,7 @@ begin
   CaptionsUpdate;
   TimetableLoad;
   TimetableRedraw;
+  MonthTimetableLoad;
 end;
 
 procedure TTimetableForm.TimetableDraw(const AZoomPercent: Integer);

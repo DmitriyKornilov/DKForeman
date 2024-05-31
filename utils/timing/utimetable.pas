@@ -21,6 +21,10 @@ const
   MARKTYPE_ABSENCE  = 2; //неявка
   MARKTYPE_OVERTIME = 3; //сверхурочно
   MARKTYPE_FREEDAY  = 4; //выходной
+  {ID графика для ручной корректировки табеля}
+  MANUAL_SCHEDULEID = -1;
+  {отсутствие в течение всей смены}
+  FULLSHIFT_SKIPHOURS = -1;
   {флаги изменения вручную}
   MANUAL_NO  = 0;
   MANUAL_YES = 1;
@@ -251,6 +255,9 @@ procedure TimetableDataToMarksAndHoursStr(const AMainMark, ASkipMark,ANightMark,
 //получаем данные по индексу AIndex из графика ASchedule для табеля
 function TimetableDayDataFromSchedule(const ASchedule: TPersonalSchedule;
                                   const ADayStatus, AIndex: Integer): TTimetableDay;
+
+function TimetableIsManualChanged(const AScheduleID: Integer): Integer;
+function TimetableIsAbsence(const AMarkType: Integer): Integer;
 
 implementation
 
@@ -749,6 +756,22 @@ begin
   end;
   Result.ScheduleID:= ASchedule.ScheduleIDs[AIndex];
   Result.ShiftNum:= ASchedule.ShiftNumbersCorrectVacation[AIndex];
+end;
+
+function TimetableIsManualChanged(const AScheduleID: Integer): Integer;
+begin
+  if AScheduleID = FULLSHIFT_SKIPHOURS then
+    Result:= MANUAL_YES
+  else
+    Result:= MANUAL_NO;
+end;
+
+function TimetableIsAbsence(const AMarkType: Integer): Integer;
+begin
+  if AMarkType = MARKTYPE_ABSENCE then
+    Result:= ABSENCE_YES
+  else
+    Result:= ABSENCE_NO;
 end;
 
 end.

@@ -6059,7 +6059,6 @@
       "OVERHOURS",
       "SKIPHOURS",
       "DIGMARK",
-      "STATUS",
       "SKIPMARK",
       "SCHEDHOURS",
       "SCHEDID",
@@ -6257,30 +6256,6 @@
         ]
       }
     },
-    "STATUS" : {
-      "FieldType" : "INTEGER",
-      "PrimaryKey" : false,
-      "Status" : false,
-      "NotNull" : true,
-      "DefaultValue" : "0",
-      "Description" : [
-        "0 - заполнено по графику, 1 - ручная корректировка"
-      ],
-      "ExistingValues" : [
-      ],
-      "ReferenceTo" : {
-        "TableName" : "",
-        "FieldName" : "",
-        "OnDelete" : 4,
-        "OnUpdate" : 4
-      },
-      "ReferenceFrom" : {
-        "TableNames" : [
-        ],
-        "FieldNames" : [
-        ]
-      }
-    },
     "SKIPMARK" : {
       "FieldType" : "INTEGER",
       "PrimaryKey" : false,
@@ -6336,7 +6311,9 @@
       "NotNull" : true,
       "DefaultValue" : "0",
       "Description" : [
-        "ID графика сменности"
+        "ID графика сменности",
+        "0 - не указан,",
+        "-1 - корректировка табеля"
       ],
       "ExistingValues" : [
       ],

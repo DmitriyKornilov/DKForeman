@@ -155,10 +155,12 @@ uses
                                out ASheduleIDs, AShiftNums,
                                  ATotalHours, ANightHours, AOverHours,
                                  ASkipHours, ASchedHours, AMainMarkDig,
-                                 ASkipMarkDig, AManualChanged, AAbsence, AIsDayInBase: TIntVector;
+                                 ASkipMarkDig, AIsManualChanged, AAbsence, AIsDayInBase: TIntVector;
                                out AMainMarkStr, ASkipMarkStr: TStrVector): Boolean;
-  //расчет итогов годового табеля
+  {Расчет итогов годового табеля}
   function TimetableYearTotalsLoad(const ATabNumID, AYear: Integer): TTimetableTotals;
+
+
 
 implementation
 
@@ -490,13 +492,13 @@ function TimetableDataVectorsLoad(const ATabNumID: Integer; //таб номер
                                out ASheduleIDs, AShiftNums,
                                  ATotalHours, ANightHours, AOverHours,
                                  ASkipHours, ASchedHours, AMainMarkDig,
-                                 ASkipMarkDig, AManualChanged, AAbsence, AIsDayInBase: TIntVector;
+                                 ASkipMarkDig, AIsManualChanged, AAbsence, AIsDayInBase: TIntVector;
                                out AMainMarkStr, ASkipMarkStr: TStrVector): Boolean;
 begin
   Result:= DataBase.TimetableDataVectorsLoad(ATabNumID, ABeginDate, AEndDate,
                   ASheduleIDs, AShiftNums, ATotalHours, ANightHours, AOverHours,
                   ASkipHours, ASchedHours, AMainMarkDig, ASkipMarkDig,
-                  AManualChanged, AAbsence, AIsDayInBase, AMainMarkStr, ASkipMarkStr);
+                  AIsManualChanged, AAbsence, AIsDayInBase, AMainMarkStr, ASkipMarkStr);
 end;
 
 function TimetableYearTotalsLoad(const ATabNumID, AYear: Integer): TTimetableTotals;
@@ -512,7 +514,7 @@ begin
     5,6:  FirstLastDayInHalfYear(i-4, AYear, BD, ED);
     7:    FirstLastDayInYear(AYear, BD, ED);
     end;
-    DataBase.TimetableDataInPeriodLoad(ATabNumID, BD, ED,
+    DataBase.TimetableDataTotalsLoad(ATabNumID, BD, ED,
                           Result.ShiftCount[i], Result.WorkDaysCount[i],
                           Result.NotWorkDaysCount[i], Result.TotalHours[i],
                           Result.NightHours[i], Result.OverHours[i],
