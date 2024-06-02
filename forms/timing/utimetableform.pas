@@ -9,14 +9,13 @@ uses
   fpspreadsheetgrid, BCPanel, BCButton, VirtualTrees, Spin, StdCtrls,
   DividerBevel, DateUtils,
   //Project utils
-  UDataBase, UConst, UTypes, UUtils, UWorkHours, UCalendar, UTimetable,
-  UTimetableSheet,
+  UDataBase, UConst, UTypes, UUtils, UCalendar, UTimetable, UTimetableSheet,
   //DK packages utils
   DK_VSTTables, DK_VSTParamList, DK_Vector, DK_Const, DK_Dialogs,
   DK_DateUtils, DK_Color, DK_SheetExporter, DK_StrUtils,
   DK_Progress, DK_Zoom, DK_Filter,
   //Forms
-  UChooseForm;
+  UChooseForm, UTimetableEditForm;
 
 type
 
@@ -76,12 +75,24 @@ type
     ZoomBevel: TBevel;
     ZoomPanel: TPanel;
     procedure CloseButtonClick(Sender: TObject);
+    procedure CopyButtonClick(Sender: TObject);
+    procedure CopyCancelButtonClick(Sender: TObject);
+    procedure CopyDelButtonClick(Sender: TObject);
+    procedure CopySaveButtonClick(Sender: TObject);
+    procedure DayVTNodeDblClick(Sender: TBaseVirtualTree;
+      const HitInfo: THitInfo);
+    procedure EditButtonClick(Sender: TObject);
+    procedure EraseButtonClick(Sender: TObject);
     procedure FIORadioButtonClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure PostRadioButtonClick(Sender: TObject);
     procedure TabNumRadioButtonChange(Sender: TObject);
+    procedure ViewGridDblClick(Sender: TObject);
+    procedure ViewGridMouseDown(Sender: TObject; Button: TMouseButton;
+      {%H-}Shift: TShiftState; X, Y: Integer);
+    procedure WriteButtonClick(Sender: TObject);
     procedure YearSpinEditChange(Sender: TObject);
   private
     CanDraw: Boolean;
@@ -107,15 +118,19 @@ type
     Calendar: TCalendar;
     TimetableTotals: TTimetableTotals;
     Timetables: TTimetableVector;
-    TimetableSheet: TYearTimetableSheet;
+    Sheet: TYearTimetableSheet;
 
     MonthDates: TDateVector;
     MonthTimetableStrings, MonthScheduleNames: TStrVector;
     MonthTotalHours, MonthNightHours, MonthOverHours, MonthSkipHours,
-    MonthSchedHours, MonthMainMarks, MonthSkipMarks, MonthShiftNums: TIntVector;
+    MonthSchedHours, MonthMainMarks, MonthSkipMarks, MonthSchedIDs, MonthShiftNums: TIntVector;
+
+    SelectedTimetableString, SelectedScheduleName: String;
+    SelectedDay: TTimetableDay;
 
     procedure CopyBegin;
     procedure CopyEnd(const ANeedSave: Boolean);
+    function DayInListSelect(const ADate: TDate): Boolean;
 
     procedure ParamListCreate;
 
@@ -126,11 +141,17 @@ type
 
     procedure EditingTablesCreate;
     procedure MonthTimetableLoad;
+    procedure MonthTimetableChange;
+    procedure MonthTimetableSelect;
+    procedure CopyListLoad(const ASelectedDate: TDate = 0);
+    procedure CopySelect;
 
     procedure TimetableLoad;
     procedure TimetableChange;
     procedure TimetableDraw(const AZoomPercent: Integer);
     procedure TimetableRedraw;
+
+    procedure TimetableEditFormOpen(const ADate: TDate);
 
     procedure ColorsLoad;
     procedure CaptionsUpdate;
@@ -177,7 +198,7 @@ begin
   StaffListCreate;
   EditingTablesCreate;
   Calendar:= TCalendar.Create;
-  TimetableSheet:= TYearTimetableSheet.Create(ViewGrid.Worksheet, ViewGrid, MainForm.GridFont);
+  Sheet:= TYearTimetableSheet.Create(ViewGrid.Worksheet, ViewGrid, MainForm.GridFont);
   YearSpinEdit.Value:= YearOfDate(Date);
   MonthDropDown:= TMonthDropDown.Create(MonthBCButton, @MonthTimetableLoad);
 
@@ -201,7 +222,7 @@ begin
 
   FreeAndNil(Calendar);
   VTDel(Timetables);
-  FreeAndNil(TimetableSheet);
+  FreeAndNil(Sheet);
 end;
 
 procedure TTimetableForm.FormShow(Sender: TObject);
@@ -214,6 +235,42 @@ end;
 procedure TTimetableForm.CloseButtonClick(Sender: TObject);
 begin
   MainForm.CategorySelect(0);
+end;
+
+procedure TTimetableForm.CopyButtonClick(Sender: TObject);
+begin
+  CopyBegin;
+end;
+
+procedure TTimetableForm.CopyCancelButtonClick(Sender: TObject);
+begin
+  CopyEnd(False);
+end;
+
+procedure TTimetableForm.CopyDelButtonClick(Sender: TObject);
+begin
+  Sheet.Unselect(Sheet.SelectedDates[VSTCopy.SelectedIndex]);
+  CopyListLoad;
+end;
+
+procedure TTimetableForm.CopySaveButtonClick(Sender: TObject);
+begin
+  CopyEnd(True);
+end;
+
+procedure TTimetableForm.DayVTNodeDblClick(Sender: TBaseVirtualTree;
+  const HitInfo: THitInfo);
+var
+  D: TDate;
+begin
+  if not VSTDays.IsSelected then Exit;
+  D:= MonthDates[HitInfo.HitNode^.Index];
+  TimetableEditFormOpen(D);
+end;
+
+procedure TTimetableForm.EditButtonClick(Sender: TObject);
+begin
+  TimetableEditFormOpen(MonthDates[VSTDays.SelectedIndex]);
 end;
 
 procedure TTimetableForm.FIORadioButtonClick(Sender: TObject);
@@ -231,6 +288,44 @@ begin
   StaffListLoad;
 end;
 
+procedure TTimetableForm.ViewGridDblClick(Sender: TObject);
+var
+  DayDate: TDate;
+begin
+  if ModeType<>mtEditing then Exit;
+  if not Sheet.GridToDate(ViewGrid.Row, ViewGrid.Col, DayDate) then Exit;
+  //VSTDays.ReSelect(MonthDates, DayDate, False);
+  TimetableEditFormOpen(DayDate);
+end;
+
+procedure TTimetableForm.ViewGridMouseDown(Sender: TObject;
+  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+var
+  R, C: Integer;
+  D: TDate;
+begin
+  if ModeType<>mtEditing then Exit;
+  if Button=mbLeft then
+  begin
+    (Sender as TsWorksheetGrid).MouseToCell(X, Y, C, R);
+    if not Sheet.GridToDate(R, C, D) then Exit;
+    if not Timetables[MonthOfDate(D)-1].IsDateExists(D) then Exit;
+    if DayInListSelect(D) then Exit;
+    Sheet.DayInGridSelect(D);
+    if IsCopyDates then CopyListLoad;
+  end
+  else if Button=mbRight then
+  begin
+    if IsCopyDates then
+    begin
+      VSTCopy.ValuesClear;
+      Sheet.SelectionClear;
+    end
+    else
+      VSTDays.UnSelect;
+  end;
+end;
+
 procedure TTimetableForm.YearSpinEditChange(Sender: TObject);
 var
   SelectedTabNumID: Integer;
@@ -246,12 +341,67 @@ end;
 
 procedure TTimetableForm.CopyBegin;
 begin
+  IsCopyDates:= True;
+  Sheet.MultiSelect:= True;
+  DayPanel.Visible:= False;
+  DayPanel.Align:= alBottom;
+  CopyPanel.Align:= alClient;
+  CopyPanel.Visible:= True;
 
+  SelectedTimetableString:= MonthTimetableStrings[VSTDays.SelectedIndex];
+  SelectedScheduleName:= MonthScheduleNames[VSTDays.SelectedIndex];
+
+  SelectedDay.ScheduleHours:= MonthSchedHours[VSTDays.SelectedIndex];
+  SelectedDay.TotalHours:= MonthTotalHours[VSTDays.SelectedIndex];
+  SelectedDay.NightHours:= MonthNightHours[VSTDays.SelectedIndex];
+  SelectedDay.OverHours:= MonthOverHours[VSTDays.SelectedIndex];
+  SelectedDay.SkipHours:= MonthSkipHours[VSTDays.SelectedIndex];
+  SelectedDay.DigMark:= MonthMainMarks[VSTDays.SelectedIndex];
+  SelectedDay.SkipMark:= MonthSkipMarks[VSTDays.SelectedIndex];
+  SelectedDay.ScheduleID:= MANUAL_SCHEDULEID; //MonthSchedIDs[VSTDays.SelectedIndex];
+  SelectedDay.ShiftNum:= MonthShiftNums[VSTDays.SelectedIndex];
+
+  VSTDays.Unselect;
 end;
 
 procedure TTimetableForm.CopyEnd(const ANeedSave: Boolean);
 begin
+  if Sheet.IsSelected then
+  begin
+    if ANeedSave then //apply copies
+    begin
+      DataBase.TimetableDaysReplace(TabNumIDs[StaffList.SelectedIndex],
+                                    Sheet.SelectedDates, SelectedDay);
+      TimetableChange;
+    end
+    else //cancel copies
+      Sheet.SelectionClear;
+    VSTCopy.ValuesClear;
+  end;
 
+  IsCopyDates:= False;
+  Sheet.MultiSelect:= False;
+  CopyPanel.Visible:= False;
+  CopyPanel.Align:= alBottom;
+  DayPanel.Align:= alClient;
+  DayPanel.Visible:= True;
+end;
+
+function TTimetableForm.DayInListSelect(const ADate: TDate): Boolean;
+var
+  Ind: Integer;
+begin
+  Result:= False;
+  if IsCopyDates then Exit;
+
+  MonthDropDown.Month:= MonthOfDate(ADate);
+
+  Ind:= VIndexOfDate(MonthDates, ADate);
+  if Ind>=0 then
+    VSTDays.Select(Ind)
+  else
+    VSTDays.UnSelect;
+  Result:= Ind>=0;
 end;
 
 procedure TTimetableForm.ParamListCreate;
@@ -345,7 +495,7 @@ var
   i: Integer;
 begin
   VSTDays:= TVSTTable.Create(DayVT);
-  //VSTDays.OnSelect:= @CorrectionSelect;
+  VSTDays.OnSelect:= @MonthTimetableSelect;
   VSTDays.SetSingleFont(MainForm.GridFont);
   VSTDays.HeaderFont.Style:= [fsBold];
   VSTDays.CanSelect:= True;
@@ -356,7 +506,7 @@ begin
   VSTDays.Draw;
 
   VSTCopy:= TVSTTable.Create(CopyVT);
-  //VSTCopy.OnSelect:= @CopySelect;
+  VSTCopy.OnSelect:= @CopySelect;
   VSTCopy.SetSingleFont(MainForm.GridFont);
   VSTCopy.HeaderFont.Style:= [fsBold];
   VSTCopy.CanSelect:= True;
@@ -365,7 +515,6 @@ begin
                       TIMETABLE_CORRECTION_COLUMN_WIDTHS[i]);
   VSTCopy.AutosizeColumnEnable(2);
   VSTCopy.Draw;
-
 end;
 
 procedure TTimetableForm.MonthTimetableLoad;
@@ -380,7 +529,8 @@ begin
                       MonthDropDown.Month, YearSpinEdit.Value,
                       MonthDates, MonthTimetableStrings, MonthScheduleNames,
                       MonthTotalHours, MonthNightHours, MonthOverHours, MonthSkipHours,
-                      MonthSchedHours, MonthMainMarks, MonthSkipMarks, MonthShiftNums);
+                      MonthSchedHours, MonthMainMarks, MonthSkipMarks,
+                      MonthSchedIDs, MonthShiftNums);
 
   ShiftNums:= VIntToStr(MonthShiftNums);
   VChangeIf(ShiftNums, '0', EMPTY_MARK);
@@ -398,6 +548,103 @@ begin
   finally
     VSTDays.Visible:= True;
   end;
+
+  WriteButton.Enabled:= VIsNil(MonthDates);
+  EraseButton.Enabled:= not WriteButton.Enabled;
+end;
+
+procedure TTimetableForm.MonthTimetableChange;
+var
+  M, Y: Word;
+  TabNumID: Integer;
+  BD, ED: TDate;
+  MonthCalendar: TCalendar;
+begin
+  MonthTimetableLoad;
+  M:= MonthDropDown.Month;
+  Y:= YearSpinEdit.Value;
+  FirstLastDayInMonth(M, Y, BD, ED);
+  TabNumID:= TabNumIDs[StaffList.SelectedIndex];
+  MonthCalendar:= TCalendar.Create;
+  try
+    Calendar.Cut(BD, ED, MonthCalendar);
+    FreeAndNil(Timetables[M-1]);
+    Timetables[M-1]:= TTimetable.Create(TabNumID, TabNums[StaffList.SelectedIndex],
+                                        RecrutDates[StaffList.SelectedIndex],
+                                        DismissDates[StaffList.SelectedIndex],
+                                        Holidays, MonthCalendar, False);
+  finally
+    FreeAndNil(MonthCalendar);
+  end;
+
+  TimetableTotals:= TimetableYearTotalsLoad(TabNumID, Y); //итоговые данные
+  Sheet.MonthRedraw(M, Timetables[M-1], TimetableTotals);
+  if ParamList.Checked['ViewParams', 0] then
+    Sheet.ColorsUpdate(Colors);
+end;
+
+procedure TTimetableForm.MonthTimetableSelect;
+begin
+  if VSTDays.IsSelected then
+    Sheet.DayInGridSelect(MonthDates[VSTDays.SelectedIndex])
+  else //if Assigned(Sheet) then
+    Sheet.SelectionClear;
+
+
+  EditButton.Enabled:= VSTDays.IsSelected;
+  CopyButton.Enabled:= EditButton.Enabled;
+end;
+
+procedure TTimetableForm.CopyListLoad(const ASelectedDate: TDate);
+var
+  Dates, TimetableStrings, ScheduleNames, ShiftNums: TStrVector;
+begin
+  Dates:= VDateToStr(Sheet.SelectedDates);
+  VDim(TimetableStrings{%H-}, Length(Dates), SelectedTimetableString);
+  VDim(ScheduleNames{%H-}, Length(Dates), SelectedScheduleName);
+  VDim(ShiftNums{%H-}, Length(Dates), IntToStr(SelectedDay.ShiftNum));
+  VChangeIf(ShiftNums, '0', EMPTY_MARK);
+
+  VSTCopy.Visible:= False;
+  try
+    VSTCopy.ValuesClear;
+    VSTCopy.SetColumn(TIMETABLE_CORRECTION_COLUMN_NAMES[0], Dates);
+    VSTCopy.SetColumn(TIMETABLE_CORRECTION_COLUMN_NAMES[1], TimetableStrings);
+    VSTCopy.SetColumn(TIMETABLE_CORRECTION_COLUMN_NAMES[2], ScheduleNames);
+    VSTCopy.SetColumn(TIMETABLE_CORRECTION_COLUMN_NAMES[3], ShiftNums);
+    VSTCopy.Draw;
+    VSTCopy.ReSelect(Sheet.SelectedDates, ASelectedDate);
+  finally
+    VSTCopy.Visible:= True;
+  end;
+
+  CopySaveButton.Enabled:= Sheet.IsSelected;
+end;
+
+procedure TTimetableForm.CopySelect;
+begin
+  CopyDelButton.Enabled:= VSTCopy.IsSelected;
+end;
+
+procedure TTimetableForm.WriteButtonClick(Sender: TObject);
+var
+  BD, ED: TDate;
+begin
+  FirstLastDayInMonth(MonthDropDown.Month, YearSpinEdit.Value, BD, ED);
+  if not TimetableDaysByScheduleAdd(TabNumIDs[StaffList.SelectedIndex], BD, ED,
+                                    Holidays) then Exit;
+  MonthTimetableChange;
+end;
+
+procedure TTimetableForm.EraseButtonClick(Sender: TObject);
+var
+  BD, ED: TDate;
+begin
+  if not Confirm('Удалить данные табеля за ' + MonthDropDown.Text + ' ' +
+                 YearSpinEdit.Text + '?') then Exit;
+  FirstLastDayInMonth(MonthDropDown.Month, YearSpinEdit.Value, BD, ED);
+  if not DataBase.TimetableDaysDelete(TabNumIDs[StaffList.SelectedIndex], BD, ED) then Exit;
+  MonthTimetableChange;
 end;
 
 procedure TTimetableForm.TimetableLoad;
@@ -467,16 +714,16 @@ begin
   Screen.Cursor:= crHourGlass;
   try
     ZoomPercent:= AZoomPercent;
-    TimetableSheet.Zoom(ZoomPercent);
-    TimetableSheet.Draw(Timetables, TimetableTotals, YearSpinEdit.Value,
+    Sheet.Zoom(ZoomPercent);
+    Sheet.Draw(Timetables, TimetableTotals, YearSpinEdit.Value,
                         EmptyStr{StaffLongNames[StaffList.SelectedIndex]},
                         RecrutDates[StaffList.SelectedIndex],
                         DismissDates[StaffList.SelectedIndex],
                         ParamList.Selected['CountType']);
     if ParamList.Checked['ViewParams', 0] then
-      TimetableSheet.ColorsUpdate(Colors)
-    else
-      TimetableSheet.ColorsClear;
+      Sheet.ColorsUpdate(Colors);
+    //else
+    //  Sheet.ColorsClear;
   finally
     ViewGrid.Visible:= True;
     Screen.Cursor:= crDefault;
@@ -486,6 +733,23 @@ end;
 procedure TTimetableForm.TimetableRedraw;
 begin
   TimetableDraw(ZoomPercent);
+end;
+
+procedure TTimetableForm.TimetableEditFormOpen(const ADate: TDate);
+var
+  TimetableEditForm: TTimetableEditForm;
+begin
+  if not StaffList.IsSelected then Exit;
+
+  TimetableEditForm:= TTimetableEditForm.Create(nil);
+  try
+    TimetableEditForm.TabNumID:= TabNumIDs[StaffList.SelectedIndex];
+    TimetableEditForm.FirstDate:= ADate;
+    if TimetableEditForm.ShowModal=mrOK then
+      TimetableChange;
+  finally
+    FreeAndNil(TimetableEditForm);
+  end;
 end;
 
 procedure TTimetableForm.ColorsLoad;

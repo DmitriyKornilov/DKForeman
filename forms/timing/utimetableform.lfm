@@ -1189,6 +1189,7 @@ object TimetableForm: TTimetableForm
           }
           Images = Images.PX24
           ImageIndex = 29
+          OnClick = WriteButtonClick
           ShowHint = True
           ParentShowHint = False
         end
@@ -1280,6 +1281,7 @@ object TimetableForm: TTimetableForm
           }
           Images = Images.PX24
           ImageIndex = 10
+          OnClick = EraseButtonClick
           ShowHint = True
           ParentShowHint = False
         end
@@ -1371,6 +1373,7 @@ object TimetableForm: TTimetableForm
           }
           Images = Images.PX24
           ImageIndex = 6
+          OnClick = EditButtonClick
           ShowHint = True
           ParentShowHint = False
         end
@@ -1462,6 +1465,7 @@ object TimetableForm: TTimetableForm
           }
           Images = Images.PX24
           ImageIndex = 9
+          OnClick = CopyButtonClick
           ShowHint = True
           ParentShowHint = False
         end
@@ -1491,6 +1495,7 @@ object TimetableForm: TTimetableForm
         Header.MainColumn = -1
         Margin = 50
         TabOrder = 1
+        OnNodeDblClick = DayVTNodeDblClick
       end
     end
     object CopyPanel: TPanel
@@ -1605,6 +1610,7 @@ object TimetableForm: TTimetableForm
           }
           Images = Images.PX24
           ImageIndex = 7
+          OnClick = CopySaveButtonClick
           ShowHint = True
           ParentShowHint = False
         end
@@ -1697,6 +1703,7 @@ object TimetableForm: TTimetableForm
           }
           Images = Images.PX24
           ImageIndex = 5
+          OnClick = CopyDelButtonClick
           ShowHint = True
           ParentShowHint = False
         end
@@ -1788,6 +1795,7 @@ object TimetableForm: TTimetableForm
           }
           Images = Images.PX24
           ImageIndex = 8
+          OnClick = CopyCancelButtonClick
           ShowHint = True
           ParentShowHint = False
         end
@@ -1879,6 +1887,8 @@ object TimetableForm: TTimetableForm
         TabOrder = 0
         TabStop = False
         TitleFont.Style = [fsBold]
+        OnDblClick = ViewGridDblClick
+        OnMouseDown = ViewGridMouseDown
       end
       object ZoomPanel: TPanel
         Left = 0

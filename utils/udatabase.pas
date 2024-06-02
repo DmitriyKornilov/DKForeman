@@ -184,8 +184,9 @@ type
     function CalendarCorrectionsUpdate(const ACorrections: TCalendarCorrections): Boolean;
     {Удаление корректировки дня календаря: True - ОК, False - ошибка}
     function CalendarCorrectionDelete(const ADate: TDate): Boolean;
-    {Вектор дат праздничных дней текущего года и предыдщего года}
+    {Вектор дат праздничных дней с начала предыдщего года до конца текущего года}
     function HolidaysLoad(const AYear: Word): TDateVector;
+    function HolidaysLoad(const ABeginDate, AEndDate: TDate): TDateVector;
 
     (**************************************************************************
                                      ГРАФИКИ
@@ -275,33 +276,24 @@ type
     (**************************************************************************
                                       ТАБЕЛИ
     **************************************************************************)
+    //коды табеля -------------------------------------------------------------
     {Список кодов табеля: True - ОК, False - пусто}
     function TimetableMarkListLoad(out ADigMarks: TIntVector;
                                    out AStrMarks, ANotes: TStrVector;
-                                   const AIDNotZero: Boolean = True): Boolean;
+                                   const AIDNotZero: Boolean = True;
+                                   const AMarkType: Integer = -1): Boolean;
     function TimetableMarkListLoad(out ADigMarks: TIntVector;
                                    out AItemMarks: TStrVector;
-                                   const AIDNotZero: Boolean = True): Boolean;
+                                   const AIDNotZero: Boolean = True;
+                                   const AMarkType: Integer = -1): Boolean;
+    {Строковый код табеля по цифровому коду}
     function TimetableStrMarkLoad(const ADigMark: Integer): String;
 
-
-    {Первая и последняя записанные в базу даты табеля: True - ОК, False - пусто}
-    function TimetableFirstWritedDateLoad(const ATabNumID: Integer; out ADate: TDate): Boolean;
-    function TimetableLastWritedDateLoad(const ATabNumID: Integer; out ADate: TDate): Boolean;
-    function TimetableFirstLastWritedDatesLoad(const ATabNumID: Integer; out AFirstDate, ALastDate: TDate): Boolean;
-
-    //сумма отработанных часов за период
-    function TimetableSumTotalHoursInPeriodLoad(const ATabNumID: Integer;
-                                   const ABeginDate, AEndDate: TDate): Integer;
-
-    {Инфо дня табеля: True - ОК, False - пусто}
-    function TimetableDayInfoLoad(const ATabNumID: Integer; const ADate: TDate;
-                          out AWritedScheduleHours: Integer;
-                          out AIsManualChangedDay: Boolean): Boolean;
+    //актуализация табеля при выводе годового персонального табеля ------------
     {Запись дня табеля}
     procedure TimetableDayAdd(const ATabNumID: Integer; const ADate: TDate;
                               const ATimetableDay: TTimetableDay);
-    {Удаление дня из табеля: True - ОК, False - ошибка}
+    {Удаление дня из табеля}
     procedure TimetableDayDelete(const ATabNumID: Integer; const ADate: TDate);
     {Обновление часов по графику}
     procedure TimetableScheduleHoursUpdate(const ATabNumID: Integer;
@@ -312,13 +304,49 @@ type
                              const ACalendar: TCalendar;
                              const ASchedule: TPersonalSchedule): Boolean;
 
+    //редактирование табеля----------------------------------------------------
+    {Удаление дней из табеля: True - ОК, False - ошибка}
+    function TimetableDaysDelete(const ATabNumID: Integer;
+                                 const ABeginDate, AEndDate: TDate;
+                                 const ANeedCommit: Boolean = True): Boolean;
+    {Замена дней табеля: True - ОК, False - ошибка}
+    function TimetableDaysReplace(const ATabNumID: Integer;
+                                  const ADates: TDateVector;
+                                  const ATimetableDay: TTimetableDay): Boolean;
+
+    {Запись корректировки в табель: True - ОК, False - ошибка}
+    function TimetableDaysByCorrectionAdd(const ATabNumID: Integer;
+                             ATimetableDay: TTimetableDay;
+                             const ACalendar: TCalendar;
+                             const ASchedule: TPersonalSchedule;
+                             const ANeedDeleteOld: Boolean = True): Boolean;
+    {Запись табеля по графику: True - ОК, False - ошибка}
+    function TimetableDaysByScheduleAdd(const ATabNumID: Integer;
+                             const ACalendar: TCalendar;
+                             const ASchedule: TPersonalSchedule;
+                             const ANeedDeleteOld: Boolean = True): Boolean;
+
+    //расчет/загрузка табеля --------------------------------------------------
+    {Первая и последняя записанные в базу даты табеля: True - ОК, False - пусто}
+    function TimetableFirstWritedDateLoad(const ATabNumID: Integer; out ADate: TDate): Boolean;
+    function TimetableLastWritedDateLoad(const ATabNumID: Integer; out ADate: TDate): Boolean;
+    function TimetableFirstLastWritedDatesLoad(const ATabNumID: Integer; out AFirstDate, ALastDate: TDate): Boolean;
+    {Cумма отработанных часов за период}
+    function TimetableSumTotalHoursInPeriodLoad(const ATabNumID: Integer;
+                                   const ABeginDate, AEndDate: TDate): Integer;
+    {Данные дня табеля: True - ОК, False - пусто}
+    function TimetableDayLoad(const TabNumID: Integer; const ADate: TDate;
+                          out ATimetableDay: TTimetableDay; out AMarkType:Integer): Boolean;
+    {Инфо дня табеля: True - ОК, False - пусто}
+    function TimetableDayInfoLoad(const ATabNumID: Integer; const ADate: TDate;
+                          out AWritedScheduleHours: Integer;
+                          out AIsManualChangedDay: Boolean): Boolean;
     {Данные табеля за месяц для редактирования: True - ОК, False - пусто}
     function TimetableDataMonthForEditLoad(const ATabNumID, AMonth, AYear: Integer;
                        out ADates: TDateVector;
                        out ATimetableStrings, AScheduleNames: TStrVector;
                        out ATotalHours, ANightHours, AOverHours, ASkipHours, ASchedHours,
-                           AMainMarks, ASkipMarks, AShiftNums: TIntVector): Boolean;
-
+                           AMainMarks, ASkipMarks, ASchedIDs, AShiftNums: TIntVector): Boolean;
     {Загрузка из базы векторов данных табеля: True - ОК, False - пусто}
     function TimetableDataVectorsLoad(const ATabNumID: Integer; //таб номер
                                const ABeginDate, AEndDate: TDate; //период запроса
@@ -327,7 +355,6 @@ type
                                  ASkipHours, ASchedHours, AMainMarkDig,
                                  ASkipMarkDig, AIsManualChanged, AIsAbsence, AIsDayInBase: TIntVector;
                                out AMainMarkStr, ASkipMarkStr: TStrVector): Boolean;
-
     {Загрузка итоговых данных табеля за период}
     procedure TimetableDataTotalsLoad(const ATabNumID: Integer;
                                const ABeginDate, AEndDate: TDate; //период запроса
@@ -1465,13 +1492,21 @@ end;
 
 function TDataBase.HolidaysLoad(const AYear: Word): TDateVector;
 var
+  D: TDate;
+begin
+  D:= FirstDayInYear(AYear);
+  Result:= HolidaysLoad(D, D);
+end;
+
+function TDataBase.HolidaysLoad(const ABeginDate, AEndDate: TDate): TDateVector;
+var
   BD, ED: TDate;
 begin
   Result:= nil;
   //определяем дату начала предшествующего года
-  BD:= FirstDayInYear(AYear-1);
+  BD:= FirstDayInYear(YearOfDate(ABeginDate)-1);
   //определяем дату конца года
-  ED:= LastDayInYear(AYear);
+  ED:= LastDayInYear(AEndDate);
 
   QSetQuery(FQuery);
   QSetSQL(
@@ -1967,7 +2002,8 @@ end;
 
 function TDataBase.TimetableMarkListLoad(out ADigMarks: TIntVector;
                                    out AStrMarks, ANotes: TStrVector;
-                                   const AIDNotZero: Boolean = True): Boolean;
+                                   const AIDNotZero: Boolean = True;
+                                   const AMarkType: Integer = -1): Boolean;
 var
   SQLStr: String;
 begin
@@ -1980,14 +2016,17 @@ begin
   SQLStr:=
     sqlSELECT('TIMETABLEMARK', ['DigMark', 'StrMark', 'Note']);
   if AIDNotZero then
-    SQLStr:= SQLStr + 'WHERE (DigMark>0) '
+    SQLStr:= SQLStr + 'WHERE (DigMark > 0) '
   else
-    SQLStr:= SQLStr + 'WHERE (DigMark>=0) ';
+    SQLStr:= SQLStr + 'WHERE (DigMark >= 0) ';
+  if AMarkType>=0 then
+    SQLStr:= SQLStr + 'AND (TypeMark = :TypeMark) ';
   SQLStr:= SQLStr +
     'ORDER BY DigMark';
 
   QSetQuery(FQuery);
   QSetSQL(SQLStr);
+  QParamInt('TypeMark', AMarkType);
   QOpen;
   if not QIsEmpty then
   begin
@@ -2006,13 +2045,14 @@ end;
 
 function TDataBase.TimetableMarkListLoad(out ADigMarks: TIntVector;
                                    out AItemMarks: TStrVector;
-                                   const AIDNotZero: Boolean = True): Boolean;
+                                   const AIDNotZero: Boolean = True;
+                                   const AMarkType: Integer = -1): Boolean;
 var
   i: Integer;
   StrMarks, Notes: TStrVector;
 begin
   AItemMarks:= nil;
-  Result:= TimetableMarkListLoad(ADigMarks, StrMarks, Notes, AIDNotZero);
+  Result:= TimetableMarkListLoad(ADigMarks, StrMarks, Notes, AIDNotZero, AMarkType);
   if not Result then Exit;
   VDim(AItemMarks, Length(ADigMarks));
   for i:= 0 to High(ADigMarks) do
@@ -2094,6 +2134,39 @@ begin
   QClose;
 end;
 
+function TDataBase.TimetableDayLoad(const TabNumID: Integer; const ADate: TDate;
+  out ATimetableDay: TTimetableDay; out AMarkType: Integer): Boolean;
+begin
+  Result:= False;
+  ATimetableDay:= TimetableDayEmpty;
+  AMarkType:= 0;
+  QSetQuery(FQuery);
+  QSetSQL(
+    'SELECT t1.*, t2.TypeMark ' +
+    'FROM TIMETABLELOG t1 ' +
+    'INNER JOIN TIMETABLEMARK t2 ON (t1.DigMark=t2.DigMark) ' +
+    'WHERE (t1.TabNumID = :TabNumID) AND (t1.DayDate = :ADate) AND (t1.DigMark>0)'
+  );
+  QParamInt('TabNumID', TabNumID);
+  QParamDT('ADate', ADate);
+  QOpen;
+  if not QIsEmpty then
+  begin
+    ATimetableDay.ScheduleHours:= QFieldInt('SchedHours');
+    ATimetableDay.TotalHours:= QFieldInt('TotalHours');
+    ATimetableDay.NightHours:= QFieldInt('NightHours');
+    ATimetableDay.OverHours:= QFieldInt('OverHours');
+    ATimetableDay.SkipHours:= QFieldInt('SkipHours');
+    ATimetableDay.DigMark:= QFieldInt('DigMark');
+    ATimetableDay.SkipMark:= QFieldInt('SkipMark');
+    ATimetableDay.ScheduleID:= QFieldInt('SchedID');
+    ATimetableDay.ShiftNum:= QFieldInt('ShiftNum');
+    AMarkType:= QFieldInt('TypeMark');
+    Result:= True;
+  end;
+  QClose;
+end;
+
 function TDataBase.TimetableDayInfoLoad(const ATabNumID: Integer; const ADate: TDate;
                           out AWritedScheduleHours: Integer;
                           out AIsManualChangedDay: Boolean): Boolean;
@@ -2152,6 +2225,112 @@ begin
   QExec;
 end;
 
+function TDataBase.TimetableDaysDelete(const ATabNumID: Integer;
+                                       const ABeginDate, AEndDate: TDate;
+                                       const ANeedCommit: Boolean = True): Boolean;
+begin
+  Result:= False;
+  QSetQuery(FQuery);
+  QSetSQL(
+    'DELETE FROM TIMETABLELOG ' +
+    'WHERE (TabNumID = :TabNumID) AND (DayDate BETWEEN :BeginDate AND :EndDate)'
+  );
+  QParamInt('TabNumID', ATabNumID);
+  QParamDT('BeginDate', ABeginDate);
+  QParamDT('EndDate', AEndDate);
+  try
+    QExec;
+    if ANeedCommit then QCommit;
+    Result:= True;
+  except
+    if ANeedCommit then QRollback;
+  end;
+end;
+
+function TDataBase.TimetableDaysReplace(const ATabNumID: Integer;
+                                  const ADates: TDateVector;
+                                  const ATimetableDay: TTimetableDay): Boolean;
+var
+  i: Integer;
+begin
+  Result:= False;
+  if VIsNil(ADates) then Exit;
+  QSetQuery(FQuery);
+  try
+    for i:= 0 to High(ADates) do
+    begin
+      TimetableDayDelete(ATabNumID, ADates[i]);
+      TimetableDayAdd(ATabNumID, ADates[i], ATimetableDay);
+    end;
+    QCommit;
+    Result:= True;
+  except
+    QRollback;
+  end;
+end;
+
+function TDataBase.TimetableDaysByCorrectionAdd(const ATabNumID: Integer;
+                             ATimetableDay: TTimetableDay;
+                             const ACalendar: TCalendar;
+                             const ASchedule: TPersonalSchedule;
+                             const ANeedDeleteOld: Boolean = True): Boolean;
+var
+  i: Integer;
+begin
+  Result:= False;
+  QSetQuery(FQuery);
+  try
+    if ANeedDeleteOld then
+      TimetableDaysDelete(ATabNumID, ACalendar.BeginDate, ACalendar.EndDate, False{no commit});
+
+    //пробегаем по датам периода
+    for i:= 0 to ACalendar.DaysCount-1 do
+    begin
+      //если график не существует, переходим к следующему дню
+      if ASchedule.IsExists[i] = EXISTS_NO then continue;
+      //определяем данные за день (ATimetableDay содержит все, кроме часов по графику)
+      ATimetableDay.ScheduleHours:= ASchedule.HoursCorrect.Total[i];  {WorkHoursCorrect - потому что в графиковом времени нужно учитывать раб часы без учета отпуска, но  с корректировками}
+      //записываем данные за день
+      TimetableDayAdd(ATabNumID, ACalendar.Dates[i], ATimetableDay);
+    end;
+    QCommit;
+    Result:= True;
+  except
+    QRollback;
+  end;
+end;
+
+function TDataBase.TimetableDaysByScheduleAdd(const ATabNumID: Integer;
+                             const ACalendar: TCalendar;
+                             const ASchedule: TPersonalSchedule;
+                             const ANeedDeleteOld: Boolean = True): Boolean;
+var
+  i: Integer;
+  TimetableDay: TTimetableDay;
+begin
+  Result:= False;
+  QSetQuery(FQuery);
+  try
+    if ANeedDeleteOld then
+      TimetableDaysDelete(ATabNumID, ACalendar.BeginDate, ACalendar.EndDate, False{no commit});
+
+    //пробегаем по датам периода
+    for i:= 0 to ACalendar.DaysCount-1 do
+    begin
+      //если график не существует, переходим к следующему дню
+      if ASchedule.IsExists[i] = EXISTS_NO then continue;
+      //получаем данные дня из графика
+      TimetableDay:= TimetableDayDataFromSchedule(ASchedule, ACalendar.DayStatuses[i], i);
+      //записываем данные за день
+      TimetableDayAdd(ATabNumID, ACalendar.Dates[i], TimetableDay);
+    end;
+    QCommit;
+    Result:= True;
+  except
+    QRollback;
+  end;
+end;
+
 procedure TDataBase.TimetableScheduleHoursUpdate(const ATabNumID: Integer;
                           const ADate: TDate;
                           const ASchedHours: Integer);
@@ -2186,7 +2365,7 @@ begin
       begin
         if IsManualChangedDay then //если табель был изменен вручную
         begin
-          //если данные по графиковому времени устарели обновляем часы по графику
+          //обновляем часы по графику
           if ASchedule.HoursCorrect.Total[i]<>WritedScheduleHours then
             TimetableScheduleHoursUpdate(ATabNumID, ACalendar.Dates[i], ASchedule.HoursCorrect.Total[i]); {HoursCorrect - потому что в графиковом времени нужно учитывать раб часы без учета отпуска, но  с корректировками}
         end
@@ -2211,7 +2390,7 @@ function TDataBase.TimetableDataMonthForEditLoad(const ATabNumID, AMonth, AYear:
              out ADates: TDateVector;
              out ATimetableStrings, AScheduleNames: TStrVector;
              out ATotalHours, ANightHours, AOverHours, ASkipHours, ASchedHours,
-                 AMainMarks, ASkipMarks, AShiftNums: TIntVector): Boolean;
+                 AMainMarks, ASkipMarks, ASchedIDs, AShiftNums: TIntVector): Boolean;
 var
   BD, ED: TDate;
   X: Integer;
@@ -2228,6 +2407,7 @@ begin
   ASchedHours:= nil;
   AMainMarks:= nil;
   ASkipMarks:= nil;
+  ASchedIDs:= nil;
   AShiftNums:= nil;
 
   FirstLastDayInMonth(AMonth, AYear, BD, ED);
@@ -2261,6 +2441,9 @@ begin
       VAppend(AOverHours, QFieldInt('OverHours'));
       VAppend(ASkipHours, QFieldInt('SkipHours'));
       VAppend(ASchedHours, QFieldInt('SchedHours'));
+      VAppend(AMainMarks, QFieldInt('MainMarkDig'));
+      VAppend(ASkipMarks, QFieldInt('SkipMarkDig'));
+      VAppend(ASchedIDs, QFieldInt('SchedID'));
       VAppend(AShiftNums, QFieldInt('ShiftNum'));
       VAppend(AScheduleNames, QFieldStr('ScheduleName'));
 

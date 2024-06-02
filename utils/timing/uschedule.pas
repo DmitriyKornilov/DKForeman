@@ -30,7 +30,7 @@ const
   DIGMARK_NONEXISTENT      = 0;  STRMARK_NONEXISTENT      = 'X';
   DIGMARK_VACATIONMAIN     = 9;  STRMARK_VACATIONMAIN     = 'ОТ';
   DIGMARK_VACATIONADDITION = 10; STRMARK_VACATIONADDITION = 'ОД';
-  DIGMARK_VACATIONHOLIDAY  = 26; STRMARK_VACATIONHOLIDAY  = 'В';
+  DIGMARK_VACATIONHOLIDAY  = -1; STRMARK_VACATIONHOLIDAY  = 'В';
 
   OUTSIDEMONTHSTR = 'X'; //метка дня за пределом месяца
 
@@ -226,6 +226,9 @@ type
   end;
 
   {накопление графиков работы в должности и графике}
+
+  { TCustomPersonalSchedule }
+
   TCustomPersonalSchedule = class (TCustomShiftSchedule)
   protected
     FIsExists: TIntVector;    //вектор флагов существования графика (EXISTS_NO - нет, EXISTS_YES - есть)
@@ -238,6 +241,7 @@ type
     function Cut(const ABeginDate, AEndDate: TDate;
       var ACutSchedule: TCustomPersonalSchedule; out AInd1, AInd2: Integer): Boolean;
     procedure Add(const APostSchedule: TPostSchedule; const AIsLast: Boolean = False);
+    function IsDateExists(const ADate: TDate): Boolean;
     property IsExists: TIntVector read FIsExists;
     property IsDefine: TIntVector read FIsDefine;
   end;
@@ -933,6 +937,13 @@ begin
     end;
   end;
   FCalculated:= AIsLast;
+end;
+
+function TCustomPersonalSchedule.IsDateExists(const ADate: TDate): Boolean;
+begin
+  Result:= IsDateInPeriod(ADate, BeginDate, EndDate);
+  if not Result then Exit;
+  Result:= IsExists[DaysBetweenDates(BeginDate, ADate)]=EXISTS_YES;
 end;
 
 { TPostSchedule }

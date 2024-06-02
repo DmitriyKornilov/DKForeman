@@ -97,6 +97,9 @@ type
   end;
 
   { Табель на месяц }
+
+  { TTimetable }
+
   TTimetable = class (TObject)
     private
       FTabNumID           : Integer;   //ID табельного номера
@@ -182,6 +185,7 @@ type
       procedure Add(const AMonthTabel: TTimetable);
       class function CalcShiftCount(const AScheduleIDs, AShiftNums: TIntVector;
                                     const ABeginIndex, AEndIndex: Integer): Integer;
+      function IsDateExists(const ADate: TDate): Boolean;
       property Calendar: TCalendar read FMonthCalendar;
       property TabNumID: Integer read FTabNumID;
       property TabNum: String read FTabNum;
@@ -418,6 +422,13 @@ begin
       SchedID:= 0;
     end;
   end;
+end;
+
+function TTimetable.IsDateExists(const ADate: TDate): Boolean;
+begin
+  Result:= IsDateInPeriod(ADate, Calendar.BeginDate, Calendar.EndDate);
+  if not Result then Exit;
+  Result:= IsExists[DaysBetweenDates(Calendar.BeginDate, ADate)]=EXISTS_YES;
 end;
 
 procedure TTimetable.CalcResume(const ABeginIndex, AEndIndex: Integer);

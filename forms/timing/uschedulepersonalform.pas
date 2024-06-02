@@ -497,7 +497,7 @@ var
 begin
   if ModeType<>mtEditing then Exit;
   if not Sheet.GridToDate(ViewGrid.Row, ViewGrid.Col, DayDate) then Exit;
-  VSTDays.ReSelect(Corrections.Dates, DayDate, False);
+  //VSTDays.ReSelect(Corrections.Dates, DayDate, False);
   ScheduleCorrectionEditFormOpen(DayDate);
 end;
 
@@ -512,6 +512,7 @@ begin
   begin
     (Sender as TsWorksheetGrid).MouseToCell(X, Y, C, R);
     if not Sheet.GridToDate(R, C, D) then Exit;
+    if not Schedule.IsDateExists(D) then Exit;
     if DayInListSelect(D) then Exit;
     Sheet.DayInGridSelect(D);
     if IsCopyDates then CopyListLoad;
