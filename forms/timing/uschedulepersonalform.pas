@@ -873,9 +873,9 @@ begin
               ParamList.Checked['ViewParams', 3],
               ParamList.Selected['ColorType']=0);
   if ParamList.Checked['ViewParams', 4] then
-    ASheet.ColorsUpdate(Colors)
-  else
-    ASheet.ColorsClear;
+    ASheet.ColorsUpdate(Colors);
+  //else
+  //  ASheet.ColorsClear;
 end;
 
 procedure TSchedulePersonalForm.ScheduleDraw(const AZoomPercent: Integer);

@@ -155,6 +155,7 @@ object TimetableForm: TTimetableForm
       DropDownArrowSize = 8
       GlobalOpacity = 255
       GlyphMargin = 0
+      OnClick = ExportButtonClick
       ParentColor = False
       Rounding.RoundX = 0
       Rounding.RoundY = 0
