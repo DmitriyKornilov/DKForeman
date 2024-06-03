@@ -1,9 +1,9 @@
-object SchedulePersonalMonthForm: TSchedulePersonalMonthForm
+object TimetableMonthForm: TTimetableMonthForm
   Left = 529
   Height = 636
   Top = 199
   Width = 1224
-  Caption = 'SchedulePersonalMonthForm'
+  Caption = 'TimetableMonthForm'
   ClientHeight = 636
   ClientWidth = 1224
   DesignTimePPI = 120
@@ -33,12 +33,12 @@ object SchedulePersonalMonthForm: TSchedulePersonalMonthForm
       Left = 0
       Height = 36
       Top = 0
-      Width = 596
+      Width = 594
       Align = alLeft
       AutoSize = True
       BevelOuter = bvNone
       ClientHeight = 36
-      ClientWidth = 596
+      ClientWidth = 594
       TabOrder = 0
       object YearPanel: TPanel
         Left = 0
@@ -210,13 +210,13 @@ object SchedulePersonalMonthForm: TSchedulePersonalMonthForm
         ShowHint = True
         ParentShowHint = False
       end
-      object ScheduleButton: TBCButton
+      object TimetableButton: TBCButton
         Cursor = crHandPoint
         Left = 390
         Height = 34
-        Hint = 'Сформировать график на месяц'
+        Hint = 'Сформировать табель'
         Top = 1
-        Width = 206
+        Width = 204
         Align = alLeft
         AutoSize = True
         StateClicked.Background.Color = 16245964
@@ -304,13 +304,13 @@ object SchedulePersonalMonthForm: TSchedulePersonalMonthForm
         BorderSpacing.Left = 1
         BorderSpacing.Top = 1
         BorderSpacing.Bottom = 1
-        Caption = 'Сформировать график'
+        Caption = 'Сформировать табель'
         Color = clNone
         DropDownWidth = 16
         DropDownArrowSize = 8
         GlobalOpacity = 255
         GlyphMargin = 0
-        OnClick = ScheduleButtonClick
+        OnClick = TimetableButtonClick
         ParentColor = False
         Rounding.RoundX = 0
         Rounding.RoundY = 0
@@ -348,8 +348,8 @@ object SchedulePersonalMonthForm: TSchedulePersonalMonthForm
         ParentFont = False
       end
     end
-    object ScheduleToolPanel: TPanel
-      Left = 596
+    object TimetableToolPanel: TPanel
+      Left = 594
       Height = 36
       Top = 0
       Width = 456
@@ -908,7 +908,7 @@ object SchedulePersonalMonthForm: TSchedulePersonalMonthForm
       TabOrder = 3
     end
   end
-  object SchedulePanel: TPanel
+  object TimetablePanel: TPanel
     Left = 0
     Height = 426
     Top = 210
@@ -930,7 +930,7 @@ object SchedulePersonalMonthForm: TSchedulePersonalMonthForm
       ClientHeight = 426
       ClientWidth = 866
       TabOrder = 0
-      object ScheduleCaptionPanel: TBCPanel
+      object TimetableCaptionPanel: TBCPanel
         Left = 0
         Height = 30
         Top = 0
@@ -961,7 +961,7 @@ object SchedulePersonalMonthForm: TSchedulePersonalMonthForm
         Border.Color = clActiveBorder
         Border.Style = bboSolid
         BorderBCStyle = bpsBorder
-        Caption = 'График работы'
+        Caption = 'Табель учета рабочего времени'
         FontEx.Color = clDefault
         FontEx.FontQuality = fqSystemClearType
         FontEx.Shadow = False

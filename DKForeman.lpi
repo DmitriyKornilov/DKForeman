@@ -325,6 +325,14 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UTimetableEditForm"/>
       </Unit>
+      <Unit>
+        <Filename Value="forms\timing\utimetablemonthform.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="TimetableMonthForm"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="UTimetableMonthForm"/>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
