@@ -114,7 +114,7 @@ type
     IsCopyDates: Boolean;
 
     TabNumIDs: TIntVector;
-    StaffLongNames, StaffShortNames: TStrVector;
+    StaffLongNames, StaffShortNames, TimetableNames: TStrVector;
     RecrutDates, DismissDates, Holidays: TDateVector;
     Families, Names, Patronymics, TabNums, PostNames: TStrVector;
 
@@ -154,8 +154,8 @@ type
     procedure TimetableToSheet(const ASheet: TYearTimetableSheet;
                                const ATimetables: TTimetableVector;
                                const ATimetableTotals: TTimetableTotals;
-                               const ACaption: String;
-                               const ARecrutDate, ADismissDate: TDate);
+                               const ARecrutDate, ADismissDate: TDate;
+                               const ACaption: String = '');
     procedure TimetableDraw(const AZoomPercent: Integer);
     procedure TimetableRedraw;
     procedure TimetableExport;
@@ -489,6 +489,7 @@ begin
                        Families, Names, Patronymics, TabNums, PostNames);
   StaffLongNames:= StaffNamesForPersonalTiming(Families, Names, Patronymics, TabNums, PostNames, True);
   StaffShortNames:= StaffNamesForPersonalTiming(Families, Names, Patronymics, TabNums, PostNames, False);
+  TimetableNames:= StaffNamesForScheduleNames(Families, Names, Patronymics, TabNums, True);
 
   StaffList.Visible:= False;
   try
@@ -732,18 +733,15 @@ end;
 procedure TTimetableForm.TimetableToSheet(const ASheet: TYearTimetableSheet;
                                const ATimetables: TTimetableVector;
                                const ATimetableTotals: TTimetableTotals;
-                               const ACaption: String;
-                               const ARecrutDate, ADismissDate: TDate);
+                               const ARecrutDate, ADismissDate: TDate;
+                               const ACaption: String = '');
 begin
   ASheet.Draw(ATimetables, ATimetableTotals, YearSpinEdit.Value,
-              ACaption, //EmptyStr{StaffLongNames[StaffList.SelectedIndex]},
-              ARecrutDate, ADismissDate,  //RecrutDates[StaffList.SelectedIndex], DismissDates[StaffList.SelectedIndex],
-              ParamList.Selected['CountType']);
+              ACaption, ARecrutDate, ADismissDate, ParamList.Selected['CountType']);
   if ParamList.Checked['ViewParams', 0] then
     Sheet.ColorsUpdate(Colors);
   //else
   //  Sheet.ColorsClear;
-
 end;
 
 procedure TTimetableForm.TimetableDraw(const AZoomPercent: Integer);
@@ -755,18 +753,9 @@ begin
   try
     ZoomPercent:= AZoomPercent;
     Sheet.Zoom(ZoomPercent);
-    TimetableToSheet(Sheet, Timetables, TimetableTotals, EmptyStr,
+    TimetableToSheet(Sheet, Timetables, TimetableTotals,
                      RecrutDates[StaffList.SelectedIndex],
                      DismissDates[StaffList.SelectedIndex]);
-    //Sheet.Draw(Timetables, TimetableTotals, YearSpinEdit.Value,
-    //                    EmptyStr{StaffLongNames[StaffList.SelectedIndex]},
-    //                    RecrutDates[StaffList.SelectedIndex],
-    //                    DismissDates[StaffList.SelectedIndex],
-    //                    ParamList.Selected['CountType']);
-    //if ParamList.Checked['ViewParams', 0] then
-    //  Sheet.ColorsUpdate(Colors);
-    ////else
-    ////  Sheet.ColorsClear;
   finally
     ViewGrid.Visible:= True;
     Screen.Cursor:= crDefault;
@@ -796,10 +785,10 @@ var
       Worksheet:= Exporter.AddWorksheet(YearSpinEdit.Text);
       ExpSheet:= TYearTimetableSheet.Create(Worksheet, nil, MainForm.GridFont);
       TimetableToSheet(ExpSheet, Timetables, TimetableTotals,
-                     StaffLongNames[StaffList.SelectedIndex],
                      RecrutDates[StaffList.SelectedIndex],
-                     DismissDates[StaffList.SelectedIndex]);
-      //Exporter.PageSettings(spoLandscape);
+                     DismissDates[StaffList.SelectedIndex],
+                     TimetableNames[StaffList.SelectedIndex]);
+      Exporter.PageSettings();
       Exporter.Save('Выполнено!');
     finally
       if Assigned(ExpSheet) then FreeAndNil(ExpSheet);
@@ -807,55 +796,76 @@ var
     end;
   end;
 
-  //procedure ExportSeveralTimetables;
-  //var
-  //  Exporter: TBooksExporter;
-  //  Worksheet: TsWorksheet;
-  //  ExpSheet: TPersonalYearScheduleSheet;
-  //  TmpSchedule: TPersonalSchedule;
-  //  i: Integer;
-  //  Progress: TProgress;
-  //begin
-  //  ExpSheet:= nil;
-  //  Exporter:= TBooksExporter.Create;
-  //  if not Exporter.BeginExport then
-  //  begin
-  //    FreeAndNil(Exporter);
-  //    Exit;
-  //  end;
-  //  try
-  //    Progress:= TProgress.Create(nil);
-  //    try
-  //      Progress.WriteLine1('Экспорт графика');
-  //      Progress.WriteLine2(EmptyStr);
-  //      Progress.Show;
-  //      for i:=0 to High(TabNumIDs) do
-  //      begin
-  //        Progress.WriteLine2(ScheduleNames[i]);
-  //        TmpSchedule:= SchedulePersonalByCalendar(TabNumIDs[i], TabNums[i],
-  //               RecrutDates[i], DismissDates[i], Calendar, Holidays, False);
-  //        try
-  //          Worksheet:= Exporter.AddWorksheet(YearSpinEdit.Text);
-  //          ScheduleToSheet(ExpSheet, Worksheet, nil, Calendar, TmpSchedule, ScheduleNames[i]);
-  //          Exporter.PageSettings(spoLandscape);
-  //          Exporter.Save(ScheduleNames[i]);
-  //        finally
-  //          FreeAndNil(TmpSchedule);
-  //        end;
-  //      end;
-  //
-  //    finally
-  //      FreeAndNil(Progress);
-  //    end;
-  //    Exporter.EndExport('Выполнено!');
-  //  finally
-  //    if Assigned(ExpSheet) then FreeAndNil(ExpSheet);
-  //    FreeAndNil(Exporter);
-  //  end;
-  //end;
+  procedure ExportSeveralTimetables;
+  var
+    Exporter: TBooksExporter;
+    Worksheet: TsWorksheet;
+    ExpSheet: TYearTimetableSheet;
+    MonthCalendar: TCalendar;
+    TmpTimetable: TTimetable;
+    TmpTimetables: TTimetableVector;
+    TmpTimetableTotals: TTimetableTotals;
+    i, j: Integer;
+    BD, ED: TDate;
+    Progress: TProgress;
+  begin
+    ExpSheet:= nil;
+    TmpTimetables:= nil;
+    Exporter:= TBooksExporter.Create;
+    if not Exporter.BeginExport then
+    begin
+      FreeAndNil(Exporter);
+      Exit;
+    end;
+    try
+      Progress:= TProgress.Create(nil);
+      MonthCalendar:= TCalendar.Create;
+      try
+        Progress.WriteLine1('Экспорт табеля');
+        Progress.WriteLine2(EmptyStr);
+        Progress.Show;
+        for i:=0 to High(TabNumIDs) do
+        begin
+          Progress.WriteLine2(StaffLongNames[i]);
+          for j:=1 to 12 do
+          begin
+            FirstLastDayInMonth(j, YearSpinEdit.Value, BD, ED);
+            Calendar.Cut(BD, ED, MonthCalendar);
+            Progress.Go;
+            TmpTimetable:= TTimetable.Create(TabNumIDs[i], TabNums[i],
+                                             RecrutDates[i], DismissDates[i],
+                                             Holidays, MonthCalendar);
+            VTAppend(TmpTimetables, TmpTimetable);
+            Progress.Go;
+          end;
+          Progress.Go;
+          TmpTimetableTotals:= TimetableYearTotalsLoad(TabNumIDs[i], YearSpinEdit.Value);
+
+          Worksheet:= Exporter.AddWorksheet(YearSpinEdit.Text);
+          ExpSheet:= TYearTimetableSheet.Create(Worksheet, nil, MainForm.GridFont);
+          Progress.Go;
+          TimetableToSheet(ExpSheet, TmpTimetables, TmpTimetableTotals,
+                           RecrutDates[i], DismissDates[i], TimetableNames[i]);
+          Progress.Go;
+          Exporter.PageSettings();
+          Exporter.Save(StaffShortNames[i]);
+          VTDel(TmpTimetables);
+        end;
+
+      finally
+        FreeAndNil(Progress);
+        FreeAndNil(MonthCalendar);
+      end;
+      Exporter.EndExport('Выполнено!');
+    finally
+      if Assigned(ExpSheet) then FreeAndNil(ExpSheet);
+      FreeAndNil(Exporter);
+    end;
+  end;
 
 begin
   if not StaffList.IsSelected then Exit;
+  if not Calendar.IsCalculated then Exit;
 
   S:= 'Сохранить в файл:';
   V:= VCreateStr([
@@ -866,7 +876,7 @@ begin
 
   case ChooseIndex of
   0: ExportSingleTimetable;
-  1: ;//ExportSeveralTimetables;
+  1: ExportSeveralTimetables;
   end;
 end;
 

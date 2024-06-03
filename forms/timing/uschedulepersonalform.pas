@@ -974,6 +974,7 @@ var
 
 begin
   if not StaffList.IsSelected then Exit;
+  if not Calendar.IsCalculated then Exit;
 
   S:= 'Сохранить в файл:';
   V:= VCreateStr([
