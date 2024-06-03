@@ -789,7 +789,7 @@ var
                      DismissDates[StaffList.SelectedIndex],
                      TimetableNames[StaffList.SelectedIndex]);
       Exporter.PageSettings();
-      Exporter.Save('Выполнено!');
+      Exporter.Save('Выполнено!', TimetableNames[StaffList.SelectedIndex]);
     finally
       if Assigned(ExpSheet) then FreeAndNil(ExpSheet);
       FreeAndNil(Exporter);
@@ -848,7 +848,7 @@ var
                            RecrutDates[i], DismissDates[i], TimetableNames[i]);
           Progress.Go;
           Exporter.PageSettings();
-          Exporter.Save(StaffShortNames[i]);
+          Exporter.Save(TimetableNames[i]);
           VTDel(TmpTimetables);
         end;
 
@@ -869,7 +869,7 @@ begin
 
   S:= 'Сохранить в файл:';
   V:= VCreateStr([
-    'Табель за ' + YearSpinEdit.Text + ' год: ' + StaffLongNames[StaffList.SelectedIndex],
+    'Табель за ' + YearSpinEdit.Text + ' год: ' + TimetableNames[StaffList.SelectedIndex],
     'Табели всех сотрудников за ' + YearSpinEdit.Text + ' год'
   ]);
   if not Choose(S, V, ChooseIndex) then Exit;
@@ -928,13 +928,22 @@ begin
 end;
 
 procedure TTimetableForm.SettingsLoad;
+var
+  SettingValues: TIntVector;
 begin
-  ZoomPercent:= 100;
+  SettingValues:= DataBase.SettingsLoad(SETTING_NAMES_TIMETABLEFORM);
+  ZoomPercent:= SettingValues[0];
+  ParamList.Params:= VCut(SettingValues, 1);
 end;
 
 procedure TTimetableForm.SettingsSave;
+var
+  SettingValues: TIntVector;
 begin
-
+  SettingValues:= nil;
+  VAppend(SettingValues, ZoomPercent);
+  SettingValues:= VAdd(SettingValues, ParamList.Params);
+  DataBase.SettingsUpdate(SETTING_NAMES_TIMETABLEFORM, SettingValues);
 end;
 
 procedure TTimetableForm.ViewUpdate(const AModeType: TModeType);

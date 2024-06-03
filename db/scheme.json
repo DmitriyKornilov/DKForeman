@@ -997,7 +997,10 @@
         "SCHEDULEPERSONALMONTHFORM.DELTAHOURS",
         "SCHEDULEPERSONALMONTHFORM.SIGNATURETYPE",
         "SCHEDULEPERSONALMONTHFORM.REPEATTITLE",
-        "SCHEDULEPERSONALMONTHFORM.PAGENUM"
+        "SCHEDULEPERSONALMONTHFORM.PAGENUM",
+        "TIMETABLEFORM.ZOOM",
+        "TIMETABLEFORM.NEEDCOLORS",
+        "TIMETABLEFORM.RESUMETYPE"
       ],
       "ReferenceTo" : {
         "TableName" : "",
@@ -1069,7 +1072,10 @@
         "0",
         "0",
         "1",
-        "1"
+        "1",
+        "100",
+        "1",
+        "0"
       ],
       "ReferenceTo" : {
         "TableName" : "",

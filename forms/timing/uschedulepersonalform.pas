@@ -918,7 +918,7 @@ var
       ScheduleToSheet(ExpSheet, Worksheet, nil, Calendar, Schedule,
                       ScheduleNames[StaffList.SelectedIndex]);
       Exporter.PageSettings(spoLandscape);
-      Exporter.Save('Выполнено!');
+      Exporter.Save('Выполнено!', ScheduleNames[StaffList.SelectedIndex]);
     finally
       if Assigned(ExpSheet) then FreeAndNil(ExpSheet);
       FreeAndNil(Exporter);
