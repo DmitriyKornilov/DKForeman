@@ -158,7 +158,7 @@ end;
 
 procedure TTimetableMonthForm.FormCreate(Sender: TObject);
 begin
-  Caption:= MAIN_CAPTION + MAIN_DESCRIPTION[13];
+  Caption:= MAIN_CAPTION + MAIN_DESCRIPTION[14];
 
   SetToolPanels([
     ToolPanel, ListOrderToolPanel
@@ -542,7 +542,7 @@ procedure TTimetableMonthForm.StaffListLoad;
 begin
   if not CanLoadAndDraw then Exit;
 
-  TimetableCaptionPanel.Caption:= 'График работы на ' + MonthDropDown.Text + ' ' +
+  TimetableCaptionPanel.Caption:= 'Табель учета рабочего времени за ' + MonthDropDown.Text + ' ' +
                                  YearSpinEdit.Text + ' года';
 
   VStaffList.Visible:= False;

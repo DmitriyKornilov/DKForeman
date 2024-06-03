@@ -451,6 +451,7 @@ object ScheduleShiftCalendarForm: TScheduleShiftCalendarForm
       Cursor = crHandPoint
       Left = 861
       Height = 36
+      Hint = 'Закрыть'
       Top = 0
       Width = 40
       Align = alRight
@@ -459,6 +460,8 @@ object ScheduleShiftCalendarForm: TScheduleShiftCalendarForm
       Images = Images.PX24
       ImageIndex = 3
       OnClick = CloseButtonClick
+      ShowHint = True
+      ParentShowHint = False
     end
     object DividerBevel2: TDividerBevel
       Left = 65

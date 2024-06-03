@@ -214,7 +214,7 @@ object TimetableMonthForm: TTimetableMonthForm
         Cursor = crHandPoint
         Left = 390
         Height = 34
-        Hint = 'Сформировать табель'
+        Hint = 'Сформировать табель за месяц'
         Top = 1
         Width = 204
         Align = alLeft
@@ -730,6 +730,7 @@ object TimetableMonthForm: TTimetableMonthForm
       Cursor = crHandPoint
       Left = 1176
       Height = 36
+      Hint = 'Закрыть'
       Top = 0
       Width = 40
       Align = alRight
@@ -738,6 +739,8 @@ object TimetableMonthForm: TTimetableMonthForm
       Images = Images.PX24
       ImageIndex = 3
       OnClick = CloseButtonClick
+      ShowHint = True
+      ParentShowHint = False
     end
   end
   object ListPanel: TPanel

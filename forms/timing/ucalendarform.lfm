@@ -182,6 +182,7 @@ object CalendarForm: TCalendarForm
       Cursor = crHandPoint
       Left = 692
       Height = 36
+      Hint = 'Закрыть'
       Top = 0
       Width = 40
       Align = alRight
@@ -190,6 +191,8 @@ object CalendarForm: TCalendarForm
       Images = Images.PX24
       ImageIndex = 3
       OnClick = CloseButtonClick
+      ShowHint = True
+      ParentShowHint = False
     end
     object DividerBevel2: TDividerBevel
       Left = 65

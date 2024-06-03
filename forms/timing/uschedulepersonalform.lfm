@@ -1,7 +1,7 @@
 object SchedulePersonalForm: TSchedulePersonalForm
-  Left = 117
+  Left = 196
   Height = 678
-  Top = 61
+  Top = 222
   Width = 1740
   Caption = 'SchedulePersonalForm'
   ClientHeight = 678
@@ -409,6 +409,7 @@ object SchedulePersonalForm: TSchedulePersonalForm
       Cursor = crHandPoint
       Left = 1692
       Height = 36
+      Hint = 'Закрыть'
       Top = 0
       Width = 40
       Align = alRight
@@ -417,6 +418,8 @@ object SchedulePersonalForm: TSchedulePersonalForm
       Images = Images.PX24
       ImageIndex = 3
       OnClick = CloseButtonClick
+      ShowHint = True
+      ParentShowHint = False
     end
     object DividerBevel2: TDividerBevel
       Left = 65

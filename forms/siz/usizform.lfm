@@ -27,6 +27,7 @@ object SIZForm: TSIZForm
       Cursor = crHandPoint
       Left = 502
       Height = 36
+      Hint = 'Закрыть'
       Top = 0
       Width = 40
       Align = alRight
@@ -35,6 +36,8 @@ object SIZForm: TSIZForm
       Images = Images.PX24
       ImageIndex = 3
       OnClick = CloseButtonClick
+      ShowHint = True
+      ParentShowHint = False
     end
     object DividerBevel1: TDividerBevel
       Left = 482

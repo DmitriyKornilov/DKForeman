@@ -27,6 +27,7 @@ object StudyForm: TStudyForm
       Cursor = crHandPoint
       Left = 554
       Height = 36
+      Hint = 'Закрыть'
       Top = 0
       Width = 40
       Align = alRight
@@ -35,6 +36,8 @@ object StudyForm: TStudyForm
       Images = Images.PX24
       ImageIndex = 3
       OnClick = CloseButtonClick
+      ShowHint = True
+      ParentShowHint = False
     end
     object DividerBevel1: TDividerBevel
       Left = 534

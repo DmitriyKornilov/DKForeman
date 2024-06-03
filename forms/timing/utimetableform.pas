@@ -15,7 +15,7 @@ uses
   DK_DateUtils, DK_Color, DK_SheetExporter, DK_StrUtils,
   DK_Progress, DK_Zoom, DK_Filter,
   //Forms
-  UChooseForm, UTimetableEditForm;
+  UChooseForm, UTimetableEditForm, UTimetableMonthForm;
 
 type
 
@@ -88,6 +88,7 @@ type
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure MonthTimetableButtonClick(Sender: TObject);
     procedure PostRadioButtonClick(Sender: TObject);
     procedure TabNumRadioButtonChange(Sender: TObject);
     procedure ViewGridDblClick(Sender: TObject);
@@ -242,6 +243,12 @@ begin
   ParamList.Show;
   MonthDropDown.AutoWidth;
   StaffListLoad;
+end;
+
+procedure TTimetableForm.MonthTimetableButtonClick(Sender: TObject);
+begin
+  TimetableMonthFormOpen(YearSpinEdit.Value);
+  TimetableChange;
 end;
 
 procedure TTimetableForm.CloseButtonClick(Sender: TObject);

@@ -327,6 +327,7 @@ object ScheduleShiftMonthForm: TScheduleShiftMonthForm
       Cursor = crHandPoint
       Left = 732
       Height = 36
+      Hint = 'Закрыть'
       Top = 0
       Width = 40
       Align = alRight
@@ -335,6 +336,8 @@ object ScheduleShiftMonthForm: TScheduleShiftMonthForm
       Images = Images.PX24
       ImageIndex = 3
       OnClick = CloseButtonClick
+      ShowHint = True
+      ParentShowHint = False
     end
     object DividerBevel2: TDividerBevel
       Left = 269
