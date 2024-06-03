@@ -143,6 +143,8 @@ type
 
     Colors: TColorVector;
 
+    ViewYear, ViewTabNumID: Integer;
+
     ParamList: TVSTParamList;
 
     StaffList: TVSTTable;
@@ -329,6 +331,9 @@ begin
   ]);
 
   Calendar:= TCalendar.Create;
+
+  ViewYear:= 0;
+  ViewTabNumID:= 0;
 
   CanDraw:= False;
 
@@ -833,6 +838,13 @@ end;
 procedure TSchedulePersonalForm.ScheduleChange;
 begin
   if not CanDraw then Exit;
+  if not StaffList.IsSelected then Exit;
+
+  if (TabNumIDs[StaffList.SelectedIndex]=ViewTabNumID) and
+     (YearSpinEdit.Value = ViewYear) then Exit;
+  ViewYear:= YearSpinEdit.Value;
+  ViewTabNumID:= TabNumIDs[StaffList.SelectedIndex];
+
   CaptionsUpdate;
   HistoryLoad;
   VacationEditLoad;

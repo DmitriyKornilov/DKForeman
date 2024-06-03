@@ -101,6 +101,8 @@ type
     ModeType: TModeType;
     MonthDropDown: TMonthDropDown;
 
+    ViewYear, ViewTabNumID: Integer;
+
     ParamList: TVSTParamList;
     Colors: TColorVector;
 
@@ -191,6 +193,9 @@ begin
   SetCategoryButtons([
     ExportButton, MonthTimetableButton
   ]);
+
+  ViewYear:= 0;
+  ViewTabNumID:=0;
 
   CanDraw:= False;
 
@@ -699,6 +704,12 @@ end;
 procedure TTimetableForm.TimetableChange;
 begin
   if not CanDraw then Exit;
+  if not StaffList.IsSelected then Exit;
+
+  if (TabNumIDs[StaffList.SelectedIndex]=ViewTabNumID) and
+     (YearSpinEdit.Value = ViewYear) then Exit;
+  ViewYear:= YearSpinEdit.Value;
+  ViewTabNumID:= TabNumIDs[StaffList.SelectedIndex];
 
   CaptionsUpdate;
   TimetableLoad;
