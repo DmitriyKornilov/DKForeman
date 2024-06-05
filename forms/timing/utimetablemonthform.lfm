@@ -14,7 +14,7 @@ object TimetableMonthForm: TTimetableMonthForm
   WindowState = wsMaximized
   object ToolPanel: TPanel
     Left = 2
-    Height = 32
+    Height = 40
     Top = 2
     Width = 1220
     Align = alTop
@@ -23,41 +23,39 @@ object TimetableMonthForm: TTimetableMonthForm
     BorderSpacing.Right = 2
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 28
+    ClientHeight = 36
     ClientWidth = 1216
-    Constraints.MaxHeight = 32
-    Constraints.MinHeight = 32
     ParentFont = False
     TabOrder = 0
     object ListToolPanel: TPanel
       Left = 0
-      Height = 28
+      Height = 36
       Top = 0
-      Width = 482
+      Width = 553
       Align = alLeft
       AutoSize = True
       BevelOuter = bvNone
-      ClientHeight = 28
-      ClientWidth = 482
+      ClientHeight = 36
+      ClientWidth = 553
       TabOrder = 0
       object YearPanel: TPanel
         Left = 0
-        Height = 28
+        Height = 36
         Top = 0
-        Width = 215
+        Width = 228
         Align = alLeft
         AutoSize = True
         BevelOuter = bvNone
-        ClientHeight = 28
-        ClientWidth = 215
+        ClientHeight = 36
+        ClientWidth = 228
         TabOrder = 0
         object YearSpinEdit: TSpinEdit
           AnchorSideTop.Control = YearPanel
           AnchorSideTop.Side = asrCenter
           Left = 2
-          Height = 23
-          Top = 3
-          Width = 50
+          Height = 28
+          Top = 4
+          Width = 63
           Align = alCustom
           Alignment = taCenter
           BorderSpacing.Left = 2
@@ -77,9 +75,9 @@ object TimetableMonthForm: TTimetableMonthForm
           AnchorSideRight.Side = asrBottom
           AnchorSideBottom.Control = YearSpinEdit
           AnchorSideBottom.Side = asrBottom
-          Left = 55
-          Height = 23
-          Top = 3
+          Left = 68
+          Height = 28
+          Top = 4
           Width = 160
           Anchors = [akTop, akLeft, akBottom]
           StateClicked.Background.Gradient1.StartColor = 8404992
@@ -180,14 +178,12 @@ object TimetableMonthForm: TTimetableMonthForm
       end
       object CheckAllButton: TSpeedButton
         Cursor = crHandPoint
-        Left = 230
-        Height = 28
+        Left = 248
+        Height = 36
         Hint = 'Выбрать всех сотрудников'
         Top = 0
-        Width = 32
+        Width = 40
         Align = alLeft
-        Constraints.MaxWidth = 32
-        Constraints.MinWidth = 32
         Images = Images.PX24
         ImageIndex = 12
         OnClick = CheckAllButtonClick
@@ -196,14 +192,12 @@ object TimetableMonthForm: TTimetableMonthForm
       end
       object UncheckAllButton: TSpeedButton
         Cursor = crHandPoint
-        Left = 262
-        Height = 28
+        Left = 288
+        Height = 36
         Hint = 'Снять выбор со всех сотрудников'
         Top = 0
-        Width = 32
+        Width = 40
         Align = alLeft
-        Constraints.MaxWidth = 32
-        Constraints.MinWidth = 32
         Images = Images.PX24
         ImageIndex = 13
         OnClick = UncheckAllButtonClick
@@ -212,11 +206,11 @@ object TimetableMonthForm: TTimetableMonthForm
       end
       object TimetableButton: TBCButton
         Cursor = crHandPoint
-        Left = 310
-        Height = 26
+        Left = 349
+        Height = 34
         Hint = 'Сформировать табель за месяц'
         Top = 1
-        Width = 172
+        Width = 204
         Align = alLeft
         AutoSize = True
         StateClicked.Background.Color = 16245964
@@ -324,10 +318,10 @@ object TimetableMonthForm: TTimetableMonthForm
         MemoryUsage = bmuHigh
       end
       object DividerBevel2: TDividerBevel
-        Left = 294
-        Height = 28
+        Left = 328
+        Height = 36
         Top = 0
-        Width = 15
+        Width = 20
         Caption = 'DividerBevel2'
         Align = alLeft
         BevelWidth = 1
@@ -336,10 +330,10 @@ object TimetableMonthForm: TTimetableMonthForm
         ParentFont = False
       end
       object DividerBevel3: TDividerBevel
-        Left = 215
-        Height = 28
+        Left = 228
+        Height = 36
         Top = 0
-        Width = 15
+        Width = 20
         Caption = 'DividerBevel3'
         Align = alLeft
         BevelWidth = 1
@@ -349,24 +343,24 @@ object TimetableMonthForm: TTimetableMonthForm
       end
     end
     object TimetableToolPanel: TPanel
-      Left = 482
-      Height = 28
+      Left = 553
+      Height = 36
       Top = 0
-      Width = 382
+      Width = 456
       Align = alLeft
       AutoSize = True
       BevelOuter = bvNone
-      ClientHeight = 28
-      ClientWidth = 382
+      ClientHeight = 36
+      ClientWidth = 456
       TabOrder = 1
       Visible = False
       object ListButton: TBCButton
         Cursor = crHandPoint
         Left = 1
-        Height = 26
+        Height = 34
         Hint = 'Вернуться к выбору месяца и списка сотрудников'
         Top = 1
-        Width = 143
+        Width = 169
         Align = alLeft
         AutoSize = True
         StateClicked.Background.Color = 16245964
@@ -475,11 +469,11 @@ object TimetableMonthForm: TTimetableMonthForm
       end
       object ExportButton: TBCButton
         Cursor = crHandPoint
-        Left = 146
-        Height = 26
+        Left = 172
+        Height = 34
         Hint = 'Экспорт в формат электронной таблицы XLSX или ODS'
         Top = 1
-        Width = 93
+        Width = 104
         Align = alLeft
         AutoSize = True
         StateClicked.Background.Color = 16245964
@@ -587,27 +581,25 @@ object TimetableMonthForm: TTimetableMonthForm
         MemoryUsage = bmuHigh
       end
       object EditPanel: TPanel
-        Left = 239
-        Height = 28
+        Left = 276
+        Height = 36
         Top = 0
-        Width = 143
+        Width = 180
         Align = alLeft
         AutoSize = True
         BevelOuter = bvNone
-        ClientHeight = 28
-        ClientWidth = 143
+        ClientHeight = 36
+        ClientWidth = 180
         TabOrder = 0
         Visible = False
         object DayEditButton: TSpeedButton
           Cursor = crHandPoint
-          Left = 15
-          Height = 28
+          Left = 20
+          Height = 36
           Hint = 'Редактировать'
           Top = 0
-          Width = 32
+          Width = 40
           Align = alLeft
-          Constraints.MaxWidth = 32
-          Constraints.MinWidth = 32
           Images = Images.PX24
           ImageIndex = 6
           OnClick = DayEditButtonClick
@@ -616,14 +608,12 @@ object TimetableMonthForm: TTimetableMonthForm
         end
         object RowUpButton: TSpeedButton
           Cursor = crHandPoint
-          Left = 47
-          Height = 28
+          Left = 60
+          Height = 36
           Hint = 'Переместить строку вверх'
           Top = 0
-          Width = 32
+          Width = 40
           Align = alLeft
-          Constraints.MaxWidth = 32
-          Constraints.MinWidth = 32
           Images = Images.PX24
           ImageIndex = 48
           OnClick = RowUpButtonClick
@@ -632,14 +622,12 @@ object TimetableMonthForm: TTimetableMonthForm
         end
         object RowDownButton: TSpeedButton
           Cursor = crHandPoint
-          Left = 79
-          Height = 28
+          Left = 100
+          Height = 36
           Hint = 'Переместить строку вниз'
           Top = 0
-          Width = 32
+          Width = 40
           Align = alLeft
-          Constraints.MaxWidth = 32
-          Constraints.MinWidth = 32
           Images = Images.PX24
           ImageIndex = 49
           OnClick = RowDownButtonClick
@@ -648,14 +636,12 @@ object TimetableMonthForm: TTimetableMonthForm
         end
         object RowMergeButton: TSpeedButton
           Cursor = crHandPoint
-          Left = 111
-          Height = 28
+          Left = 140
+          Height = 36
           Hint = 'Объединить строки'
           Top = 0
-          Width = 32
+          Width = 40
           Align = alLeft
-          Constraints.MaxWidth = 32
-          Constraints.MinWidth = 32
           Images = Images.PX24
           ImageIndex = 50
           OnClick = RowMergeButtonClick
@@ -664,9 +650,9 @@ object TimetableMonthForm: TTimetableMonthForm
         end
         object DividerBevel4: TDividerBevel
           Left = 0
-          Height = 28
+          Height = 36
           Top = 0
-          Width = 15
+          Width = 20
           Caption = 'DividerBevel4'
           Align = alLeft
           BevelWidth = 1
@@ -678,15 +664,13 @@ object TimetableMonthForm: TTimetableMonthForm
     end
     object EditingButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 1105
-      Height = 28
+      Left = 1076
+      Height = 36
       Hint = 'Редактирование'
       Top = 0
-      Width = 32
+      Width = 40
       Align = alRight
       AllowAllUp = True
-      Constraints.MaxWidth = 32
-      Constraints.MinWidth = 32
       GroupIndex = 2
       Images = Images.PX24
       ImageIndex = 23
@@ -697,15 +681,13 @@ object TimetableMonthForm: TTimetableMonthForm
     end
     object SettingButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 1137
-      Height = 28
+      Left = 1116
+      Height = 36
       Hint = 'Параметры'
       Top = 0
-      Width = 32
+      Width = 40
       Align = alRight
       AllowAllUp = True
-      Constraints.MaxWidth = 32
-      Constraints.MinWidth = 32
       GroupIndex = 2
       Images = Images.PX24
       ImageIndex = 24
@@ -715,10 +697,10 @@ object TimetableMonthForm: TTimetableMonthForm
       ParentShowHint = False
     end
     object DividerBevel1: TDividerBevel
-      Left = 1169
-      Height = 28
+      Left = 1156
+      Height = 36
       Top = 0
-      Width = 15
+      Width = 20
       Caption = 'DividerBevel1'
       Align = alRight
       BevelWidth = 1
@@ -728,14 +710,12 @@ object TimetableMonthForm: TTimetableMonthForm
     end
     object CloseButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 1184
-      Height = 28
+      Left = 1176
+      Height = 36
       Hint = 'Закрыть'
       Top = 0
-      Width = 32
+      Width = 40
       Align = alRight
-      Constraints.MaxWidth = 32
-      Constraints.MinWidth = 32
       Images = Images.PX24
       ImageIndex = 3
       OnClick = CloseButtonClick
@@ -745,8 +725,8 @@ object TimetableMonthForm: TTimetableMonthForm
   end
   object ListPanel: TPanel
     Left = 2
-    Height = 257
-    Top = 36
+    Height = 249
+    Top = 44
     Width = 1220
     Align = alClient
     BorderSpacing.Left = 2
@@ -754,7 +734,7 @@ object TimetableMonthForm: TTimetableMonthForm
     BorderSpacing.Right = 2
     BorderSpacing.Bottom = 2
     BevelOuter = bvNone
-    ClientHeight = 257
+    ClientHeight = 249
     ClientWidth = 1220
     TabOrder = 1
     object ListCaptionPanel: TBCPanel
@@ -804,14 +784,14 @@ object TimetableMonthForm: TTimetableMonthForm
     end
     object ListOrderToolPanel: TPanel
       Left = 0
-      Height = 32
-      Top = 225
+      Height = 40
+      Top = 209
       Width = 1220
       Align = alBottom
       BorderSpacing.Top = 2
       BevelOuter = bvNone
       BorderStyle = bsSingle
-      ClientHeight = 28
+      ClientHeight = 36
       ClientWidth = 1216
       TabOrder = 1
       object OrderLabel: TLabel
@@ -819,9 +799,9 @@ object TimetableMonthForm: TTimetableMonthForm
         AnchorSideTop.Control = ListOrderToolPanel
         AnchorSideTop.Side = asrCenter
         Left = 5
-        Height = 15
-        Top = 7
-        Width = 91
+        Height = 20
+        Top = 8
+        Width = 115
         Align = alCustom
         BorderSpacing.Left = 5
         Caption = 'Сортировать по:'
@@ -832,10 +812,10 @@ object TimetableMonthForm: TTimetableMonthForm
         AnchorSideLeft.Side = asrBottom
         AnchorSideTop.Control = ListOrderToolPanel
         AnchorSideTop.Side = asrCenter
-        Left = 272
-        Height = 19
-        Top = 5
-        Width = 54
+        Left = 337
+        Height = 24
+        Top = 6
+        Width = 63
         BorderSpacing.Left = 5
         Caption = 'Ф.И.О.'
         TabOrder = 1
@@ -846,10 +826,10 @@ object TimetableMonthForm: TTimetableMonthForm
         AnchorSideLeft.Side = asrBottom
         AnchorSideTop.Control = ListOrderToolPanel
         AnchorSideTop.Side = asrCenter
-        Left = 331
-        Height = 19
-        Top = 5
-        Width = 152
+        Left = 405
+        Height = 24
+        Top = 6
+        Width = 188
         BorderSpacing.Left = 5
         Caption = 'должности (профессии)'
         TabOrder = 0
@@ -860,10 +840,10 @@ object TimetableMonthForm: TTimetableMonthForm
         AnchorSideLeft.Side = asrBottom
         AnchorSideTop.Control = ListOrderToolPanel
         AnchorSideTop.Side = asrCenter
-        Left = 488
-        Height = 19
-        Top = 5
-        Width = 129
+        Left = 598
+        Height = 24
+        Top = 6
+        Width = 161
         BorderSpacing.Left = 5
         Caption = 'табельному номеру'
         TabOrder = 2
@@ -874,10 +854,10 @@ object TimetableMonthForm: TTimetableMonthForm
         AnchorSideLeft.Side = asrBottom
         AnchorSideTop.Control = ListOrderToolPanel
         AnchorSideTop.Side = asrCenter
-        Left = 101
-        Height = 19
-        Top = 5
-        Width = 166
+        Left = 125
+        Height = 24
+        Top = 6
+        Width = 207
         BorderSpacing.Left = 5
         Caption = 'графику на начало месяца'
         Checked = True
@@ -889,7 +869,7 @@ object TimetableMonthForm: TTimetableMonthForm
     object VStaffListVT: TVirtualStringTree
       Left = 0
       Height = 38
-      Top = 185
+      Top = 169
       Width = 1220
       Align = alBottom
       DefaultText = 'Node'
@@ -900,7 +880,7 @@ object TimetableMonthForm: TTimetableMonthForm
     end
     object MStaffListVT: TVirtualStringTree
       Left = 0
-      Height = 159
+      Height = 143
       Top = 26
       Width = 1220
       Align = alClient
@@ -924,20 +904,20 @@ object TimetableMonthForm: TTimetableMonthForm
     TabOrder = 2
     Visible = False
     object RightPanel: TPanel
-      Left = 287
+      Left = 357
       Height = 341
       Top = 0
-      Width = 937
+      Width = 867
       Align = alClient
       BevelOuter = bvNone
       ClientHeight = 341
-      ClientWidth = 937
+      ClientWidth = 867
       TabOrder = 0
       object TimetableCaptionPanel: TBCPanel
         Left = 0
         Height = 24
         Top = 0
-        Width = 935
+        Width = 865
         Align = alTop
         BorderSpacing.Right = 2
         BorderSpacing.Bottom = 2
@@ -983,7 +963,7 @@ object TimetableMonthForm: TTimetableMonthForm
         Left = 0
         Height = 313
         Top = 26
-        Width = 935
+        Width = 865
         Align = alClient
         BorderSpacing.Top = 2
         BorderSpacing.Right = 2
@@ -991,7 +971,7 @@ object TimetableMonthForm: TTimetableMonthForm
         BevelOuter = bvNone
         BorderStyle = bsSingle
         ClientHeight = 309
-        ClientWidth = 931
+        ClientWidth = 861
         Color = clWhite
         ParentBackground = False
         ParentColor = False
@@ -1000,7 +980,7 @@ object TimetableMonthForm: TTimetableMonthForm
           Left = 0
           Height = 289
           Top = 0
-          Width = 931
+          Width = 861
           AutoExpand = []
           DisplayFixedColRow = False
           FrozenBorderPen.Style = psClear
@@ -1036,7 +1016,7 @@ object TimetableMonthForm: TTimetableMonthForm
           Left = 0
           Height = 18
           Top = 291
-          Width = 931
+          Width = 861
           Align = alBottom
           BevelOuter = bvNone
           Color = clWhite
@@ -1048,7 +1028,7 @@ object TimetableMonthForm: TTimetableMonthForm
           Left = 0
           Height = 2
           Top = 289
-          Width = 931
+          Width = 861
           Align = alBottom
           Shape = bsBottomLine
           Style = bsRaised
@@ -1059,13 +1039,13 @@ object TimetableMonthForm: TTimetableMonthForm
       Left = 2
       Height = 339
       Top = 0
-      Width = 280
+      Width = 350
       Align = alLeft
       BorderSpacing.Left = 2
       BorderSpacing.Bottom = 2
       BevelOuter = bvNone
       ClientHeight = 339
-      ClientWidth = 280
+      ClientWidth = 350
       Color = clWindow
       ParentBackground = False
       ParentColor = False
@@ -1075,7 +1055,7 @@ object TimetableMonthForm: TTimetableMonthForm
         Left = 0
         Height = 24
         Top = 0
-        Width = 280
+        Width = 350
         Align = alTop
         BorderSpacing.Bottom = 2
         Background.Color = clBtnFace
@@ -1120,7 +1100,7 @@ object TimetableMonthForm: TTimetableMonthForm
         Left = 0
         Height = 313
         Top = 26
-        Width = 280
+        Width = 350
         Align = alClient
         BevelOuter = bvNone
         BorderStyle = bsSingle
@@ -1129,7 +1109,7 @@ object TimetableMonthForm: TTimetableMonthForm
       end
     end
     object SettingSplitter: TSplitter
-      Left = 282
+      Left = 352
       Height = 341
       Top = 0
       Width = 5

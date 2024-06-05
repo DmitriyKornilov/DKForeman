@@ -218,7 +218,7 @@ end;
 
 procedure TTimetableMonthForm.FormShow(Sender: TObject);
 begin
-  ParamListVisibles;//ParamList.Show;
+  ParamListVisibles; //ParamList.Show;
   MonthDropDown.AutoWidth;
   OrderType:= 0;
   StaffListLoad;
@@ -333,6 +333,7 @@ end;
 
 procedure TTimetableMonthForm.ParamListVisibles;
 begin
+  SettingClientPanel.Visible:= False;
   if ParamList.Selected['TimetableType']=0 then
   begin
     ParamList.Visibles['ViewType']:= False;
@@ -350,6 +351,7 @@ begin
     ParamList.Visibles['ExtraColumns']:= False;
     ParamList.Visibles['LineType']:= True;
   end;
+  SettingClientPanel.Visible:= True;
 end;
 
 procedure TTimetableMonthForm.TimetableTypeChange;

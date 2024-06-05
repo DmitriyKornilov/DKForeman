@@ -236,7 +236,6 @@ end;
 
 procedure TSchedulePersonalMonthForm.FormShow(Sender: TObject);
 begin
-  ParamList.Show;
   MonthDropDown.AutoWidth;
   OrderType:= 0;
   StaffListLoad;

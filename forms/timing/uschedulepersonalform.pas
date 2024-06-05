@@ -374,7 +374,6 @@ procedure TSchedulePersonalForm.FormShow(Sender: TObject);
 var
   H: Integer;
 begin
-  ParamList.Show;
   H:= Round(0.6*(ClientHeight - ToolPanel.Height - StaffCaptionPanel.Height));
   BottomEditingPanel.Height:= H;
   H:= VacationCaptionPanel.Height + VacationToolPanel.Height + VacationEdit.TotalHeight + 10;

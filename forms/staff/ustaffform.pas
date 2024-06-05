@@ -255,7 +255,6 @@ end;
 
 procedure TStaffForm.FormShow(Sender: TObject);
 begin
-  ParamList.Show;
   EditingPanel.Width:= Round(ClientWidth*2/3);
 end;
 

@@ -297,7 +297,6 @@ procedure TScheduleShiftForm.FormShow(Sender: TObject);
 var
   H: Integer;
 begin
-  ParamList.Show;
   H:= MainPanel.Height div 3;
   EditingPanel.Height:= 2*H;
   CorrectionsPanel.Height:= H;

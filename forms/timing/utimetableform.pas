@@ -240,7 +240,6 @@ end;
 
 procedure TTimetableForm.FormShow(Sender: TObject);
 begin
-  ParamList.Show;
   MonthDropDown.AutoWidth;
   StaffListLoad;
 end;
