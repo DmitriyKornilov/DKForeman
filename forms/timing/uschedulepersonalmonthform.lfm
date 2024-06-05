@@ -25,8 +25,6 @@ object SchedulePersonalMonthForm: TSchedulePersonalMonthForm
     BorderStyle = bsSingle
     ClientHeight = 36
     ClientWidth = 1216
-    Constraints.MaxHeight = 40
-    Constraints.MinHeight = 40
     ParentFont = False
     TabOrder = 0
     object ListToolPanel: TPanel
@@ -186,8 +184,6 @@ object SchedulePersonalMonthForm: TSchedulePersonalMonthForm
         Top = 0
         Width = 40
         Align = alLeft
-        Constraints.MaxWidth = 40
-        Constraints.MinWidth = 40
         Images = Images.PX24
         ImageIndex = 12
         OnClick = CheckAllButtonClick
@@ -202,8 +198,6 @@ object SchedulePersonalMonthForm: TSchedulePersonalMonthForm
         Top = 0
         Width = 40
         Align = alLeft
-        Constraints.MaxWidth = 40
-        Constraints.MinWidth = 40
         Images = Images.PX24
         ImageIndex = 13
         OnClick = UncheckAllButtonClick
@@ -606,8 +600,6 @@ object SchedulePersonalMonthForm: TSchedulePersonalMonthForm
           Top = 0
           Width = 40
           Align = alLeft
-          Constraints.MaxWidth = 40
-          Constraints.MinWidth = 40
           Images = Images.PX24
           ImageIndex = 6
           OnClick = DayEditButtonClick
@@ -622,8 +614,6 @@ object SchedulePersonalMonthForm: TSchedulePersonalMonthForm
           Top = 0
           Width = 40
           Align = alLeft
-          Constraints.MaxWidth = 40
-          Constraints.MinWidth = 40
           Images = Images.PX24
           ImageIndex = 48
           OnClick = RowUpButtonClick
@@ -638,8 +628,6 @@ object SchedulePersonalMonthForm: TSchedulePersonalMonthForm
           Top = 0
           Width = 40
           Align = alLeft
-          Constraints.MaxWidth = 40
-          Constraints.MinWidth = 40
           Images = Images.PX24
           ImageIndex = 49
           OnClick = RowDownButtonClick
@@ -654,8 +642,6 @@ object SchedulePersonalMonthForm: TSchedulePersonalMonthForm
           Top = 0
           Width = 40
           Align = alLeft
-          Constraints.MaxWidth = 40
-          Constraints.MinWidth = 40
           Images = Images.PX24
           ImageIndex = 50
           OnClick = RowMergeButtonClick
@@ -685,8 +671,6 @@ object SchedulePersonalMonthForm: TSchedulePersonalMonthForm
       Width = 40
       Align = alRight
       AllowAllUp = True
-      Constraints.MaxWidth = 40
-      Constraints.MinWidth = 40
       GroupIndex = 2
       Images = Images.PX24
       ImageIndex = 23
@@ -704,8 +688,6 @@ object SchedulePersonalMonthForm: TSchedulePersonalMonthForm
       Width = 40
       Align = alRight
       AllowAllUp = True
-      Constraints.MaxWidth = 40
-      Constraints.MinWidth = 40
       GroupIndex = 2
       Images = Images.PX24
       ImageIndex = 24
@@ -734,8 +716,6 @@ object SchedulePersonalMonthForm: TSchedulePersonalMonthForm
       Top = 0
       Width = 40
       Align = alRight
-      Constraints.MaxWidth = 40
-      Constraints.MinWidth = 40
       Images = Images.PX24
       ImageIndex = 3
       OnClick = CloseButtonClick

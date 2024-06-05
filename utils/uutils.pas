@@ -19,6 +19,7 @@ uses
   procedure SetCaptionPanels(const AControls: array of TBCPanel);
   procedure SetToolButtons(const AControls: array of TSpeedButton);
   procedure SetCategoryButtons(const AControls: array of TBCButton);
+  procedure SetEditButtons(const AControls: array of TSpeedButton);
   function ImageListForScreen: TImageList;
 
   //ID for TVSTTable.ReSelect
@@ -227,6 +228,25 @@ begin
     AControls[i].Images:= ImageList;
     AControls[i].StateNormal.Background.Color:= c;
     AControls[i].StateNormal.Border.Color:= clActiveBorder;
+  end;
+end;
+
+procedure SetEditButtons(const AControls: array of TSpeedButton);
+var
+  i, W, H: Integer;
+  C: TControl;
+begin
+  C:= AControls[0].Parent;
+  H:= C.Scale96ToForm(EDIT_BUTTON_HEIGHT_DEFAULT);
+  W:= AControls[0].Width;
+  for i:= 1 to High(AControls) do
+    if SLength(AControls[i].Caption)>SLength(AControls[i-1].Caption) then
+      W:= AControls[i].Width;
+  W:= W + C.Scale96ToForm(EDIT_BUTTON_WIDTH_EXTRA);
+  for i:= 0 to High(AControls) do
+  begin
+    AControls[i].Constraints.MinHeight:= H;
+    AControls[i].Constraints.MinWidth:= W;
   end;
 end;
 

@@ -287,8 +287,6 @@ object ScheduleShiftMonthForm: TScheduleShiftMonthForm
       Top = 0
       Width = 40
       Align = alLeft
-      Constraints.MaxWidth = 40
-      Constraints.MinWidth = 40
       Images = Images.PX24
       ImageIndex = 12
       OnClick = CheckAllButtonClick
@@ -303,8 +301,6 @@ object ScheduleShiftMonthForm: TScheduleShiftMonthForm
       Top = 0
       Width = 40
       Align = alLeft
-      Constraints.MaxWidth = 40
-      Constraints.MinWidth = 40
       Images = Images.PX24
       ImageIndex = 13
       OnClick = UncheckAllButtonClick
@@ -331,8 +327,6 @@ object ScheduleShiftMonthForm: TScheduleShiftMonthForm
       Top = 0
       Width = 40
       Align = alRight
-      Constraints.MaxWidth = 40
-      Constraints.MinWidth = 40
       Images = Images.PX24
       ImageIndex = 3
       OnClick = CloseButtonClick

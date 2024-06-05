@@ -413,8 +413,6 @@ object SchedulePersonalForm: TSchedulePersonalForm
       Top = 0
       Width = 40
       Align = alRight
-      Constraints.MaxWidth = 40
-      Constraints.MinWidth = 40
       Images = Images.PX24
       ImageIndex = 3
       OnClick = CloseButtonClick
@@ -791,8 +789,6 @@ object SchedulePersonalForm: TSchedulePersonalForm
       BorderStyle = bsSingle
       ClientHeight = 36
       ClientWidth = 576
-      Constraints.MaxHeight = 40
-      Constraints.MinHeight = 40
       ParentBackground = False
       ParentColor = False
       ParentFont = False
@@ -897,8 +893,6 @@ object SchedulePersonalForm: TSchedulePersonalForm
           Top = 0
           Width = 40
           Align = alLeft
-          Constraints.MaxWidth = 40
-          Constraints.MinWidth = 40
           Images = Images.PX24
           ImageIndex = 15
           Visible = False
@@ -914,8 +908,6 @@ object SchedulePersonalForm: TSchedulePersonalForm
           Top = 0
           Width = 40
           Align = alLeft
-          Constraints.MaxWidth = 40
-          Constraints.MinWidth = 40
           Images = Images.PX24
           ImageIndex = 16
           OnClick = DescendingButtonClick
@@ -1048,8 +1040,6 @@ object SchedulePersonalForm: TSchedulePersonalForm
               Top = 0
               Width = 40
               Align = alLeft
-              Constraints.MaxWidth = 40
-              Constraints.MinWidth = 40
               Images = Images.PX24
               ImageIndex = 4
               OnClick = DayAddButtonClick
@@ -1064,8 +1054,6 @@ object SchedulePersonalForm: TSchedulePersonalForm
               Top = 0
               Width = 40
               Align = alLeft
-              Constraints.MaxWidth = 40
-              Constraints.MinWidth = 40
               Enabled = False
               Images = Images.PX24
               ImageIndex = 5
@@ -1081,8 +1069,6 @@ object SchedulePersonalForm: TSchedulePersonalForm
               Top = 0
               Width = 40
               Align = alLeft
-              Constraints.MaxWidth = 40
-              Constraints.MinWidth = 40
               Enabled = False
               Images = Images.PX24
               ImageIndex = 6
@@ -1098,8 +1084,6 @@ object SchedulePersonalForm: TSchedulePersonalForm
               Top = 0
               Width = 40
               Align = alLeft
-              Constraints.MaxWidth = 40
-              Constraints.MinWidth = 40
               Enabled = False
               Images = Images.PX24
               ImageIndex = 9
@@ -1156,8 +1140,6 @@ object SchedulePersonalForm: TSchedulePersonalForm
               Top = 0
               Width = 40
               Align = alLeft
-              Constraints.MaxWidth = 40
-              Constraints.MinWidth = 40
               Enabled = False
               Images = Images.PX24
               ImageIndex = 7
@@ -1173,8 +1155,6 @@ object SchedulePersonalForm: TSchedulePersonalForm
               Top = 0
               Width = 40
               Align = alLeft
-              Constraints.MaxWidth = 40
-              Constraints.MinWidth = 40
               Enabled = False
               Images = Images.PX24
               ImageIndex = 5
@@ -1190,8 +1170,6 @@ object SchedulePersonalForm: TSchedulePersonalForm
               Top = 0
               Width = 40
               Align = alLeft
-              Constraints.MaxWidth = 40
-              Constraints.MinWidth = 40
               Images = Images.PX24
               ImageIndex = 8
               OnClick = CopyCancelButtonClick
@@ -1301,8 +1279,6 @@ object SchedulePersonalForm: TSchedulePersonalForm
             Top = 0
             Width = 40
             Align = alLeft
-            Constraints.MaxWidth = 40
-            Constraints.MinWidth = 40
             Enabled = False
             Images = Images.PX24
             ImageIndex = 7
@@ -1318,8 +1294,6 @@ object SchedulePersonalForm: TSchedulePersonalForm
             Top = 0
             Width = 40
             Align = alLeft
-            Constraints.MaxWidth = 40
-            Constraints.MinWidth = 40
             Enabled = False
             Images = Images.PX24
             ImageIndex = 5
@@ -1335,8 +1309,6 @@ object SchedulePersonalForm: TSchedulePersonalForm
             Top = 0
             Width = 40
             Align = alLeft
-            Constraints.MaxWidth = 40
-            Constraints.MinWidth = 40
             Enabled = False
             Images = Images.PX24
             ImageIndex = 8
@@ -1352,8 +1324,6 @@ object SchedulePersonalForm: TSchedulePersonalForm
             Top = 0
             Width = 40
             Align = alLeft
-            Constraints.MaxWidth = 40
-            Constraints.MinWidth = 40
             Images = Images.PX24
             ImageIndex = 10
             OnClick = VacationEraseButtonClick
@@ -1451,8 +1421,6 @@ object SchedulePersonalForm: TSchedulePersonalForm
           Top = 0
           Width = 40
           Align = alLeft
-          Constraints.MaxWidth = 40
-          Constraints.MinWidth = 40
           Enabled = False
           Images = Images.PX24
           ImageIndex = 5
@@ -1468,8 +1436,6 @@ object SchedulePersonalForm: TSchedulePersonalForm
           Top = 0
           Width = 40
           Align = alLeft
-          Constraints.MaxWidth = 40
-          Constraints.MinWidth = 40
           Enabled = False
           Images = Images.PX24
           ImageIndex = 6
@@ -1485,8 +1451,6 @@ object SchedulePersonalForm: TSchedulePersonalForm
           Top = 0
           Width = 40
           Align = alLeft
-          Constraints.MaxWidth = 40
-          Constraints.MinWidth = 40
           Enabled = False
           Images = Images.PX24
           ImageIndex = 44

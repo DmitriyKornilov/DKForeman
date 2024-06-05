@@ -97,8 +97,6 @@ object ScheduleShiftCalendarForm: TScheduleShiftCalendarForm
       BorderStyle = bsSingle
       ClientHeight = 36
       ClientWidth = 346
-      Constraints.MaxHeight = 40
-      Constraints.MinHeight = 40
       ParentFont = False
       TabOrder = 2
       object AddButton: TSpeedButton
@@ -109,8 +107,6 @@ object ScheduleShiftCalendarForm: TScheduleShiftCalendarForm
         Top = 0
         Width = 40
         Align = alLeft
-        Constraints.MaxWidth = 40
-        Constraints.MinWidth = 40
         Images = Images.PX24
         ImageIndex = 4
         OnClick = AddButtonClick
@@ -125,8 +121,6 @@ object ScheduleShiftCalendarForm: TScheduleShiftCalendarForm
         Top = 0
         Width = 40
         Align = alLeft
-        Constraints.MaxWidth = 40
-        Constraints.MinWidth = 40
         Enabled = False
         Images = Images.PX24
         ImageIndex = 5
@@ -142,8 +136,6 @@ object ScheduleShiftCalendarForm: TScheduleShiftCalendarForm
         Top = 0
         Width = 40
         Align = alLeft
-        Constraints.MaxWidth = 40
-        Constraints.MinWidth = 40
         Enabled = False
         Images = Images.PX24
         ImageIndex = 6
@@ -426,8 +418,6 @@ object ScheduleShiftCalendarForm: TScheduleShiftCalendarForm
       Width = 40
       Align = alRight
       AllowAllUp = True
-      Constraints.MaxWidth = 40
-      Constraints.MinWidth = 40
       GroupIndex = 2
       Images = Images.PX24
       ImageIndex = 24
@@ -455,8 +445,6 @@ object ScheduleShiftCalendarForm: TScheduleShiftCalendarForm
       Top = 0
       Width = 40
       Align = alRight
-      Constraints.MaxWidth = 40
-      Constraints.MinWidth = 40
       Images = Images.PX24
       ImageIndex = 3
       OnClick = CloseButtonClick

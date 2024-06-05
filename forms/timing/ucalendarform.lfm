@@ -186,8 +186,6 @@ object CalendarForm: TCalendarForm
       Top = 0
       Width = 40
       Align = alRight
-      Constraints.MaxWidth = 40
-      Constraints.MinWidth = 40
       Images = Images.PX24
       ImageIndex = 3
       OnClick = CloseButtonClick
@@ -298,8 +296,6 @@ object CalendarForm: TCalendarForm
           Top = 0
           Width = 40
           Align = alLeft
-          Constraints.MaxWidth = 40
-          Constraints.MinWidth = 40
           Images = Images.PX24
           ImageIndex = 4
           OnClick = DayAddButtonClick
@@ -314,8 +310,6 @@ object CalendarForm: TCalendarForm
           Top = 0
           Width = 40
           Align = alLeft
-          Constraints.MaxWidth = 40
-          Constraints.MinWidth = 40
           Enabled = False
           Images = Images.PX24
           ImageIndex = 5
@@ -331,8 +325,6 @@ object CalendarForm: TCalendarForm
           Top = 0
           Width = 40
           Align = alLeft
-          Constraints.MaxWidth = 40
-          Constraints.MinWidth = 40
           Enabled = False
           Images = Images.PX24
           ImageIndex = 6
@@ -348,8 +340,6 @@ object CalendarForm: TCalendarForm
           Top = 0
           Width = 40
           Align = alLeft
-          Constraints.MaxWidth = 40
-          Constraints.MinWidth = 40
           Enabled = False
           Images = Images.PX24
           ImageIndex = 9
@@ -406,8 +396,6 @@ object CalendarForm: TCalendarForm
           Top = 0
           Width = 40
           Align = alLeft
-          Constraints.MaxWidth = 40
-          Constraints.MinWidth = 40
           Enabled = False
           Images = Images.PX24
           ImageIndex = 7
@@ -423,8 +411,6 @@ object CalendarForm: TCalendarForm
           Top = 0
           Width = 40
           Align = alLeft
-          Constraints.MaxWidth = 40
-          Constraints.MinWidth = 40
           Enabled = False
           Images = Images.PX24
           ImageIndex = 5
@@ -440,8 +426,6 @@ object CalendarForm: TCalendarForm
           Top = 0
           Width = 40
           Align = alLeft
-          Constraints.MaxWidth = 40
-          Constraints.MinWidth = 40
           Images = Images.PX24
           ImageIndex = 8
           OnClick = CopyCancelButtonClick

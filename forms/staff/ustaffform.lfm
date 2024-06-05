@@ -34,8 +34,6 @@ object StaffForm: TStaffForm
       Top = 0
       Width = 40
       Align = alRight
-      Constraints.MaxWidth = 40
-      Constraints.MinWidth = 40
       Images = Images.PX24
       ImageIndex = 3
       OnClick = CloseButtonClick
@@ -314,8 +312,6 @@ object StaffForm: TStaffForm
           Top = 0
           Width = 40
           Align = alLeft
-          Constraints.MaxWidth = 40
-          Constraints.MinWidth = 40
           Images = Images.PX24
           ImageIndex = 4
           OnClick = ListAddButtonClick
@@ -330,8 +326,6 @@ object StaffForm: TStaffForm
           Top = 0
           Width = 40
           Align = alLeft
-          Constraints.MaxWidth = 40
-          Constraints.MinWidth = 40
           Enabled = False
           Images = Images.PX24
           ImageIndex = 5
@@ -347,8 +341,6 @@ object StaffForm: TStaffForm
           Top = 0
           Width = 40
           Align = alLeft
-          Constraints.MaxWidth = 40
-          Constraints.MinWidth = 40
           Enabled = False
           Images = Images.PX24
           ImageIndex = 6
@@ -498,8 +490,6 @@ object StaffForm: TStaffForm
             Top = 0
             Width = 40
             Align = alLeft
-            Constraints.MaxWidth = 40
-            Constraints.MinWidth = 40
             Images = Images.PX24
             ImageIndex = 15
             Visible = False
@@ -515,8 +505,6 @@ object StaffForm: TStaffForm
             Top = 0
             Width = 40
             Align = alLeft
-            Constraints.MaxWidth = 40
-            Constraints.MinWidth = 40
             Images = Images.PX24
             ImageIndex = 16
             OnClick = DescendingButtonClick
@@ -591,8 +579,6 @@ object StaffForm: TStaffForm
             Top = 0
             Width = 40
             Align = alLeft
-            Constraints.MaxWidth = 40
-            Constraints.MinWidth = 40
             Enabled = False
             Images = Images.PX24
             ImageIndex = 4
@@ -608,8 +594,6 @@ object StaffForm: TStaffForm
             Top = 0
             Width = 40
             Align = alLeft
-            Constraints.MaxWidth = 40
-            Constraints.MinWidth = 40
             Enabled = False
             Images = Images.PX24
             ImageIndex = 5
@@ -625,8 +609,6 @@ object StaffForm: TStaffForm
             Top = 0
             Width = 40
             Align = alLeft
-            Constraints.MaxWidth = 40
-            Constraints.MinWidth = 40
             Enabled = False
             Images = Images.PX24
             ImageIndex = 6
@@ -642,8 +624,6 @@ object StaffForm: TStaffForm
             Top = 0
             Width = 40
             Align = alLeft
-            Constraints.MaxWidth = 40
-            Constraints.MinWidth = 40
             Enabled = False
             Images = Images.PX24
             ImageIndex = 42
@@ -659,8 +639,6 @@ object StaffForm: TStaffForm
             Top = 0
             Width = 40
             Align = alLeft
-            Constraints.MaxWidth = 40
-            Constraints.MinWidth = 40
             Images = Images.PX24
             ImageIndex = 43
             Visible = False
@@ -770,8 +748,6 @@ object StaffForm: TStaffForm
             Top = 0
             Width = 40
             Align = alLeft
-            Constraints.MaxWidth = 40
-            Constraints.MinWidth = 40
             Enabled = False
             Images = Images.PX24
             ImageIndex = 44
@@ -787,8 +763,6 @@ object StaffForm: TStaffForm
             Top = 0
             Width = 40
             Align = alLeft
-            Constraints.MaxWidth = 40
-            Constraints.MinWidth = 40
             Enabled = False
             Images = Images.PX24
             ImageIndex = 5
@@ -804,8 +778,6 @@ object StaffForm: TStaffForm
             Top = 0
             Width = 40
             Align = alLeft
-            Constraints.MaxWidth = 40
-            Constraints.MinWidth = 40
             Enabled = False
             Images = Images.PX24
             ImageIndex = 6

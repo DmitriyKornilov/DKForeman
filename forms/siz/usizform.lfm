@@ -30,9 +30,7 @@ object SIZForm: TSIZForm
       Hint = 'Закрыть'
       Top = 0
       Width = 40
-      Align = alRight
-      Constraints.MaxWidth = 40
-      Constraints.MinWidth = 40
+      Align = alRight      
       Images = Images.PX24
       ImageIndex = 3
       OnClick = CloseButtonClick

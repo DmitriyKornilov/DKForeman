@@ -40,8 +40,6 @@ type
     procedure FormShow(Sender: TObject);
     procedure LastDateCheckBoxChange(Sender: TObject);
     procedure SaveButtonClick(Sender: TObject);
-
-
   private
     DigMarks: TIntVector;
     MarkDropDown: TVSTDropDown;
@@ -87,6 +85,9 @@ end;
 
 procedure TScheduleCorrectionEditForm.FormShow(Sender: TObject);
 begin
+  SetEditButtons([SaveButton, CancelButton]);
+  Constraints.MinHeight:= Height;
+  Constraints.MinWidth:= Width;
   if SameDate(FirstDatePicker.Date, NULDATE) then
     FirstDatePicker.Date:= FirstDayInYear(Year);
   LastDatePicker.Date:= FirstDatePicker.Date;

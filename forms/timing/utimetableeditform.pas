@@ -95,6 +95,7 @@ implementation
 
 procedure TTimetableEditForm.FormShow(Sender: TObject);
 begin
+  SetEditButtons([SaveButton, CancelButton]);
   Constraints.MinWidth:= Width;
   Constraints.MinHeight:= Height;
   TotalHoursLabel.Width:= MainMarkLabel.Width;

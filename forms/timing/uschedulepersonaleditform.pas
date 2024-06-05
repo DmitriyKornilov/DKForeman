@@ -64,6 +64,9 @@ end;
 
 procedure TSchedulePersonalEditForm.FormShow(Sender: TObject);
 begin
+  SetEditButtons([SaveButton, CancelButton]);
+  Constraints.MinHeight:= Height;
+  Constraints.MinWidth:= Width;
   SchedulesUpdate;
   Sheet.SelectedIndex:= VIndexOf(ScheduleIDs, ScheduleID);
 end;

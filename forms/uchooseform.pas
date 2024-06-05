@@ -120,6 +120,7 @@ procedure TChooseForm.FormShow(Sender: TObject);
 var
   H: Integer;
 begin
+  SetEditButtons([SaveButton, CancelButton]);
   H:= ButtonPanel.Height + VT1.Height + 50;
   if VT2.Visible then
     H:= H + VT2.Height;

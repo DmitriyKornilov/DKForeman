@@ -64,6 +64,9 @@ end;
 
 procedure TStaffTabNumEditForm.FormShow(Sender: TObject);
 begin
+  SetEditButtons([SaveButton, CancelButton]);
+  Constraints.MinHeight:= Height;
+  Constraints.MinWidth:= Width;
   if EditingType=etCustom then
     DismissDatePicker.SetFocus
   else

@@ -62,6 +62,7 @@ end;
 
 procedure TCalendarEditForm.FormShow(Sender: TObject);
 begin
+  SetEditButtons([SaveButton, CancelButton]);
   FirstDatePicker.MinDate:= FirstDayInYear(Year);
   FirstDatePicker.MaxDate:= LastDayInYear(Year);
   if SameDate(DayDate, NULDATE) then //новый

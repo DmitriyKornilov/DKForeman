@@ -120,6 +120,7 @@ end;
 
 procedure TScheduleShiftEditForm.FormShow(Sender: TObject);
 begin
+  SetEditButtons([SaveButton, CancelButton]);
   Width:= Width + 5; //fix datetimepicker button size bug
 
   if not Cycle.IsWeek then
