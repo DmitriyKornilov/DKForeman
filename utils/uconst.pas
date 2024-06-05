@@ -12,7 +12,7 @@ uses
 const
   MONDAY_DATE = 45292; //01.01.2024 - ПН
   EMPTY_MARK  = '—';
-  VIEW_PARAMS_CAPTION = 'Параметры отображения';
+  VIEW_PARAMS_CAPTION = 'Параметры отображения:';
 
   TIMETABLE_TYPEMARK_KEYS: array of Integer =
     (0,               1,      2,            3,              4        );

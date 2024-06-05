@@ -112,7 +112,9 @@ type
     RecrutDates, DismissDates, PostBDs, PostEDs, ScheduleBDs, ScheduleEDs: TDateVector;
 
     procedure ParamListCreate;
+    procedure ParamListVisibles;
 
+    procedure TimetableTypeChange;
     procedure PeriodTypeSelect;
     function OrderTypeChange: Boolean;
     procedure EditButtonsEnabled;
@@ -216,7 +218,7 @@ end;
 
 procedure TTimetableMonthForm.FormShow(Sender: TObject);
 begin
-  ParamList.Show;
+  ParamListVisibles;//ParamList.Show;
   MonthDropDown.AutoWidth;
   OrderType:= 0;
   StaffListLoad;
@@ -255,57 +257,107 @@ var
 begin
   ParamList:= TVSTParamList.Create(SettingClientPanel);
 
-  //S:= VIEW_PARAMS_CAPTION;
-  //V:= VCreateStr([
-  //  'отображать строку ночных часов',
-  //  'учитывать корректировки графика',
-  //  'коды табеля для нерабочих дней',
-  //  'учитывать отпуск'
-  //]);
-  //ParamList.AddCheckList('ViewParams', S, V, @ScheduleRedraw);
-  //
-  //S:= 'Отображать в итогах количество:';
-  //V:= VCreateStr([
-  //  'дней',
-  //  'смен',
-  //  'дней и смен'
-  //]);
-  //ParamList.AddStringList('CountType', S, V, @ScheduleRecreate);
-  //
-  //S:= 'Учетный период:';
-  //V:= VCreateStr([
-  //  'год',
-  //  'квартал',
-  //  'месяц'
-  //]);
-  //ParamList.AddStringList('PeriodType', S, V, @PeriodTypeSelect);
-  //
-  //S:= 'Дополнительные столбцы:';
-  //V:= VCreateStr([
-  //  'Порядковый номер',
-  //  'Должность (профессия)',
-  //  'Табельный номер',
-  //  'Количество дней/часов за месяц',
-  //  'Сумма часов за учетный период',
-  //  'Норма часов за учетный период',
-  //  'Отклонение от нормы часов'
-  //]);
-  //ParamList.AddCheckList('ExtraColumns', S, V, @ScheduleRecreate);
-  //
-  //S:= 'Ознакомление с графиком:';
-  //V:= VCreateStr([
-  //  'не выводить',
-  //  'столбцы Дата/Подпись',
-  //  'список под таблицей'
-  //]);
-  //ParamList.AddStringList('SignType', S, V, @ScheduleRecreate);
-  //
-  //S:= 'Параметры экспорта:';
-  //V:= VCreateStr([
-  //  'заголовок таблицы на каждой странице',
-  //  'номера страниц в нижнем колонтитуле'
-  //]);
-  //ParamList.AddCheckList('ExportParams', S, V, nil);
+  S:= 'Форма табеля:';
+  V:= VCreateStr([
+    'график',
+    'Т-12',
+    'Т-13'
+  ]);
+  ParamList.AddStringList('TimetableType', S, V, @TimetableTypeChange);
+
+  S:= 'Вид табеля:';
+  V:= VCreateStr([
+    'форма',
+    'таблица'
+  ]);
+  ParamList.AddStringList('ViewType', S, V, nil{@ScheduleRecreate});
+
+  S:= 'Отображать табель за:';
+  V:= VCreateStr([
+    'половину месяца',
+    'весь месяц'
+  ]);
+  ParamList.AddStringList('MonthType', S, V, nil{@ScheduleRecreate});
+
+  S:= VIEW_PARAMS_CAPTION;
+  V:= VCreateStr([
+    'отображать строку ночных часов',
+    'коды табеля для нерабочих дней'
+  ]);
+  ParamList.AddCheckList('ViewParams', S, V, nil{@ScheduleRedraw});
+
+  S:= 'Учетный период:';
+  V:= VCreateStr([
+    'год',
+    'квартал',
+    'месяц'
+  ]);
+  ParamList.AddStringList('PeriodType', S, V, nil{@ScheduleRecreate});
+
+  S:= 'Отображать в итогах количество:';
+  V:= VCreateStr([
+    'дней',
+    'смен',
+    'дней и смен'
+  ]);
+  ParamList.AddStringList('CountType', S, V, nil{@ScheduleRecreate});
+
+  S:= 'Дополнительные столбцы:';
+  V:= VCreateStr([
+    'Порядковый номер',
+    'Должность (профессия)',
+    'Табельный номер',
+    'Количество дней/часов за месяц',
+    'Сумма часов за учетный период',
+    'Норма часов за учетный период',
+    'Отклонение от нормы часов',
+    'Ночные часы'
+  ]);
+  ParamList.AddCheckList('ExtraColumns', S, V, nil{@ScheduleRecreate});
+
+  S:= 'Параметры экспорта:';
+  V:= VCreateStr([
+    'заголовок таблицы на каждой странице',
+    'номера страниц в нижнем колонтитуле'
+  ]);
+  ParamList.AddCheckList('ExportParams', S, V, nil);
+
+  S:= 'Вид обрамляющих линий таблицы:';
+  V:= VCreateStr([
+    'простые',
+    'утолщенные',
+    'двойные'
+  ]);
+  ParamList.AddStringList('LineType', S, V, nil{@ScheduleRecreate});
+end;
+
+procedure TTimetableMonthForm.ParamListVisibles;
+begin
+  if ParamList.Selected['TimetableType']=0 then
+  begin
+    ParamList.Visibles['ViewType']:= False;
+    ParamList.Visibles['ViewParams']:= True;
+    ParamList.Visibles['PeriodType']:= True;
+    ParamList.Visibles['CountType']:= True;
+    ParamList.Visibles['ExtraColumns']:= True;
+    ParamList.Visibles['LineType']:= False;
+  end else
+  begin
+    ParamList.Visibles['ViewType']:= True;
+    ParamList.Visibles['ViewParams']:= False;
+    ParamList.Visibles['PeriodType']:= False;
+    ParamList.Visibles['CountType']:= False;
+    ParamList.Visibles['ExtraColumns']:= False;
+    ParamList.Visibles['LineType']:= True;
+  end;
+end;
+
+procedure TTimetableMonthForm.TimetableTypeChange;
+begin
+  if not CanLoadAndDraw then Exit;
+  ParamListVisibles;
+
+
 end;
 
 procedure TTimetableMonthForm.PeriodTypeSelect;
