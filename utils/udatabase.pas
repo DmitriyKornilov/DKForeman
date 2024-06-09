@@ -302,7 +302,8 @@ type
     {Актуализация записей табеля в соответствии с графиком: True - ОК, False - ошибка}
     function TimetableByScheduleUpdate(const ATabNumID: Integer;
                              const ACalendar: TCalendar;
-                             const ASchedule: TPersonalSchedule): Boolean;
+                             const ASchedule: TPersonalSchedule;
+                             const AUpdateWritedOnly: Boolean): Boolean;
 
     //редактирование табеля----------------------------------------------------
     {Удаление дней из табеля: True - ОК, False - ошибка}
@@ -331,8 +332,16 @@ type
     function TimetableFirstWritedDateLoad(const ATabNumID: Integer; out ADate: TDate): Boolean;
     function TimetableLastWritedDateLoad(const ATabNumID: Integer; out ADate: TDate): Boolean;
     function TimetableFirstLastWritedDatesLoad(const ATabNumID: Integer; out AFirstDate, ALastDate: TDate): Boolean;
+
+    {Cумма часов за период}
+    function TimetableSumHoursInPeriodLoad(const AFieldName: String;
+                                   const ATabNumID: Integer;
+                                   const ABeginDate, AEndDate: TDate): Integer;
     {Cумма отработанных часов за период}
     function TimetableSumTotalHoursInPeriodLoad(const ATabNumID: Integer;
+                                   const ABeginDate, AEndDate: TDate): Integer;
+    {Cумма ночных часов за период}
+    function TimetableSumNightHoursInPeriodLoad(const ATabNumID: Integer;
                                    const ABeginDate, AEndDate: TDate): Integer;
     {Данные дня табеля: True - ОК, False - пусто}
     function TimetableDayLoad(const TabNumID: Integer; const ADate: TDate;
@@ -2116,22 +2125,38 @@ begin
            TimetableLastWritedDateLoad(ATabNumID, ALastDate);
 end;
 
-function TDataBase.TimetableSumTotalHoursInPeriodLoad(const ATabNumID: Integer;
-  const ABeginDate, AEndDate: TDate): Integer;
+function TDataBase.TimetableSumHoursInPeriodLoad(const AFieldName: String;
+                                   const ATabNumID: Integer;
+                                   const ABeginDate, AEndDate: TDate): Integer;
+var
+  FieldName: String;
 begin
   Result:= 0;
+  FieldName:= SQLEsc(AFieldName);
   QSetQuery(FQuery);
   QSetSQL(
-   'SELECT SUM(TotalHours) AS SumTotalHours ' +
+   'SELECT SUM(' + FieldName + ') AS SumHours ' +
    'FROM TIMETABLELOG ' +
-   'WHERE (TabNumID = :TabNumID) AND (DayDate BETWEEN :BD AND :ED) AND (TotalHours>0)');
+   'WHERE (TabNumID = :TabNumID) AND (DayDate BETWEEN :BD AND :ED) AND ('+FieldName+'>0)');
   QParamInt('TabNumID', ATabNumID);
   QParamDT('BD', ABeginDate);
   QParamDT('ED', AEndDate);
   QOpen;
   if not QIsEmpty then
-    Result:= QFieldInt('SumTotalHours');
+    Result:= QFieldInt('SumHours');
   QClose;
+end;
+
+function TDataBase.TimetableSumTotalHoursInPeriodLoad(const ATabNumID: Integer;
+  const ABeginDate, AEndDate: TDate): Integer;
+begin
+  Result:= TimetableSumHoursInPeriodLoad('TotalHours', ATabNumID, ABeginDate, AEndDate);
+end;
+
+function TDataBase.TimetableSumNightHoursInPeriodLoad(const ATabNumID: Integer;
+  const ABeginDate, AEndDate: TDate): Integer;
+begin
+  Result:= TimetableSumHoursInPeriodLoad('NightHours', ATabNumID, ABeginDate, AEndDate);
 end;
 
 function TDataBase.TimetableDayLoad(const TabNumID: Integer; const ADate: TDate;
@@ -2348,7 +2373,8 @@ begin
 end;
 
 function TDataBase.TimetableByScheduleUpdate(const ATabNumID: Integer;
-  const ACalendar: TCalendar; const ASchedule: TPersonalSchedule): Boolean;
+  const ACalendar: TCalendar; const ASchedule: TPersonalSchedule;
+  const AUpdateWritedOnly: Boolean): Boolean;
 var
   i, WritedScheduleHours: Integer;
   IsManualChangedDay: Boolean;
@@ -2377,6 +2403,13 @@ begin
           //записываем данные за день
           TimetableDayAdd(ATabNumID, ACalendar.Dates[i], TimetableDay);
         end;
+      end
+      else begin //день не записан в базу
+        if AUpdateWritedOnly then continue;
+        //определяем данные за день
+        TimetableDay:= TimetableDayDataFromSchedule(ASchedule, ACalendar.DayStatuses[i], i);
+        //записываем данные за день
+        TimetableDayAdd(ATabNumID, ACalendar.Dates[i], TimetableDay);
       end;
     end;
     QCommit;

@@ -12,8 +12,8 @@ uses
   DK_Vector, DK_Matrix, DK_Math, DK_Fonts, DK_Const, DK_DateUtils,
   DK_StrUtils, DK_VSTTables, DK_VSTParamList, DK_Zoom, DK_SheetExporter, DK_Progress,
   //Project utils
-  UDataBase, UConst, UUtils, UCalendar, UTimetable, UTimetableSheet, UWorkHours,
-  UTypes,
+  UDataBase, UConst, UUtils, UCalendar, UTimetable, UTimetableSheet,
+  UTimingSheet, UWorkHours, UTypes,
   //Forms
   UTimetableEditForm, UChooseForm;
 
@@ -111,6 +111,13 @@ type
     StaffNames, TabNums, PostNames: TStrVector;
     RecrutDates, DismissDates, PostBDs, PostEDs, ScheduleBDs, ScheduleEDs: TDateVector;
 
+    Holidays: TDateVector;
+    BeforeTotalHours, BeforeNightHours: TIntVector;
+    MonthCalendar, YearCalendar: TCalendar;
+    Timetables: TTimetableVector;
+
+    Sheet: TMonthTimetableSheet;
+
     procedure ParamListCreate;
     procedure ParamListVisibles;
 
@@ -123,6 +130,16 @@ type
     procedure StaffListLoad;
     procedure VStaffListSelect;
     procedure MStaffListSelect;
+
+    procedure TimetableLoad;
+    procedure TimetableSheetCreate;
+    procedure TimetableSheetRecreate;
+    procedure TimetableDraw(const AZoomPercent: Integer);
+    procedure TimetableRedraw;
+    procedure TimetableSelect;
+
+    procedure SelectionMove(const ADirection: TMoveDirection);
+    procedure RowsMerge;
 
     procedure SettingsSave;
     procedure SettingsLoad;
@@ -181,16 +198,15 @@ begin
 
   CanLoadAndDraw:= False;
 
-  //Calendar:= TCalendar.Create;
-  //BeforeCalendar:= TCalendar.Create;
-  //YearCalendar:= TCalendar.Create;
+  MonthCalendar:= TCalendar.Create;
+  YearCalendar:= TCalendar.Create;
 
   ParamListCreate;
 
   MonthDropDown:= TMonthDropDown.Create(MonthBCButton, @StaffListLoad);
 
   SettingsLoad; //load ZoomPercent
-  CreateZoomControls(50, 150, ZoomPercent, ZoomPanel, nil{@ScheduleDraw}, True);
+  CreateZoomControls(50, 150, ZoomPercent, ZoomPanel, @TimetableDraw, True);
 
   StaffListCreate;
 
@@ -203,17 +219,17 @@ begin
 
   FreeAndNil(ParamList);
 
-  //FreeAndNil(Calendar);
-  //FreeAndNil(BeforeCalendar);
-  //FreeAndNil(YearCalendar);
+  FreeAndNil(MonthCalendar);
+  FreeAndNil(YearCalendar);
   FreeAndNil(MonthDropDown);
   FreeAndNil(VStaffList);
   FreeAndNil(MStaffList);
-  //FreeAndNil(Sheet);
 
-  //VSDel(Schedules);
-  //VSDel(BeforeSchedules);
-  //MSDel(PostSchedules);
+  if Assigned(Sheet) then FreeAndNil(Sheet);
+  //if Assigned(SheetT12) then FreeAndNil(SheetT12);
+  //if Assigned(SheetT13) then FreeAndNil(SheetT13);
+
+  VTDel(Timetables);
 end;
 
 procedure TTimetableMonthForm.FormShow(Sender: TObject);
@@ -270,21 +286,21 @@ begin
     'форма',
     'таблица'
   ]);
-  ParamList.AddStringList('ViewType', S, V, nil{@ScheduleRecreate});
+  ParamList.AddStringList('ViewType', S, V, @TimetableRedraw);
 
   S:= 'Отображать табель за:';
   V:= VCreateStr([
     'половину месяца',
     'весь месяц'
   ]);
-  ParamList.AddStringList('MonthType', S, V, nil{@ScheduleRecreate});
+  ParamList.AddStringList('MonthType', S, V, @TimetableRedraw);
 
   S:= VIEW_PARAMS_CAPTION;
   V:= VCreateStr([
     'отображать строку ночных часов',
     'коды табеля для нерабочих дней'
   ]);
-  ParamList.AddCheckList('ViewParams', S, V, nil{@ScheduleRedraw});
+  ParamList.AddCheckList('ViewParams', S, V, @TimetableRedraw);
 
   S:= 'Учетный период:';
   V:= VCreateStr([
@@ -292,7 +308,7 @@ begin
     'квартал',
     'месяц'
   ]);
-  ParamList.AddStringList('PeriodType', S, V, nil{@ScheduleRecreate});
+  ParamList.AddStringList('PeriodType', S, V, @TimetableSheetRecreate);
 
   S:= 'Отображать в итогах количество:';
   V:= VCreateStr([
@@ -300,7 +316,7 @@ begin
     'смен',
     'дней и смен'
   ]);
-  ParamList.AddStringList('CountType', S, V, nil{@ScheduleRecreate});
+  ParamList.AddStringList('CountType', S, V, @TimetableSheetRecreate);
 
   S:= 'Дополнительные столбцы:';
   V:= VCreateStr([
@@ -313,7 +329,7 @@ begin
     'Отклонение от нормы часов',
     'Ночные часы'
   ]);
-  ParamList.AddCheckList('ExtraColumns', S, V, nil{@ScheduleRecreate});
+  ParamList.AddCheckList('ExtraColumns', S, V, @TimetableSheetRecreate);
 
   S:= 'Параметры экспорта:';
   V:= VCreateStr([
@@ -328,7 +344,7 @@ begin
     'утолщенные',
     'двойные'
   ]);
-  ParamList.AddStringList('LineType', S, V, nil{@ScheduleRecreate});
+  ParamList.AddStringList('LineType', S, V, nil);
 end;
 
 procedure TTimetableMonthForm.ParamListVisibles;
@@ -358,8 +374,7 @@ procedure TTimetableMonthForm.TimetableTypeChange;
 begin
   if not CanLoadAndDraw then Exit;
   ParamListVisibles;
-
-
+  TimetableSheetRecreate;
 end;
 
 procedure TTimetableMonthForm.PeriodTypeSelect;
@@ -369,32 +384,31 @@ var
 begin
   if not CanLoadAndDraw then Exit;
 
-  //Screen.Cursor:= crHandPoint;
-  //try
-  //  AccountingPeriodWithMonth(MonthDropDown.Month, YearSpinEdit.Value,
-  //                            ParamList.Selected['PeriodType'], BD, ED);
-  //  for i:= 0 to High(TabNumIDs) do
-  //  begin
-  //    NormHoursAndWorkDaysCounInPeriod(TabNumIDs[i], BD, ED, YearCalendar, d, h);
-  //    NormHours[i]:= h;
-  //  end;
-  //
-  //  if Length(BeforeSchedules)>0 then
-  //  begin
-  //    AccountingPeriodBeforeMonth(MonthDropDown.Month, YearSpinEdit.Value,
-  //                            ParamList.Selected['PeriodType'], BD, ED);
-  //    YearCalendar.Cut(BD, ED, BeforeCalendar);
-  //    for i:= 0 to High(TabNumIDs) do
-  //      BeforeSchedules[i]:= SchedulePersonalByCalendar(TabNumIDs[i], TabNums[i],
-  //        RecrutDates[i], DismissDates[i], BeforeCalendar, Holidays, False{fact vacations},
-  //        STRMARK_VACATIONMAIN, STRMARK_VACATIONADDITION, STRMARK_VACATIONHOLIDAY,
-  //        ScheduleBDs[i], ScheduleEDs[i], PostBDs[i], PostEDs[i]);
-  //  end;
-  //
-  //  ScheduleRecreate;
-  //finally
-  //  Screen.Cursor:= crDefault;
-  //end;
+  Screen.Cursor:= crHandPoint;
+  try
+    AccountingPeriodWithMonth(MonthDropDown.Month, YearSpinEdit.Value,
+                              ParamList.Selected['PeriodType'], BD, ED);
+    for i:= 0 to High(TabNumIDs) do
+    begin
+      NormHoursAndWorkDaysCounInPeriod(TabNumIDs[i], BD, ED, YearCalendar, d, h);
+      NormHours[i]:= h;
+    end;
+
+    if Length(BeforeTotalHours)>0 then
+    begin
+      AccountingPeriodBeforeMonth(MonthDropDown.Month, YearSpinEdit.Value,
+                                  ParamList.Selected['PeriodType'], BD, ED);
+      for i:=0 to High(TabNumIDs) do
+      begin
+        BeforeTotalHours[i]:= DataBase.TimetableSumTotalHoursInPeriodLoad(TabNumIDs[i], BD, ED);
+        BeforeNightHours[i]:= DataBase.TimetableSumNightHoursInPeriodLoad(TabNumIDs[i], BD, ED);
+      end;
+    end;
+
+    TimetableSheetRecreate;
+  finally
+    Screen.Cursor:= crDefault;
+  end;
 end;
 
 procedure TTimetableMonthForm.CloseButtonClick(Sender: TObject);
@@ -443,8 +457,8 @@ begin
   SettingButton.Visible:= True;
   EditingButton.Visible:= True;
 
-  //ScheduleLoad;
-  //ScheduleRecreate;
+  TimetableLoad;
+  TimetableSheetRecreate;
   ViewUpdate;
   EditButtonsEnabled;
 end;
@@ -463,17 +477,17 @@ end;
 
 procedure TTimetableMonthForm.RowDownButtonClick(Sender: TObject);
 begin
-  //SelectionMove(mdDown);
+  SelectionMove(mdDown);
 end;
 
 procedure TTimetableMonthForm.RowMergeButtonClick(Sender: TObject);
 begin
-  //RowsMerge;
+  RowsMerge;
 end;
 
 procedure TTimetableMonthForm.RowUpButtonClick(Sender: TObject);
 begin
-  //SelectionMove(mdUp);
+  SelectionMove(mdUp);
 end;
 
 procedure TTimetableMonthForm.ScheduleRadioButtonClick(Sender: TObject);
@@ -547,11 +561,19 @@ begin
 end;
 
 procedure TTimetableMonthForm.EditButtonsEnabled;
+var
+  S: TMonthCustomSheet;
 begin
-  //DayEditButton.Enabled:= Sheet.IsDateSelected;
-  //RowUpButton.Enabled:= Sheet.IsRowSelected and (Sheet.SelectedIndex>0);
-  //RowDownButton.Enabled:= Sheet.IsRowSelected and (Sheet.SelectedIndex<High(Schedules));
-  //RowMergeButton.Enabled:= Sheet.IsDoubleRowSelected;
+  case ParamList.Selected['TimetableType'] of
+    0: S:= Sheet;
+    1: ;//S:= SheetT12;
+    2: ;//S:= SheetT13;
+  end;
+
+  DayEditButton.Enabled:= S.IsDateSelected;
+  RowUpButton.Enabled:= S.IsRowSelected and (S.SelectedIndex>0);
+  RowDownButton.Enabled:= S.IsRowSelected and (S.SelectedIndex<High(Timetables));
+  RowMergeButton.Enabled:= S.IsDoubleRowSelected;
 end;
 
 procedure TTimetableMonthForm.StaffListLoad;
@@ -632,7 +654,332 @@ begin
   TimetableButton.Enabled:= MStaffList.IsSelected;
 end;
 
+procedure TTimetableMonthForm.TimetableLoad;
+var
+  Y, M: Word;
+  Progress: TProgress;
 
+  procedure GetCategoryValues;
+  var
+    Flags: TBoolMatrix;
+  begin
+    Flags:= MStaffList.Selected;
+    TabNumIDs:= MToVector(MTabNumIDs, Flags);
+    StaffNames:= MToVector(MStaffNames, Flags);
+    PostNames:= MToVector(MPostNames, Flags);
+    TabNums:= MToVector(MTabNums, Flags);
+    RecrutDates:= MToVector(MRecrutDates, Flags);
+    DismissDates:= MToVector(MDismissDates, Flags);
+    PostBDs:= MToVector(MPostBDs, Flags);
+    PostEDs:= MToVector(MPostEDs, Flags);
+    ScheduleBDs:= MToVector(MScheduleBDs, Flags);
+    ScheduleEDs:= MToVector(MScheduleEDs, Flags);
+  end;
+
+  procedure GetSimpleValues;
+  var
+    Flags: TBoolVector;
+  begin
+    Flags:= VStaffList.Selected;
+    TabNumIDs:= VCut(VTabNumIDs, Flags);
+    StaffNames:= VCut(VStaffNames, Flags);
+    PostNames:= VCut(VPostNames, Flags);
+    TabNums:= VCut(VTabNums, Flags);
+    RecrutDates:= VCut(VRecrutDates, Flags);
+    DismissDates:= VCut(VDismissDates, Flags);
+    PostBDs:= VCut(VPostBDs, Flags);
+    PostEDs:= VCut(VPostEDs, Flags);
+    ScheduleBDs:= VCut(VScheduleBDs, Flags);
+    ScheduleEDs:= VCut(VScheduleEDs, Flags);
+  end;
+
+  procedure TimetablesCalc;
+  var
+    i: Integer;
+    S: String;
+    BD, ED: TDate;
+    Timetable: TTimetable;
+  begin
+    FirstLastDayInMonth(M, Y, BD, ED);
+    YearCalendar.Cut(BD, ED, MonthCalendar);
+    Progress.WriteLine1('Расчет табелей');
+    for i:=0 to High(TabNumIDs) do
+    begin
+      S:= StaffNames[i] + ' [таб.№ ' + TabNums[i] + '] - ' + PostNames[i];
+      Progress.WriteLine2(S);
+      Timetable:= TTimetable.Create(TabNumIDs[i], TabNums[i],
+                                    RecrutDates[i], DismissDates[i],
+                                    Holidays, MonthCalendar,
+                                    True {need update}, False {update writed only},
+                                    STRMARK_NIGHT, STRMARK_OVER,
+                                    ScheduleBDs[i], ScheduleEDs[i],
+                                    PostBDs[i], PostEDs[i]);
+      VTAppend(Timetables, Timetable);
+    end;
+  end;
+
+  procedure NormHoursCalc;
+  var
+    i, Days, Hours: Integer;
+    BD, ED: TDate;
+    S: String;
+  begin
+    Progress.WriteLine1('Расчет нормы часов');
+    VDim(NormHours, Length(TabNumIDs));
+    AccountingPeriodWithMonth(M, Y, ParamList.Selected['PeriodType'], BD, ED);
+    for i:=0 to High(TabNumIDs) do
+    begin
+      S:= StaffNames[i] + ' [таб.№ ' + TabNums[i] + '] - ' + PostNames[i];
+      Progress.WriteLine2(S);
+      NormHoursAndWorkDaysCounInPeriod(TabNumIDs[i], BD, ED, YearCalendar, Days, Hours);
+      NormHours[i]:= Hours;
+    end;
+  end;
+
+  procedure BeforeHoursCalc;
+  var
+    IsBeforePeriodExists: Boolean;
+    i: Integer;
+    BD, ED: TDate;
+    S: String;
+  begin
+    BeforeTotalHours:= nil;
+    BeforeNightHours:= nil;
+    IsBeforePeriodExists:= (ParamList.Selected['PeriodType']<2 {учетный период<>месяц}) and
+                 AccountingPeriodBeforeMonth(M, Y, ParamList.Selected['PeriodType'], BD, ED);
+    if not IsBeforePeriodExists then Exit;
+
+    Progress.WriteLine1('Расчет отработанных часов');
+    VDim(BeforeTotalHours, Length(TabNumIDs));
+    VDim(BeforeNightHours, Length(TabNumIDs));
+    for i:=0 to High(TabNumIDs) do
+    begin
+      S:= StaffNames[i] + ' [таб.№ ' + TabNums[i] + '] - ' + PostNames[i];
+      Progress.WriteLine2(S);
+      BeforeTotalHours[i]:= DataBase.TimetableSumTotalHoursInPeriodLoad(TabNumIDs[i], BD, ED);
+      BeforeNightHours[i]:= DataBase.TimetableSumNightHoursInPeriodLoad(TabNumIDs[i], BD, ED);
+    end;
+  end;
+
+begin
+  if not CanLoadAndDraw then Exit;
+
+  VTDel(Timetables);
+
+  if OrderType<=1 then
+    GetCategoryValues
+  else
+    GetSimpleValues;
+  if VIsNil(TabNumIDs) then Exit;
+
+  Y:= YearSpinEdit.Value;
+  M:= MonthDropDown.Month;
+  Holidays:= DataBase.HolidaysLoad(Y);
+  CalendarForYear(Y, YearCalendar);
+
+  Progress:= TProgress.Create(nil);
+  try
+    Progress.WriteLine1(EmptyStr);
+    Progress.WriteLine2(EmptyStr);
+    Progress.Show;
+
+    TimetablesCalc;
+    NormHoursCalc;
+    BeforeHoursCalc;
+  finally
+    FreeAndNil(Progress);
+  end;
+end;
+
+procedure TTimetableMonthForm.TimetableSheetCreate;
+begin
+  case ParamList.Selected['TimetableType'] of
+    0: //форма графика
+      begin
+        if Assigned(Sheet) then FreeAndNil(Sheet);
+        Sheet:= TMonthTimetableSheet.Create(ViewGrid.Worksheet, ViewGrid, MainForm.GridFont,
+                                            ParamList.Selected['CountType'],
+                                            ParamList.Selected['PeriodType'],
+                                            ParamList.Checkeds['ExtraColumns']);
+        Sheet.CanSelect:= EditingButton.Down;
+        Sheet.OnSelect:= @TimetableSelect;
+      end;
+    1: //форма T-12
+      begin
+        //if Assigned(SheetT12) then FreeAndNil(SheetT12);
+
+        //SheetT12.CanSelect:= EditingButton.Down;
+        //SheetT12.OnSelect:= @TimetableSelect;
+      end;
+    2: //форма T-13
+      begin
+        //if Assigned(SheetT13) then FreeAndNil(SheetT13);
+
+        //SheetT13.CanSelect:= EditingButton.Down;
+        //SheetT13.OnSelect:= @TimetableSelect;
+      end;
+  end;
+end;
+
+procedure TTimetableMonthForm.TimetableSheetRecreate;
+begin
+  if not CanLoadAndDraw then Exit;
+  TimetableSheetCreate;
+  TimetableRedraw;
+end;
+
+procedure TTimetableMonthForm.TimetableDraw(const AZoomPercent: Integer);
+begin
+  if not CanLoadAndDraw then Exit;
+  ViewGrid.Visible:= False;
+  Screen.Cursor:= crHourGlass;
+  try
+    ZoomPercent:= AZoomPercent;
+    case ParamList.Selected['TimetableType'] of
+      0: //форма графика
+        begin
+          Sheet.Zoom(ZoomPercent);
+          Sheet.Draw(MonthCalendar,
+                 StaffNames, TabNums, PostNames, NormHours,
+                 ParamList.Checkeds['ViewParams'],
+                 ParamList.Checkeds['ExportParams'],
+                 Timetables, BeforeTotalHours, BeforeNightHours,
+                 ParamList.Selected['MonthType']=0);
+        end;
+      1: //форма T-12
+        begin
+
+        end;
+      2: //форма T-13
+        begin
+
+        end;
+    end;
+  finally
+    ViewGrid.Visible:= True;
+    Screen.Cursor:= crDefault;
+  end;
+end;
+
+procedure TTimetableMonthForm.TimetableRedraw;
+begin
+  TimetableDraw(ZoomPercent);
+end;
+
+procedure TTimetableMonthForm.TimetableSelect;
+begin
+  EditButtonsEnabled;
+end;
+
+procedure TTimetableMonthForm.SelectionMove(const ADirection: TMoveDirection);
+var
+  OldSelectedIndex, NewSelectedIndex: Integer;
+  S: TMonthCustomSheet;
+begin
+  case ParamList.Selected['TimetableType'] of
+    0: S:= Sheet;
+    1: ;//S:= SheetT12;
+    2: ;//S:= SheetT13;
+  end;
+
+  if ADirection=mdUp then
+    NewSelectedIndex:= S.SelectedIndex - 1
+  else if ADirection=mdDown then
+    NewSelectedIndex:= S.SelectedIndex + 1
+  else Exit;
+  OldSelectedIndex:= S.SelectedIndex;
+
+  VSwap(StaffNames, OldSelectedIndex, NewSelectedIndex);
+  VSwap(PostNames, OldSelectedIndex, NewSelectedIndex);
+  VSwap(TabNumIDs, OldSelectedIndex, NewSelectedIndex);
+  VSwap(TabNums, OldSelectedIndex, NewSelectedIndex);
+  VSwap(NormHours, OldSelectedIndex, NewSelectedIndex);
+  VSwap(PostBDs, OldSelectedIndex, NewSelectedIndex);
+  VSwap(PostEDs, OldSelectedIndex, NewSelectedIndex);
+  VSwap(ScheduleBDs, OldSelectedIndex, NewSelectedIndex);
+  VSwap(ScheduleEDs, OldSelectedIndex, NewSelectedIndex);
+  VSwap(RecrutDates, OldSelectedIndex, NewSelectedIndex);
+  VSwap(DismissDates, OldSelectedIndex, NewSelectedIndex);
+  VSwap(BeforeTotalHours, OldSelectedIndex, NewSelectedIndex);
+  VSwap(BeforeNightHours, OldSelectedIndex, NewSelectedIndex);
+  VTSwap(Timetables, OldSelectedIndex, NewSelectedIndex);
+
+  S.SelectionMove(NewSelectedIndex);
+end;
+
+procedure TTimetableMonthForm.RowsMerge;
+var
+  ChooseIndex1, ChooseIndex2: Integer;
+  V1, V2: TStrVector;
+  RowIndexes: TIntVector;
+  PostName: String;
+
+  procedure Merge(const AResultIndex, ADeleteIndex: Integer; const APostName: String);
+  var
+    S: TMonthCustomSheet;
+  begin
+    //должность, в результирующей строке
+    PostNames[AResultIndex]:= APostName;
+    //табель в результирующей строке
+    Timetables[AResultIndex].Add(Timetables[ADeleteIndex]);
+    //периоды должностей и графиков в строке
+    //PostBDs[AResultIndex]:= VAdd(PostBDs[AResultIndex], PostBDs[ADeleteIndex]);
+    //PostsEDs[AResultIndex]:= VAdd(PostsEDs[AResultIndex], PostsEDs[ADeleteIndex]);
+    //ScheduleBDs[AResultIndex]:= VAdd(ScheduleBDs[AResultIndex], ScheduleBDs[ADeleteIndex]);
+    //ScheduleEDs[AResultIndex]:= VAdd(ScheduleEDs[AResultIndex], ScheduleEDs[ADeleteIndex]);
+    //удаляем элементы векторов
+    VDel(StaffNames, ADeleteIndex);
+    VDel(PostNames, ADeleteIndex);
+    VDel(TabNumIDs, ADeleteIndex);
+    VDel(TabNums, ADeleteIndex);
+    VDel(NormHours, ADeleteIndex);
+    VDel(PostBDs, ADeleteIndex);
+    VDel(PostEDs, ADeleteIndex);
+    VDel(ScheduleBDs, ADeleteIndex);
+    VDel(ScheduleEDs, ADeleteIndex);
+    VDel(RecrutDates, ADeleteIndex);
+    VDel(DismissDates, ADeleteIndex);
+    VDel(BeforeTotalHours, ADeleteIndex);
+    VDel(BeforeNightHours, ADeleteIndex);
+    VTDel(Timetables, ADeleteIndex);
+    TimetableRedraw;
+    case ParamList.Selected['TimetableType'] of
+      0: S:= Sheet;
+      1: ;//S:= SheetT12;
+      2: ;//S:= SheetT13;
+    end;
+    S.Select(AResultIndex - Ord(AResultIndex>ADeleteIndex));
+  end;
+
+begin
+  RowIndexes:= VCreateInt([
+    Min(Sheet.SelectedIndex, Sheet.SelectedIndex2),
+    Max(Sheet.SelectedIndex, Sheet.SelectedIndex2)
+  ]);
+
+  V1:= VCreateStr(['№ ' + IntToStr(RowIndexes[0]+1), '№ ' + IntToStr(RowIndexes[1]+1)]);
+  V2:= nil;
+  if not SSame(PostNames[RowIndexes[0]], PostNames[RowIndexes[1]]) then
+    V2:= VCreateStr([PostNames[RowIndexes[0]], PostNames[RowIndexes[1]]]);
+  if not Choose('Записать объединенные данные в строку:',
+                'Записать в результирующую строку должность (профессию):',
+                V1, V2, ChooseIndex1, ChooseIndex2) then Exit;
+
+  if ChooseIndex2>=0 then
+    PostName:= PostNames[RowIndexes[ChooseIndex2]]
+  else
+    PostName:= PostNames[RowIndexes[0]];
+
+  if ChooseIndex1=1 then
+    VSwap(RowIndexes, 0, 1);
+
+  Screen.Cursor:= crHourGlass;
+  try
+    Merge(RowIndexes[0], RowIndexes[1], PostName);
+  finally
+    Screen.Cursor:= crDefault;
+  end;
+end;
 
 procedure TTimetableMonthForm.SettingsSave;
 begin
@@ -641,13 +988,18 @@ end;
 
 procedure TTimetableMonthForm.SettingsLoad;
 begin
-
+  ZoomPercent:= 100;
 end;
 
 procedure TTimetableMonthForm.ViewUpdate;
 begin
   EditPanel.Visible:= EditingButton.Down;
-  //Sheet.CanSelect:= EditingButton.Down;
+
+  case ParamList.Selected['TimetableType'] of
+    0: Sheet.CanSelect:= EditingButton.Down;
+    1: ;//SheetT12.CanSelect:= EditingButton.Down;
+    2: ;//SheetT13.CanSelect:= EditingButton.Down;
+  end;
 
   if SettingButton.Down then
   begin

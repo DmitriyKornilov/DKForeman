@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, Graphics, fpspreadsheetgrid, fpspreadsheet,
   //Project utils
-  UConst, UCalendar, UWorkHours, UDateSheet,
+  UConst, UCalendar, UWorkHours, UTimingSheet,
   //DK packages utils
   DK_SheetWriter, DK_Vector, DK_Const, DK_DateUtils, DK_StrUtils, DK_SheetTypes;
 

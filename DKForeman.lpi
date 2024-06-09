@@ -234,9 +234,9 @@
         <UnitName Value="USchedule"/>
       </Unit>
       <Unit>
-        <Filename Value="utils\timing\udatesheet.pas"/>
+        <Filename Value="utils\timing\utimingsheet.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="UDateSheet"/>
+        <UnitName Value="UTimingSheet"/>
       </Unit>
       <Unit>
         <Filename Value="utils\timing\uschedulesheet.pas"/>

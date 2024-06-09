@@ -190,7 +190,7 @@ type
     procedure StaffListLoad(const SelectedID: Integer = -1);
 
     procedure ScheduleLoad;
-    procedure ScheduleChange;
+    procedure ScheduleChange(const AChangeIfSameTabNumAndYear: Boolean = False);
     procedure ScheduleToSheet(var ASheet: TPersonalYearScheduleSheet;
                               const AWorksheet: TsWorksheet;
                               const AGrid: TsWorksheetGrid;
@@ -834,12 +834,13 @@ begin
     Calendar, Holidays, False);
 end;
 
-procedure TSchedulePersonalForm.ScheduleChange;
+procedure TSchedulePersonalForm.ScheduleChange(const AChangeIfSameTabNumAndYear: Boolean = False);
 begin
   if not CanDraw then Exit;
   if not StaffList.IsSelected then Exit;
 
-  if (TabNumIDs[StaffList.SelectedIndex]=ViewTabNumID) and
+  if (not AChangeIfSameTabNumAndYear) and
+     (TabNumIDs[StaffList.SelectedIndex]=ViewTabNumID) and
      (YearSpinEdit.Value = ViewYear) then Exit;
   ViewYear:= YearSpinEdit.Value;
   ViewTabNumID:= TabNumIDs[StaffList.SelectedIndex];
@@ -1200,7 +1201,7 @@ begin
     if SchedulePersonalEditForm.ShowModal=mrOK then
     begin
       HistoryLoad(SchedulePersonalEditForm.HistoryID);
-      ScheduleChange;
+      ScheduleChange(True);
     end;
   finally
     FreeAndNil(SchedulePersonalEditForm);

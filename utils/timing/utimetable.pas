@@ -37,6 +37,9 @@ const
   {флаги существования}
   EXISTS_NO  = 0;
   EXISTS_YES = 1;
+  {флаги заданности графика}
+  DEFINE_NO  = 0;
+  DEFINE_YES = 1;
 
   STRMARK_NIGHT       = 'Н';
   STRMARK_OVER        = 'С';
@@ -166,7 +169,7 @@ type
       FHolidayDates: TDateVector; //вектор дат нерабочих праздничных дней в этом и предыдущем году
       procedure GetSkipStrings(ABeginInd, AEndInd: Integer;
                                out AMarksSkipStr, ADaysHoursSkipStr: String);
-      procedure Calc(const ANeedUpdate: Boolean);
+      procedure Calc(const ANeedUpdate, AUpdateWritedOnly: Boolean);
       procedure CalcResume(const ABeginIndex, AEndIndex: Integer);
       procedure CalcHoursInReportPeriod;
     public
@@ -175,6 +178,7 @@ type
                          const AHolidayDates: TDateVector;
                          const AMonthCalendar: TCalendar;
                          const ANeedUpdate: Boolean = True;
+                         const AUpdateWritedOnly: Boolean = True;
                          const ANightMarkStr: String = STRMARK_NIGHT;
                          const AOverMarkStr: String = STRMARK_OVER;
                          const ATimetableBeginDate: TDate = NULDATE;
@@ -324,6 +328,7 @@ constructor TTimetable.Create(const ATabNumID: Integer; const ATabNum: String;
                          const AHolidayDates: TDateVector;
                          const AMonthCalendar: TCalendar;
                          const ANeedUpdate: Boolean = True;
+                         const AUpdateWritedOnly: Boolean = True;
                          const ANightMarkStr: String = STRMARK_NIGHT;
                          const AOverMarkStr: String = STRMARK_OVER;
                          const ATimetableBeginDate: TDate = NULDATE;
@@ -345,7 +350,7 @@ begin
   FMonthCalendar:= nil;
   AMonthCalendar.Cut(AMonthCalendar.BeginDate, AMonthCalendar.EndDate, FMonthCalendar);
   FHolidayDates:= AHolidayDates;
-  Calc(ANeedUpdate);
+  Calc(ANeedUpdate, AUpdateWritedOnly);
 end;
 
 destructor TTimetable.Destroy;
@@ -526,7 +531,7 @@ begin
   end;
 end;
 
-procedure TTimetable.Calc(const ANeedUpdate: Boolean);
+procedure TTimetable.Calc(const ANeedUpdate, AUpdateWritedOnly: Boolean);
 var
   ExistBD, ExistED: TDate;
   i, N1, N2: Integer;
@@ -537,7 +542,7 @@ begin
   //обновляем записи в базе по графику, если они есть для этого месяца
   if ANeedUpdate then
     TimetableForPeriodUpdate(FTabNumID,
-      FMonthCalendar.BeginDate, FMonthCalendar.EndDate, FHolidayDates);
+      FMonthCalendar.BeginDate, FMonthCalendar.EndDate, FHolidayDates, AUpdateWritedOnly);
   //дефолтные значения векторов данных
   N1:= FMonthCalendar.DaysCount;
   VDim(FIsManualChanged, N1, MANUAL_NO);

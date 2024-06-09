@@ -94,7 +94,7 @@ type
     OrderType: Integer;
 
     Holidays: TDateVector;
-    Calendar, BeforeCalendar, YearCalendar: TCalendar;
+    MonthCalendar, BeforeCalendar, YearCalendar: TCalendar;
     Schedules: TPersonalScheduleVector;
     BeforeSchedules: TPersonalScheduleVector; //для расчета часов за учетный период
     PostSchedules: TPostScheduleMatrix;
@@ -133,7 +133,7 @@ type
     procedure ScheduleLoad;
     procedure ScheduleDraw(const AZoomPercent: Integer);
     procedure ScheduleRedraw;
-    procedure ScheduleRecreate;
+    procedure ScheduleSheetRecreate;
     procedure ScheduleSelect;
     procedure ScheduleExport;
 
@@ -199,7 +199,7 @@ begin
 
   CanLoadAndDraw:= False;
 
-  Calendar:= TCalendar.Create;
+  MonthCalendar:= TCalendar.Create;
   BeforeCalendar:= TCalendar.Create;
   YearCalendar:= TCalendar.Create;
 
@@ -221,7 +221,7 @@ begin
 
   FreeAndNil(ParamList);
 
-  FreeAndNil(Calendar);
+  FreeAndNil(MonthCalendar);
   FreeAndNil(BeforeCalendar);
   FreeAndNil(YearCalendar);
   FreeAndNil(MonthDropDown);
@@ -289,7 +289,7 @@ begin
     'смен',
     'дней и смен'
   ]);
-  ParamList.AddStringList('CountType', S, V, @ScheduleRecreate);
+  ParamList.AddStringList('CountType', S, V, @ScheduleSheetRecreate);
 
   S:= 'Учетный период:';
   V:= VCreateStr([
@@ -309,7 +309,7 @@ begin
     'Норма часов за учетный период',
     'Отклонение от нормы часов'
   ]);
-  ParamList.AddCheckList('ExtraColumns', S, V, @ScheduleRecreate);
+  ParamList.AddCheckList('ExtraColumns', S, V, @ScheduleSheetRecreate);
 
   S:= 'Ознакомление с графиком:';
   V:= VCreateStr([
@@ -317,7 +317,7 @@ begin
     'столбцы Дата/Подпись',
     'список под таблицей'
   ]);
-  ParamList.AddStringList('SignType', S, V, @ScheduleRecreate);
+  ParamList.AddStringList('SignType', S, V, @ScheduleSheetRecreate);
 
   S:= 'Параметры экспорта:';
   V:= VCreateStr([
@@ -356,7 +356,7 @@ begin
           ScheduleBDs[i], ScheduleEDs[i], PostBDs[i], PostEDs[i]);
     end;
 
-    ScheduleRecreate;
+    ScheduleSheetRecreate;
   finally
     Screen.Cursor:= crDefault;
   end;
@@ -409,7 +409,7 @@ begin
   EditingButton.Visible:= True;
 
   ScheduleLoad;
-  ScheduleRecreate;
+  ScheduleSheetRecreate;
   ViewUpdate;
   EditButtonsEnabled;
 end;
@@ -602,12 +602,12 @@ var
   d, h: Integer;
   PeriodBD, PeriodED: TDate;
 begin
-  PostSchedules[AIndex]:= PostSchedulesByCalendar(TabNumIDs[AIndex], Calendar,
+  PostSchedules[AIndex]:= PostSchedulesByCalendar(TabNumIDs[AIndex], MonthCalendar,
      ScheduleBDs[AIndex], ScheduleEDs[AIndex], PostBDs[AIndex], PostEDs[AIndex]);
 
   Schedules[AIndex]:= PersonalScheduleByPostSchedules(TabNumIDs[AIndex], TabNums[AIndex],
      RecrutDates[AIndex], DismissDates[AIndex],
-     Calendar, Holidays, PostSchedules[AIndex], False{fact vacations},
+     MonthCalendar, Holidays, PostSchedules[AIndex], False{fact vacations},
      STRMARK_VACATIONMAIN, STRMARK_VACATIONADDITION, STRMARK_VACATIONHOLIDAY);
 
   AccountingPeriodWithMonth(MonthDropDown.Month, YearSpinEdit.Value,
@@ -684,7 +684,6 @@ begin
   Y:= YearSpinEdit.Value;
   M:= MonthDropDown.Month;
   Holidays:= DataBase.HolidaysLoad(Y);
-
   CalendarForYear(Y, YearCalendar);
 
   SetLength(PostSchedules, Length(TabNumIDs));
@@ -699,7 +698,7 @@ begin
   end;
 
   FirstLastDayInMonth(M, Y, BD, ED);
-  YearCalendar.Cut(BD, ED, Calendar);
+  YearCalendar.Cut(BD, ED, MonthCalendar);
 
   Progress:= TProgress.Create(nil);
   try
@@ -724,10 +723,11 @@ begin
   try
     ZoomPercent:= AZoomPercent;
     Sheet.Zoom(ZoomPercent);
-    Sheet.Draw(Calendar, Schedules, BeforeSchedules,
+    Sheet.Draw(MonthCalendar,
                StaffNames, TabNums, PostNames, NormHours,
                ParamList.Checkeds['ViewParams'],
-               ParamList.Checkeds['ExportParams']);
+               ParamList.Checkeds['ExportParams'],
+               Schedules, BeforeSchedules);
   finally
     ViewGrid.Visible:= True;
     Screen.Cursor:= crDefault;
@@ -740,7 +740,7 @@ begin
   ScheduleDraw(ZoomPercent);
 end;
 
-procedure TSchedulePersonalMonthForm.ScheduleRecreate;
+procedure TSchedulePersonalMonthForm.ScheduleSheetRecreate;
 begin
   if not CanLoadAndDraw then Exit;
 
@@ -776,10 +776,11 @@ begin
                                ParamList.Selected['SignType'],
                                ParamList.Checkeds['ExtraColumns']);
     try
-      ExpSheet.Draw(Calendar, Schedules, BeforeSchedules,
+      ExpSheet.Draw(MonthCalendar,
                StaffNames, TabNums, PostNames, NormHours,
                ParamList.Checkeds['ViewParams'],
-               ParamList.Checkeds['ExportParams']);
+               ParamList.Checkeds['ExportParams'],
+               Schedules, BeforeSchedules);
     finally
       FreeAndNil(ExpSheet);
     end;
@@ -877,7 +878,7 @@ var
     FreeAndNil(Schedules[AResultIndex]);
     Schedules[AResultIndex]:= PersonalScheduleByPostSchedules(TabNumIDs[AResultIndex],
       TabNums[AResultIndex], RecrutDates[AResultIndex], DismissDates[AResultIndex],
-      Calendar, Holidays, PostSchedules[AResultIndex], False{fact vacations},
+      MonthCalendar, Holidays, PostSchedules[AResultIndex], False{fact vacations},
       STRMARK_VACATIONMAIN, STRMARK_VACATIONADDITION, STRMARK_VACATIONHOLIDAY);
     //удаляем элементы векторов
     VDel(StaffNames, ADeleteIndex);
@@ -894,7 +895,6 @@ var
     VSDel(BeforeSchedules, ADeleteIndex);
     VSDel(Schedules, ADeleteIndex);
     MSDel(PostSchedules,ADeleteIndex, -1, False);
-
     ScheduleRedraw;
     Sheet.Select(AResultIndex - Ord(AResultIndex>ADeleteIndex));
   end;

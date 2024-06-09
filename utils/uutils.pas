@@ -146,7 +146,8 @@ uses
   {Актуализация записей табеля за период}
   function TimetableForPeriodUpdate(const ATabNumID: Integer;
                                    const ABeginDate, AEndDate: TDate;
-                                   const AHolidayDates: TDateVector): Boolean;
+                                   const AHolidayDates: TDateVector;
+                                   const AUpdateWritedOnly: Boolean): Boolean;
   {Сумма отработанных часов за период }
   function TimetableSumTotalHoursInPeriod(const ATabNumID: Integer;
                                    const ABeginDate, AEndDate: TDate): Integer;
@@ -542,7 +543,8 @@ end;
 
 function TimetableForPeriodUpdate(const ATabNumID: Integer;
                             const ABeginDate, AEndDate: TDate;
-                            const AHolidayDates: TDateVector): Boolean;
+                            const AHolidayDates: TDateVector;
+                            const AUpdateWritedOnly: Boolean): Boolean;
 var
   FirtsWritedDate, LastWritedDate, RecrutDate, DismissDate, BD, ED: TDate;
   Calendar: TCalendar;
@@ -553,12 +555,15 @@ begin
   Calendar:= nil;
   //получаем даты приема увольнения
   if not DataBase.StaffTabNumWorkPeriodLoad(ATabNumID, RecrutDate, DismissDate) then Exit;
-  //ограничене периода на время работы
+  //ограничение периода на время работы
   if not IsPeriodIntersect(ABeginDate, AEndDate, RecrutDate, DismissDate, BD, ED) then Exit;
-  //первая и последняя даты записанного  в базу табеля
-  if not DataBase.TimetableFirstLastWritedDatesLoad(ATabNumID, FirtsWritedDate, LastWritedDate) then Exit;
-  //ограничение периода
-  if not IsPeriodIntersect(BD, ED, FirtsWritedDate, LastWritedDate, BD, ED) then Exit;
+  if AUpdateWritedOnly then
+  begin
+    //первая и последняя даты записанного в базу табеля
+    if not DataBase.TimetableFirstLastWritedDatesLoad(ATabNumID, FirtsWritedDate, LastWritedDate) then Exit;
+    //ограничение периода
+    if not IsPeriodIntersect(BD, ED, FirtsWritedDate, LastWritedDate, BD, ED) then Exit;
+  end;
   //расчет календаря
   Calendar:= nil;
   CalendarForPeriod(BD, ED, Calendar);
@@ -568,7 +573,7 @@ begin
 
   try
     if Schedule.Calculated then
-      Result:= DataBase.TimetableByScheduleUpdate(ATabNumID, Calendar, Schedule);
+      Result:= DataBase.TimetableByScheduleUpdate(ATabNumID, Calendar, Schedule, AUpdateWritedOnly);
   finally
     FreeAndNil(Schedule);
     FreeAndNil(Calendar);

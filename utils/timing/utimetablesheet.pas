@@ -5,16 +5,15 @@ unit UTimetableSheet;
 interface
 
 uses
-  Classes, SysUtils, Graphics, fpspreadsheetgrid, {fpspreadsheet,} fpstypes,
+  Classes, SysUtils, Graphics, fpspreadsheetgrid, fpspreadsheet, fpstypes,
   DateUtils,
   //Project utils
-  {UUtils,  UTypes,  UWorkHours,} UConst, UCalendar, UTimetable, UDateSheet,
+  {UUtils,  UTypes,  UWorkHours,} UConst, UCalendar, UTimetable, UTimingSheet,
   //DK packages utils
   DK_SheetWriter, DK_Vector, DK_Const, DK_DateUtils, DK_StrUtils, DK_SheetTypes,
-  DK_Math;
+  DK_Math, DK_Color;
 
 type
-
 
   { TYearTimetableSheet }
   //годовой табель
@@ -74,6 +73,59 @@ type
     procedure Select(const ADate: TDate); override;
     procedure Unselect(const ADate: TDate); override;
   end;
+
+  { TMonthTimetableSheet }
+  //Табель за месяц (форма графика)
+  TMonthTimetableSheet = class (TMonthSheet)
+  protected
+    function SetWidths: TIntVector; override;
+    procedure CaptionDraw(var R, C: Integer); override;
+    procedure SelectDate(const ADate: TDate); override;
+  private
+    const
+      NIGHTHOURS_COLUMN_WIDTH = 60;
+    var
+      FTimetables: TTimetableVector;
+      FBeforeTotalHours: TIntVector;
+      FBeforeNightHours: TIntVector;
+      FHalfMonth: Boolean; //табель за половину месяца
+  public
+    constructor Create(const AWorksheet: TsWorksheet;
+                       const AGrid: TsWorksheetGrid;
+                       const AFont: TFont;
+                       const AResumeType: Byte {0-дни, 1-смены, 2-дни и смены};
+                       const APeriodType: Byte {0-год, 1-квартал, 2-месяц};
+                       const AExtraColumns: TBoolVector
+                        //AExtraColumns:
+                        //0 - Порядковый номер,
+                        //1 - Должность (профессия)
+                        //2 - Табельный номер
+                        //3 - Количество дней/часов за месяц
+                        //4 - Сумма часов за учетный период
+                        //5 - Норма часов за учетный период
+                        //6 - Отклонение от нормы часов
+                        //7 - Сумма ночных часов за учетный период
+                       );
+
+    procedure Draw(const ACalendar: TCalendar;
+                   const AStaffNames, ATabNums, APostNames: TStrVector;
+                   const ANormHours: TIntVector;
+                   const AViewParams: TBoolVector;
+                    //AViewParams:
+                    //0 - Отображать строку ночных часов
+                    //1 - Коды табеля для нерабочих дней
+                   const AExportParams: TBoolVector;
+                    //AExportParams:
+                    //0 - заголовок таблицы на каждой странице
+                    //1 - номера страниц в нижнем колонтитуле
+                   const ATimetables: TTimetableVector;
+                   const ABeforeTotalHours, ABeforeNightHours: TIntVector;
+                   const AHalfMonth: Boolean
+                   );
+    procedure LineDraw(const AIndex: Integer); override;
+  end;
+
+
 
 implementation
 
@@ -643,6 +695,257 @@ begin
   inherited Unselect(ADate);
   if not DateToGrid(ADate, R, C) then Exit;
   SelectionDelCell(R+1, C);
+end;
+
+{ TMonthTimetableSheet }
+
+function TMonthTimetableSheet.SetWidths: TIntVector;
+begin
+  Result:= inherited SetWidths;
+  if FExtraColumns[7] then //7 - Сумма ночных часов за период
+    VAppend(Result, NIGHTHOURS_COLUMN_WIDTH);
+end;
+
+procedure TMonthTimetableSheet.CaptionDraw(var R, C: Integer);
+begin
+  inherited CaptionDraw(R, C);
+
+  if FExtraColumns[7] then  //7 - Сумма ночных часов за период
+  begin
+    C:= C + 1;
+    Writer.WriteText(R, C, R+1, C, 'Ночные часы', cbtOuter);
+  end;
+end;
+
+procedure TMonthTimetableSheet.SelectDate(const ADate: TDate);
+begin
+  if IsRowSelected and
+     (FTimetables[FSelectedRowIndex1].IsExists[DayOf(ADate)-1]=EXISTS_NO) then Exit;
+  inherited SelectDate(ADate);
+end;
+
+constructor TMonthTimetableSheet.Create(const AWorksheet: TsWorksheet;
+                       const AGrid: TsWorksheetGrid;
+                       const AFont: TFont;
+                       const AResumeType: Byte {0-дни, 1-смены, 2-дни и смены};
+                       const APeriodType: Byte {0-год, 1-квартал, 2-месяц};
+                       const AExtraColumns: TBoolVector
+                        //AExtraColumns:
+                        //0 - Порядковый номер,
+                        //1 - Должность (профессия)
+                        //2 - Табельный номер
+                        //3 - Количество дней/часов за месяц
+                        //4 - Сумма часов за учетный период
+                        //5 - Норма часов за учетный период
+                        //6 - Отклонение от нормы часов
+                        //7 - Сумма ночных часов за учетный период
+                       );
+begin
+  inherited Create(AWorksheet, AGrid, AFont, AResumeType, APeriodType, AExtraColumns);
+  FResumeCaption:= 'Количество за текущий месяц';
+end;
+
+procedure TMonthTimetableSheet.Draw(const ACalendar: TCalendar;
+                   const AStaffNames, ATabNums, APostNames: TStrVector;
+                   const ANormHours: TIntVector;
+                   const AViewParams: TBoolVector;
+                    //AViewParams:
+                    //0 - Отображать строку ночных часов
+                    //1 - Коды табеля для нерабочих дней
+                   const AExportParams: TBoolVector;
+                    //AExportParams:
+                    //0 - заголовок таблицы на каждой странице
+                    //1 - номера страниц в нижнем колонтитуле
+                   const ATimetables: TTimetableVector;
+                   const ABeforeTotalHours, ABeforeNightHours: TIntVector;
+                   const AHalfMonth: Boolean);
+begin
+  FTimetables:= ATimetables;
+  FBeforeTotalHours:= ABeforeTotalHours;
+  FBeforeNightHours:= ABeforeNightHours;
+  FHalfMonth:= AHalfMonth;
+  DrawCustom(ACalendar, AStaffNames, ATabNums, APostNames,
+                 ANormHours, AViewParams, AExportParams);
+end;
+
+procedure TMonthTimetableSheet.LineDraw(const AIndex: Integer);
+var
+  R, C, i, n, d, s, SHTotal, SHNight: Integer;
+
+  procedure DrawDay(const ARow, ACol, ADayIndex: Integer; const AEmptyDay: Boolean = False);
+  begin
+    if AEmptyDay then
+    begin
+      Writer.WriteText(ARow, ACol, EmptyStr, cbtOuter);
+      if FViewParams[0] then //0 - Отображать строку ночных часов
+        Writer.WriteText(ARow+1, ACol, EmptyStr, cbtOuter);
+      Exit;
+    end;
+    if FTimetables[AIndex].IsExists[ADayIndex]=EXISTS_YES then
+    begin
+      if (FTimetables[AIndex].IsAbsence[ADayIndex]=ABSENCE_YES) or
+         (FTimetables[AIndex].MarksMainDig[ADayIndex]=DEFINE_NO) then
+      begin
+        Writer.WriteText(ARow, ACol, FTimetables[AIndex].MarksMainStr[ADayIndex], cbtOuter);
+        if FViewParams[0] then //0 - Отображать строку ночных часов
+          Writer.WriteText(ARow+1, ACol, EmptyStr, cbtOuter);
+      end
+      else begin
+        if FTimetables[AIndex].HoursTotal[ADayIndex]=0 then
+        begin
+          if FViewParams[1] then  //1 - Коды табеля для нерабочих дней
+            Writer.WriteText(ARow, ACol, FTimetables[AIndex].MarksMainStr[ADayIndex], cbtOuter)
+          else
+            Writer.WriteText(ARow, ACol, EmptyStr, cbtOuter);
+          if FViewParams[0] then //0 - Отображать строку ночных часов
+            Writer.WriteText(ARow+1, ACol, EmptyStr, cbtOuter);
+        end
+        else begin
+          DrawHours(Writer, ARow, ACol,
+                    FTimetables[AIndex].HoursTotal[ADayIndex],
+                    FTimetables[AIndex].HoursNight[ADayIndex],
+                    FWriteTotalIfZero, FWriteNightIfZero,
+                    FViewParams[0] {0 - Отображать строку ночных часов});
+        end;
+      end;
+    end
+    else begin
+      Writer.WriteText(ARow, ACol, STRMARK_NONEXISTENT, cbtOuter);
+      if FViewParams[0] then //0 - Отображать строку ночных часов
+        Writer.WriteText(ARow+1,ACol, STRMARK_NONEXISTENT, cbtOuter);
+    end;
+
+  end;
+
+begin
+  UnSelectDate;
+
+  if AIndex in [FSelectedRowIndex1, FSelectedRowIndex2] then
+    Writer.SetBackground(DefaultSelectionBGColor)
+  else
+    Writer.SetBackgroundDefault;
+  Writer.SetFont(Font.Name, Font.Size, [], clBlack);
+
+  C:= 0;
+  n:= Ord(FViewParams[0]); //0 - Отображать строку ночных часов
+  R:= IndexToRow(AIndex);
+
+  if FExtraColumns[0] then //0 - Порядковый номер
+  begin
+    Writer.SetAlignment(haCenter, vaCenter);
+    C:= C + 1;
+    Writer.WriteNumber(R, C, R+n, C, AIndex+1, cbtOuter);
+  end;
+
+  Writer.SetAlignment(haLeft, vaCenter);
+  C:= C + 1;
+  Writer.WriteText(R, C, R+n, C, FStaffNames[AIndex], cbtOuter);
+
+  if FExtraColumns[1] then //1 - Должность (профессия)
+  begin
+    Writer.SetAlignment(haLeft, vaCenter);
+    C:= C + 1;
+    Writer.WriteText(R, C, R+n, C, FPostNames[AIndex], cbtOuter);
+  end;
+
+  if FExtraColumns[2] then //2 - Табельный номер
+  begin
+    Writer.SetAlignment(haCenter, vaCenter);
+    C:= C + 1;
+    Writer.WriteText(R, C, R+n, C, FTabNums[AIndex], cbtOuter);
+  end;
+
+  Writer.SetAlignment(haCenter, vaCenter);
+  for i:= 0 to 14 do
+    DrawDay(R, C+i+1, i);
+  for i:= 15 to FCalendar.DaysCount-1 do
+    DrawDay(R, C+i+1, i, FHalfMonth);
+  for i:= FCalendar.DaysCount to 30 do
+    Writer.WriteText(R, C+i+1, STRMARK_NONEXISTENT, cbtOuter);
+  if FViewParams[0] then //0 - Отображать строку ночных часов
+    for i:= FCalendar.DaysCount to 30 do
+      Writer.WriteText(R+1, C+i+1, STRMARK_NONEXISTENT, cbtOuter);
+  if FHalfMonth then
+  begin
+    d:= FTimetables[AIndex].WorkDaysCountHalf1;
+    s:= FTimetables[AIndex].ShiftCountHalf1;
+    SHTotal:= FTimetables[AIndex].SumHoursTotalHalf1;
+    SHNight:= FTimetables[AIndex].SumHoursNightHalf1;
+  end
+  else begin
+    d:= FTimetables[AIndex].WorkDaysCountMonth;
+    s:= FTimetables[AIndex].ShiftCountMonth;
+    SHTotal:= FTimetables[AIndex].SumHoursTotalMonth;
+    SHNight:= FTimetables[AIndex].SumHoursNightMonth;
+  end;
+  C:= C+31;
+  if FExtraColumns[3] then  //3 - Количество дней/часов за месяц
+  begin
+    C:= C + 1;
+    case FResumeType of
+    0: if (d>0) or FWriteDaysCountIfZero then
+         Writer.WriteNumber(R, C, R+n, C, d, cbtOuter)
+       else
+         {%H-}Writer.WriteText(R, C, R+n, C, EmptyStr, cbtOuter);
+    1: if (s>0) or FWriteDaysCountIfZero then
+         Writer.WriteNumber(R, C, R+n, C, s, cbtOuter)
+       else
+         {%H-}Writer.WriteText(R, C, R+n, C, EmptyStr, cbtOuter);
+    2: begin
+         if (d>0) or FWriteDaysCountIfZero then
+           Writer.WriteNumber(R, C, R+n, C, d, cbtOuter)
+         else
+           {%H-}Writer.WriteText(R, C, R+n, C, EmptyStr, cbtOuter);
+         C:= C + 1;
+         if (s>0) or FWriteDaysCountIfZero then
+           Writer.WriteNumber(R, C, R+n, C, s, cbtOuter)
+         else
+           {%H-}Writer.WriteText(R, C, R+n, C, EmptyStr, cbtOuter);
+       end;
+    end;
+    C:= C + 1;
+    DrawHours(Writer, R, C, SHTotal, SHNight,
+              FWriteSumTotalIfZero, FWriteSumNightIfZero,
+              FViewParams[0] {0 - Отображать строку ночных часов});
+  end;
+
+  if FPeriodType<2 then
+  begin
+    SHTotal:= SHTotal + FBeforeTotalHours[AIndex];
+    SHNight:= SHNight + FBeforeNightHours[AIndex];
+  end;
+  if (FPeriodType<2) and FExtraColumns[4] then  //4 - Сумма часов за учетный период
+  begin
+    C:= C + 1;
+    DrawHours(Writer, R, C, SHTotal, SHNight,
+              FWriteSumTotalIfZero, FWriteSumNightIfZero,
+              FViewParams[0] {0 - Отображать строку ночных часов});
+  end;
+
+  if FExtraColumns[5] then  //5 - Норма часов за учетный период
+  begin
+    C:= C + 1;
+    WriteCellHours(Writer, R, C, R+n, C, FNormHours[AIndex]);
+  end;
+
+  if FExtraColumns[6] then //6 - Отклонение от нормы часов
+  begin
+    C:= C + 1;
+    WriteCellHours(Writer, R, C, R+n, C, SHTotal-FNormHours[AIndex]);
+  end;
+
+  if FExtraColumns[7] then //7 - Сумма ночных часов
+  begin
+    C:= C + 1;
+    if FHalfMonth then
+      d:= FTimetables[AIndex].SumHoursNightHalf1
+    else
+      d:= FTimetables[AIndex].SumHoursNightMonth;
+    WriteCellHours(Writer, R, C, R+n, C, d);
+  end;
+
+  if not FViewParams[0] then //0 - Отображать строку ночных часов
+    Writer.SetRowHeight(R, Trunc(1.6*Writer.RowHeightDefault));
 end;
 
 end.
