@@ -12,7 +12,7 @@ uses
   DK_Vector, DK_Matrix, DK_Math, DK_Fonts, DK_Const, DK_DateUtils,
   DK_StrUtils, DK_VSTTables, DK_VSTParamList, DK_Zoom, DK_SheetExporter, DK_Progress,
   //Project utils
-  UDataBase, UConst, UUtils, UCalendar, uschedule, UScheduleSheet, UWorkHours,
+  UDataBase, UConst, UUtils, UCalendar, USchedule, UScheduleSheet, UWorkHours,
   UTypes,
   //Forms
   UScheduleCorrectionEditForm, UChooseForm;
@@ -97,7 +97,7 @@ type
     MonthCalendar, BeforeCalendar, YearCalendar: TCalendar;
     Schedules: TPersonalScheduleVector;
     BeforeSchedules: TPersonalScheduleVector; //для расчета часов за учетный период
-    //PostSchedules: TPostScheduleMatrix;
+    PostScheduleInfos: TPostScheduleInfoVector;
     Sheet: TPersonalMonthScheduleSheet;
 
     ParamList: TVSTParamList;
@@ -118,6 +118,7 @@ type
     StaffNames, TabNums, PostNames: TStrVector;
     RecrutDates, DismissDates, PostBDs, PostEDs, ScheduleBDs, ScheduleEDs: TDateVector;
 
+
     procedure ParamListCreate;
 
     procedure PeriodTypeSelect;
@@ -130,6 +131,7 @@ type
     procedure MStaffListSelect;
 
     procedure ScheduleCreate(const AIndex: Integer);
+    procedure ScheduleUpdate(const ATabNumID: Integer);
     procedure ScheduleLoad;
     procedure ScheduleDraw(const AZoomPercent: Integer);
     procedure ScheduleRedraw;
@@ -231,7 +233,6 @@ begin
 
   VSDel(Schedules);
   VSDel(BeforeSchedules);
-  //MSDel(PostSchedules);
 end;
 
 procedure TSchedulePersonalMonthForm.FormShow(Sender: TObject);
@@ -350,11 +351,9 @@ begin
                               ParamList.Selected['PeriodType'], BD, ED);
       YearCalendar.Cut(BD, ED, BeforeCalendar);
       for i:= 0 to High(TabNumIDs) do
-      {TODO: !!!!!}
-        //BeforeSchedules[i]:= SchedulePersonalByCalendar(TabNumIDs[i], TabNums[i],
-        //  RecrutDates[i], DismissDates[i], BeforeCalendar, Holidays, False{fact vacations},
-        //  STRMARK_VACATIONMAIN, STRMARK_VACATIONADDITION, STRMARK_VACATIONHOLIDAY,
-        //  ScheduleBDs[i], ScheduleEDs[i], PostBDs[i], PostEDs[i]);
+        BeforeSchedules[i]:= SchedulePersonalByCalendar(TabNumIDs[i], TabNums[i],
+          RecrutDates[i], DismissDates[i], BeforeCalendar, Holidays, False{fact vacations},
+          STRMARK_VACATIONMAIN, STRMARK_VACATIONADDITION, STRMARK_VACATIONHOLIDAY);
     end;
 
     ScheduleSheetRecreate;
@@ -603,34 +602,30 @@ var
   d, h: Integer;
   PeriodBD, PeriodED: TDate;
 begin
-  {TODO: !!!!!!!}
-  //PostSchedules[AIndex]:= PostSchedulesByCalendar(TabNumIDs[AIndex], MonthCalendar,
-  //   ScheduleBDs[AIndex], ScheduleEDs[AIndex], PostBDs[AIndex], PostEDs[AIndex]);
-  //
-  //Schedules[AIndex]:= PersonalScheduleByPostSchedules(TabNumIDs[AIndex], TabNums[AIndex],
-  //   RecrutDates[AIndex], DismissDates[AIndex],
-  //   MonthCalendar, Holidays, PostSchedules[AIndex], False{fact vacations},
-  //   STRMARK_VACATIONMAIN, STRMARK_VACATIONADDITION, STRMARK_VACATIONHOLIDAY);
-  //
-  //AccountingPeriodWithMonth(MonthDropDown.Month, YearSpinEdit.Value,
-  //                          ParamList.Selected['PeriodType'], PeriodBD, PeriodED);
-  //NormHoursAndWorkDaysCounInPeriod(TabNumIDs[AIndex], PeriodBD, PeriodED, YearCalendar, d, h);
-  //NormHours[AIndex]:= h;
-  //
-  //if Length(BeforeSchedules)=0 then Exit;
-  //
-  //BeforeSchedules[AIndex]:= SchedulePersonalByCalendar(TabNumIDs[AIndex], TabNums[AIndex],
-  //   RecrutDates[AIndex], DismissDates[AIndex], BeforeCalendar, Holidays, False{fact vacations},
-  //   STRMARK_VACATIONMAIN, STRMARK_VACATIONADDITION, STRMARK_VACATIONHOLIDAY,
-  //   ScheduleBDs[AIndex], ScheduleEDs[AIndex], PostBDs[AIndex], PostEDs[AIndex]);
+  //Создаем график по Info
+  Schedules[AIndex]:= SchedulePersonalByInfo(TabNumIDs[AIndex], TabNums[AIndex],
+     RecrutDates[AIndex], DismissDates[AIndex],
+     MonthCalendar, Holidays, PostScheduleInfos[AIndex], False{fact vacations},
+     STRMARK_VACATIONMAIN, STRMARK_VACATIONADDITION, STRMARK_VACATIONHOLIDAY);
+
+  //график и норма часов учетного периода до текущего месяца
+  AccountingPeriodWithMonth(MonthDropDown.Month, YearSpinEdit.Value,
+                            ParamList.Selected['PeriodType'], PeriodBD, PeriodED);
+  NormHoursAndWorkDaysCounInPeriod(TabNumIDs[AIndex], PeriodBD, PeriodED, YearCalendar, d, h);
+  NormHours[AIndex]:= h;
+  if Length(BeforeSchedules)=0 then Exit;
+  BeforeSchedules[AIndex]:= SchedulePersonalByCalendar(TabNumIDs[AIndex], TabNums[AIndex],
+     RecrutDates[AIndex], DismissDates[AIndex], BeforeCalendar, Holidays, False{fact vacations},
+     STRMARK_VACATIONMAIN, STRMARK_VACATIONADDITION, STRMARK_VACATIONHOLIDAY);
 end;
 
 procedure TSchedulePersonalMonthForm.ScheduleLoad;
 var
   i: Integer;
   S: String;
-  BD, ED: TDate;
+  MonthBD, MonthED, BD, ED: TDate;
   Y, M: Word;
+  PostScheduleInfo: TPostScheduleInfo;
   IsBeforePeriodExists: Boolean;
   Progress: TProgress;
 
@@ -673,8 +668,8 @@ begin
 
   VSDel(Schedules);
   VSDel(BeforeSchedules);
-  //MSDel(PostSchedules);
   NormHours:= nil;
+  PostScheduleInfos:= nil;
 
   if OrderType<=1 then
     GetCategoryValues
@@ -688,7 +683,7 @@ begin
   Holidays:= DataBase.HolidaysLoad(Y);
   CalendarForYear(Y, YearCalendar);
 
-  //SetLength(PostSchedules, Length(TabNumIDs));
+  SetLength(PostScheduleInfos, Length(TabNumIDs));
   SetLength(Schedules, Length(TabNumIDs));
   SetLength(NormHours, Length(TabNumIDs));
   IsBeforePeriodExists:= (ParamList.Selected['PeriodType']<2 {учетный период<>месяц}) and
@@ -699,8 +694,8 @@ begin
     YearCalendar.Cut(BD, ED, BeforeCalendar);
   end;
 
-  FirstLastDayInMonth(M, Y, BD, ED);
-  YearCalendar.Cut(BD, ED, MonthCalendar);
+  FirstLastDayInMonth(M, Y, MonthBD, MonthED);
+  YearCalendar.Cut(MonthBD, MonthED, MonthCalendar);
 
   Progress:= TProgress.Create(nil);
   try
@@ -709,8 +704,16 @@ begin
     Progress.Show;
     for i:= 0 to High(TabNumIDs) do
     begin
+      //обновляем строку в окне прогресса
       S:= StaffNames[i] + ' [таб.№ ' + TabNums[i] + '] - ' + PostNames[i];
       Progress.WriteLine2(S);
+      //определяем период для загрузки Info
+      IsPeriodIntersect(ScheduleBDs[i], ScheduleEDs[i], PostBDs[i], PostEDs[i], BD, ED);
+      IsPeriodIntersect(MonthBD, MonthED, BD, ED, BD, ED);
+      //загружаем инфо о графиках
+      DataBase.StaffPostScheduleInfoLoad(TabNumIDs[i], PostScheduleInfo, BD, ED);
+      PostScheduleInfos[i]:= PostScheduleInfo;
+      //рассчитываем графики
       ScheduleCreate(i);
     end;
   finally
@@ -795,19 +798,21 @@ end;
 
 procedure TSchedulePersonalMonthForm.ScheduleCorrectionFormOpen;
 var
-  i: Integer;
+  i, TabNumID: Integer;
   ScheduleCorrectionEditForm: TScheduleCorrectionEditForm;
   CorrectIDs: TIntVector;
   Corrections: TScheduleCorrections;
 begin
   if not Sheet.IsDateSelected then Exit;
 
+  TabNumID:= TabNumIDs[Sheet.SelectedIndex];
+
   ScheduleCorrectionEditForm:= TScheduleCorrectionEditForm.Create(nil);
   try
-    ScheduleCorrectionEditForm.TabNumID:= TabNumIDs[Sheet.SelectedIndex];
+    ScheduleCorrectionEditForm.TabNumID:= TabNumID;
     ScheduleCorrectionEditForm.FirstDatePicker.Date:= Sheet.SelectedDate;
-    if DataBase.SchedulePersonalCorrectionsLoad(TabNumIDs[Sheet.SelectedIndex],
-            CorrectIDs, Corrections, Sheet.SelectedDate, Sheet.SelectedDate) then
+    if DataBase.SchedulePersonalCorrectionsLoad(TabNumID, CorrectIDs, Corrections,
+                                Sheet.SelectedDate, Sheet.SelectedDate) then
     begin
       ScheduleCorrectionEditForm.DigMark:= Corrections.DigMarks[0];
       ScheduleCorrectionEditForm.TotalHoursSpinEdit.Value:= WorkHoursIntToFrac(Corrections.HoursTotal[0]);
@@ -823,15 +828,24 @@ begin
     end;
 
     if ScheduleCorrectionEditForm.ShowModal=mrOK then
-    begin
-      FreeAndNil(Schedules[Sheet.SelectedIndex]);
-      if Length(BeforeSchedules)>0 then
-         FreeAndNil(BeforeSchedules[Sheet.SelectedIndex]);
-      ScheduleCreate(Sheet.SelectedIndex);
-      Sheet.LineDraw(Sheet.SelectedIndex);
-    end;
+      ScheduleUpdate(TabNumID);
   finally
     FreeAndNil(ScheduleCorrectionEditForm);
+  end;
+end;
+
+procedure TSchedulePersonalMonthForm.ScheduleUpdate(const ATabNumID: Integer);
+var
+  i: Integer;
+begin
+  for i:= 0 to High(TabNumIDs) do
+  begin
+    if TabNumIDs[i]<>ATabNumID then continue;
+    FreeAndNil(Schedules[i]);
+    if Length(BeforeSchedules)>0 then
+       FreeAndNil(BeforeSchedules[i]);
+    ScheduleCreate(i);
+    Sheet.LineDraw(i);
   end;
 end;
 
@@ -859,7 +873,7 @@ begin
   VSwap(DismissDates, OldSelectedIndex, NewSelectedIndex);
   VSSwap(BeforeSchedules, OldSelectedIndex, NewSelectedIndex);
   VSSwap(Schedules, OldSelectedIndex, NewSelectedIndex);
-  //MSSwap(PostSchedules, OldSelectedIndex, NewSelectedIndex);
+  VISwap(PostScheduleInfos, OldSelectedIndex, NewSelectedIndex);
 
   Sheet.SelectionMove(NewSelectedIndex);
 end;
@@ -872,71 +886,66 @@ var
   RowIndexes: TIntVector;
   PostName: String;
   {TODO !!!!}
-  //procedure Merge(const AResultIndex, ADeleteIndex: Integer; const APostName: String);
-  //begin
-  //  //должность, в результирующей строке
-  //  PostNames[AResultIndex]:= APostName;
-  //  //график в результирующей строке
-  //  //VSAppend(PostSchedules[AResultIndex], PostSchedules[ADeleteIndex]);
-  //  FreeAndNil(Schedules[AResultIndex]);
-  //  Schedules[AResultIndex]:= PersonalScheduleByPostSchedules(TabNumIDs[AResultIndex],
-  //    TabNums[AResultIndex], RecrutDates[AResultIndex], DismissDates[AResultIndex],
-  //    MonthCalendar, Holidays, PostSchedules[AResultIndex], False{fact vacations},
-  //    STRMARK_VACATIONMAIN, STRMARK_VACATIONADDITION, STRMARK_VACATIONHOLIDAY);
-  //  //периоды должностей и графиков в строке
-  //
-  //  //PostBDs[AResultIndex]:= VAdd(PostBDs[AResultIndex], PostBDs[ADeleteIndex]);
-  //  //PostsEDs[AResultIndex]:= VAdd(PostsEDs[AResultIndex], PostsEDs[ADeleteIndex]);
-  //  //ScheduleBDs[AResultIndex]:= VAdd(ScheduleBDs[AResultIndex], ScheduleBDs[ADeleteIndex]);
-  //  //ScheduleEDs[AResultIndex]:= VAdd(ScheduleEDs[AResultIndex], ScheduleEDs[ADeleteIndex]);
-  //  //удаляем элементы векторов
-  //  VDel(StaffNames, ADeleteIndex);
-  //  VDel(PostNames, ADeleteIndex);
-  //  VDel(TabNumIDs, ADeleteIndex);
-  //  VDel(TabNums, ADeleteIndex);
-  //  VDel(NormHours, ADeleteIndex);
-  //  VDel(PostBDs, ADeleteIndex);
-  //  VDel(PostEDs, ADeleteIndex);
-  //  VDel(ScheduleBDs, ADeleteIndex);
-  //  VDel(ScheduleEDs, ADeleteIndex);
-  //  VDel(RecrutDates, ADeleteIndex);
-  //  VDel(DismissDates, ADeleteIndex);
-  //  VSDel(BeforeSchedules, ADeleteIndex);
-  //  VSDel(Schedules, ADeleteIndex);
-  //  MSDel(PostSchedules,ADeleteIndex, -1, False);
-  //  ScheduleRedraw;
-  //  Sheet.Select(AResultIndex - Ord(AResultIndex>ADeleteIndex));
-  //end;
+  procedure Merge(const AResultIndex, ADeleteIndex: Integer; const APostName: String);
+  begin
+    //должность, в результирующей строке
+    PostNames[AResultIndex]:= APostName;
+    //Info графика в результирующей строке
+    PostScheduleInfoAdd(PostScheduleInfos[AResultIndex], PostScheduleInfos[ADeleteIndex]);
+    //график в результирующей строке
+    FreeAndNil(Schedules[AResultIndex]);
+    Schedules[AResultIndex]:= SchedulePersonalByInfo(TabNumIDs[AResultIndex],
+      TabNums[AResultIndex], RecrutDates[AResultIndex], DismissDates[AResultIndex],
+      MonthCalendar, Holidays, PostScheduleInfos[AResultIndex], False{fact vacations},
+      STRMARK_VACATIONMAIN, STRMARK_VACATIONADDITION, STRMARK_VACATIONHOLIDAY);
+
+    //удаляем элементы векторов
+    VDel(StaffNames, ADeleteIndex);
+    VDel(PostNames, ADeleteIndex);
+    VDel(TabNumIDs, ADeleteIndex);
+    VDel(TabNums, ADeleteIndex);
+    VDel(NormHours, ADeleteIndex);
+    VDel(PostBDs, ADeleteIndex);
+    VDel(PostEDs, ADeleteIndex);
+    VDel(ScheduleBDs, ADeleteIndex);
+    VDel(ScheduleEDs, ADeleteIndex);
+    VDel(RecrutDates, ADeleteIndex);
+    VDel(DismissDates, ADeleteIndex);
+    VSDel(BeforeSchedules, ADeleteIndex);
+    VSDel(Schedules, ADeleteIndex);
+    VIDel(PostScheduleInfos,ADeleteIndex);
+    ScheduleRedraw;
+    Sheet.Select(AResultIndex - Ord(AResultIndex>ADeleteIndex));
+  end;
 
 begin
-  //RowIndexes:= VCreateInt([
-  //  Min(Sheet.SelectedIndex, Sheet.SelectedIndex2),
-  //  Max(Sheet.SelectedIndex, Sheet.SelectedIndex2)
-  //]);
-  //
-  //V1:= VCreateStr(['№ ' + IntToStr(RowIndexes[0]+1), '№ ' + IntToStr(RowIndexes[1]+1)]);
-  //V2:= nil;
-  //if not SSame(PostNames[RowIndexes[0]], PostNames[RowIndexes[1]]) then
-  //  V2:= VCreateStr([PostNames[RowIndexes[0]], PostNames[RowIndexes[1]]]);
-  //if not Choose('Записать объединенные данные в строку:',
-  //              'Записать в результирующую строку должность (профессию):',
-  //              V1, V2, ChooseIndex1, ChooseIndex2) then Exit;
-  //
-  //
-  //if ChooseIndex2>=0 then
-  //  PostName:= PostNames[RowIndexes[ChooseIndex2]]
-  //else
-  //  PostName:= PostNames[RowIndexes[0]];
-  //
-  //if ChooseIndex1=1 then
-  //  VSwap(RowIndexes, 0, 1);
-  //
-  //Screen.Cursor:= crHourGlass;
-  //try
-  //  Merge(RowIndexes[0], RowIndexes[1], PostName);
-  //finally
-  //  Screen.Cursor:= crDefault;
-  //end;
+  RowIndexes:= VCreateInt([
+    Min(Sheet.SelectedIndex, Sheet.SelectedIndex2),
+    Max(Sheet.SelectedIndex, Sheet.SelectedIndex2)
+  ]);
+
+  V1:= VCreateStr(['№ ' + IntToStr(RowIndexes[0]+1), '№ ' + IntToStr(RowIndexes[1]+1)]);
+  V2:= nil;
+  if not SSame(PostNames[RowIndexes[0]], PostNames[RowIndexes[1]]) then
+    V2:= VCreateStr([PostNames[RowIndexes[0]], PostNames[RowIndexes[1]]]);
+  if not Choose('Записать объединенные данные в строку:',
+                'Записать в результирующую строку должность (профессию):',
+                V1, V2, ChooseIndex1, ChooseIndex2) then Exit;
+
+  if ChooseIndex2>=0 then
+    PostName:= PostNames[RowIndexes[ChooseIndex2]]
+  else
+    PostName:= PostNames[RowIndexes[0]];
+
+  if ChooseIndex1=1 then
+    VSwap(RowIndexes, 0, 1);
+
+  Screen.Cursor:= crHourGlass;
+  try
+    Merge(RowIndexes[0], RowIndexes[1], PostName);
+  finally
+    Screen.Cursor:= crDefault;
+  end;
 end;
 
 procedure TSchedulePersonalMonthForm.SettingsSave;

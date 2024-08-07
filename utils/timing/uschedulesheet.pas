@@ -551,6 +551,8 @@ procedure TPersonalMonthScheduleSheet.Draw(
                    const ASchedules, ABeforeSchedules: TPersonalScheduleVector
                    );
 begin
+  SelectionClear;
+
   FSchedules:= ASchedules;
   FBeforeSchedules:= ABeforeSchedules;
 

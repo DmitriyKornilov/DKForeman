@@ -715,6 +715,7 @@ procedure TMonthSheet.DrawCustom(const ACalendar: TCalendar;
 var
   X, W, R, C, i: Integer;
 begin
+
   FCalendar:= ACalendar;
   FYear:= YearOf(FCalendar.BeginDate);
   FMonth:= MonthOf(FCalendar.BeginDate);
@@ -738,6 +739,7 @@ begin
     Writer.SetColWidth(X, W);
   end;
 
+  Writer.SetBackgroundDefault;
   CaptionDraw(R{%H-}, C{%H-});
   for i:=0 to High(FTabNums) do
     LineDraw(i);
@@ -794,6 +796,7 @@ var
 begin
   C:= 0;
   R:= 1;
+  Writer.SetBackgroundDefault;
   Writer.SetAlignment(haCenter, vaCenter);
   Writer.SetFont(Font.Name, Font.Size, [fsBold], clBlack);
   if FExtraColumns[0] then //0 - Порядковый номер

@@ -111,6 +111,15 @@ type
     FirstDates, LastDates: TDateMatrix; //должность с одним ID может попадаться в периоде несколько раз
   end;
 
+  TPostScheduleInfoVector = array of TPostScheduleInfo;
+
+  procedure PostScheduleInfoAdd(var ADestinationInfo: TPostScheduleInfo;
+                                const ASourceInfo:  TPostScheduleInfo);
+
+  procedure VIAppend(var V: TPostScheduleInfoVector; const NewValue: TPostScheduleInfo);
+  procedure VIDel(var V: TPostScheduleInfoVector; Index1: Integer = -1; Index2: Integer = -1);
+  procedure VISwap(var V: TPostScheduleInfoVector; const Index1, Index2: Integer);
+
 const
   EmptyShiftScheduleInfo: TShiftScheduleInfo =
     (ScheduleIDs : nil;
@@ -278,7 +287,6 @@ type
     procedure SetShiftNums(const AIndex, AShiftNumber: Integer); override;
 
   private
-    procedure WriteExistions(const ARecrutDate, ADismissDate: TDate);
     procedure WriteInfo(const ACalendar: TCalendar; const APostScheduleInfo: TPostScheduleInfo);
     procedure WriteVacations(const AIsVacations: TIntVector);
     procedure SetMarksVacation(const AIndex, ADigMark: Integer; const AStrMark: String);
@@ -472,6 +480,78 @@ begin
   V[Index2]:= TmpValue;
 end;
 
+procedure PostScheduleInfoAdd(var ADestinationInfo: TPostScheduleInfo;
+  const ASourceInfo: TPostScheduleInfo);
+var
+  i, j, n, k: Integer;
+begin
+  for i:= 0 to High(ASourceInfo.PostIDs) do
+  begin
+    j:= VIndexOf(ADestinationInfo.PostIDs, ASourceInfo.PostIDs[i]);
+    if j>=0 then //есть такая должность
+    begin
+      ADestinationInfo.FirstDates[j]:= VAdd(ADestinationInfo.FirstDates[j],
+                                            ASourceInfo.FirstDates[i]);
+      ADestinationInfo.LastDates[j]:= VAdd(ADestinationInfo.LastDates[j],
+                                           ASourceInfo.LastDates[i]);
+    end
+    else begin  //новая должность
+      VAppend(ADestinationInfo.PostIDs, ASourceInfo.PostIDs[i]);
+      MAppend(ADestinationInfo.FirstDates, ASourceInfo.FirstDates[i]);
+      MAppend(ADestinationInfo.LastDates, ASourceInfo.LastDates[i]);
+      n:= Length(ADestinationInfo.Infos);
+      SetLength(ADestinationInfo.Infos, n+1);
+      j:= n;
+    end;
+    for k:= 0 to High(ASourceInfo.Infos[i]) do
+    begin
+      n:= Length(ADestinationInfo.Infos[j]);
+      SetLength(ADestinationInfo.Infos[j], n+1);
+      ADestinationInfo.Infos[j, n]:= ASourceInfo.Infos[i, k];
+    end;
+  end;
+end;
+
+procedure VIAppend(var V: TPostScheduleInfoVector; const NewValue: TPostScheduleInfo);
+var
+  N: Integer;
+begin
+  N:= Length(V);
+  SetLength(V, N+1);
+  V[N]:= NewValue;
+end;
+
+procedure VIDel(var V: TPostScheduleInfoVector; Index1: Integer = -1; Index2: Integer = -1);
+var
+  i, OldSize, DelLength: Integer;
+begin
+  OldSize:= Length(V);
+  if OldSize=0 then Exit;
+  if (Index1=-1) and (Index2=-1) then
+  begin
+    Index1:=0;
+    Index2:=High(V);
+  end
+  else begin
+    if Index2< Index1 then Index2:= Index1;
+    i:= High(V);
+    if not (CheckIndex(i, Index1) and CheckIndex(i, Index2)) then Exit;
+  end;
+  DelLength:= Index2 - Index1 + 1;
+  for i:= Index2+1 to OldSize-1 do  V[i-DelLength]:= V[i];
+  SetLength(V, OldSize - DelLength);
+end;
+
+procedure VISwap(var V: TPostScheduleInfoVector; const Index1, Index2: Integer);
+var
+  TmpValue: TPostScheduleInfo;
+begin
+  if not CheckIndexes(High(V), Index1, Index2) then Exit;
+  TmpValue:= V[Index1];
+  V[Index1]:= V[Index2];
+  V[Index2]:= TmpValue;
+end;
+
 function DateToCycleIndex(const ACycle: TScheduleCycle; const ADate: TDate): Byte;
 var
   Delta, CycleCount: Integer;
@@ -554,15 +634,19 @@ var
   HrsTotal, HrsNight, DMark, SNum, i, I1, I2: Integer;
   SMark: String;
 begin
-  if ACycle.ScheduleID=0 then Exit; //график не задан
-
+  //определяем индексы подпериода для записи цикла
   FromToIndexes(AFromDate, AToDate, I1, I2);
+  //устанавливаем флаги существования графика на этом периоде
+  VChangeIn(FIsExists, EXISTS_YES, I1, I2);
   for i:= I1 to I2 do
   begin
-    if FIsExists[i]=EXISTS_NO then continue;
-    FScheduleIDs[i]:= ACycle.ScheduleID;
-    DateToCycleStage(ACycle, FDates[i], HrsTotal, HrsNight, SNum, DMark, SMark);
-    SetDay(i, HrsTotal, HrsNight, SNum, DMark, SMark);
+    if ACycle.ScheduleID<=0 then //график не задан
+      SetDay(i, 0, 0, 0, DIGMARK_UNKNOWN, STRMARK_UNKNOWN)
+    else begin //график задан
+      FScheduleIDs[i]:= ACycle.ScheduleID;
+      DateToCycleStage(ACycle, FDates[i], HrsTotal, HrsNight, SNum, DMark, SMark);
+      SetDay(i, HrsTotal, HrsNight, SNum, DMark, SMark);
+    end;
   end;
 end;
 
@@ -775,12 +859,12 @@ begin
   FDates:= VCut(ACalendar.Dates);
   VDim(FScheduleIDs, DaysCount, 0);
   VDim(FIsCorrections, DaysCount, CORRECTION_NO);
-  VDim(FIsExists, DaysCount, EXISTS_YES);
+  VDim(FIsExists, DaysCount, EXISTS_NO);
 
-  VDim(FMarkSTRDefault, DaysCount, STRMARK_UNKNOWN);
-  VDim(FMarkDIGDefault, DaysCount, DIGMARK_UNKNOWN);
-  VDim(FMarkSTRCorrect, DaysCount, STRMARK_UNKNOWN);
-  VDim(FMarkDIGCorrect, DaysCount, DIGMARK_UNKNOWN);
+  VDim(FMarkSTRDefault, DaysCount, STRMARK_NONEXISTENT);
+  VDim(FMarkDIGDefault, DaysCount, DIGMARK_NONEXISTENT);
+  VDim(FMarkSTRCorrect, DaysCount, STRMARK_NONEXISTENT);
+  VDim(FMarkDIGCorrect, DaysCount, DIGMARK_NONEXISTENT);
 
   VDim(FShiftNumsDefault, DaysCount, 0);
   VDim(FShiftNumsCorrect, DaysCount, 0);
@@ -834,10 +918,10 @@ begin
   VDim(FPostIDs, DaysCount, 0);
   VDim(FIsVacations, DaysCount, VACATION_NO);
 
-  VDim(FMarkSTRDefaultVacation, DaysCount, STRMARK_UNKNOWN);
-  VDim(FMarkDIGDefaultVacation, DaysCount, DIGMARK_UNKNOWN);
-  VDim(FMarkSTRCorrectVacation, DaysCount, STRMARK_UNKNOWN);
-  VDim(FMarkDIGCorrectVacation, DaysCount, DIGMARK_UNKNOWN);
+  VDim(FMarkSTRDefaultVacation, DaysCount, STRMARK_NONEXISTENT);
+  VDim(FMarkDIGDefaultVacation, DaysCount, DIGMARK_NONEXISTENT);
+  VDim(FMarkSTRCorrectVacation, DaysCount, STRMARK_NONEXISTENT);
+  VDim(FMarkDIGCorrectVacation, DaysCount, DIGMARK_NONEXISTENT);
 
   VDim(FShiftNumsDefaultVacation, DaysCount, 0);
   VDim(FShiftNumsCorrectVacation, DaysCount, 0);
@@ -893,22 +977,6 @@ begin
   FShiftNumsCorrectVacation[AIndex]:= AShiftNumber;
 end;
 
-procedure TPersonalSchedule.WriteExistions(const ARecrutDate, ADismissDate: TDate);
-var
-  i, I1, I2: Integer;
-begin
-  //определяем подпериод существования графика, запоминяем соответствующие индексы
-  if not VCrossInd(FDates, ARecrutDate, ADismissDate, I1, I2) then Exit;
-
-  //устанавливаем вне периода пересечения флаги несуществования
-  VChangeNotIn(FIsExists, EXISTS_NO, I1, I2);
-  //устанавливаем вне периода существования коды табеля
-  for i:= 0 to I1-1 do
-    SetMarks(i, DIGMARK_NONEXISTENT, STRMARK_NONEXISTENT);
-  for i:= I2+1 to DaysCount-1 do
-    SetMarks(i, DIGMARK_NONEXISTENT, STRMARK_NONEXISTENT);
-end;
-
 procedure TPersonalSchedule.WriteInfo(const ACalendar: TCalendar;
                                       const APostScheduleInfo: TPostScheduleInfo);
 var
@@ -935,8 +1003,9 @@ begin
       //подпериод в должности
       BD:= APostScheduleInfo.FirstDates[i, j];
       ED:= APostScheduleInfo.LastDates[i, j];
+      if not IsPeriodIntersect(RecrutDate, DismissDate, BD, ED, BD, ED) then continue;
       FromToIndexes(BD, ED, I1, I2);
-      VChangeIf(FPostIDs, APostScheduleInfo.PostIDs[i], FIsExists, EXISTS_YES, I1, I2);
+      VChangeIn(FPostIDs, APostScheduleInfo.PostIDs[i], I1, I2);
 
       ShiftScheduleInfo:= APostScheduleInfo.Infos[i, j];
       for m:= 0 to High(ShiftScheduleInfo.ScheduleIDs) do
@@ -945,6 +1014,7 @@ begin
           //подпериод в сменном графике
           BD:= ShiftScheduleInfo.FirstDates[m, n];
           ED:= ShiftScheduleInfo.LastDates[m, n];
+          if not IsPeriodIntersect(RecrutDate, DismissDate, BD, ED, BD, ED) then continue;
           WriteCycle(ShiftScheduleInfo.Cycles[m], BD, ED);
           if ShiftScheduleInfo.Cycles[m].IsWeek then
             WriteCalendarSpecDays(ACalendar, ShiftScheduleInfo.Cycles[m], BD, ED);
@@ -1068,7 +1138,6 @@ begin
   FStrMarkVacationHoliday:= AStrMarkVacationHoliday;
 
   WriteDefault(ACalendar);
-  WriteExistions(ARecrutDate, ADismissDate);
   WriteInfo(ACalendar, APostScheduleInfo);
   WriteCorrections(APersonalCorrect, BeginDate, EndDate);
   WriteVacations(AIsVacations);
