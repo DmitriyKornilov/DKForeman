@@ -7,10 +7,10 @@ interface
 uses
   Classes, SysUtils, DateUtils,
   //Project utils
-  UCalendar, UConst, USchedule, UTimetable, UWorkHours,
+  UCalendar, UConst, {USchedule,} UTimetable, UWorkHours, uschedule,
   //DK packages utils
-  DK_SQLite3, DK_SQLUtils, DK_Vector, DK_StrUtils, DK_Const, DK_DateUtils,
-  DK_VSTDropDown;
+  DK_SQLite3, DK_SQLUtils, DK_Vector, DK_MAtrix, DK_StrUtils, DK_Const,
+  DK_DateUtils, DK_VSTDropDown;
 
 type
 
@@ -132,11 +132,30 @@ type
     function StaffTabNumWorkPeriodLoad(const ATabNumID: Integer;
                           out ARecrutDate, ADismissDate: TDate): Boolean;
 
+    {Список уникальных ID с матрицей периодов их действия за общий период по ID таб. номера: True - ОК, False - список пуст}
+    function StaffParamIDsForPeriodLoad(const ATabNumID: Integer;
+                                  const ABeginDate, AEndDate: TDate;
+                                  const ATableName, AIDField, ABDField, AEDField: String;
+                                  out AParamIDs: TIntVector;
+                                  out AFirstDates, ALastDates: TDateMatrix): Boolean;
+    {Список уникальных должностей с матрицей периодов их действия за общий период по ID таб. номера: True - ОК, False - список пуст}
+    function StaffPostForPeriodLoad(const ATabNumID: Integer;
+                                  const ABeginDate, AEndDate: TDate;
+                                  out APostIDs: TIntVector;
+                                  out AFirstDates, ALastDates: TDateMatrix): Boolean;
+    {Список уникальных графиков с матрицей периодов их действия за общий период по ID таб. номера: True - ОК, False - список пуст}
+    function StaffScheduleForPeriodLoad(const ATabNumID: Integer;
+                                  const ABeginDate, AEndDate: TDate;
+                                  out AScheduleIDs: TIntVector;
+                                  out ABeginDates, AEndDates: TDateMatrix): Boolean;
+
+
     {Актуальная постоянная должность таб номера на дату}
     procedure StaffPostForDate(const ATabNumID: Integer;
                                const ADate: TDate;
                                out APostID: Integer;
                                out APostName, ARank: String);
+
     {Список переводов по ID таб. номера: True - ОК, False - список пуст}
     function StaffPostLogListLoad(const ATabNumID: Integer;
                           out APostLogIDs, APostIDs, APostTemps: TIntVector;
@@ -154,6 +173,15 @@ type
     function StaffPostLogDelete(const APrevPostLogID, APostLogID: Integer;
                           const ALastDate: TDate): Boolean;
 
+    {Инфо по рабочим графикам: True - ОК, False - пусто}
+    function StaffPostScheduleInfoLoad(const ATabNumID: Integer;
+                          out AInfo: TPostScheduleInfo;
+                          const AFromDate: TDate = NULDATE;
+                          const AToDate: TDate = INFDATE): Boolean;
+    function StaffScheduleInfoLoad(const ATabNumID: Integer;
+                          out AInfo: TShiftScheduleInfo;
+                          const AFromDate: TDate = NULDATE;
+                          const AToDate: TDate = INFDATE): Boolean;
     {История переводов по рабочим графикам: True - ОК, False - пусто}
     function StaffScheduleHistoryLoad(const ATabNumID: Integer;
                           out AHistoryIDs, AScheduleIDs, AWeekHours: TIntVector;
@@ -1193,6 +1221,79 @@ begin
   QClose;
 end;
 
+function TDataBase.StaffParamIDsForPeriodLoad(const ATabNumID: Integer;
+                                  const ABeginDate, AEndDate: TDate;
+                                  const ATableName, AIDField, ABDField, AEDField: String;
+                                  out AParamIDs: TIntVector;
+                                  out AFirstDates, ALastDates: TDateMatrix): Boolean;
+var
+  i, ParamID: Integer;
+  BD, ED: TDate;
+begin
+  Result:= False;
+
+  AParamIDs:= nil;
+  AFirstDates:= nil;
+  ALastDates:= nil;
+
+  QSetQuery(FQuery);
+  QSetSQL(
+    SqlSELECT(ATableName, [AIDField, ABDField, AEDField]) +
+    'WHERE (TabNumID = :TabNumID) AND (' +
+           SqlCROSS(ABDField, AEDField, ':BD', ':ED') +
+           ') ' +
+    'ORDER BY ' + SqlEsc(ABDField)
+  );
+  QParamInt('TabNumID', ATabNumID);
+  QParamDT('BD', ABeginDate);
+  QParamDT('ED', AEndDate);
+  QOpen;
+  if not QIsEmpty then
+  begin
+    QFirst;
+    while not QEOF do
+    begin
+      ParamID:= QFieldInt(AIDField);
+      BD:= MaxDate(QFieldDT(ABDField), ABeginDate);
+      ED:= MinDate(QFieldDT(AEDField), AEndDate);
+      i:= VIndexOf(AParamIDs, ParamID);
+      if i<0 then
+      begin
+        VAppend(AParamIDs, ParamID);
+        MAppend(AFirstDates, VCreateDate([BD]));
+        MAppend(ALastDates, VCreateDate([ED]));
+      end
+      else begin
+        VAppend(AFirstDates[i], BD);
+        VAppend(ALastDates[i], ED);
+      end;
+      QNext;
+    end;
+    Result:= True;
+  end;
+  QClose;
+end;
+
+function TDataBase.StaffPostForPeriodLoad(const ATabNumID: Integer;
+                                  const ABeginDate, AEndDate: TDate;
+                                  out APostIDs: TIntVector;
+                                  out AFirstDates, ALastDates: TDateMatrix): Boolean;
+begin
+  Result:= StaffParamIDsForPeriodLoad(ATabNumID, ABeginDate, AEndDate,
+                    'STAFFPOSTLOG', 'PostID', 'FirstDate', 'LastDate',
+                    APostIDs, AFirstDates, ALastDates);
+end;
+
+function TDataBase.StaffScheduleForPeriodLoad(const ATabNumID: Integer;
+                                  const ABeginDate, AEndDate: TDate;
+                                  out AScheduleIDs: TIntVector;
+                                  out ABeginDates, AEndDates: TDateMatrix): Boolean;
+begin
+  Result:= StaffParamIDsForPeriodLoad(ATabNumID, ABeginDate, AEndDate,
+                    'STAFFSCHEDULE', 'ScheduleID', 'BeginDate', 'EndDate',
+                    AScheduleIDs, ABeginDates, AEndDates);
+end;
+
 function TDataBase.StaffPostLogListLoad(const ATabNumID: Integer;
                           out APostLogIDs, APostIDs, APostTemps: TIntVector;
                           out APostNames, ARanks: TStrVector;
@@ -1310,6 +1411,106 @@ begin
     QRollback;
   end;
 end;
+
+function TDataBase.StaffPostScheduleInfoLoad(const ATabNumID: Integer;
+                          out AInfo: TPostScheduleInfo;
+                          const AFromDate: TDate = NULDATE;
+                          const AToDate: TDate = INFDATE): Boolean;
+var
+  i, j: Integer;
+  PostIDs: TIntVector;
+  FirstDates, LastDates: TDateMatrix;
+  ShiftScheduleInfo: TShiftScheduleInfo;
+begin
+  //TPostScheduleInfo = record
+  //  PostIDs: TIntVector; //список уникальных ID должностей
+  //  Infos: array of array of TShiftScheduleInfo;
+  //  FirstDates, LastDates: TDateMatrix; //должность с одним ID может попадаться в периоде несколько раз
+  //end;
+
+  Result:= False;
+  AInfo:= EmptyPostScheduleInfo;
+
+  Result:= StaffPostForPeriodLoad(ATabNumID, AFromDate, AToDate,
+                                PostIDs, FirstDates, LastDates);
+
+  if not Result then Exit;
+
+  AInfo.PostIDs:= PostIDs;
+  AInfo.FirstDates:= FirstDates;
+  AInfo.LastDates:= LastDates;
+  SetLength(AInfo.Infos, Length(PostIDs));
+  for i:= 0 to High(PostIDs) do
+  begin
+    SetLength(AInfo.Infos[i], Length(FirstDates[i]));
+    for j:=0 to High(FirstDates[i]) do
+      AInfo.Infos[i, j]:= EmptyShiftScheduleInfo;
+  end;
+
+  for i:= 0 to High(PostIDs) do
+  begin
+    for j:=0 to High(FirstDates[i]) do
+    begin
+      if not StaffScheduleInfoLoad(ATabNumID, ShiftScheduleInfo,
+                                   FirstDates[i, j], LastDates[i, j]) then continue;
+      AInfo.Infos[i, j]:= ShiftScheduleInfo;
+    end;
+  end;
+end;
+
+function TDataBase.StaffScheduleInfoLoad(const ATabNumID: Integer;
+                          out AInfo: TShiftScheduleInfo;
+                          const AFromDate: TDate = NULDATE;
+                          const AToDate: TDate = INFDATE): Boolean;
+var
+  i, j: Integer;
+  ScheduleIDs, V: TIntVector;
+  FirstDates, LastDates: TDateMatrix;
+  Cycle: TScheduleCycle;
+  Corrections: TScheduleCorrections;
+begin
+  //TPostScheduleInfo = record
+  //  ScheduleIDs: TIntVector; //список уникальных ID графиков
+  //  Cycles: array of TScheduleCycle;
+  //  Corrections: array of array of TScheduleCorrections;
+  //  FirstDates, LastDates: TDateMatrix; //график с одним ID может попадаться в периоде несколько раз
+  //end;
+  //
+  Result:= False;
+  AInfo:= EmptyShiftScheduleInfo;
+
+  Result:= StaffScheduleForPeriodLoad(ATabNumID, AFromDate, AToDate,
+                                      ScheduleIDs, FirstDates, LastDates);
+
+  if not Result then Exit;
+
+  AInfo.ScheduleIDs:= ScheduleIDs;
+  AInfo.FirstDates:= FirstDates;
+  AInfo.LastDates:= LastDates;
+  SetLength(AInfo.Cycles, Length(ScheduleIDs));
+  SetLength(AInfo.Corrections, Length(ScheduleIDs));
+  for i:= 0 to High(ScheduleIDs) do
+  begin
+    AInfo.Cycles[i]:= EmptyScheduleCycle;
+    SetLength(AInfo.Corrections[i], Length(FirstDates[i]));
+    for j:=0 to High(FirstDates[i]) do
+      AInfo.Corrections[i, j]:= EmptyScheduleCorrections;
+  end;
+
+  for i:= 0 to High(ScheduleIDs) do
+  begin
+    if ScheduleCycleLoad(ScheduleIDs[i], V, Cycle) then
+      AInfo.Cycles[i]:= Cycle;
+
+    for j:= 0 to High(FirstDates[i]) do
+      if ScheduleShiftCorrectionsLoad(ScheduleIDs[i], V, Corrections,
+                                      FirstDates[i, j], LastDates[i, j]) then
+        AInfo.Corrections[i, j]:= Corrections;
+  end;
+
+end;
+
+
 
 function TDataBase.StaffScheduleHistoryLoad(const ATabNumID: Integer;
                           out AHistoryIDs, AScheduleIDs, AWeekHours: TIntVector;
@@ -1627,7 +1828,7 @@ function TDataBase.ScheduleCycleLoad(const AScheduleID: Integer;
                                out ACycleIDs: TIntVector;
                                out ACycle: TScheduleCycle): Boolean;
 begin
-  ACycle:= ScheduleCycleEmpty;
+  ACycle:= EmptyScheduleCycle;
   ACycle.ScheduleID:= AScheduleID;
   ACycle.Count:= ValueInt32Int32ID('SCHEDULEMAIN', 'CycleCount', 'ScheduleID', AScheduleID);
   ACycle.IsWeek:= ACycle.Count=0;
@@ -2314,7 +2515,7 @@ begin
       //если график не существует, переходим к следующему дню
       if ASchedule.IsExists[i] = EXISTS_NO then continue;
       //определяем данные за день (ATimetableDay содержит все, кроме часов по графику)
-      ATimetableDay.ScheduleHours:= ASchedule.HoursCorrect.Total[i];  {WorkHoursCorrect - потому что в графиковом времени нужно учитывать раб часы без учета отпуска, но  с корректировками}
+      ATimetableDay.ScheduleHours:= ASchedule.HoursCorrect.Totals[i];  {WorkHoursCorrect - потому что в графиковом времени нужно учитывать раб часы без учета отпуска, но  с корректировками}
       //записываем данные за день
       TimetableDayAdd(ATabNumID, ACalendar.Dates[i], ATimetableDay);
     end;
@@ -2392,8 +2593,8 @@ begin
         if IsManualChangedDay then //если табель был изменен вручную
         begin
           //обновляем часы по графику
-          if ASchedule.HoursCorrect.Total[i]<>WritedScheduleHours then
-            TimetableScheduleHoursUpdate(ATabNumID, ACalendar.Dates[i], ASchedule.HoursCorrect.Total[i]); {HoursCorrect - потому что в графиковом времени нужно учитывать раб часы без учета отпуска, но  с корректировками}
+          if ASchedule.HoursCorrect.Totals[i]<>WritedScheduleHours then
+            TimetableScheduleHoursUpdate(ATabNumID, ACalendar.Dates[i], ASchedule.HoursCorrect.Totals[i]); {HoursCorrect - потому что в графиковом времени нужно учитывать раб часы без учета отпуска, но  с корректировками}
         end
         else begin //табель был заполнен по графику
           //удаляем день

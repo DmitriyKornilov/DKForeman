@@ -9,7 +9,7 @@ uses
   //DK packages utils
   DK_Vector, DK_DateUtils, DK_StrUtils, DK_Const,
   //Project utils
-  UWorkHours, UCalendar, USchedule;
+  UWorkHours, UCalendar, {USchedule} uschedule;
 
 const
   SPACE1 = ' ';
@@ -742,16 +742,16 @@ function TimetableDayDataFromSchedule(const ASchedule: TPersonalSchedule;
 var
   X: Integer;
 begin
-  Result.ScheduleHours:= ASchedule.HoursCorrect.Total[AIndex];  {WorkHoursCorrect - потому что в графиковом времени нужно учитывать раб часы без учета отпуска, но  с корректировками}
-  Result.TotalHours:=  ASchedule.HoursCorrectVacation.Total[AIndex]; {WorkHoursCorrectVacation - потому что в табеле учитывается и отпуск}
-  Result.NightHours:=  ASchedule.HoursCorrectVacation.Night[AIndex];
+  Result.ScheduleHours:= ASchedule.HoursCorrect.Totals[AIndex];  {WorkHoursCorrect - потому что в графиковом времени нужно учитывать раб часы без учета отпуска, но  с корректировками}
+  Result.TotalHours:=  ASchedule.HoursCorrectVacation.Totals[AIndex]; {WorkHoursCorrectVacation - потому что в табеле учитывается и отпуск}
+  Result.NightHours:=  ASchedule.HoursCorrectVacation.Nights[AIndex];
   Result.OverHours := 0;
   //устанавливаем дефолтные данные по пропущенным часам
   Result.SkipHours:= 0;
   Result.SkipMark:= 0;
   //определяем основную метку табеля
   Result.DigMark:= ASchedule.MarkDIGCorrect[AIndex]; //берем с графика
-  X:= ASchedule.IsVacation[AIndex];
+  X:= ASchedule.IsVacations[AIndex];
   if X>VACATION_NO then  //есть отпуск
   begin
     if X=VACATION_HOLIDAY then

@@ -10,7 +10,7 @@ uses
   //DK packages utils
   DK_Vector, DK_VSTDropDown, DK_VSTEdit, DK_Const, DK_StrUtils, DK_Dialogs,
   //Project utils
-  UDataBase, UWorkHours, USchedule, UUtils, UConst;
+  UDataBase, UWorkHours, uschedule, UUtils, UConst;
 
 type
 
@@ -63,7 +63,7 @@ uses UMainForm;
 
 procedure TScheduleShiftEditForm.FormCreate(Sender: TObject);
 begin
-  Cycle:= ScheduleCycleEmpty;
+  Cycle:= EmptyScheduleCycle;
 
   SaveButton.Images:= ImageListForScreen;
   CancelButton.Images:= SaveButton.Images;

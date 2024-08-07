@@ -229,11 +229,6 @@
         <UnitName Value="UScheduleCorrectionEditForm"/>
       </Unit>
       <Unit>
-        <Filename Value="utils\timing\uschedule.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="USchedule"/>
-      </Unit>
-      <Unit>
         <Filename Value="utils\timing\utimingsheet.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="UTimingSheet"/>
@@ -332,6 +327,11 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UTimetableMonthForm"/>
+      </Unit>
+      <Unit>
+        <Filename Value="utils\timing\uschedule.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="USchedule"/>
       </Unit>
     </Units>
   </ProjectOptions>

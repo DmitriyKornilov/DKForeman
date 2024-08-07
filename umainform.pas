@@ -6,13 +6,13 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, Buttons,
-  Menus, BCButton, LCLType,
+  Menus, BCButton, LCLType, DividerBevel,
 
   //DK packages utils
   DK_Const, DK_LCLStrRus, DK_HeapTrace, DK_CtrlUtils, DK_Fonts, DK_VSTTypes,
   DK_Vector,
   //Project utils
-  UDataBase, UUtils, UConst, UTypes, UImages, DividerBevel,
+  UDataBase, UUtils, UConst, UTypes, UImages,
   //Forms
   UStaffForm,
   UCalendarForm, UScheduleShiftForm, UVacationPlaneForm,
@@ -70,6 +70,7 @@ type
     procedure FormShow(Sender: TObject);
     procedure PersonalScheduleMenuItemClick(Sender: TObject);
     procedure PostListMenuItemClick(Sender: TObject);
+    procedure RefreshButtonClick(Sender: TObject);
     procedure SafetyButtonClick(Sender: TObject);
     procedure SettingButtonClick(Sender: TObject);
     procedure ShiftScheduleMenuItemClick(Sender: TObject);
@@ -469,6 +470,11 @@ end;
 procedure TMainForm.PostListMenuItemClick(Sender: TObject);
 begin
   DictionarySelect(1);
+end;
+
+procedure TMainForm.RefreshButtonClick(Sender: TObject);
+begin
+
 end;
 
 procedure TMainForm.TimetableMarkMenuItemClick(Sender: TObject);

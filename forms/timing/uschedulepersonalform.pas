@@ -9,7 +9,7 @@ uses
   fpspreadsheetgrid, BCPanel, BCButton, VirtualTrees, Spin, StdCtrls,
   DividerBevel, DateUtils,
   //Project utils
-  UDataBase, UConst, UTypes, UUtils, UWorkHours, UCalendar, USchedule,
+  UDataBase, UConst, UTypes, UUtils, UWorkHours, UCalendar, uschedule,
   UScheduleSheet,
   //DK packages utils
   DK_VSTTables, DK_VSTParamList, DK_VSTEdit, DK_Vector, DK_Const, DK_Dialogs,
@@ -501,7 +501,6 @@ var
 begin
   if ModeType<>mtEditing then Exit;
   if not Sheet.GridToDate(ViewGrid.Row, ViewGrid.Col, DayDate) then Exit;
-  //VSTDays.ReSelect(Corrections.Dates, DayDate, False);
   ScheduleCorrectionEditFormOpen(DayDate);
 end;
 
@@ -571,7 +570,7 @@ begin
   begin
     if ANeedSave then //apply copies
     begin
-      C:= GetScheduleCorrections(Sheet.SelectedDates, SelectedHoursTotal, SelectedHoursNight,
+      C:= ScheduleCorrectionsCreate(Sheet.SelectedDates, SelectedHoursTotal, SelectedHoursNight,
                                  SelectedDigMark, SelectedShiftNum, SelectedStrMark);
       DataBase.SchedulePersonalCorrectionsUpdate(TabNumIDs[StaffList.SelectedIndex], C);
       ScheduleChange;
@@ -874,14 +873,12 @@ begin
               ParamList.Selected['ColorType']=0);
   if ParamList.Checked['ViewParams', 4] then
     ASheet.ColorsUpdate(Colors);
-  //else
-  //  ASheet.ColorsClear;
 end;
 
 procedure TSchedulePersonalForm.ScheduleDraw(const AZoomPercent: Integer);
 begin
   if not Calendar.IsCalculated then Exit;
-  if (not Assigned(Schedule)) or (not Schedule.Calculated) then Exit;
+  if (not Assigned(Schedule)) or (not Schedule.IsCalculated) then Exit;
 
   ViewGrid.Visible:= False;
   Screen.Cursor:= crHourGlass;

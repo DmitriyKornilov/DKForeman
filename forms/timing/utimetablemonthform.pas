@@ -923,6 +923,7 @@ var
     //табель в результирующей строке
     Timetables[AResultIndex].Add(Timetables[ADeleteIndex]);
     //периоды должностей и графиков в строке
+    {TODO !!!!}
     //PostBDs[AResultIndex]:= VAdd(PostBDs[AResultIndex], PostBDs[ADeleteIndex]);
     //PostsEDs[AResultIndex]:= VAdd(PostsEDs[AResultIndex], PostsEDs[ADeleteIndex]);
     //ScheduleBDs[AResultIndex]:= VAdd(ScheduleBDs[AResultIndex], ScheduleBDs[ADeleteIndex]);

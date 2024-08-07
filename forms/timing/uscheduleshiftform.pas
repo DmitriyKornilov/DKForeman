@@ -408,7 +408,7 @@ begin
   begin
     if ANeedSave then //apply copies
     begin
-      C:= GetScheduleCorrections(Sheet.SelectedDates, SelectedHoursTotal, SelectedHoursNight,
+      C:= ScheduleCorrectionsCreate(Sheet.SelectedDates, SelectedHoursTotal, SelectedHoursNight,
                                  SelectedDigMark, SelectedShiftNum, SelectedStrMark);
       DataBase.ScheduleShiftCorrectionsUpdate(ScheduleIDs[ScheduleList.SelectedIndex], C);
       ScheduleChange(False{no cycle reload});
@@ -709,7 +709,7 @@ procedure TScheduleShiftForm.ScheduleDraw(const AZoomPercent: Integer);
 begin
   if not CanDraw then Exit;
   if not Calendar.IsCalculated then Exit;
-  if not Schedule.Calculated then Exit;
+  if not Schedule.IsCalculated then Exit;
 
   SheetCaptionPanel.Caption:= 'График сменности на ' + YearSpinEdit.Text + ' год: ';
   if not ScheduleList.IsSelected then Exit;

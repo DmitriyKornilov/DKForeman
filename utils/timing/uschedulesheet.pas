@@ -8,7 +8,7 @@ uses
   Classes, SysUtils, Graphics, fpspreadsheetgrid, fpspreadsheet, fpstypes,
   LCLType, Controls, DateUtils,
   //Project utils
-  UUtils, UConst, UTypes, UCalendar, UWorkHours, USchedule, UTimingSheet,
+  UUtils, UConst, UTypes, UCalendar, UWorkHours, uschedule, UTimingSheet,
   //DK packages utils
   DK_SheetWriter, DK_Vector, DK_Const, DK_DateUtils, DK_StrUtils, DK_SheetTypes,
   DK_Math, DK_Color;
@@ -417,9 +417,9 @@ begin
   Writer.SetAlignment(haCenter, vaCenter);
   for i:= 0 to FCalendar.DaysCount - 1 do
     DrawPersonalHoursOrMarks(Writer, R, C+i+1,
-                FSchedules[AIndex].IsExists[i], FSchedules[AIndex].IsDefine[i],
-                FSchedules[AIndex].IsVacation[i],
-                WorkHours.Total[i], WorkHours.Night[i], Marks[i], EmptyStr,
+                FSchedules[AIndex].IsExists[i], FSchedules[AIndex].IsDefines[i],
+                FSchedules[AIndex].IsVacations[i],
+                WorkHours.Totals[i], WorkHours.Nights[i], Marks[i], EmptyStr,
                 FWriteTotalIfZero, FWriteNightIfZero,
                 FViewParams[0], //0 - Отображать строку ночных часов
                 FViewParams[2], //2 - Коды табеля для нерабочих дней
@@ -588,16 +588,16 @@ var
       if CutSchedule.IsExists[i]=EXISTS_NO then
          AddScheduleColorIndex(Writer, ARow, ACol+i, OUTSIDEMONTH_COLOR_INDEX, FNeedNight)
       else begin
-        if CutSchedule.IsDefine[i]=DEFINE_NO then
+        if CutSchedule.IsDefines[i]=DEFINE_NO then
           AddScheduleColorIndex(Writer, ARow, ACol+i, NOTDEFINE_COLOR_INDEX, FNeedNight)
         else begin
-          if FNeedCorrect and (CutSchedule.IsCorrection[i]=CORRECTION_YES) and
-             (CutSchedule.IsVacation[i]=VACATION_NO) then
+          if FNeedCorrect and (CutSchedule.IsCorrections[i]=CORRECTION_YES) and
+             (CutSchedule.IsVacations[i]=VACATION_NO) then
             AddScheduleColorIndex(Writer, ARow, ACol+i, CORRECT_COLOR_INDEX, FNeedNight)
           else begin
             if FScheduleNotWorkColor then
             begin
-              if WorkHours.Total[i]=0 then
+              if WorkHours.Totals[i]=0 then
                 AddScheduleColorIndex(Writer, ARow, ACol+i, NOTWORK_COLOR_INDEX, FNeedNight);
             end
             else begin
@@ -610,8 +610,8 @@ var
       end;
 
       DrawPersonalHoursOrMarks(Writer, ARow, ACol+i,
-                CutSchedule.IsExists[i], CutSchedule.IsDefine[i], CutSchedule.IsVacation[i],
-                WorkHours.Total[i], WorkHours.Night[i], Marks[i], EmptyStr,
+                CutSchedule.IsExists[i], CutSchedule.IsDefines[i], CutSchedule.IsVacations[i],
+                WorkHours.Totals[i], WorkHours.Nights[i], Marks[i], EmptyStr,
                 FWriteTotalIfZero, FWriteNightIfZero, FNeedNight, FNeedMarks, FNeedVacation,
                 CutSchedule.StrMarkVacationMain, CutSchedule.StrMarkVacationAddition, CutSchedule.StrMarkVacationHoliday);
 
@@ -674,11 +674,7 @@ var
 begin
   CutCalendar:= TCalendar.Create;
   try
-    CutSchedule:= TPersonalSchedule.Create(FSchedule.TabNumID, FSchedule.TabNum,
-                     FSchedule.RecrutDate, FSchedule.DismissDate, FSchedule.IsVacation,
-                     FSchedule.PersonalCorrect,
-                     FSchedule.StrMarkVacationMain, FSchedule.StrMarkVacationAddition,
-                     FSchedule.StrMarkVacationHoliday);
+    CutSchedule:= TPersonalSchedule.Create;
     try
       Writer.SetFont(Font.Name, Font.Size, [], clBlack);
       AYear:= YearOfDate(FSchedule.BeginDate);
@@ -1378,12 +1374,12 @@ var
     ChooseShiftScheduleData(CutSchedule, FNeedCorrect, WorkHours, d, s, Marks);
     for i:= 0 to CutCalendar.DaysCount - 1 do
     begin
-      if FNeedCorrect and (CutSchedule.IsCorrection[i]=CORRECTION_YES) then
+      if FNeedCorrect and (CutSchedule.IsCorrections[i]=CORRECTION_YES) then
         AddScheduleColorIndex(Writer, ARow, ACol+i, CORRECT_COLOR_INDEX, FNeedNight)
       else begin
         if FScheduleNotWorkColor then
         begin
-          if WorkHours.Total[i]=0 then
+          if WorkHours.Totals[i]=0 then
             AddScheduleColorIndex(Writer, ARow, ACol+i, NOTWORK_COLOR_INDEX, FNeedNight);
         end
         else begin
@@ -1392,7 +1388,7 @@ var
              AddScheduleColorIndex(Writer, ARow, ACol+i, NOTWORK_COLOR_INDEX, FNeedNight);
         end;
       end;
-      DrawHoursOrMarks(Writer, ARow, ACol+i, WorkHours.Total[i], WorkHours.Night[i],
+      DrawHoursOrMarks(Writer, ARow, ACol+i, WorkHours.Totals[i], WorkHours.Nights[i],
                        Marks[i], EmptyStr, FWriteTotalIfZero, FWriteNightIfZero, FNeedNight, FNeedMarks);
     end;
     for i:= CutCalendar.DaysCount to 30 do
@@ -1559,12 +1555,12 @@ var
     ChooseShiftScheduleData(FSchedules[AInd], FNeedCorrect, WorkHours, d,s, Marks);
     for i:= 0 to FCalendar.DaysCount - 1 do
     begin
-      if FNeedCorrect and (FSchedules[AInd].IsCorrection[i]=CORRECTION_YES) then
+      if FNeedCorrect and (FSchedules[AInd].IsCorrections[i]=CORRECTION_YES) then
         AddScheduleColorIndex(Writer, ARow, ACol+i, CORRECT_COLOR_INDEX, FNeedNight)
       else begin
         if FScheduleNotWorkColor then
         begin
-          if WorkHours.Total[i]=0 then
+          if WorkHours.Totals[i]=0 then
             AddScheduleColorIndex(Writer, ARow, ACol+i, NOTWORK_COLOR_INDEX, FNeedNight);
         end
         else begin
@@ -1573,7 +1569,7 @@ var
              AddScheduleColorIndex(Writer, ARow, ACol+i, NOTWORK_COLOR_INDEX, FNeedNight);
         end;
       end;
-      DrawHoursOrMarks(Writer, ARow, ACol+i, WorkHours.Total[i], WorkHours.Night[i],
+      DrawHoursOrMarks(Writer, ARow, ACol+i, WorkHours.Totals[i], WorkHours.Nights[i],
                        Marks[i], EmptyStr, FWriteTotalIfZero, FWriteNightIfZero, FNeedNight, FNeedMarks);
     end;
     for i:= FCalendar.DaysCount to 30 do
@@ -1815,7 +1811,7 @@ begin
   Writer.SetAlignment(haCenter, vaCenter);
   ChooseShiftScheduleData(FSchedules[AIndex], False, WorkHours, i, i, Marks);
   for i:=0 to 9 do
-    DrawHoursOrMarks(Writer, R, i+2, WorkHours.Total[i], WorkHours.Night[i], Marks[i],
+    DrawHoursOrMarks(Writer, R, i+2, WorkHours.Totals[i], WorkHours.Nights[i], Marks[i],
                      EmptyStr, False, False, True, True);
 end;
 

@@ -127,7 +127,7 @@ begin
     if not Confirm('Указано количество рабочих часов, но не указан номер смены (=0)! ' +
              'Всё равно записать изменения?') then Exit;
 
-  Corrections:= GetScheduleCorrections(FirstDatePicker.Date, LastDatePicker.Date,
+  Corrections:= ScheduleCorrectionsCreate(FirstDatePicker.Date, LastDatePicker.Date,
                   HoursTotal, HoursNight, DigMarks[MarkDropDown.ItemIndex], ShiftNum);
 
   if TabNumID>0 then //pesonal schedule corrections

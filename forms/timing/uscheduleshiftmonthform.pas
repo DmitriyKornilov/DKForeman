@@ -216,6 +216,7 @@ begin
   try
     ZoomPercent:= AZoomPercent;
     Sheet.Zoom(ZoomPercent);
+
     Sheet.Draw(Calendar, Schedules, ScheduleNames,
                NeedNight, NeedCorrect, NeedMarks, ScheduleNotWorkColor,
                ScheduleList.Selected);

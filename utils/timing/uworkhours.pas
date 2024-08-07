@@ -20,22 +20,28 @@ const
 
 type
   {Рабочие часы}
+
+  { TWorkHours }
+
   TWorkHours = class (TObject)
-    protected
-      FTotal: TIntVector; //вектор фактических часов (общее кол-во за смену)
-      FNight: TIntVector; //вектор ночных часов
-      function GetSumTotal: Integer;
-      function GetSumNight: Integer;
-      procedure SetTotal(const AVector: TIntVector);
-      procedure SetNight(const AVector: TIntVector);
-    public
-      procedure Clear;
-      procedure Add(const ATotal: Integer; const ANight: Integer = 0);
-      procedure Copy(const ADestination: TWorkHours);
-      property Total: TIntVector read FTotal write SetTotal;
-      property Night: TIntVector read FNight write SetNight;
-      property SumTotal: Integer read GetSumTotal;  //сумма отработанных часов
-      property SumNight: Integer read GetSumNight;  //сумма ночных часов
+  private
+    FTotals: TIntVector; //вектор фактических часов (общее кол-во за смену)
+    FNights: TIntVector; //вектор ночных часов
+
+    function GetSumTotal: Integer;
+    function GetSumNight: Integer;
+
+    procedure SetTotals(const AVector: TIntVector);
+    procedure SetNights(const AVector: TIntVector);
+  public
+    procedure Clear;
+    procedure Add(const ATotal, ANight: Integer);
+    procedure Zeros(const ACount: Integer);
+    procedure Copy(const ADestination: TWorkHours);
+    property Totals: TIntVector read FTotals write SetTotals;
+    property Nights: TIntVector read FNights write SetNights;
+    property SumTotal: Integer read GetSumTotal;  //сумма отработанных часов
+    property SumNight: Integer read GetSumNight;  //сумма ночных часов
   end;
 
   {ФУНКЦИИ ПЕРЕСЧЕТА ПРЕДСТАВЛЕНИЙ РАБОЧИХ ЧАСОВ}
@@ -68,40 +74,46 @@ implementation
 
 procedure TWorkHours.Clear;
 begin
-  FTotal:= nil;
-  FNight:= nil;
+  FTotals:= nil;
+  FNights:= nil;
 end;
 
-procedure TWorkHours.SetTotal(const AVector: TIntVector);
+procedure TWorkHours.SetTotals(const AVector: TIntVector);
 begin
-  FTotal:= VCut(AVector);
+  FTotals:= VCut(AVector);
 end;
 
-procedure TWorkHours.SetNight(const AVector: TIntVector);
+procedure TWorkHours.SetNights(const AVector: TIntVector);
 begin
-  FNight:= VCut(AVector);
+  FNights:= VCut(AVector);
 end;
 
-procedure TWorkHours.Add(const ATotal: Integer; const ANight: Integer = 0);
+procedure TWorkHours.Add(const ATotal, ANight: Integer);
 begin
-  VAppend(FTotal, ATotal);
-  VAppend(FNight, ANight);
+  VAppend(FTotals, ATotal);
+  VAppend(FNights, ANight);
+end;
+
+procedure TWorkHours.Zeros(const ACount: Integer);
+begin
+  VDim(FTotals, ACount, 0);
+  VDim(FNights, ACount, 0);
 end;
 
 procedure TWorkHours.Copy(const ADestination: TWorkHours);
 begin
-  ADestination.Total:= FTotal;
-  ADestination.Night:= FNight;
+  ADestination.Totals:= FTotals;
+  ADestination.Nights:= FNights;
 end;
 
 function TWorkHours.GetSumTotal: Integer;
 begin
-  GetSumTotal:= VSum(FTotal);
+  GetSumTotal:= VSum(FTotals);
 end;
 
 function TWorkHours.GetSumNight: Integer;
 begin
-  GetSumNight:= VSum(FNight);
+  GetSumNight:= VSum(FNights);
 end;
 
 {ФУНКЦИИ ПЕРЕСЧЕТА ПРЕДСТАВЛЕНИЙ ЧАСОВ}
