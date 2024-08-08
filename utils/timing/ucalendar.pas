@@ -96,6 +96,7 @@ type
     procedure Clear;
     procedure Calc(const ABeginDate, AEndDate: TDate; const ACorrections: TCalendarCorrections);
     function Cut(const ABeginDate, AEndDate: TDate; var ACutCalendar: TCalendar): Boolean;
+    function Cut(var ACutCalendar: TCalendar): Boolean;
     //сумма рабочих часов в зависимости от кол-ва часов в неделю AHoursInWeek (40, 36, 24) в целочисленном формате
     function SumWorkHoursInt(const AHoursInWeek: Byte;
       const ABeginDate: TDate = NULDATE; const AEndDate: TDate = INFDATE): Integer;
@@ -284,6 +285,11 @@ begin
   ACutCalendar.FWeekNumsInMonth:= VCut(FWeekNumsInMonth, I1, I2) ;
   ACutCalendar.FIsCalculated:= True;
   Result:= True;
+end;
+
+function TCalendar.Cut(var ACutCalendar: TCalendar): Boolean;
+begin
+  Result:= Cut(BeginDate, EndDate, ACutCalendar);
 end;
 
 //сумма рабочих часов в зависимости от кол-ва часов в неделю AHoursInWeek (40, 36, 24)

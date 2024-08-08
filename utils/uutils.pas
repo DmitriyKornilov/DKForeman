@@ -140,6 +140,7 @@ uses
   //Timetable
   {Актуализация записей табеля за период}
   function TimetableForPeriodUpdate(const ATabNumID: Integer;
+                                   const ARecrutDate, ADismissDate: TDate;
                                    const ABeginDate, AEndDate: TDate;
                                    const AHolidayDates: TDateVector;
                                    const AUpdateWritedOnly: Boolean): Boolean;
@@ -149,10 +150,11 @@ uses
   {Загрузка из базы векторов данных табеля: True - ОК, False - пусто}
   function TimetableDataVectorsLoad(const ATabNumID: Integer; //таб номер
                                const ABeginDate, AEndDate: TDate; //период запроса
+                               out ADates: TDateVector;
                                out ASheduleIDs, AShiftNums,
                                  ATotalHours, ANightHours, AOverHours,
                                  ASkipHours, ASchedHours, AMainMarkDig,
-                                 ASkipMarkDig, AIsManualChanged, AAbsence, AIsDayInBase: TIntVector;
+                                 ASkipMarkDig, AIsManualChanged, AAbsence: TIntVector;
                                out AMainMarkStr, ASkipMarkStr: TStrVector): Boolean;
   {Расчет итогов годового табеля}
   function TimetableYearTotalsLoad(const ATabNumID, AYear: Integer): TTimetableTotals;
@@ -521,7 +523,6 @@ begin
   //ограничене периода на время работы
   if not IsPeriodIntersect(ABeginDate, AEndDate, RecrutDate, DismissDate, BD, ED) then Exit;
   //расчет календаря
-  Calendar:= nil;
   CalendarForPeriod(BD, ED, Calendar);
   //расчет графика
   Schedule:= SchedulePersonalByCalendar(ATabNumID, EmptyStr,
@@ -537,21 +538,21 @@ begin
 end;
 
 function TimetableForPeriodUpdate(const ATabNumID: Integer;
+                            const ARecrutDate, ADismissDate: TDate;
                             const ABeginDate, AEndDate: TDate;
                             const AHolidayDates: TDateVector;
                             const AUpdateWritedOnly: Boolean): Boolean;
 var
-  FirtsWritedDate, LastWritedDate, RecrutDate, DismissDate, BD, ED: TDate;
+  FirtsWritedDate, LastWritedDate, BD, ED: TDate;
   Calendar: TCalendar;
   Schedule: TPersonalSchedule;
 begin
   Result:= False;
   Schedule:= nil;
   Calendar:= nil;
-  //получаем даты приема увольнения
-  if not DataBase.StaffTabNumWorkPeriodLoad(ATabNumID, RecrutDate, DismissDate) then Exit;
+
   //ограничение периода на время работы
-  if not IsPeriodIntersect(ABeginDate, AEndDate, RecrutDate, DismissDate, BD, ED) then Exit;
+  if not IsPeriodIntersect(ABeginDate, AEndDate, ARecrutDate, ADismissDate, BD, ED) then Exit;
   if AUpdateWritedOnly then
   begin
     //первая и последняя даты записанного в базу табеля
@@ -560,11 +561,10 @@ begin
     if not IsPeriodIntersect(BD, ED, FirtsWritedDate, LastWritedDate, BD, ED) then Exit;
   end;
   //расчет календаря
-  Calendar:= nil;
   CalendarForPeriod(BD, ED, Calendar);
   //расчет графика
   Schedule:= SchedulePersonalByCalendar(ATabNumID, EmptyStr,
-                         RecrutDate, DismissDate, Calendar, AHolidayDates);
+                         ARecrutDate, ADismissDate, Calendar, AHolidayDates);
 
   try
     if Schedule.IsCalculated then
@@ -583,16 +583,17 @@ end;
 
 function TimetableDataVectorsLoad(const ATabNumID: Integer; //таб номер
                                const ABeginDate, AEndDate: TDate; //период запроса
+                               out ADates: TDateVector;
                                out ASheduleIDs, AShiftNums,
                                  ATotalHours, ANightHours, AOverHours,
                                  ASkipHours, ASchedHours, AMainMarkDig,
-                                 ASkipMarkDig, AIsManualChanged, AAbsence, AIsDayInBase: TIntVector;
+                                 ASkipMarkDig, AIsManualChanged, AAbsence: TIntVector;
                                out AMainMarkStr, ASkipMarkStr: TStrVector): Boolean;
 begin
   Result:= DataBase.TimetableDataVectorsLoad(ATabNumID, ABeginDate, AEndDate,
-                  ASheduleIDs, AShiftNums, ATotalHours, ANightHours, AOverHours,
+                  ADates, ASheduleIDs, AShiftNums, ATotalHours, ANightHours, AOverHours,
                   ASkipHours, ASchedHours, AMainMarkDig, ASkipMarkDig,
-                  AIsManualChanged, AAbsence, AIsDayInBase, AMainMarkStr, ASkipMarkStr);
+                  AIsManualChanged, AAbsence, AMainMarkStr, ASkipMarkStr);
 end;
 
 function TimetableYearTotalsLoad(const ATabNumID, AYear: Integer): TTimetableTotals;
@@ -1014,8 +1015,8 @@ begin
                                           ACalendar.BeginDate, ACalendar.EndDate);
   //создаем и рассчитываем график
   Result:= TPersonalSchedule.Create;
-  Result.Calc(ATabNumID, ATabNum, ACalendar, APostScheduleInfo,
-              IsVacations, PersonalCorrections, ARecrutDate, ADismissDate,
+  Result.Calc(ATabNumID, ATabNum, ARecrutDate, ADismissDate, ACalendar,
+              APostScheduleInfo, IsVacations, PersonalCorrections,
               AStrMarkVacationMain,  AStrMarkVacationAddition, AStrMarkVacationHoliday);
 end;
 

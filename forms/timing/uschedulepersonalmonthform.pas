@@ -118,7 +118,6 @@ type
     StaffNames, TabNums, PostNames: TStrVector;
     RecrutDates, DismissDates, PostBDs, PostEDs, ScheduleBDs, ScheduleEDs: TDateVector;
 
-
     procedure ParamListCreate;
 
     procedure PeriodTypeSelect;
@@ -155,26 +154,11 @@ type
 var
   SchedulePersonalMonthForm: TSchedulePersonalMonthForm;
 
-procedure SchedulePersonalMonthFormOpen(const AYear: Integer);
-
 implementation
 
 uses UMainForm;
 
 {$R *.lfm}
-
-procedure SchedulePersonalMonthFormOpen(const AYear: Integer);
-var
-  Form: TSchedulePersonalMonthForm;
-begin
-  Form:= TSchedulePersonalMonthForm.Create(nil);
-  try
-    Form.YearSpinEdit.Value:= AYear;
-    Form.ShowModal;
-  finally
-    FreeAndNil(Form);
-  end;
-end;
 
 { TSchedulePersonalMonthForm }
 
@@ -707,12 +691,17 @@ begin
       //обновляем строку в окне прогресса
       S:= StaffNames[i] + ' [таб.№ ' + TabNums[i] + '] - ' + PostNames[i];
       Progress.WriteLine2(S);
-      //определяем период для загрузки Info
-      IsPeriodIntersect(ScheduleBDs[i], ScheduleEDs[i], PostBDs[i], PostEDs[i], BD, ED);
-      IsPeriodIntersect(MonthBD, MonthED, BD, ED, BD, ED);
-      //загружаем инфо о графиках
-      DataBase.StaffPostScheduleInfoLoad(TabNumIDs[i], PostScheduleInfo, BD, ED);
-      PostScheduleInfos[i]:= PostScheduleInfo;
+      //определяем период для загрузки инфо о должностях и графиках
+      if IsPeriodIntersect(ScheduleBDs[i], ScheduleEDs[i], PostBDs[i], PostEDs[i], BD, ED) then
+        if IsPeriodIntersect(MonthBD, MonthED, BD, ED, BD, ED) then
+          if IsPeriodIntersect(RecrutDates[i], DismissDates[i], BD, ED, BD, ED) then
+      begin
+        //загружаем инфо о должностях и графиках
+        DataBase.StaffPostScheduleInfoLoad(TabNumIDs[i], PostScheduleInfo, BD, ED);
+        PostScheduleInfos[i]:= PostScheduleInfo;
+      end
+      else
+        PostScheduleInfos[i]:= EmptyPostScheduleInfo;
       //рассчитываем графики
       ScheduleCreate(i);
     end;
@@ -879,13 +868,12 @@ begin
 end;
 
 procedure TSchedulePersonalMonthForm.RowsMerge;
-
 var
   ChooseIndex1, ChooseIndex2: Integer;
   V1, V2: TStrVector;
   RowIndexes: TIntVector;
   PostName: String;
-  {TODO !!!!}
+
   procedure Merge(const AResultIndex, ADeleteIndex: Integer; const APostName: String);
   begin
     //должность, в результирующей строке
@@ -913,7 +901,7 @@ var
     VDel(DismissDates, ADeleteIndex);
     VSDel(BeforeSchedules, ADeleteIndex);
     VSDel(Schedules, ADeleteIndex);
-    VIDel(PostScheduleInfos,ADeleteIndex);
+    VIDel(PostScheduleInfos, ADeleteIndex);
     ScheduleRedraw;
     Sheet.Select(AResultIndex - Ord(AResultIndex>ADeleteIndex));
   end;

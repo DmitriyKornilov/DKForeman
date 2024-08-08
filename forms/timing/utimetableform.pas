@@ -9,7 +9,8 @@ uses
   fpspreadsheetgrid, BCPanel, BCButton, VirtualTrees, Spin, StdCtrls,
   DividerBevel, DateUtils,
   //Project utils
-  UDataBase, UConst, UTypes, UUtils, UCalendar, UTimetable, UTimetableSheet,
+  UDataBase, UConst, UTypes, UUtils, UCalendar, USchedule, UTimetable,
+  UTimetableSheet,
   //DK packages utils
   DK_VSTTables, DK_VSTParamList, DK_Vector, DK_Const, DK_Dialogs,
   DK_DateUtils, DK_Color, DK_SheetExporter, DK_StrUtils,
@@ -152,6 +153,7 @@ type
 
     procedure TimetableLoad;
     procedure TimetableChange;
+    procedure TimetableUpdate;
     procedure TimetableToSheet(const ASheet: TYearTimetableSheet;
                                const ATimetables: TTimetableVector;
                                const ATimetableTotals: TTimetableTotals;
@@ -161,6 +163,7 @@ type
     procedure TimetableRedraw;
     procedure TimetableExport;
 
+    procedure TimetableMonthFormOpen;
     procedure TimetableEditFormOpen(const ADate: TDate);
 
     procedure ColorsLoad;
@@ -211,6 +214,7 @@ begin
   StaffListCreate;
   EditingTablesCreate;
   Calendar:= TCalendar.Create;
+  VTCreate(Timetables, 12);
   Sheet:= TYearTimetableSheet.Create(ViewGrid.Worksheet, ViewGrid, MainForm.GridFont);
   YearSpinEdit.Value:= YearOfDate(Date);
   MonthDropDown:= TMonthDropDown.Create(MonthBCButton, @MonthTimetableLoad);
@@ -244,10 +248,23 @@ begin
   StaffListLoad;
 end;
 
+procedure TTimetableForm.TimetableMonthFormOpen;
+var
+  TimetableMonthForm: TTimetableMonthForm;
+begin
+  TimetableMonthForm:= TTimetableMonthForm.Create(nil);
+  try
+    TimetableMonthForm.YearSpinEdit.Value:= YearSpinEdit.Value;
+    TimetableMonthForm.ShowModal;
+    TimetableUpdate;
+  finally
+    FreeAndNil(TimetableMonthForm);
+  end;
+end;
+
 procedure TTimetableForm.MonthTimetableButtonClick(Sender: TObject);
 begin
-  TimetableMonthFormOpen(YearSpinEdit.Value);
-  TimetableChange;
+  TimetableMonthFormOpen;
 end;
 
 procedure TTimetableForm.CloseButtonClick(Sender: TObject);
@@ -390,7 +407,7 @@ begin
     begin
       DataBase.TimetableDaysReplace(TabNumIDs[StaffList.SelectedIndex],
                                     Sheet.SelectedDates, SelectedDay);
-      TimetableChange;
+      TimetableUpdate;
     end
     else //cancel copies
       Sheet.SelectionClear;
@@ -587,11 +604,10 @@ begin
   MonthCalendar:= TCalendar.Create;
   try
     Calendar.Cut(BD, ED, MonthCalendar);
-    FreeAndNil(Timetables[M-1]);
-    Timetables[M-1]:= TTimetable.Create(TabNumID, TabNums[StaffList.SelectedIndex],
-                                        RecrutDates[StaffList.SelectedIndex],
-                                        DismissDates[StaffList.SelectedIndex],
-                                        Holidays, MonthCalendar, False);
+    Timetables[M-1].Calc(TabNumID, TabNums[StaffList.SelectedIndex],
+                         RecrutDates[StaffList.SelectedIndex],
+                         DismissDates[StaffList.SelectedIndex],
+                         MonthCalendar, EmptyPostScheduleInfo);
   finally
     FreeAndNil(MonthCalendar);
   end;
@@ -608,7 +624,6 @@ begin
     Sheet.DayInGridSelect(MonthDates[VSTDays.SelectedIndex])
   else //if Assigned(Sheet) then
     Sheet.SelectionClear;
-
 
   EditButton.Enabled:= VSTDays.IsSelected;
   CopyButton.Enabled:= EditButton.Enabled;
@@ -674,47 +689,34 @@ end;
 procedure TTimetableForm.TimetableLoad;
 var
   i: Integer;
-  Timetable: TTimetable;
   MonthCalendar: TCalendar;
   BD, ED: TDate;
-  Progress: TProgress;
 begin
-  VTDel(Timetables);
+  VTClear(Timetables);
   if not StaffList.IsSelected then Exit;
   if not Calendar.IsCalculated then Exit;
 
   Screen.Cursor:= crHourGlass;
   try
-    Progress:= TProgress.Create(nil);
+    MonthCalendar:= TCalendar.Create;
     try
-      MonthCalendar:= TCalendar.Create;
-      try
-        Progress.WriteLine1('Актуализация и расчет табеля:');
-        Progress.WriteLine2(EmptyStr);
-        Progress.Show;
-        for i:=1 to 12 do
-        begin
-          Progress.WriteLine2(MONTHSNOM[i] + ' ' + YearSpinEdit.Text);
-          FirstLastDayInMonth(i, YearSpinEdit.Value, BD,ED);
-          Calendar.Cut(BD,ED, MonthCalendar);
-          Timetable:= TTimetable.Create(TabNumIDs[StaffList.SelectedIndex],
-            TabNums[StaffList.SelectedIndex],
-            RecrutDates[StaffList.SelectedIndex], DismissDates[StaffList.SelectedIndex],
-            Holidays, MonthCalendar
-            );
-          VTAppend(Timetables, Timetable);
-        end;
-      finally
-        FreeAndNil(MonthCalendar);
+      for i:=1 to 12 do
+      begin
+        FirstLastDayInMonth(i, YearSpinEdit.Value, BD,ED);
+        Calendar.Cut(BD,ED, MonthCalendar);
+        Timetables[i-1].Calc(TabNumIDs[StaffList.SelectedIndex],
+          TabNums[StaffList.SelectedIndex],
+          RecrutDates[StaffList.SelectedIndex], DismissDates[StaffList.SelectedIndex],
+          MonthCalendar, EmptyPostScheduleInfo
+          );
       end;
-
-      //итоговые данные
-      TimetableTotals:= TimetableYearTotalsLoad(TabNumIDs[StaffList.SelectedIndex],
-                                                YearSpinEdit.Value);
-
     finally
-      FreeAndNil(Progress);
+      FreeAndNil(MonthCalendar);
     end;
+    //итоговые данные
+    TimetableTotals:= TimetableYearTotalsLoad(TabNumIDs[StaffList.SelectedIndex],
+                                              YearSpinEdit.Value);
+
   finally
     Screen.Cursor:= crDefault;
   end;
@@ -731,6 +733,11 @@ begin
   ViewTabNumID:= TabNumIDs[StaffList.SelectedIndex];
 
   CaptionsUpdate;
+  TimetableUpdate;
+end;
+
+procedure TTimetableForm.TimetableUpdate;
+begin
   TimetableLoad;
   TimetableRedraw;
   MonthTimetableLoad;
@@ -746,13 +753,11 @@ begin
               ACaption, ARecrutDate, ADismissDate, ParamList.Selected['CountType']);
   if ParamList.Checked['ViewParams', 0] then
     Sheet.ColorsUpdate(Colors);
-  //else
-  //  Sheet.ColorsClear;
 end;
 
 procedure TTimetableForm.TimetableDraw(const AZoomPercent: Integer);
 begin
-  if Length(Timetables)=0 then Exit;
+  if not CanDraw then Exit;
 
   ViewGrid.Visible:= False;
   Screen.Cursor:= crHourGlass;
@@ -808,7 +813,6 @@ var
     Worksheet: TsWorksheet;
     ExpSheet: TYearTimetableSheet;
     MonthCalendar: TCalendar;
-    TmpTimetable: TTimetable;
     TmpTimetables: TTimetableVector;
     TmpTimetableTotals: TTimetableTotals;
     i, j: Integer;
@@ -826,6 +830,7 @@ var
     try
       Progress:= TProgress.Create(nil);
       MonthCalendar:= TCalendar.Create;
+      VTCreate(TmpTimetables, 12);
       try
         Progress.WriteLine1('Экспорт табеля');
         Progress.WriteLine2(EmptyStr);
@@ -838,10 +843,9 @@ var
             FirstLastDayInMonth(j, YearSpinEdit.Value, BD, ED);
             Calendar.Cut(BD, ED, MonthCalendar);
             Progress.Go;
-            TmpTimetable:= TTimetable.Create(TabNumIDs[i], TabNums[i],
-                                             RecrutDates[i], DismissDates[i],
-                                             Holidays, MonthCalendar);
-            VTAppend(TmpTimetables, TmpTimetable);
+            TmpTimetables[j-1].Calc(TabNumIDs[i], TabNums[i],
+                                    RecrutDates[i], DismissDates[i],
+                                    MonthCalendar, EmptyPostScheduleInfo);
             Progress.Go;
           end;
           Progress.Go;
@@ -855,12 +859,12 @@ var
           Progress.Go;
           Exporter.PageSettings();
           Exporter.Save(TimetableNames[i]);
-          VTDel(TmpTimetables);
         end;
 
       finally
         FreeAndNil(Progress);
         FreeAndNil(MonthCalendar);
+        VTDel(TmpTimetables);
       end;
       Exporter.EndExport('Выполнено!');
     finally
@@ -897,7 +901,7 @@ begin
     TimetableEditForm.TabNumID:= TabNumIDs[StaffList.SelectedIndex];
     TimetableEditForm.FirstDate:= ADate;
     if TimetableEditForm.ShowModal=mrOK then
-      TimetableChange;
+      TimetableUpdate;
   finally
     FreeAndNil(TimetableEditForm);
   end;

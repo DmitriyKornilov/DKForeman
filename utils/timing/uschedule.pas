@@ -301,11 +301,11 @@ type
     procedure Clear; override;
 
     procedure Calc(const ATabNumID: Integer; const ATabNum: String;
+                   const ARecrutDate, ADismissDate: TDate;
                    const ACalendar: TCalendar;
                    const APostScheduleInfo: TPostScheduleInfo;
                    const AIsVacations: TIntVector;
                    const APersonalCorrect: TScheduleCorrections;
-                   const ARecrutDate, ADismissDate: TDate;
                    const AStrMarkVacationMain: String = STRMARK_VACATIONMAIN;
                    const AStrMarkVacationAddition: String = STRMARK_VACATIONADDITION;
                    const AStrMarkVacationHoliday: String = STRMARK_VACATIONHOLIDAY);
@@ -1003,6 +1003,7 @@ begin
       //подпериод в должности
       BD:= APostScheduleInfo.FirstDates[i, j];
       ED:= APostScheduleInfo.LastDates[i, j];
+      if not IsPeriodIntersect(BeginDate, EndDate, BD, ED, BD, ED) then continue;
       if not IsPeriodIntersect(RecrutDate, DismissDate, BD, ED, BD, ED) then continue;
       FromToIndexes(BD, ED, I1, I2);
       VChangeIn(FPostIDs, APostScheduleInfo.PostIDs[i], I1, I2);
@@ -1014,6 +1015,7 @@ begin
           //подпериод в сменном графике
           BD:= ShiftScheduleInfo.FirstDates[m, n];
           ED:= ShiftScheduleInfo.LastDates[m, n];
+          if not IsPeriodIntersect(BeginDate, EndDate, BD, ED, BD, ED) then continue;
           if not IsPeriodIntersect(RecrutDate, DismissDate, BD, ED, BD, ED) then continue;
           WriteCycle(ShiftScheduleInfo.Cycles[m], BD, ED);
           if ShiftScheduleInfo.Cycles[m].IsWeek then
@@ -1117,11 +1119,11 @@ begin
 end;
 
 procedure TPersonalSchedule.Calc(const ATabNumID: Integer; const ATabNum: String;
+                   const ARecrutDate, ADismissDate: TDate;
                    const ACalendar: TCalendar;
                    const APostScheduleInfo: TPostScheduleInfo;
                    const AIsVacations: TIntVector;
                    const APersonalCorrect: TScheduleCorrections;
-                   const ARecrutDate, ADismissDate: TDate;
                    const AStrMarkVacationMain: String = STRMARK_VACATIONMAIN;
                    const AStrMarkVacationAddition: String = STRMARK_VACATIONADDITION;
                    const AStrMarkVacationHoliday: String = STRMARK_VACATIONHOLIDAY);
@@ -1141,7 +1143,6 @@ begin
   WriteInfo(ACalendar, APostScheduleInfo);
   WriteCorrections(APersonalCorrect, BeginDate, EndDate);
   WriteVacations(AIsVacations);
-
   FIsCalculated:= True;
 end;
 

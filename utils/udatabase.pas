@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, DateUtils,
   //Project utils
-  UCalendar, UConst, {USchedule,} UTimetable, UWorkHours, uschedule,
+  UCalendar, UConst, USchedule, UTimetable, UWorkHours,
   //DK packages utils
   DK_SQLite3, DK_SQLUtils, DK_Vector, DK_MAtrix, DK_StrUtils, DK_Const,
   DK_DateUtils, DK_VSTDropDown;
@@ -387,10 +387,11 @@ type
     {Загрузка из базы векторов данных табеля: True - ОК, False - пусто}
     function TimetableDataVectorsLoad(const ATabNumID: Integer; //таб номер
                                const ABeginDate, AEndDate: TDate; //период запроса
+                               out ADates: TDateVector;
                                out ASheduleIDs, AShiftNums,
                                  ATotalHours, ANightHours, AOverHours,
                                  ASkipHours, ASchedHours, AMainMarkDig,
-                                 ASkipMarkDig, AIsManualChanged, AIsAbsence, AIsDayInBase: TIntVector;
+                                 ASkipMarkDig, AIsManualChanged, AIsAbsence: TIntVector;
                                out AMainMarkStr, ASkipMarkStr: TStrVector): Boolean;
     {Загрузка итоговых данных табеля за период}
     procedure TimetableDataTotalsLoad(const ATabNumID: Integer;
@@ -2699,30 +2700,30 @@ end;
 
 function TDataBase.TimetableDataVectorsLoad(const ATabNumID: Integer;
                                const ABeginDate, AEndDate: TDate; //период запроса
+                               out ADates: TDateVector;
                                out ASheduleIDs, AShiftNums,
                                  ATotalHours, ANightHours, AOverHours,
                                  ASkipHours, ASchedHours, AMainMarkDig,
-                                 ASkipMarkDig, AIsManualChanged, AIsAbsence, AIsDayInBase: TIntVector;
+                                 ASkipMarkDig, AIsManualChanged, AIsAbsence: TIntVector;
                                out AMainMarkStr, ASkipMarkStr: TStrVector): Boolean;
-var
-  N: Integer;
 begin
   Result:= False;
-  N:= DaysInPeriod(ABeginDate, AEndDate);
-  VDim(ASheduleIDs{%H-}, N, 0);
-  VDim(AShiftNums{%H-}, N, 0);
-  VDim(ATotalHours{%H-}, N, 0);
-  VDim(ANightHours{%H-}, N, 0);
-  VDim(AOverHours{%H-}, N, 0);
-  VDim(ASkipHours{%H-}, N, 0);
-  VDim(ASchedHours{%H-}, N, 0);
-  VDim(AMainMarkDig{%H-}, N, 0);
-  VDim(ASkipMarkDig{%H-}, N, 0);
-  VDim(AMainMarkStr{%H-}, N, EmptyStr);
-  VDim(ASkipMarkStr{%H-}, N, EmptyStr);
-  VDim(AIsManualChanged{%H-}, N, MANUAL_NO);
-  VDim(AIsAbsence{%H-}, N, ABSENCE_NO);
-  VDim(AIsDayInBase{%H-}, N, INBASE_NO);
+
+  ADates:= nil;
+  ASheduleIDs:= nil;
+  AShiftNums:= nil;
+  ATotalHours:= nil;
+  ANightHours:= nil;
+  AOverHours:= nil;
+  ASkipHours:= nil;
+  ASchedHours:= nil;
+  AMainMarkDig:= nil;
+  ASkipMarkDig:= nil;
+  AMainMarkStr:= nil;
+  ASkipMarkStr:= nil;
+  AIsManualChanged:= nil;
+  AIsAbsence:= nil;
+
   QSetQuery(FQuery);
   QSetSQL(
     'SELECT t1.DayDate, t1.TotalHours, t1.NightHours, t1.OverHours, t1.SkipHours, ' +
@@ -2744,21 +2745,20 @@ begin
     QFirst;
     while not QEOF do
     begin
-      N:= DaysBetweenDates(ABeginDate, QFieldDT('DayDate'));
-      AIsDayInBase[N]:= INBASE_YES;
-      AIsAbsence[N]:= TimetableIsAbsence(QFieldInt('TypeMark'));
-      ASheduleIDs[N]:= QFieldInt('SchedID');
-      AIsManualChanged[N]:= TimetableIsManualChanged(ASheduleIDs[N]);
-      AShiftNums[N]:= QFieldInt('ShiftNum');
-      ATotalHours[N]:= QFieldInt('TotalHours');
-      ANightHours[N]:= QFieldInt('NightHours');
-      AOverHours[N]:= QFieldInt('OverHours');
-      ASkipHours[N]:= QFieldInt('SkipHours');
-      ASchedHours[N]:= QFieldInt('SchedHours');
-      AMainMarkDig[N]:= QFieldInt('MainMarkDig');
-      ASkipMarkDig[N]:= QFieldInt('SkipMarkDig');
-      AMainMarkStr[N]:= QFieldStr('MainMarkStr');
-      ASkipMarkStr[N]:= QFieldStr('SkipMarkStr');
+      VAppend(ADates, QFieldDT('DayDate'));
+      VAppend(AIsAbsence, TimetableIsAbsence(QFieldInt('TypeMark')));
+      VAppend(ASheduleIDs, QFieldInt('SchedID'));
+      VAppend(AIsManualChanged, TimetableIsManualChanged(VLast(ASheduleIDs)));
+      VAppend(AShiftNums, QFieldInt('ShiftNum'));
+      VAppend(ATotalHours, QFieldInt('TotalHours'));
+      VAppend(ANightHours, QFieldInt('NightHours'));
+      VAppend(AOverHours, QFieldInt('OverHours'));
+      VAppend(ASkipHours, QFieldInt('SkipHours'));
+      VAppend(ASchedHours, QFieldInt('SchedHours'));
+      VAppend(AMainMarkDig, QFieldInt('MainMarkDig'));
+      VAppend(ASkipMarkDig, QFieldInt('SkipMarkDig'));
+      VAppend(AMainMarkStr, QFieldStr('MainMarkStr'));
+      VAppend(ASkipMarkStr, QFieldStr('SkipMarkStr'));
       QNext;
     end;
     Result:= True;

@@ -9,7 +9,7 @@ uses
   //DK packages utils
   DK_Vector, DK_DateUtils, DK_StrUtils, DK_Const,
   //Project utils
-  UWorkHours, UCalendar, {USchedule} uschedule;
+  UWorkHours, UCalendar, USchedule;
 
 const
   SPACE1 = ' ';
@@ -109,14 +109,14 @@ type
       FTabNum             : String;    //табельный номер
       FRecrutDate         : TDate;     //дата приема на работу
       FDismissDate        : TDate;     //дата увольнения
-      FScheduleBD         : TDate;     //дата начала работы в графике
-      FScheduleED         : TDate;     //конечная дата работы в графике
-      FPostBD             : TDate;     //дата начала работы в должности
-      FPostED             : TDate;     //конечная дата работы в должности
-      FIsWritedInBase     : Boolean;   //табель на месяц записан в базу
+
       FMonthCalendar      : TCalendar;
       FNightMarkStr       : String;
       FOverMarkStr        : String;
+
+      FDates              : TDateVector;
+      FScheduleIDs        : TIntVector;   //вектор значений ID графиков на каждый день
+      FShiftNums          : TIntVector;     //вектор знаяений номеров смен на каждый день
       FIsExists           : TIntVector;  //вектор флагов существоваия табеля
       FIsManualChanged    : TIntVector;  //вектор флагов корректировок (изменения вручную)
       FIsAbsence          : TIntVector;  //вектор флагов неявки (TIMETABLEMARK.Typemark=2)
@@ -132,6 +132,7 @@ type
       FHoursOver          : TIntVector;  {1}
       FHoursSkip          : TIntVector;  {0}
       FHoursSchedule      : TIntVector;  {4}
+
       FSumHoursTotalHalf1 : Integer; //сумма часов за 1 половину месяца
       FSumHoursTotalHalf2 : Integer; //сумма часов за 2 половину месяца
       FSumHoursTotalMonth : Integer; //сумма часов за месяц
@@ -164,69 +165,84 @@ type
       FSumHoursQuartHalfMonth: Integer; //отработано часов за текущий квартал с учетом половины текущего месяца
       FSumHoursYearFullMonth : Integer; //отработано часов за текущий год с учетом полного текущего месяца
       FSumHoursYearHalfMonth : Integer; //отработано часов за текущий год с учетом половины текущего месяца
-      FScheduleIDs: TIntVector;   //вектор знаяений ID графиков на каждый день
-      FShiftNums: TIntVector;     //вектор знаяений номеров смен на каждый день
-      FHolidayDates: TDateVector; //вектор дат нерабочих праздничных дней в этом и предыдущем году
-      procedure GetSkipStrings(ABeginInd, AEndInd: Integer;
+
+      function GetBeginDate: TDate;
+      function GetEndDate: TDate;
+      procedure GetSkipStrings(const ABeginInd, AEndInd: Integer;
                                out AMarksSkipStr, ADaysHoursSkipStr: String);
-      procedure Calc(const ANeedUpdate, AUpdateWritedOnly: Boolean);
-      procedure CalcResume(const ABeginIndex, AEndIndex: Integer);
-      procedure CalcHoursInReportPeriod;
+
+      function DateIndex(const ADate: TDate; out AIndex: Integer): Boolean;
+      function FromToIndexes(const AFromDate, AToDate: TDate; out AIndex1, AIndex2: Integer): Boolean;
+
+      procedure WriteDefault;
+      procedure WriteExistions(const APostScheduleInfo: TPostScheduleInfo);
+      procedure WriteData;
+      procedure WriteResume;
+      procedure WriteHoursInReportPeriod;
     public
-      constructor Create(const ATabNumID: Integer; const ATabNum: String;
-                         const ARecrutDate, ADismissDate: TDate;
-                         const AHolidayDates: TDateVector;
-                         const AMonthCalendar: TCalendar;
-                         const ANeedUpdate: Boolean = True;
-                         const AUpdateWritedOnly: Boolean = True;
-                         const ANightMarkStr: String = STRMARK_NIGHT;
-                         const AOverMarkStr: String = STRMARK_OVER;
-                         const ATimetableBeginDate: TDate = NULDATE;
-                         const ATimetableEndDate: TDate = INFDATE; //период работы в графике
-                         const APostBeginDate: TDate = NULDATE;
-                         const APostEndDate: TDate = INFDATE); //период работы в должности
+      constructor Create;
       destructor Destroy; override;
-      procedure Add(const AMonthTabel: TTimetable);
+      procedure Clear;
+      procedure Calc(const ATabNumID: Integer; const ATabNum: String;
+                     const ARecrutDate, ADismissDate: TDate;
+                     const AMonthCalendar: TCalendar;
+                     const APostScheduleInfo: TPostScheduleInfo;
+                     const ANightMarkStr: String = STRMARK_NIGHT;
+                     const AOverMarkStr: String = STRMARK_OVER);
+
       class function CalcShiftCount(const AScheduleIDs, AShiftNums: TIntVector;
                                     const ABeginIndex, AEndIndex: Integer): Integer;
-      function IsDateExists(const ADate: TDate): Boolean;
+
       property Calendar: TCalendar read FMonthCalendar;
       property TabNumID: Integer read FTabNumID;
       property TabNum: String read FTabNum;
       property RecrutDate: TDate read FRecrutDate;
       property DismissDate: TDate read FDismissDate;
-      property WritedInBase: Boolean read FIsWritedInBase;
+
+      property Dates: TDateVector read FDates;
+      property BeginDate: TDate read GetBeginDate;
+      property EndDate: TDate read GetEndDate;
+
       property IsExists: TIntVector read FIsExists;
       property IsManualChanged: TIntVector read FIsManualChanged;
       property IsAbsence: TIntVector read FIsAbsence;
       property IsDayInBase: TIntVector read FIsDayInBase;
+      function IsDateExists(const ADate: TDate): Boolean;
+
       property MarksMainDig: TIntVector read FMarksMainDig;
       property MarksMainStr: TStrVector read FMarksMainStr;
       property MarksSkipDig: TIntVector read FMarksSkipDig;
       property MarksSkipStr: TStrVector read FMarksSkipStr;
+
       property MarksStr: TStrVector read FMarksStr;
       property HoursStr: TStrVector read FHoursStr;
+
       property HoursTotal: TIntVector read FHoursTotal;
       property HoursNight: TIntVector read FHoursNight;
       property HoursOver: TIntVector read FHoursOver;
       property HoursSkip: TIntVector read FHoursSkip;
       property HoursSchedule: TIntVector read FHoursSchedule;
+
       property SumHoursTotalHalf1: Integer read FSumHoursTotalHalf1;
       property SumHoursTotalHalf2: Integer read FSumHoursTotalHalf2;
       property SumHoursTotalMonth: Integer read FSumHoursTotalMonth;
       property SumHoursNightHalf1: Integer read FSumHoursNightHalf1;
       property SumHoursNightHalf2: Integer read FSumHoursNightHalf2;
       property SumHoursNightMonth: Integer read FSumHoursNightMonth;
+
       property WorkDaysCountHalf1: Integer read FWorkDaysCountHalf1;
       property WorkDaysCountHalf2: Integer read FWorkDaysCountHalf2;
       property WorkDaysCountMonth: Integer read FWorkDaysCountMonth;
+
       property ShiftCountHalf1: Integer read FShiftCountHalf1;
       property ShiftCountHalf2: Integer read FShiftCountHalf2;
       property ShiftCountMonth: Integer read FShiftCountMonth;
+
       property SumHoursOverMonth: Integer read FSumHoursOverMonth;
       property SumHoursOverHalf1: Integer read FSumHoursOverHalf1;
       property SumHoursHolidayHalf1: Integer read FSumHoursHolidayHalf1;
       property SumHoursHolidayMonth: Integer read FSumHoursHolidayMonth;
+
       property NotWorkDaysCountHalf1: Integer read FNotWorkDaysCountHalf1;
       property NotWorkDaysCountMonth: Integer read FNotWorkDaysCountMonth;
       property SkipDaysCountHalf1: Integer read FSkipDaysCountHalf1;
@@ -248,6 +264,8 @@ type
   end;
 
   TTimetableVector = array of TTimetable;
+  procedure VTCreate(var V: TTimetableVector; const Count: Integer);
+  procedure VTClear(var V: TTimetableVector);
   procedure VTAppend(var V: TTimetableVector; const NewValue: TTimetable);
   procedure VTDel(var V: TTimetableVector; Index1: Integer = -1; Index2: Integer = -1);
   procedure VTSwap(var V: TTimetableVector; const Index1, Index2: Integer);
@@ -270,6 +288,23 @@ function TimetableIsAbsence(const AMarkType: Integer): Integer;
 implementation
 
 uses UUtils;
+
+procedure VTCreate(var V: TTimetableVector; const Count: Integer);
+var
+  i: Integer;
+begin
+  SetLength(V, Count);
+  for i:= 0 to High(V) do
+    V[i]:= TTimetable.Create;
+end;
+
+procedure VTClear(var V: TTimetableVector);
+var
+  i: Integer;
+begin
+  for i:= 0 to High(V) do
+    V[i].Clear;
+end;
 
 procedure VTAppend(var V: TTimetableVector; const NewValue: TTimetable);
 var
@@ -323,77 +358,96 @@ end;
 
 {TTimetable}
 
-constructor TTimetable.Create(const ATabNumID: Integer; const ATabNum: String;
-                         const ARecrutDate, ADismissDate: TDate;
-                         const AHolidayDates: TDateVector;
-                         const AMonthCalendar: TCalendar;
-                         const ANeedUpdate: Boolean = True;
-                         const AUpdateWritedOnly: Boolean = True;
-                         const ANightMarkStr: String = STRMARK_NIGHT;
-                         const AOverMarkStr: String = STRMARK_OVER;
-                         const ATimetableBeginDate: TDate = NULDATE;
-                         const ATimetableEndDate: TDate = INFDATE;
-                         const APostBeginDate: TDate = NULDATE;
-                         const APostEndDate: TDate = INFDATE);
+procedure TTimetable.Clear;
 begin
-  inherited Create;
+  FTabNumID:= 0;
+  FTabNum:= EmptyStr;
+  FRecrutDate:= 0;
+  FDismissDate:= 0;
+
+  //FIsWritedInBase:= False;
+  FMonthCalendar.Clear;
+  FNightMarkStr:= STRMARK_NIGHT;
+  FOverMarkStr:= STRMARK_OVER;
+
+  FDates:= nil;
+  FIsExists:= nil;
+  FIsManualChanged:= nil;
+  FIsAbsence:= nil;
+  FIsDayInBase:= nil;
+  FMarksMainDig:= nil;
+  FMarksMainStr:= nil;
+  FMarksSkipDig:= nil;
+  FMarksSkipStr:= nil;
+  FMarksStr:= nil;
+  FHoursStr:= nil;
+  FHoursTotal:= nil;
+  FHoursNight:= nil;
+  FHoursOver:= nil;
+  FHoursSkip:= nil;
+  FHoursSchedule:= nil;
+  FSumHoursTotalHalf1:= 0;
+  FSumHoursTotalHalf2:= 0;
+  FSumHoursTotalMonth:= 0;
+  FSumHoursNightHalf1:= 0;
+  FSumHoursNightHalf2:= 0;
+  FSumHoursNightMonth:= 0;
+  FWorkDaysCountHalf1:= 0;
+  FWorkDaysCountHalf2:= 0;
+  FWorkDaysCountMonth:= 0;
+  FSumHoursOverHalf1:= 0;
+  FSumHoursOverMonth:= 0;
+  FSumHoursHolidayHalf1:= 0;
+  FSumHoursHolidayMonth:= 0;
+  FShiftCountHalf1:= 0;
+  FShiftCountHalf2:= 0;
+  FShiftCountMonth:= 0;
+  FSumHoursSkipHalf1:= 0;
+  FSumHoursSkipMonth:= 0;
+  FSkipDaysCountHalf1:= 0;
+  FSkipDaysCountMonth:= 0;
+  FMarksSkipStrMonth:= EmptyStr;
+  FDaysHoursSkipStrMonth:= EmptyStr;
+  FMarksSkipStrHalf1:= EmptyStr;
+  FDaysHoursSkipStrHalf1:= EmptyStr;
+  FMarksSkipStrHalf2:= EmptyStr;
+  FDaysHoursSkipStrHalf2:= EmptyStr;
+  FNotWorkDaysCountHalf1:= 0;
+  FNotWorkDaysCountMonth:= 0;
+  FSumHoursQuartFullMonth:= 0;
+  FSumHoursQuartHalfMonth:= 0;
+  FSumHoursYearFullMonth:= 0;
+  FSumHoursYearHalfMonth:= 0;
+  FScheduleIDs:= nil;
+  FShiftNums:= nil;
+  //FHolidayDates:= nil;
+end;
+
+procedure TTimetable.Calc(const ATabNumID: Integer; const ATabNum: String;
+                     const ARecrutDate, ADismissDate: TDate;
+                     const AMonthCalendar: TCalendar;
+                     const APostScheduleInfo: TPostScheduleInfo;
+                     const ANightMarkStr: String = STRMARK_NIGHT;
+                     const AOverMarkStr: String = STRMARK_OVER);
+begin
+  Clear;
+
   FTabNumID:= ATabNumID;
   FTabNum:= ATabNum;
   FRecrutDate:= ARecrutDate;
   FDismissDate:= ADismissDate;
-  FScheduleBD:= ATimetableBeginDate;
-  FScheduleED:= ATimetableEndDate;
-  FPostBD:= APostBeginDate;
-  FPostED:= APostEndDate;
+  //FPostScheduleInfo:= APostScheduleInfo;
+
   FNightMarkStr:= ANightMarkStr;
   FOverMarkStr:= AOverMarkStr;
-  FMonthCalendar:= nil;
-  AMonthCalendar.Cut(AMonthCalendar.BeginDate, AMonthCalendar.EndDate, FMonthCalendar);
-  FHolidayDates:= AHolidayDates;
-  Calc(ANeedUpdate, AUpdateWritedOnly);
-end;
+  AMonthCalendar.Cut(FMonthCalendar);
+  //FHolidayDates:= AHolidayDates;
 
-destructor TTimetable.Destroy;
-begin
-  FreeAndNil(FMonthCalendar);
-  inherited Destroy;
-end;
-
-procedure TTimetable.Add(const AMonthTabel: TTimetable);
-var
-  i: Integer;
-begin
-  if not IsEqualPeriods(AMonthTabel.Calendar.BeginDate, AMonthTabel.Calendar.EndDate,
-                        FMonthCalendar.BeginDate, FMonthCalendar.EndDate) then Exit;
-  //суммируем основные данные
-  FIsExists:= VSum(AMonthTabel.IsExists, FIsExists);
-  FIsManualChanged:= VSum(AMonthTabel.IsManualChanged, FIsManualChanged);
-  FIsAbsence:= VSum(AMonthTabel.IsAbsence, FIsAbsence);
-  FHoursTotal:= VSum(AMonthTabel.HoursTotal, FHoursTotal);
-  FHoursNight:= VSum(AMonthTabel.HoursNight, FHoursNight);
-  FHoursOver:= VSum(AMonthTabel.HoursOver, FHoursOver);
-  FHoursSkip:= VSum(AMonthTabel.HoursSkip, FHoursSkip);
-  FHoursSchedule:= VSum(AMonthTabel.HoursSchedule, FHoursSchedule);
-  FMarksMainDig:= VSum(AMonthTabel.MarksMainDig, FMarksMainDig);
-  FMarksSkipDig:= VSum(AMonthTabel.MarksSkipDig, FMarksSkipDig);
-  FMarksMainStr:= VSum(AMonthTabel.MarksMainStr, FMarksMainStr);
-  FMarksSkipStr:= VSum(AMonthTabel.MarksSkipStr, FMarksSkipStr);
-  FScheduleIDs:= VSum(AMonthTabel.ScheduleIDs, FScheduleIDs);
-  FShiftNums:= VSum(AMonthTabel.ShiftNums, FShiftNums);
-  //векторы меток табеля
-  VDim(FMarksStr, FMonthCalendar.DaysCount, EmptyStr);
-  VDim(FHoursStr, FMonthCalendar.DaysCount, EmptyStr);
-  for i:=0 to FMonthCalendar.DaysCount-1 do
-  begin
-    if FIsExists[i]=EXISTS_YES then
-      TimetableDataToMarksAndHoursStr(FMarksMainStr[i], FMarksSkipStr[i],
-                                FNightMarkStr, FOverMarkStr,
-                                FHoursTotal[i], FHoursNight[i],
-                                FHoursOver[i], FHoursSkip[i],
-                                FMarksStr[i], FHoursStr[i]);
-  end;
-  CalcResume(0, FMonthCalendar.DaysCount-1);
-  CalcHoursInReportPeriod;
+  WriteDefault;
+  WriteExistions(APostScheduleInfo);
+  WriteData;
+  WriteResume;
+  WriteHoursInReportPeriod;
 end;
 
 class function TTimetable.CalcShiftCount(const AScheduleIDs, AShiftNums: TIntVector;
@@ -430,31 +484,35 @@ begin
 end;
 
 function TTimetable.IsDateExists(const ADate: TDate): Boolean;
+var
+  Index: Integer;
 begin
-  Result:= IsDateInPeriod(ADate, Calendar.BeginDate, Calendar.EndDate);
+  Result:= DateIndex(ADate, Index);
   if not Result then Exit;
-  Result:= IsExists[DaysBetweenDates(Calendar.BeginDate, ADate)]=EXISTS_YES;
+  Result:= IsExists[Index]=EXISTS_YES;
 end;
 
-procedure TTimetable.CalcResume(const ABeginIndex, AEndIndex: Integer);
+procedure TTimetable.WriteResume;
 var
-  i: Integer;
+  i, a, b: Integer;
 begin
+  a:= 0;
+  b:= High(FDates);
   //кол-во смен
-  FShiftCountHalf1:= TTimetable.CalcShiftCount(FScheduleIDs, FShiftNums, ABeginIndex, 14);
-  FShiftCountHalf2:= TTimetable.CalcShiftCount(FScheduleIDs, FShiftNums, 15, AEndIndex);
-  FShiftCountMonth:= TTimetable.CalcShiftCount(FScheduleIDs, FShiftNums, ABeginIndex, AEndIndex);
+  FShiftCountHalf1:= TTimetable.CalcShiftCount(FScheduleIDs, FShiftNums, a, 14);
+  FShiftCountHalf2:= TTimetable.CalcShiftCount(FScheduleIDs, FShiftNums, 15, b);
+  FShiftCountMonth:= TTimetable.CalcShiftCount(FScheduleIDs, FShiftNums, a, b);
   //суммы часов
-  FSumHoursTotalHalf1:= VSum(FHoursTotal, ABeginIndex, 14);
-  FSumHoursTotalHalf2:= VSum(FHoursTotal, 15, AEndIndex);
+  FSumHoursTotalHalf1:= VSum(FHoursTotal, a, 14);
+  FSumHoursTotalHalf2:= VSum(FHoursTotal, 15, b);
   FSumHoursTotalMonth:= FSumHoursTotalHalf1 + FSumHoursTotalHalf2;
   //суммы ночных часов
-  FSumHoursNightHalf1:= VSum(FHoursNight, ABeginIndex, 14);
-  FSumHoursNightHalf2:= VSum(FHoursNight, 15, AEndIndex);
+  FSumHoursNightHalf1:= VSum(FHoursNight, a, 14);
+  FSumHoursNightHalf2:= VSum(FHoursNight, 15, b);
   FSumHoursNightMonth:= FSumHoursNightHalf1 + FSumHoursNightHalf2;
   //кол-во рабочих дней
-  FWorkDaysCountHalf1:= VCountIfNot(FHoursTotal, 0, ABeginIndex, 14);
-  FWorkDaysCountHalf2:= VCountIfNot(FHoursTotal, 0, 15, AEndIndex);
+  FWorkDaysCountHalf1:= VCountIfNot(FHoursTotal, 0, a, 14);
+  FWorkDaysCountHalf2:= VCountIfNot(FHoursTotal, 0, 15, b);
   FWorkDaysCountMonth:= FWorkDaysCountHalf1 + FWorkDaysCountHalf2;
   //сумма сверхурочных часов
   FSumHoursOverHalf1:= VSum(FHoursOver, 0, 14);
@@ -472,14 +530,14 @@ begin
   FSkipDaysCountMonth:= VCountIfNot(FMarksSkipDig, 0 {нет неявки});
   //строка перечня кодов неявок за 1 и 2 половины месяца
   //строка перечня дней (часов) неявок за 1 и 2 половины месяца
-  GetSkipStrings(0, 14, FMarksSkipStrHalf1, FDaysHoursSkipStrHalf1);
-  GetSkipStrings(15, FMonthCalendar.DaysCount-1, FMarksSkipStrHalf2, FDaysHoursSkipStrHalf2);
+  GetSkipStrings(a, 14, FMarksSkipStrHalf1, FDaysHoursSkipStrHalf1);
+  GetSkipStrings(15, b, FMarksSkipStrHalf2, FDaysHoursSkipStrHalf2);
   //строка перечня кодов неявок за месяц
   //строка перечня дней (часов) неявок за месяц
-  GetSkipStrings(0, FMonthCalendar.DaysCount-1, FMarksSkipStrMonth, FDaysHoursSkipStrMonth);
+  GetSkipStrings(a, b, FMarksSkipStrMonth, FDaysHoursSkipStrMonth);
   //кол-во нерабочих (выходных и праздников) в месяц
   FNotWorkDaysCountMonth:= 0;
-  for i:=0 to FMonthCalendar.DaysCount-1 do
+  for i:=0 to b do
   begin
     If (FHoursTotal[i]=0) and (FMarksSkipDig[i]=0) then
       FNotWorkDaysCountMonth:= FNotWorkDaysCountMonth + 1;
@@ -492,22 +550,22 @@ begin
   end;
 end;
 
-procedure TTimetable.CalcHoursInReportPeriod;
+procedure TTimetable.WriteHoursInReportPeriod;
 var
   M, Y, D: Word;
   H: Integer;
   BD, ED: TDate;
 begin
-  DecodeDate(FMonthCalendar.BeginDate, Y, M, D);
+  DecodeDate(BeginDate, Y, M, D);
   //ЧАСЫ ЗА ТЕКУЩИЙ КВАРТАЛ
   BD:= FirstDayInQuarter(QuarterNumber(M), Y); //дата первого дня в квратале
-  if SameDate(FMonthCalendar.BeginDate, BD) then  //этот месяц первый в квартале
+  if SameDate(BeginDate, BD) then  //этот месяц первый в квартале
   begin
     FSumHoursQuartFullMonth:= FSumHoursTotalMonth;
     FSumHoursQuartHalfMonth:= FSumHoursTotalHalf1;
   end
   else begin
-    ED:= IncDay(FMonthCalendar.BeginDate, -1); //последний день предыдущего месяца
+    ED:= IncDay(BeginDate, -1); //последний день предыдущего месяца
     //достаем часы, отработанные в квартале до текущего месяца
     H:= TimetableSumTotalHoursInPeriod(FTabNumID, BD, ED);
     //добавляем часы, отработанные в текущем месяце
@@ -522,7 +580,7 @@ begin
     FSumHoursYearHalfMonth:= FSumHoursTotalHalf1;
   end
   else begin
-    ED:= IncDay(FMonthCalendar.BeginDate, -1); //последний день предыдущего месяца
+    ED:= IncDay(BeginDate, -1); //последний день предыдущего месяца
     //достаем часы, отработанные в году до текущего месяца
     H:= TimetableSumTotalHoursInPeriod(FTabNumID, BD, ED);
     //добавляем часы, отработанные в текущем месяце
@@ -531,97 +589,142 @@ begin
   end;
 end;
 
-procedure TTimetable.Calc(const ANeedUpdate, AUpdateWritedOnly: Boolean);
-var
-  ExistBD, ExistED: TDate;
-  i, N1, N2: Integer;
-  SchedIDs, ShNums, TotalHours, NightHours, OverHours, SkipHours,
-  SchedHours, MainMarkDig, SkipMarkDig, ManualChanged, Absence, DayInBase: TIntVector;
-  MainMarkStr, SkipMarkStr: TStrVector;
+constructor TTimetable.Create;
 begin
-  //обновляем записи в базе по графику, если они есть для этого месяца
-  if ANeedUpdate then
-    TimetableForPeriodUpdate(FTabNumID,
-      FMonthCalendar.BeginDate, FMonthCalendar.EndDate, FHolidayDates, AUpdateWritedOnly);
-  //дефолтные значения векторов данных
-  N1:= FMonthCalendar.DaysCount;
-  VDim(FIsManualChanged, N1, MANUAL_NO);
-  VDim(FIsAbsence, N1, ABSENCE_NO);
-  VDim(FIsDayInBase, N1, INBASE_NO);
-  VDim(FHoursTotal, N1, 0);
-  VDim(FHoursNight, N1, 0);
-  VDim(FHoursOver, N1, 0);
-  VDim(FHoursSkip, N1, 0);
-  VDim(FHoursSchedule, N1, 0);
-  VDim(FMarksMainDig, N1, 0);
-  VDim(FMarksSkipDig, N1, 0);
-  VDim(FMarksMainStr, N1, EmptyStr);
-  VDim(FMarksSkipStr, N1, EmptyStr);
-  VDim(FIsExists, N1, EXISTS_NO);
-  VDim(FScheduleIDs, N1, 0);
-  VDim(FShiftNums, N1, 0);
-  //определяем период существования табеля
-  if not IsPeriodIntersect(FMonthCalendar.BeginDate, FMonthCalendar.EndDate,
-                  FRecrutDate, FDismissDate, ExistBD, ExistED) then Exit;
-   //ограничение периода работы в должности
-  if not IsPeriodIntersect(FPostBD, FPostED, ExistBD, ExistED, ExistBD, ExistED) then Exit;
-  //ограничение периода работы в графике
-  if not IsPeriodIntersect(FScheduleBD, FScheduleED, ExistBD, ExistED, ExistBD, ExistED) then Exit;
-  //ограничивающие индексы дней, в которых табель существует
-  N1:= DaysBetweenDates(FMonthCalendar.BeginDate, ExistBD);
-  N2:= DaysBetweenDates(FMonthCalendar.BeginDate, ExistED);
-  //меняем флаги в интервале существования
-  VChangeIn(FIsExists, EXISTS_YES, N1, N2);
-  //достаем из базы данные по табелю
-  FIsWritedInBase:= TimetableDataVectorsLoad(FTabNumID, FMonthCalendar.BeginDate, FMonthCalendar.EndDate,
-                       SchedIDs, ShNums, TotalHours, NightHours, OverHours, SkipHours, SchedHours,
-                       MainMarkDig, SkipMarkDig, ManualChanged, Absence, DayInBase,
-                       MainMarkStr, SkipMarkStr);
-  if not FIsWritedInBase then Exit;
-  //записываем полученные данные в вектора
-  FIsManualChanged:= VSum(ManualChanged, FIsManualChanged);
-  FIsAbsence:= VSum(Absence, FIsAbsence);
-  FIsDayInBase:= VSum(DayInBase, FIsDayInBase);
-  FScheduleIDs := VSum(SchedIDs, FScheduleIDs);
-  FShiftNums := VSum(ShNums, FShiftNums);
-  FHoursTotal := VSum(TotalHours, FHoursTotal);
-  FHoursNight := VSum(NightHours, FHoursNight);
-  FHoursOver := VSum(OverHours, FHoursOver);
-  FHoursSkip := VSum(SkipHours, FHoursSkip);
-  FHoursSchedule := VSum(SchedHours, FHoursSchedule);
-  FMarksMainDig := VSum(MainMarkDig, FMarksMainDig);
-  FMarksSkipDig := VSum(SkipMarkDig, FMarksSkipDig);
-  FMarksMainStr := VSum(MainMarkStr, FMarksMainStr);
-  FMarksSkipStr := VSum(SkipMarkStr, FMarksSkipStr);
-  //пересекаем с периодом существования
-  FIsManualChanged:= VMult(FIsManualChanged, FIsExists);
-  FIsAbsence:= VMult(FIsAbsence, FIsExists);
-  FIsDayInBase:= VMult(FIsDayInBase, FIsExists);
-  FScheduleIDs:= VMult(FScheduleIDs, FIsExists);
-  FShiftNums:= VMult(FShiftNums, FIsExists);
-  FHoursTotal:= VMult(FHoursTotal, FIsExists);
-  FHoursNight:= VMult(FHoursNight, FIsExists);
-  FHoursOver:= VMult(FHoursOver, FIsExists);
-  FHoursSkip:= VMult(FHoursSkip, FIsExists);
-  FHoursSchedule:= VMult(FHoursSchedule, FIsExists);
-  FMarksMainDig:= VMult(FMarksMainDig, FIsExists);
-  FMarksSkipDig:= VMult(FMarksSkipDig, FIsExists);
-  FMarksMainStr:= VMult(FMarksMainStr, FIsExists);
-  FMarksSkipStr:= VMult(FMarksSkipStr, FIsExists);
-  //векторы меток табеля
-  VDim(FMarksStr, FMonthCalendar.DaysCount, EmptyStr);
-  VDim(FHoursStr, FMonthCalendar.DaysCount, EmptyStr);
-  for i:=0 to High(TotalHours) do
-    TimetableDataToMarksAndHoursStr(MainMarkStr[i], SkipMarkStr[i], FNightMarkStr, FOverMarkStr,
-                                TotalHours[i], NightHours[i], OverHours[i], SkipHours[i],
-                                FMarksStr[i], FHoursStr[i]);
-  //расчет итогов по месяцу
-  CalcResume(N1,N2);
-  //расчет суммы отработанных часов за учетный период
-  CalcHoursInReportPeriod;
+  inherited Create;
+  FMonthCalendar:= TCalendar.Create;
+  Clear;
 end;
 
-procedure TTimetable.GetSkipStrings(ABeginInd, AEndInd: Integer;
+destructor TTimetable.Destroy;
+begin
+  FreeAndNil(FMonthCalendar);
+  inherited Destroy;
+end;
+
+procedure TTimetable.WriteDefault;
+var
+  N: Integer;
+begin
+  //дефолтные значения векторов данных
+  FDates:= VCut(Calendar.Dates);
+
+  N:= Calendar.DaysCount;
+
+  VDim(FScheduleIDs, N, 0);
+  VDim(FShiftNums, N, 0);
+
+  VDim(FIsExists, N, EXISTS_NO);
+  VDim(FIsManualChanged, N, MANUAL_NO);
+  VDim(FIsAbsence, N, ABSENCE_NO);
+  VDim(FIsDayInBase, N, INBASE_NO);
+
+  VDim(FHoursTotal, N, 0);
+  VDim(FHoursNight, N, 0);
+  VDim(FHoursOver, N, 0);
+  VDim(FHoursSkip, N, 0);
+  VDim(FHoursSchedule, N, 0);
+
+  VDim(FMarksMainDig, N, 0);
+  VDim(FMarksSkipDig, N, 0);
+  VDim(FMarksMainStr, N, EmptyStr);
+  VDim(FMarksSkipStr, N, EmptyStr);
+
+  VDim(FMarksStr, N, EmptyStr);
+  VDim(FHoursStr, N, EmptyStr);
+end;
+
+procedure TTimetable.WriteExistions(const APostScheduleInfo: TPostScheduleInfo);
+var
+  i, j, m, n, I1, I2: Integer;
+  BD, ED: TDate;
+  ShiftScheduleInfo: TShiftScheduleInfo;
+begin
+  if VIsNil(APostScheduleInfo.PostIDs) then
+  begin
+    if not IsPeriodIntersect(RecrutDate, DismissDate, BeginDate, EndDate, BD, ED) then Exit;
+    FromToIndexes(BD, ED, I1, I2);
+    //меняем флаги в интервале существования
+    VChangeIn(FIsExists, EXISTS_YES, I1, I2);
+    Exit;
+  end;
+
+  for i:= 0 to High(APostScheduleInfo.PostIDs) do
+    for j:= 0 to High(APostScheduleInfo.FirstDates[i]) do
+    begin
+      ShiftScheduleInfo:= APostScheduleInfo.Infos[i, j];
+      for m:= 0 to High(ShiftScheduleInfo.ScheduleIDs) do
+        for n:= 0 to High(ShiftScheduleInfo.FirstDates[m]) do
+        begin
+          //подпериод в сменном графике
+          BD:= ShiftScheduleInfo.FirstDates[m, n];
+          ED:= ShiftScheduleInfo.LastDates[m, n];
+          if not IsPeriodIntersect(BeginDate, EndDate, BD, ED, BD, ED) then continue;
+          if not IsPeriodIntersect(RecrutDate, DismissDate, BD, ED, BD, ED) then continue;
+          FromToIndexes(BD, ED, I1, I2);
+          //меняем флаги в интервале существования
+          VChangeIn(FIsExists, EXISTS_YES, I1, I2);
+        end;
+    end;
+end;
+
+procedure TTimetable.WriteData;
+var
+  i, j: Integer;
+  DayDates: TDateVector;
+  SchedIDs, ShNums, TotalHours, NightHours, OverHours, SkipHours,
+  SchedHours, MainMarkDig, SkipMarkDig, ManualChanged, Absence: TIntVector;
+  MainMarkStr, SkipMarkStr: TStrVector;
+begin
+  //достаем из базы данные по табелю
+  if not TimetableDataVectorsLoad(FTabNumID, BeginDate, EndDate,
+                       DayDates, SchedIDs, ShNums,
+                       TotalHours, NightHours, OverHours, SkipHours, SchedHours,
+                       MainMarkDig, SkipMarkDig, ManualChanged, Absence,
+                       MainMarkStr, SkipMarkStr) then Exit;
+  //записываем в вектора
+  for i:= 0 to High(DayDates) do
+  begin
+    if not DateIndex(DayDates[i], j) then continue;
+    if FIsExists[j]=EXISTS_NO then continue;
+
+    FScheduleIDs[j]:= SchedIDs[i];
+    FShiftNums[j]:= ShNums[i];
+
+    FIsManualChanged[j]:= ManualChanged[i];
+    FIsAbsence[j]:= Absence[i];
+    FIsDayInBase[j]:= INBASE_YES;
+
+    FHoursTotal[j]:= TotalHours[i];
+    FHoursNight[j]:= NightHours[i];
+    FHoursOver[j]:= OverHours[i];
+    FHoursSkip[j]:= SkipHours[i];
+    FHoursSchedule[j]:= SchedHours[i];
+
+    FMarksMainDig[j]:= MainMarkDig[i];
+    FMarksSkipDig[j]:= SkipMarkDig[i];
+    FMarksMainStr[j]:= MainMarkStr[i];
+    FMarksSkipStr[j]:= SkipMarkStr[i];
+
+    TimetableDataToMarksAndHoursStr(MainMarkStr[i], SkipMarkStr[i],
+                                FNightMarkStr, FOverMarkStr,
+                                TotalHours[i], NightHours[i], OverHours[i], SkipHours[i],
+                                FMarksStr[j], FHoursStr[j]);
+  end;
+end;
+
+function TTimetable.DateIndex(const ADate: TDate; out AIndex: Integer): Boolean;
+begin
+  Result:= DateIndexInPeriod(ADate, BeginDate, EndDate, AIndex);
+end;
+
+function TTimetable.FromToIndexes(const AFromDate, AToDate: TDate;
+                                  out AIndex1, AIndex2: Integer): Boolean;
+begin
+  Result:= DateIndex(AFromDate, AIndex1) and DateIndex(AToDate, AIndex2);
+end;
+
+procedure TTimetable.GetSkipStrings(const ABeginInd, AEndInd: Integer;
                                out AMarksSkipStr, ADaysHoursSkipStr: String);
 var
   i,j,N,SumSkipDays, SumSkipHours: Integer;
@@ -633,7 +736,7 @@ begin
   SkipMarkStr:= nil;
   SkipMarkDig:= nil;
   N:= 0;
-  for i:=ABeginInd to AEndInd do   //выбираем из значений векторов кодов неявок список уникальных кодов
+  for i:= ABeginInd to AEndInd do   //выбираем из значений векторов кодов неявок список уникальных кодов
   begin
     if FMarksSkipDig[i]=0 then continue;
     if VIndexOf(SkipMarkDig, FMarksSkipDig[i])<0 then
@@ -665,6 +768,16 @@ begin
   end;
   AMarksSkipStr:= STrim(AMarksSkipStr);
   ADaysHoursSkipStr:= STrim(ADaysHoursSkipStr);
+end;
+
+function TTimetable.GetBeginDate: TDate;
+begin
+  Result:= VFirst(FDates);
+end;
+
+function TTimetable.GetEndDate: TDate;
+begin
+  Result:= VLast(FDates);
 end;
 
 {ВСПОМ ПРОЦЕДУРЫ}
@@ -742,13 +855,12 @@ function TimetableDayDataFromSchedule(const ASchedule: TPersonalSchedule;
 var
   X: Integer;
 begin
+  Result:= TimetableDayEmpty;
+  if ASchedule.ScheduleIDs[AIndex]<=0 then Exit;
+
   Result.ScheduleHours:= ASchedule.HoursCorrect.Totals[AIndex];  {WorkHoursCorrect - потому что в графиковом времени нужно учитывать раб часы без учета отпуска, но  с корректировками}
   Result.TotalHours:=  ASchedule.HoursCorrectVacation.Totals[AIndex]; {WorkHoursCorrectVacation - потому что в табеле учитывается и отпуск}
   Result.NightHours:=  ASchedule.HoursCorrectVacation.Nights[AIndex];
-  Result.OverHours := 0;
-  //устанавливаем дефолтные данные по пропущенным часам
-  Result.SkipHours:= 0;
-  Result.SkipMark:= 0;
   //определяем основную метку табеля
   Result.DigMark:= ASchedule.MarkDIGCorrect[AIndex]; //берем с графика
   X:= ASchedule.IsVacations[AIndex];

@@ -190,7 +190,8 @@ type
     procedure StaffListLoad(const SelectedID: Integer = -1);
 
     procedure ScheduleLoad;
-    procedure ScheduleChange(const AChangeIfSameTabNumAndYear: Boolean = False);
+    procedure ScheduleUpdate;
+    procedure ScheduleChange;
     procedure ScheduleToSheet(var ASheet: TPersonalYearScheduleSheet;
                               const AWorksheet: TsWorksheet;
                               const AGrid: TsWorksheetGrid;
@@ -214,6 +215,7 @@ type
     procedure VacationEditingBegin;
     procedure VacationEditDelete;
 
+    procedure SchedulePersonalMonthFormOpen;
     procedure ScheduleCorrectionEditFormOpen(const ADate: TDate);
     procedure SchedulePersonalEditFormOpen(const AEditingType: TEditingType);
 
@@ -408,10 +410,23 @@ begin
   SchedulePersonalEditFormOpen(etEdit);
 end;
 
+procedure TSchedulePersonalForm.SchedulePersonalMonthFormOpen;
+var
+  SchedulePersonalMonthForm: TSchedulePersonalMonthForm;
+begin
+  SchedulePersonalMonthForm:= TSchedulePersonalMonthForm.Create(nil);
+  try
+    SchedulePersonalMonthForm.YearSpinEdit.Value:= YearSpinEdit.Value;
+    SchedulePersonalMonthForm.ShowModal;
+    ScheduleUpdate;
+  finally
+    FreeAndNil(SchedulePersonalMonthForm);
+  end;
+end;
+
 procedure TSchedulePersonalForm.MonthScheduleButtonClick(Sender: TObject);
 begin
-  SchedulePersonalMonthFormOpen(YearSpinEdit.Value);
-  ScheduleChange;
+  SchedulePersonalMonthFormOpen;
 end;
 
 procedure TSchedulePersonalForm.PostRadioButtonClick(Sender: TObject);
@@ -486,8 +501,8 @@ begin
 
   DataBase.VacationsEditingUpdate(TabNumIDs[StaffList.SelectedIndex], YearSpinEdit.Value,
                                 VacationDates, VacationCounts, VacationAddCounts);
-
-  ScheduleChange;
+  VacationEditLoad;
+  ScheduleUpdate;
 end;
 
 procedure TSchedulePersonalForm.VacationScheduleButtonClick(Sender: TObject);
@@ -573,7 +588,7 @@ begin
       C:= ScheduleCorrectionsCreate(Sheet.SelectedDates, SelectedHoursTotal, SelectedHoursNight,
                                  SelectedDigMark, SelectedShiftNum, SelectedStrMark);
       DataBase.SchedulePersonalCorrectionsUpdate(TabNumIDs[StaffList.SelectedIndex], C);
-      ScheduleChange;
+      ScheduleUpdate;
     end
     else //cancel copies
       Sheet.SelectionClear;
@@ -704,7 +719,7 @@ begin
   if not VSTDays.IsSelected then Exit;
   Ind:= VSTDays.SelectedIndex;
   DataBase.SchedulePersonalCorrectionDelete(CorrectIDs[Ind]);
-  ScheduleChange;
+  ScheduleUpdate;
   if VIsNil(CorrectIDs) then Exit;
   if Ind>High(CorrectIDs) then Dec(Ind);
   VSTDays.Select(Ind);
@@ -833,13 +848,19 @@ begin
     Calendar, Holidays, False);
 end;
 
-procedure TSchedulePersonalForm.ScheduleChange(const AChangeIfSameTabNumAndYear: Boolean = False);
+procedure TSchedulePersonalForm.ScheduleUpdate;
+begin
+  CorrectionsLoad;
+  ScheduleLoad;
+  ScheduleRedraw;
+end;
+
+procedure TSchedulePersonalForm.ScheduleChange;
 begin
   if not CanDraw then Exit;
   if not StaffList.IsSelected then Exit;
 
-  if (not AChangeIfSameTabNumAndYear) and
-     (TabNumIDs[StaffList.SelectedIndex]=ViewTabNumID) and
+  if (TabNumIDs[StaffList.SelectedIndex]=ViewTabNumID) and
      (YearSpinEdit.Value = ViewYear) then Exit;
   ViewYear:= YearSpinEdit.Value;
   ViewTabNumID:= TabNumIDs[StaffList.SelectedIndex];
@@ -847,9 +868,7 @@ begin
   CaptionsUpdate;
   HistoryLoad;
   VacationEditLoad;
-  CorrectionsLoad;
-  ScheduleLoad;
-  ScheduleRedraw;
+  ScheduleUpdate;
 end;
 
 procedure TSchedulePersonalForm.ScheduleToSheet(var ASheet: TPersonalYearScheduleSheet;
@@ -1054,7 +1073,7 @@ begin
                               HistoryEndDates[History.SelectedIndex]) then Exit;
 
   HistoryLoad;
-  ScheduleChange;
+  ScheduleUpdate;
 end;
 
 procedure TSchedulePersonalForm.VacationEditCreate;
@@ -1150,7 +1169,7 @@ begin
       ScheduleCorrectionEditForm.ShiftNumSpinEdit.Value:= Corrections.ShiftNums[VSTDays.SelectedIndex];
     end;
     if ScheduleCorrectionEditForm.ShowModal=mrOK then
-      ScheduleChange;
+      ScheduleUpdate;
   finally
     FreeAndNil(ScheduleCorrectionEditForm);
   end;
@@ -1198,7 +1217,7 @@ begin
     if SchedulePersonalEditForm.ShowModal=mrOK then
     begin
       HistoryLoad(SchedulePersonalEditForm.HistoryID);
-      ScheduleChange(True);
+      ScheduleUpdate;
     end;
   finally
     FreeAndNil(SchedulePersonalEditForm);

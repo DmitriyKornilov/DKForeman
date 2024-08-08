@@ -12,8 +12,8 @@ uses
   DK_Vector, DK_Matrix, DK_Math, DK_Fonts, DK_Const, DK_DateUtils,
   DK_StrUtils, DK_VSTTables, DK_VSTParamList, DK_Zoom, DK_SheetExporter, DK_Progress,
   //Project utils
-  UDataBase, UConst, UUtils, UCalendar, UTimetable, UTimetableSheet,
-  UTimingSheet, UWorkHours, UTypes,
+  UDataBase, UConst, UUtils, UCalendar, USchedule, UTimetable, UTimetableSheet,
+  UTimingSheet, UTypes,
   //Forms
   UTimetableEditForm, UChooseForm;
 
@@ -115,6 +115,7 @@ type
     BeforeTotalHours, BeforeNightHours: TIntVector;
     MonthCalendar, YearCalendar: TCalendar;
     Timetables: TTimetableVector;
+    PostScheduleInfos: TPostScheduleInfoVector;
 
     Sheet: TMonthTimetableSheet;
 
@@ -131,12 +132,15 @@ type
     procedure VStaffListSelect;
     procedure MStaffListSelect;
 
+    procedure TimetableUpdate(const ATabNumID: Integer);
     procedure TimetableLoad;
     procedure TimetableSheetCreate;
     procedure TimetableSheetRecreate;
     procedure TimetableDraw(const AZoomPercent: Integer);
     procedure TimetableRedraw;
     procedure TimetableSelect;
+
+    procedure TimetableEditFormOpen;
 
     procedure SelectionMove(const ADirection: TMoveDirection);
     procedure RowsMerge;
@@ -152,26 +156,11 @@ type
 var
   TimetableMonthForm: TTimetableMonthForm;
 
-procedure TimetableMonthFormOpen(const AYear: Integer);
-
 implementation
 
 uses UMainForm;
 
 {$R *.lfm}
-
-procedure TimetableMonthFormOpen(const AYear: Integer);
-var
-  Form: TTimetableMonthForm;
-begin
-  Form:= TTimetableMonthForm.Create(nil);
-  try
-    Form.YearSpinEdit.Value:= AYear;
-    Form.ShowModal;
-  finally
-    FreeAndNil(Form);
-  end;
-end;
 
 { TTimetableMonthForm }
 
@@ -418,7 +407,7 @@ end;
 
 procedure TTimetableMonthForm.DayEditButtonClick(Sender: TObject);
 begin
-  //ScheduleCorrectionFormOpen;
+  TimetableEditFormOpen;
 end;
 
 procedure TTimetableMonthForm.EditingButtonClick(Sender: TObject);
@@ -654,6 +643,19 @@ begin
   TimetableButton.Enabled:= MStaffList.IsSelected;
 end;
 
+procedure TTimetableMonthForm.TimetableUpdate(const ATabNumID: Integer);
+var
+  i: Integer;
+begin
+  for i:= 0 to High(TabNumIDs) do
+  begin
+    if TabNumIDs[i]<>ATabNumID then continue;
+    Timetables[i].Calc(TabNumIDs[i], TabNums[i], RecrutDates[i], DismissDates[i],
+                     MonthCalendar, PostScheduleInfos[i]);
+    Sheet.LineDraw(i);
+  end;
+end;
+
 procedure TTimetableMonthForm.TimetableLoad;
 var
   Y, M: Word;
@@ -697,23 +699,38 @@ var
   var
     i: Integer;
     S: String;
-    BD, ED: TDate;
+    BD, ED, MonthBD, MonthED: TDate;
     Timetable: TTimetable;
+    PostScheduleInfo: TPostScheduleInfo;
   begin
-    FirstLastDayInMonth(M, Y, BD, ED);
-    YearCalendar.Cut(BD, ED, MonthCalendar);
+    FirstLastDayInMonth(M, Y, MonthBD, MonthED);
+    YearCalendar.Cut(MonthBD, MonthED, MonthCalendar);
     Progress.WriteLine1('Расчет табелей');
     for i:=0 to High(TabNumIDs) do
     begin
       S:= StaffNames[i] + ' [таб.№ ' + TabNums[i] + '] - ' + PostNames[i];
       Progress.WriteLine2(S);
-      Timetable:= TTimetable.Create(TabNumIDs[i], TabNums[i],
-                                    RecrutDates[i], DismissDates[i],
-                                    Holidays, MonthCalendar,
-                                    True {need update}, False {update writed only},
-                                    STRMARK_NIGHT, STRMARK_OVER,
-                                    ScheduleBDs[i], ScheduleEDs[i],
-                                    PostBDs[i], PostEDs[i]);
+
+      //определяем период для загрузки инфо о должностях и графиках
+      if IsPeriodIntersect(MonthBD, MonthED, BD, ED, BD, ED) then
+          if IsPeriodIntersect(RecrutDates[i], DismissDates[i], BD, ED, BD, ED) then
+      begin
+        //обновляем данные о табеле в базе
+        TimetableForPeriodUpdate(TabNumIDs[i], RecrutDates[i], DismissDates[i],
+                                 BD, ED, Holidays, False);
+        if IsPeriodIntersect(ScheduleBDs[i], ScheduleEDs[i], PostBDs[i], PostEDs[i], BD, ED) then
+        begin
+          //загружаем инфо о должностях и графиках
+          DataBase.StaffPostScheduleInfoLoad(TabNumIDs[i], PostScheduleInfo, BD, ED);
+          VIAppend(PostScheduleInfos, PostScheduleInfo);
+        end
+        else
+          VIAppend(PostScheduleInfos, EmptyPostScheduleInfo);
+      end;
+
+      Timetable:= TTimetable.Create;
+      Timetable.Calc(TabNumIDs[i], TabNums[i], RecrutDates[i], DismissDates[i],
+                     MonthCalendar, PostScheduleInfo);
       VTAppend(Timetables, Timetable);
     end;
   end;
@@ -765,6 +782,7 @@ begin
   if not CanLoadAndDraw then Exit;
 
   VTDel(Timetables);
+  PostScheduleInfos:= nil;
 
   if OrderType<=1 then
     GetCategoryValues
@@ -871,6 +889,26 @@ begin
   EditButtonsEnabled;
 end;
 
+procedure TTimetableMonthForm.TimetableEditFormOpen;
+var
+  TimetableEditForm: TTimetableEditForm;
+  TabNumID: Integer;
+begin
+  if not Sheet.IsDateSelected then Exit;
+
+  TabNumID:= TabNumIDs[Sheet.SelectedIndex];
+
+  TimetableEditForm:= TTimetableEditForm.Create(nil);
+  try
+    TimetableEditForm.TabNumID:= TabNumID;
+    TimetableEditForm.FirstDate:= Sheet.SelectedDate;;
+    if TimetableEditForm.ShowModal=mrOK then
+      TimetableUpdate(TabNumID);
+  finally
+    FreeAndNil(TimetableEditForm);
+  end
+end;
+
 procedure TTimetableMonthForm.SelectionMove(const ADirection: TMoveDirection);
 var
   OldSelectedIndex, NewSelectedIndex: Integer;
@@ -903,6 +941,7 @@ begin
   VSwap(BeforeTotalHours, OldSelectedIndex, NewSelectedIndex);
   VSwap(BeforeNightHours, OldSelectedIndex, NewSelectedIndex);
   VTSwap(Timetables, OldSelectedIndex, NewSelectedIndex);
+  VISwap(PostScheduleInfos, OldSelectedIndex, NewSelectedIndex);
 
   S.SelectionMove(NewSelectedIndex);
 end;
@@ -920,14 +959,13 @@ var
   begin
     //должность, в результирующей строке
     PostNames[AResultIndex]:= APostName;
+    //Info графика в результирующей строке
+    PostScheduleInfoAdd(PostScheduleInfos[AResultIndex], PostScheduleInfos[ADeleteIndex]);
     //табель в результирующей строке
-    Timetables[AResultIndex].Add(Timetables[ADeleteIndex]);
-    //периоды должностей и графиков в строке
-    {TODO !!!!}
-    //PostBDs[AResultIndex]:= VAdd(PostBDs[AResultIndex], PostBDs[ADeleteIndex]);
-    //PostsEDs[AResultIndex]:= VAdd(PostsEDs[AResultIndex], PostsEDs[ADeleteIndex]);
-    //ScheduleBDs[AResultIndex]:= VAdd(ScheduleBDs[AResultIndex], ScheduleBDs[ADeleteIndex]);
-    //ScheduleEDs[AResultIndex]:= VAdd(ScheduleEDs[AResultIndex], ScheduleEDs[ADeleteIndex]);
+    Timetables[AResultIndex].Calc(TabNumIDs[AResultIndex], TabNums[AResultIndex],
+                                  RecrutDates[AResultIndex], DismissDates[AResultIndex],
+                                  MonthCalendar, PostScheduleInfos[AResultIndex]);
+
     //удаляем элементы векторов
     VDel(StaffNames, ADeleteIndex);
     VDel(PostNames, ADeleteIndex);
@@ -943,6 +981,7 @@ var
     VDel(BeforeTotalHours, ADeleteIndex);
     VDel(BeforeNightHours, ADeleteIndex);
     VTDel(Timetables, ADeleteIndex);
+    VIDel(PostScheduleInfos, ADeleteIndex);
     TimetableRedraw;
     case ParamList.Selected['TimetableType'] of
       0: S:= Sheet;
