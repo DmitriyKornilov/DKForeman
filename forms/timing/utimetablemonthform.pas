@@ -118,6 +118,8 @@ type
     PostScheduleInfos: TPostScheduleInfoVector;
 
     Sheet: TMonthTimetableSheet;
+    SheetT12: TTimetableSheetT12;
+    //SheetT13: TTimetableSheetT13;
 
     procedure ParamListCreate;
     procedure ParamListVisibles;
@@ -215,7 +217,7 @@ begin
   FreeAndNil(MStaffList);
 
   if Assigned(Sheet) then FreeAndNil(Sheet);
-  //if Assigned(SheetT12) then FreeAndNil(SheetT12);
+  if Assigned(SheetT12) then FreeAndNil(SheetT12);
   //if Assigned(SheetT13) then FreeAndNil(SheetT13);
 
   VTDel(Timetables);
@@ -555,7 +557,7 @@ var
 begin
   case ParamList.Selected['TimetableType'] of
     0: S:= Sheet;
-    1: ;//S:= SheetT12;
+    1: S:= SheetT12;
     2: ;//S:= SheetT13;
   end;
 
@@ -824,10 +826,10 @@ begin
       end;
     1: //форма T-12
       begin
-        //if Assigned(SheetT12) then FreeAndNil(SheetT12);
-
-        //SheetT12.CanSelect:= EditingButton.Down;
-        //SheetT12.OnSelect:= @TimetableSelect;
+        if Assigned(SheetT12) then FreeAndNil(SheetT12);
+        SheetT12:= TTimetableSheetT12.Create(ViewGrid.Worksheet, ViewGrid, MainForm.GridFont);
+        SheetT12.CanSelect:= EditingButton.Down;
+        SheetT12.OnSelect:= @TimetableSelect;
       end;
     2: //форма T-13
       begin
@@ -866,7 +868,14 @@ begin
         end;
       1: //форма T-12
         begin
-
+          SheetT12.Zoom(ZoomPercent);
+          SheetT12.Draw(MonthCalendar, Timetables,
+                 StaffNames, TabNums, PostNames,
+                 ParamList.Selected['ViewType']=0,
+                 ParamList.Selected['MonthType']=0,
+                 False{not repeat title in grid},
+                 False{not need page numbers in grid},
+                 1{simple border line in grid});
         end;
       2: //форма T-13
         begin
@@ -918,7 +927,7 @@ var
 begin
   case ParamList.Selected['TimetableType'] of
     0: S:= Sheet;
-    1: ;//S:= SheetT12;
+    1: S:= SheetT12;
     2: ;//S:= SheetT13;
   end;
 
@@ -954,10 +963,9 @@ var
   V1, V2: TStrVector;
   RowIndexes: TIntVector;
   PostName: String;
+  S: TMonthCustomSheet;
 
   procedure Merge(const AResultIndex, ADeleteIndex: Integer; const APostName: String);
-  var
-    S: TMonthCustomSheet;
   begin
     //должность, в результирующей строке
     PostNames[AResultIndex]:= APostName;
@@ -985,18 +993,19 @@ var
     VTDel(Timetables, ADeleteIndex);
     VIDel(PostScheduleInfos, ADeleteIndex);
     TimetableRedraw;
-    case ParamList.Selected['TimetableType'] of
-      0: S:= Sheet;
-      1: ;//S:= SheetT12;
-      2: ;//S:= SheetT13;
-    end;
     S.Select(AResultIndex - Ord(AResultIndex>ADeleteIndex));
   end;
 
 begin
+  case ParamList.Selected['TimetableType'] of
+    0: S:= Sheet;
+    1: S:= SheetT12;
+    2: ;//S:= SheetT13;
+  end;
+
   RowIndexes:= VCreateInt([
-    Min(Sheet.SelectedIndex, Sheet.SelectedIndex2),
-    Max(Sheet.SelectedIndex, Sheet.SelectedIndex2)
+    Min(S.SelectedIndex, S.SelectedIndex2),
+    Max(S.SelectedIndex, S.SelectedIndex2)
   ]);
 
   V1:= VCreateStr(['№ ' + IntToStr(RowIndexes[0]+1), '№ ' + IntToStr(RowIndexes[1]+1)]);
@@ -1039,7 +1048,7 @@ begin
 
   case ParamList.Selected['TimetableType'] of
     0: Sheet.CanSelect:= EditingButton.Down;
-    1: ;//SheetT12.CanSelect:= EditingButton.Down;
+    1: SheetT12.CanSelect:= EditingButton.Down;
     2: ;//SheetT13.CanSelect:= EditingButton.Down;
   end;
 

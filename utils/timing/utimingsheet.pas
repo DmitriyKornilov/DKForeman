@@ -11,7 +11,7 @@ uses
   DK_SheetTypes, DK_SheetWriter, DK_Vector, DK_StrUtils, DK_DateUtils,
   DK_Const,
   //Project utils
-  UCalendar, USchedule, UWorkHours;
+  UCalendar, USchedule, UTimetable, UWorkHours;
 
 type
 
@@ -163,6 +163,9 @@ type
   procedure DrawDaysCount(const AWriter: TSheetWriter;
                         const ARow, ACol, ADaysCount: Integer;
                         const AWriteDaysCountIfZero, ANeedNight: Boolean);
+  procedure DrawDaysCount(const AWriter: TSheetWriter;
+                        const ARow1, ACol1, ARow2, ACol2, ADaysCount: Integer;
+                        const AWriteDaysCountIfZero: Boolean);
   procedure DrawDaysOrShiftCount(const AWriter: TSheetWriter;
                                 const ARow,ACol, ADaysCount, AShiftCount: Integer;
                                 const AWriteDaysCountIfZero, ANeedNight: Boolean;
@@ -204,7 +207,58 @@ type
                                        const ANeedCorrect, ANeedVacation: Boolean;
                                        out WH: TWorkHours; out DC,SC: Integer; out Marks: TStrVector);
 
+  procedure DrawTimetableDay(const AWriter: TSheetWriter;
+                       const ARow, ACol, ADayIndex: Integer;
+                       const ATimetable: TTimetable;
+                       const AEmptyDay: Boolean = False);
+  procedure DrawTotalHours(const AWriter: TSheetWriter;
+                        const ARow1, ACol1, ARow2, ACol2, AValue: Integer;
+                        const ADrawIfZero: Boolean);
+  procedure DrawTotalHours(const AWriter: TSheetWriter;
+                        const ARow, ACol, AValue: Integer;
+                        const ADrawIfZero: Boolean);
+
+
 implementation
+
+procedure DrawTotalHours(const AWriter: TSheetWriter;
+                        const ARow1, ACol1, ARow2, ACol2, AValue: Integer;
+                        const ADrawIfZero: Boolean);
+begin
+  if ADrawIfZero or (AValue<>0) then
+    WriteCellHours(AWriter, ARow1, ACol1, ARow2, ACol2, AValue)
+  else
+    AWriter.WriteText(ARow1, ACol1, ARow2, ACol2, EmptyStr, cbtOuter);
+end;
+
+procedure DrawTotalHours(const AWriter: TSheetWriter;
+                        const ARow, ACol, AValue: Integer;
+                        const ADrawIfZero: Boolean);
+begin
+  DrawTotalHours(AWriter, ARow, ACol, ARow, ACol, AValue, ADrawIfZero);
+end;
+
+procedure DrawTimetableDay(const AWriter: TSheetWriter;
+                       const ARow, ACol, ADayIndex: Integer;
+                       const ATimetable: TTimetable;
+                       const AEmptyDay: Boolean = False);
+begin
+  if AEmptyDay then
+  begin
+    AWriter.WriteText(ARow,ACol, EmptyStr, cbtOuter);
+    AWriter.WriteText(ARow+1,ACol, EmptyStr, cbtOuter);
+    Exit;
+  end;
+  if ATimetable.IsExists[ADayIndex]=EXISTS_YES then
+  begin
+    AWriter.WriteText(ARow,ACol, ATimetable.MarksStr[ADayIndex], cbtOuter);
+    AWriter.WriteText(ARow+1,ACol, ATimetable.HoursStr[ADayIndex], cbtOuter);
+  end
+  else begin
+    AWriter.WriteText(ARow,ACol, STRMARK_NONEXISTENT, cbtOuter);
+    AWriter.WriteText(ARow+1,ACol, STRMARK_NONEXISTENT, cbtOuter);
+  end;
+end;
 
 procedure ChoosePersonalScheduleData(const PS: TPersonalSchedule;
                                       const ANeedCorrect, ANeedVacation: Boolean;
@@ -252,6 +306,19 @@ begin
     AWriter.AddCellBGColorIndex(ARow+1, ACol, AInd);
 end;
 
+{procedure DrawDaysCount(const AFX: TXLSX;
+                        const ARow1,ACol1,ARow2,ACol2, AValue: Integer;
+                        const ADrawIfZero: Boolean;
+                        const ABordersType: TCellBorderType);
+begin
+  if ADrawIfZero or (AValue<>0) then
+    AFX.WriteNumber(ARow1,ACol1,ARow2,ACol2, AValue, ABordersType)
+  else
+    AFX.WriteText(ARow1,ACol1,ARow2,ACol2, EmptyStr, ABordersType);
+end;
+
+   }
+
 procedure DrawDaysCount(const AWriter: TSheetWriter;
                         const ARow, ACol, ADaysCount: Integer;
                         const AWriteDaysCountIfZero, ANeedNight: Boolean);
@@ -262,6 +329,16 @@ begin
     AWriter.WriteText(ARow, ACol, EmptyStr, cbtOuter);
   if ANeedNight then
     AWriter.WriteText(ARow+1, ACol, EmptyStr, cbtOuter);
+end;
+
+procedure DrawDaysCount(const AWriter: TSheetWriter;
+                        const ARow1, ACol1, ARow2, ACol2, ADaysCount: Integer;
+                        const AWriteDaysCountIfZero: Boolean);
+begin
+  if (ADaysCount>0) or AWriteDaysCountIfZero then
+    AWriter.WriteNumber(ARow1, ACol1, ARow2, ACol2, ADaysCount, cbtOuter)
+  else
+    AWriter.WriteText(ARow1, ACol1, ARow2, ACol2, EmptyStr, cbtOuter);
 end;
 
 procedure DrawDaysOrShiftCount(const AWriter: TSheetWriter;
@@ -674,6 +751,7 @@ var
   R, i, j: Integer;
 begin
   inherited SelectRow(AIndex);
+  if AIndex<0 then Exit;
   R:= IndexToRow(AIndex);
   for i:= R to R + Ord(FViewParams[0]) do  //FViewParams: 0 - Отображать строку ночных часов
     for j:= 1 to Writer.ColCount do
@@ -715,7 +793,6 @@ procedure TMonthSheet.DrawCustom(const ACalendar: TCalendar;
 var
   X, W, R, C, i: Integer;
 begin
-
   FCalendar:= ACalendar;
   FYear:= YearOf(FCalendar.BeginDate);
   FMonth:= MonthOf(FCalendar.BeginDate);

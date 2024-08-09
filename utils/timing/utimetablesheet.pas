@@ -13,6 +13,11 @@ uses
   DK_SheetWriter, DK_Vector, DK_Const, DK_DateUtils, DK_StrUtils, DK_SheetTypes,
   DK_Math, DK_Color;
 
+const
+  BOLD_LINE_STYLE = lsMedium;
+  DOUBLE_LINE_STYLE = lsDouble;
+  BORDER_STYLE_DEFAULT = lsThin;
+
 type
 
   { TYearTimetableSheet }
@@ -125,7 +130,68 @@ type
     procedure LineDraw(const AIndex: Integer); override;
   end;
 
+  { TTimetableSheetT12 }
+  //Табель за месяц (форма T-12)
+  TTimetableSheetT12 = class (TMonthCustomSheet)
+  protected
+    function SetWidths: TIntVector; override;
+    procedure SelectDate(const ADate: TDate); override;
+    procedure SelectRow(const AIndex: Integer); override;
+    function DateAndIndexFromCell(const ARow, ACol: Integer;
+                                  out ADate: TDate;
+                                  out AIndex: Integer): Boolean; override;
+  private
+    const
+      FWriteTotalHoursIfZero = False;
+      FWriteDaysCountIfZero = True;
+      COL1_WIDTH = 55;
+      COL2_WIDTH = 140;
+      COL3_WIDTH = 70;
+      COL_DAYS_WIDTH = 32;
+      COL_HALF_WIDTH = 50;
+      RESUME1_COLUMN_WITH = 40;
+      RESUME2_COLUMN_WITH = 50;
+      RESUME3_COLUMN_WITH = 50;
+      RESUME4_COLUMN_WITH = 50;
+      RESUME5_COLUMN_WITH = 50;
+      RESUME6_COLUMN_WITH = 30;
+      RESUME7_1_COLUMN_WITH = 20;
+      RESUME7_2_COLUMN_WITH = 30;
+      RESUME8_COLUMN_WITH = 40;
+      RESUME9_COLUMN_WITH = 50;
+      RESUME10_COLUMN_WITH = 50;
+      ROW1_HEIGHT = 35;
+      ROW2_HEIGHT = 20;
+      ROW3_HEIGHT = 20;
+      ROW4_HEIGHT = 65;
+      ROW5_HEIGHT = 20;
+      LINE_ROW_HEIGHT = 30;
+    var
+      FTimetables: TTimetableVector;
+      FCalendar: TCalendar;
+      FYear, FMonth: Word;
+      FHalfMonth: Boolean;
+      FNeedTopBottom: Boolean;
+      FBorderStyle: Byte;
 
+    procedure TopDraw;
+    procedure BottomDraw;
+    procedure CaptionDraw(const ANeedRepeatTitle: Boolean);
+    procedure CaptionBordersDraw(const AFirstRow: Integer);
+    procedure LineBordersDraw(const AFirstRow: Integer);
+
+    function IndexToRow(const AIndex: Integer): Integer;
+    function RowToIndex(const ARow: Integer): Integer;
+    function ColToDate(const ACol: Integer): TDate;
+    function DateToCol(const ADate: TDate): Integer;
+  public
+    procedure Draw(const ACalendar: TCalendar;
+                   const ATimetables: TTimetableVector;
+                   const AStaffNames, ATabNums, APostNames: TStrVector;
+                   const ANeedTopBottom, AHalfMonth, ANeedRepeatTitle, ANeedPageNumber: Boolean;
+                   const ABorderStyle: Byte = 1);
+    procedure LineDraw(const AIndex: Integer); override;
+  end;
 
 implementation
 
@@ -760,6 +826,8 @@ procedure TMonthTimetableSheet.Draw(const ACalendar: TCalendar;
                    const ABeforeTotalHours, ABeforeNightHours: TIntVector;
                    const AHalfMonth: Boolean);
 begin
+  SelectionClear;
+
   FTimetables:= ATimetables;
   FBeforeTotalHours:= ABeforeTotalHours;
   FBeforeNightHours:= ABeforeNightHours;
@@ -946,6 +1014,541 @@ begin
 
   if not FViewParams[0] then //0 - Отображать строку ночных часов
     Writer.SetRowHeight(R, Trunc(1.6*Writer.RowHeightDefault));
+end;
+
+{ TTimetableSheetT12 }
+
+function TTimetableSheetT12.SetWidths: TIntVector;
+var
+  i: Integer;
+begin
+  Result:=  nil;
+  VAppend(Result, COL1_WIDTH);
+  VAppend(Result, COL2_WIDTH);
+  VAppend(Result, COL3_WIDTH);
+  for i:= 1 to 15 do
+    VAppend(Result, COL_DAYS_WIDTH);
+  VAppend(Result, COL_HALF_WIDTH);
+  for i:= 1 to 16 do
+    VAppend(Result, COL_DAYS_WIDTH);
+  VAppend(Result, COL_HALF_WIDTH);
+  VAppend(Result, RESUME1_COLUMN_WITH);
+  VAppend(Result, RESUME2_COLUMN_WITH);
+  VAppend(Result, RESUME3_COLUMN_WITH);
+  VAppend(Result, RESUME4_COLUMN_WITH);
+  VAppend(Result, RESUME5_COLUMN_WITH);
+  VAppend(Result, RESUME6_COLUMN_WITH);
+  VAppend(Result, RESUME7_1_COLUMN_WITH);
+  VAppend(Result, RESUME7_2_COLUMN_WITH);
+  VAppend(Result, RESUME8_COLUMN_WITH);
+  VAppend(Result, RESUME9_COLUMN_WITH);
+  VAppend(Result, RESUME10_COLUMN_WITH);
+end;
+
+procedure TTimetableSheetT12.SelectDate(const ADate: TDate);
+var
+  R, C: Integer;
+begin
+  if (ADate=0) or SameDate(ADate, FSelectedDate) then Exit;
+  if IsDoubleRowSelected then Exit;
+
+  SelectionExtraClear;
+  FSelectedDate:= ADate;
+  R:= IndexToRow(FSelectedRowIndex1);
+  C:= DateToCol(FSelectedDate);
+  SelectionExtraAddCell(R, C);
+  SelectionExtraAddCell(R+1, C);
+
+  if Assigned(FOnSelect) then FOnSelect;
+end;
+
+procedure TTimetableSheetT12.SelectRow(const AIndex: Integer);
+var
+  R, i, j: Integer;
+begin
+  inherited SelectRow(AIndex);
+  if AIndex<0 then Exit;
+  R:= IndexToRow(AIndex);
+  for i:= R to R + 1 do
+    for j:= 1 to Writer.ColCount do
+      SelectionAddCell(i, j);
+end;
+
+function TTimetableSheetT12.DateAndIndexFromCell(const ARow, ACol: Integer;
+                                  out ADate: TDate;
+                                  out AIndex: Integer): Boolean;
+var
+  Index: Integer;
+begin
+  Result:= False;
+  ADate:= 0;
+  AIndex:= -1;
+  if ARow>=IndexToRow(Length(FTabNums)) then Exit;
+  Index:= RowToIndex(ARow);
+  if Index<0 then Exit;
+  ADate:= ColToDate(ACol);
+  AIndex:= Index;
+  Result:= True;
+end;
+
+procedure TTimetableSheetT12.TopDraw;
+var
+  R, C, i: Integer;
+  EndDateStr, BeginDateStr: String;
+const
+  BIGROWHEIGHT = 25;
+  SMALLROWHEIGHT = 15;
+begin
+  if not FNeedTopBottom then Exit;
+  if FHalfMonth then
+    EndDateStr:= FormatDateTime('dd.mm.yyyy', FCalendar.Dates[14])
+  else
+    EndDateStr:= FormatDateTime('dd.mm.yyyy', FCalendar.EndDate);
+  BeginDateStr:= FormatDateTime('dd.mm.yyyy', FCalendar.BeginDate);
+
+  Writer.SetBackgroundDefault;
+
+  C:= 1;
+  R:= 1;
+  Writer.SetAlignment(haLeft, vaCenter);
+  Writer.SetFont(Font.Name, Font.Size-1, [{fsBold}], clBlack);
+  Writer.WriteText(R, Writer.ColCount-5, R, Writer.ColCount, 'Унифицированная форма № Т-12');
+  Writer.WriteText(R+1, Writer.ColCount-5, R+1, Writer.ColCount, 'Утверждена Постановлением Госкомстата');
+  Writer.WriteText(R+2, Writer.ColCount-5, R+2, Writer.ColCount, 'России от 5 января 2004 г. № 1');
+  for i:= 0 to 3 do Writer.SetRowHeight(R+i, SMALLROWHEIGHT);
+  R:= R + 4;
+  Writer.SetFont(Font.Name, Font.Size+1, [{fsBold}], clBlack);
+  Writer.SetAlignment(haCenter, vaCenter);
+  Writer.WriteText(R, Writer.ColCount-1, R, Writer.ColCount, 'Код', cbtOuter);
+  R:= R + 1;
+  Writer.SetAlignment(haRight, vaCenter);
+  Writer.WriteText(R, Writer.ColCount-5, R, Writer.ColCount-2, 'Форма по ОКУД');
+  Writer.SetAlignment(haCenter, vaCenter);
+  if not Writer.HasGrid then Writer.SetBorders(BOLD_LINE_STYLE, clBlack);
+  Writer.WriteText(R, Writer.ColCount-1, R, Writer.ColCount, '0301007', cbtOuter);
+  R:= R + 1;
+  Writer.SetAlignment(haRight, vaCenter);
+  Writer.WriteText(R, Writer.ColCount-4, R, Writer.ColCount-2, 'по ОКПО');
+  Writer.SetAlignment(haCenter, vaCenter);
+  Writer.WriteText(R, Writer.ColCount-1, R, Writer.ColCount, '', cbtOuter);
+  if not Writer.HasGrid then Writer.SetBordersDefault;
+  Writer.SetFont(Font.Name, Font.Size+4, [fsBold], clBlack);
+  Writer.SetAlignment(haCenter, vaBottom);
+  Writer.WriteText(R, C, R, Writer.ColCount-5, EmptyStr, cbtBottom);
+  R:= R + 1;
+  Writer.SetFont(Font.Name, Font.Size+1, [{fsBold}], clBlack);
+  if not Writer.HasGrid then Writer.SetBorders(BOLD_LINE_STYLE, clBlack);
+  Writer.WriteText(R, Writer.ColCount-1, R+1, Writer.ColCount, EmptyStr, cbtOuter);
+  if Writer.HasGrid then Writer.WriteText(R+2, Writer.ColCount-1, R+2, Writer.ColCount, EmptyStr, cbtTop);
+  if not Writer.HasGrid then Writer.SetBordersDefault;
+  Writer.SetFont(Font.Name, Font.Size-1, [{fsBold}], clBlack);
+  Writer.SetAlignment(haCenter, vaTop);
+  Writer.WriteText(R, C, R, Writer.ColCount-5, '(наименование организации)');
+  R:= R + 1;
+  Writer.SetFont(Font.Name, Font.Size+4, [fsBold], clBlack);
+  Writer.SetAlignment(haCenter, vaBottom);
+  Writer.WriteText(R, C, R, Writer.ColCount-5, EmptyStr  {ADepartment}, cbtBottom);
+  R:= R + 1;
+  Writer.SetFont(Font.Name, Font.Size-1, [{fsBold}], clBlack);
+  Writer.SetAlignment(haCenter, vaTop);
+  Writer.WriteText(R, C, R, Writer.ColCount-5, '(структурное подразделение)');
+  R:= R + 1;
+  Writer.SetAlignment(haCenter, vaCenter);
+  Writer.SetFont(Font.Name, Font.Size+1, [{fsBold}], clBlack);
+  Writer.WriteText(R, Writer.ColCount-17, R+1, Writer.ColCount-14, 'Номер документа', cbtOuter);
+  Writer.WriteText(R, Writer.ColCount-13, R+1, Writer.ColCount-11, 'Дата составления', cbtOuter);
+  Writer.WriteText(R, Writer.ColCount-9, R, Writer.ColCount-6, 'Отчетный период', cbtOuter);
+  Writer.WriteText(R+1, Writer.ColCount-9, R+1, Writer.ColCount-8, 'с', cbtOuter);
+  Writer.WriteText(R+1, Writer.ColCount-7, R+1, Writer.ColCount-6, 'по', cbtOuter);
+  if Writer.HasGrid then
+  begin
+    for i:= 0 to 2 do
+    begin
+      Writer.WriteText(R+i, Writer.ColCount-10, EmptyStr, cbtLeft);
+      Writer.WriteText(R+i, Writer.ColCount-5, EmptyStr, cbtLeft);
+    end;
+  end;
+  R:= R + 2;
+  Writer.SetFont(Font.Name, Font.Size+1, [fsBold], clBlack);
+  if not Writer.HasGrid then Writer.SetBorders(BOLD_LINE_STYLE, clBlack);
+  Writer.WriteText(R, Writer.ColCount-17, R, Writer.ColCount-14, EmptyStr, cbtOuter);
+  Writer.WriteText(R, Writer.ColCount-13, R, Writer.ColCount-11, EndDateStr, cbtOuter);
+  Writer.WriteText(R, Writer.ColCount-9, R, Writer.ColCount-8, BeginDateStr, cbtOuter);
+  Writer.WriteText(R, Writer.ColCount-7, R, Writer.ColCount-6, EndDateStr , cbtOuter);
+  if not Writer.HasGrid then Writer.SetBordersDefault;
+  Writer.SetFont(Font.Name, Font.Size+6, [fsBold], clBlack);
+  Writer.WriteText(R, C+19, R, C+24, 'ТАБЕЛЬ');
+  Writer.SetRowHeight(R, BIGROWHEIGHT);
+  R:= R + 1;
+  Writer.WriteText(R, C, R, Writer.ColCount, 'учета рабочего времени');
+  Writer.SetRowHeight(R, BIGROWHEIGHT);
+end;
+
+procedure TTimetableSheetT12.BottomDraw;
+var
+  R, C: Integer;
+begin
+  if not FNeedTopBottom then Exit;
+
+  Writer.SetBackgroundDefault;
+
+  R:= IndexToRow(Length(FTimetables)) + 1;
+  C:= 1;
+  Writer.SetFont(Font.Name, Font.Size+1, [fsBold], clBlack);
+  Writer.SetAlignment(haLeft, vaCenter);
+  Writer.WriteText(R, C+22, R, C+27, 'Руководитель');
+  R:= R + 1;
+  Writer.SetAlignment(haLeft, vaBottom);
+  Writer.WriteText(R, C+1, 'Ответственное лицо');
+  Writer.SetAlignment(haCenter, vaBottom);
+  Writer.SetFont(Font.Name, Font.Size+1, [], clBlack);
+  Writer.WriteText(R, C+2, R, C+6, EmptyStr, cbtBottom);
+  Writer.WriteText(R, C+8, R, C+11, EmptyStr, cbtBottom);
+  Writer.WriteText(R, C+13, R, C+17, EmptyStr, cbtBottom);
+  Writer.SetAlignment(haLeft, vaBottom);
+  Writer.SetFont(Font.Name, Font.Size+1, [fsBold], clBlack);
+  Writer.WriteText(R, C+22, R, C+27, 'структурного подразделения');
+  Writer.SetFont(Font.Name, Font.Size+1, [], clBlack);
+  Writer.SetAlignment(haCenter, vaBottom);
+  Writer.WriteText(R, C+28, R, C+31, EmptyStr, cbtBottom);  //должность
+  Writer.WriteText(R, C+33, R, C+35, EmptyStr, cbtBottom);  //подпись
+  Writer.WriteText(R, C+37, R, C+39, EmptyStr, cbtBottom);  //расшифровка
+  Writer.SetAlignment(haRight, vaBottom);
+  Writer.WriteText(R, C+40, '«');
+  Writer.WriteText(R, C+41, EmptyStr, cbtBottom);
+  Writer.SetAlignment(haLeft, vaBottom);
+  Writer.WriteText(R, C+42, '»');
+  Writer.WriteText(R, C+43, R, C+45, EmptyStr, cbtBottom);  //месяц
+  Writer.WriteText(R, C+46, '20      г.');
+  R:= R + 1;
+  Writer.SetAlignment(haCenter, vaTop);
+  Writer.SetFont(Font.Name, Font.Size-1, [], clBlack);
+  Writer.WriteText(R, C+2, R, C+6, '(должность)');
+  Writer.WriteText(R, C+8, R, C+11, '(личная подпись)');
+  Writer.WriteText(R, C+13, R, C+17, '(расшифровка подписи)');
+  Writer.WriteText(R, C+28, R, C+31, '(должность)');
+  Writer.WriteText(R, C+33, R, C+35, '(личная подпись)');
+  Writer.WriteText(R, C+37, R, C+39, '(расшифровка подписи)');
+  R:= R + 1;
+  Writer.SetAlignment(haLeft, vaBottom);
+  Writer.SetFont(Font.Name, Font.Size+1, [fsBold], clBlack);
+  Writer.WriteText(R, C+22, R, C+27, 'Работник');
+  R:= R + 1;
+  Writer.WriteText(R, C+22, R, C+27, 'кадровой службы');
+  Writer.SetFont(Font.Name, Font.Size+1, [], clBlack);
+  Writer.SetAlignment(haCenter, vaBottom);
+  Writer.WriteText(R, C+28, R, C+31, EmptyStr, cbtBottom);  //должность
+  Writer.WriteText(R, C+33, R, C+35, EmptyStr, cbtBottom);  //подпись
+  Writer.WriteText(R, C+37, R, C+39, EmptyStr, cbtBottom);  //расшифровка
+  Writer.SetAlignment(haRight, vaBottom);
+  Writer.WriteText(R, C+40, '«');
+  Writer.WriteText(R, C+41, EmptyStr, cbtBottom);
+  Writer.SetAlignment(haLeft, vaBottom);
+  Writer.WriteText(R, C+42, '»');
+  Writer.WriteText(R, C+43, R, C+45, EmptyStr, cbtBottom);  //месяц
+  Writer.WriteText(R, C+46, '20      г.');
+  R:= R + 1;
+  Writer.SetAlignment(haCenter, vaTop);
+  Writer.SetFont(Font.Name, Font.Size-1, [], clBlack);
+  Writer.WriteText(R, C+28, R, C+31, '(должность)');
+  Writer.WriteText(R, C+33, R, C+35, '(личная подпись)');
+  Writer.WriteText(R, C+37, R, C+39, '(расшифровка подписи)');
+end;
+
+procedure TTimetableSheetT12.CaptionDraw(const ANeedRepeatTitle: Boolean);
+var
+  R, C, FirstRow, i: Integer;
+begin
+  Writer.SetBackgroundDefault;
+
+  FirstRow:= 15*Ord(FNeedTopBottom) + 1;
+  C:= 1;
+  R:= FirstRow;
+  Writer.SetAlignment(haCenter, vaCenter);
+  Writer.SetFont(Font.Name, Font.Size, [fsBold], clBlack);
+  Writer.WriteText(R, C, R+3, C, 'Номер по порядку', cbtOuter);
+  Writer.WriteNumber(R+4, C, 1, cbtOuter);
+  C:= C+1;
+  Writer.WriteText(R, C, R+3, C, 'Фамилия, инициалы, должность (специальность, профессия)', cbtOuter);
+  Writer.WriteNumber(R+4, C, 2, cbtOuter);
+  C:= C+1;
+  Writer.WriteText(R, C, R+3, C, 'Табельный номер', cbtOuter);
+  Writer.WriteNumber(R+4, C, 3, cbtOuter);
+  C:= C+1;
+  Writer.WriteText(R, C, R, C+32, 'Отметки о явках и неявках на работу по числам месяца', cbtOuter);
+  for i:= 0 to 14 do  Writer.WriteNumber(R+1, C+i, R+3, C+i, i+1, cbtOuter);
+  Writer.WriteNumber(R+4, C, R+4, C+14, 4, cbtOuter);
+  Writer.WriteText(R+1, C+15, R+3, C+15,   'Итого' + SYMBOL_BREAK + 'отрабо-'+ SYMBOL_BREAK +
+                                       'тано за'+ SYMBOL_BREAK + 'I поло-'+ SYMBOL_BREAK +
+                                       'вину' + SYMBOL_BREAK + 'месяца', cbtOuter);
+  Writer.WriteNumber(R+4, C+15, 5, cbtOuter);
+  for i:= 16 to 31 do Writer.WriteNumber(R+1, C+i, R+3, C+i, i, cbtOuter);
+  Writer.WriteNumber(R+4, C+16, R+4, C+31, 6, cbtOuter);
+  Writer.WriteText(R+1, C+32, R+3, C+32, 'Итого' + SYMBOL_BREAK + 'отрабо-'+ SYMBOL_BREAK +
+                                       'тано за'+ SYMBOL_BREAK + 'II поло-'+ SYMBOL_BREAK +
+                                       'вину' + SYMBOL_BREAK + 'месяца', cbtOuter);
+  Writer.WriteNumber(R+4, C+32, 7, cbtOuter);
+  for i:= 1 to 6 do Writer.WriteNumber(R+4, C+32+i, i+7, cbtOuter);
+  Writer.WriteNumber(R+4, C+39, R+4, C+40, 14, cbtOuter);
+  for i:= 8 to 10 do Writer.WriteNumber(R+4, C+32+i+1, i+7, cbtOuter);
+  C:= C+33;
+  Writer.WriteText(R,C,R,C+5, 'Итого отработано', cbtOuter);
+  Writer.WriteText(R+1,C,R+3,C, 'дней', cbtOuter);
+  Writer.WriteText(R+1,C+1, R+1,C+5,  'часов', cbtOuter);
+  Writer.WriteText(R+2,C+1, R+3,C+1,  'всего', cbtOuter);
+  Writer.WriteText(R+2,C+2, R+2,C+5,  'из них', cbtOuter);
+  Writer.WriteText(R+3,C+2, 'сверх-' + SYMBOL_BREAK +
+                        'уроч-' + SYMBOL_BREAK + 'ных', cbtOuter);
+  Writer.WriteText(R+3,C+3, 'ночных', cbtOuter);
+  Writer.WriteText(R+3,C+4, 'выход-' + SYMBOL_BREAK + 'ных,' + SYMBOL_BREAK +
+                        'празд-'+ SYMBOL_BREAK + 'ничных', cbtOuter);
+  Writer.WriteText(R+3,C+5, '', cbtOuter);
+  C:= C+6;
+  Writer.WriteText(R,C,R+3,C+1, 'Коли-' + SYMBOL_BREAK + 'чество' + SYMBOL_BREAK +
+                            'неявок'+ SYMBOL_BREAK +'дней'+ SYMBOL_BREAK +'часов', cbtOuter);
+  C:= C+2;
+  Writer.WriteText(R,C,R,C+1, 'Из них по причинам', cbtOuter);
+  Writer.WriteText(R+1,C,R+3,C, 'код', cbtOuter);
+  Writer.WriteText(R+1,C+1,R+3,C+1, 'коли-'+ SYMBOL_BREAK +'чество' + SYMBOL_BREAK +
+                                'дней'+ SYMBOL_BREAK +'(часов)', cbtOuter);
+  C:= C+2;
+  Writer.WriteText(R,C,R+3,C, 'Коли-' + SYMBOL_BREAK + 'чество' + SYMBOL_BREAK +
+                          'выход-'+ SYMBOL_BREAK +'ных и'+ SYMBOL_BREAK +
+                          'празд-'+ SYMBOL_BREAK +'ничных'+ SYMBOL_BREAK +'дней', cbtOuter);
+  Writer.SetRowHeight(FirstRow, ROW1_HEIGHT);
+  Writer.SetRowHeight(FirstRow+1, ROW2_HEIGHT);
+  Writer.SetRowHeight(FirstRow+2, ROW3_HEIGHT);
+  Writer.SetRowHeight(FirstRow+3, ROW4_HEIGHT);
+  Writer.SetRowHeight(FirstRow+4, ROW5_HEIGHT);
+  if (not Writer.HasGrid) then
+  begin
+    if (FBorderStyle>1) then CaptionBordersDraw(FirstRow);
+    if ANeedRepeatTitle then Writer.SetRepeatedRows(FirstRow, FirstRow+4);
+  end;
+end;
+
+procedure TTimetableSheetT12.CaptionBordersDraw(const AFirstRow: Integer);
+var
+  R, C: Integer;
+begin
+  C:= 1;
+  R:= AFirstRow;
+  case FBorderStyle of
+  2: Writer.SetBorders(BOLD_LINE_STYLE, clBlack, BORDER_STYLE_DEFAULT, clBlack);
+  3: Writer.SetBorders(DOUBLE_LINE_STYLE, clBlack, BORDER_STYLE_DEFAULT, clBlack);
+  end;
+  Writer.DrawBorders(R, C,   R+3, C, cbtAll);
+  Writer.DrawBorders(R, C+1, R+3, C+1, cbtAll);
+  Writer.DrawBorders(R, C+2, R+3, C+2, cbtAll);
+  Writer.DrawBorders(R, C+3, R, C+35, cbtAll);
+  Writer.DrawBorders(R+1, C+3, R+3, C+17, cbtAll);
+  Writer.DrawBorders(R+1, C+18, R+3, C+18, cbtAll);
+  Writer.DrawBorders(R+1, C+19, R+3, C+34, cbtAll);
+  Writer.DrawBorders(R+1, C+35, R+3, C+35, cbtAll);
+  Writer.DrawBorders(R, C+36, R+3, C+41, cbtAll);
+  Writer.DrawBorders(R, C+42, R+3, C+45, cbtAll);
+  Writer.DrawBorders(R, C+46, R+3, C+46, cbtAll);
+  R:= R+4;
+  Writer.DrawBorders(R, C,   R, C, cbtAll);
+  Writer.DrawBorders(R, C+1, R, C+1, cbtAll);
+  Writer.DrawBorders(R, C+2, R, C+2, cbtAll);
+  Writer.DrawBorders(R, C+3, R, C+17, cbtAll);
+  Writer.DrawBorders(R, C+18, R, C+18, cbtAll);
+  Writer.DrawBorders(R, C+19, R, C+34, cbtAll);
+  Writer.DrawBorders(R, C+35, R, C+35, cbtAll);
+  Writer.DrawBorders(R, C+36, R, C+41, cbtAll);
+  Writer.DrawBorders(R, C+42, R, C+45, cbtAll);
+  Writer.DrawBorders(R, C+46, R, C+46, cbtAll);
+  Writer.SetBordersDefault;
+end;
+
+procedure TTimetableSheetT12.LineBordersDraw(const AFirstRow: Integer);
+var
+  R, C: Integer;
+begin
+  C:= 1;
+  R:= AFirstRow;
+  case FBorderStyle of
+  2: Writer.SetBorders(BOLD_LINE_STYLE, clBlack, BORDER_STYLE_DEFAULT, clBlack);
+  3: Writer.SetBorders(DOUBLE_LINE_STYLE, clBlack, BORDER_STYLE_DEFAULT, clBlack);
+  end;
+  Writer.DrawBorders(R, C,    R+1, C,    cbtAll);
+  Writer.DrawBorders(R, C+1,  R+1, C+1,  cbtAll);
+  Writer.DrawBorders(R, C+2,  R+1, C+2,  cbtAll);
+  Writer.DrawBorders(R, C+3,  R+1, C+17, cbtAll);
+  Writer.DrawBorders(R, C+18, R+1, C+18, cbtAll);
+  Writer.DrawBorders(R, C+19, R+1, C+34, cbtAll);
+  Writer.DrawBorders(R, C+35, R+1, C+35, cbtAll);
+  Writer.DrawBorders(R, C+36, R+1, C+41, cbtAll);
+  Writer.DrawBorders(R, C+42, R+1, C+45, cbtAll);
+  Writer.DrawBorders(R, C+46, R+1, C+46, cbtAll);
+  Writer.SetBordersDefault;
+end;
+
+function TTimetableSheetT12.IndexToRow(const AIndex: Integer): Integer;
+begin
+  Result:= 15*Ord(FNeedTopBottom) + 6 + AIndex*2;
+end;
+
+function TTimetableSheetT12.RowToIndex(const ARow: Integer): Integer;
+begin
+  Result:= (ARow - 15*Ord(FNeedTopBottom) - 6) div 2;
+end;
+
+function TTimetableSheetT12.ColToDate(const ACol: Integer): TDate;
+var
+  d: Integer;
+begin
+  Result:= 0;
+  if (ACol>=4) and (ACol<=18) then
+    d:= ACol - 3
+  else if (ACol>=20) and (ACol<=DaysInAMonth(FYear, FMonth)+4) then
+    d:= ACol - 4
+  else
+    Exit;
+  Result:= EncodeDate(FYear, FMonth, d);
+end;
+
+function TTimetableSheetT12.DateToCol(const ADate: TDate): Integer;
+var
+  d: Integer;
+begin
+  d:= DayOfDate(ADate);
+  Result:= d + 3;
+  if d>15 then
+    Result:= Result + 1;
+end;
+
+procedure TTimetableSheetT12.Draw(const ACalendar: TCalendar;
+                   const ATimetables: TTimetableVector;
+                   const AStaffNames, ATabNums, APostNames: TStrVector;
+                   const ANeedTopBottom, AHalfMonth, ANeedRepeatTitle, ANeedPageNumber: Boolean;
+                   const ABorderStyle: Byte = 1);
+var
+  i, R: Integer;
+begin
+  SelectionClear;
+
+  FTimetables:= ATimetables;
+  FCalendar:= ACalendar;
+  FYear:= YearOfDate(ACalendar.BeginDate);
+  FMonth:= MonthOfDate(ACalendar.BeginDate);
+  FNeedTopBottom:= ANeedTopBottom;
+  FHalfMonth:= AHalfMonth;
+  FStaffNames:= AStaffNames;
+  FTabNums:= ATabNums;
+  FPostNames:= APostNames;
+  FBorderStyle:= ABorderStyle;
+
+  Writer.BeginEdit;
+
+  TopDraw;
+  CaptionDraw(ANeedRepeatTitle);
+  for i:=0 to High(FTimetables) do
+    LineDraw(i);
+  R:= IndexToRow(Length(FTimetables));
+  if Writer.HasGrid then
+    for i:= 1 to Writer.ColCount do
+      Writer.WriteText(R, i, EmptyStr, cbtTop);
+  BottomDraw;
+
+  if not FNeedTopBottom then
+    Writer.SetFrozenRows(IndexToRow(0)-1);
+  if ANeedPageNumber then
+    Writer.WorkSheet.PageLayout.Footers[HEADER_FOOTER_INDEX_ALL] := '&R страница &P (из &N)';
+
+  Writer.EndEdit;
+end;
+
+procedure TTimetableSheetT12.LineDraw(const AIndex: Integer);
+var
+  R, C, i: Integer;
+begin
+  UnSelectDate;
+
+  if AIndex in [FSelectedRowIndex1, FSelectedRowIndex2] then
+    Writer.SetBackground(DefaultSelectionBGColor)
+  else
+    Writer.SetBackgroundDefault;
+  Writer.SetFont(Font.Name, Font.Size, [], clBlack);
+
+  C:= 1;
+  R:= IndexToRow(AIndex);
+  Writer.SetAlignment(haCenter, vaCenter);
+  Writer.WriteNumber(R, C, R+1, C, AIndex+1, cbtOuter);
+  C:= C+1;
+  Writer.SetAlignment(haLeft, vaCenter);
+  Writer.WriteText(R, C, R+1, C, FStaffNames[AIndex] + ',' + SYMBOL_BREAK +
+                              FPostNames[AIndex], cbtOuter);
+  C:= C+1;
+  Writer.SetAlignment(haCenter, vaCenter);
+  Writer.WriteText(R,C,R+1,C, FTabNums[AIndex], cbtOuter);
+  //1 половина
+  C:= C+1;
+  for i:= 0 to 14 do
+    DrawTimetableDay(Writer, R, C+i, i, FTimetables[AIndex]);
+  DrawDaysCount(Writer, R, C+15, FTimetables[AIndex].WorkDaysCountHalf1, FWriteDaysCountIfZero, False);
+  DrawTotalHours(Writer, R+1, C+15, FTimetables[AIndex].SumHoursTotalHalf1, FWriteTotalHoursIfZero);
+  //2половина
+  for i:= 15 to FCalendar.DaysCount-1 do
+    DrawTimetableDay(Writer, R, C+i+1, i, FTimetables[AIndex], FHalfMonth);
+  for i:= FCalendar.DaysCount to 30 do
+  begin
+    Writer.WriteText(R,C+i+1, STRMARK_NONEXISTENT, cbtOuter);   //Х в несуществующем дне
+    Writer.WriteText(R+1,C+i+1, STRMARK_NONEXISTENT, cbtOuter); //Х в несуществующем дне
+  end;
+  Writer.WriteText(R,C+38, R+1,C+38, EmptyStr, cbtOuter);
+  if not FHalfMonth then
+  begin
+    DrawDaysCount( Writer, R, C+32, FTimetables[AIndex].WorkDaysCountHalf2, FWriteDaysCountIfZero, False);
+    DrawTotalHours(Writer, R+1, C+32, FTimetables[AIndex].SumHoursTotalHalf2, FWriteTotalHoursIfZero);
+    DrawDaysCount( Writer, R, C+33, R+1,C+33, FTimetables[AIndex].WorkDaysCountMonth, FWriteDaysCountIfZero);
+    DrawTotalHours(Writer, R, C+34, R+1,C+34, FTimetables[AIndex].SumHoursTotalMonth, FWriteTotalHoursIfZero);
+    DrawTotalHours(Writer, R, C+35, R+1,C+35, FTimetables[AIndex].SumHoursOverMonth, False);
+    DrawTotalHours(Writer, R, C+36, R+1,C+36, FTimetables[AIndex].SumHoursNightMonth, False);
+    DrawTotalHours(Writer, R, C+37, R+1,C+37, FTimetables[AIndex].SumHoursHolidayMonth, False);
+    if (FTimetables[AIndex].SkipDaysCountMonth>0) or (FTimetables[AIndex].SumHoursSkipMonth>0) then
+    begin
+      Writer.WriteNumber(R,C+39,R,C+40, FTimetables[AIndex].SkipDaysCountMonth, cbtOuter);
+      WriteCellHours(Writer, R+1, C+39, R+1, C+40, FTimetables[AIndex].SumHoursSkipMonth);
+    end
+    else begin
+      Writer.WriteText(R,C+39,R,C+40, EmptyStr, cbtOuter);
+      Writer.WriteText(R+1,C+39, R+1,C+40, EmptyStr, cbtOuter);
+    end;
+    Writer.SetAlignment(haCenter, vaTop);
+    Writer.WriteText(R,C+41, R+1,C+41, FTimetables[AIndex].MarksSkipStrMonth, cbtOuter);
+    Writer.WriteText(R,C+42, R+1,C+42, FTimetables[AIndex].DaysHoursSkipStrMonth, cbtOuter);
+    Writer.SetAlignment(haCenter, vaCenter);
+    Writer.WriteNumber(R,C+43, R+1,C+43, FTimetables[AIndex].NotWorkDaysCountMonth, cbtOuter);
+  end
+  else begin
+    Writer.WriteText(R,C+32, EmptyStr, cbtOuter);
+    Writer.WriteText(R+1,C+32, EmptyStr, cbtOuter);
+    DrawDaysCount( Writer, R, C+33, R+1, C+33, FTimetables[AIndex].WorkDaysCountHalf1, FWriteDaysCountIfZero);
+    DrawTotalHours(Writer, R, C+34, R+1, C+34, FTimetables[AIndex].SumHoursTotalHalf1, FWriteTotalHoursIfZero);
+    DrawTotalHours(Writer, R, C+35, R+1, C+35, FTimetables[AIndex].SumHoursOverHalf1, False);
+    DrawTotalHours(Writer, R, C+36, R+1, C+36, FTimetables[AIndex].SumHoursNightHalf1, False);
+    DrawTotalHours(Writer, R, C+37, R+1, C+37, FTimetables[AIndex].SumHoursHolidayHalf1, False);
+    if (FTimetables[AIndex].SkipDaysCountHalf1>0) or (FTimetables[AIndex].SumHoursSkipHalf1>0) then
+    begin
+      Writer.WriteNumber(R,C+39,R,C+40, FTimetables[AIndex].SkipDaysCountHalf1, cbtOuter);
+      WriteCellHours(Writer, R+1, C+39, R+1, C+40, FTimetables[AIndex].SumHoursSkipHalf1);
+    end
+    else begin
+      Writer.WriteText(R,C+39,R,C+40, EmptyStr, cbtOuter);
+      Writer.WriteText(R+1,C+39, R+1,C+40, EmptyStr, cbtOuter);
+    end;
+    Writer.SetAlignment(haCenter, vaTop);
+    Writer.WriteText(R,C+41, R+1,C+41, FTimetables[AIndex].MarksSkipStrHalf1, cbtOuter);
+    Writer.WriteText(R,C+42, R+1,C+42, FTimetables[AIndex].DaysHoursSkipStrHalf1, cbtOuter);
+    Writer.SetAlignment(haCenter, vaCenter);
+    Writer.WriteNumber(R,C+43, R+1,C+43, FTimetables[AIndex].NotWorkDaysCountHalf1, cbtOuter);
+  end;
+  Writer.SetRowHeight(R, LINE_ROW_HEIGHT);
+  Writer.SetRowHeight(R+1, LINE_ROW_HEIGHT);
+  if (not Writer.HasGrid) and (FBorderStyle>1) then
+    LineBordersDraw(R);
 end;
 
 end.
