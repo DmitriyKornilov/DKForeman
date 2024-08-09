@@ -597,6 +597,7 @@ end;
 procedure TSchedulePersonalForm.YearSpinEditChange(Sender: TObject);
 var
   SelectedTabNumID: Integer;
+  BD, ED: TDate;
 begin
   CalendarForYear(YearSpinEdit.Value, Calendar);
   Holidays:= DataBase.HolidaysLoad(YearSpinEdit.Value);
@@ -605,6 +606,9 @@ begin
   if StaffList.IsSelected then
     SelectedTabNumID:= TabNumIDs[StaffList.SelectedIndex];
   StaffListLoad(SelectedTabNumID);
+
+  FirstLastDayInYear(YearSpinEdit.Value, BD, ED);
+  VacationEdit.SetColumnMinMaxDate(VACATION_EDIT_COLUMN_NAMES[1], BD, ED);
 end;
 
 procedure TSchedulePersonalForm.CopyBegin;
@@ -1138,9 +1142,9 @@ begin
   VacationEdit.AddColumnDate(VACATION_EDIT_COLUMN_NAMES[1],
                              'dd.mm.yyyy',
                              VACATION_EDIT_COLUMN_WIDTHS[1]);
-  VacationEdit.AddColumnInteger(VACATION_EDIT_COLUMN_NAMES[2], 0, Integer.MaxValue,
+  VacationEdit.AddColumnInteger(VACATION_EDIT_COLUMN_NAMES[2], 0, 366,
                              VACATION_EDIT_COLUMN_WIDTHS[2]);
-  VacationEdit.AddColumnInteger(VACATION_EDIT_COLUMN_NAMES[3], 0, Integer.MaxValue,
+  VacationEdit.AddColumnInteger(VACATION_EDIT_COLUMN_NAMES[3], 0, 366,
                              VACATION_EDIT_COLUMN_WIDTHS[3]);
   VacationEdit.AutosizeColumnRowTitlesEnable;
   VacationEdit.SetColumnRowTitles(VACATION_EDIT_ROW_NAMES, taLeftJustify);

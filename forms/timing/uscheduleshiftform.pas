@@ -959,10 +959,7 @@ begin
       ListPanel.Visible:= True;
     LeftSplitter.Align:= alLeft;
 
-    ExportButton.Enabled:= ModeType<>mtEditing;
-
     ScheduleListLoad;
-
   finally
     MainPanel.Visible:= True;
   end;

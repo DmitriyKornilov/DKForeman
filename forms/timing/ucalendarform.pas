@@ -499,8 +499,6 @@ begin
     EditingPanel.Visible:= False;
     SheetPanel.AnchorToNeighbour(akLeft, 2, Self);
   end;
-
-  ExportButton.Enabled:= ModeType<>mtEditing;
 end;
 
 end.

@@ -836,7 +836,7 @@ begin
   MainPanel.Visible:= False;
   try
     ModeType:= AModeType;
-    ExportButton.Enabled:= ModeType<>mtEditing;
+    ExportButton.Visible:= ModeType<>mtEditing;
 
     if ModeType=mtSetting then
     begin
