@@ -48,6 +48,7 @@ type
     procedure TypeDropDownChange;
   public
     Cycle: TScheduleCycle;
+    FirstDate: TDate;
   end;
 
 var
@@ -77,12 +78,12 @@ begin
   Structure.AddColumnRowTitles(SCHEDULE_CORRECTION_COLUMN_NAMES[0],
                                SCHEDULE_CORRECTION_COLUMN_WIDTHS[0]);
 
-  Structure.AddColumnInteger(SCHEDULE_CORRECTION_COLUMN_NAMES[1],
+  Structure.AddColumnInteger(SCHEDULE_CORRECTION_COLUMN_NAMES[1], 0, 366,
                              SCHEDULE_CORRECTION_COLUMN_WIDTHS[1]);
-  Structure.AddColumnDouble(SCHEDULE_CORRECTION_COLUMN_NAMES[2],
+  Structure.AddColumnDouble(SCHEDULE_CORRECTION_COLUMN_NAMES[2], 0, 24,
                             FRACTION_DIGITS_IN_WORKHOURS,
                              SCHEDULE_CORRECTION_COLUMN_WIDTHS[2]);
-  Structure.AddColumnDouble(SCHEDULE_CORRECTION_COLUMN_NAMES[3],
+  Structure.AddColumnDouble(SCHEDULE_CORRECTION_COLUMN_NAMES[3], 0, 24,
                             FRACTION_DIGITS_IN_WORKHOURS,
                              SCHEDULE_CORRECTION_COLUMN_WIDTHS[3]);
   Structure.AddColumnKeyPick(SCHEDULE_CORRECTION_COLUMN_NAMES[4], KeyMarks, PickMarks,
@@ -123,6 +124,7 @@ begin
   SetEditButtons([SaveButton, CancelButton]);
   Width:= Width + 5; //fix datetimepicker button size bug
 
+  FirstDatePicker.Date:= FirstDate;
   if not Cycle.IsWeek then
     CycleCountSpinEdit.Value:= Cycle.Count;
   TypeDropDown.ItemIndex:= Ord(not Cycle.IsWeek);
@@ -181,7 +183,7 @@ begin
     ScheduleCycleToWeek(Cycle);
   end
   else begin//цикловой
-    FirstDatePicker.Date:= Date;
+    FirstDatePicker.Date:= FirstDate;
     ScheduleCycleToCount(Cycle, CycleCountSpinEdit.Value, FirstDatePicker.Date);
   end;
   ScheduleCycleDraw(Structure, Cycle);

@@ -80,7 +80,7 @@ type
     procedure CorrectionTypeChange;
   public
     TabNumID: Integer;
-    FirstDate: TDate;
+    FirstDate, RecrutDate, DismissDate: TDate;
   end;
 
 var
@@ -146,7 +146,9 @@ begin
   Holidays:= DataBase.HolidaysLoad(FirstDate, LastDateTimePicker.Date);
 
   if ScheduleRadioButton.Checked then
-    IsOK:= TimetableDaysByScheduleAdd(TabNumID, FirstDate, LastDateTimePicker.Date, Holidays)
+    IsOK:= TimetableForPeriodUpdate(TabNumID, RecrutDate, DismissDate,
+                            FirstDate, LastDateTimePicker.Date, Holidays, False)
+    //IsOK:= TimetableDaysByScheduleAdd(TabNumID, FirstDate, LastDateTimePicker.Date, Holidays)
   else begin //ручная корректировка
     TimetableDay:= TimetableDayEmpty;
     TimetableDay.ScheduleID:= MANUAL_SCHEDULEID; //ID графика для ручной корректировки табеля
@@ -172,8 +174,8 @@ begin
     else //выходной
       TimetableDay.DigMark:= OffdayDigMarks[MainMarkDropDown.ItemIndex];
 
-    IsOK:= TimetableDaysByCorrectionAdd(TabNumID, FirstDate, LastDateTimePicker.Date,
-                                        Holidays, TimetableDay);
+    IsOK:= TimetableDaysByCorrectionAdd(TabNumID, RecrutDate, DismissDate,
+                  FirstDate, LastDateTimePicker.Date, Holidays, TimetableDay);
   end;
 
   if not IsOK then Exit;

@@ -317,12 +317,6 @@ type
     {Строковый код табеля по цифровому коду}
     function TimetableStrMarkLoad(const ADigMark: Integer): String;
 
-    //актуализация табеля при выводе годового персонального табеля ------------
-    {Запись дня табеля}
-    procedure TimetableDayAdd(const ATabNumID: Integer; const ADate: TDate;
-                              const ATimetableDay: TTimetableDay);
-    {Удаление дня из табеля}
-    procedure TimetableDayDelete(const ATabNumID: Integer; const ADate: TDate);
     {Обновление часов по графику}
     procedure TimetableScheduleHoursUpdate(const ATabNumID: Integer;
                           const ADate: TDate;
@@ -334,10 +328,15 @@ type
                              const AUpdateWritedOnly: Boolean): Boolean;
 
     //редактирование табеля----------------------------------------------------
+    {Удаление дня из табеля}
+    procedure TimetableDayDelete(const ATabNumID: Integer; const ADate: TDate);
     {Удаление дней из табеля: True - ОК, False - ошибка}
     function TimetableDaysDelete(const ATabNumID: Integer;
                                  const ABeginDate, AEndDate: TDate;
                                  const ANeedCommit: Boolean = True): Boolean;
+    {Запись дня табеля}
+    procedure TimetableDayAdd(const ATabNumID: Integer; const ADate: TDate;
+                              const ATimetableDay: TTimetableDay);
     {Замена дней табеля: True - ОК, False - ошибка}
     function TimetableDaysReplace(const ATabNumID: Integer;
                                   const ADates: TDateVector;
@@ -346,11 +345,6 @@ type
     {Запись корректировки в табель: True - ОК, False - ошибка}
     function TimetableDaysByCorrectionAdd(const ATabNumID: Integer;
                              ATimetableDay: TTimetableDay;
-                             const ACalendar: TCalendar;
-                             const ASchedule: TPersonalSchedule;
-                             const ANeedDeleteOld: Boolean = True): Boolean;
-    {Запись табеля по графику: True - ОК, False - ошибка}
-    function TimetableDaysByScheduleAdd(const ATabNumID: Integer;
                              const ACalendar: TCalendar;
                              const ASchedule: TPersonalSchedule;
                              const ANeedDeleteOld: Boolean = True): Boolean;
@@ -2519,37 +2513,6 @@ begin
       ATimetableDay.ScheduleHours:= ASchedule.HoursCorrect.Totals[i];  {WorkHoursCorrect - потому что в графиковом времени нужно учитывать раб часы без учета отпуска, но  с корректировками}
       //записываем данные за день
       TimetableDayAdd(ATabNumID, ACalendar.Dates[i], ATimetableDay);
-    end;
-    QCommit;
-    Result:= True;
-  except
-    QRollback;
-  end;
-end;
-
-function TDataBase.TimetableDaysByScheduleAdd(const ATabNumID: Integer;
-                             const ACalendar: TCalendar;
-                             const ASchedule: TPersonalSchedule;
-                             const ANeedDeleteOld: Boolean = True): Boolean;
-var
-  i: Integer;
-  TimetableDay: TTimetableDay;
-begin
-  Result:= False;
-  QSetQuery(FQuery);
-  try
-    if ANeedDeleteOld then
-      TimetableDaysDelete(ATabNumID, ACalendar.BeginDate, ACalendar.EndDate, False{no commit});
-
-    //пробегаем по датам периода
-    for i:= 0 to ACalendar.DaysCount-1 do
-    begin
-      //если график не существует, переходим к следующему дню
-      if ASchedule.IsExists[i] = EXISTS_NO then continue;
-      //получаем данные дня из графика
-      TimetableDay:= TimetableDayDataFromSchedule(ASchedule, ACalendar.DayStatuses[i], i);
-      //записываем данные за день
-      TimetableDayAdd(ATabNumID, ACalendar.Dates[i], TimetableDay);
     end;
     QCommit;
     Result:= True;

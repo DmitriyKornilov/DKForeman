@@ -479,20 +479,67 @@ begin
 end;
 
 procedure TSchedulePersonalForm.VacationSaveButtonClick(Sender: TObject);
+var
+  VDates: TDateVector;
+  VCounts, VAddCounts: TIntVector;
 begin
   VacationEdit.UnSelect;
-  VacationEditGetColumns(VacationDates, VacationCounts, VacationAddCounts);
+  VacationEditGetColumns(VDates, VCounts, VAddCounts);
 
-  if VacationDates[0]=0 then
+  if VDates[0]=0 then
   begin
     ShowInfo('Не указана дата начала планируемого отпуска (1 часть)!');
     Exit;
   end;
-  if VacationCounts[0]=0 then
+  if VCounts[0]=0 then
   begin
     ShowInfo('Не указано количество дней планируемого основного отпуска (1 часть)!');
     Exit;
   end;
+
+  if not ((VDates[1]=0) and (VCounts[1]=0)) then
+  begin
+    if VDates[1]=0 then
+    begin
+      ShowInfo('Не указана дата начала фактического отпуска (1 часть)!');
+      Exit;
+    end
+    else if VCounts[1]=0 then
+    begin
+      ShowInfo('Не указано количество дней фактического основного отпуска (1 часть)!');
+      Exit;
+    end;
+  end;
+
+  if not ((VDates[2]=0) and (VCounts[2]=0)) then
+  begin
+    if VDates[2]=0 then
+    begin
+      ShowInfo('Не указана дата начала планируемого отпуска (2 часть)!');
+      Exit;
+    end
+    else if VCounts[2]=0 then
+    begin
+      ShowInfo('Не указано количество дней планируемого основного отпуска (2 часть)!');
+      Exit;
+    end;
+  end;
+
+  if not ((VDates[3]=0) and (VCounts[3]=0)) then
+  begin
+    if VDates[3]=0 then
+    begin
+      ShowInfo('Не указана дата начала фактического отпуска (2 часть)!');
+      Exit;
+    end
+    else if VCounts[3]=0 then
+    begin
+      ShowInfo('Не указано количество дней фактического основного отпуска (2 часть)!');
+      Exit;
+    end;
+  end;
+
+  VacationEditGetColumns(VacationDates, VacationCounts, VacationAddCounts);
 
   if VacationDates[1]=0 then
     VacationDates[1]:= VacationDates[0];
@@ -1091,9 +1138,9 @@ begin
   VacationEdit.AddColumnDate(VACATION_EDIT_COLUMN_NAMES[1],
                              'dd.mm.yyyy',
                              VACATION_EDIT_COLUMN_WIDTHS[1]);
-  VacationEdit.AddColumnInteger(VACATION_EDIT_COLUMN_NAMES[2],
+  VacationEdit.AddColumnInteger(VACATION_EDIT_COLUMN_NAMES[2], 0, Integer.MaxValue,
                              VACATION_EDIT_COLUMN_WIDTHS[2]);
-  VacationEdit.AddColumnInteger(VACATION_EDIT_COLUMN_NAMES[3],
+  VacationEdit.AddColumnInteger(VACATION_EDIT_COLUMN_NAMES[3], 0, Integer.MaxValue,
                              VACATION_EDIT_COLUMN_WIDTHS[3]);
   VacationEdit.AutosizeColumnRowTitlesEnable;
   VacationEdit.SetColumnRowTitles(VACATION_EDIT_ROW_NAMES, taLeftJustify);

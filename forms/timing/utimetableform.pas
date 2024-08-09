@@ -485,6 +485,7 @@ end;
 procedure TTimetableForm.StaffListSelect;
 begin
   TimetableChange;
+  WriteButton.Enabled:= StaffList.IsSelected;
 end;
 
 procedure TTimetableForm.StaffListLoad(const SelectedID: Integer);
@@ -585,8 +586,7 @@ begin
     VSTDays.Visible:= True;
   end;
 
-  WriteButton.Enabled:= VIsNil(MonthDates);
-  EraseButton.Enabled:= not WriteButton.Enabled;
+  EraseButton.Enabled:= not VIsNil(MonthDates);
 end;
 
 procedure TTimetableForm.MonthTimetableChange;
@@ -664,9 +664,11 @@ procedure TTimetableForm.WriteButtonClick(Sender: TObject);
 var
   BD, ED: TDate;
 begin
+  if not StaffList.IsSelected then Exit;
   FirstLastDayInMonth(MonthDropDown.Month, YearSpinEdit.Value, BD, ED);
-  if not TimetableDaysByScheduleAdd(TabNumIDs[StaffList.SelectedIndex], BD, ED,
-                                    Holidays) then Exit;
+  if not TimetableForPeriodUpdate(TabNumIDs[StaffList.SelectedIndex],
+            RecrutDates[StaffList.SelectedIndex], DismissDates[StaffList.SelectedIndex],
+            BD, ED, Holidays, False) then Exit;
   MonthTimetableChange;
 end;
 
@@ -899,6 +901,8 @@ begin
   TimetableEditForm:= TTimetableEditForm.Create(nil);
   try
     TimetableEditForm.TabNumID:= TabNumIDs[StaffList.SelectedIndex];
+    TimetableEditForm.RecrutDate:= RecrutDates[StaffList.SelectedIndex];
+    TimetableEditForm.DismissDate:= DismissDates[StaffList.SelectedIndex];
     TimetableEditForm.FirstDate:= ADate;
     if TimetableEditForm.ShowModal=mrOK then
       TimetableUpdate;

@@ -901,7 +901,9 @@ begin
   TimetableEditForm:= TTimetableEditForm.Create(nil);
   try
     TimetableEditForm.TabNumID:= TabNumID;
-    TimetableEditForm.FirstDate:= Sheet.SelectedDate;;
+    TimetableEditForm.RecrutDate:= RecrutDates[Sheet.SelectedIndex];
+    TimetableEditForm.DismissDate:= DismissDates[Sheet.SelectedIndex];
+    TimetableEditForm.FirstDate:= Sheet.SelectedDate;
     if TimetableEditForm.ShowModal=mrOK then
       TimetableUpdate(TabNumID);
   finally

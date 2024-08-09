@@ -144,6 +144,12 @@ uses
                                    const ABeginDate, AEndDate: TDate;
                                    const AHolidayDates: TDateVector;
                                    const AUpdateWritedOnly: Boolean): Boolean;
+  {Запись корректировки в табель: True - ОК, False - ошибка}
+  function TimetableDaysByCorrectionAdd(const ATabNumID: Integer;
+                           const ARecrutDate, ADismissDate: TDate;
+                           const ABeginDate, AEndDate: TDate;
+                           const AHolidayDates: TDateVector;
+                           ATimetableDay: TTimetableDay): Boolean;
   {Сумма отработанных часов за период }
   function TimetableSumTotalHoursInPeriod(const ATabNumID: Integer;
                                    const ABeginDate, AEndDate: TDate): Integer;
@@ -158,18 +164,6 @@ uses
                                out AMainMarkStr, ASkipMarkStr: TStrVector): Boolean;
   {Расчет итогов годового табеля}
   function TimetableYearTotalsLoad(const ATabNumID, AYear: Integer): TTimetableTotals;
-
-
-  {Запись корректировки в табель: True - ОК, False - ошибка}
-  function TimetableDaysByCorrectionAdd(const ATabNumID: Integer;
-                           const ABeginDate, AEndDate: TDate;
-                           const AHolidayDates: TDateVector;
-                           ATimetableDay: TTimetableDay): Boolean;
-  {Запись табеля по графику: True - ОК, False - ошибка}
-  function TimetableDaysByScheduleAdd(const ATabNumID: Integer;
-                           const ABeginDate, AEndDate: TDate;
-                           const AHolidayDates: TDateVector): Boolean;
-
 
 implementation
 
@@ -475,62 +469,30 @@ begin
 end;
 
 function TimetableDaysByCorrectionAdd(const ATabNumID: Integer;
+                           const ARecrutDate, ADismissDate: TDate;
                            const ABeginDate, AEndDate: TDate;
                            const AHolidayDates: TDateVector;
                            ATimetableDay: TTimetableDay): Boolean;
 var
-  RecrutDate, DismissDate, BD, ED: TDate;
+  BD, ED: TDate;
   Calendar: TCalendar;
   Schedule: TPersonalSchedule;
 begin
   Result:= False;
   Schedule:= nil;
   Calendar:= nil;
-  //получаем даты приема увольнения
-  if not DataBase.StaffTabNumWorkPeriodLoad(ATabNumID, RecrutDate, DismissDate) then Exit;
-  //ограничене периода на время работы
-  if not IsPeriodIntersect(ABeginDate, AEndDate, RecrutDate, DismissDate, BD, ED) then Exit;
+  //ограничение периода на время работы
+  if not IsPeriodIntersect(ABeginDate, AEndDate, ARecrutDate, ADismissDate, BD, ED) then Exit;
   //расчет календаря
-  Calendar:= nil;
   CalendarForPeriod(BD, ED, Calendar);
   //расчет графика
   Schedule:= SchedulePersonalByCalendar(ATabNumID, EmptyStr,
-                         RecrutDate, DismissDate, Calendar, AHolidayDates);
+                         ARecrutDate, ADismissDate, Calendar, AHolidayDates);
 
   try
     if Schedule.IsCalculated then
       Result:= DataBase.TimetableDaysByCorrectionAdd(ATabNumID, ATimetableDay,
                                                      Calendar, Schedule);
-  finally
-    FreeAndNil(Schedule);
-    FreeAndNil(Calendar);
-  end;
-end;
-
-function TimetableDaysByScheduleAdd(const ATabNumID: Integer;
-                           const ABeginDate, AEndDate: TDate;
-                           const AHolidayDates: TDateVector): Boolean;
-var
-  RecrutDate, DismissDate, BD, ED: TDate;
-  Calendar: TCalendar;
-  Schedule: TPersonalSchedule;
-begin
-  Result:= False;
-  Schedule:= nil;
-  Calendar:= nil;
-  //получаем даты приема увольнения
-  if not DataBase.StaffTabNumWorkPeriodLoad(ATabNumID, RecrutDate, DismissDate) then Exit;
-  //ограничене периода на время работы
-  if not IsPeriodIntersect(ABeginDate, AEndDate, RecrutDate, DismissDate, BD, ED) then Exit;
-  //расчет календаря
-  CalendarForPeriod(BD, ED, Calendar);
-  //расчет графика
-  Schedule:= SchedulePersonalByCalendar(ATabNumID, EmptyStr,
-                         RecrutDate, DismissDate, Calendar, AHolidayDates);
-
-  try
-    if Schedule.IsCalculated then
-      Result:= DataBase.TimetableDaysByScheduleAdd(ATabNumID, Calendar, Schedule);
   finally
     FreeAndNil(Schedule);
     FreeAndNil(Calendar);

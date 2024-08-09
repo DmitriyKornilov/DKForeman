@@ -860,10 +860,12 @@ begin
     if AEditingType=etEdit then
     begin
       ScheduleShiftEditForm.Cycle:= Cycle;
+      ScheduleShiftEditForm.FirstDate:= VFirst(Cycle.Dates);
       ScheduleShiftEditForm.NameEdit.Text:= ScheduleNames[ScheduleList.SelectedIndex];
       ScheduleShiftEditForm.WeekHoursSpinEdit.Value:= WeekHours[ScheduleList.SelectedIndex];
-
-    end;
+    end
+    else
+      ScheduleShiftEditForm.FirstDate:= Date;
     if ScheduleShiftEditForm.ShowModal=mrOK then
     begin
       Cycle:= ScheduleShiftEditForm.Cycle;
