@@ -132,7 +132,32 @@ type
 
   { TTimetableSheetT12 }
   //Табель за месяц (форма T-12)
-  TTimetableSheetT12 = class (TMonthCustomSheet)
+  TTimetableSheetT12 = class (TMonthFormSheet)
+  private const
+    FWriteTotalHoursIfZero = False;
+    FWriteDaysCountIfZero = True;
+    COL1_WIDTH = 55;
+    COL2_WIDTH = 140;
+    COL3_WIDTH = 70;
+    COL_DAYS_WIDTH = 32;
+    COL_HALF_WIDTH = 50;
+    RESUME1_COLUMN_WITH = 40;
+    RESUME2_COLUMN_WITH = 50;
+    RESUME3_COLUMN_WITH = 50;
+    RESUME4_COLUMN_WITH = 50;
+    RESUME5_COLUMN_WITH = 50;
+    RESUME6_COLUMN_WITH = 30;
+    RESUME7_1_COLUMN_WITH = 20;
+    RESUME7_2_COLUMN_WITH = 30;
+    RESUME8_COLUMN_WITH = 40;
+    RESUME9_COLUMN_WITH = 50;
+    RESUME10_COLUMN_WITH = 50;
+    ROW1_HEIGHT = 35;
+    ROW2_HEIGHT = 20;
+    ROW3_HEIGHT = 20;
+    ROW4_HEIGHT = 65;
+    ROW5_HEIGHT = 20;
+    LINE_ROW_HEIGHT = 30;
   protected
     function SetWidths: TIntVector; override;
     procedure SelectDate(const ADate: TDate); override;
@@ -140,62 +165,53 @@ type
     function DateAndIndexFromCell(const ARow, ACol: Integer;
                                   out ADate: TDate;
                                   out AIndex: Integer): Boolean; override;
-  private
-    const
-      FWriteTotalHoursIfZero = False;
-      FWriteDaysCountIfZero = True;
-      COL1_WIDTH = 55;
-      COL2_WIDTH = 140;
-      COL3_WIDTH = 70;
-      COL_DAYS_WIDTH = 32;
-      COL_HALF_WIDTH = 50;
-      RESUME1_COLUMN_WITH = 40;
-      RESUME2_COLUMN_WITH = 50;
-      RESUME3_COLUMN_WITH = 50;
-      RESUME4_COLUMN_WITH = 50;
-      RESUME5_COLUMN_WITH = 50;
-      RESUME6_COLUMN_WITH = 30;
-      RESUME7_1_COLUMN_WITH = 20;
-      RESUME7_2_COLUMN_WITH = 30;
-      RESUME8_COLUMN_WITH = 40;
-      RESUME9_COLUMN_WITH = 50;
-      RESUME10_COLUMN_WITH = 50;
-      ROW1_HEIGHT = 35;
-      ROW2_HEIGHT = 20;
-      ROW3_HEIGHT = 20;
-      ROW4_HEIGHT = 65;
-      ROW5_HEIGHT = 20;
-      LINE_ROW_HEIGHT = 30;
-    var
-      FTimetables: TTimetableVector;
-      FCalendar: TCalendar;
-      FYear, FMonth: Word;
-      FHalfMonth: Boolean;
-      FNeedTopBottom: Boolean;
-      FBorderStyle: Byte;
+    procedure TopDraw; override;
+    procedure BottomDraw; override;
+    procedure CaptionDraw(const ANeedRepeatTitle: Boolean); override;
+    procedure CaptionBordersDraw(const AFirstRow: Integer); override;
+    procedure LineBordersDraw(const AFirstRow: Integer); override;
 
-    procedure TopDraw;
-    procedure BottomDraw;
-    procedure CaptionDraw(const ANeedRepeatTitle: Boolean);
-    procedure CaptionBordersDraw(const AFirstRow: Integer);
-    procedure LineBordersDraw(const AFirstRow: Integer);
-
-    function IndexToRow(const AIndex: Integer): Integer;
+    function IndexToRow(const AIndex: Integer): Integer; override;
     function RowToIndex(const ARow: Integer): Integer;
     function ColToDate(const ACol: Integer): TDate;
     function DateToCol(const ADate: TDate): Integer;
   public
-    procedure Draw(const ACalendar: TCalendar;
-                   const ATimetables: TTimetableVector;
-                   const AStaffNames, ATabNums, APostNames: TStrVector;
-                   const ANeedTopBottom, AHalfMonth, ANeedRepeatTitle, ANeedPageNumber: Boolean;
-                   const ABorderStyle: Byte = 1);
     procedure LineDraw(const AIndex: Integer); override;
   end;
 
   { TTimetableSheetT13 }
   //Табель за месяц (форма T-13)
-  TTimetableSheetT13 = class (TMonthCustomSheet)
+  TTimetableSheetT13 = class (TMonthFormSheet)
+  private const
+    FWriteTotalHoursIfZero = True;
+    FWriteDaysCountIfZero = True;
+    COL1_WIDTH = 55;       // № по порядку
+    COL2_WIDTH = 140;      // Фамилия И.О., должность
+    COL3_WIDTH = 80;       // Табельный номер
+    COL_DAYS_WIDTH = 43;   // День месяца
+    COL5_WIDTH = 65;       // Отработано за половину месяца
+    COL6_WIDTH = 65;       // за месяц
+    COL7_WIDTH = 65;       // код вида оплаты
+    COL8_1_WIDTH = 35;     // корр счет часть 1
+    COL8_2_WIDTH = 15;     // корр счет часть 2
+    COL8_3_WIDTH = 40;     // корр счет часть 3
+    COL9_WIDTH = 50;       // дни (часы)
+    COL10_1_WIDTH = 15;    // код вида оплаты часть 1
+    COL10_2_WIDTH = 50;    // код вида оплаты часть 2
+    COL11_WIDTH = 90;      // корр счет
+    COL12_WIDTH = 50;      // дни (часы)
+    COL13_1_WIDTH = 35;    // код часть 1
+    COL13_2_WIDTH = 15;    // код часть 2
+    LAST_COLS_WIDTH = 50;  // часы(дни)/код/ часы(дни)
+    ROW1_HEIGHT = 40;
+    ROW2_HEIGHT = 20;
+    ROW3_HEIGHT = 20;
+    ROW4_HEIGHT = 20;
+    ROW5_HEIGHT = 20;
+    ROW6_HEIGHT = 40;
+    ROW7_HEIGHT = 40;
+    ROW8_HEIGHT = 20;
+    LINE_ROW_HEIGHT = 20;
   protected
     function SetWidths: TIntVector; override;
     procedure SelectDate(const ADate: TDate); override;
@@ -203,60 +219,18 @@ type
     function DateAndIndexFromCell(const ARow, ACol: Integer;
                                   out ADate: TDate;
                                   out AIndex: Integer): Boolean; override;
-  private
-    const
-      FWriteTotalHoursIfZero = True;
-      FWriteDaysCountIfZero = True;
-      COL1_WIDTH = 55;       // № по порядку
-      COL2_WIDTH = 140;      // Фамилия И.О., должность
-      COL3_WIDTH = 80;       // Табельный номер
-      COL_DAYS_WIDTH = 43;   // День месяца
-      COL5_WIDTH = 65;       // Отработано за половину месяца
-      COL6_WIDTH = 65;       // за месяц
-      COL7_WIDTH = 65;       // код вида оплаты
-      COL8_1_WIDTH = 35;     // корр счет часть 1
-      COL8_2_WIDTH = 15;     // корр счет часть 2
-      COL8_3_WIDTH = 40;     // корр счет часть 3
-      COL9_WIDTH = 50;       // дни (часы)
-      COL10_1_WIDTH = 15;    // код вида оплаты часть 1
-      COL10_2_WIDTH = 50;    // код вида оплаты часть 2
-      COL11_WIDTH = 90;      // корр счет
-      COL12_WIDTH = 50;      // дни (часы)
-      COL13_1_WIDTH = 35;    // код часть 1
-      COL13_2_WIDTH = 15;    // код часть 2
-      LAST_COLS_WIDTH = 50;  // часы(дни)/код/ часы(дни)
-      ROW1_HEIGHT = 40;
-      ROW2_HEIGHT = 20;
-      ROW3_HEIGHT = 20;
-      ROW4_HEIGHT = 20;
-      ROW5_HEIGHT = 20;
-      ROW6_HEIGHT = 40;
-      ROW7_HEIGHT = 40;
-      ROW8_HEIGHT = 20;
-      LINE_ROW_HEIGHT = 20;
-    var
-      FTimetables: TTimetableVector;
-      FCalendar: TCalendar;
-      FYear, FMonth: Word;
-      FHalfMonth: Boolean;
-      FNeedTopBottom: Boolean;
-      FBorderStyle: Byte;
-    procedure TopDraw;
-    procedure BottomDraw;
-    procedure CaptionDraw(const ANeedRepeatTitle: Boolean);
-    procedure CaptionBordersDraw(const AFirstRow: Integer);
-    procedure LineBordersDraw(const AFirstRow: Integer);
 
-    function IndexToRow(const AIndex: Integer): Integer;
+    procedure TopDraw; override;
+    procedure BottomDraw; override;
+    procedure CaptionDraw(const ANeedRepeatTitle: Boolean); override;
+    procedure CaptionBordersDraw(const AFirstRow: Integer); override;
+    procedure LineBordersDraw(const AFirstRow: Integer); override;
+
+    function IndexToRow(const AIndex: Integer): Integer; override;
     function RowToIndex(const ARow: Integer): Integer;
     procedure DateToCell(const ADate: TDate; const AIndex: Integer; out ARow, ACol: Integer);
     function CellToDate(const ARow, ACol: Integer): TDate;
   public
-    procedure Draw(const ACalendar: TCalendar;
-                   const ATimetables: TTimetableVector;
-                   const AStaffNames, ATabNums, APostNames: TStrVector;
-                   const ANeedTopBottom, AHalfMonth, ANeedRepeatTitle, ANeedPageNumber: Boolean;
-                   const ABorderStyle: Byte = 1);
     procedure LineDraw(const AIndex: Integer); override;
   end;
 
@@ -1184,7 +1158,7 @@ begin
   Writer.WriteText(R, Writer.ColCount-5, R, Writer.ColCount, 'Унифицированная форма № Т-12');
   Writer.WriteText(R+1, Writer.ColCount-5, R+1, Writer.ColCount, 'Утверждена Постановлением Госкомстата');
   Writer.WriteText(R+2, Writer.ColCount-5, R+2, Writer.ColCount, 'России от 5 января 2004 г. № 1');
-  for i:= 0 to 3 do Writer.SetRowHeight(R+i, SMALLROWHEIGHT);
+  for i:= 0 to 2 do Writer.SetRowHeight(R+i, SMALLROWHEIGHT);
   R:= R + 4;
   Writer.SetFont(Font.Name, Font.Size+1, [{fsBold}], clBlack);
   Writer.SetAlignment(haCenter, vaCenter);
@@ -1488,47 +1462,6 @@ begin
     Result:= Result + 1;
 end;
 
-procedure TTimetableSheetT12.Draw(const ACalendar: TCalendar;
-                   const ATimetables: TTimetableVector;
-                   const AStaffNames, ATabNums, APostNames: TStrVector;
-                   const ANeedTopBottom, AHalfMonth, ANeedRepeatTitle, ANeedPageNumber: Boolean;
-                   const ABorderStyle: Byte = 1);
-var
-  i, R: Integer;
-begin
-  SelectionClear;
-
-  FTimetables:= ATimetables;
-  FCalendar:= ACalendar;
-  FYear:= YearOfDate(ACalendar.BeginDate);
-  FMonth:= MonthOfDate(ACalendar.BeginDate);
-  FNeedTopBottom:= ANeedTopBottom;
-  FHalfMonth:= AHalfMonth;
-  FStaffNames:= AStaffNames;
-  FTabNums:= ATabNums;
-  FPostNames:= APostNames;
-  FBorderStyle:= ABorderStyle;
-
-  Writer.BeginEdit;
-
-  TopDraw;
-  CaptionDraw(ANeedRepeatTitle);
-  for i:=0 to High(FTimetables) do
-    LineDraw(i);
-  R:= IndexToRow(Length(FTimetables));
-  if Writer.HasGrid then
-    for i:= 1 to Writer.ColCount do
-      Writer.WriteText(R, i, EmptyStr, cbtTop);
-  BottomDraw;
-
-  if not FNeedTopBottom then
-    Writer.SetFrozenRows(IndexToRow(0)-1);
-  if ANeedPageNumber then
-    Writer.WorkSheet.PageLayout.Footers[HEADER_FOOTER_INDEX_ALL] := '&R страница &P (из &N)';
-
-  Writer.EndEdit;
-end;
-
 procedure TTimetableSheetT12.LineDraw(const AIndex: Integer);
 var
   R, C, i: Integer;
@@ -1720,14 +1653,14 @@ begin
   Writer.WriteText(R, Writer.ColCount-4, R, Writer.ColCount, 'Унифицированная форма № Т-13');
   Writer.WriteText(R+1, Writer.ColCount-4, R+1, Writer.ColCount, 'Утверждена Постановлением Госкомстата');
   Writer.WriteText(R+2, Writer.ColCount-4, R+2, Writer.ColCount, 'России от 5 января 2004 г. № 1');
-  for i:= 0 to 3 do Writer.SetRowHeight(R+i, SMALLROWHEIGHT);
+  for i:= 0 to 2 do Writer.SetRowHeight(R+i, SMALLROWHEIGHT);
   R:= R + 4;
   Writer.SetFont(Font.Name, Font.Size+1, [{fsBold}], clBlack);
   Writer.SetAlignment(haCenter, vaCenter);
   Writer.WriteText(R, Writer.ColCount-1, R, Writer.ColCount, 'Код', cbtOuter);
   R:= R + 1;
   Writer.SetAlignment(haRight, vaCenter);
-  Writer.WriteText(R, Writer.ColCount-4, R, Writer.ColCount-2, 'Форма по ОКУД');
+  Writer.WriteText(R, Writer.ColCount-5, R, Writer.ColCount-2, 'Форма по ОКУД');
   Writer.SetAlignment(haCenter, vaCenter);
   if not Writer.HasGrid then Writer.SetBorders(BOLD_LINE_STYLE, clBlack);
   Writer.WriteText(R, Writer.ColCount-1, R, Writer.ColCount, '0301008', cbtOuter);
@@ -2037,47 +1970,6 @@ begin
 
   if d>0 then
     Result:= EncodeDate(FYear, FMonth, d);
-end;
-
-procedure TTimetableSheetT13.Draw(const ACalendar: TCalendar;
-                   const ATimetables: TTimetableVector;
-                   const AStaffNames, ATabNums, APostNames: TStrVector;
-                   const ANeedTopBottom, AHalfMonth, ANeedRepeatTitle, ANeedPageNumber: Boolean;
-                   const ABorderStyle: Byte = 1);
-var
-  i, R: Integer;
-begin
-  SelectionClear;
-
-  FTimetables:= ATimetables;
-  FCalendar:= ACalendar;
-  FYear:= YearOfDate(ACalendar.BeginDate);
-  FMonth:= MonthOfDate(ACalendar.BeginDate);
-  FNeedTopBottom:= ANeedTopBottom;
-  FHalfMonth:= AHalfMonth;
-  FStaffNames:= AStaffNames;
-  FTabNums:= ATabNums;
-  FPostNames:= APostNames;
-  FBorderStyle:= ABorderStyle;
-
-  Writer.BeginEdit;
-
-  TopDraw;
-  CaptionDraw(ANeedRepeatTitle);
-  for i:=0 to High(FTimetables) do
-    LineDraw(i);
-  R:= IndexToRow(Length(FTimetables));
-  if Writer.HasGrid then
-    for i:= 1 to Writer.ColCount do
-      Writer.WriteText(R, i, EmptyStr, cbtTop);
-  BottomDraw;
-
-  if not FNeedTopBottom then
-    Writer.SetFrozenRows(IndexToRow(0)-1);
-  if ANeedPageNumber then
-    Writer.WorkSheet.PageLayout.Footers[HEADER_FOOTER_INDEX_ALL] := '&R страница &P (из &N)';
-
-  Writer.EndEdit;
 end;
 
 procedure TTimetableSheetT13.LineDraw(const AIndex: Integer);

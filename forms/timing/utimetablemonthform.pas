@@ -141,6 +141,7 @@ type
     procedure TimetableDraw(const AZoomPercent: Integer);
     procedure TimetableRedraw;
     procedure TimetableSelect;
+    procedure TimetableExport;
 
     procedure TimetableEditFormOpen;
 
@@ -420,7 +421,7 @@ end;
 
 procedure TTimetableMonthForm.ExportButtonClick(Sender: TObject);
 begin
-  //ScheduleExport;
+  TimetableExport;
 end;
 
 procedure TTimetableMonthForm.ListButtonClick(Sender: TObject);
@@ -733,7 +734,6 @@ var
   var
     i, Days, Hours: Integer;
     BD, ED: TDate;
-    //S: String;
   begin
     Progress.WriteLine1('Расчет нормы часов');
     Progress.WriteLine2(EmptyStr);
@@ -741,8 +741,6 @@ var
     AccountingPeriodWithMonth(M, Y, ParamList.Selected['PeriodType'], BD, ED);
     for i:=0 to High(TabNumIDs) do
     begin
-      //S:= StaffNames[i] + ' [таб.№ ' + TabNums[i] + '] - ' + PostNames[i];
-      //Progress.WriteLine2(S);
       NormHoursAndWorkDaysCounInPeriod(TabNumIDs[i], BD, ED, YearCalendar, Days, Hours);
       NormHours[i]:= Hours;
     end;
@@ -753,22 +751,20 @@ var
     IsBeforePeriodExists: Boolean;
     i: Integer;
     BD, ED: TDate;
-    //S: String;
   begin
+    Progress.WriteLine1('Расчет отработанных часов');
+    Progress.WriteLine2(EmptyStr);
+
     BeforeTotalHours:= nil;
     BeforeNightHours:= nil;
     IsBeforePeriodExists:= (ParamList.Selected['PeriodType']<2 {учетный период<>месяц}) and
                  AccountingPeriodBeforeMonth(M, Y, ParamList.Selected['PeriodType'], BD, ED);
     if not IsBeforePeriodExists then Exit;
 
-    Progress.WriteLine1('Расчет отработанных часов');
-    Progress.WriteLine2(EmptyStr);
     VDim(BeforeTotalHours, Length(TabNumIDs));
     VDim(BeforeNightHours, Length(TabNumIDs));
     for i:=0 to High(TabNumIDs) do
     begin
-      //S:= StaffNames[i] + ' [таб.№ ' + TabNums[i] + '] - ' + PostNames[i];
-      //Progress.WriteLine2(S);
       BeforeTotalHours[i]:= DataBase.TimetableSumTotalHoursInPeriodLoad(TabNumIDs[i], BD, ED);
       BeforeNightHours[i]:= DataBase.TimetableSumNightHoursInPeriodLoad(TabNumIDs[i], BD, ED);
     end;
@@ -866,8 +862,7 @@ begin
                  StaffNames, TabNums, PostNames,
                  ParamList.Selected['ViewType']=0,
                  ParamList.Selected['MonthType']=0,
-                 False{not repeat title in grid},
-                 False{not need page numbers in grid},
+                 ParamList.Checkeds['ExportParams'],
                  1{simple border line in grid});
         end;
       2: //форма T-13
@@ -877,8 +872,7 @@ begin
                  StaffNames, TabNums, PostNames,
                  ParamList.Selected['ViewType']=0,
                  ParamList.Selected['MonthType']=0,
-                 False{not repeat title in grid},
-                 False{not need page numbers in grid},
+                 ParamList.Checkeds['ExportParams'],
                  1{simple border line in grid});
         end;
     end;
@@ -896,6 +890,78 @@ end;
 procedure TTimetableMonthForm.TimetableSelect;
 begin
   EditButtonsEnabled;
+end;
+
+procedure TTimetableMonthForm.TimetableExport;
+var
+  Exporter: TSheetsExporter;
+  Worksheet: TsWorksheet;
+
+  procedure SheetExport;
+  var
+    ExpSheet: TMonthTimetableSheet;
+  begin
+    ExpSheet:= TMonthTimetableSheet.Create(Worksheet, nil, MainForm.GridFont,
+                                              ParamList.Selected['CountType'],
+                                              ParamList.Selected['PeriodType'],
+                                              ParamList.Checkeds['ExtraColumns']);
+    try
+      ExpSheet.Draw(MonthCalendar, StaffNames, TabNums, PostNames, NormHours,
+                   ParamList.Checkeds['ViewParams'],
+                   ParamList.Checkeds['ExportParams'],
+                   Timetables, BeforeTotalHours, BeforeNightHours,
+                   ParamList.Selected['MonthType']=0)
+    finally
+      FreeAndNil(ExpSheet)
+    end;
+  end;
+
+  procedure SheetT12Export;
+  var
+    ExpSheetT12: TTimetableSheetT12;
+  begin
+    ExpSheetT12:= TTimetableSheetT12.Create(Worksheet, nil, MainForm.GridFont);
+    try
+      ExpSheetT12.Draw(MonthCalendar, Timetables, StaffNames, TabNums, PostNames,
+                   ParamList.Selected['ViewType']=0,
+                   ParamList.Selected['MonthType']=0,
+                   ParamList.Checkeds['ExportParams'],
+                   ParamList.Selected['LineType']+1);
+    finally
+      FreeAndNil(ExpSheetT12)
+    end;
+  end;
+
+  procedure SheetT13Export;
+  var
+    ExpSheetT13: TTimetableSheetT13;
+  begin
+    ExpSheetT13:= TTimetableSheetT13.Create(Worksheet, nil, MainForm.GridFont);
+    try
+      ExpSheetT13.Draw(MonthCalendar, Timetables, StaffNames, TabNums, PostNames,
+                   ParamList.Selected['ViewType']=0,
+                   ParamList.Selected['MonthType']=0,
+                   ParamList.Checkeds['ExportParams'],
+                   ParamList.Selected['LineType']+1);
+    finally
+      FreeAndNil(ExpSheetT13)
+    end;
+  end;
+
+begin
+  Exporter:= TSheetsExporter.Create;
+  try
+    Worksheet:= Exporter.AddWorksheet(SUpper(MonthDropDown.Text) + ' ' + YearSpinEdit.Text);
+    case ParamList.Selected['TimetableType'] of
+      0: SheetExport;
+      1: SheetT12Export;
+      2: SheetT13Export;
+    end;
+    Exporter.PageSettings(spoLandscape);
+    Exporter.Save('Выполнено!');
+  finally
+    FreeAndNil(Exporter);
+  end;
 end;
 
 procedure TTimetableMonthForm.TimetableEditFormOpen;

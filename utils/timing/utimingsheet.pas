@@ -97,7 +97,7 @@ type
   end;
 
   { TMonthSheet }
-
+  //для месячных графиков и табелей в форме графика
   TMonthSheet = class(TMonthCustomSheet)
   protected
     const
@@ -157,6 +157,38 @@ type
                    const AViewParams: TBoolVector;
                    const AExportParams: TBoolVector
                    );
+  end;
+
+  //для табелей форм Т-12 и Т-13
+
+  { TMonthFormSheet }
+
+  TMonthFormSheet = class(TMonthCustomSheet)
+  protected
+    FTimetables: TTimetableVector;
+    FCalendar: TCalendar;
+    FYear, FMonth: Word;
+    FHalfMonth: Boolean;
+    FNeedTopBottom: Boolean;
+    FBorderStyle: Byte;
+
+    procedure TopDraw; virtual; abstract;
+    procedure BottomDraw; virtual; abstract;
+    procedure CaptionDraw(const ANeedRepeatTitle: Boolean); virtual; abstract;
+    procedure CaptionBordersDraw(const AFirstRow: Integer); virtual; abstract;
+    procedure LineBordersDraw(const AFirstRow: Integer); virtual; abstract;
+
+    function IndexToRow(const AIndex: Integer): Integer; virtual; abstract;
+  public
+    procedure Draw(const ACalendar: TCalendar;
+                   const ATimetables: TTimetableVector;
+                   const AStaffNames, ATabNums, APostNames: TStrVector;
+                   const ANeedTopBottom, AHalfMonth: Boolean;
+                   const AExportParams: TBoolVector;
+                    //AExportParams:
+                    //0 - заголовок таблицы на каждой странице
+                    //1 - номера страниц в нижнем колонтитуле
+                   const ABorderStyle: Byte = 1);
   end;
 
   procedure AddScheduleColorIndex(const AWriter: TSheetWriter;
@@ -956,6 +988,54 @@ begin
     Writer.WriteText(R, C, R+1, C, S, cbtOuter);
   end;
   Writer.SetRowHeight(R, 3*SHeight(Font));
+end;
+
+{ TMonthFormSheet }
+
+procedure TMonthFormSheet.Draw(const ACalendar: TCalendar;
+                   const ATimetables: TTimetableVector;
+                   const AStaffNames, ATabNums, APostNames: TStrVector;
+                   const ANeedTopBottom, AHalfMonth: Boolean;
+                   const AExportParams: TBoolVector;
+                    //AExportParams:
+                    //0 - заголовок таблицы на каждой странице
+                    //1 - номера страниц в нижнем колонтитуле
+                   const ABorderStyle: Byte = 1);
+var
+  i, R: Integer;
+begin
+  SelectionClear;
+
+  FTimetables:= ATimetables;
+  FCalendar:= ACalendar;
+  FYear:= YearOfDate(ACalendar.BeginDate);
+  FMonth:= MonthOfDate(ACalendar.BeginDate);
+  FNeedTopBottom:= ANeedTopBottom;
+  FHalfMonth:= AHalfMonth;
+  FStaffNames:= AStaffNames;
+  FTabNums:= ATabNums;
+  FPostNames:= APostNames;
+  FBorderStyle:= ABorderStyle;
+
+  Writer.BeginEdit;
+
+  TopDraw;
+  CaptionDraw(AExportParams[0]); //ExportParams: 0 - заголовок таблицы на каждой странице
+  for i:=0 to High(FTimetables) do
+    LineDraw(i);
+  R:= IndexToRow(Length(FTimetables));
+  if Writer.HasGrid then
+    for i:= 1 to Writer.ColCount do
+      Writer.WriteText(R, i, EmptyStr, cbtTop);
+  BottomDraw;
+
+  if not FNeedTopBottom then
+    Writer.SetFrozenRows(IndexToRow(0)-1);
+  if AExportParams[1] then  //ExportParams: 1 - номера страниц в нижнем колонтитуле
+    Writer.WorkSheet.PageLayout.Footers[HEADER_FOOTER_INDEX_ALL] := '&R страница &P (из &N)';
+
+  Writer.EndEdit;
+
 end;
 
 end.
