@@ -1033,13 +1033,22 @@ begin
 end;
 
 procedure TTimetableMonthForm.SettingsSave;
+var
+  SettingValues: TIntVector;
 begin
-
+  SettingValues:= nil;
+  VAppend(SettingValues, ZoomPercent);
+  SettingValues:= VAdd(SettingValues, ParamList.Params);
+  DataBase.SettingsUpdate(SETTING_NAMES_TIMETABLEMONTHFORM, SettingValues);
 end;
 
 procedure TTimetableMonthForm.SettingsLoad;
+var
+  SettingValues: TIntVector;
 begin
-  ZoomPercent:= 100;
+  SettingValues:= DataBase.SettingsLoad(SETTING_NAMES_TIMETABLEMONTHFORM);
+  ZoomPercent:= SettingValues[0];
+  ParamList.Params:= VCut(SettingValues, 1);
 end;
 
 procedure TTimetableMonthForm.ViewUpdate;
