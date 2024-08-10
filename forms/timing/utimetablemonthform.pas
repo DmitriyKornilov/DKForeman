@@ -119,7 +119,7 @@ type
 
     Sheet: TMonthTimetableSheet;
     SheetT12: TTimetableSheetT12;
-    //SheetT13: TTimetableSheetT13;
+    SheetT13: TTimetableSheetT13;
 
     procedure ParamListCreate;
     procedure ParamListVisibles;
@@ -143,6 +143,9 @@ type
     procedure TimetableSelect;
 
     procedure TimetableEditFormOpen;
+
+    function ActiveSheet: TMonthCustomSheet;
+    procedure SheetsFree;
 
     procedure SelectionMove(const ADirection: TMoveDirection);
     procedure RowsMerge;
@@ -216,9 +219,7 @@ begin
   FreeAndNil(VStaffList);
   FreeAndNil(MStaffList);
 
-  if Assigned(Sheet) then FreeAndNil(Sheet);
-  if Assigned(SheetT12) then FreeAndNil(SheetT12);
-  //if Assigned(SheetT13) then FreeAndNil(SheetT13);
+  SheetsFree;
 
   VTDel(Timetables);
 end;
@@ -555,12 +556,7 @@ procedure TTimetableMonthForm.EditButtonsEnabled;
 var
   S: TMonthCustomSheet;
 begin
-  case ParamList.Selected['TimetableType'] of
-    0: S:= Sheet;
-    1: S:= SheetT12;
-    2: ;//S:= SheetT13;
-  end;
-
+  S:= ActiveSheet;
   DayEditButton.Enabled:= S.IsDateSelected;
   RowUpButton.Enabled:= S.IsRowSelected and (S.SelectedIndex>0);
   RowDownButton.Enabled:= S.IsRowSelected and (S.SelectedIndex<High(Timetables));
@@ -813,10 +809,11 @@ end;
 
 procedure TTimetableMonthForm.TimetableSheetCreate;
 begin
+  SheetsFree;
+
   case ParamList.Selected['TimetableType'] of
     0: //форма графика
       begin
-        if Assigned(Sheet) then FreeAndNil(Sheet);
         Sheet:= TMonthTimetableSheet.Create(ViewGrid.Worksheet, ViewGrid, MainForm.GridFont,
                                             ParamList.Selected['CountType'],
                                             ParamList.Selected['PeriodType'],
@@ -826,17 +823,15 @@ begin
       end;
     1: //форма T-12
       begin
-        if Assigned(SheetT12) then FreeAndNil(SheetT12);
         SheetT12:= TTimetableSheetT12.Create(ViewGrid.Worksheet, ViewGrid, MainForm.GridFont);
         SheetT12.CanSelect:= EditingButton.Down;
         SheetT12.OnSelect:= @TimetableSelect;
       end;
     2: //форма T-13
       begin
-        //if Assigned(SheetT13) then FreeAndNil(SheetT13);
-
-        //SheetT13.CanSelect:= EditingButton.Down;
-        //SheetT13.OnSelect:= @TimetableSelect;
+        SheetT13:= TTimetableSheetT13.Create(ViewGrid.Worksheet, ViewGrid, MainForm.GridFont);
+        SheetT13.CanSelect:= EditingButton.Down;
+        SheetT13.OnSelect:= @TimetableSelect;
       end;
   end;
 end;
@@ -879,7 +874,14 @@ begin
         end;
       2: //форма T-13
         begin
-
+          SheetT13.Zoom(ZoomPercent);
+          SheetT13.Draw(MonthCalendar, Timetables,
+                 StaffNames, TabNums, PostNames,
+                 ParamList.Selected['ViewType']=0,
+                 ParamList.Selected['MonthType']=0,
+                 False{not repeat title in grid},
+                 False{not need page numbers in grid},
+                 1{simple border line in grid});
         end;
     end;
   finally
@@ -920,16 +922,28 @@ begin
   end
 end;
 
+function TTimetableMonthForm.ActiveSheet: TMonthCustomSheet;
+begin
+  case ParamList.Selected['TimetableType'] of
+    0: Result:= Sheet;
+    1: Result:= SheetT12;
+    2: Result:= SheetT13;
+  end;
+end;
+
+procedure TTimetableMonthForm.SheetsFree;
+begin
+  if Assigned(Sheet) then FreeAndNil(Sheet);
+  if Assigned(SheetT12) then FreeAndNil(SheetT12);
+  if Assigned(SheetT13) then FreeAndNil(SheetT13);
+end;
+
 procedure TTimetableMonthForm.SelectionMove(const ADirection: TMoveDirection);
 var
   OldSelectedIndex, NewSelectedIndex: Integer;
   S: TMonthCustomSheet;
 begin
-  case ParamList.Selected['TimetableType'] of
-    0: S:= Sheet;
-    1: S:= SheetT12;
-    2: ;//S:= SheetT13;
-  end;
+  S:= ActiveSheet;
 
   if ADirection=mdUp then
     NewSelectedIndex:= S.SelectedIndex - 1
@@ -997,11 +1011,7 @@ var
   end;
 
 begin
-  case ParamList.Selected['TimetableType'] of
-    0: S:= Sheet;
-    1: S:= SheetT12;
-    2: ;//S:= SheetT13;
-  end;
+  S:= ActiveSheet;
 
   RowIndexes:= VCreateInt([
     Min(S.SelectedIndex, S.SelectedIndex2),
@@ -1055,11 +1065,7 @@ procedure TTimetableMonthForm.ViewUpdate;
 begin
   EditPanel.Visible:= EditingButton.Down;
 
-  case ParamList.Selected['TimetableType'] of
-    0: Sheet.CanSelect:= EditingButton.Down;
-    1: SheetT12.CanSelect:= EditingButton.Down;
-    2: ;//SheetT13.CanSelect:= EditingButton.Down;
-  end;
+  ActiveSheet.CanSelect:= EditingButton.Down;
 
   if SettingButton.Down then
   begin
