@@ -250,7 +250,7 @@ end;
 
 procedure TTimetableMonthForm.ViewGridDblClick(Sender: TObject);
 begin
-  //ScheduleCorrectionFormOpen;
+  TimetableEditFormOpen;
 end;
 
 procedure TTimetableMonthForm.YearSpinEditChange(Sender: TObject);
@@ -644,13 +644,15 @@ end;
 procedure TTimetableMonthForm.TimetableUpdate(const ATabNumID: Integer);
 var
   i: Integer;
+  S: TMonthCustomSheet;
 begin
+  S:= ActiveSheet;
   for i:= 0 to High(TabNumIDs) do
   begin
     if TabNumIDs[i]<>ATabNumID then continue;
     Timetables[i].Calc(TabNumIDs[i], TabNums[i], RecrutDates[i], DismissDates[i],
                      MonthCalendar, PostScheduleInfos[i]);
-    Sheet.LineDraw(i);
+    S.LineDraw(i);
   end;
 end;
 
@@ -708,24 +710,18 @@ var
     begin
       S:= StaffNames[i] + ' [таб.№ ' + TabNums[i] + '] - ' + PostNames[i];
       Progress.WriteLine2(S);
-
+      //определяем период работы в этом месяце
+      IsPeriodIntersect(RecrutDates[i], DismissDates[i], MonthBD, MonthED, BD, ED);
+      //обновляем данные о табеле в базе за этот период
+      TimetableForPeriodUpdate(TabNumIDs[i], RecrutDates[i], DismissDates[i],
+                               BD, ED, Holidays, False);
       //определяем период для загрузки инфо о должностях и графиках
-      if IsPeriodIntersect(MonthBD, MonthED, BD, ED, BD, ED) then
-          if IsPeriodIntersect(RecrutDates[i], DismissDates[i], BD, ED, BD, ED) then
-      begin
-        //обновляем данные о табеле в базе
-        TimetableForPeriodUpdate(TabNumIDs[i], RecrutDates[i], DismissDates[i],
-                                 BD, ED, Holidays, False);
-        if IsPeriodIntersect(ScheduleBDs[i], ScheduleEDs[i], PostBDs[i], PostEDs[i], BD, ED) then
-        begin
-          //загружаем инфо о должностях и графиках
-          DataBase.StaffPostScheduleInfoLoad(TabNumIDs[i], PostScheduleInfo, BD, ED);
-          VIAppend(PostScheduleInfos, PostScheduleInfo);
-        end
-        else
-          VIAppend(PostScheduleInfos, EmptyPostScheduleInfo);
-      end;
-
+      IsPeriodIntersect(ScheduleBDs[i], ScheduleEDs[i], BD, ED, BD, ED);
+      IsPeriodIntersect(PostBDs[i], PostEDs[i], BD, ED, BD, ED);
+      //загружаем инфо о должностях и графиках
+      DataBase.StaffPostScheduleInfoLoad(TabNumIDs[i], PostScheduleInfo, BD, ED);
+      VIAppend(PostScheduleInfos, PostScheduleInfo);
+      //создаем и записываем табель в вектор
       Timetable:= TTimetable.Create;
       Timetable.Calc(TabNumIDs[i], TabNums[i], RecrutDates[i], DismissDates[i],
                      MonthCalendar, PostScheduleInfo);
@@ -737,15 +733,16 @@ var
   var
     i, Days, Hours: Integer;
     BD, ED: TDate;
-    S: String;
+    //S: String;
   begin
     Progress.WriteLine1('Расчет нормы часов');
+    Progress.WriteLine2(EmptyStr);
     VDim(NormHours, Length(TabNumIDs));
     AccountingPeriodWithMonth(M, Y, ParamList.Selected['PeriodType'], BD, ED);
     for i:=0 to High(TabNumIDs) do
     begin
-      S:= StaffNames[i] + ' [таб.№ ' + TabNums[i] + '] - ' + PostNames[i];
-      Progress.WriteLine2(S);
+      //S:= StaffNames[i] + ' [таб.№ ' + TabNums[i] + '] - ' + PostNames[i];
+      //Progress.WriteLine2(S);
       NormHoursAndWorkDaysCounInPeriod(TabNumIDs[i], BD, ED, YearCalendar, Days, Hours);
       NormHours[i]:= Hours;
     end;
@@ -756,7 +753,7 @@ var
     IsBeforePeriodExists: Boolean;
     i: Integer;
     BD, ED: TDate;
-    S: String;
+    //S: String;
   begin
     BeforeTotalHours:= nil;
     BeforeNightHours:= nil;
@@ -765,12 +762,13 @@ var
     if not IsBeforePeriodExists then Exit;
 
     Progress.WriteLine1('Расчет отработанных часов');
+    Progress.WriteLine2(EmptyStr);
     VDim(BeforeTotalHours, Length(TabNumIDs));
     VDim(BeforeNightHours, Length(TabNumIDs));
     for i:=0 to High(TabNumIDs) do
     begin
-      S:= StaffNames[i] + ' [таб.№ ' + TabNums[i] + '] - ' + PostNames[i];
-      Progress.WriteLine2(S);
+      //S:= StaffNames[i] + ' [таб.№ ' + TabNums[i] + '] - ' + PostNames[i];
+      //Progress.WriteLine2(S);
       BeforeTotalHours[i]:= DataBase.TimetableSumTotalHoursInPeriodLoad(TabNumIDs[i], BD, ED);
       BeforeNightHours[i]:= DataBase.TimetableSumNightHoursInPeriodLoad(TabNumIDs[i], BD, ED);
     end;
@@ -904,17 +902,19 @@ procedure TTimetableMonthForm.TimetableEditFormOpen;
 var
   TimetableEditForm: TTimetableEditForm;
   TabNumID: Integer;
+  S: TMonthCustomSheet;
 begin
-  if not Sheet.IsDateSelected then Exit;
+  S:= ActiveSheet;
+  if not S.IsDateSelected then Exit;
 
-  TabNumID:= TabNumIDs[Sheet.SelectedIndex];
+  TabNumID:= TabNumIDs[S.SelectedIndex];
 
   TimetableEditForm:= TTimetableEditForm.Create(nil);
   try
     TimetableEditForm.TabNumID:= TabNumID;
-    TimetableEditForm.RecrutDate:= RecrutDates[Sheet.SelectedIndex];
-    TimetableEditForm.DismissDate:= DismissDates[Sheet.SelectedIndex];
-    TimetableEditForm.FirstDate:= Sheet.SelectedDate;
+    TimetableEditForm.RecrutDate:= RecrutDates[S.SelectedIndex];
+    TimetableEditForm.DismissDate:= DismissDates[S.SelectedIndex];
+    TimetableEditForm.FirstDate:= S.SelectedDate;
     if TimetableEditForm.ShowModal=mrOK then
       TimetableUpdate(TabNumID);
   finally

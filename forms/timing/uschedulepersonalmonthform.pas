@@ -692,16 +692,12 @@ begin
       S:= StaffNames[i] + ' [таб.№ ' + TabNums[i] + '] - ' + PostNames[i];
       Progress.WriteLine2(S);
       //определяем период для загрузки инфо о должностях и графиках
-      if IsPeriodIntersect(ScheduleBDs[i], ScheduleEDs[i], PostBDs[i], PostEDs[i], BD, ED) then
-        if IsPeriodIntersect(MonthBD, MonthED, BD, ED, BD, ED) then
-          if IsPeriodIntersect(RecrutDates[i], DismissDates[i], BD, ED, BD, ED) then
-      begin
-        //загружаем инфо о должностях и графиках
-        DataBase.StaffPostScheduleInfoLoad(TabNumIDs[i], PostScheduleInfo, BD, ED);
-        PostScheduleInfos[i]:= PostScheduleInfo;
-      end
-      else
-        PostScheduleInfos[i]:= EmptyPostScheduleInfo;
+      IsPeriodIntersect(ScheduleBDs[i], ScheduleEDs[i], PostBDs[i], PostEDs[i], BD, ED);
+      IsPeriodIntersect(MonthBD, MonthED, BD, ED, BD, ED);
+      IsPeriodIntersect(RecrutDates[i], DismissDates[i], BD, ED, BD, ED);
+      //загружаем инфо о должностях и графиках
+      DataBase.StaffPostScheduleInfoLoad(TabNumIDs[i], PostScheduleInfo, BD, ED);
+      PostScheduleInfos[i]:= PostScheduleInfo;
       //рассчитываем графики
       ScheduleCreate(i);
     end;

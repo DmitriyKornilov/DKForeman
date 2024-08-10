@@ -65,7 +65,7 @@ type
     function DateAndIndexFromCell(const ARow, ACol: Integer;
                                   out ADate: TDate;
                                   out AIndex: Integer): Boolean; virtual; abstract;
-    procedure LineDraw(const AIndex: Integer); virtual; abstract;
+
 
     procedure UnSelectRow;
     procedure SelectRow(const AIndex: Integer); virtual;
@@ -77,6 +77,8 @@ type
     constructor Create(const AWorksheet: TsWorksheet;
                        const AGrid: TsWorksheetGrid;
                        const AFont: TFont);
+
+    procedure LineDraw(const AIndex: Integer); virtual; abstract;
 
     procedure Select(const AIndex: Integer);
     procedure SelectionClear; override;

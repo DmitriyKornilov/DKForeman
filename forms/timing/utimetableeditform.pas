@@ -146,9 +146,11 @@ begin
   Holidays:= DataBase.HolidaysLoad(FirstDate, LastDateTimePicker.Date);
 
   if ScheduleRadioButton.Checked then
-    IsOK:= TimetableForPeriodUpdate(TabNumID, RecrutDate, DismissDate,
-                            FirstDate, LastDateTimePicker.Date, Holidays, False)
-    //IsOK:= TimetableDaysByScheduleAdd(TabNumID, FirstDate, LastDateTimePicker.Date, Holidays)
+  begin
+    IsOK:= DataBase.TimetableDaysDelete(TabNumID, FirstDate, LastDateTimePicker.Date) and
+           TimetableForPeriodUpdate(TabNumID, RecrutDate, DismissDate,
+                            FirstDate, LastDateTimePicker.Date, Holidays, False);
+  end
   else begin //ручная корректировка
     TimetableDay:= TimetableDayEmpty;
     TimetableDay.ScheduleID:= MANUAL_SCHEDULEID; //ID графика для ручной корректировки табеля

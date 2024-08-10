@@ -1116,6 +1116,8 @@ procedure TTimetableSheetT12.SelectDate(const ADate: TDate);
 var
   R, C: Integer;
 begin
+  if IsRowSelected and
+     (FTimetables[FSelectedRowIndex1].IsExists[DayOf(ADate)-1]=EXISTS_NO) then Exit;
   if (ADate=0) or SameDate(ADate, FSelectedDate) then Exit;
   if IsDoubleRowSelected then Exit;
 
@@ -1651,6 +1653,8 @@ procedure TTimetableSheetT13.SelectDate(const ADate: TDate);
 var
   R, C: Integer;
 begin
+  if IsRowSelected and
+     (FTimetables[FSelectedRowIndex1].IsExists[DayOf(ADate)-1]=EXISTS_NO) then Exit;
   if (ADate=0) or SameDate(ADate, FSelectedDate) then Exit;
   if IsDoubleRowSelected then Exit;
 
@@ -2080,7 +2084,7 @@ procedure TTimetableSheetT13.LineDraw(const AIndex: Integer);
 var
   R, C, i: Integer;
 begin
- UnSelectDate;
+  UnSelectDate;
 
   if AIndex in [FSelectedRowIndex1, FSelectedRowIndex2] then
     Writer.SetBackground(DefaultSelectionBGColor)
