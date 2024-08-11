@@ -13,7 +13,7 @@ uses
   DK_Vector, DK_Fonts, DK_Const,
   DK_VSTTypes, DK_VSTEditTools, DK_Zoom, DK_SheetExporter,
   //Project utils
-  UDataBase, UConst, UUtils, UCalendar, USchedule, UScheduleSheet;
+  UDataBase, UConst, UUtils, UUIUtils, UCalendar, USchedule, UScheduleSheet;
 
 type
 

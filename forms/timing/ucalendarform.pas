@@ -9,10 +9,9 @@ uses
   Spin, StdCtrls, DividerBevel, fpspreadsheetgrid, VirtualTrees, BCPanel,
   BCButton, DateUtils,
   //Project utils
-  UConst, UTypes, UUtils, UCalendar, UCalendarSheet,
+  UConst, UTypes, UUtils, UUIUtils, UCalendar, UCalendarSheet,
   //DK packages utils
-  DK_DateUtils, {DK_VSTTools,} DK_VSTTables, DK_Vector, DK_Zoom, DK_Color,
-  DK_Const,
+  DK_DateUtils, DK_VSTTables, DK_Vector, DK_Zoom, DK_Color, DK_Const,
   //Forms
   UCalendarEditForm;
 

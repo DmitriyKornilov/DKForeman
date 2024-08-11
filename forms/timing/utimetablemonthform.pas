@@ -12,8 +12,8 @@ uses
   DK_Vector, DK_Matrix, DK_Math, DK_Fonts, DK_Const, DK_DateUtils,
   DK_StrUtils, DK_VSTTables, DK_VSTParamList, DK_Zoom, DK_SheetExporter, DK_Progress,
   //Project utils
-  UDataBase, UConst, UUtils, UCalendar, USchedule, UTimetable, UTimetableSheet,
-  UTimingSheet, UTypes,
+  UDataBase, UConst, UUtils, UUIUtils, UCalendar, USchedule, UTimetable,
+  UTimetableSheet, UTimingSheet, UTypes,
   //Forms
   UTimetableEditForm, UChooseForm;
 

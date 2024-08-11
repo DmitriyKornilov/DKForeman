@@ -12,7 +12,7 @@ uses
   DK_Vector, DK_Fonts, DK_Const, DK_StrUtils, DK_VSTTableTools, DK_Zoom,
   DK_SheetExporter,
   //Project utils
-  UDataBase, UConst, UTypes, UUtils, UCalendar, USchedule, UScheduleSheet,
+  UDataBase, UConst, UTypes, UUtils, UUIUtils, UCalendar, USchedule, UScheduleSheet,
   //Forms
   UChooseForm;
 

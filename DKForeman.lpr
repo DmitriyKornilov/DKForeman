@@ -11,7 +11,7 @@ uses
   {$ENDIF}
   Interfaces, // this includes the LCL widgetset
   Forms, UMainForm, UCalendarForm, lazcontrols, datetimectrls, UDataBase,
-  UStaffForm, UScheduleShiftForm, UVacationPlaneForm, USchedulePersonalForm,
+  UStaffForm, UScheduleShiftForm, UVacationPlanForm, USchedulePersonalForm,
   UTimetableForm, USIZForm, USSOForm, UStudyForm, UConst, UTypes,
   UStaffMainEditForm, UUtils, UCalendar, UWorkHours, UStaffTabNumEditForm,
   UStaffPostLogEditForm, UCalendarSheet, 
@@ -20,7 +20,7 @@ UTimingSheet, UScheduleSheet,
   UScheduleShiftEditForm, UScheduleShiftMonthForm, UScheduleShiftCalendarForm,
   USchedulePersonalEditForm, UScheduleVacationForm, USchedulePersonalMonthForm,
   UTimetableEditForm, UTimetableMonthForm, UChooseForm, UImages,
-  UTimetableSheet, uschedule;
+  UTimetableSheet, uschedule, UUIUtils;
 
 {$R *.res}
 

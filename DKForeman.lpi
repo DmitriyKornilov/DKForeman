@@ -111,12 +111,12 @@
         <UnitName Value="UScheduleShiftForm"/>
       </Unit>
       <Unit>
-        <Filename Value="forms\timing\uvacationplaneform.pas"/>
+        <Filename Value="forms\timing\uvacationplanform.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="VacationPlaneForm"/>
+        <ComponentName Value="VacationPlanForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <UnitName Value="UVacationPlaneForm"/>
+        <UnitName Value="UVacationPlanForm"/>
       </Unit>
       <Unit>
         <Filename Value="forms\timing\uschedulepersonalform.pas"/>
@@ -332,6 +332,11 @@
         <Filename Value="utils\timing\uschedule.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="USchedule"/>
+      </Unit>
+      <Unit>
+        <Filename Value="utils\uuiutils.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="UUIUtils"/>
       </Unit>
     </Units>
   </ProjectOptions>

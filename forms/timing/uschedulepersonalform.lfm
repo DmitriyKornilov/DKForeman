@@ -284,9 +284,9 @@ object SchedulePersonalForm: TSchedulePersonalForm
       Cursor = crHandPoint
       Left = 430
       Height = 34
-      Hint = 'Общий график работы на месяц'
+      Hint = 'График отпусков по форме Т-7'
       Top = 1
-      Width = 164
+      Width = 200
       Align = alLeft
       AutoSize = True
       StateClicked.Background.Color = 16245964
@@ -374,7 +374,7 @@ object SchedulePersonalForm: TSchedulePersonalForm
       BorderSpacing.Left = 2
       BorderSpacing.Top = 1
       BorderSpacing.Bottom = 1
-      Caption = 'График отпусков'
+      Caption = 'График отпусков (Т-7)'
       Color = clNone
       DropDownWidth = 16
       DropDownArrowSize = 8

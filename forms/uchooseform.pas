@@ -10,7 +10,7 @@ uses
   //DK packages utils
   DK_Vector, DK_VSTTableTools, DK_CtrlUtils,
   //Project utils
-  UUtils;
+  UUIUtils;
 
 type
 

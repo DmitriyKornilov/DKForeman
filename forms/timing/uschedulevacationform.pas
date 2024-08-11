@@ -10,7 +10,7 @@ uses
   //DK packages utils
   DK_Vector, DK_Zoom,
   //Project utils
-  UDataBase, UConst, UUtils, UScheduleSheet;
+  UDataBase, UConst, UUIUtils, UScheduleSheet;
 
 type
 

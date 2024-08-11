@@ -12,10 +12,10 @@ uses
   DK_Const, DK_LCLStrRus, DK_HeapTrace, DK_CtrlUtils, DK_Fonts, DK_VSTTypes,
   DK_Vector,
   //Project utils
-  UDataBase, UUtils, UConst, UTypes, UImages,
+  UDataBase, UUIUtils, UConst, UTypes, UImages,
   //Forms
   UStaffForm,
-  UCalendarForm, UScheduleShiftForm, UVacationPlaneForm,
+  UCalendarForm, UScheduleShiftForm, UVacationPlanForm,
   USchedulePersonalForm, UTimetableForm,
   USIZForm,
   USSOForm,
@@ -239,7 +239,7 @@ begin
       1: CategoryForm:= FormOnPanelCreate(TStaffForm, MainPanel);
       2: CategoryForm:= FormOnPanelCreate(TCalendarForm, MainPanel);
       3: CategoryForm:= FormOnPanelCreate(TScheduleShiftForm, MainPanel);
-      4: CategoryForm:= FormOnPanelCreate(TVacationPlaneForm, MainPanel);
+      4: CategoryForm:= FormOnPanelCreate(TVacationPlanForm, MainPanel);
       5: CategoryForm:= FormOnPanelCreate(TSchedulePersonalForm, MainPanel);
       6: CategoryForm:= FormOnPanelCreate(TTimetableForm, MainPanel);
       7: CategoryForm:= FormOnPanelCreate(TSIZForm, MainPanel);
