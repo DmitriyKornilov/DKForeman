@@ -47,7 +47,7 @@ type
     ToolPanel: TPanel;
     YearSpinEdit: TSpinEdit;
     ZoomPanel: TPanel;
-    procedure DayVTNodeDblClick(Sender: TBaseVirtualTree; const HitInfo: THitInfo);
+    procedure DayVTDblClick(Sender: TObject);
     procedure ViewGridDblClick(Sender: TObject);
     procedure ViewGridMouseDown(Sender: TObject; Button: TMouseButton;
       {%H-}Shift: TShiftState; X, Y: Integer);
@@ -115,6 +115,15 @@ uses UMainForm, UDataBase;
 procedure TCalendarForm.CloseButtonClick(Sender: TObject);
 begin
   MainForm.CategorySelect(0);
+end;
+
+procedure TCalendarForm.DayVTDblClick(Sender: TObject);
+var
+  D: TDate;
+begin
+  if not VSTDays.IsSelected then Exit;
+  D:= Corrections.Dates[VSTDays.SelectedIndex];
+  CalendarEditFormOpen(D);
 end;
 
 procedure TCalendarForm.ViewGridDblClick(Sender: TObject);
@@ -246,15 +255,6 @@ begin
   FreeAndNil(VSTCopy);
   FreeAndNil(CalendarSheet);
   FreeAndNil(Calendar);
-end;
-
-procedure TCalendarForm.DayVTNodeDblClick(Sender: TBaseVirtualTree; const HitInfo: THitInfo);
-var
-  D: TDate;
-begin
-  if not VSTDays.IsSelected then Exit;
-  D:= Corrections.Dates[HitInfo.HitNode^.Index];
-  CalendarEditFormOpen(D);
 end;
 
 procedure TCalendarForm.YearSpinEditChange(Sender: TObject);

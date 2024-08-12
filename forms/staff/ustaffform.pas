@@ -80,14 +80,14 @@ type
     procedure PostLogAddButtonClick(Sender: TObject);
     procedure PostLogDelButtonClick(Sender: TObject);
     procedure PostLogEditButtonClick(Sender: TObject);
-    procedure PostLogVTNodeDblClick(Sender: TBaseVirtualTree; const {%H-}HitInfo: THitInfo);
-    procedure StaffVTNodeDblClick(Sender: TBaseVirtualTree; const {%H-}HitInfo: THitInfo);
+    procedure PostLogVTDblClick(Sender: TObject);
+    procedure StaffVTDblClick(Sender: TObject);
     procedure TabNumAddButtonClick(Sender: TObject);
     procedure TabNumDelButtonClick(Sender: TObject);
     procedure TabNumDismissButtonClick(Sender: TObject);
     procedure TabNumDismissCancelButtonClick(Sender: TObject);
     procedure TabNumEditButtonClick(Sender: TObject);
-    procedure TabNumVTNodeDblClick(Sender: TBaseVirtualTree; const {%H-}HitInfo: THitInfo);
+    procedure TabNumVTDblClick(Sender: TObject);
   private
     CanLoadStaffList: Boolean;
     //ZoomPercent: Integer;
@@ -112,7 +112,6 @@ type
     PostLogPostNames, PostLogRanks: TStrVector;
 
     procedure ParamListCreate;
-    procedure ParamsSelect;
     procedure OrderTypeSelect;
     procedure ListTypeSelect;
     procedure ColumnsListSelect;
@@ -311,13 +310,13 @@ begin
   StaffPostLogEditFormOpen(etEdit);
 end;
 
-procedure TStaffForm.PostLogVTNodeDblClick(Sender: TBaseVirtualTree; const HitInfo: THitInfo);
+procedure TStaffForm.PostLogVTDblClick(Sender: TObject);
 begin
   if not PostLog.IsSelected then Exit;
   StaffPostLogEditFormOpen(etEdit);
 end;
 
-procedure TStaffForm.StaffVTNodeDblClick(Sender: TBaseVirtualTree; const HitInfo: THitInfo);
+procedure TStaffForm.StaffVTDblClick(Sender: TObject);
 begin
   if not StaffList.IsSelected then Exit;
   StaffMainEditFormOpen(etEdit);
@@ -349,7 +348,7 @@ begin
   StaffTabNumEditFormOpen(etEdit);
 end;
 
-procedure TStaffForm.TabNumVTNodeDblClick(Sender: TBaseVirtualTree; const HitInfo: THitInfo);
+procedure TStaffForm.TabNumVTDblClick(Sender: TObject);
 begin
   if (not TabNumList.IsSelected) then Exit;
   if SameDate(INFDATE, TabNumListDismissDates[TabNumList.SelectedIndex]) then
@@ -405,11 +404,6 @@ begin
     'Фамилия И.О.'
   ]);
   ParamList.AddStringList('NameType', S, V, @NameTypeSelect);
-end;
-
-procedure TStaffForm.ParamsSelect;
-begin
-  StaffListLoad;
 end;
 
 procedure TStaffForm.TabNumDismissButtonClick(Sender: TObject);

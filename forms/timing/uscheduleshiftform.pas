@@ -81,7 +81,7 @@ type
     procedure DayCopyButtonClick(Sender: TObject);
     procedure DayDelButtonClick(Sender: TObject);
     procedure DayEditButtonClick(Sender: TObject);
-    procedure DayVTNodeDblClick(Sender: TBaseVirtualTree; const HitInfo: THitInfo);
+    procedure DayVTDblClick(Sender: TObject);
     procedure ExportButtonClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -90,7 +90,7 @@ type
     procedure ScheduleAddButtonClick(Sender: TObject);
     procedure ScheduleDelButtonClick(Sender: TObject);
     procedure ScheduleEditButtonClick(Sender: TObject);
-    procedure ScheduleListVTNodeDblClick(Sender: TBaseVirtualTree; const {%H-}HitInfo: THitInfo);
+    procedure ScheduleListVTDblClick(Sender: TObject);
     procedure ViewGridDblClick(Sender: TObject);
     procedure ViewGridMouseDown(Sender: TObject; Button: TMouseButton;
       {%H-}Shift: TShiftState; X, Y: Integer);
@@ -226,12 +226,12 @@ begin
   ScheduleCorrectionEditFormOpen(Corrections.Dates[VSTDays.SelectedIndex]);
 end;
 
-procedure TScheduleShiftForm.DayVTNodeDblClick(Sender: TBaseVirtualTree; const HitInfo: THitInfo);
+procedure TScheduleShiftForm.DayVTDblClick(Sender: TObject);
 var
   D: TDate;
 begin
   if not VSTDays.IsSelected then Exit;
-  D:= Corrections.Dates[HitInfo.HitNode^.Index];
+  D:= Corrections.Dates[VSTDays.SelectedIndex];
   ScheduleCorrectionEditFormOpen(D);
 end;
 
@@ -333,10 +333,8 @@ begin
   ScheduleShiftEditFormOpen(etEdit);
 end;
 
-procedure TScheduleShiftForm.ScheduleListVTNodeDblClick(Sender: TBaseVirtualTree;
-                                           const HitInfo: THitInfo);
+procedure TScheduleShiftForm.ScheduleListVTDblClick(Sender: TObject);
 begin
-  if ModeType<>mtEditing then Exit;
   if not ScheduleList.IsSelected then Exit;
   ScheduleShiftEditFormOpen(etEdit);
 end;

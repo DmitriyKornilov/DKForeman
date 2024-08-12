@@ -18,9 +18,9 @@ uses
 UTimingSheet, UScheduleSheet,
   UTimetable, UCalendarEditForm, UScheduleCorrectionEditForm,
   UScheduleShiftEditForm, UScheduleShiftMonthForm, UScheduleShiftCalendarForm,
-  USchedulePersonalEditForm, UScheduleVacationForm, USchedulePersonalMonthForm,
+  USchedulePersonalEditForm, UVacationScheduleForm, USchedulePersonalMonthForm,
   UTimetableEditForm, UTimetableMonthForm, UChooseForm, UImages,
-  UTimetableSheet, uschedule, UUIUtils;
+  UTimetableSheet, uschedule, UUIUtils, UVacationPlanEditForm;
 
 {$R *.res}
 

@@ -286,7 +286,7 @@ object StaffForm: TStaffForm
         Header.Columns = <>
         Header.MainColumn = -1
         TabOrder = 0
-        OnNodeDblClick = StaffVTNodeDblClick
+        OnDblClick = StaffVTDblClick
       end
       object ListToolPanel: TPanel
         Left = 0
@@ -660,7 +660,7 @@ object StaffForm: TStaffForm
           Header.Columns = <>
           Header.MainColumn = -1
           TabOrder = 1
-          OnNodeDblClick = TabNumVTNodeDblClick
+          OnDblClick = TabNumVTDblClick
         end
         object TabNumCaptionPanel: TBCPanel
           Left = 0
@@ -799,7 +799,7 @@ object StaffForm: TStaffForm
           Header.Columns = <>
           Header.MainColumn = -1
           TabOrder = 1
-          OnNodeDblClick = PostLogVTNodeDblClick
+          OnDblClick = PostLogVTDblClick
         end
         object PostLogCaptionPanel: TBCPanel
           Left = 0

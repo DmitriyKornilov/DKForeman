@@ -3,7 +3,7 @@ object ScheduleVacationForm: TScheduleVacationForm
   Height = 240
   Top = 257
   Width = 928
-  Caption = 'ScheduleVacationForm'
+  Caption = 'VacationScheduleForm'
   ClientHeight = 240
   ClientWidth = 928
   DesignTimePPI = 120

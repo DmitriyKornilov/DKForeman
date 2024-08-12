@@ -17,7 +17,7 @@ uses
   DK_Zoom, DK_Progress, DK_Filter,
   //Forms
   UChooseForm, USchedulePersonalEditForm, UScheduleCorrectionEditForm,
-  UScheduleVacationForm, USchedulePersonalMonthForm;
+  UVacationScheduleForm, USchedulePersonalMonthForm;
 
 type
 
@@ -101,8 +101,7 @@ type
     procedure DayCopyButtonClick(Sender: TObject);
     procedure DayDelButtonClick(Sender: TObject);
     procedure DayEditButtonClick(Sender: TObject);
-    procedure DayVTNodeDblClick(Sender: TBaseVirtualTree;
-      const HitInfo: THitInfo);
+    procedure DayVTDblClick(Sender: TObject);
     procedure DescendingButtonClick(Sender: TObject);
     procedure CloseButtonClick(Sender: TObject);
     procedure AscendingButtonClick(Sender: TObject);
@@ -114,8 +113,7 @@ type
     procedure HistoryAddButtonClick(Sender: TObject);
     procedure HistoryDelButtonClick(Sender: TObject);
     procedure HistoryEditButtonClick(Sender: TObject);
-    procedure HistoryVTNodeDblClick(Sender: TBaseVirtualTree;
-      const {%H-}HitInfo: THitInfo);
+    procedure HistoryVTDblClick(Sender: TObject);
     procedure MonthScheduleButtonClick(Sender: TObject);
     procedure PostRadioButtonClick(Sender: TObject);
     procedure TabNumRadioButtonClick(Sender: TObject);
@@ -287,13 +285,12 @@ begin
   ScheduleCorrectionEditFormOpen(Corrections.Dates[VSTDays.SelectedIndex]);
 end;
 
-procedure TSchedulePersonalForm.DayVTNodeDblClick(Sender: TBaseVirtualTree;
-  const HitInfo: THitInfo);
+procedure TSchedulePersonalForm.DayVTDblClick(Sender: TObject);
 var
   D: TDate;
 begin
   if not VSTDays.IsSelected then Exit;
-  D:= Corrections.Dates[HitInfo.HitNode^.Index];
+  D:= Corrections.Dates[VSTDays.SelectedIndex];
   ScheduleCorrectionEditFormOpen(D);
 end;
 
@@ -403,8 +400,7 @@ begin
   SchedulePersonalEditFormOpen(etEdit);
 end;
 
-procedure TSchedulePersonalForm.HistoryVTNodeDblClick(Sender: TBaseVirtualTree;
-  const HitInfo: THitInfo);
+procedure TSchedulePersonalForm.HistoryVTDblClick(Sender: TObject);
 begin
   if not History.IsSelected then Exit;
   SchedulePersonalEditFormOpen(etEdit);
@@ -554,7 +550,7 @@ end;
 
 procedure TSchedulePersonalForm.VacationScheduleButtonClick(Sender: TObject);
 begin
-  ScheduleVacationFormShow(YearSpinEdit.Value);
+  VacationScheduleFormShow(YearSpinEdit.Value);
 end;
 
 procedure TSchedulePersonalForm.ViewGridDblClick(Sender: TObject);

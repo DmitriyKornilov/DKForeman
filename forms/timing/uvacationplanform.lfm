@@ -1,19 +1,21 @@
 object VacationPlanForm: TVacationPlanForm
-  Left = 653
-  Height = 240
-  Top = 256
-  Width = 822
+  Left = 499
+  Height = 557
+  Top = 182
+  Width = 975
   Caption = 'VacationPlanForm'
-  ClientHeight = 240
-  ClientWidth = 822
+  ClientHeight = 557
+  ClientWidth = 975
   DesignTimePPI = 120
   OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  OnShow = FormShow
   LCLVersion = '3.2.0.0'
   object ToolPanel: TPanel
     Left = 2
     Height = 40
     Top = 2
-    Width = 818
+    Width = 971
     Align = alTop
     BorderSpacing.Left = 2
     BorderSpacing.Top = 2
@@ -21,7 +23,7 @@ object VacationPlanForm: TVacationPlanForm
     BevelOuter = bvNone
     BorderStyle = bsSingle
     ClientHeight = 36
-    ClientWidth = 814
+    ClientWidth = 967
     ParentFont = False
     TabOrder = 0
     object YearPanel: TPanel
@@ -153,6 +155,7 @@ object VacationPlanForm: TVacationPlanForm
       DropDownArrowSize = 8
       GlobalOpacity = 255
       GlyphMargin = 0
+      OnClick = ExportButtonClick
       ParentColor = False
       Rounding.RoundX = 0
       Rounding.RoundY = 0
@@ -390,7 +393,7 @@ object VacationPlanForm: TVacationPlanForm
       MemoryUsage = bmuHigh
     end
     object DividerBevel1: TDividerBevel
-      Left = 754
+      Left = 907
       Height = 36
       Top = 0
       Width = 20
@@ -403,7 +406,7 @@ object VacationPlanForm: TVacationPlanForm
     end
     object CloseButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 774
+      Left = 927
       Height = 36
       Hint = 'Закрыть'
       Top = 0
@@ -440,50 +443,216 @@ object VacationPlanForm: TVacationPlanForm
       ParentFont = False
     end
   end
-  object CaptionPanel: TBCPanel
+  object MainPanel: TPanel
+    Left = 308
+    Height = 515
+    Top = 42
+    Width = 667
+    Align = alClient
+    BevelOuter = bvNone
+    ClientHeight = 515
+    ClientWidth = 667
+    TabOrder = 1
+    object ListCaptionPanel: TBCPanel
+      Left = 0
+      Height = 30
+      Top = 2
+      Width = 665
+      Align = alTop
+      BorderSpacing.Top = 2
+      BorderSpacing.Right = 2
+      Background.Color = clBtnFace
+      Background.Gradient1.StartColor = clWhite
+      Background.Gradient1.EndColor = clBlack
+      Background.Gradient1.GradientType = gtLinear
+      Background.Gradient1.Point1XPercent = 0
+      Background.Gradient1.Point1YPercent = 0
+      Background.Gradient1.Point2XPercent = 0
+      Background.Gradient1.Point2YPercent = 100
+      Background.Gradient2.StartColor = clWhite
+      Background.Gradient2.EndColor = clBlack
+      Background.Gradient2.GradientType = gtLinear
+      Background.Gradient2.Point1XPercent = 0
+      Background.Gradient2.Point1YPercent = 0
+      Background.Gradient2.Point2XPercent = 0
+      Background.Gradient2.Point2YPercent = 100
+      Background.Gradient1EndPercent = 35
+      Background.Style = bbsColor
+      BevelInner = bvNone
+      BevelOuter = bvNone
+      BevelWidth = 1
+      Border.Color = clActiveBorder
+      Border.Style = bboSolid
+      BorderBCStyle = bpsBorder
+      Caption = 'Планируемые отпуска'
+      FontEx.Color = clDefault
+      FontEx.FontQuality = fqSystemClearType
+      FontEx.Shadow = False
+      FontEx.ShadowRadius = 5
+      FontEx.ShadowOffsetX = 5
+      FontEx.ShadowOffsetY = 5
+      FontEx.Style = [fsBold]
+      FontEx.PaddingLeft = 10
+      ParentBackground = False
+      Rounding.RoundX = 1
+      Rounding.RoundY = 1
+      TabOrder = 0
+    end
+    object ListToolPanel: TPanel
+      Left = 0
+      Height = 40
+      Top = 34
+      Width = 665
+      Align = alTop
+      BorderSpacing.Top = 2
+      BorderSpacing.Right = 2
+      BorderSpacing.Bottom = 2
+      BevelOuter = bvNone
+      BorderStyle = bsSingle
+      ClientHeight = 36
+      ClientWidth = 661
+      ParentBackground = False
+      ParentColor = False
+      ParentFont = False
+      TabOrder = 1
+      Visible = False
+      object EditButton: TSpeedButton
+        Cursor = crHandPoint
+        Left = 0
+        Height = 36
+        Hint = 'Редактировать'
+        Top = 0
+        Width = 40
+        Align = alLeft
+        Enabled = False
+        Images = Images.PX24
+        ImageIndex = 6
+        OnClick = EditButtonClick
+        ShowHint = True
+        ParentShowHint = False
+      end
+      object FilterPanel: TPanel
+        Left = 60
+        Height = 36
+        Top = 0
+        Width = 600
+        Align = alLeft
+        BevelOuter = bvNone
+        Caption = 'FilterPanel'
+        ParentBackground = False
+        TabOrder = 0
+      end
+      object DividerBevel4: TDividerBevel
+        Left = 40
+        Height = 36
+        Top = 0
+        Width = 20
+        Caption = 'DividerBevel3'
+        Align = alLeft
+        BevelWidth = 1
+        Font.Style = [fsBold]
+        Orientation = trVertical
+        ParentFont = False
+      end
+    end
+    object VT: TVirtualStringTree
+      Left = 0
+      Height = 437
+      Top = 76
+      Width = 665
+      Align = alClient
+      BorderSpacing.Top = 2
+      BorderSpacing.Right = 2
+      BorderSpacing.Bottom = 2
+      DefaultNodeHeight = 25
+      DefaultText = 'Node'
+      Header.AutoSizeIndex = 0
+      Header.Columns = <>
+      Header.MainColumn = -1
+      TabOrder = 2
+      OnDblClick = VTDblClick
+    end
+  end
+  object SettingPanel: TPanel
     Left = 2
-    Height = 30
+    Height = 511
     Top = 44
-    Width = 818
-    Align = alTop
+    Width = 300
+    Align = alLeft
     BorderSpacing.Left = 2
     BorderSpacing.Top = 2
-    BorderSpacing.Right = 2
-    Background.Color = clBtnFace
-    Background.Gradient1.StartColor = clWhite
-    Background.Gradient1.EndColor = clBlack
-    Background.Gradient1.GradientType = gtLinear
-    Background.Gradient1.Point1XPercent = 0
-    Background.Gradient1.Point1YPercent = 0
-    Background.Gradient1.Point2XPercent = 0
-    Background.Gradient1.Point2YPercent = 100
-    Background.Gradient2.StartColor = clWhite
-    Background.Gradient2.EndColor = clBlack
-    Background.Gradient2.GradientType = gtLinear
-    Background.Gradient2.Point1XPercent = 0
-    Background.Gradient2.Point1YPercent = 0
-    Background.Gradient2.Point2XPercent = 0
-    Background.Gradient2.Point2YPercent = 100
-    Background.Gradient1EndPercent = 35
-    Background.Style = bbsColor
-    BevelInner = bvNone
+    BorderSpacing.Bottom = 2
     BevelOuter = bvNone
-    BevelWidth = 1
-    Border.Color = clActiveBorder
-    Border.Style = bboSolid
-    BorderBCStyle = bpsBorder
-    Caption = 'Планируемые отпуска'
-    FontEx.Color = clDefault
-    FontEx.FontQuality = fqSystemClearType
-    FontEx.Shadow = False
-    FontEx.ShadowRadius = 5
-    FontEx.ShadowOffsetX = 5
-    FontEx.ShadowOffsetY = 5
-    FontEx.Style = [fsBold]
-    FontEx.PaddingLeft = 10
+    ClientHeight = 511
+    ClientWidth = 300
+    Color = clWindow
     ParentBackground = False
-    Rounding.RoundX = 1
-    Rounding.RoundY = 1
-    TabOrder = 1
+    ParentColor = False
+    TabOrder = 2
+    Visible = False
+    object SettingCaptionPanel: TBCPanel
+      Left = 0
+      Height = 30
+      Top = 0
+      Width = 300
+      Align = alTop
+      BorderSpacing.Bottom = 2
+      Background.Color = clBtnFace
+      Background.Gradient1.StartColor = clWhite
+      Background.Gradient1.EndColor = clBlack
+      Background.Gradient1.GradientType = gtLinear
+      Background.Gradient1.Point1XPercent = 0
+      Background.Gradient1.Point1YPercent = 0
+      Background.Gradient1.Point2XPercent = 0
+      Background.Gradient1.Point2YPercent = 100
+      Background.Gradient2.StartColor = clWhite
+      Background.Gradient2.EndColor = clBlack
+      Background.Gradient2.GradientType = gtLinear
+      Background.Gradient2.Point1XPercent = 0
+      Background.Gradient2.Point1YPercent = 0
+      Background.Gradient2.Point2XPercent = 0
+      Background.Gradient2.Point2YPercent = 100
+      Background.Gradient1EndPercent = 35
+      Background.Style = bbsColor
+      BevelInner = bvNone
+      BevelOuter = bvNone
+      BevelWidth = 1
+      Border.Color = clActiveBorder
+      Border.Style = bboSolid
+      BorderBCStyle = bpsBorder
+      Caption = 'Параметры'
+      FontEx.Color = clDefault
+      FontEx.FontQuality = fqSystemClearType
+      FontEx.Shadow = False
+      FontEx.ShadowRadius = 5
+      FontEx.ShadowOffsetX = 5
+      FontEx.ShadowOffsetY = 5
+      FontEx.Style = [fsBold]
+      FontEx.TextAlignment = bcaLeftCenter
+      FontEx.PaddingLeft = 10
+      ParentBackground = False
+      Rounding.RoundX = 1
+      Rounding.RoundY = 1
+      TabOrder = 0
+    end
+    object SettingClientPanel: TPanel
+      Left = 0
+      Height = 479
+      Top = 32
+      Width = 300
+      Align = alClient
+      BevelOuter = bvNone
+      BorderStyle = bsSingle
+      ParentBackground = False
+      TabOrder = 1
+    end
+  end
+  object LeftSplitter: TSplitter
+    Left = 302
+    Height = 515
+    Top = 42
+    Width = 6
+    ResizeStyle = rsLine
+    Visible = False
   end
 end

@@ -271,12 +271,12 @@
         <UnitName Value="USchedulePersonalEditForm"/>
       </Unit>
       <Unit>
-        <Filename Value="forms\timing\uschedulevacationform.pas"/>
+        <Filename Value="forms\timing\uvacationscheduleform.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="ScheduleVacationForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <UnitName Value="UScheduleVacationForm"/>
+        <UnitName Value="UVacationScheduleForm"/>
       </Unit>
       <Unit>
         <Filename Value="forms\timing\uschedulepersonalmonthform.pas"/>
@@ -337,6 +337,14 @@
         <Filename Value="utils\uuiutils.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="UUIUtils"/>
+      </Unit>
+      <Unit>
+        <Filename Value="forms\timing\uvacationplaneditform.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="VacationPlanEditForm"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="UVacationPlanEditForm"/>
       </Unit>
     </Units>
   </ProjectOptions>

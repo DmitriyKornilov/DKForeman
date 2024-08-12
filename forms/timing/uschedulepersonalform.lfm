@@ -1106,7 +1106,7 @@ object SchedulePersonalForm: TSchedulePersonalForm
             Header.Height = 20
             Header.MainColumn = -1
             TabOrder = 1
-            OnNodeDblClick = DayVTNodeDblClick
+            OnDblClick = DayVTDblClick
           end
         end
         object CopyPanel: TPanel
@@ -1472,7 +1472,7 @@ object SchedulePersonalForm: TSchedulePersonalForm
         Header.MainColumn = -1
         Margin = 50
         TabOrder = 2
-        OnNodeDblClick = HistoryVTNodeDblClick
+        OnDblClick = HistoryVTDblClick
       end
     end
     object Splitter3: TSplitter

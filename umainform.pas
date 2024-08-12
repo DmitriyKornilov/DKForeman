@@ -194,7 +194,7 @@ begin
     1: (CategoryForm as TStaffForm).ViewUpdate(ModeType);
     2: (CategoryForm as TCalendarForm).ViewUpdate(ModeType);
     3: (CategoryForm as TScheduleShiftForm).ViewUpdate(ModeType);
-    4: ;
+    4: (CategoryForm as TVacationPlanForm).ViewUpdate(ModeType);
     5: (CategoryForm as TSchedulePersonalForm).ViewUpdate(ModeType);
     6: (CategoryForm as TTimetableForm).ViewUpdate(ModeType);
     7: ;
@@ -213,7 +213,7 @@ begin
     1: (CategoryForm as TStaffForm).SettingsSave;
     //2: (CategoryForm as TCalendarForm).SettingsSave;
     3: (CategoryForm as TScheduleShiftForm).SettingsSave;
-    4: ;
+    4: (CategoryForm as TVacationPlanForm).SettingsSave;
     5: (CategoryForm as TSchedulePersonalForm).SettingsSave;
     6: (CategoryForm as TTimetableForm).SettingsSave;
     7: ;

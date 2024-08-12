@@ -1,4 +1,4 @@
-unit UScheduleVacationForm;
+unit UVacationScheduleForm;
 
 {$mode ObjFPC}{$H+}
 
@@ -49,7 +49,7 @@ type
 var
   ScheduleVacationForm: TScheduleVacationForm;
 
-  procedure ScheduleVacationFormShow(const AYear: Word);
+  procedure VacationScheduleFormShow(const AYear: Word);
 
 implementation
 
@@ -57,7 +57,7 @@ uses UMainForm;
 
 {$R *.lfm}
 
-procedure ScheduleVacationFormShow(const AYear: Word);
+procedure VacationScheduleFormShow(const AYear: Word);
 var
   Form: TScheduleVacationForm;
 begin

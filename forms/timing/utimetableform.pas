@@ -80,8 +80,7 @@ type
     procedure CopyCancelButtonClick(Sender: TObject);
     procedure CopyDelButtonClick(Sender: TObject);
     procedure CopySaveButtonClick(Sender: TObject);
-    procedure DayVTNodeDblClick(Sender: TBaseVirtualTree;
-      const HitInfo: THitInfo);
+    procedure DayVTDblClick(Sender: TObject);
     procedure EditButtonClick(Sender: TObject);
     procedure EraseButtonClick(Sender: TObject);
     procedure ExportButtonClick(Sender: TObject);
@@ -293,13 +292,12 @@ begin
   CopyEnd(True);
 end;
 
-procedure TTimetableForm.DayVTNodeDblClick(Sender: TBaseVirtualTree;
-  const HitInfo: THitInfo);
+procedure TTimetableForm.DayVTDblClick(Sender: TObject);
 var
   D: TDate;
 begin
   if not VSTDays.IsSelected then Exit;
-  D:= MonthDates[HitInfo.HitNode^.Index];
+  D:= MonthDates[VSTDays.SelectedIndex];
   TimetableEditFormOpen(D);
 end;
 

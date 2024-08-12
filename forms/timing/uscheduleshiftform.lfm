@@ -664,7 +664,7 @@ object ScheduleShiftForm: TScheduleShiftForm
         Header.MainColumn = -1
         Margin = 50
         TabOrder = 2
-        OnNodeDblClick = ScheduleListVTNodeDblClick
+        OnDblClick = ScheduleListVTDblClick
       end
     end
     object EditingSplitter: TSplitter
@@ -842,7 +842,7 @@ object ScheduleShiftForm: TScheduleShiftForm
             Header.Height = 20
             Header.MainColumn = -1
             TabOrder = 1
-            OnNodeDblClick = DayVTNodeDblClick
+            OnDblClick = DayVTDblClick
           end
         end
         object CopyPanel: TPanel

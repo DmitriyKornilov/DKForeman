@@ -952,7 +952,7 @@ object TimetableForm: TTimetableForm
         Header.MainColumn = -1
         Margin = 50
         TabOrder = 1
-        OnNodeDblClick = DayVTNodeDblClick
+        OnDblClick = DayVTDblClick
       end
     end
     object CopyPanel: TPanel

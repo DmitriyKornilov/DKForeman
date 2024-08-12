@@ -150,7 +150,8 @@ type
                                   out ABeginDates, AEndDates: TDateMatrix): Boolean;
 
 
-    {Актуальная постоянная должность таб номера на дату}
+    {Постоянная должность таб номера на дату
+    (или первая после даты, если на эту дату еще не работал)}
     procedure StaffPostForDate(const ATabNumID: Integer;
                                const ADate: TDate;
                                out APostID: Integer;
@@ -215,6 +216,8 @@ type
     {Вектор дат праздничных дней с начала предыдщего года до конца текущего года}
     function HolidaysLoad(const AYear: Word): TDateVector;
     function HolidaysLoad(const ABeginDate, AEndDate: TDate): TDateVector;
+    {Количество праздничных дней за период}
+    function HolidaysCount(const ABeginDate, AEndDate: TDate): Integer;
 
     (**************************************************************************
                                      ГРАФИКИ
@@ -300,6 +303,30 @@ type
     function VacationScheduleLoad(const AYear: Integer;
                              out AStaffNames, ATabNums, APostNames: TStrVector;
                              out AFirstDates: TDateVector; out ATotalCounts: TIntVector): Boolean;
+    {Список планируемых отпусков на год: True - ОК, False - ошибка}
+    function VacationPlanListForYearLoad(const AFilterValue: String;
+                             const AOrderType, ARecrutType: Byte;
+                             const AYear: Integer;
+                             out ATabNumIDs: TIntVector;
+                             out AFamilies, ANames, APatronymics, ATabNums, APostNames: TStrVector;
+                             out ARecrutDates, APlan1FirstDates, APlan2FirstDates: TDateVector;
+                             out APlan1Counts, APlan1AddCounts, APlan2Counts, APlan2AddCounts: TIntVector): Boolean;
+
+    {Проверка наличия записи об отпуске в базе}
+    function VacationRecordIsExists(const AYear, ATabNumID: Integer): Boolean;
+    {Добавление записи о планируемом отпуске}
+    function VacationPlanAdd(const AYear, ATabNumID: Integer;
+                              const APlan1FirstDate, APlan2FirstDate: TDate;
+                              const APlan1Count, APlan1AddCount, APlan2Count, APlan2AddCount: Integer): Boolean;
+    {Обновление записи планируемого отпуска}
+    function VacationPlanUpdate(const AYear, ATabNumID: Integer;
+                              const APlan1FirstDate, APlan2FirstDate: TDate;
+                              const APlan1Count, APlan1AddCount, APlan2Count, APlan2AddCount: Integer): Boolean;
+    {Редактирование планируемго отпуска}
+    function VacationPlanEdit(const AYear, ATabNumID: Integer;
+                              const APlan1FirstDate, APlan2FirstDate: TDate;
+                              const APlan1Count, APlan1AddCount, APlan2Count, APlan2AddCount: Integer): Boolean;
+
 
     (**************************************************************************
                                       ТАБЕЛИ
@@ -582,18 +609,18 @@ begin
   begin
     SQLStr:= SQLStr + 'WHERE ';
     case AListType of
-    1: SQLStr:= SQLStr + '(((tt.DismissDate >= :ADate) OR (tt.DismissDate IS NULL)) AND (tt.TabNum IS NOT NULL)) ';
-    2: SQLStr:= SQLStr + '(((tt.DismissDate < :ADate) OR (tt.DismissDate IS NULL)) AND (tt.TabNum IS NOT NULL)) ';
-    3: SQLStr:= SQLStr + '(tt.TabNum IS NULL) ';
+      1: SQLStr:= SQLStr + '(((tt.DismissDate >= :ADate) OR (tt.DismissDate IS NULL)) AND (tt.TabNum IS NOT NULL)) ';
+      2: SQLStr:= SQLStr + '(((tt.DismissDate < :ADate) OR (tt.DismissDate IS NULL)) AND (tt.TabNum IS NOT NULL)) ';
+      3: SQLStr:= SQLStr + '(tt.TabNum IS NULL) ';
     end;
   end;
   SQLStr:= SQLStr + 'ORDER BY ';
   case AOrderType of
-  0,2: SQLStr:= SQLStr + 't1.Family, t1.Name, t1.Patronymic ';
-  1: SQLStr:= SQLStr + 'tt.TabNum, t1.Family, t1.Name, t1.Patronymic ';
-  3: SQLStr:= SQLStr + 't1.BornDate, t1.Family, t1.Name, t1.Patronymic ';
-  4: SQLStr:= SQLStr + 'tt.RecrutDate, t1.Family, t1.Name, t1.Patronymic ';
-  5: SQLStr:= SQLStr + 'tt.DismissDate, t1.Family, t1.Name, t1.Patronymic ';
+    0,2: SQLStr:= SQLStr + 't1.Family, t1.Name, t1.Patronymic ';
+    1: SQLStr:= SQLStr + 'tt.TabNum, t1.Family, t1.Name, t1.Patronymic ';
+    3: SQLStr:= SQLStr + 't1.BornDate, t1.Family, t1.Name, t1.Patronymic ';
+    4: SQLStr:= SQLStr + 'tt.RecrutDate, t1.Family, t1.Name, t1.Patronymic ';
+    5: SQLStr:= SQLStr + 'tt.DismissDate, t1.Family, t1.Name, t1.Patronymic ';
   end;
 
   QSetQuery(FQuery);
@@ -1199,8 +1226,10 @@ begin
     'SELECT t1.Rank, t1.PostID, t2.PostName ' +
     'FROM STAFFPOSTLOG t1 ' +
     'INNER JOIN STAFFPOST t2 ON (t1.PostID=t2.PostID) ' +
-    'WHERE (t1.TabNumID = :TabNumID) AND (t1.PostTemp = 0) AND (t1.FirstDate <= :DateValue) ' +
-    'ORDER BY t1.FirstDate DESC ' +
+    'WHERE (t1.TabNumID = :TabNumID) AND (t1.PostTemp = 0) AND (' +
+          '(:DateValue BETWEEN t1.FirstDate AND t1.LastDate ) OR (:DateValue<t1.FirstDate) ' +
+    ')' +
+    'ORDER BY t1.FirstDate ' +
     'LIMIT 1'
   );
   QParamDT('DateValue', ADate);
@@ -1734,6 +1763,26 @@ begin
   QClose;
 end;
 
+function TDataBase.HolidaysCount(const ABeginDate, AEndDate: TDate): Integer;
+begin
+  Result:= 0;
+  QSetQuery(FQuery);
+  QSetSQL(
+    'SELECT COUNT(DayDate) AS DaysCount FROM CALENDAR ' +
+    'WHERE (DayDate BETWEEN :BD AND :ED) AND (Status = :Status)'
+  );
+  QParamDT('BD', ABeginDate);
+  QParamDT('ED', AEndDate);
+  QParamInt('Status', DAY_STATUS_HOLIDAY);
+  QOpen;
+  if not QIsEmpty then
+  begin
+    QFirst;
+    Result:= QFieldInt('DaysCount');
+  end;
+  QClose;
+end;
+
 function TDataBase.ScheduleMainListLoad(out AScheduleIDs, AWeekHours, ACycleCounts: TIntVector;
                                   out AScheduleNames: TStrVector): Boolean;
 begin
@@ -2203,6 +2252,223 @@ begin
     StaffPostForDate(TabNumIDs[i], BD, TabNumID{tmp}, Name, TabNum{tmp});
     VAppend(APostNames, Name);
   end;
+end;
+
+function TDataBase.VacationPlanListForYearLoad(const AFilterValue: String;
+                             const AOrderType, ARecrutType: Byte;
+                             const AYear: Integer;
+                             out ATabNumIDs: TIntVector;
+                             out AFamilies, ANames, APatronymics, ATabNums, APostNames: TStrVector;
+                             out ARecrutDates, APlan1FirstDates, APlan2FirstDates: TDateVector;
+                             out APlan1Counts, APlan1AddCounts, APlan2Counts, APlan2AddCounts: TIntVector): Boolean;
+var
+  i, j: Integer;
+  BD, ED: TDate;
+  S1, S2, SQLStr: String;
+  Indexes: TIntVector;
+begin
+  Result:= False;
+  ATabNumIDs:= nil;
+  AFamilies:= nil;
+  ANames:= nil;
+  APatronymics:= nil;
+  ATabNums:= nil;
+  APostNames:= nil;
+  ARecrutDates:= nil;
+  APlan1FirstDates:= nil;
+  APlan1Counts:= nil;
+  APlan1AddCounts:= nil;
+  APlan2FirstDates:= nil;
+  APlan2Counts:= nil;
+  APlan2AddCounts:= nil;
+
+  FirstLastDayInYear(AYear, BD, ED);
+
+  SQLStr:=
+    'SELECT t1.TabNum, t1.TabNumID, t1.RecrutDate, ' +
+           't2.Name, t2.Patronymic, t2.Family, ' +
+           't3.Plan1Date, t3.Plan1Count, t3.Plan1CountAdd, ' +
+           't3.Plan2Date, t3.Plan2Count, t3.Plan2CountAdd ' +
+    'FROM STAFFTABNUM t1 ' +
+    'INNER JOIN STAFFMAIN t2 ON (t1.StaffID=t2.StaffID) ' +
+    'LEFT OUTER JOIN (' +
+       'SELECT TabNumID, YearNum, ' +
+              'Plan1Date, Plan1Count, Plan1CountAdd, ' +
+              'Plan2Date, Plan2Count, Plan2CountAdd ' +
+       'FROM STAFFVACATION ' +
+       'WHERE YearNum=:YearNum ' +
+       ') t3 ON (t1.TabNumID=t3.TabNumID) ';
+
+  case ARecrutType of
+    0: SQLStr:= SQLStr + 'WHERE ((t1.RecrutDate < :BD) AND (t1.DismissDate >= :BD)) ';
+    1: SQLStr:= SQLStr + 'WHERE (t1.RecrutDate BETWEEN :BD AND :ED) ';
+    2: SQLStr:= SQLStr + 'WHERE ((t1.RecrutDate <= :ED) AND (t1.DismissDate >= :BD)) ';
+  end;
+
+  if not SEmpty(AFilterValue) then
+    SQLStr:= SQLStr + 'AND (t2.FullName LIKE :FilterValue) ';
+
+  case AOrderType of
+    0,2: SQLStr:= SQLStr + 'ORDER BY t2.Family, t2.Name, t2.Patronymic';
+    1: SQLStr:= SQLStr + 'ORDER BY t1.TabNum, t2.Family, t2.Name, t2.Patronymic';
+    3: SQLStr:= SQLStr + 'ORDER BY t3.Plan1Date, t2.Family, t2.Name, t2.Patronymic';
+    4: SQLStr:= SQLStr + 'ORDER BY t3.Plan2Date, t2.Family, t2.Name, t2.Patronymic';
+  end;
+
+  QSetQuery(FQuery);
+  QSetSQL(SQLStr);
+  QParamDT('BD', BD);
+  QParamDT('ED', ED);
+  QParamInt('YearNum', AYear);
+  QParamStr('FilterValue', '%'+AFilterValue+'%');
+  QOpen;
+  if not QIsEmpty then
+  begin
+    QFirst;
+    while not QEOF do
+    begin
+      VAppend(ATabNumIDs, QFieldInt('TabNumID'));
+      VAppend(ATabNums, QFieldStr('TabNum'));
+      VAppend(ARecrutDates, QFieldDT('RecrutDate'));
+
+      VAppend(AFamilies, QFieldStr('Family'));
+      VAppend(ANames, QFieldStr('Name'));
+      VAppend(APatronymics, QFieldStr('Patronymic'));
+
+      VAppend(APlan1FirstDates, QFieldDT('Plan1Date'));
+      VAppend(APlan2FirstDates, QFieldDT('Plan2Date'));
+      VAppend(APlan1Counts, QFieldInt('Plan1Count'));
+      VAppend(APlan2Counts, QFieldInt('Plan2Count'));
+      VAppend(APlan1AddCounts, QFieldInt('Plan1CountAdd'));
+      VAppend(APlan2AddCounts, QFieldInt('Plan2CountAdd'));
+      QNext;
+    end;
+    Result:= True;
+  end;
+  QClose;
+
+  if not Result then Exit;
+
+  //актуальные должности и разряды на начало года
+  for i:= 0 to High(ATabNumIDs) do
+  begin
+    StaffPostForDate(ATabNumIDs[i], BD, j, S1, S2);
+    VAppend(APostNames, S1);
+  end;
+
+  //сортировка по наименованию должности
+  if AOrderType<>2 then Exit;
+  VSort(APostNames, Indexes);
+
+  APostNames:= VReplace(APostNames, Indexes);
+  ATabNumIDs:= VReplace(ATabNumIDs, Indexes);
+  ATabNums:= VReplace(ATabNums, Indexes);
+  AFamilies:= VReplace(AFamilies, Indexes);
+  ANames:= VReplace(ANames, Indexes);
+  APatronymics:= VReplace(APatronymics, Indexes);
+  APlan1FirstDates:= VReplace(APlan1FirstDates, Indexes);
+  APlan2FirstDates:= VReplace(APlan2FirstDates, Indexes);
+  APlan1Counts:= VReplace(APlan1Counts, Indexes);
+  APlan2Counts:= VReplace(APlan2Counts, Indexes);
+  APlan1AddCounts:= VReplace(APlan1Counts, Indexes);
+  APlan2AddCounts:= VReplace(APlan2Counts, Indexes);
+end;
+
+function TDataBase.VacationRecordIsExists(const AYear, ATabNumID: Integer): Boolean;
+begin
+  QSetQuery(FQuery);
+  QSetSQL(
+    'SELECT ID ' +
+    'FROM STAFFVACATION ' +
+    'WHERE (TabNumID = :TabNumID) AND (YearNum = :YearNum)'
+  );
+  QParamInt('TabNumID', ATabNumID);
+  QParamInt('YearNum', AYear);
+  QOpen;
+  Result:= not QIsEmpty;
+  QClose;
+end;
+
+function TDataBase.VacationPlanAdd(const AYear, ATabNumID: Integer;
+                              const APlan1FirstDate, APlan2FirstDate: TDate;
+                              const APlan1Count, APlan1AddCount, APlan2Count, APlan2AddCount: Integer): Boolean;
+begin
+  Result:= False;
+  QSetQuery(FQuery);
+  try
+    QSetSQL(
+      sqlINSERT('STAFFVACATION', ['TabNumID', 'YearNum',
+                                  'Plan1Date', 'Plan1Count', 'Plan1CountAdd',
+                                  'Plan2Date', 'Plan2Count', 'Plan2CountAdd',
+                                  'Fact1Date', 'Fact1Count', 'Fact1CountAdd',
+                                  'Fact2Date', 'Fact2Count', 'Fact2CountAdd'])
+    );
+    QParamInt('TabNumID', ATabNumID);
+    QParamInt('YearNum', AYear);
+
+    QParamDT('Plan1Date', APlan1FirstDate);
+    QParamInt('Plan1Count', APlan1Count);
+    QParamInt('Plan1CountAdd', APlan1AddCount);
+    QParamDT('Plan2Date', APlan2FirstDate, APlan2FirstDate>0);
+    QParamInt('Plan2Count', APlan2Count, APlan2Count>0);
+    QParamInt('Plan2CountAdd', APlan2AddCount, APlan2AddCount>0);
+
+    QParamDT('Fact1Date', APlan1FirstDate);
+    QParamInt('Fact1Count', APlan1Count);
+    QParamInt('Fact1CountAdd', APlan1AddCount);
+    QParamDT('Fact2Date', APlan2FirstDate, APlan2FirstDate>0);
+    QParamInt('Fact2Count', APlan2Count, APlan2Count>0);
+    QParamInt('Fact2CountAdd', APlan2AddCount, APlan2AddCount>0);
+
+    QExec;
+    QCommit;
+    Result:= True;
+  except
+    QRollback;
+  end;
+end;
+
+function TDataBase.VacationPlanUpdate(const AYear, ATabNumID: Integer;
+                              const APlan1FirstDate, APlan2FirstDate: TDate;
+                              const APlan1Count, APlan1AddCount, APlan2Count, APlan2AddCount: Integer): Boolean;
+begin
+  Result:= False;
+  QSetQuery(FQuery);
+  try
+    QSetSQL(
+      sqlUPDATE('STAFFVACATION', ['TabNumID', 'YearNum',
+                                  'Plan1Date', 'Plan1Count', 'Plan1CountAdd',
+                                  'Plan2Date', 'Plan2Count', 'Plan2CountAdd']) +
+      'WHERE (TabNumID = :TabNumID) AND (YearNum = :YearNum)'
+    );
+    QParamInt('TabNumID', ATabNumID);
+    QParamInt('YearNum', AYear);
+
+    QParamDT('Plan1Date', APlan1FirstDate);
+    QParamInt('Plan1Count', APlan1Count);
+    QParamInt('Plan1CountAdd', APlan1AddCount);
+    QParamDT('Plan2Date', APlan2FirstDate, APlan2FirstDate>0);
+    QParamInt('Plan2Count', APlan2Count, APlan2Count>0);
+    QParamInt('Plan2CountAdd', APlan2AddCount, APlan2AddCount>0);
+
+    QExec;
+    QCommit;
+    Result:= True;
+  except
+    QRollback;
+  end;
+end;
+
+function TDataBase.VacationPlanEdit(const AYear, ATabNumID: Integer;
+                              const APlan1FirstDate, APlan2FirstDate: TDate;
+                              const APlan1Count, APlan1AddCount, APlan2Count, APlan2AddCount: Integer): Boolean;
+begin
+  if VacationRecordIsExists(AYear, ATabNumID) then
+    Result:= VacationPlanUpdate(AYear, ATabNumID, APlan1FirstDate, APlan2FirstDate,
+                                APlan1Count, APlan1AddCount, APlan2Count, APlan2AddCount)
+  else
+    Result:= VacationPlanAdd(AYear, ATabNumID, APlan1FirstDate, APlan2FirstDate,
+                             APlan1Count, APlan1AddCount, APlan2Count, APlan2AddCount);
 end;
 
 function TDataBase.TimetableMarkListLoad(out ADigMarks: TIntVector;
