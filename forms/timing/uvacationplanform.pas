@@ -10,7 +10,7 @@ uses
   //DK packages utils
   DK_VSTTables, DK_VSTParamList, DK_VSTTypes, DK_Vector, DK_Filter, DK_StrUtils,
   //Project utils
-  UDataBase, UUtils, UUIUtils, UTypes,
+  UDataBase, UUtils, UUIUtils, UTypes, UConst,
   //Forms
   UVacationScheduleForm, UVacationPlanEditForm;
 
@@ -66,6 +66,7 @@ type
     procedure ParamListCreate;
     procedure OrderTypeSelect;
     procedure RecrutTypeSelect;
+    procedure ColumnsListSelect;
     procedure NameTypeSelect;
 
     procedure StaffListCreate;
@@ -134,6 +135,7 @@ begin
   CanLoadStaffList:= False;
   StaffListCreate;
   ParamListCreate;
+  SettingsLoad;
   YearSpinEdit.Value:= YearOf(Date);
   CreateFilterControls('Фильтр по Ф.И.О.:', FilterPanel, @StaffListFilter);
   CanLoadStaffList:= True;
@@ -195,6 +197,18 @@ begin
   ]);
   ParamList.AddStringList('RecrutType', S, V, @RecrutTypeSelect);
 
+  S:= 'Отображать столбцы:';
+  V:= VCreateStr([
+    '№ п/п',
+    'Ф.И.О',
+    'табельный номер',
+    'должность',
+    'дата приема',
+    'отпуск (1 часть)',
+    'отпуск (2 часть)'
+  ]);
+  ParamList.AddCheckList('ColumnsList', S, V, @ColumnsListSelect);
+
   S:= 'Формат имени:';
   V:= VCreateStr([
     'Фамилия Имя Отчество',
@@ -212,6 +226,11 @@ end;
 procedure TVacationPlanForm.RecrutTypeSelect;
 begin
   StaffListLoad;
+end;
+
+procedure TVacationPlanForm.ColumnsListSelect;
+begin
+  StaffList.ColumnVisibles:= ParamList.Checkeds['ColumnsList'];
 end;
 
 procedure TVacationPlanForm.NameTypeSelect;
@@ -353,12 +372,12 @@ end;
 
 procedure TVacationPlanForm.SettingsLoad;
 begin
-
+  ParamList.Params:= DataBase.SettingsLoad(SETTING_NAMES_VACATIONPLANFORM);
 end;
 
 procedure TVacationPlanForm.SettingsSave;
 begin
-
+  DataBase.SettingsUpdate(SETTING_NAMES_VACATIONPLANFORM, ParamList.Params);
 end;
 
 procedure TVacationPlanForm.ViewUpdate(const AModeType: TModeType);
