@@ -9,7 +9,6 @@ object VacationPlanForm: TVacationPlanForm
   DesignTimePPI = 120
   OnCreate = FormCreate
   OnDestroy = FormDestroy
-  OnShow = FormShow
   LCLVersion = '3.2.0.0'
   object ToolPanel: TPanel
     Left = 2
@@ -267,6 +266,7 @@ object VacationPlanForm: TVacationPlanForm
       DropDownArrowSize = 8
       GlobalOpacity = 255
       GlyphMargin = 0
+      OnClick = PlanButtonClick
       ParentColor = False
       Rounding.RoundX = 0
       Rounding.RoundY = 0

@@ -106,26 +106,6 @@ type
 var
   MainForm: TMainForm;
 
-const
-  MAIN_CAPTION =  'DKForeman v1.0.0';
-  MAIN_DESCRIPTION: array of String = (
-    {00} '',
-    {01} ' - [ШТАТ]',
-    {02} ' - [ПРОИЗВОДСТВЕННЫЙ КАЛЕНДАРЬ]',
-    {03} ' - [ГРАФИКИ СМЕННОСТИ]',
-    {04} ' - [ПЛАНИРОВАНИЕ ОТПУСКОВ]',
-    {05} ' - [ГРАФИКИ РАБОТЫ]',
-    {06} ' - [ТАБЕЛИ УЧЕТА РАБОЧЕГО ВРЕМЕНИ]',
-    {07} ' - [СРЕДСТВА ИНДИВИДУАЛЬНОЙ ЗАЩИТЫ]',
-    {08} ' - [СМЫВАЮЩИЕ И ОБЕЗВРЕЖИВАЮЩИЕ СРЕДСТВА]',
-    {09} ' - [ИНСТРУКТАЖИ, АТТЕСТАЦИЯ, ОБУЧЕНИЕ]',
-    {10} ' - [ГОДОВОЙ ГРАФИК СМЕННОСТИ]',
-    {11} ' - [СВОДНЫЙ ГРАФИК СМЕННОСТИ НА МЕСЯЦ]',
-    {12} ' - [ГРАФИК ОТПУСКОВ]',
-    {13} ' - [ОБЩИЙ ГРАФИК РАБОТЫ НА МЕСЯЦ]',
-    {14} ' - [ОБЩИЙ ТАБЕЛЬ УЧЕТА РАБОЧЕГО ВРЕМЕНИ ЗА МЕСЯЦ]'
-  );
-
 implementation
 
 {$R *.lfm}
@@ -381,13 +361,14 @@ end;
 
 procedure TMainForm.FormDestroy(Sender: TObject);
 begin
+  SettingsSave;
   FreeAndNil(DataBase);
   FreeAndNil(GridFont);
 end;
 
 procedure TMainForm.FormShow(Sender: TObject);
 begin
-  //MainForm.CategorySelect(0);
+  //CategorySelect(0);
 end;
 
 procedure TMainForm.SetGridFont;
@@ -514,7 +495,6 @@ end;
 
 procedure TMainForm.ExitButtonClick(Sender: TObject);
 begin
-  SettingsSave;
   Close;
 end;
 

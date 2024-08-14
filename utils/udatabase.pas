@@ -80,6 +80,16 @@ type
                    out ARecrutDates, ADismissDates, APostBDs, APostEDs, AScheduleBDs, AScheduleEDs: TDateVector;
                    out AFs, ANs, APs, ATabNums, APostNames, AScheduleNames: TStrVector): Boolean;
 
+    {Cписок сотрудников для планирования отпусков на год
+     AYear - отчетный период
+     AOrderType - сортировка: 0-график, 1-должность, 2-ФИО, 3-табельный номер
+     True - ОК, False - список пуст}
+    function StaffListForVacationPlanningLoad(const AYear: Integer;
+                   const AOrderType: Byte;
+                   out ATabNumIDs: TIntVector;
+                   out AFamilies, ANames, APatronymics, ATabNums, APostNames, AScheduleNames: TStrVector): Boolean;
+
+
 
     {Добавление данных нового человека: True - ОК, False - ошибка}
     function StaffMainAdd(out AStaffID: Integer;
@@ -314,6 +324,10 @@ type
 
     {Проверка наличия записи об отпуске в базе}
     function VacationRecordIsExists(const AYear, ATabNumID: Integer): Boolean;
+    {Получение данных о планируемом отпуске}
+    function VacationPlanLoad(const AYear, ATabNumID: Integer;
+                              out APlan1FirstDate, APlan2FirstDate: TDate;
+                              out APlan1Count, APlan1AddCount, APlan2Count, APlan2AddCount: Integer): Boolean;
     {Добавление записи о планируемом отпуске}
     function VacationPlanAdd(const AYear, ATabNumID: Integer;
                               const APlan1FirstDate, APlan2FirstDate: TDate;
@@ -326,6 +340,9 @@ type
     function VacationPlanEdit(const AYear, ATabNumID: Integer;
                               const APlan1FirstDate, APlan2FirstDate: TDate;
                               const APlan1Count, APlan1AddCount, APlan2Count, APlan2AddCount: Integer): Boolean;
+    {Обновление даты начала планируемого отпуска}
+    function VacationPlanDateUpdate(const AYear, ATabNumID, APart: Integer;
+                                    const APlanFirstDate: TDate): Boolean;
 
 
     (**************************************************************************
@@ -820,7 +837,7 @@ begin
   0:  SQLStr:= SQLStr + 'ORDER BY t6.ScheduleName, t1.Family, t1.Name, t1.Patronymic';
   1:  SQLStr:= SQLStr + 'ORDER BY t5.PostName, t6.ScheduleName, t1.Family, t1.Name, t1.Patronymic';
   2:  SQLStr:= SQLStr + 'ORDER BY t1.Family, t1.Name, t1.Patronymic';
-  3:  SQLStr:= SQLStr + 'ORDER BY t2.TabNum';
+  3:  SQLStr:= SQLStr + 'ORDER BY t2.TabNum, t1.Family, t1.Name, t1.Patronymic';
   end;
 
   QSetQuery(FQuery);
@@ -857,6 +874,88 @@ begin
     Result:= True;
   end;
   QClose;
+end;
+
+function TDataBase.StaffListForVacationPlanningLoad(const AYear: Integer;
+                   const AOrderType: Byte;
+                   out ATabNumIDs: TIntVector;
+                   out AFamilies, ANames, APatronymics, ATabNums, APostNames, AScheduleNames: TStrVector): Boolean;
+var
+  i, j: Integer;
+  BD: TDate;
+  S1, S2, SQLStr: String;
+  Indexes: TIntVector;
+begin
+  Result:= False;
+  ATabNumIDs:= nil;
+  AFamilies:= nil;
+  ANames:= nil;
+  APatronymics:= nil;
+  ATabNums:= nil;
+  APostNames:= nil;
+  AScheduleNames:= nil;
+
+  BD:= FirstDayInYear(AYear);
+
+  SQLStr:=
+    'SELECT t1.TabNum, t1.TabNumID,  ' +
+           't2.Name, t2.Patronymic, t2.Family, ' +
+           't4.ScheduleName ' +
+    'FROM STAFFTABNUM t1 ' +
+    'INNER JOIN STAFFMAIN t2 ON (t1.StaffID=t2.StaffID) ' +
+    'INNER JOIN STAFFSCHEDULE t3 ON (t1.TabNumID=t3.TabNumID) ' +
+    'INNER JOIN SCHEDULEMAIN t4 ON (t3.ScheduleID=t4.ScheduleID) ' +
+    'WHERE ((t1.RecrutDate < :BD) AND (t1.DismissDate >= :BD)) AND ' +
+          '(:BD BETWEEN t3.BeginDate AND t3.EndDate)';
+
+  //0-график, 1-должность, 2-ФИО, 3-табельный номер
+  case AOrderType of
+  0:    SQLStr:= SQLStr + 'ORDER BY t4.ScheduleName, t2.Family, t2.Name, t2.Patronymic';
+  1,2:  SQLStr:= SQLStr + 'ORDER BY t2.Family, t2.Name, t2.Patronymic';
+  3:    SQLStr:= SQLStr + 'ORDER BY t1.TabNum, t2.Family, t2.Name, t2.Patronymic';
+  end;
+
+  QSetQuery(FQuery);
+  QSetSQL(SQLStr);
+  QParamDT('BD', BD);
+  QOpen;
+  if not QIsEmpty then
+  begin
+    QFirst;
+    while not QEOF do
+    begin
+      VAppend(ATabNumIDs, QFieldInt('TabNumID'));
+      VAppend(AFamilies, QFieldStr('Family'));
+      VAppend(ANames, QFieldStr('Name'));
+      VAppend(APatronymics, QFieldStr('Patronymic'));
+      VAppend(ATabNums, QFieldStr('TabNum'));
+      VAppend(AScheduleNames, QFieldStr('ScheduleName'));
+      QNext;
+    end;
+    Result:= True;
+  end;
+  QClose;
+
+  if not Result then Exit;
+
+  //актуальные должности и разряды на начало года
+  for i:= 0 to High(ATabNumIDs) do
+  begin
+    StaffPostForDate(ATabNumIDs[i], BD, j, S1, S2);
+    VAppend(APostNames, S1);
+  end;
+
+  //сортировка по наименованию должности
+  if AOrderType<>1 then Exit;
+  VSort(APostNames, Indexes);
+
+  APostNames:= VReplace(APostNames, Indexes);
+  ATabNumIDs:= VReplace(ATabNumIDs, Indexes);
+  ATabNums:= VReplace(ATabNums, Indexes);
+  AFamilies:= VReplace(AFamilies, Indexes);
+  ANames:= VReplace(ANames, Indexes);
+  APatronymics:= VReplace(APatronymics, Indexes);
+  AScheduleNames:= VReplace(AScheduleNames, Indexes);
 end;
 
 function TDataBase.StaffMainAdd(out AStaffID: Integer;
@@ -2389,6 +2488,42 @@ begin
   QClose;
 end;
 
+function TDataBase.VacationPlanLoad(const AYear, ATabNumID: Integer;
+                              out APlan1FirstDate, APlan2FirstDate: TDate;
+                              out APlan1Count, APlan1AddCount, APlan2Count, APlan2AddCount: Integer): Boolean;
+begin
+  Result:= False;
+
+  APlan1FirstDate:= 0;
+  APlan2FirstDate:= 0;
+  APlan1Count:= 0;
+  APlan1AddCount:= 0;
+  APlan2Count:= 0;
+  APlan2AddCount:= 0;
+
+  QSetQuery(FQuery);
+  QSetSQL(
+    SqlSELECT('STAFFVACATION', ['Plan1Date', 'Plan1Count', 'Plan1CountAdd',
+                                'Plan2Date', 'Plan2Count', 'Plan2CountAdd']) +
+    'WHERE (TabNumID = :TabNumID) AND (YearNum = :YearNum)'
+  );
+  QParamInt('TabNumID', ATabNumID);
+  QParamInt('YearNum', AYear);
+  QOpen;
+  if not QIsEmpty then
+  begin
+    QFirst;
+    APlan1FirstDate:= QFieldDT('Plan1Date');
+    APlan2FirstDate:= QFieldDT('Plan2Date');
+    APlan1Count:= QFieldInt('Plan1Count');
+    APlan1AddCount:= QFieldInt('Plan1CountAdd');
+    APlan2Count:= QFieldInt('Plan2Count');
+    APlan2AddCount:= QFieldInt('Plan2CountAdd');
+    Result:= True;
+  end;
+  QClose;
+end;
+
 function TDataBase.VacationPlanAdd(const AYear, ATabNumID: Integer;
                               const APlan1FirstDate, APlan2FirstDate: TDate;
                               const APlan1Count, APlan1AddCount, APlan2Count, APlan2AddCount: Integer): Boolean;
@@ -2436,8 +2571,7 @@ begin
   QSetQuery(FQuery);
   try
     QSetSQL(
-      sqlUPDATE('STAFFVACATION', ['TabNumID', 'YearNum',
-                                  'Plan1Date', 'Plan1Count', 'Plan1CountAdd',
+      sqlUPDATE('STAFFVACATION', ['Plan1Date', 'Plan1Count', 'Plan1CountAdd',
                                   'Plan2Date', 'Plan2Count', 'Plan2CountAdd']) +
       'WHERE (TabNumID = :TabNumID) AND (YearNum = :YearNum)'
     );
@@ -2469,6 +2603,35 @@ begin
   else
     Result:= VacationPlanAdd(AYear, ATabNumID, APlan1FirstDate, APlan2FirstDate,
                              APlan1Count, APlan1AddCount, APlan2Count, APlan2AddCount);
+end;
+
+function TDataBase.VacationPlanDateUpdate(const AYear, ATabNumID, APart: Integer;
+                              const APlanFirstDate: TDate): Boolean;
+var
+  S: String;
+begin
+  Result:= False;
+
+  if APart=1 then
+    S:= 'Plan1Date'
+  else
+    S:= 'Plan2Date';
+
+  QSetQuery(FQuery);
+  try
+    QSetSQL(
+      sqlUPDATE('STAFFVACATION', [S]) +
+      'WHERE (TabNumID = :TabNumID) AND (YearNum = :YearNum)'
+    );
+    QParamInt('TabNumID', ATabNumID);
+    QParamInt('YearNum', AYear);
+    QParamDT(S, APlanFirstDate);
+    QExec;
+    QCommit;
+    Result:= True;
+  except
+    QRollback;
+  end;
 end;
 
 function TDataBase.TimetableMarkListLoad(out ADigMarks: TIntVector;

@@ -1029,7 +1029,8 @@
         "VACATIONPLANFORM.RECRUTDATE",
         "VACATIONPLANFORM.FIRSTPART",
         "VACATIONPLANFORM.SECONDPART",
-        "VACATIONPLANFORM.NAMETYPE"
+        "VACATIONPLANFORM.NAMETYPE",
+        "VACATIONPLANNINGFORM.ZOOM"
       ],
       "ReferenceTo" : {
         "TableName" : "",
@@ -1133,7 +1134,8 @@
         "1",
         "1",
         "1",
-        "0"
+        "0",
+        "100"
       ],
       "ReferenceTo" : {
         "TableName" : "",

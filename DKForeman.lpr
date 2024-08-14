@@ -20,7 +20,8 @@ UTimingSheet, UScheduleSheet,
   UScheduleShiftEditForm, UScheduleShiftMonthForm, UScheduleShiftCalendarForm,
   USchedulePersonalEditForm, UVacationScheduleForm, USchedulePersonalMonthForm,
   UTimetableEditForm, UTimetableMonthForm, UChooseForm, UImages,
-  UTimetableSheet, uschedule, UUIUtils, UVacationPlanEditForm;
+  UTimetableSheet, uschedule, UUIUtils, UVacationPlanEditForm, 
+UVacationPlanningForm;
 
 {$R *.res}
 

@@ -49,7 +49,46 @@ type
 var
   VacationPlanEditForm: TVacationPlanEditForm;
 
+  function VacationPlanEditFormShow(const AYear, ATabNumID: Integer;
+              const APlan1Date, APlan2Date: TDate;
+              const APlan1Count, APlan1AddCount, APlan2Count, APlan2AddCount: Integer): Integer;
+
 implementation
+
+function VacationPlanEditFormShow(const AYear, ATabNumID: Integer;
+            const APlan1Date, APlan2Date: TDate;
+            const APlan1Count, APlan1AddCount, APlan2Count, APlan2AddCount: Integer): Integer;
+var
+  Form: TVacationPlanEditForm;
+begin
+  Form:= TVacationPlanEditForm.Create(nil);
+  try
+    Form.YearNum:= AYear;
+    Form.TabNumID:= ATabNumID;
+
+    if APlan1Date>0 then
+      Form.Plan1DatePicker.Date:= APlan1Date;
+    if APlan1Count>0 then
+      Form.Plan1CountSpinEdit.Value:= APlan1Count;
+    if APlan1AddCount>0 then
+      Form.Plan1CountAddSpinEdit.Value:= APlan1AddCount;
+
+    if (APlan2Date>0) and
+       (APlan2Count+APlan2AddCount>0) then
+    begin
+      Form.Plan2CheckBox.Checked:= True;
+      Form.Plan2DatePicker.Date:= APlan2Date;
+      if APlan2Count>0 then
+        Form.Plan2CountSpinEdit.Value:= APlan2Count;
+      if APlan2AddCount>0 then
+       Form.Plan2CountAddSpinEdit.Value:= APlan2AddCount;
+    end;
+
+    Result:= Form.ShowModal;
+  finally
+    FreeAndNil(Form);
+  end;
+end;
 
 {$R *.lfm}
 

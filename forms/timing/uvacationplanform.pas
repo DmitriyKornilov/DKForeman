@@ -9,10 +9,11 @@ uses
   DividerBevel, BCPanel, BCButton, Spin, StdCtrls, VirtualTrees, DateUtils,
   //DK packages utils
   DK_VSTTables, DK_VSTParamList, DK_VSTTypes, DK_Vector, DK_Filter, DK_StrUtils,
+
   //Project utils
   UDataBase, UUtils, UUIUtils, UTypes, UConst,
   //Forms
-  UVacationScheduleForm, UVacationPlanEditForm;
+  UVacationScheduleForm, UVacationPlanEditForm, UVacationPlanningForm;
 
 type
 
@@ -45,7 +46,7 @@ type
     procedure ExportButtonClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
-    procedure FormShow(Sender: TObject);
+    procedure PlanButtonClick(Sender: TObject);
     procedure ScheduleButtonClick(Sender: TObject);
     procedure VTDblClick(Sender: TObject);
     procedure YearSpinEditChange(Sender: TObject);
@@ -75,6 +76,7 @@ type
     procedure StaffListFilter(const AFilterString: String);
 
     procedure VacationPlanEditFormOpen;
+    procedure VacationPlanningFormOpen;
 
     procedure SettingsLoad;
   public
@@ -149,10 +151,23 @@ begin
   FreeAndNil(ParamList);
 end;
 
-procedure TVacationPlanForm.FormShow(Sender: TObject);
+procedure TVacationPlanForm.VacationPlanningFormOpen;
+var
+  VacationPlanningForm: TVacationPlanningForm;
 begin
+  VacationPlanningForm:= TVacationPlanningForm.Create(nil);
+  try
+    VacationPlanningForm.YearSpinEdit.Value:= YearSpinEdit.Value;
+    VacationPlanningForm.ShowModal;
+    StaffListLoad;
+  finally
+    FreeAndNil(VacationPlanningForm);
+  end;
+end;
 
-
+procedure TVacationPlanForm.PlanButtonClick(Sender: TObject);
+begin
+  VacationPlanningFormOpen;
 end;
 
 procedure TVacationPlanForm.ScheduleButtonClick(Sender: TObject);
@@ -254,7 +269,7 @@ begin
   StaffList.AddColumn('№ п/п', 50);
   StaffList.AddColumn('Ф.И.О', 250);
   StaffList.AddColumn('Табельный номер', 120);
-  StaffList.AddColumn('Должность', 300);
+  StaffList.AddColumn('Должность на начало года', 300);
   StaffList.AddColumn('Дата приема', 100);
   StaffList.AddColumn('Отпуск (1 часть)', 150);
   StaffList.AddColumn('Отпуск (2 часть)', 150);
@@ -267,26 +282,6 @@ procedure TVacationPlanForm.StaffListLoad(const SelectedID: Integer);
 var
   V: TStrVector;
   SelectedTabNumID: Integer;
-
-  function VacationPart(const AFirstDate: TDate; const ACount, AAddCount: Integer): String;
-  begin
-    Result:= EmptyStr;
-    if Acount=0 then Exit;
-    Result:= FormatDateTime('с dd.mm.yyyy на ', AFirstDate) +
-             IntToStr(ACount+AAddCount) + ' дней';
-  end;
-
-  function VVacationPart(const AFirstDates: TDateVector; const ACounts, AAddCounts: TIntVector): TStrVector;
-  var
-    i: Integer;
-  begin
-    Result:= nil;
-    if VIsNil(AFirstDates) then Exit;
-    VDim(Result, Length(AFirstDates));
-    for i:= 0 to High(AFirstDates) do
-      Result[i]:= VacationPart(AFirstDates[i], ACounts[i], AAddCounts[i]);
-  end;
-
 begin
   if not CanLoadStaffList then Exit;
 
@@ -309,7 +304,7 @@ begin
     StaffList.SetColumn('№ п/п', V);
     NameTypeSelect;
     StaffList.SetColumn('Табельный номер', TabNums);
-    StaffList.SetColumn('Должность', PostNames, taLeftJustify);
+    StaffList.SetColumn('Должность на начало года', PostNames, taLeftJustify);
     StaffList.SetColumn('Дата приема', VFormatDateTime('dd.mm.yyyy', RecrutDates));
     V:= VVacationPart(Part1FirstDates, Part1Counts, Part1AddCounts);
     StaffList.SetColumn('Отпуск (1 часть)', V);
@@ -336,38 +331,16 @@ end;
 
 procedure TVacationPlanForm.VacationPlanEditFormOpen;
 var
-  //TabNumID: Integer;
-  VacationPlanEditForm: TVacationPlanEditForm;
+  i, TabNumID: Integer;
 begin
-  //TabNumID:= TabNumIDs[StaffList.SelectedIndex];
-  VacationPlanEditForm:= TVacationPlanEditForm.Create(nil);
-  try
-    VacationPlanEditForm.YearNum:= YearSpinEdit.Value;
-    VacationPlanEditForm.TabNumID:= TabNumIDs[StaffList.SelectedIndex];
+  i:= StaffList.SelectedIndex;
+  TabNumID:= TabNumIDs[i];
 
-    if Part1FirstDates[StaffList.SelectedIndex]>0 then
-      VacationPlanEditForm.Plan1DatePicker.Date:= Part1FirstDates[StaffList.SelectedIndex];
-    if Part1Counts[StaffList.SelectedIndex]>0 then
-      VacationPlanEditForm.Plan1CountSpinEdit.Value:= Part1Counts[StaffList.SelectedIndex];
-    if Part1AddCounts[StaffList.SelectedIndex]>0 then
-      VacationPlanEditForm.Plan1CountAddSpinEdit.Value:= Part1AddCounts[StaffList.SelectedIndex];
-
-    if (Part2FirstDates[StaffList.SelectedIndex]>0) and
-       (Part2Counts[StaffList.SelectedIndex]>0) then
-    begin
-      VacationPlanEditForm.Plan2CheckBox.Checked:= True;
-      VacationPlanEditForm.Plan2DatePicker.Date:= Part2FirstDates[StaffList.SelectedIndex];
-      VacationPlanEditForm.Plan2CountSpinEdit.Value:= Part2Counts[StaffList.SelectedIndex];
-      if Part2AddCounts[StaffList.SelectedIndex]>0 then
-       VacationPlanEditForm.Plan2CountAddSpinEdit.Value:= Part2AddCounts[StaffList.SelectedIndex];
-    end;
-
-    if VacationPlanEditForm.ShowModal=mrOK then
-      StaffListLoad(VacationPlanEditForm.TabNumID);
-  finally
-    FreeAndNil(VacationPlanEditForm);
-  end;
-
+  if VacationPlanEditFormShow(YearSpinEdit.Value, TabNumID,
+                          Part1FirstDates[i], Part2FirstDates[i],
+                          Part1Counts[i], Part1AddCounts[i],
+                          Part2Counts[i], Part2AddCounts[i]) <> mrOK then Exit;
+  StaffListLoad(TabNumID);
 end;
 
 procedure TVacationPlanForm.SettingsLoad;

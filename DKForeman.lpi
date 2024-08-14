@@ -346,6 +346,14 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UVacationPlanEditForm"/>
       </Unit>
+      <Unit>
+        <Filename Value="forms\timing\uvacationplanningform.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="VacationPlanningForm"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="UVacationPlanningForm"/>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

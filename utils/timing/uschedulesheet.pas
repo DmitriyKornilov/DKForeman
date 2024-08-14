@@ -6,14 +6,88 @@ interface
 
 uses
   Classes, SysUtils, Graphics, fpspreadsheetgrid, fpspreadsheet, fpstypes,
-  LCLType, Controls, DateUtils,
+  LCLType, Controls, DateUtils, Grids,
   //Project utils
-  UUtils, UConst, UTypes, UCalendar, UWorkHours, uschedule, UTimingSheet,
+  UUtils, UConst, UTypes, UCalendar, UWorkHours, USchedule, UTimingSheet,
   //DK packages utils
   DK_SheetWriter, DK_Vector, DK_Const, DK_DateUtils, DK_StrUtils, DK_SheetTypes,
-  DK_Math, DK_Color;
+  DK_SheetConst, DK_Math, DK_Color;
 
 type
+
+  { TVacationStatSheet }
+
+  TVacationStatSheet = class (TCustomSheet)
+  protected
+    function SetWidths: TIntVector; override;
+  public
+    procedure Draw;
+    procedure Update(const ACounts: TIntVector);
+  end;
+
+  { TVacationPlanSheet }
+
+  TVacationPlanSheet = class (TCustomSheet)
+  protected
+    function SetWidths: TIntVector; override;
+  private
+    const
+      NAME_COLUMN_WIDTH = 150;
+      TABNUM_COLUMN_WIDTH = 100;
+      DATE_COLUMN_WIDTH = 130;
+      DAY_COLUMN_WIDTH = 35;
+    var
+      FFirstDateCol: Integer;
+      FLastRow: Integer;
+      FCalendar: TCalendar;
+      FSelectedRowIndex, FSelectedCol: Integer;
+      FOnSelect: TSheetEvent;
+
+    function DateToIndex(const ADate: TDate): Integer;
+    function ColToIndex(const ACol: Integer): Integer;
+    function IndexToCol(const AIndex: Integer): Integer;
+    function IndexToRow(const AIndex: Integer): Integer;
+    function RowToIndex(const ARow: Integer): Integer;
+
+    procedure CaptionDraw;
+
+    procedure StaffLineDraw(const AIndex: Integer;
+                            const AStaffName, ATabNum: String);
+    procedure ScheduleLineDraw(const AIndex: Integer;
+                               const ASchedule: TPersonalSchedule);
+
+    procedure Select(const ARowIndex, ACol: Integer);
+    procedure Unselect(const ANeedDoEvent: Boolean);
+
+    procedure MouseDown(Sender: TObject; Button: TMouseButton; {%H-}Shift: TShiftState; X, Y: Integer);
+    procedure DrawCell(Sender: TObject; aCol, aRow: Integer; aRect: TRect; {%H-}aState: TGridDrawState);
+  public
+    constructor Create(const ACalendar: TCalendar;
+                       const AWorksheet: TsWorksheet; const AGrid: TsWorksheetGrid;
+                       const AFont: TFont);
+
+    procedure Draw(const AStaffNames, ATabNums: TStrVector;
+         const ASchedules: TPersonalScheduleVector;
+         const APlan1Dates, APlan2Dates: TDateVector;
+         const APlan1Counts, APlan1AddCounts, APlan2Counts, APlan2AddCounts: TIntVector);
+
+    procedure BeginDraw;
+    procedure EndDraw(const ARowCount: Integer);
+
+    procedure LineDraw(const AIndex: Integer;
+                 const AStaffName, ATabNum: String;
+                 const ASchedule: TPersonalSchedule;
+                 const APlan1Date, APlan2Date: TDate;
+                 const APlan1Count, APlan1AddCount, APlan2Count, APlan2AddCount: Integer);
+    procedure VacationLineDraw(const AIndex: Integer;
+                const APlan1Date, APlan2Date: TDate;
+                const APlan1Count, APlan1AddCount, APlan2Count, APlan2AddCount: Integer);
+
+    function IsSelected: Boolean;
+    function SelectedPart: Integer;
+    property SelectedIndex: Integer read FSelectedRowIndex;
+    property OnSelect: TSheetEvent read FOnSelect write FOnSelect;
+  end;
 
   { TVacationScheduleSheet }
   //График отпусков (Форма Т-7)
@@ -976,6 +1050,374 @@ begin
   if not FNeedNight then Exit;
   if not DateToGrid(ADate, R, C) then Exit;
   SelectionDelCell(R+1, C);
+end;
+
+{ TVacationStatSheet }
+
+function TVacationStatSheet.SetWidths: TIntVector;
+begin
+  VDim(Result{%H-}, 12, 100);
+end;
+
+procedure TVacationStatSheet.Draw;
+var
+  i: Integer;
+begin
+  Writer.BeginEdit;
+
+  Writer.SetFont(Font.Name, Font.Size, [{fsBold}], clBlack);
+  Writer.SetAlignment(haCenter, vaCenter);
+  Writer.SetBackgroundDefault;
+
+  for i:= 1 to 12 do
+  begin
+    Writer.WriteText(1, i, SUpper(MONTHSNOM[i]), cbtOuter);
+    Writer.WriteNumber(2, i, 0, cbtOuter);
+  end;
+
+  Writer.EndEdit;
+end;
+
+procedure TVacationStatSheet.Update(const ACounts: TIntVector);
+var
+  i: Integer;
+begin
+  for i:= 1 to 12 do
+    Writer.WriteNumber(2, i, ACounts[i-1], cbtOuter);
+end;
+
+{ TVacationPlanSheet }
+
+function TVacationPlanSheet.SetWidths: TIntVector;
+begin
+  FFirstDateCol:= 5;
+  Result:= nil;
+  VDim(Result, FCalendar.DaysCount + FFirstDateCol - 1, DAY_COLUMN_WIDTH);
+  Result[0]:= NAME_COLUMN_WIDTH;
+  Result[1]:= TABNUM_COLUMN_WIDTH;
+  Result[2]:= DATE_COLUMN_WIDTH;
+  Result[3]:= DATE_COLUMN_WIDTH;
+end;
+
+function TVacationPlanSheet.DateToIndex(const ADate: TDate): Integer;
+begin
+  Result:= DayNumberInYear(ADate) - 1;
+end;
+
+function TVacationPlanSheet.ColToIndex(const ACol: Integer): Integer;
+begin
+  Result:= ACol - FFirstDateCol;
+end;
+
+function TVacationPlanSheet.IndexToCol(const AIndex: Integer): Integer;
+begin
+  Result:= AIndex + FFirstDateCol;
+end;
+
+function TVacationPlanSheet.IndexToRow(const AIndex: Integer): Integer;
+begin
+  Result:= AIndex + 3;
+end;
+
+function TVacationPlanSheet.RowToIndex(const ARow: Integer): Integer;
+begin
+ Result:= ARow - 3;
+end;
+
+procedure TVacationPlanSheet.CaptionDraw;
+var
+  R, C1, C2, i, j, YearNum: Integer;
+begin
+  YearNum:= YearOf(FCalendar.BeginDate);
+
+  R:= 1;
+  Writer.SetFont(Font.Name, Font.Size, [fsBold], clBlack);
+  Writer.SetAlignment(haCenter, vaCenter);
+  Writer.SetBackgroundDefault;
+
+  Writer.WriteText(R, 1, R+1, 1, 'Фамилия И.О.', cbtOuter);
+  Writer.WriteText(R, 2, R+1, 2, 'Табельный номер', cbtOuter);
+  Writer.WriteText(R, 3, R+1, 3, 'Отпуск (1 часть)', cbtOuter);
+  Writer.WriteText(R, 4, R+1, 4, 'Отпуск (2 часть)', cbtOuter);
+
+  C2:= FFirstDateCol - 1;
+  for i:= 1 to 12 do
+  begin
+    C1:= C2 + 1;
+    C2:= C2 + DaysInAMonth(YearNum, i);
+    Writer.WriteText(R, C1, R, C2, SUpper(MONTHSNOM[i]), cbtOuter);
+    for j:= C1 to C2 do
+    begin
+      if FCalendar.DayStatuses[ColToIndex(j)]=DAY_STATUS_HOLIDAY then
+        Writer.SetBackground(COLORS_CALENDAR[DAY_STATUS_HOLIDAY])
+      else
+        Writer.SetBackgroundDefault;
+      Writer.WriteNumber(R+1, j, j-C1+1, cbtOuter);
+    end;
+    //
+  end;
+end;
+
+procedure TVacationPlanSheet.StaffLineDraw(const AIndex: Integer;
+                                           const AStaffName, ATabNum: String);
+var
+  R: Integer;
+begin
+  Writer.SetFont(Font.Name, Font.Size, [{fsBold}], clBlack);
+  Writer.SetBackgroundDefault;
+  R:= IndexToRow(AIndex);
+  Writer.SetAlignment(haLeft, vaCenter);
+  Writer.WriteText(R, 1, AStaffName, cbtOuter);
+  Writer.SetAlignment(haCenter, vaCenter);
+  Writer.WriteText(R, 2, ATabNum, cbtOuter);
+end;
+
+procedure TVacationPlanSheet.ScheduleLineDraw(const AIndex: Integer;
+                                              const ASchedule: TPersonalSchedule);
+var
+  R, C, H, i: Integer;
+begin
+  Writer.SetFont(Font.Name, Font.Size, [{fsBold}], clBlack);
+  Writer.SetBackgroundDefault;
+  Writer.SetAlignment(haCenter, vaCenter);
+  R:= IndexToRow(AIndex);
+  for i:= 0 to FCalendar.DaysCount-1 do
+  begin
+    C:= IndexToCol(i);
+    H:= ASchedule.HoursCorrect.Totals[i];
+    if H>0 then
+      WriteCellHours(Writer, R, C, H)
+    else
+      Writer.WriteText(R, C, EmptyStr, cbtOuter);
+  end;
+end;
+
+procedure TVacationPlanSheet.Select(const ARowIndex, ACol: Integer);
+begin
+  FSelectedRowIndex:= ARowIndex;
+  FSelectedCol:= ACol;
+
+  if IsSelected then
+  begin
+    Writer.SetBackground(DefaultSelectionBGColor);
+    Writer.WriteBackground(IndexToRow(ARowIndex), ACol);
+    Writer.SetBackgroundDefault;
+  end;
+
+  if Assigned(FOnSelect) then FOnSelect;
+end;
+
+procedure TVacationPlanSheet.Unselect(const ANeedDoEvent: Boolean);
+begin
+  if IsSelected then
+  begin
+    Writer.SetBackgroundDefault;
+    Writer.WriteBackground(IndexToRow(FSelectedRowIndex), FSelectedCol);
+  end;
+
+  FSelectedRowIndex:= -1;
+  FSelectedCol:= 0;
+
+  if ANeedDoEvent and Assigned(FOnSelect) then FOnSelect;
+end;
+
+procedure TVacationPlanSheet.MouseDown(Sender: TObject; Button: TMouseButton;
+  Shift: TShiftState; X, Y: Integer);
+var
+  R, C: Integer;
+begin
+  if FLastRow<=2 then Exit;
+  if Button=mbLeft then
+  begin
+     (Sender as TsWorksheetGrid).MouseToCell(X, Y, C, R);
+     if not ((C in [3, 4]) and ((R>2) and (R<=FLastRow))) then Exit;
+     Unselect(False);
+     Select(RowToIndex(R), C);
+  end
+  else if Button=mbRight then
+    Unselect(True);
+end;
+
+procedure TVacationPlanSheet.DrawCell(Sender: TObject; aCol, aRow: Integer;
+  aRect: TRect; aState: TGridDrawState);
+var
+  Grid: TsWorksheetGrid;
+begin
+  //fix frozen pane border drawing
+  if not ((ACol=FFirstDateCol-1) and ((ARow>=1) and (ARow<=FLastRow))) then Exit;
+  Grid:= Sender as TsWorksheetGrid;
+  Grid.Canvas.Pen.Color:= clBlack;
+  Grid.Canvas.Pen.Style:= psSolid;
+  Grid.Canvas.Line(aRect.Right-1, aRect.Top, aRect.Right-1, aRect.Bottom);
+end;
+
+procedure TVacationPlanSheet.VacationLineDraw(const AIndex: Integer;
+   const APlan1Date, APlan2Date: TDate;
+   const APlan1Count, APlan1AddCount, APlan2Count, APlan2AddCount: Integer);
+var
+  R, C: Integer;
+  S: String;
+
+  function GetEndDate(const ABeginDate: TDate; const ADaysCount: Integer): TDate;
+  var
+    HolidaysCount: Integer;
+  begin
+    Result:= IncDay(ABeginDate, ADaysCount-1);
+    HolidaysCount:= FCalendar.HoliDaysCount(ABeginDate, Result);
+    if HolidaysCount>0 then
+      Result:= IncDay(Result, HolidaysCount);
+    if CompareDate(Result, FCalendar.EndDate)>0 then
+      Result:= FCalendar.EndDate;
+  end;
+
+  procedure ColorClear;
+  var
+    i: Integer;
+  begin
+    Writer.SetBackgroundDefault;
+    for i:= 0 to FCalendar.DaysCount-1 do
+    begin
+      C:= IndexToCol(i);
+      Writer.WriteBackground(R, C);
+    end;
+  end;
+
+  procedure ColorDraw(const AFirstIndex, ALastIndex: Integer; const ABGColor: TColor);
+  var
+    i: Integer;
+  begin
+    for i:= AFirstIndex to ALastIndex do
+    begin
+      C:= IndexToCol(i);
+      if FCalendar.DayStatuses[i]=DAY_STATUS_HOLIDAY then
+        Writer.SetBackground(COLORS_CALENDAR[DAY_STATUS_HOLIDAY])
+      else
+        Writer.SetBackground(ABGColor);
+      Writer.WriteBackground(R, C);
+    end;
+  end;
+
+  procedure VacationDraw(const ABeginDate: TDate; const ACount, AAddCount: Integer);
+  var
+    FirstDate, EndDate: TDate;
+    FirstIndex, LastIndex: Integer;
+  begin
+    FirstDate:= ABeginDate;
+    EndDate:= IncDay(FirstDate, -1);
+    if ACount>0 then
+    begin
+      FirstDate:= IncDay(EndDate);
+      FirstIndex:= DateToIndex(FirstDate);
+      EndDate:= GetEndDate(FirstDate, ACount);
+      LastIndex:= DateToIndex(EndDate);
+      ColorDraw(FirstIndex, LastIndex, COLORS_CALENDAR[DAY_STATUS_OFFDAY]);
+    end;
+    if AAddCount>0 then
+    begin
+      FirstDate:= IncDay(EndDate);
+      FirstIndex:= DateToIndex(FirstDate);
+      EndDate:= GetEndDate(FirstDate, AAddCount);
+      LastIndex:= DateToIndex(EndDate);
+      ColorDraw(FirstIndex, LastIndex, COLORS_CALENDAR[DAY_STATUS_BEFORE]);
+    end;
+    Writer.SetBackgroundDefault;
+  end;
+
+begin
+  Writer.SetFont(Font.Name, Font.Size, [{fsBold}], clBlack);
+  Writer.SetAlignment(haCenter, vaCenter);
+
+  R:= IndexToRow(AIndex);
+  S:= VacationPart(APlan1Date, APlan1Count, APlan1AddCount);
+  if (FSelectedCol=3) and (SelectedIndex=AIndex) then
+    Writer.SetBackground(DefaultSelectionBGColor)
+  else
+    Writer.SetBackgroundDefault;
+  Writer.WriteText(R, 3, S, cbtOuter);
+  if (FSelectedCol=4) and (SelectedIndex=AIndex) then
+    Writer.SetBackground(DefaultSelectionBGColor)
+  else
+    Writer.SetBackgroundDefault;
+  S:= VacationPart(APlan2Date, APlan2Count, APlan2AddCount);
+  Writer.WriteText(R, 4, S, cbtOuter);
+  Writer.SetBackgroundDefault;
+
+  ColorClear;
+  VacationDraw(APlan1Date, APlan1Count, APlan1AddCount);
+  VacationDraw(APlan2Date, APlan2Count, APlan2AddCount);
+end;
+
+function TVacationPlanSheet.IsSelected: Boolean;
+begin
+  Result:= (FSelectedRowIndex>=0) and (FSelectedCol>0);
+end;
+
+function TVacationPlanSheet.SelectedPart: Integer;
+begin
+  Result:= 0;
+  if FSelectedCol>0 then
+    Result:= FSelectedCol - 2;
+end;
+
+constructor TVacationPlanSheet.Create(const ACalendar: TCalendar;
+                       const AWorksheet: TsWorksheet; const AGrid: TsWorksheetGrid;
+                       const AFont: TFont);
+begin
+  FCalendar:= ACalendar;
+  inherited Create(AWorksheet, AGrid, AFont);
+  if not Writer.HasGrid then Exit;
+  Writer.Grid.Options:= Writer.Grid.Options - [goRangeSelect] + [goThumbTracking];
+  Writer.Grid.OnDrawCell:= @DrawCell;
+  Writer.Grid.OnMouseDown:= @MouseDown;
+end;
+
+procedure TVacationPlanSheet.Draw(const AStaffNames, ATabNums: TStrVector;
+          const ASchedules: TPersonalScheduleVector;
+          const APlan1Dates, APlan2Dates: TDateVector;
+          const APlan1Counts, APlan1AddCounts, APlan2Counts, APlan2AddCounts: TIntVector);
+var
+  i: Integer;
+begin
+  BeginDraw;
+  for i:=0 to High(AStaffNames) do
+    LineDraw(i, AStaffNames[i], ATabNums[i], ASchedules[i], APlan1Dates[i], APlan2Dates[i],
+             APlan1Counts[i], APlan1AddCounts[i], APlan2Counts[i], APlan2AddCounts[i]);
+  EndDraw(Length(AStaffNames));
+end;
+
+procedure TVacationPlanSheet.BeginDraw;
+begin
+  Writer.BeginEdit;
+  CaptionDraw;
+end;
+
+procedure TVacationPlanSheet.EndDraw(const ARowCount: Integer);
+var
+  i, X: Integer;
+begin
+  X:= IndexToRow(ARowCount);
+  for i:= 1 to Writer.ColCount do
+    Writer.WriteText(X, i, EmptyStr, cbtTop);
+  FLastRow:= 2;
+  if ARowCount>0 then
+  begin
+    Writer.SetFrozenRows(2);
+    FLastRow:= FLastRow + ARowCount;
+  end;
+  Writer.SetFrozenCols(IndexToCol(-1));
+  Writer.EndEdit;
+end;
+
+procedure TVacationPlanSheet.LineDraw(const AIndex: Integer;
+                const AStaffName, ATabNum: String;
+                const ASchedule: TPersonalSchedule;
+                const APlan1Date, APlan2Date: TDate;
+                const APlan1Count, APlan1AddCount, APlan2Count, APlan2AddCount: Integer);
+begin
+  StaffLineDraw(AIndex, AStaffName, ATabNum);
+  ScheduleLineDraw(AIndex, ASchedule);
+  VacationLineDraw(AIndex, APlan1Date, APlan2Date,
+                   APlan1Count, APlan1AddCount, APlan2Count, APlan2AddCount);
 end;
 
 { TVacationScheduleSheet }

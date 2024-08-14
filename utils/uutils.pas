@@ -36,6 +36,21 @@ uses
                          out AStaffNames, ATabNums, APostNames, AScheduleNames: TStrMatrix;
                          out ARecrutDates, ADismissDates, APostBDs, APostEDs, AScheduleBDs, AScheduleEDs: TDateMatrix;
                          const ANeedLongName: Boolean = False): Boolean;
+
+   function StaffListForVacationPlanningLoad(const AYear: Integer;
+                   const AOrderType: Byte;
+                   out ATabNumIDs: TIntVector;
+                   out AStaffNames, ATabNums, APostNames, AScheduleNames: TStrVector): Boolean;
+   function StaffListForVacationPlanningLoad(const AYear: Integer;
+                   const AOrderType: Byte;
+                   out ACategoryNames: TStrVector;
+                   out ATabNumIDs: TIntMatrix;
+                   out AStaffNames, ATabNums, APostNames, AScheduleNames: TStrMatrix): Boolean;
+
+
+  function StaffNameForVacationPlanning(const AStaffName, ATabNum, APostName: String): String;
+  function StaffNameForVacationPlanning(const AStaffNames, ATabNums, APostNames: TStrVector): TStrVector;
+
   function StaffNameForPersonalTiming(const AF, AN, AP, ATabNum, APostName: String;
                               const ANeedLongName: Boolean = False): String;
   function StaffNamesForPersonalTiming(const AFs, ANs, APs, ATabNums, APostNames: TStrVector;
@@ -79,6 +94,9 @@ uses
                          const AMonth, AYear: Word; var ASchedule: TShiftSchedule);
 
   //Vacations
+  function VacationPart(const AFirstDate: TDate; const ACount, AAddCount: Integer): String;
+  function VVacationPart(const AFirstDates: TDateVector; const ACounts, AAddCounts: TIntVector): TStrVector;
+
   function VacationVector(const ABeginDate, AEndDate, AFirstDate: TDate;
                           const ACount, AAddCount: Integer;
                           const AHolidayDates: TDateVector;
@@ -293,6 +311,95 @@ begin
   N2:= High(V);
   VAppend(ACategoryNames, S);
   AddToMatrix(N1, N2);
+end;
+
+function StaffListForVacationPlanningLoad(const AYear: Integer;
+                   const AOrderType: Byte;
+                   out ATabNumIDs: TIntVector;
+                   out AStaffNames, ATabNums, APostNames, AScheduleNames: TStrVector): Boolean;
+var
+  Fs, Ns, Ps: TStrVector;
+begin
+  Result:= DataBase.StaffListForVacationPlanningLoad(AYear, AOrderType, ATabNumIDs,
+                             Fs, Ns, Ps, ATabNums, APostNames, AScheduleNames);
+  AStaffNames:= VNameShort(Fs, Ns, Ps);
+end;
+
+function StaffListForVacationPlanningLoad(const AYear: Integer;
+                   const AOrderType: Byte;
+                   out ACategoryNames: TStrVector;
+                   out ATabNumIDs: TIntMatrix;
+                   out AStaffNames, ATabNums, APostNames, AScheduleNames: TStrMatrix): Boolean;
+var
+  TabNumIDs: TIntVector;
+  StaffNames, TabNums, PostNames, ScheduleNames: TStrVector;
+  i, N1, N2: Integer;
+  S: String;
+  V: TStrVector;
+
+  procedure AddToMatrix(const AIndex1, AIndex2: Integer);
+  begin
+    MAppend(ATabNumIDs, VCut(TabNumIDs, AIndex1, AIndex2));
+    MAppend(AStaffNames, VCut(StaffNames, AIndex1, AIndex2));
+    MAppend(ATabNums, VCut(TabNums, AIndex1, AIndex2));
+    MAppend(APostNames, VCut(PostNames, AIndex1, AIndex2));
+    MAppend(AScheduleNames, VCut(ScheduleNames, AIndex1, AIndex2));
+  end;
+
+begin
+  ACategoryNames:= nil;
+  ATabNumIDs:= nil;
+  AStaffNames:= nil;
+  ATabNums:= nil;
+  APostNames:= nil;
+  AScheduleNames:= nil;
+
+  Result:= StaffListForVacationPlanningLoad(AYear, AOrderType,
+           TabNumIDs, StaffNames, TabNums, PostNames, ScheduleNames);
+
+  if not Result then Exit;
+
+  if AOrderType=0 then
+    V:= ScheduleNames
+  else
+    V:= PostNames;
+
+  S:= V[0];
+  N1:= 0;
+  for i:= 1 to High(V) do
+  begin
+    if V[i]<>S then
+    begin
+      N2:= i-1;
+      VAppend(ACategoryNames, S);
+      AddToMatrix(N1, N2);
+      N1:= i;
+      S:= V[i];
+    end;
+  end;
+  N2:= High(V);
+  VAppend(ACategoryNames, S);
+  AddToMatrix(N1, N2);
+end;
+
+function StaffNameForVacationPlanning(const AStaffName, ATabNum, APostName: String): String;
+begin
+  Result:= AStaffName + ' [' + ATabNum + '] - ';
+  if SSame(APostName, '<не указана>') then
+     Result:= Result + '<должность не указана>'
+  else
+    Result:= Result + APostName;
+end;
+
+function StaffNameForVacationPlanning(const AStaffNames, ATabNums, APostNames: TStrVector): TStrVector;
+var
+  i: Integer;
+begin
+  Result:= nil;
+  if VIsNil(ATabNums) then Exit;
+  VDim(Result, Length(ATabNums));
+  for i:= 0 to High(Result) do
+    Result[i]:= StaffNameForVacationPlanning(AStaffNames[i], ATabNums[i], APostNames[i]);
 end;
 
 function StaffNameForPersonalTiming(const AF, AN, AP, ATabNum, APostName: String;
@@ -746,6 +853,25 @@ var
 begin
   FirstLastDayInMonth(AMonth, AYear, BD, ED);
   ScheduleShiftForPeriod(AScheduleID, BD, ED, ASchedule);
+end;
+
+function VacationPart(const AFirstDate: TDate; const ACount, AAddCount: Integer): String;
+begin
+  Result:= EmptyStr;
+  if Acount=0 then Exit;
+  Result:= FormatDateTime('dd.mm.yyyy (', AFirstDate) +
+           IntToStr(ACount+AAddCount) + ' дней)';
+end;
+
+function VVacationPart(const AFirstDates: TDateVector; const ACounts, AAddCounts: TIntVector): TStrVector;
+var
+  i: Integer;
+begin
+  Result:= nil;
+  if VIsNil(AFirstDates) then Exit;
+  VDim(Result, Length(AFirstDates));
+  for i:= 0 to High(AFirstDates) do
+    Result[i]:= VacationPart(AFirstDates[i], ACounts[i], AAddCounts[i]);
 end;
 
 function VacationVector(const ABeginDate, AEndDate, AFirstDate: TDate;

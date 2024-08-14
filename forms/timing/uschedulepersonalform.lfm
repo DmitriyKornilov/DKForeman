@@ -1,7 +1,7 @@
 object SchedulePersonalForm: TSchedulePersonalForm
-  Left = 196
+  Left = 124
   Height = 678
-  Top = 222
+  Top = 201
   Width = 1740
   Caption = 'SchedulePersonalForm'
   ClientHeight = 678

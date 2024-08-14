@@ -708,6 +708,8 @@ end;
 
 procedure TSchedulePersonalMonthForm.ScheduleDraw(const AZoomPercent: Integer);
 begin
+  if not CanLoadAndDraw then Exit;
+
   ViewGrid.Visible:= False;
   Screen.Cursor:= crHourGlass;
   try
@@ -726,7 +728,6 @@ end;
 
 procedure TSchedulePersonalMonthForm.ScheduleRedraw;
 begin
-  if not CanLoadAndDraw then Exit;
   ScheduleDraw(ZoomPercent);
 end;
 
