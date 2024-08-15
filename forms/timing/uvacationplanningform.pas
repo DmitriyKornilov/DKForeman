@@ -40,6 +40,7 @@ type
     NextMonthButton: TSpeedButton;
     OrderLabel: TLabel;
     LegendPanel: TPanel;
+    ZoomPanel: TPanel;
     StatGrid: TsWorksheetGrid;
     StatSheetPanel: TPanel;
     StatCaptionPanel: TBCPanel;
@@ -63,7 +64,7 @@ type
     YearPanel: TPanel;
     YearSpinEdit: TSpinEdit;
     ZoomBevel: TBevel;
-    ZoomPanel: TPanel;
+    SheetBottomPanel: TPanel;
     procedure CheckAllButtonClick(Sender: TObject);
     procedure CloseButtonClick(Sender: TObject);
     procedure EditButtonClick(Sender: TObject);

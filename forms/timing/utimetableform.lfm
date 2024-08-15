@@ -1113,14 +1113,13 @@ object TimetableForm: TTimetableForm
         OnDblClick = ViewGridDblClick
         OnMouseDown = ViewGridMouseDown
       end
-      object ZoomPanel: TPanel
+      object SheetBottomPanel: TPanel
         Left = 0
         Height = 22
         Top = 542
         Width = 266
         Align = alBottom
         BevelOuter = bvNone
-        Caption = 'ZoomPanel'
         ClientHeight = 22
         ClientWidth = 266
         Color = clWhite
@@ -1131,13 +1130,24 @@ object TimetableForm: TTimetableForm
           Left = 0
           Height = 21
           Top = 1
-          Width = 213
+          Width = 109
           Align = alLeft
           BorderSpacing.Top = 1
           BevelOuter = bvNone
           Caption = 'LegendPanel'
           ParentBackground = False
           TabOrder = 0
+        end
+        object ZoomPanel: TPanel
+          Left = 152
+          Height = 22
+          Top = 0
+          Width = 114
+          Align = alRight
+          BevelOuter = bvNone
+          Caption = 'ZoomPanel'
+          ParentBackground = False
+          TabOrder = 1
         end
       end
       object ZoomBevel: TBevel

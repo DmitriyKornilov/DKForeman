@@ -205,17 +205,30 @@ object ScheduleShiftCalendarForm: TScheduleShiftCalendarForm
       TabStop = False
       TitleFont.Style = [fsBold]
     end
-    object ZoomPanel: TPanel
+    object SheetBottomPanel: TPanel
       Left = 0
       Height = 22
       Top = 266
       Width = 545
       Align = alBottom
       BevelOuter = bvNone
+      ClientHeight = 22
+      ClientWidth = 545
       Color = clWhite
       ParentBackground = False
       ParentColor = False
       TabOrder = 1
+      object ZoomPanel: TPanel
+        Left = 332
+        Height = 22
+        Top = 0
+        Width = 213
+        Align = alRight
+        BevelOuter = bvNone
+        Caption = 'ZoomPanel'
+        ParentBackground = False
+        TabOrder = 0
+      end
     end
     object ZoomBevel: TBevel
       Left = 0

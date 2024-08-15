@@ -94,6 +94,7 @@ type
     YearPanel: TPanel;
     YearSpinEdit: TSpinEdit;
     ZoomBevel: TBevel;
+    SheetBottomPanel: TPanel;
     ZoomPanel: TPanel;
     procedure CopyCancelButtonClick(Sender: TObject);
     procedure CopyDelButtonClick(Sender: TObject);

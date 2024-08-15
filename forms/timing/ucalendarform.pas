@@ -46,6 +46,7 @@ type
     YearPanel: TPanel;
     ToolPanel: TPanel;
     YearSpinEdit: TSpinEdit;
+    SheetBottomPanel: TPanel;
     ZoomPanel: TPanel;
     procedure DayVTDblClick(Sender: TObject);
     procedure ViewGridDblClick(Sender: TObject);

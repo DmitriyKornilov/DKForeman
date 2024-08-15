@@ -445,7 +445,7 @@ object ScheduleShiftMonthForm: TScheduleShiftMonthForm
       TabStop = False
       TitleFont.Style = [fsBold]
     end
-    object ZoomPanel: TPanel
+    object SheetBottomPanel: TPanel
       Left = 0
       Height = 22
       Top = 239
@@ -469,6 +469,17 @@ object ScheduleShiftMonthForm: TScheduleShiftMonthForm
         Caption = 'LegendPanel'
         ParentBackground = False
         TabOrder = 0
+      end
+      object ZoomPanel: TPanel
+        Left = 203
+        Height = 22
+        Top = 0
+        Width = 213
+        Align = alRight
+        BevelOuter = bvNone
+        Caption = 'ZoomPanel'
+        ParentBackground = False
+        TabOrder = 1
       end
     end
     object ZoomBevel: TBevel

@@ -75,6 +75,7 @@ type
     YearPanel: TPanel;
     YearSpinEdit: TSpinEdit;
     ZoomBevel: TBevel;
+    SheetBottomPanel: TPanel;
     ZoomPanel: TPanel;
     procedure CloseButtonClick(Sender: TObject);
     procedure CopyButtonClick(Sender: TObject);

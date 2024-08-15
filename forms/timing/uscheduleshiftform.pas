@@ -72,6 +72,7 @@ type
     YearPanel: TPanel;
     YearSpinEdit: TSpinEdit;
     ZoomBevel: TBevel;
+    SheetBottomPanel: TPanel;
     ZoomPanel: TPanel;
     procedure CalendarButtonClick(Sender: TObject);
     procedure CloseButtonClick(Sender: TObject);
@@ -263,8 +264,6 @@ begin
   SetCategoryButtons([
     ExportButton, CalendarButton, MonthButton
   ]);
-
-
 
   Calendar:= TCalendar.Create;
   Schedule:= TShiftSchedule.Create;

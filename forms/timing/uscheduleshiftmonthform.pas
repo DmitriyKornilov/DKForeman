@@ -39,6 +39,7 @@ type
     YearPanel: TPanel;
     YearSpinEdit: TSpinEdit;
     ZoomBevel: TBevel;
+    SheetBottomPanel: TPanel;
     ZoomPanel: TPanel;
     procedure CheckAllButtonClick(Sender: TObject);
     procedure CloseButtonClick(Sender: TObject);

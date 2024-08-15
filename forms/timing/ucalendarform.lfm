@@ -513,17 +513,30 @@ object CalendarForm: TCalendarForm
       OnDblClick = ViewGridDblClick
       OnMouseDown = ViewGridMouseDown
     end
-    object ZoomPanel: TPanel
+    object SheetBottomPanel: TPanel
       Left = 0
       Height = 22
       Top = 287
       Width = 324
       Align = alBottom
       BevelOuter = bvNone
+      ClientHeight = 22
+      ClientWidth = 324
       Color = clWhite
       ParentBackground = False
       ParentColor = False
       TabOrder = 1
+      object ZoomPanel: TPanel
+        Left = 111
+        Height = 22
+        Top = 0
+        Width = 213
+        Align = alRight
+        BevelOuter = bvNone
+        Caption = 'ZoomPanel'
+        ParentBackground = False
+        TabOrder = 0
+      end
     end
     object ZoomBevel: TBevel
       Left = 0

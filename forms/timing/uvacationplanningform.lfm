@@ -714,14 +714,13 @@ object VacationPlanningForm: TVacationPlanningForm
         TitleFont.Style = [fsBold]
         OnDblClick = ViewGridDblClick
       end
-      object ZoomPanel: TPanel
+      object SheetBottomPanel: TPanel
         Left = 0
         Height = 22
         Top = 72
         Width = 1104
         Align = alBottom
         BevelOuter = bvNone
-        Caption = 'ZoomPanel'
         ClientHeight = 22
         ClientWidth = 1104
         Color = clWhite
@@ -739,6 +738,17 @@ object VacationPlanningForm: TVacationPlanningForm
           Caption = 'LegendPanel'
           ParentBackground = False
           TabOrder = 0
+        end
+        object ZoomPanel: TPanel
+          Left = 891
+          Height = 22
+          Top = 0
+          Width = 213
+          Align = alRight
+          BevelOuter = bvNone
+          Caption = 'ZoomPanel'
+          ParentBackground = False
+          TabOrder = 1
         end
       end
       object ZoomBevel: TBevel
