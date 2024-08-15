@@ -10,7 +10,7 @@ uses
 
   //DK packages utils
   DK_Vector, DK_Fonts, DK_Const, DK_StrUtils, DK_VSTTableTools, DK_Zoom,
-  DK_SheetExporter,
+  DK_SheetExporter, DK_ColorLegend,
   //Project utils
   UDataBase, UConst, UTypes, UUtils, UUIUtils, UCalendar, USchedule, UScheduleSheet,
   //Forms
@@ -27,6 +27,7 @@ type
     DividerBevel3: TDividerBevel;
     ExportButton: TBCButton;
     LeftSplitter: TSplitter;
+    LegendPanel: TPanel;
     MonthBCButton: TBCButton;
     LeftPanel: TPanel;
     CheckAllButton: TSpeedButton;
@@ -69,8 +70,9 @@ type
     procedure ScheduleDraw(const AZoomPercent: Integer);
     procedure ScheduleReDraw;
     procedure ScheduleRefresh;
-
     procedure ScheduleExport;
+
+    procedure LegendCreate;
 
     procedure SettingsLoad;
     procedure SettingsSave;
@@ -136,6 +138,7 @@ begin
 
   SettingsLoad; //load ZoomPercent
   CreateZoomControls(50, 150, ZoomPercent, ZoomPanel, @ScheduleDraw, True);
+  LegendCreate;
 
   Calendar:= TCalendar.Create;
   Sheet:= TShiftMonthScheduleSheet.Create(ViewGrid.Worksheet, ViewGrid, MainForm.GridFont, ResumeType);
@@ -303,6 +306,23 @@ begin
   finally
     FreeAndNil(Exporter);
   end;
+end;
+
+procedure TScheduleShiftMonthForm.LegendCreate;
+var
+  C: TColorVector;
+  S: TStrVector;
+begin
+  C:= VCreateColor([
+    COLOR_SCHEDULE_NOTWORK,
+    COLOR_SCHEDULE_CORRECTION
+  ]);
+  S:= VCreateStr([
+    '- нерабочий день',
+    '- корректировка'
+  ]);
+
+  ColorLegendCreate(LegendPanel, C, S);
 end;
 
 procedure TScheduleShiftMonthForm.SettingsLoad;

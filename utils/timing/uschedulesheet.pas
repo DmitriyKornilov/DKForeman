@@ -56,9 +56,6 @@ type
     procedure ScheduleLineDraw(const AIndex: Integer;
                                const ASchedule: TPersonalSchedule);
 
-    procedure Select(const ARowIndex, ACol: Integer);
-    procedure Unselect(const ANeedDoEvent: Boolean);
-
     procedure MouseDown(Sender: TObject; Button: TMouseButton; {%H-}Shift: TShiftState; X, Y: Integer);
     procedure DrawCell(Sender: TObject; aCol, aRow: Integer; aRect: TRect; {%H-}aState: TGridDrawState);
   public
@@ -83,9 +80,12 @@ type
                 const APlan1Date, APlan2Date: TDate;
                 const APlan1Count, APlan1AddCount, APlan2Count, APlan2AddCount: Integer);
 
+    procedure Select(const ARowIndex, ACol: Integer);
+    procedure Unselect(const ANeedDoEvent: Boolean);
     function IsSelected: Boolean;
     function SelectedPart: Integer;
     property SelectedIndex: Integer read FSelectedRowIndex;
+    property SelectedCol: Integer read FSelectedCol;
     property OnSelect: TSheetEvent read FOnSelect write FOnSelect;
   end;
 
@@ -1154,8 +1154,9 @@ begin
         Writer.SetBackgroundDefault;
       Writer.WriteNumber(R+1, j, j-C1+1, cbtOuter);
     end;
-    //
   end;
+
+  Writer.DrawBorders(1, 1, 2, Writer.ColCount, cbtAll);
 end;
 
 procedure TVacationPlanSheet.StaffLineDraw(const AIndex: Integer;

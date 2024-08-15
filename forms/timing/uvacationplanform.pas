@@ -383,8 +383,6 @@ begin
         StaffList.UnSelect;
     end;
 
-    //StaffListUpdate;
-
   finally
     MainPanel.Visible:= True;
   end;

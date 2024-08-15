@@ -1,11 +1,11 @@
 object SchedulePersonalForm: TSchedulePersonalForm
-  Left = 124
+  Left = 58
   Height = 678
-  Top = 201
-  Width = 1740
+  Top = 173
+  Width = 1821
   Caption = 'SchedulePersonalForm'
   ClientHeight = 678
-  ClientWidth = 1740
+  ClientWidth = 1821
   DesignTimePPI = 120
   OnCreate = FormCreate
   OnDestroy = FormDestroy
@@ -15,7 +15,7 @@ object SchedulePersonalForm: TSchedulePersonalForm
     Left = 2
     Height = 40
     Top = 2
-    Width = 1736
+    Width = 1817
     Align = alTop
     BorderSpacing.Left = 2
     BorderSpacing.Top = 2
@@ -23,7 +23,7 @@ object SchedulePersonalForm: TSchedulePersonalForm
     BevelOuter = bvNone
     BorderStyle = bsSingle
     ClientHeight = 36
-    ClientWidth = 1732
+    ClientWidth = 1813
     ParentFont = False
     TabOrder = 0
     object YearPanel: TPanel
@@ -394,7 +394,7 @@ object SchedulePersonalForm: TSchedulePersonalForm
       MemoryUsage = bmuHigh
     end
     object DividerBevel1: TDividerBevel
-      Left = 1672
+      Left = 1753
       Height = 36
       Top = 0
       Width = 20
@@ -407,7 +407,7 @@ object SchedulePersonalForm: TSchedulePersonalForm
     end
     object CloseButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 1692
+      Left = 1773
       Height = 36
       Hint = 'Закрыть'
       Top = 0
@@ -529,19 +529,19 @@ object SchedulePersonalForm: TSchedulePersonalForm
     Left = 1592
     Height = 602
     Top = 76
-    Width = 148
+    Width = 229
     Align = alClient
     BorderSpacing.Top = 2
     BevelOuter = bvNone
     Caption = 'ViewPanel'
     ClientHeight = 602
-    ClientWidth = 148
+    ClientWidth = 229
     TabOrder = 3
     object ViewGridPanel: TPanel
       Left = 0
       Height = 568
       Top = 32
-      Width = 146
+      Width = 227
       Align = alClient
       BorderSpacing.Top = 2
       BorderSpacing.Right = 2
@@ -549,7 +549,7 @@ object SchedulePersonalForm: TSchedulePersonalForm
       BevelOuter = bvNone
       BorderStyle = bsSingle
       ClientHeight = 564
-      ClientWidth = 142
+      ClientWidth = 223
       Color = clWhite
       ParentBackground = False
       ParentColor = False
@@ -558,7 +558,7 @@ object SchedulePersonalForm: TSchedulePersonalForm
         Left = 0
         Height = 540
         Top = 0
-        Width = 142
+        Width = 223
         AutoExpand = []
         DisplayFixedColRow = False
         FrozenBorderPen.Style = psClear
@@ -595,19 +595,33 @@ object SchedulePersonalForm: TSchedulePersonalForm
         Left = 0
         Height = 22
         Top = 542
-        Width = 142
+        Width = 223
         Align = alBottom
         BevelOuter = bvNone
+        ClientHeight = 22
+        ClientWidth = 223
         Color = clWhite
         ParentBackground = False
         ParentColor = False
         TabOrder = 1
+        object LegendPanel: TPanel
+          Left = 0
+          Height = 21
+          Top = 1
+          Width = 213
+          Align = alLeft
+          BorderSpacing.Top = 1
+          BevelOuter = bvNone
+          Caption = 'LegendPanel'
+          ParentBackground = False
+          TabOrder = 0
+        end
       end
       object ZoomBevel: TBevel
         Left = 0
         Height = 2
         Top = 540
-        Width = 142
+        Width = 223
         Align = alBottom
         Shape = bsBottomLine
         Style = bsRaised
@@ -617,7 +631,7 @@ object SchedulePersonalForm: TSchedulePersonalForm
       Left = 0
       Height = 30
       Top = 0
-      Width = 146
+      Width = 227
       Align = alTop
       BorderSpacing.Right = 2
       BorderSpacing.Bottom = 2
@@ -664,7 +678,7 @@ object SchedulePersonalForm: TSchedulePersonalForm
     Left = 2
     Height = 30
     Top = 44
-    Width = 1736
+    Width = 1817
     Align = alTop
     BorderSpacing.Left = 2
     BorderSpacing.Top = 2

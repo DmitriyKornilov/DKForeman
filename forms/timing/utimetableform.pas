@@ -14,7 +14,7 @@ uses
   //DK packages utils
   DK_VSTTables, DK_VSTParamList, DK_Vector, DK_Const, DK_Dialogs,
   DK_DateUtils, DK_Color, DK_SheetExporter, DK_StrUtils,
-  DK_Progress, DK_Zoom, DK_Filter,
+  DK_Progress, DK_Zoom, DK_Filter, DK_ColorLegend,
   //Forms
   UChooseForm, UTimetableEditForm, UTimetableMonthForm;
 
@@ -47,6 +47,7 @@ type
     FIORadioButton: TRadioButton;
     DayPanel: TPanel;
     DayVT: TVirtualStringTree;
+    LegendPanel: TPanel;
     MonthBCButton: TBCButton;
     MonthPanel: TPanel;
     ViewCaptionPanel: TBCPanel;
@@ -166,6 +167,7 @@ type
     procedure TimetableEditFormOpen(const ADate: TDate);
 
     procedure ColorsLoad;
+    procedure LegendCreate;
     procedure CaptionsUpdate;
     procedure SettingsLoad;
   public
@@ -220,6 +222,7 @@ begin
 
   IsCopyDates:= False;
   ColorsLoad;
+  LegendCreate;
   SettingsLoad; //load ZoomPercent
   CreateZoomControls(50, 150, ZoomPercent, ZoomPanel, @TimetableDraw, True);
   CreateFilterControls('Фильтр по Ф.И.О.:', FilterPanel, @StaffListFilter, 1000 {1c});
@@ -921,6 +924,27 @@ begin
   Colors[NOTDEFINE_COLOR_INDEX]:= COLOR_TIMETABLE_NOTDEFINE;
   Colors[HIGHLIGHT_COLOR_INDEX]:= DefaultSelectionBGColor;
   Colors[NOTWORK_COLOR_INDEX]:= COLOR_TIMETABLE_NOTWORK;
+end;
+
+procedure TTimetableForm.LegendCreate;
+var
+  C: TColorVector;
+  S: TStrVector;
+begin
+  C:= VCreateColor([
+    COLOR_TIMETABLE_HOLIDAY,
+    COLOR_TIMETABLE_NOTWORK,
+    COLOR_TIMETABLE_BEFORE,
+    COLOR_SCHEDULE_CORRECTION
+  ]);
+  S:= VCreateStr([
+    '- праздничный день',
+    '- нерабочий день',
+    '- сокращенный день',
+    '- корректировка'
+  ]);
+
+  ColorLegendCreate(LegendPanel, C, S);
 end;
 
 procedure TTimetableForm.CaptionsUpdate;

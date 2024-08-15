@@ -13,7 +13,7 @@ uses
   UScheduleSheet,
   //DK packages utils
   DK_VSTTables, DK_VSTParamList, DK_Vector, DK_Const, DK_Dialogs,
-  DK_Zoom, DK_DateUtils, DK_Color, DK_SheetExporter, DK_Progress,
+  DK_Zoom, DK_DateUtils, DK_Color, DK_SheetExporter, DK_Progress, DK_ColorLegend,
   //Forms
   UChooseForm, UScheduleShiftEditForm, UScheduleCorrectionEditForm,
   UScheduleShiftCalendarForm, UScheduleShiftMonthForm;
@@ -27,6 +27,7 @@ type
     DividerBevel1: TDividerBevel;
     DividerBevel2: TDividerBevel;
     DividerBevel3: TDividerBevel;
+    LegendPanel: TPanel;
     MonthButton: TBCButton;
     ExportButton: TBCButton;
     CorrectionsCaptionPanel: TBCPanel;
@@ -161,6 +162,8 @@ type
     procedure ScheduleCorrectionEditFormOpen(const ADate: TDate);
     procedure ScheduleShiftEditFormOpen(const AEditingType: TEditingType);
 
+    procedure LegendCreate;
+
     procedure SettingsLoad;
   public
     procedure SettingsSave;
@@ -261,6 +264,8 @@ begin
     ExportButton, CalendarButton, MonthButton
   ]);
 
+
+
   Calendar:= TCalendar.Create;
   Schedule:= TShiftSchedule.Create;
 
@@ -273,6 +278,7 @@ begin
   IsCopyDates:= False;
 
   ColorsLoad;
+  LegendCreate;
   SettingsLoad; //load ZoomPercent
   CreateZoomControls(50, 150, ZoomPercent, ZoomPanel, @ScheduleDraw, True);
 
@@ -875,6 +881,23 @@ begin
   finally
     FreeAndNil(ScheduleShiftEditForm);
   end;
+end;
+
+procedure TScheduleShiftForm.LegendCreate;
+var
+  C: TColorVector;
+  S: TStrVector;
+begin
+  C:= VCreateColor([
+    COLOR_SCHEDULE_NOTWORK,
+    COLOR_SCHEDULE_CORRECTION
+  ]);
+  S:= VCreateStr([
+    '- нерабочий день',
+    '- корректировка'
+  ]);
+
+  ColorLegendCreate(LegendPanel, C, S);
 end;
 
 procedure TScheduleShiftForm.ScheduleListLoad(const SelectedID: Integer = -1);

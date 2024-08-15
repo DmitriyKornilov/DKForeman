@@ -452,10 +452,24 @@ object ScheduleShiftMonthForm: TScheduleShiftMonthForm
       Width = 416
       Align = alBottom
       BevelOuter = bvNone
+      ClientHeight = 22
+      ClientWidth = 416
       Color = clWhite
       ParentBackground = False
       ParentColor = False
       TabOrder = 1
+      object LegendPanel: TPanel
+        Left = 0
+        Height = 21
+        Top = 1
+        Width = 213
+        Align = alLeft
+        BorderSpacing.Top = 1
+        BevelOuter = bvNone
+        Caption = 'LegendPanel'
+        ParentBackground = False
+        TabOrder = 0
+      end
     end
     object ZoomBevel: TBevel
       Left = 0

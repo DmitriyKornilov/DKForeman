@@ -1,11 +1,11 @@
 object ScheduleShiftForm: TScheduleShiftForm
-  Left = 492
+  Left = 424
   Height = 802
-  Top = 152
-  Width = 998
+  Top = 80
+  Width = 1189
   Caption = 'ScheduleShiftForm'
   ClientHeight = 802
-  ClientWidth = 998
+  ClientWidth = 1189
   DesignTimePPI = 120
   OnCreate = FormCreate
   OnDestroy = FormDestroy
@@ -15,7 +15,7 @@ object ScheduleShiftForm: TScheduleShiftForm
     Left = 2
     Height = 40
     Top = 2
-    Width = 994
+    Width = 1185
     Align = alTop
     BorderSpacing.Left = 2
     BorderSpacing.Top = 2
@@ -23,7 +23,7 @@ object ScheduleShiftForm: TScheduleShiftForm
     BevelOuter = bvNone
     BorderStyle = bsSingle
     ClientHeight = 36
-    ClientWidth = 990
+    ClientWidth = 1181
     ParentFont = False
     TabOrder = 0
     object YearPanel: TPanel
@@ -394,7 +394,7 @@ object ScheduleShiftForm: TScheduleShiftForm
       MemoryUsage = bmuHigh
     end
     object DividerBevel1: TDividerBevel
-      Left = 930
+      Left = 1121
       Height = 36
       Top = 0
       Width = 20
@@ -407,7 +407,7 @@ object ScheduleShiftForm: TScheduleShiftForm
     end
     object CloseButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 950
+      Left = 1141
       Height = 36
       Hint = 'Закрыть'
       Top = 0
@@ -1016,18 +1016,18 @@ object ScheduleShiftForm: TScheduleShiftForm
     Left = 872
     Height = 760
     Top = 42
-    Width = 126
+    Width = 317
     Align = alClient
     BevelOuter = bvNone
     Caption = 'MainPanel'
     ClientHeight = 760
-    ClientWidth = 126
+    ClientWidth = 317
     TabOrder = 4
     object SheetPanel: TPanel
       Left = 0
       Height = 724
       Top = 34
-      Width = 124
+      Width = 315
       Align = alClient
       BorderSpacing.Top = 2
       BorderSpacing.Right = 2
@@ -1035,7 +1035,7 @@ object ScheduleShiftForm: TScheduleShiftForm
       BevelOuter = bvNone
       BorderStyle = bsSingle
       ClientHeight = 720
-      ClientWidth = 120
+      ClientWidth = 311
       Color = clWhite
       ParentBackground = False
       ParentColor = False
@@ -1044,7 +1044,7 @@ object ScheduleShiftForm: TScheduleShiftForm
         Left = 0
         Height = 696
         Top = 0
-        Width = 120
+        Width = 311
         AutoExpand = []
         DisplayFixedColRow = False
         FrozenBorderPen.Style = psClear
@@ -1081,19 +1081,33 @@ object ScheduleShiftForm: TScheduleShiftForm
         Left = 0
         Height = 22
         Top = 698
-        Width = 120
+        Width = 311
         Align = alBottom
         BevelOuter = bvNone
+        ClientHeight = 22
+        ClientWidth = 311
         Color = clWhite
         ParentBackground = False
         ParentColor = False
         TabOrder = 1
+        object LegendPanel: TPanel
+          Left = 0
+          Height = 21
+          Top = 1
+          Width = 213
+          Align = alLeft
+          BorderSpacing.Top = 1
+          BevelOuter = bvNone
+          Caption = 'LegendPanel'
+          ParentBackground = False
+          TabOrder = 0
+        end
       end
       object ZoomBevel: TBevel
         Left = 0
         Height = 2
         Top = 696
-        Width = 120
+        Width = 311
         Align = alBottom
         Shape = bsBottomLine
         Style = bsRaised
@@ -1103,7 +1117,7 @@ object ScheduleShiftForm: TScheduleShiftForm
       Left = 0
       Height = 30
       Top = 2
-      Width = 124
+      Width = 315
       Align = alTop
       BorderSpacing.Top = 2
       BorderSpacing.Right = 2

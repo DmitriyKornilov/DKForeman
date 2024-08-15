@@ -10,6 +10,7 @@ uses
   fpspreadsheetgrid, DateUtils,
   //DK packages utils
   DK_Vector, DK_Matrix, DK_VSTTables, DK_Zoom, DK_Progress, DK_DateUtils,
+  DK_ColorLegend,
   //Project utils
   UDataBase, UConst, UUtils, UUIUtils, UScheduleSheet, UCalendar, USchedule,
   //Forms
@@ -28,21 +29,17 @@ type
     DividerBevel3: TDividerBevel;
     DividerBevel4: TDividerBevel;
     EditPanel: TPanel;
+    ExportButton: TBCButton;
     FIORadioButton: TRadioButton;
-    MainVacationLabel: TLabel;
-    AdditionVacationLabel: TLabel;
-    MainVacationPanel: TPanel;
-    HolidayLabel: TLabel;
     ListButton: TBCButton;
     ListCaptionPanel: TBCPanel;
     ListOrderToolPanel: TPanel;
     ListPanel: TPanel;
     ListToolPanel: TPanel;
-    AdditionVacationPanel: TPanel;
     MStaffListVT: TVirtualStringTree;
     NextMonthButton: TSpeedButton;
     OrderLabel: TLabel;
-    HolidayPanel: TPanel;
+    LegendPanel: TPanel;
     StatGrid: TsWorksheetGrid;
     StatSheetPanel: TPanel;
     StatCaptionPanel: TBCPanel;
@@ -70,6 +67,7 @@ type
     procedure CheckAllButtonClick(Sender: TObject);
     procedure CloseButtonClick(Sender: TObject);
     procedure EditButtonClick(Sender: TObject);
+    procedure ExportButtonClick(Sender: TObject);
     procedure FIORadioButtonClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -124,6 +122,7 @@ type
     procedure PlanRedraw;
     procedure PlanSelect;
     procedure PlanStat;
+    procedure PlanExport;
 
     procedure VacationLoad(const AIndex: Integer);
     procedure VacationPlanEditFormOpen;
@@ -131,6 +130,8 @@ type
     procedure PlanDateMove(const ADelta: Integer; const AMonth: Boolean);
 
     procedure SetEditButtonsEnabled;
+
+    procedure LegendCreate;
 
     procedure SettingsSave;
     procedure SettingsLoad;
@@ -167,12 +168,10 @@ begin
   ]);
 
   SetCategoryButtons([
-    PlanButton, ListButton
+    PlanButton, ListButton, ExportButton
   ]);
 
-  HolidayPanel.Color:= COLORS_CALENDAR[DAY_STATUS_HOLIDAY];
-  MainVacationPanel.Color:= COLORS_CALENDAR[DAY_STATUS_OFFDAY];
-  AdditionVacationPanel.Color:= COLORS_CALENDAR[DAY_STATUS_BEFORE];
+  LegendCreate;
 
   CanLoadAndDraw:= False;
   StatSheet:= TVacationStatSheet.Create(StatGrid.Worksheet, StatGrid, MainForm.GridFont);
@@ -541,6 +540,23 @@ begin
   StatSheet.Update(V);
 end;
 
+procedure TVacationPlanningForm.PlanExport;
+var
+  i,j: Integer;
+begin
+  i:= 0;
+  j:= 0;
+  if Sheet.IsSelected then
+  begin
+    i:= Sheet.SelectedIndex;
+    j:= Sheet.SelectedCol;
+    Sheet.Unselect(False);
+  end;
+  Sheet.Save(YearSpinEdit.Text);
+  if (i>0) and (j>0) then
+    Sheet.Select(i, j);
+end;
+
 procedure TVacationPlanningForm.VacationLoad(const AIndex: Integer);
 var
   Plan1Date, Plan2Date: TDate;
@@ -632,6 +648,25 @@ begin
   NextDayButton.Enabled:= b and (DayNumberInYear(D)<DaysInYear(D)-n);
 end;
 
+procedure TVacationPlanningForm.LegendCreate;
+var
+  C: TColorVector;
+  S: TStrVector;
+begin
+  C:= VCreateColor([
+    COLORS_CALENDAR[DAY_STATUS_HOLIDAY],
+    COLORS_CALENDAR[DAY_STATUS_OFFDAY],
+    COLORS_CALENDAR[DAY_STATUS_BEFORE]
+  ]);
+  S:= VCreateStr([
+    '- праздничный день',
+    '- основной отпуск',
+    '- дополнительный отпуск'
+  ]);
+
+  ColorLegendCreate(LegendPanel, C, S);
+end;
+
 procedure TVacationPlanningForm.SettingsSave;
 var
   SettingValues: TIntVector;
@@ -657,6 +692,11 @@ end;
 procedure TVacationPlanningForm.EditButtonClick(Sender: TObject);
 begin
   VacationPlanEditFormOpen;
+end;
+
+procedure TVacationPlanningForm.ExportButtonClick(Sender: TObject);
+begin
+  PlanExport;
 end;
 
 procedure TVacationPlanningForm.CheckAllButtonClick(Sender: TObject);

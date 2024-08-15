@@ -1,11 +1,11 @@
 object TimetableForm: TTimetableForm
-  Left = 146
+  Left = 36
   Height = 678
-  Top = 177
-  Width = 1710
+  Top = 149
+  Width = 1814
   Caption = 'TimetableForm'
   ClientHeight = 678
-  ClientWidth = 1710
+  ClientWidth = 1814
   DesignTimePPI = 120
   OnCreate = FormCreate
   OnDestroy = FormDestroy
@@ -15,7 +15,7 @@ object TimetableForm: TTimetableForm
     Left = 2
     Height = 40
     Top = 2
-    Width = 1706
+    Width = 1810
     Align = alTop
     BorderSpacing.Left = 2
     BorderSpacing.Top = 2
@@ -23,7 +23,7 @@ object TimetableForm: TTimetableForm
     BevelOuter = bvNone
     BorderStyle = bsSingle
     ClientHeight = 36
-    ClientWidth = 1702
+    ClientWidth = 1806
     ParentFont = False
     TabOrder = 0
     object YearPanel: TPanel
@@ -281,7 +281,7 @@ object TimetableForm: TTimetableForm
       MemoryUsage = bmuHigh
     end
     object DividerBevel1: TDividerBevel
-      Left = 1642
+      Left = 1746
       Height = 36
       Top = 0
       Width = 20
@@ -294,7 +294,7 @@ object TimetableForm: TTimetableForm
     end
     object CloseButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 1662
+      Left = 1766
       Height = 36
       Hint = 'Закрыть'
       Top = 0
@@ -335,7 +335,7 @@ object TimetableForm: TTimetableForm
     Left = 2
     Height = 30
     Top = 44
-    Width = 1706
+    Width = 1810
     Align = alTop
     BorderSpacing.Left = 2
     BorderSpacing.Top = 2
@@ -1051,19 +1051,19 @@ object TimetableForm: TTimetableForm
     Left = 1542
     Height = 602
     Top = 76
-    Width = 168
+    Width = 272
     Align = alClient
     BorderSpacing.Top = 2
     BevelOuter = bvNone
     Caption = 'ViewPanel'
     ClientHeight = 602
-    ClientWidth = 168
+    ClientWidth = 272
     TabOrder = 6
     object ViewGridPanel: TPanel
       Left = 0
       Height = 568
       Top = 32
-      Width = 166
+      Width = 270
       Align = alClient
       BorderSpacing.Top = 2
       BorderSpacing.Right = 2
@@ -1071,7 +1071,7 @@ object TimetableForm: TTimetableForm
       BevelOuter = bvNone
       BorderStyle = bsSingle
       ClientHeight = 564
-      ClientWidth = 162
+      ClientWidth = 266
       Color = clWhite
       ParentBackground = False
       ParentColor = False
@@ -1080,7 +1080,7 @@ object TimetableForm: TTimetableForm
         Left = 0
         Height = 540
         Top = 0
-        Width = 162
+        Width = 266
         AutoExpand = []
         DisplayFixedColRow = False
         FrozenBorderPen.Style = psClear
@@ -1117,20 +1117,34 @@ object TimetableForm: TTimetableForm
         Left = 0
         Height = 22
         Top = 542
-        Width = 162
+        Width = 266
         Align = alBottom
         BevelOuter = bvNone
         Caption = 'ZoomPanel'
+        ClientHeight = 22
+        ClientWidth = 266
         Color = clWhite
         ParentBackground = False
         ParentColor = False
         TabOrder = 1
+        object LegendPanel: TPanel
+          Left = 0
+          Height = 21
+          Top = 1
+          Width = 213
+          Align = alLeft
+          BorderSpacing.Top = 1
+          BevelOuter = bvNone
+          Caption = 'LegendPanel'
+          ParentBackground = False
+          TabOrder = 0
+        end
       end
       object ZoomBevel: TBevel
         Left = 0
         Height = 2
         Top = 540
-        Width = 162
+        Width = 266
         Align = alBottom
         Shape = bsBottomLine
         Style = bsRaised
@@ -1140,7 +1154,7 @@ object TimetableForm: TTimetableForm
       Left = 0
       Height = 30
       Top = 0
-      Width = 166
+      Width = 270
       Align = alTop
       BorderSpacing.Right = 2
       BorderSpacing.Bottom = 2

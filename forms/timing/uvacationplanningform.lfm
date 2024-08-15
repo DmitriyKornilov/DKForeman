@@ -2,10 +2,10 @@ object VacationPlanningForm: TVacationPlanningForm
   Left = 509
   Height = 502
   Top = 206
-  Width = 928
+  Width = 1112
   Caption = 'VacationPlanningForm'
   ClientHeight = 502
-  ClientWidth = 928
+  ClientWidth = 1112
   DesignTimePPI = 120
   OnCreate = FormCreate
   OnDestroy = FormDestroy
@@ -16,7 +16,7 @@ object VacationPlanningForm: TVacationPlanningForm
     Left = 2
     Height = 40
     Top = 2
-    Width = 924
+    Width = 1108
     Align = alTop
     BorderSpacing.Left = 2
     BorderSpacing.Top = 2
@@ -24,7 +24,7 @@ object VacationPlanningForm: TVacationPlanningForm
     BevelOuter = bvNone
     BorderStyle = bsSingle
     ClientHeight = 36
-    ClientWidth = 920
+    ClientWidth = 1104
     ParentFont = False
     TabOrder = 0
     object ListToolPanel: TPanel
@@ -238,12 +238,12 @@ object VacationPlanningForm: TVacationPlanningForm
       Left = 354
       Height = 36
       Top = 0
-      Width = 427
+      Width = 533
       Align = alLeft
       AutoSize = True
       BevelOuter = bvNone
       ClientHeight = 36
-      ClientWidth = 427
+      ClientWidth = 533
       TabOrder = 1
       Visible = False
       object ListButton: TBCButton
@@ -360,7 +360,7 @@ object VacationPlanningForm: TVacationPlanningForm
         MemoryUsage = bmuHigh
       end
       object EditPanel: TPanel
-        Left = 207
+        Left = 313
         Height = 36
         Top = 0
         Width = 220
@@ -460,9 +460,122 @@ object VacationPlanningForm: TVacationPlanningForm
           ParentShowHint = False
         end
       end
+      object ExportButton: TBCButton
+        Cursor = crHandPoint
+        Left = 209
+        Height = 34
+        Hint = 'Экспорт в формат электронной таблицы XLSX или ODS'
+        Top = 1
+        Width = 104
+        Align = alLeft
+        AutoSize = True
+        StateClicked.Background.Color = 16245964
+        StateClicked.Background.Gradient1.StartColor = 16577765
+        StateClicked.Background.Gradient1.EndColor = 16180676
+        StateClicked.Background.Gradient1.GradientType = gtLinear
+        StateClicked.Background.Gradient1.Point1XPercent = 0
+        StateClicked.Background.Gradient1.Point1YPercent = 0
+        StateClicked.Background.Gradient1.Point2XPercent = 0
+        StateClicked.Background.Gradient1.Point2YPercent = 100
+        StateClicked.Background.Gradient2.StartColor = 15716760
+        StateClicked.Background.Gradient2.EndColor = 14398312
+        StateClicked.Background.Gradient2.GradientType = gtLinear
+        StateClicked.Background.Gradient2.Point1XPercent = 0
+        StateClicked.Background.Gradient2.Point1YPercent = 0
+        StateClicked.Background.Gradient2.Point2XPercent = 0
+        StateClicked.Background.Gradient2.Point2YPercent = 100
+        StateClicked.Background.Gradient1EndPercent = 55
+        StateClicked.Background.Style = bbsColor
+        StateClicked.Border.Color = 10048512
+        StateClicked.Border.LightColor = clBlack
+        StateClicked.Border.LightOpacity = 100
+        StateClicked.Border.Style = bboSolid
+        StateClicked.FontEx.Color = clBlack
+        StateClicked.FontEx.FontQuality = fqSystemClearType
+        StateClicked.FontEx.Shadow = False
+        StateClicked.FontEx.ShadowRadius = 5
+        StateClicked.FontEx.ShadowOffsetX = 5
+        StateClicked.FontEx.ShadowOffsetY = 5
+        StateClicked.FontEx.Style = []
+        StateHover.Background.Color = 16511461
+        StateHover.Background.Gradient1.StartColor = 16643818
+        StateHover.Background.Gradient1.EndColor = 16576729
+        StateHover.Background.Gradient1.GradientType = gtLinear
+        StateHover.Background.Gradient1.Point1XPercent = 0
+        StateHover.Background.Gradient1.Point1YPercent = 0
+        StateHover.Background.Gradient1.Point2XPercent = 0
+        StateHover.Background.Gradient1.Point2YPercent = 100
+        StateHover.Background.Gradient2.StartColor = 16639678
+        StateHover.Background.Gradient2.EndColor = 16112039
+        StateHover.Background.Gradient2.GradientType = gtLinear
+        StateHover.Background.Gradient2.Point1XPercent = 0
+        StateHover.Background.Gradient2.Point1YPercent = 0
+        StateHover.Background.Gradient2.Point2XPercent = 0
+        StateHover.Background.Gradient2.Point2YPercent = 100
+        StateHover.Background.Gradient1EndPercent = 50
+        StateHover.Background.Style = bbsColor
+        StateHover.Border.Color = 14120960
+        StateHover.Border.LightOpacity = 200
+        StateHover.Border.Style = bboSolid
+        StateHover.FontEx.Color = clBlack
+        StateHover.FontEx.FontQuality = fqSystemClearType
+        StateHover.FontEx.Shadow = False
+        StateHover.FontEx.ShadowRadius = 5
+        StateHover.FontEx.ShadowOffsetX = 5
+        StateHover.FontEx.ShadowOffsetY = 5
+        StateHover.FontEx.Style = []
+        StateNormal.Background.Color = 14803425
+        StateNormal.Background.Gradient1.StartColor = 15921906
+        StateNormal.Background.Gradient1.EndColor = 15461355
+        StateNormal.Background.Gradient1.GradientType = gtLinear
+        StateNormal.Background.Gradient1.Point1XPercent = 0
+        StateNormal.Background.Gradient1.Point1YPercent = 0
+        StateNormal.Background.Gradient1.Point2XPercent = 0
+        StateNormal.Background.Gradient1.Point2YPercent = 100
+        StateNormal.Background.Gradient2.StartColor = 14540253
+        StateNormal.Background.Gradient2.EndColor = 13619151
+        StateNormal.Background.Gradient2.GradientType = gtLinear
+        StateNormal.Background.Gradient2.Point1XPercent = 0
+        StateNormal.Background.Gradient2.Point1YPercent = 0
+        StateNormal.Background.Gradient2.Point2XPercent = 0
+        StateNormal.Background.Gradient2.Point2YPercent = 100
+        StateNormal.Background.Gradient1EndPercent = 50
+        StateNormal.Background.Style = bbsColor
+        StateNormal.Border.Color = 11382189
+        StateNormal.Border.LightOpacity = 200
+        StateNormal.Border.Style = bboSolid
+        StateNormal.FontEx.Color = clBlack
+        StateNormal.FontEx.FontQuality = fqSystemClearType
+        StateNormal.FontEx.Shadow = False
+        StateNormal.FontEx.ShadowRadius = 5
+        StateNormal.FontEx.ShadowOffsetX = 5
+        StateNormal.FontEx.ShadowOffsetY = 5
+        StateNormal.FontEx.Style = []
+        BorderSpacing.Left = 2
+        BorderSpacing.Top = 1
+        BorderSpacing.Bottom = 1
+        Caption = 'Экспорт'
+        Color = clNone
+        DropDownWidth = 16
+        DropDownArrowSize = 8
+        GlobalOpacity = 255
+        GlyphMargin = 0
+        OnClick = ExportButtonClick
+        ParentColor = False
+        Rounding.RoundX = 0
+        Rounding.RoundY = 0
+        RoundingDropDown.RoundX = 1
+        RoundingDropDown.RoundY = 1
+        ShowHint = True
+        TextApplyGlobalOpacity = False
+        DropDownStyle = bdsCommon
+        Images = Images.PX24
+        ImageIndex = 22
+        MemoryUsage = bmuHigh
+      end
     end
     object DividerBevel1: TDividerBevel
-      Left = 860
+      Left = 1044
       Height = 36
       Top = 0
       Width = 20
@@ -475,7 +588,7 @@ object VacationPlanningForm: TVacationPlanningForm
     end
     object CloseButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 880
+      Left = 1064
       Height = 36
       Hint = 'Закрыть'
       Top = 0
@@ -492,19 +605,19 @@ object VacationPlanningForm: TVacationPlanningForm
     Left = 0
     Height = 288
     Top = 214
-    Width = 928
+    Width = 1112
     Align = alBottom
     BorderSpacing.Top = 2
     BevelOuter = bvNone
     ClientHeight = 288
-    ClientWidth = 928
+    ClientWidth = 1112
     TabOrder = 1
     Visible = False
     object PlanCaptionPanel: TBCPanel
       Left = 2
       Height = 30
       Top = 0
-      Width = 924
+      Width = 1108
       Align = alTop
       BorderSpacing.Left = 2
       BorderSpacing.Right = 2
@@ -551,7 +664,7 @@ object VacationPlanningForm: TVacationPlanningForm
       Left = 2
       Height = 98
       Top = 32
-      Width = 924
+      Width = 1108
       Align = alClient
       BorderSpacing.Left = 2
       BorderSpacing.Top = 2
@@ -560,7 +673,7 @@ object VacationPlanningForm: TVacationPlanningForm
       BevelOuter = bvNone
       BorderStyle = bsSingle
       ClientHeight = 94
-      ClientWidth = 920
+      ClientWidth = 1104
       Color = clWhite
       ParentBackground = False
       ParentColor = False
@@ -569,7 +682,7 @@ object VacationPlanningForm: TVacationPlanningForm
         Left = 0
         Height = 70
         Top = 0
-        Width = 920
+        Width = 1104
         AutoExpand = []
         DisplayFixedColRow = False
         FrozenBorderPen.Style = psClear
@@ -605,101 +718,34 @@ object VacationPlanningForm: TVacationPlanningForm
         Left = 0
         Height = 22
         Top = 72
-        Width = 920
+        Width = 1104
         Align = alBottom
         BevelOuter = bvNone
+        Caption = 'ZoomPanel'
         ClientHeight = 22
-        ClientWidth = 920
+        ClientWidth = 1104
         Color = clWhite
         ParentBackground = False
         ParentColor = False
         TabOrder = 1
-        object HolidayPanel: TPanel
-          Left = 1
-          Height = 19
-          Top = 2
-          Width = 30
+        object LegendPanel: TPanel
+          Left = 0
+          Height = 21
+          Top = 1
+          Width = 213
           Align = alLeft
           BorderSpacing.Top = 1
-          BorderSpacing.Around = 1
-          BevelColor = clWindowText
-          BevelInner = bvSpace
           BevelOuter = bvNone
-          Color = clMenuHighlight
+          Caption = 'LegendPanel'
           ParentBackground = False
-          ParentColor = False
           TabOrder = 0
-        end
-        object HolidayLabel: TLabel
-          Left = 37
-          Height = 21
-          Top = 1
-          Width = 143
-          Align = alLeft
-          BorderSpacing.Left = 6
-          BorderSpacing.Top = 1
-          Caption = '- праздничный день'
-        end
-        object MainVacationPanel: TPanel
-          Left = 201
-          Height = 19
-          Top = 2
-          Width = 30
-          Align = alLeft
-          BorderSpacing.Left = 20
-          BorderSpacing.Top = 1
-          BorderSpacing.Around = 1
-          BevelColor = clWindowText
-          BevelInner = bvSpace
-          BevelOuter = bvNone
-          Color = clMenuHighlight
-          ParentBackground = False
-          ParentColor = False
-          TabOrder = 1
-        end
-        object MainVacationLabel: TLabel
-          Left = 237
-          Height = 21
-          Top = 1
-          Width = 128
-          Align = alLeft
-          BorderSpacing.Left = 6
-          BorderSpacing.Top = 1
-          Caption = '- основной отпуск'
-        end
-        object AdditionVacationPanel: TPanel
-          Left = 386
-          Height = 19
-          Top = 2
-          Width = 30
-          Align = alLeft
-          BorderSpacing.Left = 20
-          BorderSpacing.Top = 1
-          BorderSpacing.Around = 1
-          BevelColor = clWindowText
-          BevelInner = bvSpace
-          BevelOuter = bvNone
-          Color = clMenuHighlight
-          ParentBackground = False
-          ParentColor = False
-          TabOrder = 2
-        end
-        object AdditionVacationLabel: TLabel
-          Left = 422
-          Height = 21
-          Top = 1
-          Width = 179
-          Align = alLeft
-          BorderSpacing.Left = 6
-          BorderSpacing.Top = 1
-          Caption = '- дополнительный отпуск'
         end
       end
       object ZoomBevel: TBevel
         Left = 0
         Height = 2
         Top = 70
-        Width = 920
+        Width = 1104
         Align = alBottom
         Shape = bsBottomLine
         Style = bsRaised
@@ -709,17 +755,17 @@ object VacationPlanningForm: TVacationPlanningForm
       Left = 0
       Height = 150
       Top = 138
-      Width = 928
+      Width = 1112
       Align = alBottom
       BevelOuter = bvNone
       ClientHeight = 150
-      ClientWidth = 928
+      ClientWidth = 1112
       TabOrder = 2
       object StatCaptionPanel: TBCPanel
         Left = 2
         Height = 30
         Top = 0
-        Width = 924
+        Width = 1108
         Align = alTop
         BorderSpacing.Left = 2
         BorderSpacing.Right = 2
@@ -766,13 +812,13 @@ object VacationPlanningForm: TVacationPlanningForm
         Left = 2
         Height = 116
         Top = 32
-        Width = 924
+        Width = 1108
         Align = alClient
         BorderSpacing.Around = 2
         BevelOuter = bvNone
         BorderStyle = bsSingle
         ClientHeight = 112
-        ClientWidth = 920
+        ClientWidth = 1104
         Color = clWindow
         ParentBackground = False
         ParentColor = False
@@ -781,7 +827,7 @@ object VacationPlanningForm: TVacationPlanningForm
           Left = 0
           Height = 112
           Top = 0
-          Width = 920
+          Width = 1104
           AutoExpand = []
           DisplayFixedColRow = False
           FrozenBorderPen.Style = psClear
@@ -820,7 +866,7 @@ object VacationPlanningForm: TVacationPlanningForm
       Left = 0
       Height = 6
       Top = 132
-      Width = 928
+      Width = 1112
       Align = alBottom
       ResizeAnchor = akBottom
       ResizeStyle = rsLine
@@ -830,7 +876,7 @@ object VacationPlanningForm: TVacationPlanningForm
     Left = 2
     Height = 168
     Top = 44
-    Width = 924
+    Width = 1108
     Align = alClient
     BorderSpacing.Left = 2
     BorderSpacing.Top = 2
@@ -838,13 +884,13 @@ object VacationPlanningForm: TVacationPlanningForm
     BorderSpacing.Bottom = 2
     BevelOuter = bvNone
     ClientHeight = 168
-    ClientWidth = 924
+    ClientWidth = 1108
     TabOrder = 2
     object ListCaptionPanel: TBCPanel
       Left = 0
       Height = 30
       Top = 0
-      Width = 924
+      Width = 1108
       Align = alTop
       BorderSpacing.Bottom = 2
       Background.Color = clBtnFace
@@ -889,13 +935,13 @@ object VacationPlanningForm: TVacationPlanningForm
       Left = 0
       Height = 40
       Top = 128
-      Width = 924
+      Width = 1108
       Align = alBottom
       BorderSpacing.Top = 2
       BevelOuter = bvNone
       BorderStyle = bsSingle
       ClientHeight = 36
-      ClientWidth = 920
+      ClientWidth = 1104
       TabOrder = 1
       object OrderLabel: TLabel
         AnchorSideLeft.Control = ListOrderToolPanel
@@ -973,7 +1019,7 @@ object VacationPlanningForm: TVacationPlanningForm
       Left = 0
       Height = 48
       Top = 78
-      Width = 924
+      Width = 1108
       Align = alBottom
       DefaultText = 'Node'
       Header.AutoSizeIndex = 0
@@ -985,7 +1031,7 @@ object VacationPlanningForm: TVacationPlanningForm
       Left = 0
       Height = 46
       Top = 32
-      Width = 924
+      Width = 1108
       Align = alClient
       DefaultText = 'Node'
       Header.AutoSizeIndex = 0

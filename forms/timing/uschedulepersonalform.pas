@@ -14,7 +14,7 @@ uses
   //DK packages utils
   DK_VSTTables, DK_VSTParamList, DK_VSTEdit, DK_Vector, DK_Const, DK_Dialogs,
   DK_DateUtils, DK_Color, DK_SheetExporter, DK_StrUtils,
-  DK_Zoom, DK_Progress, DK_Filter,
+  DK_Zoom, DK_Progress, DK_Filter, DK_ColorLegend,
   //Forms
   UChooseForm, USchedulePersonalEditForm, UScheduleCorrectionEditForm,
   UVacationScheduleForm, USchedulePersonalMonthForm;
@@ -33,6 +33,7 @@ type
     DividerBevel3: TDividerBevel;
     DividerBevel4: TDividerBevel;
     FilterPanel: TPanel;
+    LegendPanel: TPanel;
     OrderButtonPanel: TPanel;
     OrderLabel: TLabel;
     ListFilterToolPanel: TPanel;
@@ -218,6 +219,7 @@ type
     procedure SchedulePersonalEditFormOpen(const AEditingType: TEditingType);
 
     procedure ColorsLoad;
+    procedure LegendCreate;
     procedure CaptionsUpdate;
     procedure SettingsLoad;
   public
@@ -346,6 +348,7 @@ begin
   IsCopyDates:= False;
 
   ColorsLoad;
+  LegendCreate;
   SettingsLoad; //load ZoomPercent
   CreateZoomControls(50, 150, ZoomPercent, ZoomPanel, @ScheduleDraw, True);
   CreateFilterControls('Фильтр по Ф.И.О.:', FilterPanel, @StaffListFilter, 300);
@@ -1281,6 +1284,23 @@ begin
   Colors[OUTSIDEMONTH_COLOR_INDEX]:= COLOR_SCHEDULE_OUTSIDEMONTH;
   Colors[HIGHLIGHT_COLOR_INDEX]:= DefaultSelectionBGColor;
   Colors[NOTDEFINE_COLOR_INDEX]:= COLOR_SCHEDULE_NOTDEFINE;
+end;
+
+procedure TSchedulePersonalForm.LegendCreate;
+var
+  C: TColorVector;
+  S: TStrVector;
+begin
+  C:= VCreateColor([
+    COLOR_SCHEDULE_NOTWORK,
+    COLOR_SCHEDULE_CORRECTION
+  ]);
+  S:= VCreateStr([
+    '- нерабочий день',
+    '- корректировка'
+  ]);
+
+  ColorLegendCreate(LegendPanel, C, S);
 end;
 
 procedure TSchedulePersonalForm.CaptionsUpdate;
