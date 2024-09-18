@@ -46,6 +46,7 @@ type
     procedure ExportButtonClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
+    procedure FormShow(Sender: TObject);
     procedure PlanButtonClick(Sender: TObject);
     procedure ScheduleButtonClick(Sender: TObject);
     procedure VTDblClick(Sender: TObject);
@@ -143,14 +144,17 @@ begin
   YearSpinEdit.Value:= YearOf(Date);
   CreateFilterControls('Фильтр по Ф.И.О.:', FilterPanel, @StaffListFilter);
   CanLoadStaffList:= True;
-
-  StaffListLoad;
 end;
 
 procedure TVacationPlanForm.FormDestroy(Sender: TObject);
 begin
   FreeAndNil(StaffList);
   FreeAndNil(ParamList);
+end;
+
+procedure TVacationPlanForm.FormShow(Sender: TObject);
+begin
+  StaffListLoad;
 end;
 
 procedure TVacationPlanForm.VacationPlanningFormOpen;

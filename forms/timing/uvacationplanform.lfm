@@ -9,6 +9,7 @@ object VacationPlanForm: TVacationPlanForm
   DesignTimePPI = 120
   OnCreate = FormCreate
   OnDestroy = FormDestroy
+  OnShow = FormShow
   LCLVersion = '3.2.0.0'
   object ToolPanel: TPanel
     Left = 2
@@ -56,10 +57,10 @@ object VacationPlanForm: TVacationPlanForm
       end
     end
     object DividerBevel1: TDividerBevel
-      Left = 906
+      Left = 907
       Height = 36
       Top = 0
-      Width = 21
+      Width = 20
       Caption = 'DividerBevel1'
       Align = alRight
       BevelWidth = 2
@@ -85,7 +86,7 @@ object VacationPlanForm: TVacationPlanForm
       Left = 65
       Height = 36
       Top = 0
-      Width = 21
+      Width = 20
       Caption = 'DividerBevel2'
       Align = alLeft
       BevelWidth = 2
@@ -94,10 +95,10 @@ object VacationPlanForm: TVacationPlanForm
       ParentFont = False
     end
     object DividerBevel3: TDividerBevel
-      Left = 189
+      Left = 188
       Height = 36
       Top = 0
-      Width = 21
+      Width = 20
       Caption = 'DividerBevel3'
       Align = alLeft
       BevelWidth = 2
@@ -107,7 +108,7 @@ object VacationPlanForm: TVacationPlanForm
     end
     object ExportButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 86
+      Left = 85
       Height = 36
       Hint = 'Экспорт в формат электронной таблицы XLSX или ODS'
       Top = 0
@@ -125,7 +126,7 @@ object VacationPlanForm: TVacationPlanForm
     end
     object ScheduleButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 362
+      Left = 360
       Height = 36
       Hint = 'График отпусков по форме Т-7'
       Top = 0
@@ -143,7 +144,7 @@ object VacationPlanForm: TVacationPlanForm
     end
     object PlanButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 210
+      Left = 208
       Height = 36
       Hint = 'Планирование отпусков на год'
       Top = 0
@@ -204,7 +205,7 @@ object VacationPlanForm: TVacationPlanForm
         ParentShowHint = False
       end
       object FilterPanel: TPanel
-        Left = 61
+        Left = 60
         Height = 36
         Top = 0
         Width = 600
@@ -218,7 +219,7 @@ object VacationPlanForm: TVacationPlanForm
         Left = 40
         Height = 36
         Top = 0
-        Width = 21
+        Width = 20
         Caption = 'DividerBevel3'
         Align = alLeft
         BevelWidth = 2
