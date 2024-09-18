@@ -855,6 +855,8 @@ begin
       EditingPanel.Visible:= False;
     end;
 
+    ListPanel.BorderSpacing.Right:= 2*Ord(ModeType<>mtEditing);
+
     StaffList.CanUnselect:= ModeType<>mtEditing;
     StaffList.CanSelect:= ModeType=mtEditing;
     ListToolPanel.Visible:= ModeType=mtEditing;

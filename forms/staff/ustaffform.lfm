@@ -47,7 +47,7 @@ object StaffForm: TStaffForm
       Width = 20
       Caption = 'DividerBevel1'
       Align = alRight
-      BevelWidth = 1
+      BevelWidth = 2
       Font.Style = [fsBold]
       Orientation = trVertical
       ParentFont = False
@@ -226,10 +226,10 @@ object StaffForm: TStaffForm
           ParentShowHint = False
         end
         object FilterPanel: TPanel
-          Left = 141
+          Left = 140
           Height = 36
           Top = 0
-          Width = 465
+          Width = 466
           Align = alClient
           AutoSize = True
           BevelOuter = bvNone
@@ -241,7 +241,7 @@ object StaffForm: TStaffForm
           Left = 120
           Height = 36
           Top = 0
-          Width = 21
+          Width = 20
           Caption = 'DividerBevel3'
           Align = alLeft
           BevelWidth = 2
@@ -267,7 +267,7 @@ object StaffForm: TStaffForm
           AnchorSideLeft.Side = asrBottom
           AnchorSideTop.Control = ListOrderToolPanel
           AnchorSideTop.Side = asrCenter
-          Left = 101
+          Left = 100
           Height = 20
           Top = 8
           Width = 115
@@ -278,7 +278,7 @@ object StaffForm: TStaffForm
           AnchorSideLeft.Side = asrBottom
           AnchorSideTop.Control = ListOrderToolPanel
           AnchorSideTop.Side = asrCenter
-          Left = 222
+          Left = 221
           Height = 24
           Top = 6
           Width = 63
@@ -294,7 +294,7 @@ object StaffForm: TStaffForm
           AnchorSideLeft.Side = asrBottom
           AnchorSideTop.Control = ListOrderToolPanel
           AnchorSideTop.Side = asrCenter
-          Left = 291
+          Left = 290
           Height = 24
           Top = 6
           Width = 126
@@ -307,12 +307,12 @@ object StaffForm: TStaffForm
           Left = 0
           Height = 36
           Top = 0
-          Width = 101
+          Width = 100
           Align = alLeft
           AutoSize = True
           BevelOuter = bvNone
           ClientHeight = 36
-          ClientWidth = 101
+          ClientWidth = 100
           TabOrder = 2
           object AscendingButton: TSpeedButton
             Cursor = crHandPoint
@@ -347,7 +347,7 @@ object StaffForm: TStaffForm
             Left = 80
             Height = 36
             Top = 0
-            Width = 21
+            Width = 20
             Caption = 'DividerBevel2'
             Align = alLeft
             BevelWidth = 2

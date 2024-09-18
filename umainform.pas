@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, Buttons,
-  Menus, BCButton, LCLType, DividerBevel,
+  Menus, LCLType, DividerBevel,
 
   //DK packages utils
   DK_HeapTrace, DK_Const, DK_LCLStrRus, DK_CtrlUtils, DK_Fonts, DK_VSTTypes,
