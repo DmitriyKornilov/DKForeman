@@ -379,6 +379,8 @@ begin
     StaffList.CanSelect:= ModeType=mtEditing;
     ListToolPanel.Visible:= ModeType=mtEditing;
 
+    MainPanel.BorderSpacing.Left:= 2*Ord(ModeType<>mtSetting);
+
     if ModeType=mtEditing then
     begin
       if not VIsNil(TabNumIDs) then
