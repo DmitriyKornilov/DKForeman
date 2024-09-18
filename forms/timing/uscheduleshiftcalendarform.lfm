@@ -181,10 +181,12 @@ object ScheduleShiftCalendarForm: TScheduleShiftCalendarForm
       Top = 266
       Width = 577
       Align = alBottom
+      AutoSize = True
       BevelOuter = bvNone
       ClientHeight = 22
       ClientWidth = 577
       Color = clWhite
+      Constraints.MinHeight = 22
       ParentBackground = False
       ParentColor = False
       TabOrder = 1
@@ -255,7 +257,7 @@ object ScheduleShiftCalendarForm: TScheduleShiftCalendarForm
       end
     end
     object NeedCorrectionsCheckBox: TCheckBox
-      Left = 86
+      Left = 85
       Height = 36
       Top = 0
       Width = 265
@@ -268,7 +270,7 @@ object ScheduleShiftCalendarForm: TScheduleShiftCalendarForm
       OnChange = NeedCorrectionsCheckBoxChange
     end
     object FirstShiftDayColorOnlyCheckBox: TCheckBox
-      Left = 357
+      Left = 356
       Height = 36
       Top = 0
       Width = 305
@@ -282,7 +284,7 @@ object ScheduleShiftCalendarForm: TScheduleShiftCalendarForm
     end
     object SettingButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 832
+      Left = 833
       Height = 36
       Hint = 'Параметры'
       Top = 0
@@ -297,10 +299,10 @@ object ScheduleShiftCalendarForm: TScheduleShiftCalendarForm
       ParentShowHint = False
     end
     object DividerBevel1: TDividerBevel
-      Left = 872
+      Left = 873
       Height = 36
       Top = 0
-      Width = 21
+      Width = 20
       Caption = 'DividerBevel1'
       Align = alRight
       BevelWidth = 2
@@ -326,7 +328,7 @@ object ScheduleShiftCalendarForm: TScheduleShiftCalendarForm
       Left = 65
       Height = 36
       Top = 0
-      Width = 21
+      Width = 20
       Caption = 'DividerBevel2'
       Align = alLeft
       BevelWidth = 2
@@ -335,10 +337,10 @@ object ScheduleShiftCalendarForm: TScheduleShiftCalendarForm
       ParentFont = False
     end
     object DividerBevel3: TDividerBevel
-      Left = 662
+      Left = 661
       Height = 36
       Top = 0
-      Width = 21
+      Width = 20
       Caption = 'DividerBevel3'
       Align = alLeft
       BevelWidth = 2
@@ -348,7 +350,7 @@ object ScheduleShiftCalendarForm: TScheduleShiftCalendarForm
     end
     object ExportButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 683
+      Left = 681
       Height = 36
       Hint = 'Экспорт в формат электронной таблицы XLSX или ODS'
       Top = 0

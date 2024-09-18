@@ -1,47 +1,48 @@
 object CalendarForm: TCalendarForm
   Left = 517
-  Height = 287
+  Height = 359
   Top = 296
-  Width = 592
+  Width = 740
   Caption = 'CalendarForm'
-  ClientHeight = 287
-  ClientWidth = 592
+  ClientHeight = 359
+  ClientWidth = 740
+  DesignTimePPI = 120
   OnCreate = FormCreate
   OnDestroy = FormDestroy
-  LCLVersion = '3.4.0.0'
+  LCLVersion = '3.2.0.0'
   object ToolPanel: TPanel
     Left = 2
-    Height = 32
+    Height = 40
     Top = 2
-    Width = 588
+    Width = 736
     Align = alTop
     BorderSpacing.Left = 2
     BorderSpacing.Top = 2
     BorderSpacing.Right = 2
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 30
-    ClientWidth = 586
+    ClientHeight = 36
+    ClientWidth = 732
     ParentFont = False
     TabOrder = 0
     object YearPanel: TPanel
       Left = 0
-      Height = 30
+      Height = 36
       Top = 0
-      Width = 52
+      Width = 65
       Align = alLeft
       AutoSize = True
       BevelOuter = bvNone
-      ClientHeight = 30
-      ClientWidth = 52
+      ClientHeight = 36
+      ClientWidth = 65
       TabOrder = 0
       object YearSpinEdit: TSpinEdit
         AnchorSideTop.Control = YearPanel
         AnchorSideTop.Side = asrCenter
         Left = 2
-        Height = 29
-        Top = 1
-        Width = 50
+        Height = 28
+        Top = 4
+        Width = 63
         Align = alCustom
         Alignment = taCenter
         BorderSpacing.Left = 2
@@ -54,10 +55,10 @@ object CalendarForm: TCalendarForm
       end
     end
     object DividerBevel1: TDividerBevel
-      Left = 535
-      Height = 30
+      Left = 672
+      Height = 36
       Top = 0
-      Width = 19
+      Width = 20
       Caption = 'DividerBevel1'
       Align = alRight
       BevelWidth = 2
@@ -67,11 +68,11 @@ object CalendarForm: TCalendarForm
     end
     object CloseButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 554
-      Height = 30
+      Left = 692
+      Height = 36
       Hint = 'Закрыть'
       Top = 0
-      Width = 32
+      Width = 40
       Align = alRight
       Images = Images.PX24
       ImageIndex = 3
@@ -80,10 +81,10 @@ object CalendarForm: TCalendarForm
       ParentShowHint = False
     end
     object DividerBevel2: TDividerBevel
-      Left = 52
-      Height = 30
+      Left = 65
+      Height = 36
       Top = 0
-      Width = 19
+      Width = 20
       Caption = 'DividerBevel2'
       Align = alLeft
       BevelWidth = 2
@@ -93,11 +94,11 @@ object CalendarForm: TCalendarForm
     end
     object ExportButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 71
-      Height = 30
+      Left = 85
+      Height = 36
       Hint = 'Экспорт в формат электронной таблицы XLSX или ODS'
       Top = 0
-      Width = 96
+      Width = 103
       Align = alLeft
       AutoSize = True
       Caption = ' Экспорт '
@@ -112,49 +113,49 @@ object CalendarForm: TCalendarForm
   end
   object EditingPanel: TPanel
     Left = 2
-    Height = 249
-    Top = 36
-    Width = 320
+    Height = 313
+    Top = 44
+    Width = 400
     Align = alLeft
     BorderSpacing.Left = 2
     BorderSpacing.Top = 2
     BorderSpacing.Bottom = 2
     BevelOuter = bvNone
-    ClientHeight = 249
-    ClientWidth = 320
+    ClientHeight = 313
+    ClientWidth = 400
     ParentBackground = False
     ParentColor = False
     TabOrder = 1
     Visible = False
     object DayPanel: TPanel
       Left = 0
-      Height = 108
-      Top = 26
-      Width = 320
+      Height = 137
+      Top = 32
+      Width = 400
       Align = alClient
       BevelOuter = bvNone
-      ClientHeight = 108
-      ClientWidth = 320
+      ClientHeight = 137
+      ClientWidth = 400
       TabOrder = 0
       object DayToolPanel: TPanel
         Left = 0
-        Height = 32
+        Height = 40
         Top = 0
-        Width = 320
+        Width = 400
         Align = alTop
         BevelOuter = bvNone
         BorderStyle = bsSingle
-        ClientHeight = 30
-        ClientWidth = 318
+        ClientHeight = 36
+        ClientWidth = 396
         ParentFont = False
         TabOrder = 0
         object DayAddButton: TSpeedButton
           Cursor = crHandPoint
           Left = 0
-          Height = 30
+          Height = 36
           Hint = 'Добавить'
           Top = 0
-          Width = 32
+          Width = 40
           Align = alLeft
           Images = Images.PX24
           ImageIndex = 4
@@ -164,11 +165,11 @@ object CalendarForm: TCalendarForm
         end
         object DayDelButton: TSpeedButton
           Cursor = crHandPoint
-          Left = 32
-          Height = 30
+          Left = 40
+          Height = 36
           Hint = 'Удалить'
           Top = 0
-          Width = 32
+          Width = 40
           Align = alLeft
           Enabled = False
           Images = Images.PX24
@@ -179,11 +180,11 @@ object CalendarForm: TCalendarForm
         end
         object DayEditButton: TSpeedButton
           Cursor = crHandPoint
-          Left = 64
-          Height = 30
+          Left = 80
+          Height = 36
           Hint = 'Редактировать'
           Top = 0
-          Width = 32
+          Width = 40
           Align = alLeft
           Enabled = False
           Images = Images.PX24
@@ -194,11 +195,11 @@ object CalendarForm: TCalendarForm
         end
         object DayCopyButton: TSpeedButton
           Cursor = crHandPoint
-          Left = 96
-          Height = 30
+          Left = 120
+          Height = 36
           Hint = 'Копировать'
           Top = 0
-          Width = 32
+          Width = 40
           Align = alLeft
           Enabled = False
           Images = Images.PX24
@@ -210,16 +211,16 @@ object CalendarForm: TCalendarForm
       end
       object DayVT: TVirtualStringTree
         Left = 0
-        Height = 74
-        Top = 34
-        Width = 320
+        Height = 95
+        Top = 42
+        Width = 400
         Align = alClient
         BorderSpacing.Top = 2
-        DefaultNodeHeight = 25
+        DefaultNodeHeight = 31
         DefaultText = 'Node'
         Header.AutoSizeIndex = 0
         Header.Columns = <>
-        Header.Height = 16
+        Header.Height = 20
         Header.MainColumn = -1
         TabOrder = 1
         OnDblClick = DayVTDblClick
@@ -227,34 +228,34 @@ object CalendarForm: TCalendarForm
     end
     object CopyPanel: TPanel
       Left = 0
-      Height = 115
-      Top = 134
-      Width = 320
+      Height = 144
+      Top = 169
+      Width = 400
       Align = alBottom
       BevelOuter = bvNone
-      ClientHeight = 115
-      ClientWidth = 320
+      ClientHeight = 144
+      ClientWidth = 400
       TabOrder = 1
       Visible = False
       object CopyToolPanel: TPanel
         Left = 0
-        Height = 32
+        Height = 40
         Top = 0
-        Width = 320
+        Width = 400
         Align = alTop
         BevelOuter = bvNone
         BorderStyle = bsSingle
-        ClientHeight = 30
-        ClientWidth = 318
+        ClientHeight = 36
+        ClientWidth = 396
         ParentFont = False
         TabOrder = 0
         object CopySaveButton: TSpeedButton
           Cursor = crHandPoint
           Left = 0
-          Height = 30
+          Height = 36
           Hint = 'Сохранить'
           Top = 0
-          Width = 32
+          Width = 40
           Align = alLeft
           Enabled = False
           Images = Images.PX24
@@ -265,11 +266,11 @@ object CalendarForm: TCalendarForm
         end
         object CopyDelButton: TSpeedButton
           Cursor = crHandPoint
-          Left = 32
-          Height = 30
+          Left = 40
+          Height = 36
           Hint = 'Удалить'
           Top = 0
-          Width = 32
+          Width = 40
           Align = alLeft
           Enabled = False
           Images = Images.PX24
@@ -280,11 +281,11 @@ object CalendarForm: TCalendarForm
         end
         object CopyCancelButton: TSpeedButton
           Cursor = crHandPoint
-          Left = 64
-          Height = 30
+          Left = 80
+          Height = 36
           Hint = 'Отменить'
           Top = 0
-          Width = 32
+          Width = 40
           Align = alLeft
           Images = Images.PX24
           ImageIndex = 8
@@ -295,25 +296,25 @@ object CalendarForm: TCalendarForm
       end
       object CopyVT: TVirtualStringTree
         Left = 0
-        Height = 81
-        Top = 34
-        Width = 320
+        Height = 102
+        Top = 42
+        Width = 400
         Align = alClient
         BorderSpacing.Top = 2
-        DefaultNodeHeight = 25
+        DefaultNodeHeight = 31
         DefaultText = 'Node'
         Header.AutoSizeIndex = 0
         Header.Columns = <>
-        Header.Height = 16
+        Header.Height = 20
         Header.MainColumn = -1
         TabOrder = 1
       end
     end
     object CaptionPanel: TPanel
       Left = 0
-      Height = 24
+      Height = 30
       Top = 0
-      Width = 320
+      Width = 400
       Align = alTop
       Alignment = taLeftJustify
       BorderSpacing.Bottom = 2
@@ -326,18 +327,18 @@ object CalendarForm: TCalendarForm
     end
   end
   object LeftSplitter: TSplitter
-    Left = 322
-    Height = 253
-    Top = 34
-    Width = 5
+    Left = 402
+    Height = 317
+    Top = 42
+    Width = 6
     ResizeStyle = rsLine
     Visible = False
   end
   object SheetPanel: TPanel
-    Left = 329
-    Height = 249
-    Top = 36
-    Width = 261
+    Left = 410
+    Height = 313
+    Top = 44
+    Width = 328
     Align = alClient
     BorderSpacing.Left = 2
     BorderSpacing.Top = 2
@@ -345,17 +346,17 @@ object CalendarForm: TCalendarForm
     BorderSpacing.Bottom = 2
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 247
-    ClientWidth = 259
+    ClientHeight = 309
+    ClientWidth = 324
     Color = clWhite
     ParentBackground = False
     ParentColor = False
     TabOrder = 3
     object ViewGrid: TsWorksheetGrid
       Left = 0
-      Height = 227
+      Height = 285
       Top = 0
-      Width = 259
+      Width = 324
       AutoExpand = []
       DisplayFixedColRow = False
       FrozenBorderPen.Style = psClear
@@ -390,24 +391,24 @@ object CalendarForm: TCalendarForm
     end
     object SheetBottomPanel: TPanel
       Left = 0
-      Height = 18
-      Top = 229
-      Width = 259
+      Height = 22
+      Top = 287
+      Width = 324
       Align = alBottom
       AutoSize = True
       BevelOuter = bvNone
-      ClientHeight = 18
-      ClientWidth = 259
+      ClientHeight = 22
+      ClientWidth = 324
       Color = clWhite
-      Constraints.MinHeight = 18
+      Constraints.MinHeight = 22
       ParentBackground = False
       ParentColor = False
       TabOrder = 1
       object ZoomPanel: TPanel
-        Left = 89
-        Height = 18
+        Left = 112
+        Height = 22
         Top = 0
-        Width = 170
+        Width = 212
         Align = alRight
         BevelOuter = bvNone
         Caption = 'ZoomPanel'
@@ -418,8 +419,8 @@ object CalendarForm: TCalendarForm
     object ZoomBevel: TBevel
       Left = 0
       Height = 2
-      Top = 227
-      Width = 259
+      Top = 285
+      Width = 324
       Align = alBottom
       Shape = bsBottomLine
       Style = bsRaised

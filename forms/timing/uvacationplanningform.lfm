@@ -31,12 +31,12 @@ object VacationPlanningForm: TVacationPlanningForm
       Left = 0
       Height = 36
       Top = 0
-      Width = 354
+      Width = 352
       Align = alLeft
       AutoSize = True
       BevelOuter = bvNone
       ClientHeight = 36
-      ClientWidth = 354
+      ClientWidth = 352
       TabOrder = 0
       object YearPanel: TPanel
         Left = 0
@@ -70,7 +70,7 @@ object VacationPlanningForm: TVacationPlanningForm
       end
       object CheckAllButton: TSpeedButton
         Cursor = crHandPoint
-        Left = 86
+        Left = 85
         Height = 36
         Hint = 'Выбрать всех сотрудников'
         Top = 0
@@ -84,7 +84,7 @@ object VacationPlanningForm: TVacationPlanningForm
       end
       object UncheckAllButton: TSpeedButton
         Cursor = crHandPoint
-        Left = 126
+        Left = 125
         Height = 36
         Hint = 'Снять выбор со всех сотрудников'
         Top = 0
@@ -97,10 +97,10 @@ object VacationPlanningForm: TVacationPlanningForm
         ParentShowHint = False
       end
       object DividerBevel2: TDividerBevel
-        Left = 166
+        Left = 165
         Height = 36
         Top = 0
-        Width = 21
+        Width = 20
         Caption = 'DividerBevel2'
         Align = alLeft
         BevelWidth = 2
@@ -112,7 +112,7 @@ object VacationPlanningForm: TVacationPlanningForm
         Left = 65
         Height = 36
         Top = 0
-        Width = 21
+        Width = 20
         Caption = 'DividerBevel3'
         Align = alLeft
         BevelWidth = 2
@@ -122,7 +122,7 @@ object VacationPlanningForm: TVacationPlanningForm
       end
       object PlanButton: TSpeedButton
         Cursor = crHandPoint
-        Left = 187
+        Left = 185
         Height = 36
         Hint = 'Перейти к планированию отпусков на год'
         Top = 0
@@ -140,31 +140,31 @@ object VacationPlanningForm: TVacationPlanningForm
       end
     end
     object PlanToolPanel: TPanel
-      Left = 354
+      Left = 352
       Height = 36
       Top = 0
-      Width = 529
+      Width = 528
       Align = alLeft
       AutoSize = True
       BevelOuter = bvNone
       ClientHeight = 36
-      ClientWidth = 529
+      ClientWidth = 528
       TabOrder = 1
       Visible = False
       object EditPanel: TPanel
         Left = 308
         Height = 36
         Top = 0
-        Width = 221
+        Width = 220
         Align = alLeft
         AutoSize = True
         BevelOuter = bvNone
         ClientHeight = 36
-        ClientWidth = 221
+        ClientWidth = 220
         TabOrder = 0
         object EditButton: TSpeedButton
           Cursor = crHandPoint
-          Left = 21
+          Left = 20
           Height = 36
           Hint = 'Редактировать даты'
           Top = 0
@@ -179,7 +179,7 @@ object VacationPlanningForm: TVacationPlanningForm
         end
         object PrevMonthButton: TSpeedButton
           Cursor = crHandPoint
-          Left = 61
+          Left = 60
           Height = 36
           Hint = 'На месяц назад'
           Top = 0
@@ -194,7 +194,7 @@ object VacationPlanningForm: TVacationPlanningForm
         end
         object PrevDayButton: TSpeedButton
           Cursor = crHandPoint
-          Left = 101
+          Left = 100
           Height = 36
           Hint = 'На день назад'
           Top = 0
@@ -209,7 +209,7 @@ object VacationPlanningForm: TVacationPlanningForm
         end
         object NextDayButton: TSpeedButton
           Cursor = crHandPoint
-          Left = 141
+          Left = 140
           Height = 36
           Hint = 'На день вперед'
           Top = 0
@@ -226,7 +226,7 @@ object VacationPlanningForm: TVacationPlanningForm
           Left = 0
           Height = 36
           Top = 0
-          Width = 21
+          Width = 20
           Caption = 'DividerBevel4'
           Align = alLeft
           BevelWidth = 2
@@ -236,7 +236,7 @@ object VacationPlanningForm: TVacationPlanningForm
         end
         object NextMonthButton: TSpeedButton
           Cursor = crHandPoint
-          Left = 181
+          Left = 180
           Height = 36
           Hint = 'На месяц вперед'
           Top = 0
@@ -290,10 +290,10 @@ object VacationPlanningForm: TVacationPlanningForm
       end
     end
     object DividerBevel1: TDividerBevel
-      Left = 946
+      Left = 947
       Height = 36
       Top = 0
-      Width = 21
+      Width = 20
       Caption = 'DividerBevel1'
       Align = alRight
       BevelWidth = 2
@@ -388,10 +388,12 @@ object VacationPlanningForm: TVacationPlanningForm
         Top = 72
         Width = 1007
         Align = alBottom
+        AutoSize = True
         BevelOuter = bvNone
         ClientHeight = 22
         ClientWidth = 1007
         Color = clWhite
+        Constraints.MinHeight = 22
         ParentBackground = False
         ParentColor = False
         TabOrder = 1

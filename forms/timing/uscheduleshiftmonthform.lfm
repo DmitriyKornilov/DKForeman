@@ -169,7 +169,7 @@ object ScheduleShiftMonthForm: TScheduleShiftMonthForm
     end
     object CheckAllButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 290
+      Left = 289
       Height = 36
       Hint = 'Выбрать все графики'
       Top = 0
@@ -183,7 +183,7 @@ object ScheduleShiftMonthForm: TScheduleShiftMonthForm
     end
     object UncheckAllButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 330
+      Left = 329
       Height = 36
       Hint = 'Снять выбор со всех графиков'
       Top = 0
@@ -196,10 +196,10 @@ object ScheduleShiftMonthForm: TScheduleShiftMonthForm
       ParentShowHint = False
     end
     object DividerBevel1: TDividerBevel
-      Left = 711
+      Left = 712
       Height = 36
       Top = 0
-      Width = 21
+      Width = 20
       Caption = 'DividerBevel1'
       Align = alRight
       BevelWidth = 2
@@ -225,7 +225,7 @@ object ScheduleShiftMonthForm: TScheduleShiftMonthForm
       Left = 269
       Height = 36
       Top = 0
-      Width = 21
+      Width = 20
       Caption = 'DividerBevel2'
       Align = alLeft
       BevelWidth = 2
@@ -234,10 +234,10 @@ object ScheduleShiftMonthForm: TScheduleShiftMonthForm
       ParentFont = False
     end
     object DividerBevel3: TDividerBevel
-      Left = 370
+      Left = 369
       Height = 36
       Top = 0
-      Width = 21
+      Width = 20
       Caption = 'DividerBevel3'
       Align = alLeft
       BevelWidth = 2
@@ -247,7 +247,7 @@ object ScheduleShiftMonthForm: TScheduleShiftMonthForm
     end
     object ExportButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 391
+      Left = 389
       Height = 36
       Hint = 'Экспорт в формат электронной таблицы XLSX или ODS'
       Top = 0
@@ -357,10 +357,12 @@ object ScheduleShiftMonthForm: TScheduleShiftMonthForm
       Top = 239
       Width = 416
       Align = alBottom
+      AutoSize = True
       BevelOuter = bvNone
       ClientHeight = 22
       ClientWidth = 416
       Color = clWhite
+      Constraints.MinHeight = 22
       ParentBackground = False
       ParentColor = False
       TabOrder = 1

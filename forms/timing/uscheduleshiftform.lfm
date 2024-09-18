@@ -57,10 +57,10 @@ object ScheduleShiftForm: TScheduleShiftForm
       end
     end
     object DividerBevel1: TDividerBevel
-      Left = 1203
+      Left = 1204
       Height = 36
       Top = 0
-      Width = 21
+      Width = 20
       Caption = 'DividerBevel1'
       Align = alRight
       BevelWidth = 2
@@ -86,7 +86,7 @@ object ScheduleShiftForm: TScheduleShiftForm
       Left = 65
       Height = 36
       Top = 0
-      Width = 21
+      Width = 20
       Caption = 'DividerBevel2'
       Align = alLeft
       BevelWidth = 2
@@ -95,10 +95,10 @@ object ScheduleShiftForm: TScheduleShiftForm
       ParentFont = False
     end
     object DividerBevel3: TDividerBevel
-      Left = 189
+      Left = 188
       Height = 36
       Top = 0
-      Width = 21
+      Width = 20
       Caption = 'DividerBevel3'
       Align = alLeft
       BevelWidth = 2
@@ -108,7 +108,7 @@ object ScheduleShiftForm: TScheduleShiftForm
     end
     object ExportButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 86
+      Left = 85
       Height = 36
       Hint = 'Экспорт в формат электронной таблицы XLSX или ODS'
       Top = 0
@@ -126,7 +126,7 @@ object ScheduleShiftForm: TScheduleShiftForm
     end
     object CalendarButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 210
+      Left = 208
       Height = 36
       Hint = 'Годовой график сменности в виде календаря'
       Top = 0
@@ -144,7 +144,7 @@ object ScheduleShiftForm: TScheduleShiftForm
     end
     object MonthButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 386
+      Left = 384
       Height = 36
       Hint = 'Сводный график сменности на месяц'
       Top = 0
@@ -693,10 +693,12 @@ object ScheduleShiftForm: TScheduleShiftForm
         Top = 698
         Width = 394
         Align = alBottom
+        AutoSize = True
         BevelOuter = bvNone
         ClientHeight = 22
         ClientWidth = 394
         Color = clWhite
+        Constraints.MinHeight = 22
         ParentBackground = False
         ParentColor = False
         TabOrder = 1
