@@ -8,7 +8,7 @@ uses
   Classes, SysUtils, Graphics, fpspreadsheetgrid, fpspreadsheet, fpstypes,
   LCLType, Controls, DateUtils, Grids,
   //Project utils
-  UUtils, UConst, UTypes, UCalendar, UWorkHours, USchedule, UTimingSheet,
+  UTimingUtils, UConst, UTypes, UCalendar, UWorkHours, USchedule, UTimingSheet,
   //DK packages utils
   DK_SheetWriter, DK_Vector, DK_Const, DK_DateUtils, DK_StrUtils, DK_SheetTypes,
   DK_SheetConst, DK_Math, DK_Color;

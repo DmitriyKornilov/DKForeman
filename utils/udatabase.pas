@@ -446,12 +446,39 @@ type
                                out ASkipMarksStr,             //перечень кодов отсутствия
                                  ASkipDaysHoursStr:           //перечень дней (часов) отсутствия
                                String);
+
+    (**************************************************************************
+                                НОРМЫ ВЫДАЧИ СИЗ
+    **************************************************************************)
+    {Загрузка из базы списка типовых норм: True - ОК, False - пусто}
+    function SIZNormsLoad(out ANormIDs: TIntVector;
+                             out ANormNames, ATypicalNames: TStrVector;
+                             out ABeginDates, AEndDates: TDateVector): Boolean;
+
+    function SIZNormDelete(const ANormID: Integer): Boolean;
+
+    {Загрузка из базы списка пунктов типовых норм: True - ОК, False - пусто}
+    function SIZNormItemsLoad(const ANormID: Integer;
+                              out AItemIDs, APostIDs: TIntVector;
+                              out AItemNames, APostNames: TStrVector): Boolean;
+    function SIZNormItemsLoad(const ANormID: Integer;
+                              out AItemIDs: TIntVector; out AItemNames: TStrVector;
+                              out APostIDs: TIntMatrix; out APostNames: TStrMatrix): Boolean;
+    {Загрузка данных пункта типовых норм: True - ОК, False - пусто}
+    function SizNormItemDataLoad(const AItemID: Integer;
+       out ASubItemIDs, ANums, ALifes, ASubItemOrderNums, AReasonIDs, AInfoIDs, ASizeTypes: TIntVector;
+       out ASizNames, AUnits, ASpecLifeNames, AReasonNames: TStrVector): Boolean;
+
   end;
+
+
 
 var
   DataBase: TDataBase;
 
 implementation
+
+
 
 { TDataBase }
 
@@ -3373,6 +3400,185 @@ begin
   GetSkipDaysCount(ASkipDaysCount);
   GetSkipHours(ASkipHours);
   GetSkipMarksDaysHoursStr;
+end;
+
+function TDataBase.SIZNormsLoad(out ANormIDs: TIntVector;
+                             out ANormNames, ATypicalNames: TStrVector;
+                             out ABeginDates, AEndDates: TDateVector): Boolean;
+begin
+  Result:= False;
+
+  ANormIDs:= nil;
+  ANormNames:= nil;
+  ATypicalNames:= nil;
+  ABeginDates:= nil;
+  AEndDates:= nil;
+
+  QSetQuery(FQuery);
+  QSetSQL(
+    sqlSELECT('SIZNORM', ['NormID', 'NormName', 'TypicalName', 'BeginDate', 'EndDate']) +
+    'WHERE NormID>0 ' +
+    'ORDER BY BeginDate DESC'
+  );
+  QOpen;
+  if not QIsEmpty then
+  begin
+    QFirst;
+    while not QEOF do
+    begin
+      VAppend(ANormIDs, QFieldInt('NormID'));
+      VAppend(ANormNames, QFieldStr('NormName'));
+      VAppend(ATypicalNames, QFieldStr('TypicalName'));
+      VAppend(ABeginDates, QFieldDT('BeginDate'));
+      VAppend(AEndDates, QFieldDT('EndDate'));
+      QNext;
+    end;
+    Result:= True;
+  end;
+  QClose;
+end;
+
+function TDataBase.SIZNormDelete(const ANormID: Integer): Boolean;
+begin
+
+end;
+
+function TDataBase.SIZNormItemsLoad(const ANormID: Integer;
+                              out AItemIDs, APostIDs: TIntVector;
+                              out AItemNames, APostNames: TStrVector): Boolean;
+begin
+  Result:= False;
+
+  AItemIDs:= nil;
+  APostIDs:= nil;
+  AItemNames:= nil;
+  APostNames:= nil;
+
+  QSetQuery(FQuery);
+  QSetSQL(
+    'SELECT t1.ItemID, t1.PostID, t2.ItemName, t3.PostName ' +
+    'FROM SIZNORMITEMPOST t1 ' +
+    'INNER JOIN SIZNORMITEM t2 ON (t1.ItemID=t2.ItemID) ' +
+    'INNER JOIN STAFFPOST t3 ON (t1.PostID=t3.PostID) ' +
+    'WHERE t2.NormID = :NormID ' +
+    'ORDER BY t2.ItemName'
+  );
+  QParamInt('NormID', ANormID);
+  QOpen;
+  if not QIsEmpty then
+  begin
+    QFirst;
+    while not QEOF do
+    begin
+      VAppend(AItemIDs, QFieldInt('ItemID'));
+      VAppend(APostIDs, QFieldInt('PostID'));
+      VAppend(AItemNames, QFieldStr('ItemName'));
+      VAppend(APostNames, QFieldStr('PostName'));
+      QNext;
+    end;
+    Result:= True;
+  end;
+  QClose;
+end;
+
+function TDataBase.SIZNormItemsLoad(const ANormID: Integer;
+                              out AItemIDs: TIntVector; out AItemNames: TStrVector;
+                              out APostIDs: TIntMatrix; out APostNames: TStrMatrix): Boolean;
+var
+  i, I1, I2, ItemID: Integer;
+  ItemIDs, PostIDs: TIntVector;
+  ItemNames, PostNames: TStrVector;
+begin
+  AItemIDs:= nil;
+  AItemNames:= nil;
+  APostIDs:= nil;
+  APostNames:= nil;
+
+  Result:= SIZNormItemsLoad(ANormID, ItemIDs, PostIDs, ItemNames, PostNames);
+  if not Result then Exit;
+
+  I1:= 0;
+  ItemID:= ItemIDs[0];
+  for i:= 1 to High(AItemIDs) do
+  begin
+    if ItemIDs[i]=ItemID then continue;
+
+    VAppend(AItemIDs, ItemIDs[i-1]);
+    VAppend(AItemNames, ItemNames[i-1]);
+
+    I2:= i-1;
+    MAppend(APostIDs, VCut(PostIDs, I1, I2));
+    MAppend(APostNames, VCut(PostNames, I1, I2));
+
+    ItemID:= ItemIDs[i];
+    I1:= i;
+  end;
+
+  VAppend(AItemIDs, VLast(ItemIDs));
+  VAppend(AItemNames, VLast(ItemNames));
+  I2:= High(ItemIDs);
+  MAppend(APostIDs, VCut(PostIDs, I1, I2));
+  MAppend(APostNames, VCut(PostNames, I1, I2));
+end;
+
+function TDataBase.SizNormItemDataLoad(const AItemID: Integer; out ASubItemIDs,
+  ANums, ALifes, ASubItemOrderNums, AReasonIDs, AInfoIDs,
+  ASizeTypes: TIntVector; out ASizNames, AUnits, ASpecLifeNames,
+  AReasonNames: TStrVector): Boolean;
+begin
+  Result:= False;
+
+  ASubItemIDs:= nil;
+  ANums:= nil;
+  ALifes:= nil;
+  ASubItemOrderNums:= nil;
+  AReasonIDs:= nil;
+  AInfoIDs:= nil;
+  ASizeTypes:= nil;
+  ASizNames:= nil;
+  AUnits:= nil;
+  ASpecLifeNames:= nil;
+  AReasonNames:= nil;
+
+  QSetQuery(FQuery);
+  QSetSQL(
+    'SELECT t1.SubItemID, t1.Num, t1.Life, t1.InfoID, ' +
+           't2.ReasonID, t2.OrderNum AS SubItemOrderNum, ' +
+           't3.SizName, t3.SizeType, ' +
+           't4.SpecLifeName, ' +
+           't5.ReasonName, ' +
+           't6.UnitStringCode ' +
+    'FROM SIZNORMSUBITEMINFO t1 ' +
+    'INNER JOIN SIZNORMSUBITEM t2 ON (t1.SubItemID=t2.SubItemID) ' +
+    'INNER JOIN SIZNAMES t3 ON (t1.NameID=t3.NameID) ' +
+    'INNER JOIN SIZSPECLIFE t4 ON (t1.SpecLifeID=t4.SpecLifeID) ' +
+    'INNER JOIN SIZREASON t5 ON (t2.ReasonID=t5.ReasonID) ' +
+    'INNER JOIN SIZUNIT t6 ON (t3.UnitID=t6.UnitID) ' +
+    'WHERE t2.ItemID = :ItemID ' +
+    'ORDER BY t2.ReasonID, t2.OrderNum, t1.OrderNum');
+  QParamInt('ItemID', AItemID);
+  QOpen;
+  if not QIsEmpty then
+  begin
+    QFirst;
+    while not QEOF do
+    begin
+      VAppend(ASubItemIDs, QFieldInt('SubItemID'));
+      VAppend(ANums, QFieldInt('Num'));
+      VAppend(ALifes, QFieldInt('Life'));
+      VAppend(ASubItemOrderNums, QFieldInt('SubItemOrderNum'));
+      VAppend(AReasonIDs, QFieldInt('ReasonID'));
+      VAppend(AInfoIDs, QFieldInt('InfoID'));
+      VAppend(ASizeTypes, QFieldInt('SizeType'));
+      VAppend(ASizNames, QFieldStr('SizName'));
+      VAppend(AUnits, QFieldStr('UnitStringCode'));
+      VAppend(ASpecLifeNames, QFieldStr('SpecLifeName'));
+      VAppend(AReasonNames, QFieldStr('ReasonName'));
+      QNext;
+    end;
+    Result:= True;
+  end;
+  QClose;
 end;
 
 end.

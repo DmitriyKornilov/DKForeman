@@ -7,12 +7,12 @@ interface
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, BCButton,
   Buttons, Spin, DividerBevel, VirtualTrees, fpspreadsheetgrid,
-
   //DK packages utils
   DK_Vector, DK_Fonts, DK_Const, DK_StrUtils, DK_VSTTableTools, DK_Zoom,
   DK_SheetExporter, DK_ColorLegend,
   //Project utils
-  UDataBase, UConst, UTypes, UUtils, UUIUtils, UCalendar, USchedule, UScheduleSheet,
+  UDataBase, UConst, UTypes, UTimingUtils, UUIUtils, UCalendar, USchedule,
+  UScheduleSheet,
   //Forms
   UChooseForm;
 
@@ -121,7 +121,7 @@ end;
 
 procedure TScheduleShiftMonthForm.FormCreate(Sender: TObject);
 begin
-  Caption:= MAIN_CAPTION + MAIN_DESCRIPTION[11];
+  Caption:= MAIN_CAPTION + OTHER_DESCRIPTION[2];
 
   SetToolPanels([
     ToolPanel

@@ -74,7 +74,7 @@ end;
 
 procedure TScheduleVacationForm.FormCreate(Sender: TObject);
 begin
-  Caption:= MAIN_CAPTION + MAIN_DESCRIPTION[12];
+  Caption:= MAIN_CAPTION + OTHER_DESCRIPTION[3];
 
   SetToolPanels([
     ToolPanel

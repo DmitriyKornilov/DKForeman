@@ -287,7 +287,7 @@ function TimetableIsAbsence(const AMarkType: Integer): Integer;
 
 implementation
 
-uses UUtils;
+uses UTimingUtils;
 
 procedure VTCreate(var V: TTimetableVector; const Count: Integer);
 var

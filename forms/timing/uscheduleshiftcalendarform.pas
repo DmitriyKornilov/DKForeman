@@ -8,12 +8,11 @@ uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, Buttons,
   BCButton, BCPanel, Spin, StdCtrls, DividerBevel, VirtualTrees,
   fpspreadsheetgrid, DateUtils,
-
   //DK packages utils
   DK_Vector, DK_Fonts, DK_Const,
   DK_VSTTypes, DK_VSTEditTools, DK_Zoom, DK_SheetExporter,
   //Project utils
-  UDataBase, UConst, UUtils, UUIUtils, UCalendar, USchedule, UScheduleSheet;
+  UDataBase, UConst, UTimingUtils, UUIUtils, UCalendar, USchedule, UScheduleSheet;
 
 type
 
@@ -121,8 +120,7 @@ end;
 
 procedure TScheduleShiftCalendarForm.FormCreate(Sender: TObject);
 begin
-  Caption:= MAIN_CAPTION + MAIN_DESCRIPTION[10];
-  //Height:= 300; Width:= 500; //for normal form maximizing
+  Caption:= MAIN_CAPTION + OTHER_DESCRIPTION[1];
 
   SetToolPanels([
     ToolPanel, ListToolPanel

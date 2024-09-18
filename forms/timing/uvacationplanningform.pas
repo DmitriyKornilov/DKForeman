@@ -12,7 +12,7 @@ uses
   DK_Vector, DK_Matrix, DK_VSTTables, DK_Zoom, DK_Progress, DK_DateUtils,
   DK_ColorLegend,
   //Project utils
-  UDataBase, UConst, UUtils, UUIUtils, UScheduleSheet, UCalendar, USchedule,
+  UDataBase, UConst, UTimingUtils, UUIUtils, UScheduleSheet, UCalendar, USchedule,
   //Forms
   UVacationPlanEditForm;
 
@@ -153,7 +153,7 @@ uses UMainForm;
 
 procedure TVacationPlanningForm.FormCreate(Sender: TObject);
 begin
-  Caption:= MAIN_CAPTION + MAIN_DESCRIPTION[15];
+  Caption:= MAIN_CAPTION + OTHER_DESCRIPTION[6];
 
   SetToolPanels([
     ToolPanel, ListOrderToolPanel

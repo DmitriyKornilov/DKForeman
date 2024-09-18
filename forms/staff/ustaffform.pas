@@ -230,8 +230,6 @@ begin
   PostLogCreate;
   CreateFilterControls('Фильтр по Ф.И.О.:', FilterPanel, @StaffListFilter);
   CanLoadStaffList:= True;
-
-  ViewUpdate(mtView);
 end;
 
 procedure TStaffForm.SettingsLoad;

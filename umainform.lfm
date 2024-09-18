@@ -642,15 +642,30 @@ object MainForm: TMainForm
     Images = Images.PX24
     Left = 40
     Top = 113
+    object SIZNormsMenuItem: TMenuItem
+      Caption = 'Нормы выдачи средств индивидуальной защиты'
+      ImageIndex = 56
+      OnClick = SIZNormsMenuItemClick
+    end
     object SIZMenuItem: TMenuItem
       Caption = 'Средства индивидуальной защиты'
       ImageIndex = 34
       OnClick = SIZMenuItemClick
     end
+    object Separator3: TMenuItem
+      Caption = '-'
+    end
+    object SSONormsMenuItem: TMenuItem
+      Caption = 'Нормы выдачи смывающих и обезвреживающих средств'
+      ImageIndex = 56
+    end
     object SSOMenuItem: TMenuItem
       Caption = 'Средства смывающие и обезвреживающие'
       ImageIndex = 35
       OnClick = SSOMenuItemClick
+    end
+    object Separator4: TMenuItem
+      Caption = '-'
     end
     object StudyMenuItem: TMenuItem
       Caption = 'Инструктажи, аттестация и обучение'

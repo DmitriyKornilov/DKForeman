@@ -17,7 +17,7 @@ uses
   UStaffForm,
   UCalendarForm, UScheduleShiftForm, UVacationPlanForm,
   USchedulePersonalForm, UTimetableForm,
-  USIZForm,
+  USIZNormsForm, USIZForm,
   USSOForm,
   UStudyForm;
 
@@ -31,6 +31,10 @@ type
     DividerBevel1: TDividerBevel;
     DividerBevel2: TDividerBevel;
     DividerBevel3: TDividerBevel;
+    SIZNormsMenuItem: TMenuItem;
+    SSONormsMenuItem: TMenuItem;
+    Separator3: TMenuItem;
+    Separator4: TMenuItem;
     TimetableMarkMenuItem: TMenuItem;
     SIZListMenuItem: TMenuItem;
     SIZUnitMenuItem: TMenuItem;
@@ -76,6 +80,7 @@ type
     procedure ShiftScheduleMenuItemClick(Sender: TObject);
     procedure SIZListMenuItemClick(Sender: TObject);
     procedure SIZMenuItemClick(Sender: TObject);
+    procedure SIZNormsMenuItemClick(Sender: TObject);
     procedure SIZReasonMenuItemClick(Sender: TObject);
     procedure SIZSpecLifeMenuItemClick(Sender: TObject);
     procedure SIZUnitMenuItemClick(Sender: TObject);
@@ -177,7 +182,7 @@ begin
     4: (CategoryForm as TVacationPlanForm).ViewUpdate(ModeType);
     5: (CategoryForm as TSchedulePersonalForm).ViewUpdate(ModeType);
     6: (CategoryForm as TTimetableForm).ViewUpdate(ModeType);
-    7: ;
+    7: (CategoryForm as TSIZNormsForm).ViewUpdate(ModeType);
     8: ;
     9: ;
   end;
@@ -191,12 +196,12 @@ begin
   case Category of
     0: ;
     1: (CategoryForm as TStaffForm).SettingsSave;
-    //2: (CategoryForm as TCalendarForm).SettingsSave;
+    //2: (CategoryForm as TCalendarForm).SettingsSave;   - no settings
     3: (CategoryForm as TScheduleShiftForm).SettingsSave;
     4: (CategoryForm as TVacationPlanForm).SettingsSave;
     5: (CategoryForm as TSchedulePersonalForm).SettingsSave;
     6: (CategoryForm as TTimetableForm).SettingsSave;
-    7: ;
+    //7: (CategoryForm as TSIZNormsForm).SettingsSave;   - no settings
     8: ;
     9: ;
   end;
@@ -211,7 +216,7 @@ begin
     SettingsSave;
     Category:= ACategory;
     Caption:= MAIN_CAPTION + MAIN_DESCRIPTION[ACategory];
-    SettingButton.Enabled:= Category<>2;
+    SettingButton.Enabled:= not (Category in [2, 7]);
 
     if Assigned(CategoryForm) then FreeAndNil(CategoryForm);
     case Category of
@@ -222,9 +227,10 @@ begin
       4: CategoryForm:= FormOnPanelCreate(TVacationPlanForm, MainPanel);
       5: CategoryForm:= FormOnPanelCreate(TSchedulePersonalForm, MainPanel);
       6: CategoryForm:= FormOnPanelCreate(TTimetableForm, MainPanel);
-      7: CategoryForm:= FormOnPanelCreate(TSIZForm, MainPanel);
-      8: CategoryForm:= FormOnPanelCreate(TSSOForm, MainPanel);
-      9: CategoryForm:= FormOnPanelCreate(TStudyForm, MainPanel);
+      7: CategoryForm:= FormOnPanelCreate(TSIZNormsForm, MainPanel);
+      //7: CategoryForm:= FormOnPanelCreate(TSIZForm, MainPanel);
+      //8: CategoryForm:= FormOnPanelCreate(TSSOForm, MainPanel);
+      //9: CategoryForm:= FormOnPanelCreate(TStudyForm, MainPanel);
     end;
     if Assigned(CategoryForm) then
     begin
@@ -433,19 +439,24 @@ begin
   CategorySelect(6);
 end;
 
-procedure TMainForm.SIZMenuItemClick(Sender: TObject);
+procedure TMainForm.SIZNormsMenuItemClick(Sender: TObject);
 begin
   CategorySelect(7);
 end;
 
+procedure TMainForm.SIZMenuItemClick(Sender: TObject);
+begin
+  //CategorySelect(7);
+end;
+
 procedure TMainForm.SSOMenuItemClick(Sender: TObject);
 begin
-  CategorySelect(8);
+  //CategorySelect(8);
 end;
 
 procedure TMainForm.StudyMenuItemClick(Sender: TObject);
 begin
-  CategorySelect(9);
+  //CategorySelect(9);
 end;
 
 procedure TMainForm.PostListMenuItemClick(Sender: TObject);

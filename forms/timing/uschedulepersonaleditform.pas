@@ -8,7 +8,7 @@ uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls,
   fpspreadsheetgrid, DateTimePicker, DateUtils, Buttons,
   //Project utils
-  UDataBase, UUtils, UUIUtils, UTypes, UCalendar, USchedule,  UScheduleSheet,
+  UDataBase, UTimingUtils, UUIUtils, UTypes, UCalendar, USchedule,  UScheduleSheet,
   //DK packages utils
   DK_Vector, DK_Dialogs;
 

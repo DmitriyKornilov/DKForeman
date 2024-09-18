@@ -9,9 +9,8 @@ uses
   DividerBevel, BCPanel, BCButton, Spin, StdCtrls, VirtualTrees, DateUtils,
   //DK packages utils
   DK_VSTTables, DK_VSTParamList, DK_VSTTypes, DK_Vector, DK_Filter, DK_StrUtils,
-
   //Project utils
-  UDataBase, UUtils, UUIUtils, UTypes, UConst,
+  UDataBase, UTimingUtils, UUIUtils, UTypes, UConst,
   //Forms
   UVacationScheduleForm, UVacationPlanEditForm, UVacationPlanningForm;
 

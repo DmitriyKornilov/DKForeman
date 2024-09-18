@@ -354,6 +354,39 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UVacationPlanningForm"/>
       </Unit>
+      <Unit>
+        <Filename Value="forms\siz\usiznormsform.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="SIZNormsForm"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="USIZNormsForm"/>
+      </Unit>
+      <Unit>
+        <Filename Value="utils\siz\usiznormsheet.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="USIZNormSheet"/>
+      </Unit>
+      <Unit>
+        <Filename Value="utils\siz\usizsizes.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="USIZSizes"/>
+      </Unit>
+      <Unit>
+        <Filename Value="utils\timing\utimingutils.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="UTimingUtils"/>
+      </Unit>
+      <Unit>
+        <Filename Value="utils\siz\usizutils.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="USIZUtils"/>
+      </Unit>
+      <Unit>
+        <Filename Value="utils\siz\usiztypes.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="USIZTypes"/>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -364,7 +397,7 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
-      <OtherUnitFiles Value="forms\calendar;utils;forms\staff;forms\timing;forms\siz;forms\sso;forms\study;utils\timing;forms"/>
+      <OtherUnitFiles Value="forms\calendar;utils;forms\staff;forms\timing;forms\siz;forms\sso;forms\study;utils\timing;forms;utils\siz"/>
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <Linking>

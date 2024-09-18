@@ -9,8 +9,8 @@ uses
   fpspreadsheetgrid, BCPanel, BCButton, VirtualTrees, Spin, DividerBevel,
   DateUtils,
   //Project utils
-  UDataBase, UConst, UTypes, UUtils, UUIUtils, UWorkHours, UCalendar, USchedule,
-  UScheduleSheet,
+  UDataBase, UConst, UTypes, UTimingUtils, UUIUtils, UWorkHours, UCalendar,
+  USchedule, UScheduleSheet,
   //DK packages utils
   DK_VSTTables, DK_VSTParamList, DK_Vector, DK_Const, DK_Dialogs,
   DK_Zoom, DK_DateUtils, DK_Color, DK_SheetExporter, DK_Progress, DK_ColorLegend,

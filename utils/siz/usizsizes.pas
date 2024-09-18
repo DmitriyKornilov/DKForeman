@@ -1,0 +1,172 @@
+unit USIZSizes;
+
+{$mode objfpc}{$H+}
+
+interface
+
+uses
+  Classes, SysUtils;
+
+const
+  MANHEIGHTS: array [0..5] of String =
+    ('', '146-152', '158-164', '170-176', '182-188', '194-200');
+  CLOTHES: array [0..7] of String =
+    ('', '40-42', '44-46', '48-50', '52-54', '56-58', '60-62', '64-66');
+  SHOES: array [0..18] of String =
+    ('',   '33', '34', '35', '36', '37', '38', '39', '40', '41', '42', '43',
+     '44', '45', '46', '47', '48', '49', '50');
+  HEADDRESS: array [0..21] of String =
+    ('',   '50', '51', '52', '53', '54', '55', '56', '57', '58', '59', '60',
+     '61', '62', '63', '64', '65', '66', '67', '68', '69', '70');
+  MITTENS: array [0..7] of String =
+    ('', '6', '7', '8', '9', '10', '11', '12');
+  GASMASK: array [0..5] of String =
+    ('', '0', '1', '2', '3', '4');
+  RESPIRATOR: array [0..3] of String =
+    ('', '1', '2', '3');
+
+type
+
+  TSizStaffSizeIndexes = record
+    Clothes, Height, Shoes, HeadDress,
+    Mittens, Gloves, Gasmask, Respirator: Integer;
+  end;
+  procedure SizStaffSizeIndexesClear(var AStaffSizes: TSizStaffSizeIndexes);
+  procedure SizStaffSizesForSizeType(const AStaffSizes: TSizStaffSizeIndexes;
+                                     const ASizeType: Integer;
+                                     out ASizeID, AHeightID: Integer);
+type
+
+  TSizStaffSizes = record
+    Clothes, Height, Shoes, HeadDress,
+    Mittens, Gloves, Gasmask, Respirator: String;
+  end;
+  procedure SizStaffSizesClear(var AStaffSizes: TSizStaffSizes);
+
+  procedure LoadHeights(const AStrings: TStrings);
+  procedure LoadClothes(const AStrings: TStrings);
+  procedure LoadShoes(const AStrings: TStrings);
+  procedure LoadHeadDress(const AStrings: TStrings);
+  procedure LoadMittens(const AStrings: TStrings);
+  procedure LoadGasmask(const AStrings: TStrings);
+  procedure LoadRespirator(const AStrings: TStrings);
+
+implementation
+
+procedure SizStaffSizeIndexesClear(var AStaffSizes: TSizStaffSizeIndexes);
+begin
+  AStaffSizes.Clothes:= 0;
+  AStaffSizes.Height:= 0;
+  AStaffSizes.Shoes:= 0;
+  AStaffSizes.HeadDress:= 0;
+  AStaffSizes.Mittens:= 0;
+  AStaffSizes.Gloves:= 0;
+  AStaffSizes.Gasmask:= 0;
+  AStaffSizes.Respirator:= 0;
+end;
+
+procedure SizStaffSizesForSizeType(const AStaffSizes: TSizStaffSizeIndexes;
+                                   const ASizeType: Integer;
+                                   out ASizeID, AHeightID: Integer);
+begin
+  ASizeID:= 0;
+  AHeightID:= 0;
+  if ASizeType=0 then Exit;
+  case ASizeType of
+  1: begin
+       ASizeID:= AStaffSizes.Clothes;
+       AHeightID:= AStaffSizes.Height;
+     end;
+  2: ASizeID:= AStaffSizes.Shoes;
+  3: ASizeID:= AStaffSizes.HeadDress;
+  4: ASizeID:= AStaffSizes.Mittens;
+  5: ASizeID:= AStaffSizes.Gloves;
+  6: ASizeID:= AStaffSizes.Gasmask;
+  7: ASizeID:= AStaffSizes.Respirator;
+  end;
+end;
+
+procedure SizStaffSizesClear(var AStaffSizes: TSizStaffSizes);
+begin
+  AStaffSizes.Clothes:= EmptyStr;
+  AStaffSizes.Height:= EmptyStr;
+  AStaffSizes.Shoes:= EmptyStr;
+  AStaffSizes.HeadDress:= EmptyStr;
+  AStaffSizes.Mittens:= EmptyStr;
+  AStaffSizes.Gloves:= EmptyStr;
+  AStaffSizes.Gasmask:= EmptyStr;
+  AStaffSizes.Respirator:= EmptyStr;
+end;
+
+procedure LoadHeights(const AStrings: TStrings);
+var
+  i: Integer;
+begin
+  AStrings.Clear;
+  AStrings.Add('<нет>');
+  for i:= 1 to High(MANHEIGHTS) do
+    AStrings.Add(MANHEIGHTS[i]);
+end;
+
+procedure LoadClothes(const AStrings: TStrings);
+var
+  i: Integer;
+begin
+  AStrings.Clear;
+  AStrings.Add('<нет>');
+  for i:= 1 to High(CLOTHES) do
+    AStrings.Add(CLOTHES[i]);
+end;
+
+procedure LoadShoes(const AStrings: TStrings);
+var
+  i: Integer;
+begin
+  AStrings.Clear;
+  AStrings.Add('<нет>');
+  for i:= 1 to High(SHOES) do
+    AStrings.Add(SHOES[i]);
+end;
+
+procedure LoadHeadDress(const AStrings: TStrings);
+var
+  i: Integer;
+begin
+  AStrings.Clear;
+  AStrings.Add('<нет>');
+  for i:= 1 to High(HEADDRESS) do
+    AStrings.Add(HEADDRESS[i]);
+end;
+
+procedure LoadMittens(const AStrings: TStrings);
+var
+  i: Integer;
+begin
+  AStrings.Clear;
+  AStrings.Add('<нет>');
+  for i:= 1 to High(MITTENS) do
+    AStrings.Add(MITTENS[i]);
+end;
+
+procedure LoadGasmask(const AStrings: TStrings);
+var
+  i: Integer;
+begin
+  AStrings.Clear;
+  AStrings.Add('<нет>');
+  for i:= 1 to High(GASMASK) do
+    AStrings.Add(GASMASK[i]);
+end;
+
+procedure LoadRespirator(const AStrings: TStrings);
+var
+  i: Integer;
+begin
+  AStrings.Clear;
+  AStrings.Add('<нет>');
+  for i:= 1 to High(RESPIRATOR) do
+    AStrings.Add(RESPIRATOR[i]);
+end;
+
+end.
+
