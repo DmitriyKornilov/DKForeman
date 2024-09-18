@@ -6,14 +6,14 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, Buttons,
-  fpspreadsheetgrid, BCPanel, BCButton, VirtualTrees, Spin, StdCtrls,
-  DividerBevel, DateUtils,
+  fpspreadsheetgrid, VirtualTrees, Spin, StdCtrls, DividerBevel, DateUtils,
+  BCButton,
   //Project utils
-  UDataBase, UConst, UTypes, UTimingUtils, UUIUtils, UCalendar, USchedule,
+  UDataBase, UConst, UTypes, UTimingUtils, UImages, UCalendar, USchedule,
   UTimetable, UTimetableSheet,
   //DK packages utils
   DK_VSTTables, DK_VSTParamList, DK_Vector, DK_Const, DK_Dialogs,
-  DK_DateUtils, DK_Color, DK_SheetExporter, DK_StrUtils,
+  DK_DateUtils, DK_Color, DK_SheetExporter, DK_StrUtils, DK_CtrlUtils,
   DK_Progress, DK_Zoom, DK_Filter, DK_ColorLegend,
   //Forms
   UChooseForm, UTimetableEditForm, UTimetableMonthForm;
@@ -39,10 +39,14 @@ type
     DividerBevel4: TDividerBevel;
     DividerBevel5: TDividerBevel;
     EditButton: TSpeedButton;
+    ViewCaptionPanel: TPanel;
     EditingPanel: TPanel;
     DayToolPanel: TPanel;
     EraseButton: TSpeedButton;
-    ExportButton: TBCButton;
+    ExportButton: TSpeedButton;
+    StaffCaptionPanel: TPanel;
+    SettingCaptionPanel: TPanel;
+    MonthTimetableButton: TSpeedButton;
     FilterPanel: TPanel;
     FIORadioButton: TRadioButton;
     DayPanel: TPanel;
@@ -50,24 +54,20 @@ type
     LegendPanel: TPanel;
     MonthBCButton: TBCButton;
     MonthPanel: TPanel;
-    ViewCaptionPanel: TBCPanel;
+    ListCaptionPanel: TPanel;
+    EditingCaptionPanel: TPanel;
     ViewGrid: TsWorksheetGrid;
     ViewGridPanel: TPanel;
     ViewPanel: TPanel;
-    EditingCaptionPanel: TBCPanel;
     LeftSplitter: TSplitter;
-    ListCaptionPanel: TBCPanel;
     ListFilterToolPanel: TPanel;
     ListOrderToolPanel: TPanel;
     ListPanel: TPanel;
-    MonthTimetableButton: TBCButton;
     OrderButtonPanel: TPanel;
     OrderLabel: TLabel;
     PostRadioButton: TRadioButton;
-    SettingCaptionPanel: TBCPanel;
     SettingClientPanel: TPanel;
     SettingPanel: TPanel;
-    StaffCaptionPanel: TBCPanel;
     StaffListVT: TVirtualStringTree;
     TabNumRadioButton: TRadioButton;
     ToolPanel: TPanel;
@@ -201,10 +201,14 @@ begin
   SetToolButtons([
     CloseButton, AscendingButton, DescendingButton,
     WriteButton, EraseButton, EditButton, CopyButton,
-    CopySaveButton, CopyDelButton,CopyCancelButton
+    CopySaveButton, CopyDelButton, CopyCancelButton
   ]);
-  SetCategoryButtons([
-    ExportButton, MonthTimetableButton
+
+  Images.ToButtons([
+    ExportButton, MonthTimetableButton,
+    CloseButton, AscendingButton, DescendingButton,
+    WriteButton, EraseButton, EditButton, CopyButton,
+    CopySaveButton, CopyDelButton, CopyCancelButton
   ]);
 
   ViewYear:= 0;
@@ -951,14 +955,14 @@ end;
 procedure TTimetableForm.CaptionsUpdate;
 begin
   StaffCaptionPanel.Caption:= EmptyStr;
-  ViewCaptionPanel.Caption:= 'Табель: ';
+  ViewCaptionPanel.Caption:= '  Табель';
 
   if not StaffList.IsSelected then Exit;
 
   StaffCaptionPanel.Caption:= StaffLongNames[StaffList.SelectedIndex];
   StaffCaptionPanel.Visible:= ModeType=mtEditing;
 
-  ViewCaptionPanel.Caption:= 'Табель за ' + YearSpinEdit.Text + ' год: ';
+  ViewCaptionPanel.Caption:= '  Табель за ' + YearSpinEdit.Text + ' год: ';
   if ModeType<>mtEditing then
     ViewCaptionPanel.Caption:= ViewCaptionPanel.Caption +
                                StaffLongNames[StaffList.SelectedIndex];

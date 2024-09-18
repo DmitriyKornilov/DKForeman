@@ -6,13 +6,12 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, Buttons,
-  fpspreadsheetgrid, BCPanel, BCButton, VirtualTrees, Spin, DividerBevel,
-  DateUtils,
+  fpspreadsheetgrid, VirtualTrees, Spin, DividerBevel, DateUtils,
   //Project utils
-  UDataBase, UConst, UTypes, UTimingUtils, UUIUtils, UWorkHours, UCalendar,
+  UDataBase, UConst, UTypes, UTimingUtils, UImages, UWorkHours, UCalendar,
   USchedule, UScheduleSheet,
   //DK packages utils
-  DK_VSTTables, DK_VSTParamList, DK_Vector, DK_Const, DK_Dialogs,
+  DK_VSTTables, DK_VSTParamList, DK_Vector, DK_Const, DK_Dialogs, DK_CtrlUtils,
   DK_Zoom, DK_DateUtils, DK_Color, DK_SheetExporter, DK_Progress, DK_ColorLegend,
   //Forms
   UChooseForm, UScheduleShiftEditForm, UScheduleCorrectionEditForm,
@@ -23,23 +22,24 @@ type
   { TScheduleShiftForm }
 
   TScheduleShiftForm = class(TForm)
+    SheetCaptionPanel: TPanel;
+    StructureCaptionPanel: TPanel;
+    MonthButton: TSpeedButton;
     CloseButton: TSpeedButton;
     DividerBevel1: TDividerBevel;
     DividerBevel2: TDividerBevel;
     DividerBevel3: TDividerBevel;
+    ExportButton: TSpeedButton;
+    CalendarButton: TSpeedButton;
     LegendPanel: TPanel;
-    MonthButton: TBCButton;
-    ExportButton: TBCButton;
-    CorrectionsCaptionPanel: TBCPanel;
     CopyCancelButton: TSpeedButton;
     CopyDelButton: TSpeedButton;
     CopyPanel: TPanel;
     CopySaveButton: TSpeedButton;
     CopyToolPanel: TPanel;
-    CalendarButton: TBCButton;
+    SettingCaptionPanel: TPanel;
+    ListCaptionPanel: TPanel;
     SettingClientPanel: TPanel;
-    SettingCaptionPanel: TBCPanel;
-    SheetCaptionPanel: TBCPanel;
     MainPanel: TPanel;
     ScheduleAddButton: TSpeedButton;
     DayAddButton: TSpeedButton;
@@ -54,7 +54,6 @@ type
     SheetPanel: TPanel;
     ListToolPanel: TPanel;
     LeftSplitter: TSplitter;
-    ListCaptionPanel: TBCPanel;
     ListPanel: TPanel;
     EditingPanel: TPanel;
     ScheduleListVT: TVirtualStringTree;
@@ -62,7 +61,7 @@ type
     SettingPanel: TPanel;
     EditingSplitter: TSplitter;
     Splitter2: TSplitter;
-    StructureCaptionPanel: TBCPanel;
+    CorrectionsCaptionPanel: TPanel;
     StructurePanel: TPanel;
     StructureVT: TVirtualStringTree;
     ToolPanel: TPanel;
@@ -259,10 +258,15 @@ begin
     CloseButton,
     ScheduleAddButton, ScheduleDelButton, ScheduleEditButton,
     DayAddButton, DayDelButton, DayEditButton, DayCopyButton,
-    CopySaveButton, CopyDelButton,CopyCancelButton
+    CopySaveButton, CopyDelButton, CopyCancelButton
   ]);
-  SetCategoryButtons([
-    ExportButton, CalendarButton, MonthButton
+
+  Images.ToButtons([
+    ExportButton, CalendarButton, MonthButton,
+    CloseButton,
+    ScheduleAddButton, ScheduleDelButton, ScheduleEditButton,
+    DayAddButton, DayDelButton, DayEditButton, DayCopyButton,
+    CopySaveButton, CopyDelButton, CopyCancelButton
   ]);
 
   Calendar:= TCalendar.Create;
@@ -535,11 +539,11 @@ var
   CycleIDs: TIntVector;
 begin
   Structure.ValuesClear;
-  StructureCaptionPanel.Caption:= 'Структура: ';
+  StructureCaptionPanel.Caption:= '  Структура ';
 
   if not ScheduleList.IsSelected then Exit;
 
-  StructureCaptionPanel.Caption:= StructureCaptionPanel.Caption +
+  StructureCaptionPanel.Caption:= StructureCaptionPanel.Caption + ': ' +
                                   ScheduleNames[ScheduleList.SelectedIndex];
 
   DataBase.ScheduleCycleLoad(ScheduleIDs[ScheduleList.SelectedIndex], CycleIDs, Cycle);
@@ -555,11 +559,11 @@ begin
   SelectedCorrectionID:= GetSelectedID(VSTDays, CorrectIDs, SelectedID);
 
   VSTDays.ValuesClear;
-  CorrectionsCaptionPanel.Caption:= 'Корректировки: ';
+  CorrectionsCaptionPanel.Caption:= '  Корректировки';
 
   if not ScheduleList.IsSelected then Exit;
 
-  CorrectionsCaptionPanel.Caption:= CorrectionsCaptionPanel.Caption +
+  CorrectionsCaptionPanel.Caption:= CorrectionsCaptionPanel.Caption +  ': ' +
                                   ScheduleNames[ScheduleList.SelectedIndex];
 
   FirstLastDayInYear(YearSpinEdit.Value, BD, ED);
@@ -714,9 +718,9 @@ begin
   if not Calendar.IsCalculated then Exit;
   if not Schedule.IsCalculated then Exit;
 
-  SheetCaptionPanel.Caption:= 'График сменности на ' + YearSpinEdit.Text + ' год: ';
+  SheetCaptionPanel.Caption:= '  График сменности на ' + YearSpinEdit.Text + ' год';
   if not ScheduleList.IsSelected then Exit;
-  SheetCaptionPanel.Caption:= SheetCaptionPanel.Caption +
+  SheetCaptionPanel.Caption:= SheetCaptionPanel.Caption + ': ' +
                               ScheduleNames[ScheduleList.SelectedIndex];
 
   ViewGrid.Visible:= False;

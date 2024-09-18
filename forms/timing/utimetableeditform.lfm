@@ -1,11 +1,11 @@
 object TimetableEditForm: TTimetableEditForm
   Left = 567
-  Height = 377
+  Height = 418
   Top = 164
   Width = 885
   BorderIcons = [biSystemMenu]
   Caption = 'Корректировка табеля'
-  ClientHeight = 377
+  ClientHeight = 418
   ClientWidth = 885
   DesignTimePPI = 120
   OnCreate = FormCreate
@@ -50,7 +50,7 @@ object TimetableEditForm: TTimetableEditForm
     AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Control = ButtonPanel
     Left = 0
-    Height = 235
+    Height = 270
     Top = 88
     Width = 885
     Align = alCustom
@@ -58,7 +58,7 @@ object TimetableEditForm: TTimetableEditForm
     BorderSpacing.Top = 12
     BorderSpacing.Bottom = 12
     BevelOuter = bvNone
-    ClientHeight = 235
+    ClientHeight = 270
     ClientWidth = 885
     TabOrder = 2
     object MarkTypeLabel: TLabel
@@ -251,7 +251,7 @@ object TimetableEditForm: TTimetableEditForm
       AnchorSideBottom.Control = MainSettingsPanel
       AnchorSideBottom.Side = asrBottom
       Left = 8
-      Height = 158
+      Height = 193
       Top = 77
       Width = 869
       Anchors = [akTop, akLeft, akRight, akBottom]
@@ -259,7 +259,7 @@ object TimetableEditForm: TTimetableEditForm
       BorderSpacing.Top = 12
       BorderSpacing.Right = 8
       BevelOuter = bvNone
-      ClientHeight = 158
+      ClientHeight = 193
       ClientWidth = 869
       TabOrder = 3
       object TotalHoursSpinEdit: TFloatSpinEdit
@@ -368,13 +368,13 @@ object TimetableEditForm: TTimetableEditForm
         AnchorSideBottom.Control = SettingsPanel1
         AnchorSideBottom.Side = asrBottom
         Left = 0
-        Height = 83
+        Height = 118
         Top = 75
         Width = 869
         Anchors = [akTop, akLeft, akRight, akBottom]
         BorderSpacing.Top = 8
         BevelOuter = bvNone
-        ClientHeight = 83
+        ClientHeight = 118
         ClientWidth = 869
         TabOrder = 4
         Visible = False
@@ -662,17 +662,17 @@ object TimetableEditForm: TTimetableEditForm
     AnchorSideTop.Control = MainSettingsPanel
     AnchorSideTop.Side = asrBottom
     Left = 2
-    Height = 36
-    Top = 335
+    Height = 42
+    Top = 370
     Width = 881
     Align = alBottom
+    Anchors = [akLeft, akRight]
     AutoSize = True
     BorderSpacing.Left = 2
-    BorderSpacing.Top = 12
     BorderSpacing.Right = 2
     BorderSpacing.Bottom = 6
     BevelOuter = bvNone
-    ClientHeight = 36
+    ClientHeight = 42
     ClientWidth = 881
     TabOrder = 5
     object CancelButton: TSpeedButton
@@ -681,16 +681,18 @@ object TimetableEditForm: TTimetableEditForm
       AnchorSideRight.Control = ButtonPanel
       AnchorSideRight.Side = asrBottom
       Cursor = crHandPoint
-      Left = 775
-      Height = 28
+      Left = 760
+      Height = 34
       Top = 8
-      Width = 100
+      Width = 115
       Anchors = [akTop, akRight]
       AutoSize = True
       BorderSpacing.Right = 6
-      Caption = 'Отменить'
+      Caption = ' Отменить '
       Images = Images.PX24
       ImageIndex = 8
+      Margin = 5
+      Spacing = 5
       OnClick = CancelButtonClick
       ParentFont = False
     end
@@ -699,15 +701,17 @@ object TimetableEditForm: TTimetableEditForm
       AnchorSideTop.Side = asrCenter
       AnchorSideRight.Control = CancelButton
       Cursor = crHandPoint
-      Left = 669
-      Height = 28
+      Left = 639
+      Height = 34
       Top = 8
-      Width = 106
+      Width = 121
       Anchors = [akTop, akRight]
       AutoSize = True
-      Caption = 'Сохранить'
+      Caption = ' Сохранить '
       Images = Images.PX24
       ImageIndex = 7
+      Margin = 5
+      Spacing = 5
       OnClick = SaveButtonClick
       ParentFont = False
     end

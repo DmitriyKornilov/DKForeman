@@ -8,9 +8,9 @@ uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, Spin,
   ExtCtrls, BCButton, VirtualTrees, DateTimePicker, Buttons, DateUtils,
   //DK packages utils
-  DK_Vector, DK_DateUtils, DK_VSTDropDown, DK_Dialogs, DK_Const,
+  DK_Vector, DK_DateUtils, DK_VSTDropDown, DK_Dialogs, DK_Const, DK_CtrlUtils,
   //Project utils
-  UDataBase, UTimingUtils, UUIUtils, UWorkHours, UTimetable;
+  UDataBase, UTimingUtils, UImages, UWorkHours, UTimetable;
 
 type
 
@@ -95,9 +95,8 @@ implementation
 
 procedure TTimetableEditForm.FormShow(Sender: TObject);
 begin
-  SetEditButtons([SaveButton, CancelButton]);
-  Constraints.MinWidth:= Width;
-  Constraints.MinHeight:= Height;
+  FormKeepMinSize(Self, False);
+
   TotalHoursLabel.Width:= MainMarkLabel.Width;
   SkipHoursLabel.Width:= MainMarkLabel.Width;
   SkipMarkLabel.Width:= MainMarkLabel.Width;
@@ -247,8 +246,9 @@ end;
 procedure TTimetableEditForm.FormCreate(Sender: TObject);
 begin
   TabNumID:= -1;
-  SaveButton.Images:= ImageListForScreen;
-  CancelButton.Images:= SaveButton.Images;
+
+  Images.ToButtons([SaveButton, CancelButton]);
+
   MainMarkDropDown:= TVSTDropDown.Create(MainMarkBCButton);
   SkipMarkDropDown:= TVSTDropDown.Create(SkipMarkBCButton);
 

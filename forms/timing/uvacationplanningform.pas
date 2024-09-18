@@ -6,13 +6,12 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, Buttons,
-  BCButton, BCPanel, DividerBevel, Spin, StdCtrls, VirtualTrees,
-  fpspreadsheetgrid, DateUtils,
+  DividerBevel, Spin, StdCtrls, VirtualTrees, fpspreadsheetgrid, DateUtils,
   //DK packages utils
   DK_Vector, DK_Matrix, DK_VSTTables, DK_Zoom, DK_Progress, DK_DateUtils,
-  DK_ColorLegend,
+  DK_ColorLegend, DK_CtrlUtils,
   //Project utils
-  UDataBase, UConst, UTimingUtils, UUIUtils, UScheduleSheet, UCalendar, USchedule,
+  UDataBase, UConst, UTimingUtils, UImages, UScheduleSheet, UCalendar, USchedule,
   //Forms
   UVacationPlanEditForm;
 
@@ -29,29 +28,29 @@ type
     DividerBevel3: TDividerBevel;
     DividerBevel4: TDividerBevel;
     EditPanel: TPanel;
-    ExportButton: TBCButton;
+    ExportButton: TSpeedButton;
     FIORadioButton: TRadioButton;
-    ListButton: TBCButton;
-    ListCaptionPanel: TBCPanel;
+    ListButton: TSpeedButton;
+    PlanCaptionPanel: TPanel;
     ListOrderToolPanel: TPanel;
     ListPanel: TPanel;
     ListToolPanel: TPanel;
     MStaffListVT: TVirtualStringTree;
     NextMonthButton: TSpeedButton;
+    ListCaptionPanel: TPanel;
     OrderLabel: TLabel;
     LegendPanel: TPanel;
+    PlanButton: TSpeedButton;
+    StatCaptionPanel: TPanel;
     ZoomPanel: TPanel;
     StatGrid: TsWorksheetGrid;
     StatSheetPanel: TPanel;
-    StatCaptionPanel: TBCPanel;
     Splitter1: TSplitter;
     StatPanel: TPanel;
     PostRadioButton: TRadioButton;
     PrevDayButton: TSpeedButton;
     NextDayButton: TSpeedButton;
     PrevMonthButton: TSpeedButton;
-    PlanButton: TBCButton;
-    PlanCaptionPanel: TBCPanel;
     PlanPanel: TPanel;
     ScheduleRadioButton: TRadioButton;
     PlanToolPanel: TPanel;
@@ -158,18 +157,18 @@ begin
   SetToolPanels([
     ToolPanel, ListOrderToolPanel
   ]);
-
   SetCaptionPanels([
     ListCaptionPanel, PlanCaptionPanel, StatCaptionPanel
   ]);
-
   SetToolButtons([
     CloseButton, CheckAllButton, UncheckAllButton,
     EditButton, PrevMonthButton, PrevDayButton, NextDayButton, NextMonthButton
   ]);
 
-  SetCategoryButtons([
-    PlanButton, ListButton, ExportButton
+  Images.ToButtons([
+    PlanButton, ListButton, ExportButton,
+    CloseButton, CheckAllButton, UncheckAllButton,
+    EditButton, PrevMonthButton, PrevDayButton, NextDayButton, NextMonthButton
   ]);
 
   LegendCreate;

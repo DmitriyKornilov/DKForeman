@@ -9,8 +9,9 @@ uses
   ExtCtrls, BCButton, VirtualTrees, DateTimePicker, Buttons,
   //DK packages utils
   DK_Vector, DK_VSTDropDown, DK_VSTEdit, DK_Const, DK_StrUtils, DK_Dialogs,
+  DK_CtrlUtils,
   //Project utils
-  UDataBase, UWorkHours, USchedule, UTimingUtils, UUIUtils, UConst;
+  UDataBase, UWorkHours, USchedule, UTimingUtils, UImages, UConst;
 
 type
 
@@ -22,8 +23,8 @@ type
     CancelButton: TSpeedButton;
     FirstDatePicker: TDateTimePicker;
     CycleCountLabel: TLabel;
-    StrucutureLabel: TLabel;
     SaveButton: TSpeedButton;
+    StrucutureLabel: TLabel;
     TypeBCButton: TBCButton;
     VT: TVirtualStringTree;
     WeekHoursLabel: TLabel;
@@ -66,8 +67,7 @@ procedure TScheduleShiftEditForm.FormCreate(Sender: TObject);
 begin
   Cycle:= EmptyScheduleCycle;
 
-  SaveButton.Images:= ImageListForScreen;
-  CancelButton.Images:= SaveButton.Images;
+  Images.ToButtons([SaveButton, CancelButton]);
 
   DataBase.TimetableMarkListLoad(KeyMarks, PickMarks, True{ DigMark>0});
 
@@ -121,8 +121,8 @@ end;
 
 procedure TScheduleShiftEditForm.FormShow(Sender: TObject);
 begin
-  SetEditButtons([SaveButton, CancelButton]);
   Width:= Width + 5; //fix datetimepicker button size bug
+  FormKeepMinSize(Self, False);
 
   FirstDatePicker.Date:= FirstDate;
   if not Cycle.IsWeek then

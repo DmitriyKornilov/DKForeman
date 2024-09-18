@@ -5,14 +5,15 @@ unit USchedulePersonalMonthForm;
 interface
 
 uses
-  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, BCButton,
-  BCPanel, Buttons, Spin, StdCtrls, DividerBevel, VirtualTrees,
-  fpspreadsheetgrid, DateUtils,
+  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, Buttons,
+  Spin, StdCtrls, DividerBevel, VirtualTrees, fpspreadsheetgrid, DateUtils,
+  BCButton,
   //DK packages utils
   DK_Vector, DK_Matrix, DK_Math, DK_Fonts, DK_Const, DK_DateUtils,
-  DK_StrUtils, DK_VSTTables, DK_VSTParamList, DK_Zoom, DK_SheetExporter, DK_Progress,
+  DK_StrUtils, DK_VSTTables, DK_VSTParamList, DK_Zoom, DK_SheetExporter,
+  DK_Progress, DK_CtrlUtils,
   //Project utils
-  UDataBase, UConst, UTimingUtils, UUIUtils, UCalendar, USchedule, UScheduleSheet,
+  UDataBase, UConst, UTimingUtils, UImages, UCalendar, USchedule, UScheduleSheet,
   UWorkHours, UTypes,
   //Forms
   UScheduleCorrectionEditForm, UChooseForm;
@@ -31,28 +32,28 @@ type
     DividerBevel4: TDividerBevel;
     EditingButton: TSpeedButton;
     EditPanel: TPanel;
+    ExportButton: TSpeedButton;
+    SettingCaptionPanel: TPanel;
+    ScheduleButton: TSpeedButton;
+    ListCaptionPanel: TPanel;
     RowDownButton: TSpeedButton;
     RowMergeButton: TSpeedButton;
     RowUpButton: TSpeedButton;
+    ListButton: TSpeedButton;
     SettingButton: TSpeedButton;
+    ScheduleCaptionPanel: TPanel;
     SettingSplitter: TSplitter;
     RightPanel: TPanel;
-    ExportButton: TBCButton;
-    ScheduleCaptionPanel: TBCPanel;
     ScheduleToolPanel: TPanel;
-    ScheduleButton: TBCButton;
     FIORadioButton: TRadioButton;
     ListToolPanel: TPanel;
     MonthBCButton: TBCButton;
-    ListButton: TBCButton;
     SchedulePanel: TPanel;
     ScheduleRadioButton: TRadioButton;
-    ListCaptionPanel: TBCPanel;
     ListOrderToolPanel: TPanel;
     ListPanel: TPanel;
     OrderLabel: TLabel;
     PostRadioButton: TRadioButton;
-    SettingCaptionPanel: TBCPanel;
     SettingClientPanel: TPanel;
     SettingPanel: TPanel;
     SheetPanel: TPanel;
@@ -169,18 +170,18 @@ begin
   SetToolPanels([
     ToolPanel, ListOrderToolPanel
   ]);
-
   SetCaptionPanels([
     ListCaptionPanel, SettingCaptionPanel, ScheduleCaptionPanel
   ]);
-
   SetToolButtons([
     CloseButton, CheckAllButton, UncheckAllButton, EditingButton, SettingButton,
     DayEditButton, RowUpButton, RowDownButton, RowMergeButton
   ]);
 
-  SetCategoryButtons([
-    ExportButton, ScheduleButton, ListButton
+  Images.ToButtons([
+    ExportButton, ScheduleButton, ListButton,
+    CloseButton, CheckAllButton, UncheckAllButton, EditingButton, SettingButton,
+    DayEditButton, RowUpButton, RowDownButton, RowMergeButton
   ]);
 
   CanLoadAndDraw:= False;

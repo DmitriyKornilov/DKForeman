@@ -1,7 +1,7 @@
 object SchedulePersonalForm: TSchedulePersonalForm
-  Left = 4
+  Left = 158
   Height = 678
-  Top = 112
+  Top = 145
   Width = 1799
   Caption = 'SchedulePersonalForm'
   ClientHeight = 678
@@ -56,351 +56,14 @@ object SchedulePersonalForm: TSchedulePersonalForm
         Value = 2022
       end
     end
-    object ExportButton: TBCButton
-      Cursor = crHandPoint
-      Left = 85
-      Height = 34
-      Hint = 'Экспорт в формат электронной таблицы XLSX или ODS'
-      Top = 1
-      Width = 104
-      Align = alLeft
-      AutoSize = True
-      StateClicked.Background.Color = 16245964
-      StateClicked.Background.Gradient1.StartColor = 16577765
-      StateClicked.Background.Gradient1.EndColor = 16180676
-      StateClicked.Background.Gradient1.GradientType = gtLinear
-      StateClicked.Background.Gradient1.Point1XPercent = 0
-      StateClicked.Background.Gradient1.Point1YPercent = 0
-      StateClicked.Background.Gradient1.Point2XPercent = 0
-      StateClicked.Background.Gradient1.Point2YPercent = 100
-      StateClicked.Background.Gradient2.StartColor = 15716760
-      StateClicked.Background.Gradient2.EndColor = 14398312
-      StateClicked.Background.Gradient2.GradientType = gtLinear
-      StateClicked.Background.Gradient2.Point1XPercent = 0
-      StateClicked.Background.Gradient2.Point1YPercent = 0
-      StateClicked.Background.Gradient2.Point2XPercent = 0
-      StateClicked.Background.Gradient2.Point2YPercent = 100
-      StateClicked.Background.Gradient1EndPercent = 55
-      StateClicked.Background.Style = bbsColor
-      StateClicked.Border.Color = 10048512
-      StateClicked.Border.LightColor = clBlack
-      StateClicked.Border.LightOpacity = 100
-      StateClicked.Border.Style = bboSolid
-      StateClicked.FontEx.Color = clBlack
-      StateClicked.FontEx.FontQuality = fqSystemClearType
-      StateClicked.FontEx.Shadow = False
-      StateClicked.FontEx.ShadowRadius = 5
-      StateClicked.FontEx.ShadowOffsetX = 5
-      StateClicked.FontEx.ShadowOffsetY = 5
-      StateClicked.FontEx.Style = []
-      StateHover.Background.Color = 16511461
-      StateHover.Background.Gradient1.StartColor = 16643818
-      StateHover.Background.Gradient1.EndColor = 16576729
-      StateHover.Background.Gradient1.GradientType = gtLinear
-      StateHover.Background.Gradient1.Point1XPercent = 0
-      StateHover.Background.Gradient1.Point1YPercent = 0
-      StateHover.Background.Gradient1.Point2XPercent = 0
-      StateHover.Background.Gradient1.Point2YPercent = 100
-      StateHover.Background.Gradient2.StartColor = 16639678
-      StateHover.Background.Gradient2.EndColor = 16112039
-      StateHover.Background.Gradient2.GradientType = gtLinear
-      StateHover.Background.Gradient2.Point1XPercent = 0
-      StateHover.Background.Gradient2.Point1YPercent = 0
-      StateHover.Background.Gradient2.Point2XPercent = 0
-      StateHover.Background.Gradient2.Point2YPercent = 100
-      StateHover.Background.Gradient1EndPercent = 50
-      StateHover.Background.Style = bbsColor
-      StateHover.Border.Color = 14120960
-      StateHover.Border.LightOpacity = 200
-      StateHover.Border.Style = bboSolid
-      StateHover.FontEx.Color = clBlack
-      StateHover.FontEx.FontQuality = fqSystemClearType
-      StateHover.FontEx.Shadow = False
-      StateHover.FontEx.ShadowRadius = 5
-      StateHover.FontEx.ShadowOffsetX = 5
-      StateHover.FontEx.ShadowOffsetY = 5
-      StateHover.FontEx.Style = []
-      StateNormal.Background.Color = 14803425
-      StateNormal.Background.Gradient1.StartColor = 15921906
-      StateNormal.Background.Gradient1.EndColor = 15461355
-      StateNormal.Background.Gradient1.GradientType = gtLinear
-      StateNormal.Background.Gradient1.Point1XPercent = 0
-      StateNormal.Background.Gradient1.Point1YPercent = 0
-      StateNormal.Background.Gradient1.Point2XPercent = 0
-      StateNormal.Background.Gradient1.Point2YPercent = 100
-      StateNormal.Background.Gradient2.StartColor = 14540253
-      StateNormal.Background.Gradient2.EndColor = 13619151
-      StateNormal.Background.Gradient2.GradientType = gtLinear
-      StateNormal.Background.Gradient2.Point1XPercent = 0
-      StateNormal.Background.Gradient2.Point1YPercent = 0
-      StateNormal.Background.Gradient2.Point2XPercent = 0
-      StateNormal.Background.Gradient2.Point2YPercent = 100
-      StateNormal.Background.Gradient1EndPercent = 50
-      StateNormal.Background.Style = bbsColor
-      StateNormal.Border.Color = 11382189
-      StateNormal.Border.LightOpacity = 200
-      StateNormal.Border.Style = bboSolid
-      StateNormal.FontEx.Color = clBlack
-      StateNormal.FontEx.FontQuality = fqSystemClearType
-      StateNormal.FontEx.Shadow = False
-      StateNormal.FontEx.ShadowRadius = 5
-      StateNormal.FontEx.ShadowOffsetX = 5
-      StateNormal.FontEx.ShadowOffsetY = 5
-      StateNormal.FontEx.Style = []
-      BorderSpacing.Top = 1
-      BorderSpacing.Bottom = 1
-      Caption = 'Экспорт'
-      Color = clNone
-      DropDownWidth = 16
-      DropDownArrowSize = 8
-      GlobalOpacity = 255
-      GlyphMargin = 0
-      OnClick = ExportButtonClick
-      ParentColor = False
-      Rounding.RoundX = 0
-      Rounding.RoundY = 0
-      RoundingDropDown.RoundX = 1
-      RoundingDropDown.RoundY = 1
-      ShowHint = True
-      TextApplyGlobalOpacity = False
-      DropDownStyle = bdsCommon
-      Images = Images.PX24
-      ImageIndex = 22
-      MemoryUsage = bmuHigh
-    end
-    object MonthScheduleButton: TBCButton
-      Cursor = crHandPoint
-      Left = 209
-      Height = 34
-      Hint = 'Общий график работы на месяц'
-      Top = 1
-      Width = 219
-      Align = alLeft
-      AutoSize = True
-      StateClicked.Background.Color = 16245964
-      StateClicked.Background.Gradient1.StartColor = 16577765
-      StateClicked.Background.Gradient1.EndColor = 16180676
-      StateClicked.Background.Gradient1.GradientType = gtLinear
-      StateClicked.Background.Gradient1.Point1XPercent = 0
-      StateClicked.Background.Gradient1.Point1YPercent = 0
-      StateClicked.Background.Gradient1.Point2XPercent = 0
-      StateClicked.Background.Gradient1.Point2YPercent = 100
-      StateClicked.Background.Gradient2.StartColor = 15716760
-      StateClicked.Background.Gradient2.EndColor = 14398312
-      StateClicked.Background.Gradient2.GradientType = gtLinear
-      StateClicked.Background.Gradient2.Point1XPercent = 0
-      StateClicked.Background.Gradient2.Point1YPercent = 0
-      StateClicked.Background.Gradient2.Point2XPercent = 0
-      StateClicked.Background.Gradient2.Point2YPercent = 100
-      StateClicked.Background.Gradient1EndPercent = 55
-      StateClicked.Background.Style = bbsColor
-      StateClicked.Border.Color = 10048512
-      StateClicked.Border.LightColor = clBlack
-      StateClicked.Border.LightOpacity = 100
-      StateClicked.Border.Style = bboSolid
-      StateClicked.FontEx.Color = clBlack
-      StateClicked.FontEx.FontQuality = fqSystemClearType
-      StateClicked.FontEx.Shadow = False
-      StateClicked.FontEx.ShadowRadius = 5
-      StateClicked.FontEx.ShadowOffsetX = 5
-      StateClicked.FontEx.ShadowOffsetY = 5
-      StateClicked.FontEx.Style = []
-      StateHover.Background.Color = 16511461
-      StateHover.Background.Gradient1.StartColor = 16643818
-      StateHover.Background.Gradient1.EndColor = 16576729
-      StateHover.Background.Gradient1.GradientType = gtLinear
-      StateHover.Background.Gradient1.Point1XPercent = 0
-      StateHover.Background.Gradient1.Point1YPercent = 0
-      StateHover.Background.Gradient1.Point2XPercent = 0
-      StateHover.Background.Gradient1.Point2YPercent = 100
-      StateHover.Background.Gradient2.StartColor = 16639678
-      StateHover.Background.Gradient2.EndColor = 16112039
-      StateHover.Background.Gradient2.GradientType = gtLinear
-      StateHover.Background.Gradient2.Point1XPercent = 0
-      StateHover.Background.Gradient2.Point1YPercent = 0
-      StateHover.Background.Gradient2.Point2XPercent = 0
-      StateHover.Background.Gradient2.Point2YPercent = 100
-      StateHover.Background.Gradient1EndPercent = 50
-      StateHover.Background.Style = bbsColor
-      StateHover.Border.Color = 14120960
-      StateHover.Border.LightOpacity = 200
-      StateHover.Border.Style = bboSolid
-      StateHover.FontEx.Color = clBlack
-      StateHover.FontEx.FontQuality = fqSystemClearType
-      StateHover.FontEx.Shadow = False
-      StateHover.FontEx.ShadowRadius = 5
-      StateHover.FontEx.ShadowOffsetX = 5
-      StateHover.FontEx.ShadowOffsetY = 5
-      StateHover.FontEx.Style = []
-      StateNormal.Background.Color = 14803425
-      StateNormal.Background.Gradient1.StartColor = 15921906
-      StateNormal.Background.Gradient1.EndColor = 15461355
-      StateNormal.Background.Gradient1.GradientType = gtLinear
-      StateNormal.Background.Gradient1.Point1XPercent = 0
-      StateNormal.Background.Gradient1.Point1YPercent = 0
-      StateNormal.Background.Gradient1.Point2XPercent = 0
-      StateNormal.Background.Gradient1.Point2YPercent = 100
-      StateNormal.Background.Gradient2.StartColor = 14540253
-      StateNormal.Background.Gradient2.EndColor = 13619151
-      StateNormal.Background.Gradient2.GradientType = gtLinear
-      StateNormal.Background.Gradient2.Point1XPercent = 0
-      StateNormal.Background.Gradient2.Point1YPercent = 0
-      StateNormal.Background.Gradient2.Point2XPercent = 0
-      StateNormal.Background.Gradient2.Point2YPercent = 100
-      StateNormal.Background.Gradient1EndPercent = 50
-      StateNormal.Background.Style = bbsColor
-      StateNormal.Border.Color = 11382189
-      StateNormal.Border.LightOpacity = 200
-      StateNormal.Border.Style = bboSolid
-      StateNormal.FontEx.Color = clBlack
-      StateNormal.FontEx.FontQuality = fqSystemClearType
-      StateNormal.FontEx.Shadow = False
-      StateNormal.FontEx.ShadowRadius = 5
-      StateNormal.FontEx.ShadowOffsetX = 5
-      StateNormal.FontEx.ShadowOffsetY = 5
-      StateNormal.FontEx.Style = []
-      BorderSpacing.Top = 1
-      BorderSpacing.Bottom = 1
-      Caption = 'Общий график на месяц'
-      Color = clNone
-      DropDownWidth = 16
-      DropDownArrowSize = 8
-      GlobalOpacity = 255
-      GlyphMargin = 0
-      OnClick = MonthScheduleButtonClick
-      ParentColor = False
-      Rounding.RoundX = 0
-      Rounding.RoundY = 0
-      RoundingDropDown.RoundX = 1
-      RoundingDropDown.RoundY = 1
-      ShowHint = True
-      TextApplyGlobalOpacity = False
-      DropDownStyle = bdsCommon
-      Images = Images.PX24
-      ImageIndex = 45
-      MemoryUsage = bmuHigh
-    end
-    object VacationScheduleButton: TBCButton
-      Cursor = crHandPoint
-      Left = 430
-      Height = 34
-      Hint = 'График отпусков по форме Т-7'
-      Top = 1
-      Width = 200
-      Align = alLeft
-      AutoSize = True
-      StateClicked.Background.Color = 16245964
-      StateClicked.Background.Gradient1.StartColor = 16577765
-      StateClicked.Background.Gradient1.EndColor = 16180676
-      StateClicked.Background.Gradient1.GradientType = gtLinear
-      StateClicked.Background.Gradient1.Point1XPercent = 0
-      StateClicked.Background.Gradient1.Point1YPercent = 0
-      StateClicked.Background.Gradient1.Point2XPercent = 0
-      StateClicked.Background.Gradient1.Point2YPercent = 100
-      StateClicked.Background.Gradient2.StartColor = 15716760
-      StateClicked.Background.Gradient2.EndColor = 14398312
-      StateClicked.Background.Gradient2.GradientType = gtLinear
-      StateClicked.Background.Gradient2.Point1XPercent = 0
-      StateClicked.Background.Gradient2.Point1YPercent = 0
-      StateClicked.Background.Gradient2.Point2XPercent = 0
-      StateClicked.Background.Gradient2.Point2YPercent = 100
-      StateClicked.Background.Gradient1EndPercent = 55
-      StateClicked.Background.Style = bbsColor
-      StateClicked.Border.Color = 10048512
-      StateClicked.Border.LightColor = clBlack
-      StateClicked.Border.LightOpacity = 100
-      StateClicked.Border.Style = bboSolid
-      StateClicked.FontEx.Color = clBlack
-      StateClicked.FontEx.FontQuality = fqSystemClearType
-      StateClicked.FontEx.Shadow = False
-      StateClicked.FontEx.ShadowRadius = 5
-      StateClicked.FontEx.ShadowOffsetX = 5
-      StateClicked.FontEx.ShadowOffsetY = 5
-      StateClicked.FontEx.Style = []
-      StateHover.Background.Color = 16511461
-      StateHover.Background.Gradient1.StartColor = 16643818
-      StateHover.Background.Gradient1.EndColor = 16576729
-      StateHover.Background.Gradient1.GradientType = gtLinear
-      StateHover.Background.Gradient1.Point1XPercent = 0
-      StateHover.Background.Gradient1.Point1YPercent = 0
-      StateHover.Background.Gradient1.Point2XPercent = 0
-      StateHover.Background.Gradient1.Point2YPercent = 100
-      StateHover.Background.Gradient2.StartColor = 16639678
-      StateHover.Background.Gradient2.EndColor = 16112039
-      StateHover.Background.Gradient2.GradientType = gtLinear
-      StateHover.Background.Gradient2.Point1XPercent = 0
-      StateHover.Background.Gradient2.Point1YPercent = 0
-      StateHover.Background.Gradient2.Point2XPercent = 0
-      StateHover.Background.Gradient2.Point2YPercent = 100
-      StateHover.Background.Gradient1EndPercent = 50
-      StateHover.Background.Style = bbsColor
-      StateHover.Border.Color = 14120960
-      StateHover.Border.LightOpacity = 200
-      StateHover.Border.Style = bboSolid
-      StateHover.FontEx.Color = clBlack
-      StateHover.FontEx.FontQuality = fqSystemClearType
-      StateHover.FontEx.Shadow = False
-      StateHover.FontEx.ShadowRadius = 5
-      StateHover.FontEx.ShadowOffsetX = 5
-      StateHover.FontEx.ShadowOffsetY = 5
-      StateHover.FontEx.Style = []
-      StateNormal.Background.Color = 14803425
-      StateNormal.Background.Gradient1.StartColor = 15921906
-      StateNormal.Background.Gradient1.EndColor = 15461355
-      StateNormal.Background.Gradient1.GradientType = gtLinear
-      StateNormal.Background.Gradient1.Point1XPercent = 0
-      StateNormal.Background.Gradient1.Point1YPercent = 0
-      StateNormal.Background.Gradient1.Point2XPercent = 0
-      StateNormal.Background.Gradient1.Point2YPercent = 100
-      StateNormal.Background.Gradient2.StartColor = 14540253
-      StateNormal.Background.Gradient2.EndColor = 13619151
-      StateNormal.Background.Gradient2.GradientType = gtLinear
-      StateNormal.Background.Gradient2.Point1XPercent = 0
-      StateNormal.Background.Gradient2.Point1YPercent = 0
-      StateNormal.Background.Gradient2.Point2XPercent = 0
-      StateNormal.Background.Gradient2.Point2YPercent = 100
-      StateNormal.Background.Gradient1EndPercent = 50
-      StateNormal.Background.Style = bbsColor
-      StateNormal.Border.Color = 11382189
-      StateNormal.Border.LightOpacity = 200
-      StateNormal.Border.Style = bboSolid
-      StateNormal.FontEx.Color = clBlack
-      StateNormal.FontEx.FontQuality = fqSystemClearType
-      StateNormal.FontEx.Shadow = False
-      StateNormal.FontEx.ShadowRadius = 5
-      StateNormal.FontEx.ShadowOffsetX = 5
-      StateNormal.FontEx.ShadowOffsetY = 5
-      StateNormal.FontEx.Style = []
-      BorderSpacing.Left = 2
-      BorderSpacing.Top = 1
-      BorderSpacing.Bottom = 1
-      Caption = 'График отпусков (Т-7)'
-      Color = clNone
-      DropDownWidth = 16
-      DropDownArrowSize = 8
-      GlobalOpacity = 255
-      GlyphMargin = 0
-      OnClick = VacationScheduleButtonClick
-      ParentColor = False
-      Rounding.RoundX = 0
-      Rounding.RoundY = 0
-      RoundingDropDown.RoundX = 1
-      RoundingDropDown.RoundY = 1
-      ShowHint = True
-      TextApplyGlobalOpacity = False
-      DropDownStyle = bdsCommon
-      Images = Images.PX24
-      ImageIndex = 46
-      MemoryUsage = bmuHigh
-    end
     object DividerBevel1: TDividerBevel
-      Left = 1731
+      Left = 1730
       Height = 36
       Top = 0
-      Width = 20
+      Width = 21
       Caption = 'DividerBevel1'
       Align = alRight
-      BevelWidth = 1
+      BevelWidth = 2
       Font.Style = [fsBold]
       Orientation = trVertical
       ParentFont = False
@@ -423,10 +86,10 @@ object SchedulePersonalForm: TSchedulePersonalForm
       Left = 65
       Height = 36
       Top = 0
-      Width = 20
+      Width = 21
       Caption = 'DividerBevel2'
       Align = alLeft
-      BevelWidth = 1
+      BevelWidth = 2
       Font.Style = [fsBold]
       Orientation = trVertical
       ParentFont = False
@@ -435,13 +98,67 @@ object SchedulePersonalForm: TSchedulePersonalForm
       Left = 189
       Height = 36
       Top = 0
-      Width = 20
+      Width = 21
       Caption = 'DividerBevel3'
       Align = alLeft
-      BevelWidth = 1
+      BevelWidth = 2
       Font.Style = [fsBold]
       Orientation = trVertical
       ParentFont = False
+    end
+    object ExportButton: TSpeedButton
+      Cursor = crHandPoint
+      Left = 86
+      Height = 36
+      Hint = 'Экспорт в формат электронной таблицы XLSX или ODS'
+      Top = 0
+      Width = 103
+      Align = alLeft
+      AutoSize = True
+      Caption = ' Экспорт '
+      Images = Images.PX24
+      ImageIndex = 22
+      Margin = 5
+      Spacing = 5
+      OnClick = ExportButtonClick
+      ShowHint = True
+      ParentShowHint = False
+    end
+    object MonthScheduleButton: TSpeedButton
+      Cursor = crHandPoint
+      Left = 210
+      Height = 36
+      Hint = 'Общий график работы на месяц'
+      Top = 0
+      Width = 218
+      Align = alLeft
+      AutoSize = True
+      Caption = ' Общий график на месяц '
+      Images = Images.PX24
+      ImageIndex = 45
+      Margin = 5
+      Spacing = 5
+      OnClick = MonthScheduleButtonClick
+      ShowHint = True
+      ParentShowHint = False
+    end
+    object VacationScheduleButton: TSpeedButton
+      Cursor = crHandPoint
+      Left = 428
+      Height = 36
+      Hint = 'График отпусков по форме Т-7'
+      Top = 0
+      Width = 199
+      Align = alLeft
+      AutoSize = True
+      Caption = ' График отпусков (Т-7) '
+      Images = Images.PX24
+      ImageIndex = 46
+      Margin = 5
+      Spacing = 5
+      OnClick = VacationScheduleButtonClick
+      ShowHint = True
+      ParentShowHint = False
     end
   end
   object SettingPanel: TPanel
@@ -461,51 +178,6 @@ object SchedulePersonalForm: TSchedulePersonalForm
     ParentColor = False
     TabOrder = 1
     Visible = False
-    object SettingCaptionPanel: TBCPanel
-      Left = 0
-      Height = 30
-      Top = 0
-      Width = 350
-      Align = alTop
-      BorderSpacing.Bottom = 2
-      Background.Color = clBtnFace
-      Background.Gradient1.StartColor = clWhite
-      Background.Gradient1.EndColor = clBlack
-      Background.Gradient1.GradientType = gtLinear
-      Background.Gradient1.Point1XPercent = 0
-      Background.Gradient1.Point1YPercent = 0
-      Background.Gradient1.Point2XPercent = 0
-      Background.Gradient1.Point2YPercent = 100
-      Background.Gradient2.StartColor = clWhite
-      Background.Gradient2.EndColor = clBlack
-      Background.Gradient2.GradientType = gtLinear
-      Background.Gradient2.Point1XPercent = 0
-      Background.Gradient2.Point1YPercent = 0
-      Background.Gradient2.Point2XPercent = 0
-      Background.Gradient2.Point2YPercent = 100
-      Background.Gradient1EndPercent = 35
-      Background.Style = bbsColor
-      BevelInner = bvNone
-      BevelOuter = bvNone
-      BevelWidth = 1
-      Border.Color = clActiveBorder
-      Border.Style = bboSolid
-      BorderBCStyle = bpsBorder
-      Caption = 'Параметры'
-      FontEx.Color = clDefault
-      FontEx.FontQuality = fqSystemClearType
-      FontEx.Shadow = False
-      FontEx.ShadowRadius = 5
-      FontEx.ShadowOffsetX = 5
-      FontEx.ShadowOffsetY = 5
-      FontEx.Style = [fsBold]
-      FontEx.TextAlignment = bcaLeftCenter
-      FontEx.PaddingLeft = 10
-      ParentBackground = False
-      Rounding.RoundX = 1
-      Rounding.RoundY = 1
-      TabOrder = 0
-    end
     object SettingClientPanel: TPanel
       Left = 0
       Height = 568
@@ -515,6 +187,24 @@ object SchedulePersonalForm: TSchedulePersonalForm
       BevelOuter = bvNone
       BorderStyle = bsSingle
       ParentBackground = False
+      TabOrder = 0
+    end
+    object SettingCaptionPanel: TPanel
+      Left = 0
+      Height = 30
+      Top = 0
+      Width = 350
+      Align = alTop
+      Alignment = taLeftJustify
+      BorderSpacing.Bottom = 2
+      BevelOuter = bvNone
+      BorderStyle = bsSingle
+      Caption = '  Параметры'
+      Color = clBtnFace
+      Font.Style = [fsBold]
+      ParentBackground = False
+      ParentColor = False
+      ParentFont = False
       TabOrder = 1
     end
   end
@@ -638,99 +328,24 @@ object SchedulePersonalForm: TSchedulePersonalForm
         Style = bsRaised
       end
     end
-    object ViewCaptionPanel: TBCPanel
+    object ViewCaptionPanel: TPanel
       Left = 0
       Height = 30
       Top = 0
-      Width = 205
+      Width = 207
       Align = alTop
-      BorderSpacing.Right = 2
+      Alignment = taLeftJustify
       BorderSpacing.Bottom = 2
-      Background.Color = clBtnFace
-      Background.Gradient1.StartColor = clWhite
-      Background.Gradient1.EndColor = clBlack
-      Background.Gradient1.GradientType = gtLinear
-      Background.Gradient1.Point1XPercent = 0
-      Background.Gradient1.Point1YPercent = 0
-      Background.Gradient1.Point2XPercent = 0
-      Background.Gradient1.Point2YPercent = 100
-      Background.Gradient2.StartColor = clWhite
-      Background.Gradient2.EndColor = clBlack
-      Background.Gradient2.GradientType = gtLinear
-      Background.Gradient2.Point1XPercent = 0
-      Background.Gradient2.Point1YPercent = 0
-      Background.Gradient2.Point2XPercent = 0
-      Background.Gradient2.Point2YPercent = 100
-      Background.Gradient1EndPercent = 35
-      Background.Style = bbsColor
-      BevelInner = bvNone
       BevelOuter = bvNone
-      BevelWidth = 1
-      Border.Color = clActiveBorder
-      Border.Style = bboSolid
-      BorderBCStyle = bpsBorder
-      Caption = 'График:'
-      FontEx.Color = clDefault
-      FontEx.FontQuality = fqSystemClearType
-      FontEx.Shadow = False
-      FontEx.ShadowRadius = 5
-      FontEx.ShadowOffsetX = 5
-      FontEx.ShadowOffsetY = 5
-      FontEx.Style = [fsBold]
-      FontEx.TextAlignment = bcaLeftCenter
-      FontEx.PaddingLeft = 10
+      BorderStyle = bsSingle
+      Caption = '  График'
+      Color = clBtnFace
+      Font.Style = [fsBold]
       ParentBackground = False
-      Rounding.RoundX = 1
-      Rounding.RoundY = 1
+      ParentColor = False
+      ParentFont = False
       TabOrder = 1
     end
-  end
-  object StaffCaptionPanel: TBCPanel
-    Left = 2
-    Height = 30
-    Top = 44
-    Width = 1795
-    Align = alTop
-    BorderSpacing.Left = 2
-    BorderSpacing.Top = 2
-    BorderSpacing.Right = 2
-    Background.Color = clBtnFace
-    Background.Gradient1.StartColor = clWhite
-    Background.Gradient1.EndColor = clBlack
-    Background.Gradient1.GradientType = gtLinear
-    Background.Gradient1.Point1XPercent = 0
-    Background.Gradient1.Point1YPercent = 0
-    Background.Gradient1.Point2XPercent = 0
-    Background.Gradient1.Point2YPercent = 100
-    Background.Gradient2.StartColor = clWhite
-    Background.Gradient2.EndColor = clBlack
-    Background.Gradient2.GradientType = gtLinear
-    Background.Gradient2.Point1XPercent = 0
-    Background.Gradient2.Point1YPercent = 0
-    Background.Gradient2.Point2XPercent = 0
-    Background.Gradient2.Point2YPercent = 100
-    Background.Gradient1EndPercent = 35
-    Background.Style = bbsColor
-    BevelInner = bvNone
-    BevelOuter = bvNone
-    BevelWidth = 1
-    Border.Color = clActiveBorder
-    Border.Style = bboSolid
-    BorderBCStyle = bpsBorder
-    Caption = 'Сотрудник'
-    FontEx.Color = clDefault
-    FontEx.FontQuality = fqSystemClearType
-    FontEx.Shadow = False
-    FontEx.ShadowRadius = 5
-    FontEx.ShadowOffsetX = 5
-    FontEx.ShadowOffsetY = 5
-    FontEx.Style = [fsBold]
-    FontEx.PaddingLeft = 10
-    ParentBackground = False
-    Rounding.RoundX = 1
-    Rounding.RoundY = 1
-    TabOrder = 4
-    Visible = False
   end
   object ListPanel: TPanel
     Left = 2
@@ -744,52 +359,7 @@ object SchedulePersonalForm: TSchedulePersonalForm
     BevelOuter = bvNone
     ClientHeight = 600
     ClientWidth = 580
-    TabOrder = 5
-    object ListCaptionPanel: TBCPanel
-      Left = 0
-      Height = 30
-      Top = 0
-      Width = 580
-      Align = alTop
-      BorderSpacing.Bottom = 2
-      Background.Color = clBtnFace
-      Background.Gradient1.StartColor = clWhite
-      Background.Gradient1.EndColor = clBlack
-      Background.Gradient1.GradientType = gtLinear
-      Background.Gradient1.Point1XPercent = 0
-      Background.Gradient1.Point1YPercent = 0
-      Background.Gradient1.Point2XPercent = 0
-      Background.Gradient1.Point2YPercent = 100
-      Background.Gradient2.StartColor = clWhite
-      Background.Gradient2.EndColor = clBlack
-      Background.Gradient2.GradientType = gtLinear
-      Background.Gradient2.Point1XPercent = 0
-      Background.Gradient2.Point1YPercent = 0
-      Background.Gradient2.Point2XPercent = 0
-      Background.Gradient2.Point2YPercent = 100
-      Background.Gradient1EndPercent = 35
-      Background.Style = bbsColor
-      BevelInner = bvNone
-      BevelOuter = bvNone
-      BevelWidth = 1
-      Border.Color = clActiveBorder
-      Border.Style = bboSolid
-      BorderBCStyle = bpsBorder
-      Caption = 'Список сотрудников'
-      FontEx.Color = clDefault
-      FontEx.FontQuality = fqSystemClearType
-      FontEx.Shadow = False
-      FontEx.ShadowRadius = 5
-      FontEx.ShadowOffsetX = 5
-      FontEx.ShadowOffsetY = 5
-      FontEx.Style = [fsBold]
-      FontEx.TextAlignment = bcaLeftCenter
-      FontEx.PaddingLeft = 10
-      ParentBackground = False
-      Rounding.RoundX = 1
-      Rounding.RoundY = 1
-      TabOrder = 0
-    end
+    TabOrder = 4
     object StaffListVT: TVirtualStringTree
       Left = 0
       Height = 484
@@ -801,7 +371,7 @@ object SchedulePersonalForm: TSchedulePersonalForm
       Header.Columns = <>
       Header.MainColumn = -1
       Margin = 50
-      TabOrder = 1
+      TabOrder = 0
     end
     object ListFilterToolPanel: TPanel
       Left = 0
@@ -817,7 +387,7 @@ object SchedulePersonalForm: TSchedulePersonalForm
       ParentBackground = False
       ParentColor = False
       ParentFont = False
-      TabOrder = 2
+      TabOrder = 1
       object FilterPanel: TPanel
         Left = 0
         Height = 36
@@ -842,13 +412,13 @@ object SchedulePersonalForm: TSchedulePersonalForm
       BorderStyle = bsSingle
       ClientHeight = 36
       ClientWidth = 576
-      TabOrder = 3
+      TabOrder = 2
       object OrderLabel: TLabel
         AnchorSideLeft.Control = OrderButtonPanel
         AnchorSideLeft.Side = asrBottom
         AnchorSideTop.Control = ListOrderToolPanel
         AnchorSideTop.Side = asrCenter
-        Left = 100
+        Left = 101
         Height = 20
         Top = 8
         Width = 115
@@ -860,7 +430,7 @@ object SchedulePersonalForm: TSchedulePersonalForm
         AnchorSideLeft.Side = asrBottom
         AnchorSideTop.Control = ListOrderToolPanel
         AnchorSideTop.Side = asrCenter
-        Left = 221
+        Left = 222
         Height = 24
         Top = 6
         Width = 63
@@ -876,7 +446,7 @@ object SchedulePersonalForm: TSchedulePersonalForm
         AnchorSideLeft.Side = asrBottom
         AnchorSideTop.Control = ListOrderToolPanel
         AnchorSideTop.Side = asrCenter
-        Left = 290
+        Left = 291
         Height = 24
         Top = 6
         Width = 97
@@ -890,7 +460,7 @@ object SchedulePersonalForm: TSchedulePersonalForm
         AnchorSideLeft.Side = asrBottom
         AnchorSideTop.Control = ListOrderToolPanel
         AnchorSideTop.Side = asrCenter
-        Left = 393
+        Left = 394
         Height = 24
         Top = 6
         Width = 161
@@ -903,12 +473,12 @@ object SchedulePersonalForm: TSchedulePersonalForm
         Left = 0
         Height = 36
         Top = 0
-        Width = 100
+        Width = 101
         Align = alLeft
         AutoSize = True
         BevelOuter = bvNone
         ClientHeight = 36
-        ClientWidth = 100
+        ClientWidth = 101
         TabOrder = 3
         object AscendingButton: TSpeedButton
           Cursor = crHandPoint
@@ -943,15 +513,30 @@ object SchedulePersonalForm: TSchedulePersonalForm
           Left = 80
           Height = 36
           Top = 0
-          Width = 20
+          Width = 21
           Caption = 'DividerBevel4'
           Align = alLeft
-          BevelWidth = 1
+          BevelWidth = 2
           Font.Style = [fsBold]
           Orientation = trVertical
           ParentFont = False
         end
       end
+    end
+    object ListCaptionPanel: TPanel
+      Left = 0
+      Height = 30
+      Top = 0
+      Width = 580
+      Align = alTop
+      Alignment = taLeftJustify
+      BorderSpacing.Bottom = 2
+      BevelOuter = bvNone
+      BorderStyle = bsSingle
+      Caption = '  Список сотрудников'
+      Font.Style = [fsBold]
+      ParentFont = False
+      TabOrder = 3
     end
   end
   object EditingPanel: TPanel
@@ -966,7 +551,7 @@ object SchedulePersonalForm: TSchedulePersonalForm
     BevelOuter = bvNone
     ClientHeight = 600
     ClientWidth = 650
-    TabOrder = 6
+    TabOrder = 5
     Visible = False
     object BottomEditingPanel: TPanel
       Left = 0
@@ -990,51 +575,6 @@ object SchedulePersonalForm: TSchedulePersonalForm
         ParentBackground = False
         ParentColor = False
         TabOrder = 0
-        object CorrectionsCaptionPanel: TBCPanel
-          Left = 0
-          Height = 30
-          Top = 0
-          Width = 650
-          Align = alTop
-          BorderSpacing.Bottom = 2
-          Background.Color = clBtnFace
-          Background.Gradient1.StartColor = clWhite
-          Background.Gradient1.EndColor = clBlack
-          Background.Gradient1.GradientType = gtLinear
-          Background.Gradient1.Point1XPercent = 0
-          Background.Gradient1.Point1YPercent = 0
-          Background.Gradient1.Point2XPercent = 0
-          Background.Gradient1.Point2YPercent = 100
-          Background.Gradient2.StartColor = clWhite
-          Background.Gradient2.EndColor = clBlack
-          Background.Gradient2.GradientType = gtLinear
-          Background.Gradient2.Point1XPercent = 0
-          Background.Gradient2.Point1YPercent = 0
-          Background.Gradient2.Point2XPercent = 0
-          Background.Gradient2.Point2YPercent = 100
-          Background.Gradient1EndPercent = 35
-          Background.Style = bbsColor
-          BevelInner = bvNone
-          BevelOuter = bvNone
-          BevelWidth = 1
-          Border.Color = clActiveBorder
-          Border.Style = bboSolid
-          BorderBCStyle = bpsBorder
-          Caption = 'Корректировки:'
-          FontEx.Color = clDefault
-          FontEx.FontQuality = fqSystemClearType
-          FontEx.Shadow = False
-          FontEx.ShadowRadius = 5
-          FontEx.ShadowOffsetX = 5
-          FontEx.ShadowOffsetY = 5
-          FontEx.Style = [fsBold]
-          FontEx.TextAlignment = bcaLeftCenter
-          FontEx.PaddingLeft = 10
-          ParentBackground = False
-          Rounding.RoundX = 1
-          Rounding.RoundY = 1
-          TabOrder = 0
-        end
         object DayPanel: TPanel
           Left = 0
           Height = 108
@@ -1044,7 +584,7 @@ object SchedulePersonalForm: TSchedulePersonalForm
           BevelOuter = bvNone
           ClientHeight = 108
           ClientWidth = 650
-          TabOrder = 1
+          TabOrder = 0
           object DayToolPanel: TPanel
             Left = 0
             Height = 40
@@ -1143,7 +683,7 @@ object SchedulePersonalForm: TSchedulePersonalForm
           BevelOuter = bvNone
           ClientHeight = 100
           ClientWidth = 650
-          TabOrder = 2
+          TabOrder = 1
           Visible = False
           object CopyToolPanel: TPanel
             Left = 0
@@ -1218,6 +758,24 @@ object SchedulePersonalForm: TSchedulePersonalForm
             TabOrder = 1
           end
         end
+        object CorrectionsCaptionPanel: TPanel
+          Left = 0
+          Height = 30
+          Top = 0
+          Width = 650
+          Align = alTop
+          Alignment = taLeftJustify
+          BorderSpacing.Bottom = 2
+          BevelOuter = bvNone
+          BorderStyle = bsSingle
+          Caption = '  Корректировки'
+          Color = clBtnFace
+          Font.Style = [fsBold]
+          ParentBackground = False
+          ParentColor = False
+          ParentFont = False
+          TabOrder = 2
+        end
       end
       object Splitter2: TSplitter
         Cursor = crVSplit
@@ -1239,51 +797,6 @@ object SchedulePersonalForm: TSchedulePersonalForm
         ClientHeight = 176
         ClientWidth = 650
         TabOrder = 2
-        object VacationCaptionPanel: TBCPanel
-          Left = 0
-          Height = 30
-          Top = 0
-          Width = 650
-          Align = alTop
-          BorderSpacing.Bottom = 2
-          Background.Color = clBtnFace
-          Background.Gradient1.StartColor = clWhite
-          Background.Gradient1.EndColor = clBlack
-          Background.Gradient1.GradientType = gtLinear
-          Background.Gradient1.Point1XPercent = 0
-          Background.Gradient1.Point1YPercent = 0
-          Background.Gradient1.Point2XPercent = 0
-          Background.Gradient1.Point2YPercent = 100
-          Background.Gradient2.StartColor = clWhite
-          Background.Gradient2.EndColor = clBlack
-          Background.Gradient2.GradientType = gtLinear
-          Background.Gradient2.Point1XPercent = 0
-          Background.Gradient2.Point1YPercent = 0
-          Background.Gradient2.Point2XPercent = 0
-          Background.Gradient2.Point2YPercent = 100
-          Background.Gradient1EndPercent = 35
-          Background.Style = bbsColor
-          BevelInner = bvNone
-          BevelOuter = bvNone
-          BevelWidth = 1
-          Border.Color = clActiveBorder
-          Border.Style = bboSolid
-          BorderBCStyle = bpsBorder
-          Caption = 'Отпуска:'
-          FontEx.Color = clDefault
-          FontEx.FontQuality = fqSystemClearType
-          FontEx.Shadow = False
-          FontEx.ShadowRadius = 5
-          FontEx.ShadowOffsetX = 5
-          FontEx.ShadowOffsetY = 5
-          FontEx.Style = [fsBold]
-          FontEx.TextAlignment = bcaLeftCenter
-          FontEx.PaddingLeft = 10
-          ParentBackground = False
-          Rounding.RoundX = 1
-          Rounding.RoundY = 1
-          TabOrder = 0
-        end
         object VacationToolPanel: TPanel
           Left = 0
           Height = 40
@@ -1295,7 +808,7 @@ object SchedulePersonalForm: TSchedulePersonalForm
           ClientHeight = 36
           ClientWidth = 646
           ParentFont = False
-          TabOrder = 1
+          TabOrder = 0
           object VacationSaveButton: TSpeedButton
             Cursor = crHandPoint
             Left = 0
@@ -1367,6 +880,24 @@ object SchedulePersonalForm: TSchedulePersonalForm
           Header.AutoSizeIndex = 0
           Header.Columns = <>
           Header.MainColumn = -1
+          TabOrder = 1
+        end
+        object VacationCaptionPanel: TPanel
+          Left = 0
+          Height = 30
+          Top = 0
+          Width = 650
+          Align = alTop
+          Alignment = taLeftJustify
+          BorderSpacing.Bottom = 2
+          BevelOuter = bvNone
+          BorderStyle = bsSingle
+          Caption = '  Отпуска'
+          Color = clBtnFace
+          Font.Style = [fsBold]
+          ParentBackground = False
+          ParentColor = False
+          ParentFont = False
           TabOrder = 2
         end
       end
@@ -1381,51 +912,6 @@ object SchedulePersonalForm: TSchedulePersonalForm
       ClientHeight = 172
       ClientWidth = 650
       TabOrder = 1
-      object HistoryCaptionPanel: TBCPanel
-        Left = 0
-        Height = 30
-        Top = 0
-        Width = 650
-        Align = alTop
-        BorderSpacing.Bottom = 2
-        Background.Color = clBtnFace
-        Background.Gradient1.StartColor = clWhite
-        Background.Gradient1.EndColor = clBlack
-        Background.Gradient1.GradientType = gtLinear
-        Background.Gradient1.Point1XPercent = 0
-        Background.Gradient1.Point1YPercent = 0
-        Background.Gradient1.Point2XPercent = 0
-        Background.Gradient1.Point2YPercent = 100
-        Background.Gradient2.StartColor = clWhite
-        Background.Gradient2.EndColor = clBlack
-        Background.Gradient2.GradientType = gtLinear
-        Background.Gradient2.Point1XPercent = 0
-        Background.Gradient2.Point1YPercent = 0
-        Background.Gradient2.Point2XPercent = 0
-        Background.Gradient2.Point2YPercent = 100
-        Background.Gradient1EndPercent = 35
-        Background.Style = bbsColor
-        BevelInner = bvNone
-        BevelOuter = bvNone
-        BevelWidth = 1
-        Border.Color = clActiveBorder
-        Border.Style = bboSolid
-        BorderBCStyle = bpsBorder
-        Caption = 'История переводов'
-        FontEx.Color = clDefault
-        FontEx.FontQuality = fqSystemClearType
-        FontEx.Shadow = False
-        FontEx.ShadowRadius = 5
-        FontEx.ShadowOffsetX = 5
-        FontEx.ShadowOffsetY = 5
-        FontEx.Style = [fsBold]
-        FontEx.TextAlignment = bcaLeftCenter
-        FontEx.PaddingLeft = 10
-        ParentBackground = False
-        Rounding.RoundX = 1
-        Rounding.RoundY = 1
-        TabOrder = 0
-      end
       object HistoryToolPanel: TPanel
         Left = 0
         Height = 40
@@ -1437,7 +923,7 @@ object SchedulePersonalForm: TSchedulePersonalForm
         ClientHeight = 36
         ClientWidth = 646
         ParentFont = False
-        TabOrder = 1
+        TabOrder = 0
         object HistoryDelButton: TSpeedButton
           Cursor = crHandPoint
           Left = 40
@@ -1496,8 +982,26 @@ object SchedulePersonalForm: TSchedulePersonalForm
         Header.Columns = <>
         Header.MainColumn = -1
         Margin = 50
-        TabOrder = 2
+        TabOrder = 1
         OnDblClick = HistoryVTDblClick
+      end
+      object HistoryCaptionPanel: TPanel
+        Left = 0
+        Height = 30
+        Top = 0
+        Width = 650
+        Align = alTop
+        Alignment = taLeftJustify
+        BorderSpacing.Bottom = 2
+        BevelOuter = bvNone
+        BorderStyle = bsSingle
+        Caption = '  История переводов'
+        Color = clBtnFace
+        Font.Style = [fsBold]
+        ParentBackground = False
+        ParentColor = False
+        ParentFont = False
+        TabOrder = 2
       end
     end
     object Splitter3: TSplitter
@@ -1510,6 +1014,23 @@ object SchedulePersonalForm: TSchedulePersonalForm
       ResizeAnchor = akBottom
       ResizeStyle = rsLine
     end
+  end
+  object StaffCaptionPanel: TPanel
+    Left = 2
+    Height = 30
+    Top = 44
+    Width = 1795
+    Align = alTop
+    BorderSpacing.Left = 2
+    BorderSpacing.Top = 2
+    BorderSpacing.Right = 2
+    BevelOuter = bvNone
+    BorderStyle = bsSingle
+    Caption = 'Сотрудник'
+    Font.Style = [fsBold]
+    ParentFont = False
+    TabOrder = 6
+    Visible = False
   end
   object SelectDirectoryDialog1: TSelectDirectoryDialog
     Left = 184

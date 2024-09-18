@@ -19,7 +19,7 @@ uses
   UScheduleShiftEditForm, UScheduleShiftMonthForm, UScheduleShiftCalendarForm,
   USchedulePersonalEditForm, UVacationScheduleForm, USchedulePersonalMonthForm,
   UTimetableEditForm, UTimetableMonthForm, UChooseForm, UImages,
-  UTimetableSheet, uschedule, UTimingUtils, UUIUtils, UVacationPlanEditForm,
+  UTimetableSheet, uschedule, UTimingUtils, UVacationPlanEditForm,
   UVacationPlanningForm, USIZNormsForm, USIZNormSheet, USIZSizes, USIZTypes,
   USIZUtils;
 

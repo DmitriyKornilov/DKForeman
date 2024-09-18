@@ -6,13 +6,12 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, Buttons,
-  BCButton, BCPanel, Spin, StdCtrls, DividerBevel, VirtualTrees,
-  fpspreadsheetgrid, DateUtils,
+  Spin, StdCtrls, DividerBevel, VirtualTrees, fpspreadsheetgrid, DateUtils,
   //DK packages utils
-  DK_Vector, DK_Fonts, DK_Const,
+  DK_Vector, DK_Fonts, DK_Const, DK_CtrlUtils,
   DK_VSTTypes, DK_VSTEditTools, DK_Zoom, DK_SheetExporter,
   //Project utils
-  UDataBase, UConst, UTimingUtils, UUIUtils, UCalendar, USchedule, UScheduleSheet;
+  UDataBase, UConst, UTimingUtils, UImages, UCalendar, USchedule, UScheduleSheet;
 
 type
 
@@ -20,11 +19,10 @@ type
 
   TScheduleShiftCalendarForm = class(TForm)
     CloseButton: TSpeedButton;
-    ColorCaptionPanel: TBCPanel;
     DividerBevel1: TDividerBevel;
     DividerBevel2: TDividerBevel;
     DividerBevel3: TDividerBevel;
-    ExportButton: TBCButton;
+    ExportButton: TSpeedButton;
     FirstShiftDayColorOnlyCheckBox: TCheckBox;
     ListToolPanel: TPanel;
     LeftPanel: TPanel;
@@ -33,6 +31,7 @@ type
     DelButton: TSpeedButton;
     EditButton: TSpeedButton;
     NeedCorrectionsCheckBox: TCheckBox;
+    ColorCaptionPanel: TPanel;
     SettingButton: TSpeedButton;
     ToolPanel: TPanel;
     SheetPanel: TPanel;
@@ -131,8 +130,10 @@ begin
   SetToolButtons([
     CloseButton, SettingButton, AddButton, DelButton, EditButton
   ]);
-  SetCategoryButtons([
-    ExportButton
+
+  Images.ToButtons([
+    ExportButton,
+    CloseButton, SettingButton, AddButton, DelButton, EditButton
   ]);
 
   CanDraw:= False;

@@ -6,11 +6,11 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, Buttons,
-  fpspreadsheetgrid, BCButton, BCPanel, VirtualTrees, DividerBevel,
+  fpspreadsheetgrid, VirtualTrees, DividerBevel,
   //Project utils
-  UDataBase, UConst, UTypes, UUtils, UUIUtils, USIZNormSheet, USIZTypes,
+  UDataBase, UConst, UTypes, UUtils, UImages, USIZNormSheet, USIZTypes,
   //DK packages utils
-  DK_VSTTables, DK_Vector, DK_Dialogs;
+  DK_VSTTables, DK_Vector, DK_Dialogs, DK_CtrlUtils;
 
 type
 
@@ -18,6 +18,9 @@ type
 
   TSIZNormsForm = class(TForm)
     CloseButton: TSpeedButton;
+    ItemCaptionPanel: TPanel;
+    NormCaptionPanel: TPanel;
+    ExportButton: TSpeedButton;
     ItemAddButton: TSpeedButton;
     SubItemAddButton: TSpeedButton;
     ItemCopyButton: TSpeedButton;
@@ -29,19 +32,16 @@ type
     SubItemSheetPanel: TPanel;
     ItemToolPanel: TPanel;
     DividerBevel1: TDividerBevel;
-    ExportButton: TBCButton;
     ItemSheetPanel: TPanel;
     SubItemDownButton: TSpeedButton;
     SubItemUpButton: TSpeedButton;
     SubItemToolPanel: TPanel;
     SubItemPanel: TPanel;
     NormAddButton: TSpeedButton;
-    ItemCaptionPanel: TBCPanel;
     NormDelButton: TSpeedButton;
     NormEditButton: TSpeedButton;
     NormToolPanel: TPanel;
     NormPanel: TPanel;
-    NormCaptionPanel: TBCPanel;
     MainPanel: TPanel;
     ItemPanel: TPanel;
     Splitter1: TSplitter;
@@ -115,8 +115,13 @@ begin
     ItemAddButton, ItemDelButton, ItemEditButton, ItemCopyButton,
     SubItemAddButton, SubItemDelButton, SubItemEditButton, SubItemUpButton, SubItemDownButton
   ]);
-  SetCategoryButtons([
-    ExportButton
+
+  Images.ToButtons([
+    ExportButton,
+    CloseButton,
+    NormAddButton, NormDelButton, NormEditButton,
+    ItemAddButton, ItemDelButton, ItemEditButton, ItemCopyButton,
+    SubItemAddButton, SubItemDelButton, SubItemEditButton, SubItemUpButton, SubItemDownButton
   ]);
 
   NormListCreate;

@@ -10,7 +10,7 @@ uses
   //DK packages utils
   DK_Vector, DK_VSTTableTools, DK_CtrlUtils,
   //Project utils
-  UUIUtils;
+  UImages;
 
 type
 
@@ -120,7 +120,6 @@ procedure TChooseForm.FormShow(Sender: TObject);
 var
   H: Integer;
 begin
-  SetEditButtons([SaveButton, CancelButton]);
   H:= ButtonPanel.Height + VT1.Height + 50;
   if VT2.Visible then
     H:= H + VT2.Height;
@@ -128,12 +127,13 @@ begin
   if H>MIN_FORM_HEIGHT then
     ClientHeight:= H;
   FormToScreenCenter(Self);
+
+  FormKeepMinSize(Self, False);
 end;
 
 procedure TChooseForm.FormCreate(Sender: TObject);
 begin
-  SaveButton.Images:= ImageListForScreen;
-  CancelButton.Images:= SaveButton.Images;
+  Images.ToButtons([SaveButton, CancelButton]);
 end;
 
 procedure TChooseForm.SaveButtonClick(Sender: TObject);

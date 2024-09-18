@@ -8,15 +8,18 @@ uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, StdCtrls,
   Spin, DateTimePicker, Buttons, DateUtils,
   //DK packages utils
-  DK_DateUtils, DK_Dialogs,
+  DK_DateUtils, DK_Dialogs, DK_CtrlUtils,
   //Project utils
-  UDataBase, UUIUtils;
+  UDataBase, UImages;
 
 type
 
   { TVacationPlanEditForm }
 
   TVacationPlanEditForm = class(TForm)
+    ButtonPanel: TPanel;
+    ButtonPanelBevel: TBevel;
+    CancelButton: TSpeedButton;
     Plan2CountAddSpinEdit: TSpinEdit;
     Plan2CountAddLabel: TLabel;
     Plan1CountLabel: TLabel;
@@ -29,12 +32,9 @@ type
     Plan2Label: TLabel;
     Plan1DateLabel: TLabel;
     Plan2DatePicker: TDateTimePicker;
-    ButtonPanel: TPanel;
-    ButtonPanelBevel: TBevel;
-    CancelButton: TSpeedButton;
     Plan1DatePicker: TDateTimePicker;
-    SaveButton: TSpeedButton;
     Plan1CountSpinEdit: TSpinEdit;
+    SaveButton: TSpeedButton;
     procedure CancelButtonClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -149,17 +149,14 @@ end;
 procedure TVacationPlanEditForm.FormCreate(Sender: TObject);
 begin
   TabNumID:= -1;
-  SaveButton.Images:= ImageListForScreen;
-  CancelButton.Images:= SaveButton.Images;
+  Images.ToButtons([SaveButton, CancelButton]);
 end;
 
 procedure TVacationPlanEditForm.FormShow(Sender: TObject);
 var
   BD, ED: TDate;
 begin
-  SetEditButtons([SaveButton, CancelButton]);
-  Constraints.MinHeight:= Height;
-  Constraints.MinWidth:= Width;
+  FormKeepMinSize(Self);
 
   FirstLastDayInYear(YearNum, BD, ED);
   Plan1DatePicker.MinDate:= BD;

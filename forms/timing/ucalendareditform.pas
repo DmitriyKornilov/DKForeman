@@ -8,9 +8,9 @@ uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls,
   DateTimePicker, Buttons, BCButton, DateUtils,
   //DK packages utils
-  DK_DateUtils, DK_Vector, DK_Const, DK_VSTDropDown,
+  DK_DateUtils, DK_Vector, DK_Const, DK_VSTDropDown, DK_CtrlUtils,
   //Project utils
-  UDataBase, UConst, UCalendar, UTimingUtils, UUIUtils;
+  UDataBase, UConst, UCalendar, UTimingUtils, UImages;
 
 type
 
@@ -21,6 +21,7 @@ type
     ButtonPanelBevel: TBevel;
     CancelButton: TSpeedButton;
     FirstDatePicker: TDateTimePicker;
+    SaveButton: TSpeedButton;
     StatusBCButton: TBCButton;
     SwapDayBCButton: TBCButton;
     SwapDayLabel: TLabel;
@@ -28,7 +29,6 @@ type
     PeriodLabel: TLabel;
     Label2: TLabel;
     StatusLabel: TLabel;
-    SaveButton: TSpeedButton;
     procedure CancelButtonClick(Sender: TObject);
     procedure FirstDatePickerChange(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -62,7 +62,8 @@ end;
 
 procedure TCalendarEditForm.FormShow(Sender: TObject);
 begin
-  SetEditButtons([SaveButton, CancelButton]);
+  FormKeepMinSize(Self);
+
   FirstDatePicker.MinDate:= FirstDayInYear(Year);
   FirstDatePicker.MaxDate:= LastDayInYear(Year);
   if SameDate(DayDate, NULDATE) then //новый
@@ -99,8 +100,7 @@ end;
 
 procedure TCalendarEditForm.FormCreate(Sender: TObject);
 begin
-  SaveButton.Images:= ImageListForScreen;
-  CancelButton.Images:= SaveButton.Images;
+  Images.ToButtons([SaveButton, CancelButton]);
 
   SwapDayDropDown:= TVSTDropDown.Create(SwapDayBCButton);
   SwapDayDropDown.Items:= DAY_NAME_PICKS;

@@ -8,19 +8,19 @@ uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, StdCtrls,
   DateTimePicker, LCLType, Buttons, BCButton,
   //DK packages utils
-  DK_StrUtils, DK_Dialogs, DK_VSTDropDown,
+  DK_StrUtils, DK_Dialogs, DK_VSTDropDown, DK_CtrlUtils,
   //Project utils
-  UDataBase, UTypes, UConst, UUIUtils;
+  UDataBase, UTypes, UConst, UImages;
 
 type
 
   { TStaffMainEditForm }
 
   TStaffMainEditForm = class(TForm)
-    ButtonPanelBevel: TBevel;
-    ButtonPanel: TPanel;
-    CancelButton: TSpeedButton;
     BornDatePicker: TDateTimePicker;
+    ButtonPanel: TPanel;
+    ButtonPanelBevel: TBevel;
+    CancelButton: TSpeedButton;
     FamilyEdit: TEdit;
     NameEdit: TEdit;
     PatronymicEdit: TEdit;
@@ -29,8 +29,8 @@ type
     PatronymicLabel: TLabel;
     BornDateLabel: TLabel;
     GenderLabel: TLabel;
-    SaveButton: TSpeedButton;
     GenderBCButton: TBCButton;
+    SaveButton: TSpeedButton;
     procedure CancelButtonClick(Sender: TObject);
     procedure FamilyEditKeyDown(Sender: TObject; var Key: Word; {%H-}Shift: TShiftState);
     procedure FormCreate(Sender: TObject);
@@ -59,8 +59,9 @@ implementation
 procedure TStaffMainEditForm.FormCreate(Sender: TObject);
 begin
   StaffID:= -1;
-  SaveButton.Images:= ImageListForScreen;
-  CancelButton.Images:= SaveButton.Images;
+
+  Images.ToButtons([SaveButton, CancelButton]);
+
   GenderDropDown:= TVSTDropDown.Create(GenderBCButton);
   GenderDropDown.Items:= GENDER_PICKS;
   GenderDropDown.ItemIndex:= 1;
@@ -73,9 +74,7 @@ end;
 
 procedure TStaffMainEditForm.FormShow(Sender: TObject);
 begin
-  SetEditButtons([SaveButton, CancelButton]);
-  Constraints.MinHeight:= Height;
-  Constraints.MinWidth:= Width;
+  FormKeepMinSize(Self);
   FamilyEdit.SetFocus;
 end;
 

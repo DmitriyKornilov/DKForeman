@@ -3,7 +3,6 @@ object VacationPlanEditForm: TVacationPlanEditForm
   Height = 227
   Top = 253
   Width = 660
-  AutoSize = True
   Caption = 'Планируемый отпуск'
   ClientHeight = 227
   ClientWidth = 660
@@ -11,74 +10,6 @@ object VacationPlanEditForm: TVacationPlanEditForm
   OnCreate = FormCreate
   OnShow = FormShow
   LCLVersion = '3.2.0.0'
-  object ButtonPanel: TPanel
-    AnchorSideLeft.Control = Owner
-    AnchorSideTop.Control = Plan2DatePicker
-    AnchorSideTop.Side = asrBottom
-    AnchorSideRight.Control = Owner
-    AnchorSideRight.Side = asrBottom
-    AnchorSideBottom.Control = Owner
-    AnchorSideBottom.Side = asrBottom
-    Left = 2
-    Height = 51
-    Top = 170
-    Width = 656
-    Align = alCustom
-    Anchors = [akTop, akLeft, akRight, akBottom]
-    AutoSize = True
-    BorderSpacing.Left = 2
-    BorderSpacing.Top = 20
-    BorderSpacing.Right = 2
-    BorderSpacing.Bottom = 6
-    BevelOuter = bvNone
-    ClientHeight = 51
-    ClientWidth = 656
-    TabOrder = 0
-    object CancelButton: TSpeedButton
-      AnchorSideTop.Control = ButtonPanelBevel
-      AnchorSideTop.Side = asrBottom
-      AnchorSideRight.Control = ButtonPanel
-      AnchorSideRight.Side = asrBottom
-      Cursor = crHandPoint
-      Left = 550
-      Height = 28
-      Top = 8
-      Width = 100
-      Anchors = [akTop, akRight]
-      AutoSize = True
-      BorderSpacing.Right = 6
-      Caption = 'Отменить'
-      Images = Images.PX24
-      ImageIndex = 8
-      OnClick = CancelButtonClick
-      ParentFont = False
-    end
-    object SaveButton: TSpeedButton
-      AnchorSideTop.Control = CancelButton
-      AnchorSideTop.Side = asrCenter
-      AnchorSideRight.Control = CancelButton
-      Cursor = crHandPoint
-      Left = 444
-      Height = 28
-      Top = 8
-      Width = 106
-      Anchors = [akTop, akRight]
-      AutoSize = True
-      Caption = 'Сохранить'
-      Images = Images.PX24
-      ImageIndex = 7
-      OnClick = SaveButtonClick
-      ParentFont = False
-    end
-    object ButtonPanelBevel: TBevel
-      Left = 0
-      Height = 8
-      Top = 0
-      Width = 656
-      Align = alTop
-      Shape = bsTopLine
-    end
-  end
   object Plan2Label: TLabel
     AnchorSideLeft.Control = Owner
     AnchorSideTop.Control = Plan2DatePicker
@@ -109,7 +40,7 @@ object VacationPlanEditForm: TVacationPlanEditForm
     MaxDate = 401768
     MinDate = -53780
     ParentFont = False
-    TabOrder = 1
+    TabOrder = 0
     BorderSpacing.Left = 8
     BorderSpacing.Top = 12
     BorderSpacing.Bottom = 12
@@ -143,7 +74,7 @@ object VacationPlanEditForm: TVacationPlanEditForm
     MaxDate = 401768
     MinDate = -53780
     ParentFont = False
-    TabOrder = 2
+    TabOrder = 1
     BorderSpacing.Left = 8
     BorderSpacing.Top = 12
     BorderSpacing.Bottom = 12
@@ -202,7 +133,7 @@ object VacationPlanEditForm: TVacationPlanEditForm
     BorderSpacing.Left = 8
     BorderSpacing.Top = 20
     Caption = 'Запланировать вторую часть отпуска:'
-    TabOrder = 3
+    TabOrder = 2
     OnChange = Plan2CheckBoxChange
   end
   object Plan1CountLabel: TLabel
@@ -233,7 +164,7 @@ object VacationPlanEditForm: TVacationPlanEditForm
     BorderSpacing.Left = 8
     MaxValue = 365
     MinValue = 1
-    TabOrder = 4
+    TabOrder = 3
     Value = 28
   end
   object Plan1CountAddLabel: TLabel
@@ -264,7 +195,7 @@ object VacationPlanEditForm: TVacationPlanEditForm
     BorderSpacing.Left = 8
     BorderSpacing.Right = 8
     MaxValue = 365
-    TabOrder = 5
+    TabOrder = 4
   end
   object Plan2CountLabel: TLabel
     AnchorSideLeft.Control = Plan2DatePicker
@@ -296,7 +227,7 @@ object VacationPlanEditForm: TVacationPlanEditForm
     Enabled = False
     MaxValue = 365
     MinValue = 1
-    TabOrder = 6
+    TabOrder = 5
     Value = 14
   end
   object Plan2CountAddLabel: TLabel
@@ -329,6 +260,73 @@ object VacationPlanEditForm: TVacationPlanEditForm
     BorderSpacing.Right = 8
     Enabled = False
     MaxValue = 365
+    TabOrder = 6
+  end
+  object ButtonPanel: TPanel
+    AnchorSideTop.Control = Plan2DatePicker
+    AnchorSideTop.Side = asrBottom
+    Left = 2
+    Height = 51
+    Top = 170
+    Width = 656
+    Align = alBottom
+    Anchors = [akTop, akLeft, akRight]
+    AutoSize = True
+    BorderSpacing.Left = 2
+    BorderSpacing.Top = 20
+    BorderSpacing.Right = 2
+    BorderSpacing.Bottom = 6
+    BevelOuter = bvNone
+    ClientHeight = 51
+    ClientWidth = 656
     TabOrder = 7
+    object CancelButton: TSpeedButton
+      AnchorSideTop.Control = ButtonPanelBevel
+      AnchorSideTop.Side = asrBottom
+      AnchorSideRight.Control = ButtonPanel
+      AnchorSideRight.Side = asrBottom
+      Cursor = crHandPoint
+      Left = 535
+      Height = 34
+      Top = 8
+      Width = 115
+      Anchors = [akTop, akRight]
+      AutoSize = True
+      BorderSpacing.Right = 6
+      Caption = ' Отменить '
+      Images = Images.PX24
+      ImageIndex = 8
+      Margin = 5
+      Spacing = 5
+      OnClick = CancelButtonClick
+      ParentFont = False
+    end
+    object SaveButton: TSpeedButton
+      AnchorSideTop.Control = CancelButton
+      AnchorSideTop.Side = asrCenter
+      AnchorSideRight.Control = CancelButton
+      Cursor = crHandPoint
+      Left = 414
+      Height = 34
+      Top = 8
+      Width = 121
+      Anchors = [akTop, akRight]
+      AutoSize = True
+      Caption = ' Сохранить '
+      Images = Images.PX24
+      ImageIndex = 7
+      Margin = 5
+      Spacing = 5
+      OnClick = SaveButtonClick
+      ParentFont = False
+    end
+    object ButtonPanelBevel: TBevel
+      Left = 0
+      Height = 8
+      Top = 0
+      Width = 656
+      Align = alTop
+      Shape = bsTopLine
+    end
   end
 end

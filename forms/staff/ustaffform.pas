@@ -6,12 +6,12 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, Buttons,
-  StdCtrls, DividerBevel, VirtualTrees, BCPanel, BCButton, DateUtils,
+  StdCtrls, DividerBevel, VirtualTrees, DateUtils,
   //Project utils
-  UDataBase, UConst, UTypes, UUtils, UUIUtils,
+  UDataBase, UConst, UTypes, UUtils, UImages,
   //DK packages utils
   DK_VSTTypes, DK_VSTTables, DK_VSTParamList, DK_Vector, DK_StrUtils, DK_Const,
-  DK_Dialogs, DK_DateUtils, DK_Filter,
+  DK_Dialogs, DK_DateUtils, DK_Filter, DK_CtrlUtils,
   //Forms
   UStaffMainEditForm, UStaffTabNumEditForm, UStaffPostlogEditForm;
 
@@ -25,20 +25,21 @@ type
     DividerBevel1: TDividerBevel;
     DividerBevel2: TDividerBevel;
     DividerBevel3: TDividerBevel;
-    ExportButton: TBCButton;
+    ExportButton: TSpeedButton;
     FIORadioButton: TRadioButton;
-    ListCaptionPanel: TBCPanel;
     ListOrderToolPanel: TPanel;
+    SettingCaptionPanel: TPanel;
     OrderButtonPanel: TPanel;
     OrderLabel: TLabel;
     BornDateRadioButton: TRadioButton;
+    ListCaptionPanel: TPanel;
+    EditingSplitter: TSplitter;
+    TabNumCaptionPanel: TPanel;
     SettingClientPanel: TPanel;
-    SettingCaptionPanel: TBCPanel;
-    TabNumCaptionPanel: TBCPanel;
     CloseButton: TSpeedButton;
     FilterPanel: TPanel;
     ListAddButton: TSpeedButton;
-    PostLogCaptionPanel: TBCPanel;
+    PostLogCaptionPanel: TPanel;
     TabNumDismissCancelButton: TSpeedButton;
     TabNumVT: TVirtualStringTree;
     TabNumAddButton: TSpeedButton;
@@ -61,7 +62,6 @@ type
     LeftSplitter: TSplitter;
     PostLogToolPanel: TPanel;
     PostLogVT: TVirtualStringTree;
-    EditingSplitter: TSplitter;
     ToolPanel: TPanel;
     ListToolPanel: TPanel;
     StaffVT: TVirtualStringTree;
@@ -218,8 +218,13 @@ begin
     TabNumAddButton, TabNumDelButton, TabNumEditButton, TabNumDismissButton, TabNumDismissCancelButton,
     PostLogAddButton, PostLogDelButton, PostLogEditButton
   ]);
-  SetCategoryButtons([
-    ExportButton
+
+  Images.ToButtons([
+    ExportButton,
+    CloseButton, AscendingButton, DescendingButton,
+    ListAddButton, ListDelButton, ListEditButton,
+    TabNumAddButton, TabNumDelButton, TabNumEditButton, TabNumDismissButton, TabNumDismissCancelButton,
+    PostLogAddButton, PostLogDelButton, PostLogEditButton
   ]);
 
   CanLoadStaffList:= False;
@@ -555,7 +560,7 @@ begin
   ListEditButton.Enabled:= StaffList.IsSelected;
   TabNumAddButton.Enabled:= StaffList.IsSelected;
 
-  TabNumCaptionPanel.Caption:= 'Табельные номера';
+  TabNumCaptionPanel.Caption:= '  Табельные номера';
   if StaffList.IsSelected then
     TabNumCaptionPanel.Caption:= TabNumCaptionPanel.Caption + ': ' +
                                  SNameLong(Families[StaffList.SelectedIndex],
@@ -627,7 +632,7 @@ begin
   TabNumEditButton.Enabled:= TabNumDismissButton.Visible;
   TabNumDismissButton.Enabled:= TabNumList.IsSelected;
 
-  PostLogCaptionPanel.Caption:= 'История переводов';
+  PostLogCaptionPanel.Caption:= '  История переводов';
   if TabNumList.IsSelected then
     PostLogCaptionPanel.Caption:= PostLogCaptionPanel.Caption + ' по табельному номеру: ' +
                                   TabNumListTabNums[TabNumList.SelectedIndex];

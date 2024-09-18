@@ -9,10 +9,10 @@ uses
   Menus, BCButton, LCLType, DividerBevel,
 
   //DK packages utils
-  DK_Const, DK_LCLStrRus, DK_HeapTrace, DK_CtrlUtils, DK_Fonts, DK_VSTTypes,
+  DK_HeapTrace, DK_Const, DK_LCLStrRus, DK_CtrlUtils, DK_Fonts, DK_VSTTypes,
   DK_Vector,
   //Project utils
-  UDataBase, UUIUtils, UConst, UTypes, UImages,
+  UDataBase, UImages, UConst, UTypes,
   //Forms
   UStaffForm,
   UCalendarForm, UScheduleShiftForm, UVacationPlanForm,
@@ -31,10 +31,13 @@ type
     DividerBevel1: TDividerBevel;
     DividerBevel2: TDividerBevel;
     DividerBevel3: TDividerBevel;
+    DictionaryButton: TSpeedButton;
+    StaffButton: TSpeedButton;
     SIZNormsMenuItem: TMenuItem;
     SSONormsMenuItem: TMenuItem;
     Separator3: TMenuItem;
     Separator4: TMenuItem;
+    TimingButton: TSpeedButton;
     TimetableMarkMenuItem: TMenuItem;
     SIZListMenuItem: TMenuItem;
     SIZUnitMenuItem: TMenuItem;
@@ -43,23 +46,20 @@ type
     SSOListMenuItem: TMenuItem;
     SSOUnitMenuItem: TMenuItem;
     ShiftScheduleMenuItem: TMenuItem;
+    SafetyButton: TSpeedButton;
     VacationPlaneMenuItem: TMenuItem;
     PersonalScheduleMenuItem: TMenuItem;
     TimetableMenuItem: TMenuItem;
     SIZMenuItem: TMenuItem;
     SSOMenuItem: TMenuItem;
     StudyMenuItem: TMenuItem;
-    DictionaryButton: TBCButton;
     DictionaryMenu: TPopupMenu;
     PostListMenuItem: TMenuItem;
     MainPanel: TPanel;
     SafetyMenu: TPopupMenu;
-    SafetyButton: TBCButton;
     Separator1: TMenuItem;
     Separator2: TMenuItem;
     TimingMenu: TPopupMenu;
-    TimingButton: TBCButton;
-    StaffButton: TBCButton;
     RefreshButton: TSpeedButton;
     SettingButton: TSpeedButton;
     ExitButton: TSpeedButton;
@@ -353,11 +353,13 @@ begin
   SetToolButtons([
     EditingButton, SettingButton, RefreshButton, AboutButton, ExitButton
   ]);
-  SetCategoryButtons([
-    StaffButton, TimingButton, SafetyButton, DictionaryButton
+
+  Images.ToButtons([
+    StaffButton, TimingButton, SafetyButton, DictionaryButton,
+    EditingButton, SettingButton, RefreshButton, AboutButton, ExitButton
   ]);
 
-  TimingMenu.Images:= ImageListForScreen;
+  TimingMenu.Images:= Images.ForCurrentPPI;
   SafetyMenu.Images:= TimingMenu.Images;
   DictionaryMenu.Images:= TimingMenu.Images;
 

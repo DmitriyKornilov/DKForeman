@@ -9,9 +9,9 @@ uses
   Buttons, Spin, DividerBevel, VirtualTrees, fpspreadsheetgrid,
   //DK packages utils
   DK_Vector, DK_Fonts, DK_Const, DK_StrUtils, DK_VSTTableTools, DK_Zoom,
-  DK_SheetExporter, DK_ColorLegend,
+  DK_SheetExporter, DK_ColorLegend, DK_CtrlUtils,
   //Project utils
-  UDataBase, UConst, UTypes, UTimingUtils, UUIUtils, UCalendar, USchedule,
+  UDataBase, UConst, UTypes, UTimingUtils, UImages, UCalendar, USchedule,
   UScheduleSheet,
   //Forms
   UChooseForm;
@@ -25,7 +25,7 @@ type
     DividerBevel1: TDividerBevel;
     DividerBevel2: TDividerBevel;
     DividerBevel3: TDividerBevel;
-    ExportButton: TBCButton;
+    ExportButton: TSpeedButton;
     LeftSplitter: TSplitter;
     LegendPanel: TPanel;
     MonthBCButton: TBCButton;
@@ -129,8 +129,10 @@ begin
   SetToolButtons([
     CloseButton, CheckAllButton, UncheckAllButton
   ]);
-  SetCategoryButtons([
-    ExportButton
+
+  Images.ToButtons([
+    ExportButton,
+    CloseButton, CheckAllButton, UncheckAllButton
   ]);
 
   CanDraw:= False;

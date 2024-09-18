@@ -6,13 +6,14 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, BCButton,
-  BCPanel, Buttons, Spin, StdCtrls, DividerBevel, VirtualTrees,
+  Buttons, Spin, StdCtrls, DividerBevel, VirtualTrees,
   fpspreadsheetgrid, DateUtils,
   //DK packages utils
   DK_Vector, DK_Matrix, DK_Math, DK_Fonts, DK_Const, DK_DateUtils,
-  DK_StrUtils, DK_VSTTables, DK_VSTParamList, DK_Zoom, DK_SheetExporter, DK_Progress,
+  DK_StrUtils, DK_VSTTables, DK_VSTParamList, DK_Zoom, DK_SheetExporter,
+  DK_Progress, DK_CtrlUtils,
   //Project utils
-  UDataBase, UConst, UTimingUtils, UUIUtils, UCalendar, USchedule, UTimetable,
+  UDataBase, UConst, UTimingUtils, UImages, UCalendar, USchedule, UTimetable,
   UTimetableSheet, UTimingSheet, UTypes,
   //Forms
   UTimetableEditForm, UChooseForm;
@@ -31,28 +32,28 @@ type
     DividerBevel4: TDividerBevel;
     EditingButton: TSpeedButton;
     EditPanel: TPanel;
+    ExportButton: TSpeedButton;
+    ListButton: TSpeedButton;
+    ListCaptionPanel: TPanel;
+    TimetableButton: TSpeedButton;
+    SettingCaptionPanel: TPanel;
     RowDownButton: TSpeedButton;
     RowMergeButton: TSpeedButton;
     RowUpButton: TSpeedButton;
     SettingButton: TSpeedButton;
+    TimetableCaptionPanel: TPanel;
     SettingSplitter: TSplitter;
     RightPanel: TPanel;
-    ExportButton: TBCButton;
-    TimetableCaptionPanel: TBCPanel;
     TimetableToolPanel: TPanel;
-    TimetableButton: TBCButton;
     FIORadioButton: TRadioButton;
     ListToolPanel: TPanel;
     MonthBCButton: TBCButton;
-    ListButton: TBCButton;
     TimetablePanel: TPanel;
     ScheduleRadioButton: TRadioButton;
-    ListCaptionPanel: TBCPanel;
     ListOrderToolPanel: TPanel;
     ListPanel: TPanel;
     OrderLabel: TLabel;
     PostRadioButton: TRadioButton;
-    SettingCaptionPanel: TBCPanel;
     SettingClientPanel: TPanel;
     SettingPanel: TPanel;
     SheetPanel: TPanel;
@@ -177,18 +178,18 @@ begin
   SetToolPanels([
     ToolPanel, ListOrderToolPanel
   ]);
-
   SetCaptionPanels([
     ListCaptionPanel, SettingCaptionPanel, TimetableCaptionPanel
   ]);
-
   SetToolButtons([
     CloseButton, CheckAllButton, UncheckAllButton, EditingButton, SettingButton,
     DayEditButton, RowUpButton, RowDownButton, RowMergeButton
   ]);
 
-  SetCategoryButtons([
-    ExportButton, TimetableButton, ListButton
+  Images.ToButtons([
+    ExportButton, TimetableButton, ListButton,
+    CloseButton, CheckAllButton, UncheckAllButton, EditingButton, SettingButton,
+    DayEditButton, RowUpButton, RowDownButton, RowMergeButton
   ]);
 
   CanLoadAndDraw:= False;
@@ -606,7 +607,7 @@ procedure TTimetableMonthForm.StaffListLoad;
 begin
   if not CanLoadAndDraw then Exit;
 
-  TimetableCaptionPanel.Caption:= 'Табель учета рабочего времени за ' + MonthDropDown.Text + ' ' +
+  TimetableCaptionPanel.Caption:= '  Табель учета рабочего времени за ' + MonthDropDown.Text + ' ' +
                                  YearSpinEdit.Text + ' года';
 
   VStaffList.Visible:= False;

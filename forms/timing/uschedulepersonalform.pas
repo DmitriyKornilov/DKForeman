@@ -6,14 +6,13 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, Buttons,
-  fpspreadsheetgrid, BCPanel, BCButton, VirtualTrees, Spin, StdCtrls,
-  DividerBevel, DateUtils,
+  fpspreadsheetgrid, VirtualTrees, Spin, StdCtrls, DividerBevel, DateUtils,
   //Project utils
-  UDataBase, UConst, UTypes, UTimingUtils, UUIUtils, UWorkHours, UCalendar,
+  UDataBase, UConst, UTypes, UTimingUtils, UImages, UWorkHours, UCalendar,
   USchedule, UScheduleSheet,
   //DK packages utils
   DK_VSTTables, DK_VSTParamList, DK_VSTEdit, DK_Vector, DK_Const, DK_Dialogs,
-  DK_DateUtils, DK_Color, DK_SheetExporter, DK_StrUtils,
+  DK_DateUtils, DK_Color, DK_SheetExporter, DK_StrUtils, DK_CtrlUtils,
   DK_Zoom, DK_Progress, DK_Filter, DK_ColorLegend,
   //Forms
   UChooseForm, USchedulePersonalEditForm, UScheduleCorrectionEditForm,
@@ -32,8 +31,18 @@ type
     DividerBevel2: TDividerBevel;
     DividerBevel3: TDividerBevel;
     DividerBevel4: TDividerBevel;
+    ExportButton: TSpeedButton;
+    StaffCaptionPanel: TPanel;
+    ViewCaptionPanel: TPanel;
+    VacationCaptionPanel: TPanel;
+    SettingCaptionPanel: TPanel;
+    HistoryCaptionPanel: TPanel;
+    CorrectionsCaptionPanel: TPanel;
+    VacationScheduleButton: TSpeedButton;
+    MonthScheduleButton: TSpeedButton;
     FilterPanel: TPanel;
     LegendPanel: TPanel;
+    ListCaptionPanel: TPanel;
     OrderButtonPanel: TPanel;
     OrderLabel: TLabel;
     ListFilterToolPanel: TPanel;
@@ -43,7 +52,6 @@ type
     SelectDirectoryDialog1: TSelectDirectoryDialog;
     TabNumRadioButton: TRadioButton;
     VacationEraseButton: TSpeedButton;
-    VacationScheduleButton: TBCButton;
     VacationCancelButton: TSpeedButton;
     CopyDelButton: TSpeedButton;
     VacationDelButton: TSpeedButton;
@@ -53,7 +61,6 @@ type
     CopyToolPanel: TPanel;
     VacationToolPanel: TPanel;
     CopyVT: TVirtualStringTree;
-    CorrectionsCaptionPanel: TBCPanel;
     CorrectionsPanel: TPanel;
     DayAddButton: TSpeedButton;
     DayCopyButton: TSpeedButton;
@@ -63,29 +70,21 @@ type
     HistoryEditButton: TSpeedButton;
     DayPanel: TPanel;
     DayToolPanel: TPanel;
-    HistoryCaptionPanel: TBCPanel;
     HistoryAddButton: TSpeedButton;
     DayVT: TVirtualStringTree;
     EditingPanel: TPanel;
-    ExportButton: TBCButton;
     LeftSplitter: TSplitter;
-    ListCaptionPanel: TBCPanel;
     BottomEditingPanel: TPanel;
     HistoryPanel: TPanel;
     Splitter2: TSplitter;
     Splitter3: TSplitter;
-    StaffCaptionPanel: TBCPanel;
     ViewPanel: TPanel;
-    MonthScheduleButton: TBCButton;
-    SettingCaptionPanel: TBCPanel;
     SettingClientPanel: TPanel;
     SettingPanel: TPanel;
-    ViewCaptionPanel: TBCPanel;
     ViewGridPanel: TPanel;
     ListPanel: TPanel;
     StaffListVT: TVirtualStringTree;
     ToolPanel: TPanel;
-    VacationCaptionPanel: TBCPanel;
     VacationPanel: TPanel;
     HistoryToolPanel: TPanel;
     HistoryVT: TVirtualStringTree;
@@ -328,8 +327,15 @@ begin
     DayAddButton, DayDelButton, DayEditButton, DayCopyButton,
     CopySaveButton, CopyDelButton,CopyCancelButton
   ]);
-  SetCategoryButtons([
-    ExportButton, MonthScheduleButton
+
+
+  Images.ToButtons([
+    ExportButton, MonthScheduleButton, VacationScheduleButton,
+    CloseButton, AscendingButton, DescendingButton,
+    HistoryAddButton, HistoryDelButton, HistoryEditButton,
+    VacationSaveButton, VacationDelButton, VacationEraseButton, VacationCancelButton,
+    DayAddButton, DayDelButton, DayEditButton, DayCopyButton,
+    CopySaveButton, CopyDelButton, CopyCancelButton
   ]);
 
   Calendar:= TCalendar.Create;
@@ -1307,18 +1313,18 @@ end;
 procedure TSchedulePersonalForm.CaptionsUpdate;
 begin
   StaffCaptionPanel.Caption:= EmptyStr;
-  ViewCaptionPanel.Caption:= 'График: ';
-  CorrectionsCaptionPanel.Caption:= 'Корректировки графика на ' + YearSpinEdit.Text + ' год';
-  VacationCaptionPanel.Caption:= 'График отпусков на ' + YearSpinEdit.Text + ' год';
+  ViewCaptionPanel.Caption:= '  График ';
+  CorrectionsCaptionPanel.Caption:= '  Корректировки графика на ' + YearSpinEdit.Text + ' год';
+  VacationCaptionPanel.Caption:= '  График отпусков на ' + YearSpinEdit.Text + ' год';
 
   if not StaffList.IsSelected then Exit;
 
   StaffCaptionPanel.Caption:= StaffLongNames[StaffList.SelectedIndex];
   StaffCaptionPanel.Visible:= ModeType=mtEditing;
 
-  ViewCaptionPanel.Caption:= 'График работы на ' + YearSpinEdit.Text + ' год: ';
+  ViewCaptionPanel.Caption:= '  График работы на ' + YearSpinEdit.Text + ' год';
   if ModeType<>mtEditing then
-    ViewCaptionPanel.Caption:= ViewCaptionPanel.Caption +
+    ViewCaptionPanel.Caption:= ViewCaptionPanel.Caption + ': ' +
                                 StaffLongNames[StaffList.SelectedIndex];
 end;
 

@@ -8,9 +8,9 @@ uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls,
   fpspreadsheetgrid, DateTimePicker, DateUtils, Buttons,
   //Project utils
-  UDataBase, UTimingUtils, UUIUtils, UTypes, UCalendar, USchedule,  UScheduleSheet,
+  UDataBase, UTimingUtils, UImages, UTypes, UCalendar, USchedule,  UScheduleSheet,
   //DK packages utils
-  DK_Vector, DK_Dialogs;
+  DK_Vector, DK_Dialogs, DK_CtrlUtils;
 
 type
 
@@ -64,9 +64,8 @@ end;
 
 procedure TSchedulePersonalEditForm.FormShow(Sender: TObject);
 begin
-  SetEditButtons([SaveButton, CancelButton]);
-  Constraints.MinHeight:= Height;
-  Constraints.MinWidth:= Width;
+  FormKeepMinSize(Self, False);
+
   SchedulesUpdate;
   Sheet.SelectedIndex:= VIndexOf(ScheduleIDs, ScheduleID);
 end;
@@ -112,8 +111,9 @@ var
 begin
   PrevHistoryID:= -1;
   Calendar:= TCalendar.Create;
-  SaveButton.Images:= ImageListForScreen;
-  CancelButton.Images:= SaveButton.Images;
+
+  Images.ToButtons([SaveButton, CancelButton]);
+
   DataBase.ScheduleMainListLoad(ScheduleIDs, V, V, ScheduleNames);
   Sheet:= TShiftSimpleScheduleSheet.Create(ViewGrid, MainForm.GridFont, ScheduleNames);
 end;

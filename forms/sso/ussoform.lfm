@@ -38,13 +38,13 @@ object SSOForm: TSSOForm
       ParentShowHint = False
     end
     object DividerBevel1: TDividerBevel
-      Left = 579
+      Left = 578
       Height = 36
       Top = 0
-      Width = 20
+      Width = 21
       Caption = 'DividerBevel1'
       Align = alRight
-      BevelWidth = 1
+      BevelWidth = 2
       Font.Style = [fsBold]
       Orientation = trVertical
       ParentFont = False

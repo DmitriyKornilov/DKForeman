@@ -8,9 +8,9 @@ uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls,
   DateTimePicker, Buttons, BCButton, DateUtils,
   //DK packages utils
-  DK_Vector, DK_StrUtils, DK_Dialogs, DK_Const, DK_VSTDropDown,
+  DK_Vector, DK_StrUtils, DK_Dialogs, DK_Const, DK_VSTDropDown, DK_CtrlUtils,
   //Project utils
-  UDataBase, UTypes, UConst, UUIUtils;
+  UDataBase, UTypes, UConst, UImages;
 
 type
 
@@ -21,8 +21,8 @@ type
     ButtonPanelBevel: TBevel;
     CancelButton: TSpeedButton;
     PostBCButton: TBCButton;
-    StatusBCButton: TBCButton;
     SaveButton: TSpeedButton;
+    StatusBCButton: TBCButton;
     PostLabel: TLabel;
     RankEdit: TEdit;
     RankLabel: TLabel;
@@ -60,8 +60,9 @@ end;
 procedure TStaffPostlogEditForm.FormCreate(Sender: TObject);
 begin
   PrevPostLogID:= -1;
-  SaveButton.Images:= ImageListForScreen;
-  CancelButton.Images:= SaveButton.Images;
+
+  Images.ToButtons([SaveButton, CancelButton]);
+
   StatusDropDown:= TVSTDropDown.Create(StatusBCButton);
   StatusDropDown.Items:= POST_STATUS_PICKS;
   StatusDropDown.ItemIndex:= 0;
@@ -76,9 +77,7 @@ end;
 
 procedure TStaffPostlogEditForm.FormShow(Sender: TObject);
 begin
-  SetEditButtons([SaveButton, CancelButton]);
-  Constraints.MinHeight:= Height;
-  Constraints.MinWidth:= Width;
+  FormKeepMinSize(Self);
   DataBase.PostDictionaryLoad(PostDropDown, PostIDs, PostID);
 end;
 

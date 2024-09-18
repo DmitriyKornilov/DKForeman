@@ -3,7 +3,6 @@ object StaffTabNumEditForm: TStaffTabNumEditForm
   Height = 118
   Top = 263
   Width = 750
-  AutoSize = True
   BorderIcons = [biSystemMenu]
   Caption = 'Табельный номер'
   ClientHeight = 118
@@ -136,19 +135,14 @@ object StaffTabNumEditForm: TStaffTabNumEditForm
     TabOrder = 2
   end
   object ButtonPanel: TPanel
-    AnchorSideLeft.Control = Owner
     AnchorSideTop.Control = TabNumEdit
     AnchorSideTop.Side = asrBottom
-    AnchorSideRight.Control = Owner
-    AnchorSideRight.Side = asrBottom
-    AnchorSideBottom.Control = Owner
-    AnchorSideBottom.Side = asrBottom
     Left = 2
     Height = 52
     Top = 60
     Width = 746
-    Align = alCustom
-    Anchors = [akTop, akLeft, akRight, akBottom]
+    Align = alBottom
+    Anchors = [akTop, akLeft, akRight]
     AutoSize = True
     BorderSpacing.Left = 2
     BorderSpacing.Top = 20
@@ -164,16 +158,18 @@ object StaffTabNumEditForm: TStaffTabNumEditForm
       AnchorSideRight.Control = ButtonPanel
       AnchorSideRight.Side = asrBottom
       Cursor = crHandPoint
-      Left = 640
-      Height = 28
+      Left = 625
+      Height = 34
       Top = 8
-      Width = 100
+      Width = 115
       Anchors = [akTop, akRight]
       AutoSize = True
       BorderSpacing.Right = 6
-      Caption = 'Отменить'
+      Caption = ' Отменить '
       Images = Images.PX24
       ImageIndex = 8
+      Margin = 5
+      Spacing = 5
       OnClick = CancelButtonClick
       ParentFont = False
     end
@@ -182,15 +178,17 @@ object StaffTabNumEditForm: TStaffTabNumEditForm
       AnchorSideTop.Side = asrCenter
       AnchorSideRight.Control = CancelButton
       Cursor = crHandPoint
-      Left = 534
-      Height = 28
+      Left = 504
+      Height = 34
       Top = 8
-      Width = 106
+      Width = 121
       Anchors = [akTop, akRight]
       AutoSize = True
-      Caption = 'Сохранить'
+      Caption = ' Сохранить '
       Images = Images.PX24
       ImageIndex = 7
+      Margin = 5
+      Spacing = 5
       OnClick = SaveButtonClick
       ParentFont = False
     end

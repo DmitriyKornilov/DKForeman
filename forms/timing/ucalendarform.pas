@@ -6,12 +6,12 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, Buttons,
-  Spin, StdCtrls, DividerBevel, fpspreadsheetgrid, VirtualTrees, BCPanel,
-  BCButton, DateUtils,
+  Spin, StdCtrls, DividerBevel, fpspreadsheetgrid, VirtualTrees, DateUtils,
   //Project utils
-  UConst, UTypes, UTimingUtils, UUIUtils, UCalendar, UCalendarSheet,
+  UConst, UTypes, UTimingUtils, UImages, UCalendar, UCalendarSheet,
   //DK packages utils
   DK_DateUtils, DK_VSTTables, DK_Vector, DK_Zoom, DK_Color, DK_Const,
+  DK_CtrlUtils,
   //Forms
   UCalendarEditForm;
 
@@ -23,7 +23,8 @@ type
     CloseButton: TSpeedButton;
     DividerBevel1: TDividerBevel;
     DividerBevel2: TDividerBevel;
-    ExportButton: TBCButton;
+    ExportButton: TSpeedButton;
+    CaptionPanel: TPanel;
     ZoomBevel: TBevel;
     ViewGrid: TsWorksheetGrid;
     CopySaveButton: TSpeedButton;
@@ -31,7 +32,6 @@ type
     CopyCancelButton: TSpeedButton;
     CopyPanel: TPanel;
     CopyToolPanel: TPanel;
-    CaptionPanel: TBCPanel;
     DayPanel: TPanel;
     SheetPanel: TPanel;
     EditingPanel: TPanel;
@@ -220,8 +220,12 @@ begin
     DayAddButton, DayDelButton, DayEditButton, DayCopyButton,
     CopySaveButton, CopyDelButton,CopyCancelButton
   ]);
-  SetCategoryButtons([
-    ExportButton
+
+  Images.ToButtons([
+    ExportButton,
+    CloseButton,
+    DayAddButton, DayDelButton, DayEditButton, DayCopyButton,
+    CopySaveButton, CopyDelButton,CopyCancelButton
   ]);
 
   ColorsLoad;

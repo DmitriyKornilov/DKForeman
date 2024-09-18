@@ -5,12 +5,12 @@ unit UVacationScheduleForm;
 interface
 
 uses
-  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, BCButton,
+  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls,
   Buttons, Spin, DividerBevel, fpspreadsheetgrid,
   //DK packages utils
-  DK_Vector, DK_Zoom,
+  DK_Vector, DK_Zoom, DK_CtrlUtils,
   //Project utils
-  UDataBase, UConst, UUIUtils, UScheduleSheet;
+  UDataBase, UConst, UImages, UScheduleSheet;
 
 type
 
@@ -20,7 +20,7 @@ type
     CloseButton: TSpeedButton;
     DividerBevel1: TDividerBevel;
     DividerBevel2: TDividerBevel;
-    ExportButton: TBCButton;
+    ExportButton: TSpeedButton;
     SheetPanel: TPanel;
     ToolPanel: TPanel;
     ViewGrid: TsWorksheetGrid;
@@ -82,8 +82,10 @@ begin
   SetToolButtons([
     CloseButton
   ]);
-  SetCategoryButtons([
-    ExportButton
+
+  Images.ToButtons([
+    ExportButton,
+    CloseButton
   ]);
 
   ZoomPercent:= 100;

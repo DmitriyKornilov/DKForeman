@@ -8,9 +8,9 @@ uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls,
   DateTimePicker, Buttons,
   //DK packages utils
-  DK_StrUtils, DK_Dialogs, DK_Const,
+  DK_StrUtils, DK_Dialogs, DK_Const, DK_CtrlUtils,
   //Project utils
-  UDataBase, UTypes, UUIUtils;
+  UDataBase, UTypes, UImages;
 
 type
 
@@ -51,8 +51,9 @@ procedure TStaffTabNumEditForm.FormCreate(Sender: TObject);
 begin
   StaffID:= -1;
   TabNumID:= -1;
-  SaveButton.Images:= ImageListForScreen;
-  CancelButton.Images:= SaveButton.Images;
+
+  Images.ToButtons([SaveButton, CancelButton]);
+
   RecrutDatePicker.MinDate:= NUlDATE;
   DismissDatePicker.MinDate:= NUlDATE;
 end;
@@ -64,9 +65,7 @@ end;
 
 procedure TStaffTabNumEditForm.FormShow(Sender: TObject);
 begin
-  SetEditButtons([SaveButton, CancelButton]);
-  Constraints.MinHeight:= Height;
-  Constraints.MinWidth:= Width;
+  FormKeepMinSize(Self);
   if EditingType=etCustom then
     DismissDatePicker.SetFocus
   else

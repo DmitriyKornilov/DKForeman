@@ -8,19 +8,19 @@ uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, Spin,
   ExtCtrls, VirtualTrees, DateTimePicker, Buttons, BCButton, DateUtils,
   //DK packages utils
-  DK_Vector, DK_DateUtils, DK_VSTDropDown, DK_Dialogs, DK_Const,
+  DK_Vector, DK_DateUtils, DK_VSTDropDown, DK_Dialogs, DK_Const, DK_CtrlUtils,
   //Project utils
-  UDataBase, UUIUtils, UWorkHours, USchedule;
+  UDataBase, UImages, UWorkHours, USchedule;
 
 type
 
   { TScheduleCorrectionEditForm }
 
   TScheduleCorrectionEditForm = class(TForm)
-    MarkBCButton: TBCButton;
     ButtonPanel: TPanel;
     ButtonPanelBevel: TBevel;
     CancelButton: TSpeedButton;
+    MarkBCButton: TBCButton;
     LastDateCheckBox: TCheckBox;
     FirstDatePicker: TDateTimePicker;
     LastDatePicker: TDateTimePicker;
@@ -62,8 +62,9 @@ begin
   DigMark:= -1;
   ScheduleID:= -1;
   TabNumID:= -1;
-  SaveButton.Images:= ImageListForScreen;
-  CancelButton.Images:= SaveButton.Images;
+
+  Images.ToButtons([SaveButton, CancelButton]);
+
   MarkDropDown:= TVSTDropDown.Create(MarkBCButton);
   ShiftNumSpinEdit.MaxValue:= 365;
 end;
@@ -85,9 +86,8 @@ end;
 
 procedure TScheduleCorrectionEditForm.FormShow(Sender: TObject);
 begin
-  SetEditButtons([SaveButton, CancelButton]);
-  Constraints.MinHeight:= Height;
-  Constraints.MinWidth:= Width;
+  FormKeepMinSize(Self);
+
   if SameDate(FirstDatePicker.Date, NULDATE) then
     FirstDatePicker.Date:= FirstDayInYear(Year);
   LastDatePicker.Date:= FirstDatePicker.Date;

@@ -3,7 +3,6 @@ object StaffPostlogEditForm: TStaffPostlogEditForm
   Height = 156
   Top = 258
   Width = 750
-  AutoSize = True
   BorderIcons = [biSystemMenu]
   Caption = 'Должность (профессия)'
   ClientHeight = 156
@@ -101,74 +100,6 @@ object StaffPostlogEditForm: TStaffPostlogEditForm
     UseDefaultSeparators = True
     HideDateTimeParts = []
     MonthNames = 'Long'
-  end
-  object ButtonPanel: TPanel
-    AnchorSideLeft.Control = Owner
-    AnchorSideTop.Control = RankEdit
-    AnchorSideTop.Side = asrBottom
-    AnchorSideRight.Control = Owner
-    AnchorSideRight.Side = asrBottom
-    AnchorSideBottom.Control = Owner
-    AnchorSideBottom.Side = asrBottom
-    Left = 2
-    Height = 49
-    Top = 101
-    Width = 746
-    Align = alCustom
-    Anchors = [akTop, akLeft, akRight, akBottom]
-    AutoSize = True
-    BorderSpacing.Left = 2
-    BorderSpacing.Top = 20
-    BorderSpacing.Right = 2
-    BorderSpacing.Bottom = 6
-    BevelOuter = bvNone
-    ClientHeight = 49
-    ClientWidth = 746
-    TabOrder = 2
-    object CancelButton: TSpeedButton
-      AnchorSideTop.Control = ButtonPanelBevel
-      AnchorSideTop.Side = asrBottom
-      AnchorSideRight.Control = ButtonPanel
-      AnchorSideRight.Side = asrBottom
-      Cursor = crHandPoint
-      Left = 640
-      Height = 28
-      Top = 8
-      Width = 100
-      Anchors = [akTop, akRight]
-      AutoSize = True
-      BorderSpacing.Right = 6
-      Caption = 'Отменить'
-      Images = Images.PX24
-      ImageIndex = 8
-      OnClick = CancelButtonClick
-      ParentFont = False
-    end
-    object SaveButton: TSpeedButton
-      AnchorSideTop.Control = CancelButton
-      AnchorSideTop.Side = asrCenter
-      AnchorSideRight.Control = CancelButton
-      Cursor = crHandPoint
-      Left = 534
-      Height = 28
-      Top = 8
-      Width = 106
-      Anchors = [akTop, akRight]
-      AutoSize = True
-      Caption = 'Сохранить'
-      Images = Images.PX24
-      ImageIndex = 7
-      OnClick = SaveButtonClick
-      ParentFont = False
-    end
-    object ButtonPanelBevel: TBevel
-      Left = 0
-      Height = 8
-      Top = 0
-      Width = 746
-      Align = alTop
-      Shape = bsTopLine
-    end
   end
   object PostBCButton: TBCButton
     Tag = -1
@@ -386,5 +317,72 @@ object StaffPostlogEditForm: TStaffPostlogEditForm
     TextApplyGlobalOpacity = False
     DropDownStyle = bdsCommon
     MemoryUsage = bmuHigh
+  end
+  object ButtonPanel: TPanel
+    AnchorSideTop.Control = RankEdit
+    AnchorSideTop.Side = asrBottom
+    Left = 2
+    Height = 49
+    Top = 101
+    Width = 746
+    Align = alBottom
+    Anchors = [akTop, akLeft, akRight]
+    AutoSize = True
+    BorderSpacing.Left = 2
+    BorderSpacing.Top = 20
+    BorderSpacing.Right = 2
+    BorderSpacing.Bottom = 6
+    BevelOuter = bvNone
+    ClientHeight = 49
+    ClientWidth = 746
+    TabOrder = 2
+    object CancelButton: TSpeedButton
+      AnchorSideTop.Control = ButtonPanelBevel
+      AnchorSideTop.Side = asrBottom
+      AnchorSideRight.Control = ButtonPanel
+      AnchorSideRight.Side = asrBottom
+      Cursor = crHandPoint
+      Left = 625
+      Height = 34
+      Top = 8
+      Width = 115
+      Anchors = [akTop, akRight]
+      AutoSize = True
+      BorderSpacing.Right = 6
+      Caption = ' Отменить '
+      Images = Images.PX24
+      ImageIndex = 8
+      Margin = 5
+      Spacing = 5
+      OnClick = CancelButtonClick
+      ParentFont = False
+    end
+    object SaveButton: TSpeedButton
+      AnchorSideTop.Control = CancelButton
+      AnchorSideTop.Side = asrCenter
+      AnchorSideRight.Control = CancelButton
+      Cursor = crHandPoint
+      Left = 504
+      Height = 34
+      Top = 8
+      Width = 121
+      Anchors = [akTop, akRight]
+      AutoSize = True
+      Caption = ' Сохранить '
+      Images = Images.PX24
+      ImageIndex = 7
+      Margin = 5
+      Spacing = 5
+      OnClick = SaveButtonClick
+      ParentFont = False
+    end
+    object ButtonPanelBevel: TBevel
+      Left = 0
+      Height = 8
+      Top = 0
+      Width = 746
+      Align = alTop
+      Shape = bsTopLine
+    end
   end
 end

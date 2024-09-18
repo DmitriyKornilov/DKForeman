@@ -6,11 +6,12 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, Buttons,
-  DividerBevel, BCPanel, BCButton, Spin, StdCtrls, VirtualTrees, DateUtils,
+  DividerBevel, Spin, StdCtrls, VirtualTrees, DateUtils,
   //DK packages utils
   DK_VSTTables, DK_VSTParamList, DK_VSTTypes, DK_Vector, DK_Filter, DK_StrUtils,
+  DK_CtrlUtils,
   //Project utils
-  UDataBase, UTimingUtils, UUIUtils, UTypes, UConst,
+  UDataBase, UTimingUtils, UImages, UTypes, UConst,
   //Forms
   UVacationScheduleForm, UVacationPlanEditForm, UVacationPlanningForm;
 
@@ -19,24 +20,24 @@ type
   { TVacationPlanForm }
 
   TVacationPlanForm = class(TForm)
-    ListCaptionPanel: TBCPanel;
     CloseButton: TSpeedButton;
     DividerBevel1: TDividerBevel;
     DividerBevel2: TDividerBevel;
     DividerBevel3: TDividerBevel;
     DividerBevel4: TDividerBevel;
-    ExportButton: TBCButton;
+    ExportButton: TSpeedButton;
+    PlanButton: TSpeedButton;
     FilterPanel: TPanel;
     LeftSplitter: TSplitter;
     EditButton: TSpeedButton;
     ListToolPanel: TPanel;
     MainPanel: TPanel;
-    PlanButton: TBCButton;
-    SettingCaptionPanel: TBCPanel;
+    SettingCaptionPanel: TPanel;
+    ListCaptionPanel: TPanel;
     SettingClientPanel: TPanel;
     SettingPanel: TPanel;
     ToolPanel: TPanel;
-    ScheduleButton: TBCButton;
+    ScheduleButton: TSpeedButton;
     VT: TVirtualStringTree;
     YearPanel: TPanel;
     YearSpinEdit: TSpinEdit;
@@ -129,8 +130,10 @@ begin
   SetToolButtons([
     CloseButton, EditButton
   ]);
-  SetCategoryButtons([
-    ExportButton, PlanButton, ScheduleButton
+
+  Images.ToButtons([
+    ExportButton, PlanButton, ScheduleButton,
+    CloseButton, EditButton
   ]);
 
   CanLoadStaffList:= False;
@@ -182,7 +185,7 @@ end;
 
 procedure TVacationPlanForm.YearSpinEditChange(Sender: TObject);
 begin
-  ListCaptionPanel.Caption:= 'Планируемые отпуска в ' + YearSpinEdit.Text + ' году';
+  ListCaptionPanel.Caption:= '  Планируемые отпуска в ' + YearSpinEdit.Text + ' году';
   StaffListLoad;
 end;
 
