@@ -2,20 +2,19 @@ object MainForm: TMainForm
   Left = 581
   Height = 326
   Top = 230
-  Width = 1271
+  Width = 1020
   ClientHeight = 326
-  ClientWidth = 1271
+  ClientWidth = 1020
   DesignTimePPI = 120
+  WindowState = wsMaximized
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
-  LCLVersion = '3.2.0.0'
-  WindowState = wsMaximized
   object ToolPanel: TPanel
     Left = 2
     Height = 40
     Top = 2
-    Width = 1267
+    Width = 1016
     Align = alTop
     BorderSpacing.Left = 2
     BorderSpacing.Top = 2
@@ -23,12 +22,12 @@ object MainForm: TMainForm
     BevelOuter = bvNone
     BorderStyle = bsSingle
     ClientHeight = 36
-    ClientWidth = 1263
+    ClientWidth = 1012
     ParentFont = False
     TabOrder = 0
     object AboutButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 1162
+      Left = 911
       Height = 36
       Hint = 'О программе'
       Top = 0
@@ -43,7 +42,7 @@ object MainForm: TMainForm
     end
     object ExitButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 1223
+      Left = 972
       Height = 36
       Hint = 'Выход'
       Top = 0
@@ -53,13 +52,13 @@ object MainForm: TMainForm
       Constraints.MinWidth = 40
       Images = Images.PX24
       ImageIndex = 0
-      OnClick = ExitButtonClick
       ShowHint = True
       ParentShowHint = False
+      OnClick = ExitButtonClick
     end
     object SettingButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 1061
+      Left = 810
       Height = 36
       Hint = 'Параметры'
       Top = 0
@@ -71,13 +70,13 @@ object MainForm: TMainForm
       GroupIndex = 2
       Images = Images.PX24
       ImageIndex = 24
-      OnClick = SettingButtonClick
       ShowHint = True
       ParentShowHint = False
+      OnClick = SettingButtonClick
     end
     object EditingButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 1021
+      Left = 770
       Height = 36
       Hint = 'Редактирование'
       Top = 0
@@ -89,13 +88,13 @@ object MainForm: TMainForm
       GroupIndex = 2
       Images = Images.PX24
       ImageIndex = 23
-      OnClick = EditingButtonClick
       ShowHint = True
       ParentShowHint = False
+      OnClick = EditingButtonClick
     end
     object RefreshButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 1122
+      Left = 871
       Height = 36
       Hint = 'Обновить'
       Top = 0
@@ -105,12 +104,12 @@ object MainForm: TMainForm
       Constraints.MinWidth = 40
       Images = Images.PX24
       ImageIndex = 2
-      OnClick = RefreshButtonClick
       ShowHint = True
       ParentShowHint = False
+      OnClick = RefreshButtonClick
     end
     object DividerBevel1: TDividerBevel
-      Left = 1202
+      Left = 951
       Height = 36
       Top = 0
       Width = 21
@@ -122,7 +121,7 @@ object MainForm: TMainForm
       ParentFont = False
     end
     object DividerBevel2: TDividerBevel
-      Left = 1101
+      Left = 850
       Height = 36
       Top = 0
       Width = 21
@@ -134,7 +133,7 @@ object MainForm: TMainForm
       ParentFont = False
     end
     object DividerBevel3: TDividerBevel
-      Left = 478
+      Left = 496
       Height = 36
       Top = 0
       Width = 21
@@ -150,7 +149,7 @@ object MainForm: TMainForm
       Left = 0
       Height = 36
       Top = 0
-      Width = 81
+      Width = 87
       Align = alLeft
       AutoSize = True
       Caption = ' Штат '
@@ -162,10 +161,10 @@ object MainForm: TMainForm
     end
     object TimingButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 81
+      Left = 87
       Height = 36
       Top = 0
-      Width = 235
+      Width = 241
       Align = alLeft
       AutoSize = True
       Caption = '  Учет рабочего времени ▼ '
@@ -177,10 +176,10 @@ object MainForm: TMainForm
     end
     object SafetyButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 316
+      Left = 328
       Height = 36
       Top = 0
-      Width = 162
+      Width = 168
       Align = alLeft
       AutoSize = True
       Caption = '  Охрана труда ▼ '
@@ -192,10 +191,10 @@ object MainForm: TMainForm
     end
     object DictionaryButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 499
+      Left = 517
       Height = 36
       Top = 0
-      Width = 162
+      Width = 168
       Align = alLeft
       AutoSize = True
       Caption = '  Справочники ▼ '
@@ -210,7 +209,7 @@ object MainForm: TMainForm
     Left = 0
     Height = 284
     Top = 42
-    Width = 1271
+    Width = 1020
     Align = alClient
     BevelOuter = bvNone
     TabOrder = 1
@@ -327,7 +326,7 @@ object MainForm: TMainForm
     end
     object SSOUnitMenuItem: TMenuItem
       Caption = 'Единицы измерения смывающих и обезвреживающих средств'
-      ImageIndex = 39
+      ImageIndex = 57
       OnClick = SSOUnitMenuItemClick
     end
   end

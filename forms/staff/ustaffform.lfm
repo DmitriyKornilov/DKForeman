@@ -1,16 +1,15 @@
 object StaffForm: TStaffForm
   Left = 547
-  Height = 619
+  Height = 457
   Top = 238
   Width = 1140
   Caption = 'StaffForm'
-  ClientHeight = 619
+  ClientHeight = 457
   ClientWidth = 1140
   DesignTimePPI = 120
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
-  LCLVersion = '3.2.0.0'
   object ToolPanel: TPanel
     Left = 2
     Height = 40
@@ -36,15 +35,15 @@ object StaffForm: TStaffForm
       Align = alRight
       Images = Images.PX24
       ImageIndex = 3
-      OnClick = CloseButtonClick
       ShowHint = True
       ParentShowHint = False
+      OnClick = CloseButtonClick
     end
     object DividerBevel1: TDividerBevel
-      Left = 1072
+      Left = 1071
       Height = 36
       Top = 0
-      Width = 20
+      Width = 21
       Caption = 'DividerBevel1'
       Align = alRight
       BevelWidth = 2
@@ -58,7 +57,7 @@ object StaffForm: TStaffForm
       Height = 36
       Hint = 'Экспорт в формат электронной таблицы XLSX или ODS'
       Top = 0
-      Width = 103
+      Width = 109
       Align = alLeft
       AutoSize = True
       Caption = ' Экспорт '
@@ -66,14 +65,14 @@ object StaffForm: TStaffForm
       ImageIndex = 22
       Margin = 5
       Spacing = 5
-      OnClick = ExportButtonClick
       ShowHint = True
       ParentShowHint = False
+      OnClick = ExportButtonClick
     end
   end
   object SettingPanel: TPanel
     Left = 2
-    Height = 573
+    Height = 411
     Top = 44
     Width = 300
     Align = alLeft
@@ -81,7 +80,7 @@ object StaffForm: TStaffForm
     BorderSpacing.Top = 2
     BorderSpacing.Bottom = 2
     BevelOuter = bvNone
-    ClientHeight = 573
+    ClientHeight = 411
     ClientWidth = 300
     Color = clWindow
     ParentBackground = False
@@ -90,7 +89,7 @@ object StaffForm: TStaffForm
     Visible = False
     object SettingClientPanel: TPanel
       Left = 0
-      Height = 541
+      Height = 379
       Top = 32
       Width = 300
       Align = alClient
@@ -120,7 +119,7 @@ object StaffForm: TStaffForm
   end
   object LeftSplitter: TSplitter
     Left = 302
-    Height = 577
+    Height = 415
     Top = 42
     Width = 6
     ResizeStyle = rsLine
@@ -128,17 +127,17 @@ object StaffForm: TStaffForm
   end
   object MainPanel: TPanel
     Left = 308
-    Height = 577
+    Height = 415
     Top = 42
     Width = 832
     Align = alClient
     BevelOuter = bvNone
-    ClientHeight = 577
+    ClientHeight = 415
     ClientWidth = 832
     TabOrder = 3
     object ListPanel: TPanel
       Left = 2
-      Height = 573
+      Height = 411
       Top = 2
       Width = 610
       Align = alClient
@@ -146,14 +145,14 @@ object StaffForm: TStaffForm
       BorderSpacing.Top = 2
       BorderSpacing.Bottom = 2
       BevelOuter = bvNone
-      ClientHeight = 573
+      ClientHeight = 411
       ClientWidth = 610
       ParentBackground = False
       ParentColor = False
       TabOrder = 0
       object StaffVT: TVirtualStringTree
         Left = 0
-        Height = 457
+        Height = 295
         Top = 74
         Width = 610
         Align = alClient
@@ -191,9 +190,9 @@ object StaffForm: TStaffForm
           Align = alLeft
           Images = Images.PX24
           ImageIndex = 4
-          OnClick = ListAddButtonClick
           ShowHint = True
           ParentShowHint = False
+          OnClick = ListAddButtonClick
         end
         object ListDelButton: TSpeedButton
           Cursor = crHandPoint
@@ -206,9 +205,9 @@ object StaffForm: TStaffForm
           Enabled = False
           Images = Images.PX24
           ImageIndex = 5
-          OnClick = ListDelButtonClick
           ShowHint = True
           ParentShowHint = False
+          OnClick = ListDelButtonClick
         end
         object ListEditButton: TSpeedButton
           Cursor = crHandPoint
@@ -221,15 +220,15 @@ object StaffForm: TStaffForm
           Enabled = False
           Images = Images.PX24
           ImageIndex = 6
-          OnClick = ListEditButtonClick
           ShowHint = True
           ParentShowHint = False
+          OnClick = ListEditButtonClick
         end
         object FilterPanel: TPanel
-          Left = 140
+          Left = 141
           Height = 36
           Top = 0
-          Width = 466
+          Width = 465
           Align = alClient
           AutoSize = True
           BevelOuter = bvNone
@@ -241,7 +240,7 @@ object StaffForm: TStaffForm
           Left = 120
           Height = 36
           Top = 0
-          Width = 20
+          Width = 21
           Caption = 'DividerBevel3'
           Align = alLeft
           BevelWidth = 2
@@ -253,7 +252,7 @@ object StaffForm: TStaffForm
       object ListOrderToolPanel: TPanel
         Left = 0
         Height = 40
-        Top = 533
+        Top = 371
         Width = 610
         Align = alBottom
         BorderSpacing.Top = 2
@@ -267,7 +266,7 @@ object StaffForm: TStaffForm
           AnchorSideLeft.Side = asrBottom
           AnchorSideTop.Control = ListOrderToolPanel
           AnchorSideTop.Side = asrCenter
-          Left = 100
+          Left = 101
           Height = 20
           Top = 8
           Width = 115
@@ -278,7 +277,7 @@ object StaffForm: TStaffForm
           AnchorSideLeft.Side = asrBottom
           AnchorSideTop.Control = ListOrderToolPanel
           AnchorSideTop.Side = asrCenter
-          Left = 221
+          Left = 222
           Height = 24
           Top = 6
           Width = 63
@@ -294,7 +293,7 @@ object StaffForm: TStaffForm
           AnchorSideLeft.Side = asrBottom
           AnchorSideTop.Control = ListOrderToolPanel
           AnchorSideTop.Side = asrCenter
-          Left = 290
+          Left = 291
           Height = 24
           Top = 6
           Width = 126
@@ -307,12 +306,12 @@ object StaffForm: TStaffForm
           Left = 0
           Height = 36
           Top = 0
-          Width = 100
+          Width = 101
           Align = alLeft
           AutoSize = True
           BevelOuter = bvNone
           ClientHeight = 36
-          ClientWidth = 100
+          ClientWidth = 101
           TabOrder = 2
           object AscendingButton: TSpeedButton
             Cursor = crHandPoint
@@ -325,9 +324,9 @@ object StaffForm: TStaffForm
             Images = Images.PX24
             ImageIndex = 15
             Visible = False
-            OnClick = AscendingButtonClick
             ShowHint = True
             ParentShowHint = False
+            OnClick = AscendingButtonClick
           end
           object DescendingButton: TSpeedButton
             Cursor = crHandPoint
@@ -339,15 +338,15 @@ object StaffForm: TStaffForm
             Align = alLeft
             Images = Images.PX24
             ImageIndex = 16
-            OnClick = DescendingButtonClick
             ShowHint = True
             ParentShowHint = False
+            OnClick = DescendingButtonClick
           end
           object DividerBevel2: TDividerBevel
             Left = 80
             Height = 36
             Top = 0
-            Width = 20
+            Width = 21
             Caption = 'DividerBevel2'
             Align = alLeft
             BevelWidth = 2
@@ -376,7 +375,7 @@ object StaffForm: TStaffForm
     end
     object EditingPanel: TPanel
       Left = 618
-      Height = 573
+      Height = 411
       Top = 2
       Width = 212
       Align = alRight
@@ -384,7 +383,7 @@ object StaffForm: TStaffForm
       BorderSpacing.Right = 2
       BorderSpacing.Bottom = 2
       BevelOuter = bvNone
-      ClientHeight = 573
+      ClientHeight = 411
       ClientWidth = 212
       TabOrder = 1
       Visible = False
@@ -421,9 +420,9 @@ object StaffForm: TStaffForm
             Enabled = False
             Images = Images.PX24
             ImageIndex = 4
-            OnClick = TabNumAddButtonClick
             ShowHint = True
             ParentShowHint = False
+            OnClick = TabNumAddButtonClick
           end
           object TabNumDelButton: TSpeedButton
             Cursor = crHandPoint
@@ -436,9 +435,9 @@ object StaffForm: TStaffForm
             Enabled = False
             Images = Images.PX24
             ImageIndex = 5
-            OnClick = TabNumDelButtonClick
             ShowHint = True
             ParentShowHint = False
+            OnClick = TabNumDelButtonClick
           end
           object TabNumEditButton: TSpeedButton
             Cursor = crHandPoint
@@ -451,9 +450,9 @@ object StaffForm: TStaffForm
             Enabled = False
             Images = Images.PX24
             ImageIndex = 6
-            OnClick = TabNumEditButtonClick
             ShowHint = True
             ParentShowHint = False
+            OnClick = TabNumEditButtonClick
           end
           object TabNumDismissButton: TSpeedButton
             Cursor = crHandPoint
@@ -466,9 +465,9 @@ object StaffForm: TStaffForm
             Enabled = False
             Images = Images.PX24
             ImageIndex = 42
-            OnClick = TabNumDismissButtonClick
             ShowHint = True
             ParentShowHint = False
+            OnClick = TabNumDismissButtonClick
           end
           object TabNumDismissCancelButton: TSpeedButton
             Cursor = crHandPoint
@@ -481,9 +480,9 @@ object StaffForm: TStaffForm
             Images = Images.PX24
             ImageIndex = 43
             Visible = False
-            OnClick = TabNumDismissCancelButtonClick
             ShowHint = True
             ParentShowHint = False
+            OnClick = TabNumDismissCancelButtonClick
           end
         end
         object TabNumVT: TVirtualStringTree
@@ -532,12 +531,12 @@ object StaffForm: TStaffForm
       end
       object PostLogEditingPanel: TPanel
         Left = 0
-        Height = 387
+        Height = 225
         Top = 186
         Width = 212
         Align = alClient
         BevelOuter = bvNone
-        ClientHeight = 387
+        ClientHeight = 225
         ClientWidth = 212
         TabOrder = 2
         object PostLogToolPanel: TPanel
@@ -563,9 +562,9 @@ object StaffForm: TStaffForm
             Enabled = False
             Images = Images.PX24
             ImageIndex = 44
-            OnClick = PostLogAddButtonClick
             ShowHint = True
             ParentShowHint = False
+            OnClick = PostLogAddButtonClick
           end
           object PostLogDelButton: TSpeedButton
             Cursor = crHandPoint
@@ -578,9 +577,9 @@ object StaffForm: TStaffForm
             Enabled = False
             Images = Images.PX24
             ImageIndex = 5
-            OnClick = PostLogDelButtonClick
             ShowHint = True
             ParentShowHint = False
+            OnClick = PostLogDelButtonClick
           end
           object PostLogEditButton: TSpeedButton
             Cursor = crHandPoint
@@ -593,14 +592,14 @@ object StaffForm: TStaffForm
             Enabled = False
             Images = Images.PX24
             ImageIndex = 6
-            OnClick = PostLogEditButtonClick
             ShowHint = True
             ParentShowHint = False
+            OnClick = PostLogEditButtonClick
           end
         end
         object PostLogVT: TVirtualStringTree
           Left = 0
-          Height = 313
+          Height = 151
           Top = 74
           Width = 212
           Align = alClient
@@ -635,7 +634,7 @@ object StaffForm: TStaffForm
     end
     object EditingSplitter: TSplitter
       Left = 612
-      Height = 577
+      Height = 415
       Top = 0
       Width = 6
       Align = alRight

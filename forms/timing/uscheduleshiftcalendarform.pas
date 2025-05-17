@@ -140,6 +140,8 @@ begin
 
   ColorList:= TVSTColorList.Create(ColorVT);
   ColorVT.BorderStyle:= bsSingle;
+  ColorsLoad;
+  ColorList.Update(ColorNames, ColorValues);
   ColorList.OnEdititingDone:= @ColorChange;
   ColorList.OnSelect:= @ColorSelect;
 
@@ -164,8 +166,6 @@ end;
 
 procedure TScheduleShiftCalendarForm.FormShow(Sender: TObject);
 begin
-  ColorsLoad;
-  ColorList.Update(ColorNames, ColorValues);
   ScheduleRefresh;
 end;
 
@@ -191,7 +191,7 @@ end;
 
 procedure TScheduleShiftCalendarForm.YearSpinEditChange(Sender: TObject);
 begin
-  //ScheduleRefresh;
+  ScheduleRefresh;
 end;
 
 procedure TScheduleShiftCalendarForm.PrevShiftNumberLoad;

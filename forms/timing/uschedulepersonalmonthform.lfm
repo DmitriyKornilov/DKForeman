@@ -1,17 +1,15 @@
 object SchedulePersonalMonthForm: TSchedulePersonalMonthForm
   Left = 403
-  Height = 636
+  Height = 561
   Top = 170
   Width = 1249
   Caption = 'SchedulePersonalMonthForm'
-  ClientHeight = 636
+  ClientHeight = 561
   ClientWidth = 1249
   DesignTimePPI = 120
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
-  LCLVersion = '3.2.0.0'
-  WindowState = wsMaximized
   object ToolPanel: TPanel
     Left = 2
     Height = 40
@@ -31,12 +29,12 @@ object SchedulePersonalMonthForm: TSchedulePersonalMonthForm
       Left = 0
       Height = 36
       Top = 0
-      Width = 594
+      Width = 602
       Align = alLeft
       AutoSize = True
       BevelOuter = bvNone
       ClientHeight = 36
-      ClientWidth = 594
+      ClientWidth = 602
       TabOrder = 0
       object YearPanel: TPanel
         Left = 0
@@ -62,10 +60,10 @@ object SchedulePersonalMonthForm: TSchedulePersonalMonthForm
           BorderSpacing.Top = 2
           BorderSpacing.Bottom = 2
           MinValue = 2010
-          OnChange = YearSpinEditChange
           TabStop = False
           TabOrder = 0
           Value = 2022
+          OnChange = YearSpinEditChange
         end
         object MonthBCButton: TBCButton
           Tag = -1
@@ -178,7 +176,7 @@ object SchedulePersonalMonthForm: TSchedulePersonalMonthForm
       end
       object CheckAllButton: TSpeedButton
         Cursor = crHandPoint
-        Left = 289
+        Left = 290
         Height = 36
         Hint = 'Выбрать всех сотрудников'
         Top = 0
@@ -186,13 +184,13 @@ object SchedulePersonalMonthForm: TSchedulePersonalMonthForm
         Align = alLeft
         Images = Images.PX24
         ImageIndex = 12
-        OnClick = CheckAllButtonClick
         ShowHint = True
         ParentShowHint = False
+        OnClick = CheckAllButtonClick
       end
       object UncheckAllButton: TSpeedButton
         Cursor = crHandPoint
-        Left = 329
+        Left = 330
         Height = 36
         Hint = 'Снять выбор со всех сотрудников'
         Top = 0
@@ -200,15 +198,15 @@ object SchedulePersonalMonthForm: TSchedulePersonalMonthForm
         Align = alLeft
         Images = Images.PX24
         ImageIndex = 13
-        OnClick = UncheckAllButtonClick
         ShowHint = True
         ParentShowHint = False
+        OnClick = UncheckAllButtonClick
       end
       object DividerBevel2: TDividerBevel
-        Left = 369
+        Left = 370
         Height = 36
         Top = 0
-        Width = 20
+        Width = 21
         Caption = 'DividerBevel2'
         Align = alLeft
         BevelWidth = 2
@@ -220,7 +218,7 @@ object SchedulePersonalMonthForm: TSchedulePersonalMonthForm
         Left = 269
         Height = 36
         Top = 0
-        Width = 20
+        Width = 21
         Caption = 'DividerBevel3'
         Align = alLeft
         BevelWidth = 2
@@ -230,11 +228,11 @@ object SchedulePersonalMonthForm: TSchedulePersonalMonthForm
       end
       object ScheduleButton: TSpeedButton
         Cursor = crHandPoint
-        Left = 389
+        Left = 391
         Height = 36
         Hint = 'Сформировать график на месяц'
         Top = 0
-        Width = 205
+        Width = 211
         Align = alLeft
         AutoSize = True
         Caption = ' Сформировать график '
@@ -242,38 +240,38 @@ object SchedulePersonalMonthForm: TSchedulePersonalMonthForm
         ImageIndex = 19
         Margin = 5
         Spacing = 5
-        OnClick = ScheduleButtonClick
         ShowHint = True
         ParentShowHint = False
+        OnClick = ScheduleButtonClick
       end
     end
     object ScheduleToolPanel: TPanel
-      Left = 594
+      Left = 602
       Height = 36
       Top = 0
-      Width = 451
+      Width = 464
       Align = alLeft
       AutoSize = True
       BevelOuter = bvNone
       ClientHeight = 36
-      ClientWidth = 451
+      ClientWidth = 464
       TabOrder = 1
       Visible = False
       object EditPanel: TPanel
-        Left = 271
+        Left = 283
         Height = 36
         Top = 0
-        Width = 180
+        Width = 181
         Align = alLeft
         AutoSize = True
         BevelOuter = bvNone
         ClientHeight = 36
-        ClientWidth = 180
+        ClientWidth = 181
         TabOrder = 0
         Visible = False
         object DayEditButton: TSpeedButton
           Cursor = crHandPoint
-          Left = 20
+          Left = 21
           Height = 36
           Hint = 'Редактировать'
           Top = 0
@@ -281,13 +279,13 @@ object SchedulePersonalMonthForm: TSchedulePersonalMonthForm
           Align = alLeft
           Images = Images.PX24
           ImageIndex = 6
-          OnClick = DayEditButtonClick
           ShowHint = True
           ParentShowHint = False
+          OnClick = DayEditButtonClick
         end
         object RowUpButton: TSpeedButton
           Cursor = crHandPoint
-          Left = 60
+          Left = 61
           Height = 36
           Hint = 'Переместить строку вверх'
           Top = 0
@@ -295,13 +293,13 @@ object SchedulePersonalMonthForm: TSchedulePersonalMonthForm
           Align = alLeft
           Images = Images.PX24
           ImageIndex = 48
-          OnClick = RowUpButtonClick
           ShowHint = True
           ParentShowHint = False
+          OnClick = RowUpButtonClick
         end
         object RowDownButton: TSpeedButton
           Cursor = crHandPoint
-          Left = 100
+          Left = 101
           Height = 36
           Hint = 'Переместить строку вниз'
           Top = 0
@@ -309,13 +307,13 @@ object SchedulePersonalMonthForm: TSchedulePersonalMonthForm
           Align = alLeft
           Images = Images.PX24
           ImageIndex = 49
-          OnClick = RowDownButtonClick
           ShowHint = True
           ParentShowHint = False
+          OnClick = RowDownButtonClick
         end
         object RowMergeButton: TSpeedButton
           Cursor = crHandPoint
-          Left = 140
+          Left = 141
           Height = 36
           Hint = 'Объединить строки'
           Top = 0
@@ -323,15 +321,15 @@ object SchedulePersonalMonthForm: TSchedulePersonalMonthForm
           Align = alLeft
           Images = Images.PX24
           ImageIndex = 50
-          OnClick = RowMergeButtonClick
           ShowHint = True
           ParentShowHint = False
+          OnClick = RowMergeButtonClick
         end
         object DividerBevel4: TDividerBevel
           Left = 0
           Height = 36
           Top = 0
-          Width = 20
+          Width = 21
           Caption = 'DividerBevel4'
           Align = alLeft
           BevelWidth = 2
@@ -342,11 +340,11 @@ object SchedulePersonalMonthForm: TSchedulePersonalMonthForm
       end
       object ExportButton: TSpeedButton
         Cursor = crHandPoint
-        Left = 168
+        Left = 174
         Height = 36
         Hint = 'Экспорт в формат электронной таблицы XLSX или ODS'
         Top = 0
-        Width = 103
+        Width = 109
         Align = alLeft
         AutoSize = True
         Caption = ' Экспорт '
@@ -354,9 +352,9 @@ object SchedulePersonalMonthForm: TSchedulePersonalMonthForm
         ImageIndex = 22
         Margin = 5
         Spacing = 5
-        OnClick = ExportButtonClick
         ShowHint = True
         ParentShowHint = False
+        OnClick = ExportButtonClick
       end
       object ListButton: TSpeedButton
         Cursor = crHandPoint
@@ -364,7 +362,7 @@ object SchedulePersonalMonthForm: TSchedulePersonalMonthForm
         Height = 36
         Hint = 'Вернуться к выбору месяца и списка сотрудников'
         Top = 0
-        Width = 168
+        Width = 174
         Align = alLeft
         AutoSize = True
         Caption = ' К выбору месяца '
@@ -372,14 +370,14 @@ object SchedulePersonalMonthForm: TSchedulePersonalMonthForm
         ImageIndex = 18
         Margin = 5
         Spacing = 5
-        OnClick = ListButtonClick
         ShowHint = True
         ParentShowHint = False
+        OnClick = ListButtonClick
       end
     end
     object EditingButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 1101
+      Left = 1100
       Height = 36
       Hint = 'Редактирование'
       Top = 0
@@ -390,13 +388,13 @@ object SchedulePersonalMonthForm: TSchedulePersonalMonthForm
       Images = Images.PX24
       ImageIndex = 23
       Visible = False
-      OnClick = EditingButtonClick
       ShowHint = True
       ParentShowHint = False
+      OnClick = EditingButtonClick
     end
     object SettingButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 1141
+      Left = 1140
       Height = 36
       Hint = 'Параметры'
       Top = 0
@@ -407,15 +405,15 @@ object SchedulePersonalMonthForm: TSchedulePersonalMonthForm
       Images = Images.PX24
       ImageIndex = 24
       Visible = False
-      OnClick = SettingButtonClick
       ShowHint = True
       ParentShowHint = False
+      OnClick = SettingButtonClick
     end
     object DividerBevel1: TDividerBevel
-      Left = 1181
+      Left = 1180
       Height = 36
       Top = 0
-      Width = 20
+      Width = 21
       Caption = 'DividerBevel1'
       Align = alRight
       BevelWidth = 2
@@ -433,14 +431,14 @@ object SchedulePersonalMonthForm: TSchedulePersonalMonthForm
       Align = alRight
       Images = Images.PX24
       ImageIndex = 3
-      OnClick = CloseButtonClick
       ShowHint = True
       ParentShowHint = False
+      OnClick = CloseButtonClick
     end
   end
   object ListPanel: TPanel
     Left = 2
-    Height = 164
+    Height = 89
     Top = 44
     Width = 1245
     Align = alClient
@@ -449,13 +447,13 @@ object SchedulePersonalMonthForm: TSchedulePersonalMonthForm
     BorderSpacing.Right = 2
     BorderSpacing.Bottom = 2
     BevelOuter = bvNone
-    ClientHeight = 164
+    ClientHeight = 89
     ClientWidth = 1245
     TabOrder = 1
     object ListOrderToolPanel: TPanel
       Left = 0
       Height = 40
-      Top = 124
+      Top = 49
       Width = 1245
       Align = alBottom
       BorderSpacing.Top = 2
@@ -539,7 +537,7 @@ object SchedulePersonalMonthForm: TSchedulePersonalMonthForm
     object VStaffListVT: TVirtualStringTree
       Left = 0
       Height = 48
-      Top = 74
+      Top = -1
       Width = 1245
       Align = alBottom
       DefaultText = 'Node'
@@ -550,7 +548,7 @@ object SchedulePersonalMonthForm: TSchedulePersonalMonthForm
     end
     object MStaffListVT: TVirtualStringTree
       Left = 0
-      Height = 42
+      Height = 0
       Top = 32
       Width = 1245
       Align = alClient
@@ -579,7 +577,7 @@ object SchedulePersonalMonthForm: TSchedulePersonalMonthForm
   object SchedulePanel: TPanel
     Left = 0
     Height = 426
-    Top = 210
+    Top = 135
     Width = 1249
     Align = alBottom
     BorderSpacing.Top = 2

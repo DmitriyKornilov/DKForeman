@@ -8,11 +8,10 @@ object ScheduleShiftCalendarForm: TScheduleShiftCalendarForm
   ClientHeight = 338
   ClientWidth = 941
   DesignTimePPI = 120
+  WindowState = wsMaximized
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
-  LCLVersion = '3.2.0.0'
-  WindowState = wsMaximized
   object LeftPanel: TPanel
     Left = 2
     Height = 292
@@ -64,9 +63,9 @@ object ScheduleShiftCalendarForm: TScheduleShiftCalendarForm
         Align = alLeft
         Images = Images.PX24
         ImageIndex = 4
-        OnClick = AddButtonClick
         ShowHint = True
         ParentShowHint = False
+        OnClick = AddButtonClick
       end
       object DelButton: TSpeedButton
         Cursor = crHandPoint
@@ -79,9 +78,9 @@ object ScheduleShiftCalendarForm: TScheduleShiftCalendarForm
         Enabled = False
         Images = Images.PX24
         ImageIndex = 5
-        OnClick = DelButtonClick
         ShowHint = True
         ParentShowHint = False
+        OnClick = DelButtonClick
       end
       object EditButton: TSpeedButton
         Cursor = crHandPoint
@@ -94,9 +93,9 @@ object ScheduleShiftCalendarForm: TScheduleShiftCalendarForm
         Enabled = False
         Images = Images.PX24
         ImageIndex = 6
-        OnClick = EditButtonClick
         ShowHint = True
         ParentShowHint = False
+        OnClick = EditButtonClick
       end
     end
     object ColorCaptionPanel: TPanel
@@ -250,14 +249,14 @@ object ScheduleShiftCalendarForm: TScheduleShiftCalendarForm
         BorderSpacing.Top = 2
         BorderSpacing.Bottom = 2
         MinValue = 2010
-        OnChange = YearSpinEditChange
         TabStop = False
         TabOrder = 0
         Value = 2022
+        OnChange = YearSpinEditChange
       end
     end
     object NeedCorrectionsCheckBox: TCheckBox
-      Left = 85
+      Left = 86
       Height = 36
       Top = 0
       Width = 265
@@ -270,7 +269,7 @@ object ScheduleShiftCalendarForm: TScheduleShiftCalendarForm
       OnChange = NeedCorrectionsCheckBoxChange
     end
     object FirstShiftDayColorOnlyCheckBox: TCheckBox
-      Left = 356
+      Left = 357
       Height = 36
       Top = 0
       Width = 305
@@ -284,7 +283,7 @@ object ScheduleShiftCalendarForm: TScheduleShiftCalendarForm
     end
     object SettingButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 833
+      Left = 832
       Height = 36
       Hint = 'Параметры'
       Top = 0
@@ -294,15 +293,15 @@ object ScheduleShiftCalendarForm: TScheduleShiftCalendarForm
       GroupIndex = 2
       Images = Images.PX24
       ImageIndex = 24
-      OnClick = SettingButtonClick
       ShowHint = True
       ParentShowHint = False
+      OnClick = SettingButtonClick
     end
     object DividerBevel1: TDividerBevel
-      Left = 873
+      Left = 872
       Height = 36
       Top = 0
-      Width = 20
+      Width = 21
       Caption = 'DividerBevel1'
       Align = alRight
       BevelWidth = 2
@@ -320,15 +319,15 @@ object ScheduleShiftCalendarForm: TScheduleShiftCalendarForm
       Align = alRight
       Images = Images.PX24
       ImageIndex = 3
-      OnClick = CloseButtonClick
       ShowHint = True
       ParentShowHint = False
+      OnClick = CloseButtonClick
     end
     object DividerBevel2: TDividerBevel
       Left = 65
       Height = 36
       Top = 0
-      Width = 20
+      Width = 21
       Caption = 'DividerBevel2'
       Align = alLeft
       BevelWidth = 2
@@ -337,10 +336,10 @@ object ScheduleShiftCalendarForm: TScheduleShiftCalendarForm
       ParentFont = False
     end
     object DividerBevel3: TDividerBevel
-      Left = 661
+      Left = 662
       Height = 36
       Top = 0
-      Width = 20
+      Width = 21
       Caption = 'DividerBevel3'
       Align = alLeft
       BevelWidth = 2
@@ -350,11 +349,11 @@ object ScheduleShiftCalendarForm: TScheduleShiftCalendarForm
     end
     object ExportButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 681
+      Left = 683
       Height = 36
       Hint = 'Экспорт в формат электронной таблицы XLSX или ODS'
       Top = 0
-      Width = 103
+      Width = 109
       Align = alLeft
       AutoSize = True
       Caption = ' Экспорт '

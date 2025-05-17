@@ -2,20 +2,19 @@ object ScheduleShiftForm: TScheduleShiftForm
   Left = 527
   Height = 802
   Top = 151
-  Width = 1272
+  Width = 1251
   Caption = 'ScheduleShiftForm'
   ClientHeight = 802
-  ClientWidth = 1272
+  ClientWidth = 1251
   DesignTimePPI = 120
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
-  LCLVersion = '3.2.0.0'
   object ToolPanel: TPanel
     Left = 2
     Height = 40
     Top = 2
-    Width = 1268
+    Width = 1247
     Align = alTop
     BorderSpacing.Left = 2
     BorderSpacing.Top = 2
@@ -23,7 +22,7 @@ object ScheduleShiftForm: TScheduleShiftForm
     BevelOuter = bvNone
     BorderStyle = bsSingle
     ClientHeight = 36
-    ClientWidth = 1264
+    ClientWidth = 1243
     ParentFont = False
     TabOrder = 0
     object YearPanel: TPanel
@@ -50,17 +49,17 @@ object ScheduleShiftForm: TScheduleShiftForm
         BorderSpacing.Top = 2
         BorderSpacing.Bottom = 2
         MinValue = 2010
-        OnChange = YearSpinEditChange
         TabStop = False
         TabOrder = 0
         Value = 2022
+        OnChange = YearSpinEditChange
       end
     end
     object DividerBevel1: TDividerBevel
-      Left = 1204
+      Left = 1182
       Height = 36
       Top = 0
-      Width = 20
+      Width = 21
       Caption = 'DividerBevel1'
       Align = alRight
       BevelWidth = 2
@@ -70,7 +69,7 @@ object ScheduleShiftForm: TScheduleShiftForm
     end
     object CloseButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 1224
+      Left = 1203
       Height = 36
       Hint = 'Закрыть'
       Top = 0
@@ -78,15 +77,15 @@ object ScheduleShiftForm: TScheduleShiftForm
       Align = alRight
       Images = Images.PX24
       ImageIndex = 3
-      OnClick = CloseButtonClick
       ShowHint = True
       ParentShowHint = False
+      OnClick = CloseButtonClick
     end
     object DividerBevel2: TDividerBevel
       Left = 65
       Height = 36
       Top = 0
-      Width = 20
+      Width = 21
       Caption = 'DividerBevel2'
       Align = alLeft
       BevelWidth = 2
@@ -95,10 +94,10 @@ object ScheduleShiftForm: TScheduleShiftForm
       ParentFont = False
     end
     object DividerBevel3: TDividerBevel
-      Left = 188
+      Left = 195
       Height = 36
       Top = 0
-      Width = 20
+      Width = 21
       Caption = 'DividerBevel3'
       Align = alLeft
       BevelWidth = 2
@@ -108,11 +107,11 @@ object ScheduleShiftForm: TScheduleShiftForm
     end
     object ExportButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 85
+      Left = 86
       Height = 36
       Hint = 'Экспорт в формат электронной таблицы XLSX или ODS'
       Top = 0
-      Width = 103
+      Width = 109
       Align = alLeft
       AutoSize = True
       Caption = ' Экспорт '
@@ -120,17 +119,17 @@ object ScheduleShiftForm: TScheduleShiftForm
       ImageIndex = 22
       Margin = 5
       Spacing = 5
-      OnClick = ExportButtonClick
       ShowHint = True
       ParentShowHint = False
+      OnClick = ExportButtonClick
     end
     object CalendarButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 208
+      Left = 216
       Height = 36
       Hint = 'Годовой график сменности в виде календаря'
       Top = 0
-      Width = 176
+      Width = 182
       Align = alLeft
       AutoSize = True
       Caption = ' График-календарь '
@@ -138,17 +137,17 @@ object ScheduleShiftForm: TScheduleShiftForm
       ImageIndex = 47
       Margin = 5
       Spacing = 5
-      OnClick = CalendarButtonClick
       ShowHint = True
       ParentShowHint = False
+      OnClick = CalendarButtonClick
     end
     object MonthButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 384
+      Left = 398
       Height = 36
       Hint = 'Сводный график сменности на месяц'
       Top = 0
-      Width = 163
+      Width = 169
       Align = alLeft
       AutoSize = True
       Caption = ' Сводный график '
@@ -156,9 +155,9 @@ object ScheduleShiftForm: TScheduleShiftForm
       ImageIndex = 45
       Margin = 5
       Spacing = 5
-      OnClick = MonthButtonClick
       ShowHint = True
       ParentShowHint = False
+      OnClick = MonthButtonClick
     end
   end
   object SettingPanel: TPanel
@@ -262,9 +261,9 @@ object ScheduleShiftForm: TScheduleShiftForm
           Align = alLeft
           Images = Images.PX24
           ImageIndex = 4
-          OnClick = ScheduleAddButtonClick
           ShowHint = True
           ParentShowHint = False
+          OnClick = ScheduleAddButtonClick
         end
         object ScheduleDelButton: TSpeedButton
           Cursor = crHandPoint
@@ -277,9 +276,9 @@ object ScheduleShiftForm: TScheduleShiftForm
           Enabled = False
           Images = Images.PX24
           ImageIndex = 5
-          OnClick = ScheduleDelButtonClick
           ShowHint = True
           ParentShowHint = False
+          OnClick = ScheduleDelButtonClick
         end
         object ScheduleEditButton: TSpeedButton
           Cursor = crHandPoint
@@ -292,9 +291,9 @@ object ScheduleShiftForm: TScheduleShiftForm
           Enabled = False
           Images = Images.PX24
           ImageIndex = 6
-          OnClick = ScheduleEditButtonClick
           ShowHint = True
           ParentShowHint = False
+          OnClick = ScheduleEditButtonClick
         end
       end
       object ScheduleListVT: TVirtualStringTree
@@ -396,9 +395,9 @@ object ScheduleShiftForm: TScheduleShiftForm
               Align = alLeft
               Images = Images.PX24
               ImageIndex = 4
-              OnClick = DayAddButtonClick
               ShowHint = True
               ParentShowHint = False
+              OnClick = DayAddButtonClick
             end
             object DayDelButton: TSpeedButton
               Cursor = crHandPoint
@@ -411,9 +410,9 @@ object ScheduleShiftForm: TScheduleShiftForm
               Enabled = False
               Images = Images.PX24
               ImageIndex = 5
-              OnClick = DayDelButtonClick
               ShowHint = True
               ParentShowHint = False
+              OnClick = DayDelButtonClick
             end
             object DayEditButton: TSpeedButton
               Cursor = crHandPoint
@@ -426,9 +425,9 @@ object ScheduleShiftForm: TScheduleShiftForm
               Enabled = False
               Images = Images.PX24
               ImageIndex = 6
-              OnClick = DayEditButtonClick
               ShowHint = True
               ParentShowHint = False
+              OnClick = DayEditButtonClick
             end
             object DayCopyButton: TSpeedButton
               Cursor = crHandPoint
@@ -441,9 +440,9 @@ object ScheduleShiftForm: TScheduleShiftForm
               Enabled = False
               Images = Images.PX24
               ImageIndex = 9
-              OnClick = DayCopyButtonClick
               ShowHint = True
               ParentShowHint = False
+              OnClick = DayCopyButtonClick
             end
           end
           object DayVT: TVirtualStringTree
@@ -497,9 +496,9 @@ object ScheduleShiftForm: TScheduleShiftForm
               Enabled = False
               Images = Images.PX24
               ImageIndex = 7
-              OnClick = CopySaveButtonClick
               ShowHint = True
               ParentShowHint = False
+              OnClick = CopySaveButtonClick
             end
             object CopyDelButton: TSpeedButton
               Cursor = crHandPoint
@@ -512,9 +511,9 @@ object ScheduleShiftForm: TScheduleShiftForm
               Enabled = False
               Images = Images.PX24
               ImageIndex = 5
-              OnClick = CopyDelButtonClick
               ShowHint = True
               ParentShowHint = False
+              OnClick = CopyDelButtonClick
             end
             object CopyCancelButton: TSpeedButton
               Cursor = crHandPoint
@@ -526,9 +525,9 @@ object ScheduleShiftForm: TScheduleShiftForm
               Align = alLeft
               Images = Images.PX24
               ImageIndex = 8
-              OnClick = CopyCancelButtonClick
               ShowHint = True
               ParentShowHint = False
+              OnClick = CopyCancelButtonClick
             end
           end
           object CopyVT: TVirtualStringTree
@@ -625,19 +624,19 @@ object ScheduleShiftForm: TScheduleShiftForm
     Left = 872
     Height = 758
     Top = 44
-    Width = 400
+    Width = 379
     Align = alClient
     BorderSpacing.Top = 2
     BevelOuter = bvNone
     Caption = 'MainPanel'
     ClientHeight = 758
-    ClientWidth = 400
+    ClientWidth = 379
     TabOrder = 4
     object SheetPanel: TPanel
       Left = 0
       Height = 724
       Top = 32
-      Width = 398
+      Width = 377
       Align = alClient
       BorderSpacing.Top = 2
       BorderSpacing.Right = 2
@@ -645,7 +644,7 @@ object ScheduleShiftForm: TScheduleShiftForm
       BevelOuter = bvNone
       BorderStyle = bsSingle
       ClientHeight = 720
-      ClientWidth = 394
+      ClientWidth = 373
       Color = clWhite
       ParentBackground = False
       ParentColor = False
@@ -654,7 +653,7 @@ object ScheduleShiftForm: TScheduleShiftForm
         Left = 0
         Height = 696
         Top = 0
-        Width = 394
+        Width = 373
         AutoExpand = []
         DisplayFixedColRow = False
         FrozenBorderPen.Style = psClear
@@ -691,12 +690,12 @@ object ScheduleShiftForm: TScheduleShiftForm
         Left = 0
         Height = 22
         Top = 698
-        Width = 394
+        Width = 373
         Align = alBottom
         AutoSize = True
         BevelOuter = bvNone
         ClientHeight = 22
-        ClientWidth = 394
+        ClientWidth = 373
         Color = clWhite
         Constraints.MinHeight = 22
         ParentBackground = False
@@ -715,7 +714,7 @@ object ScheduleShiftForm: TScheduleShiftForm
           TabOrder = 0
         end
         object ZoomPanel: TPanel
-          Left = 181
+          Left = 160
           Height = 22
           Top = 0
           Width = 213
@@ -730,7 +729,7 @@ object ScheduleShiftForm: TScheduleShiftForm
         Left = 0
         Height = 2
         Top = 696
-        Width = 394
+        Width = 373
         Align = alBottom
         Shape = bsBottomLine
         Style = bsRaised
@@ -740,7 +739,7 @@ object ScheduleShiftForm: TScheduleShiftForm
       Left = 0
       Height = 30
       Top = 0
-      Width = 398
+      Width = 377
       Align = alTop
       Alignment = taLeftJustify
       BorderSpacing.Right = 2
