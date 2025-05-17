@@ -9,7 +9,7 @@ object CalendarForm: TCalendarForm
   DesignTimePPI = 120
   OnCreate = FormCreate
   OnDestroy = FormDestroy
-  LCLVersion = '3.2.0.0'
+  OnShow = FormShow
   object ToolPanel: TPanel
     Left = 2
     Height = 40
@@ -49,16 +49,16 @@ object CalendarForm: TCalendarForm
         BorderSpacing.Top = 2
         BorderSpacing.Bottom = 2
         MinValue = 2010
-        OnChange = YearSpinEditChange
         TabOrder = 0
         Value = 2022
+        OnChange = YearSpinEditChange
       end
     end
     object DividerBevel1: TDividerBevel
-      Left = 672
+      Left = 671
       Height = 36
       Top = 0
-      Width = 20
+      Width = 21
       Caption = 'DividerBevel1'
       Align = alRight
       BevelWidth = 2
@@ -76,15 +76,15 @@ object CalendarForm: TCalendarForm
       Align = alRight
       Images = Images.PX24
       ImageIndex = 3
-      OnClick = CloseButtonClick
       ShowHint = True
       ParentShowHint = False
+      OnClick = CloseButtonClick
     end
     object DividerBevel2: TDividerBevel
       Left = 65
       Height = 36
       Top = 0
-      Width = 20
+      Width = 21
       Caption = 'DividerBevel2'
       Align = alLeft
       BevelWidth = 2
@@ -94,11 +94,11 @@ object CalendarForm: TCalendarForm
     end
     object ExportButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 85
+      Left = 86
       Height = 36
       Hint = 'Экспорт в формат электронной таблицы XLSX или ODS'
       Top = 0
-      Width = 103
+      Width = 109
       Align = alLeft
       AutoSize = True
       Caption = ' Экспорт '
@@ -106,9 +106,9 @@ object CalendarForm: TCalendarForm
       ImageIndex = 22
       Margin = 5
       Spacing = 5
-      OnClick = ExportButtonClick
       ShowHint = True
       ParentShowHint = False
+      OnClick = ExportButtonClick
     end
   end
   object EditingPanel: TPanel
@@ -159,9 +159,9 @@ object CalendarForm: TCalendarForm
           Align = alLeft
           Images = Images.PX24
           ImageIndex = 4
-          OnClick = DayAddButtonClick
           ShowHint = True
           ParentShowHint = False
+          OnClick = DayAddButtonClick
         end
         object DayDelButton: TSpeedButton
           Cursor = crHandPoint
@@ -174,9 +174,9 @@ object CalendarForm: TCalendarForm
           Enabled = False
           Images = Images.PX24
           ImageIndex = 5
-          OnClick = DayDelButtonClick
           ShowHint = True
           ParentShowHint = False
+          OnClick = DayDelButtonClick
         end
         object DayEditButton: TSpeedButton
           Cursor = crHandPoint
@@ -189,9 +189,9 @@ object CalendarForm: TCalendarForm
           Enabled = False
           Images = Images.PX24
           ImageIndex = 6
-          OnClick = DayEditButtonClick
           ShowHint = True
           ParentShowHint = False
+          OnClick = DayEditButtonClick
         end
         object DayCopyButton: TSpeedButton
           Cursor = crHandPoint
@@ -204,9 +204,9 @@ object CalendarForm: TCalendarForm
           Enabled = False
           Images = Images.PX24
           ImageIndex = 9
-          OnClick = DayCopyButtonClick
           ShowHint = True
           ParentShowHint = False
+          OnClick = DayCopyButtonClick
         end
       end
       object DayVT: TVirtualStringTree
@@ -260,9 +260,9 @@ object CalendarForm: TCalendarForm
           Enabled = False
           Images = Images.PX24
           ImageIndex = 7
-          OnClick = CopySaveButtonClick
           ShowHint = True
           ParentShowHint = False
+          OnClick = CopySaveButtonClick
         end
         object CopyDelButton: TSpeedButton
           Cursor = crHandPoint
@@ -275,9 +275,9 @@ object CalendarForm: TCalendarForm
           Enabled = False
           Images = Images.PX24
           ImageIndex = 5
-          OnClick = CopyDelButtonClick
           ShowHint = True
           ParentShowHint = False
+          OnClick = CopyDelButtonClick
         end
         object CopyCancelButton: TSpeedButton
           Cursor = crHandPoint
@@ -289,9 +289,9 @@ object CalendarForm: TCalendarForm
           Align = alLeft
           Images = Images.PX24
           ImageIndex = 8
-          OnClick = CopyCancelButtonClick
           ShowHint = True
           ParentShowHint = False
+          OnClick = CopyCancelButtonClick
         end
       end
       object CopyVT: TVirtualStringTree

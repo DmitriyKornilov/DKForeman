@@ -1,4 +1,4 @@
-object ScheduleVacationForm: TScheduleVacationForm
+object VacationScheduleForm: TVacationScheduleForm
   Left = 600
   Height = 240
   Top = 259
@@ -7,11 +7,10 @@ object ScheduleVacationForm: TScheduleVacationForm
   ClientHeight = 240
   ClientWidth = 769
   DesignTimePPI = 120
+  WindowState = wsMaximized
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
-  LCLVersion = '3.2.0.0'
-  WindowState = wsMaximized
   object ToolPanel: TPanel
     Left = 2
     Height = 40
@@ -51,10 +50,10 @@ object ScheduleVacationForm: TScheduleVacationForm
         BorderSpacing.Top = 2
         BorderSpacing.Bottom = 2
         MinValue = 2010
-        OnChange = YearSpinEditChange
         TabStop = False
         TabOrder = 0
         Value = 2022
+        OnChange = YearSpinEditChange
       end
     end
     object DividerBevel1: TDividerBevel
@@ -79,9 +78,9 @@ object ScheduleVacationForm: TScheduleVacationForm
       Align = alRight
       Images = Images.PX24
       ImageIndex = 3
-      OnClick = CloseButtonClick
       ShowHint = True
       ParentShowHint = False
+      OnClick = CloseButtonClick
     end
     object DividerBevel2: TDividerBevel
       Left = 65
@@ -101,7 +100,7 @@ object ScheduleVacationForm: TScheduleVacationForm
       Height = 36
       Hint = 'Экспорт в формат электронной таблицы XLSX или ODS'
       Top = 0
-      Width = 103
+      Width = 109
       Align = alLeft
       AutoSize = True
       Caption = ' Экспорт '
@@ -109,9 +108,9 @@ object ScheduleVacationForm: TScheduleVacationForm
       ImageIndex = 22
       Margin = 5
       Spacing = 5
-      OnClick = ExportButtonClick
       ShowHint = True
       ParentShowHint = False
+      OnClick = ExportButtonClick
     end
   end
   object SheetPanel: TPanel

@@ -8,15 +8,15 @@ uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls,
   Buttons, Spin, DividerBevel, fpspreadsheetgrid,
   //DK packages utils
-  DK_Vector, DK_Zoom, DK_CtrlUtils,
+  DK_Vector, DK_Zoom, DK_CtrlUtils, DK_SheetTypes,
   //Project utils
   UDataBase, UConst, UImages, UScheduleSheet;
 
 type
 
-  { TScheduleVacationForm }
+  { TVacationScheduleForm }
 
-  TScheduleVacationForm = class(TForm)
+  TVacationScheduleForm = class(TForm)
     CloseButton: TSpeedButton;
     DividerBevel1: TDividerBevel;
     DividerBevel2: TDividerBevel;
@@ -40,14 +40,18 @@ type
     StaffNames, TabNums, PostNames: TStrVector;
     FirstDates: TDateVector;
     TotalCounts: TIntVector;
+
     procedure ScheduleChange;
     procedure ScheduleDraw(const AZoomPercent: Integer);
+
+    procedure SettingsLoad;
+    procedure SettingsSave;
   public
 
   end;
 
 var
-  ScheduleVacationForm: TScheduleVacationForm;
+  VacationScheduleForm: TVacationScheduleForm;
 
   procedure VacationScheduleFormShow(const AYear: Word);
 
@@ -59,9 +63,9 @@ uses UMainForm;
 
 procedure VacationScheduleFormShow(const AYear: Word);
 var
-  Form: TScheduleVacationForm;
+  Form: TVacationScheduleForm;
 begin
-  Form:= TScheduleVacationForm.Create(nil);
+  Form:= TVacationScheduleForm.Create(nil);
   try
     Form.YearSpinEdit.Value:= AYear;
     Form.ShowModal;
@@ -70,9 +74,9 @@ begin
   end;
 end;
 
-{ TScheduleVacationForm }
+{ TVacationScheduleForm }
 
-procedure TScheduleVacationForm.FormCreate(Sender: TObject);
+procedure TVacationScheduleForm.FormCreate(Sender: TObject);
 begin
   Caption:= MAIN_CAPTION + OTHER_DESCRIPTION[3];
 
@@ -88,45 +92,47 @@ begin
     CloseButton
   ]);
 
-  ZoomPercent:= 100;
+  SettingsLoad; //load ZoomPercent
   CreateZoomControls(50, 150, ZoomPercent, ZoomPanel, @ScheduleDraw, True);
 
   Sheet:= TVacationScheduleSheet.Create(ViewGrid.Worksheet, ViewGrid, MainForm.GridFont);
 end;
 
-procedure TScheduleVacationForm.FormDestroy(Sender: TObject);
+procedure TVacationScheduleForm.FormDestroy(Sender: TObject);
 begin
+  SettingsSave;
   FreeAndNil(Sheet);
 end;
 
-procedure TScheduleVacationForm.CloseButtonClick(Sender: TObject);
+procedure TVacationScheduleForm.CloseButtonClick(Sender: TObject);
 begin
   Close;
 end;
 
-procedure TScheduleVacationForm.ExportButtonClick(Sender: TObject);
+procedure TVacationScheduleForm.ExportButtonClick(Sender: TObject);
 begin
-  Sheet.Save(YearSpinEdit.Text, 'Выполнено!', True);
+  SheetFromGridSave(Sheet, ZoomPercent, @ScheduleDraw,
+                    YearSpinEdit.Text, 'Выполнено!', True);
 end;
 
-procedure TScheduleVacationForm.FormShow(Sender: TObject);
-begin
-  ScheduleChange;
-end;
-
-procedure TScheduleVacationForm.YearSpinEditChange(Sender: TObject);
+procedure TVacationScheduleForm.FormShow(Sender: TObject);
 begin
   ScheduleChange;
 end;
 
-procedure TScheduleVacationForm.ScheduleChange;
+procedure TVacationScheduleForm.YearSpinEditChange(Sender: TObject);
+begin
+  ScheduleChange;
+end;
+
+procedure TVacationScheduleForm.ScheduleChange;
 begin
   DataBase.VacationScheduleLoad(YearSpinEdit.Value,
                  StaffNames, TabNums, PostNames, FirstDates, TotalCounts);
   ScheduleDraw(ZoomPercent);
 end;
 
-procedure TScheduleVacationForm.ScheduleDraw(const AZoomPercent: Integer);
+procedure TVacationScheduleForm.ScheduleDraw(const AZoomPercent: Integer);
 begin
   ViewGrid.Visible:= False;
   Screen.Cursor:= crHourGlass;
@@ -138,6 +144,22 @@ begin
     ViewGrid.Visible:= True;
     Screen.Cursor:= crDefault;
   end;
+end;
+
+procedure TVacationScheduleForm.SettingsLoad;
+var
+  SettingValues: TIntVector;
+begin
+  SettingValues:= DataBase.SettingsLoad(SETTING_NAMES_VACATIONSCHEDULEFORM);
+  ZoomPercent:= SettingValues[0];
+end;
+
+procedure TVacationScheduleForm.SettingsSave;
+var
+  SettingValues: TIntVector;
+begin
+  SettingValues:= VCreateInt([ZoomPercent]);
+  DataBase.SettingsUpdate(SETTING_NAMES_VACATIONSCHEDULEFORM, SettingValues);
 end;
 
 end.

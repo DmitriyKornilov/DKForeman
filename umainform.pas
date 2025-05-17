@@ -196,7 +196,7 @@ begin
   case Category of
     0: ;
     1: (CategoryForm as TStaffForm).SettingsSave;
-    //2: (CategoryForm as TCalendarForm).SettingsSave;   - no settings
+    2: (CategoryForm as TCalendarForm).SettingsSave;
     3: (CategoryForm as TScheduleShiftForm).SettingsSave;
     4: (CategoryForm as TVacationPlanForm).SettingsSave;
     5: (CategoryForm as TSchedulePersonalForm).SettingsSave;

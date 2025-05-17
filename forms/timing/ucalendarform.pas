@@ -11,7 +11,7 @@ uses
   UConst, UTypes, UTimingUtils, UImages, UCalendar, UCalendarSheet,
   //DK packages utils
   DK_DateUtils, DK_VSTTables, DK_Vector, DK_Zoom, DK_Color, DK_Const,
-  DK_CtrlUtils,
+  DK_CtrlUtils, DK_SheetTypes,
   //Forms
   UCalendarEditForm;
 
@@ -49,6 +49,7 @@ type
     SheetBottomPanel: TPanel;
     ZoomPanel: TPanel;
     procedure DayVTDblClick(Sender: TObject);
+    procedure FormShow(Sender: TObject);
     procedure ViewGridDblClick(Sender: TObject);
     procedure ViewGridMouseDown(Sender: TObject; Button: TMouseButton;
       {%H-}Shift: TShiftState; X, Y: Integer);
@@ -98,7 +99,10 @@ type
     function DayInListSelect(const ADate: TDate): Boolean;
 
     procedure CalendarEditFormOpen(const ADate: TDate);
+
+    procedure SettingsLoad;
   public
+    procedure SettingsSave;
     procedure ViewUpdate(const AModeType: TModeType);
   end;
 
@@ -125,6 +129,11 @@ begin
   if not VSTDays.IsSelected then Exit;
   D:= Corrections.Dates[VSTDays.SelectedIndex];
   CalendarEditFormOpen(D);
+end;
+
+procedure TCalendarForm.FormShow(Sender: TObject);
+begin
+  CalendarRefresh;
 end;
 
 procedure TCalendarForm.ViewGridDblClick(Sender: TObject);
@@ -202,7 +211,8 @@ end;
 
 procedure TCalendarForm.ExportButtonClick(Sender: TObject);
 begin
-  CalendarSheet.Save(YearSpinEdit.Text, 'Выполнено!', True);
+  SheetFromGridSave(CalendarSheet, ZoomPercent, @CalendarDraw,
+                    YearSpinEdit.Text, 'Выполнено!', True);
 end;
 
 procedure TCalendarForm.FormCreate(Sender: TObject);
@@ -243,7 +253,7 @@ begin
   //  $00FFFFFF]);
   //ColorList:= TVSTColorList.Create(DayVT);
 
-  ZoomPercent:= 100;
+  SettingsLoad; //load ZoomPercent
   CreateZoomControls(50, 150, ZoomPercent, ZoomPanel, @CalendarDraw, True);
 
   CalendarSheet:= TCalendarSheet.Create(ViewGrid.Worksheet, ViewGrid, MainForm.GridFont);
@@ -463,6 +473,22 @@ begin
   finally
     FreeAndNil(CalendarEditForm);
   end;
+end;
+
+procedure TCalendarForm.SettingsLoad;
+var
+  SettingValues: TIntVector;
+begin
+  SettingValues:= DataBase.SettingsLoad(SETTING_NAMES_CALENDARFORM);
+  ZoomPercent:= SettingValues[0];
+end;
+
+procedure TCalendarForm.SettingsSave;
+var
+  SettingValues: TIntVector;
+begin
+  SettingValues:= VCreateInt([ZoomPercent]);
+  DataBase.SettingsUpdate(SETTING_NAMES_CALENDARFORM, SettingValues);
 end;
 
 procedure TCalendarForm.CalendarDraw(const AZoomPercent: Integer);

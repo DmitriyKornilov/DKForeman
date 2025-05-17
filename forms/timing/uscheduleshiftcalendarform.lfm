@@ -363,6 +363,7 @@ object ScheduleShiftCalendarForm: TScheduleShiftCalendarForm
       Spacing = 5
       ShowHint = True
       ParentShowHint = False
+      OnClick = ExportButtonClick
     end
   end
 end

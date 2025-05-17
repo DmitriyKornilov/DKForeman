@@ -9,7 +9,7 @@ uses
   Spin, StdCtrls, DividerBevel, VirtualTrees, fpspreadsheetgrid, DateUtils,
   //DK packages utils
   DK_Vector, DK_Fonts, DK_Const, DK_CtrlUtils,
-  DK_VSTTypes, DK_VSTEditTools, DK_Zoom, DK_SheetExporter,
+  DK_VSTTypes, DK_VSTEditTools, DK_Zoom, DK_SheetExporter, DK_SheetTypes,
   //Project utils
   UDataBase, UConst, UTimingUtils, UImages, UCalendar, USchedule, UScheduleSheet;
 
@@ -367,7 +367,7 @@ end;
 
 procedure TScheduleShiftCalendarForm.ExportButtonClick(Sender: TObject);
 begin
-  Sheet.Save(YearSpinEdit.Text);
+  SheetFromGridSave(Sheet, ZoomPercent, @ScheduleDraw, YearSpinEdit.Text);
 end;
 
 end.

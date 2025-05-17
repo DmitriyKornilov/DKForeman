@@ -273,7 +273,7 @@
       <Unit>
         <Filename Value="forms\timing\uvacationscheduleform.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="ScheduleVacationForm"/>
+        <ComponentName Value="VacationScheduleForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UVacationScheduleForm"/>
