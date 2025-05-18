@@ -21,7 +21,6 @@ type
   private
 
   public
-    function ForCurrentPPI: TImageList;
     procedure ToButtons(const AButtons: array of TSpeedButton);
   end;
 
@@ -34,17 +33,12 @@ implementation
 
 { TImages }
 
-function TImages.ForCurrentPPI: TImageList;
-begin
-  Result:= ChooseImageListForScreenPPI(PX24, PX30, PX36, PX42);
-end;
-
 procedure TImages.ToButtons(const AButtons: array of TSpeedButton);
 var
   i: Integer;
   L: TImageList;
 begin
-  L:= ForCurrentPPI;
+  L:= ChooseImageListForScreenPPI(PX24, PX30, PX36, PX42);
   for i:= 0 to High(AButtons) do
     AButtons[i].Images:= L;
 end;

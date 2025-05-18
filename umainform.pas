@@ -359,7 +359,8 @@ begin
     EditingButton, SettingButton, RefreshButton, AboutButton, ExitButton
   ]);
 
-  TimingMenu.Images:= Images.ForCurrentPPI;
+  TimingMenu.Images:= ChooseImageListForScreenPPI(Images.PX24, Images.PX30,
+                                                  Images.PX36, Images.PX42);//Images.ForCurrentPPI;
   SafetyMenu.Images:= TimingMenu.Images;
   DictionaryMenu.Images:= TimingMenu.Images;
 

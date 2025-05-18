@@ -7,6 +7,7 @@ object TimetableMonthForm: TTimetableMonthForm
   ClientHeight = 548
   ClientWidth = 1193
   DesignTimePPI = 120
+  WindowState = wsMaximized
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
