@@ -8,10 +8,10 @@ object StaffTabNumEditForm: TStaffTabNumEditForm
   ClientHeight = 118
   ClientWidth = 750
   DesignTimePPI = 120
+  Position = poScreenCenter
+  LCLVersion = '4.0.0.4'
   OnCreate = FormCreate
   OnShow = FormShow
-  Position = poScreenCenter
-  LCLVersion = '3.2.0.0'
   object TabNumLabel: TLabel
     AnchorSideLeft.Control = Owner
     AnchorSideTop.Control = TabNumEdit
@@ -170,8 +170,8 @@ object StaffTabNumEditForm: TStaffTabNumEditForm
       ImageIndex = 8
       Margin = 5
       Spacing = 5
-      OnClick = CancelButtonClick
       ParentFont = False
+      OnClick = CancelButtonClick
     end
     object SaveButton: TSpeedButton
       AnchorSideTop.Control = CancelButton
@@ -189,8 +189,8 @@ object StaffTabNumEditForm: TStaffTabNumEditForm
       ImageIndex = 7
       Margin = 5
       Spacing = 5
-      OnClick = SaveButtonClick
       ParentFont = False
+      OnClick = SaveButtonClick
     end
     object ButtonPanelBevel: TBevel
       Left = 0

@@ -7,10 +7,10 @@ object SchedulePersonalForm: TSchedulePersonalForm
   ClientHeight = 678
   ClientWidth = 1799
   DesignTimePPI = 120
+  LCLVersion = '4.0.0.4'
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
-  LCLVersion = '3.2.0.0'
   object ToolPanel: TPanel
     Left = 2
     Height = 40
@@ -22,8 +22,8 @@ object SchedulePersonalForm: TSchedulePersonalForm
     BorderSpacing.Right = 2
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 36
-    ClientWidth = 1791
+    ClientHeight = 40
+    ClientWidth = 1795
     ParentFont = False
     TabOrder = 0
     object YearPanel: TPanel
@@ -50,10 +50,10 @@ object SchedulePersonalForm: TSchedulePersonalForm
         BorderSpacing.Top = 2
         BorderSpacing.Bottom = 2
         MinValue = 2010
-        OnChange = YearSpinEditChange
         TabStop = False
         TabOrder = 0
         Value = 2022
+        OnChange = YearSpinEditChange
       end
     end
     object DividerBevel1: TDividerBevel
@@ -78,9 +78,9 @@ object SchedulePersonalForm: TSchedulePersonalForm
       Align = alRight
       Images = Images.PX24
       ImageIndex = 3
-      OnClick = CloseButtonClick
       ShowHint = True
       ParentShowHint = False
+      OnClick = CloseButtonClick
     end
     object DividerBevel2: TDividerBevel
       Left = 65
@@ -120,9 +120,9 @@ object SchedulePersonalForm: TSchedulePersonalForm
       ImageIndex = 22
       Margin = 5
       Spacing = 5
-      OnClick = ExportButtonClick
       ShowHint = True
       ParentShowHint = False
+      OnClick = ExportButtonClick
     end
     object MonthScheduleButton: TSpeedButton
       Cursor = crHandPoint
@@ -138,9 +138,9 @@ object SchedulePersonalForm: TSchedulePersonalForm
       ImageIndex = 45
       Margin = 5
       Spacing = 5
-      OnClick = MonthScheduleButtonClick
       ShowHint = True
       ParentShowHint = False
+      OnClick = MonthScheduleButtonClick
     end
     object VacationScheduleButton: TSpeedButton
       Cursor = crHandPoint
@@ -156,9 +156,9 @@ object SchedulePersonalForm: TSchedulePersonalForm
       ImageIndex = 46
       Margin = 5
       Spacing = 5
-      OnClick = VacationScheduleButtonClick
       ShowHint = True
       ParentShowHint = False
+      OnClick = VacationScheduleButtonClick
     end
   end
   object SettingPanel: TPanel
@@ -238,8 +238,8 @@ object SchedulePersonalForm: TSchedulePersonalForm
       BorderSpacing.Bottom = 2
       BevelOuter = bvNone
       BorderStyle = bsSingle
-      ClientHeight = 564
-      ClientWidth = 201
+      ClientHeight = 568
+      ClientWidth = 205
       Color = clWhite
       ParentBackground = False
       ParentColor = False
@@ -384,8 +384,8 @@ object SchedulePersonalForm: TSchedulePersonalForm
       BorderSpacing.Bottom = 2
       BevelOuter = bvNone
       BorderStyle = bsSingle
-      ClientHeight = 36
-      ClientWidth = 576
+      ClientHeight = 40
+      ClientWidth = 580
       ParentBackground = False
       ParentColor = False
       ParentFont = False
@@ -412,8 +412,8 @@ object SchedulePersonalForm: TSchedulePersonalForm
       BorderSpacing.Top = 2
       BevelOuter = bvNone
       BorderStyle = bsSingle
-      ClientHeight = 36
-      ClientWidth = 576
+      ClientHeight = 40
+      ClientWidth = 580
       TabOrder = 2
       object OrderLabel: TLabel
         AnchorSideLeft.Control = OrderButtonPanel
@@ -493,9 +493,9 @@ object SchedulePersonalForm: TSchedulePersonalForm
           Images = Images.PX24
           ImageIndex = 15
           Visible = False
-          OnClick = AscendingButtonClick
           ShowHint = True
           ParentShowHint = False
+          OnClick = AscendingButtonClick
         end
         object DescendingButton: TSpeedButton
           Cursor = crHandPoint
@@ -507,9 +507,9 @@ object SchedulePersonalForm: TSchedulePersonalForm
           Align = alLeft
           Images = Images.PX24
           ImageIndex = 16
-          OnClick = DescendingButtonClick
           ShowHint = True
           ParentShowHint = False
+          OnClick = DescendingButtonClick
         end
         object DividerBevel4: TDividerBevel
           Left = 80
@@ -595,8 +595,8 @@ object SchedulePersonalForm: TSchedulePersonalForm
             Align = alTop
             BevelOuter = bvNone
             BorderStyle = bsSingle
-            ClientHeight = 36
-            ClientWidth = 646
+            ClientHeight = 40
+            ClientWidth = 650
             ParentFont = False
             TabOrder = 0
             object DayAddButton: TSpeedButton
@@ -609,9 +609,9 @@ object SchedulePersonalForm: TSchedulePersonalForm
               Align = alLeft
               Images = Images.PX24
               ImageIndex = 4
-              OnClick = DayAddButtonClick
               ShowHint = True
               ParentShowHint = False
+              OnClick = DayAddButtonClick
             end
             object DayDelButton: TSpeedButton
               Cursor = crHandPoint
@@ -624,9 +624,9 @@ object SchedulePersonalForm: TSchedulePersonalForm
               Enabled = False
               Images = Images.PX24
               ImageIndex = 5
-              OnClick = DayDelButtonClick
               ShowHint = True
               ParentShowHint = False
+              OnClick = DayDelButtonClick
             end
             object DayEditButton: TSpeedButton
               Cursor = crHandPoint
@@ -639,9 +639,9 @@ object SchedulePersonalForm: TSchedulePersonalForm
               Enabled = False
               Images = Images.PX24
               ImageIndex = 6
-              OnClick = DayEditButtonClick
               ShowHint = True
               ParentShowHint = False
+              OnClick = DayEditButtonClick
             end
             object DayCopyButton: TSpeedButton
               Cursor = crHandPoint
@@ -654,9 +654,9 @@ object SchedulePersonalForm: TSchedulePersonalForm
               Enabled = False
               Images = Images.PX24
               ImageIndex = 9
-              OnClick = DayCopyButtonClick
               ShowHint = True
               ParentShowHint = False
+              OnClick = DayCopyButtonClick
             end
           end
           object DayVT: TVirtualStringTree
@@ -695,8 +695,8 @@ object SchedulePersonalForm: TSchedulePersonalForm
             Align = alTop
             BevelOuter = bvNone
             BorderStyle = bsSingle
-            ClientHeight = 36
-            ClientWidth = 646
+            ClientHeight = 40
+            ClientWidth = 650
             ParentFont = False
             TabOrder = 0
             object CopySaveButton: TSpeedButton
@@ -710,9 +710,9 @@ object SchedulePersonalForm: TSchedulePersonalForm
               Enabled = False
               Images = Images.PX24
               ImageIndex = 7
-              OnClick = CopySaveButtonClick
               ShowHint = True
               ParentShowHint = False
+              OnClick = CopySaveButtonClick
             end
             object CopyDelButton: TSpeedButton
               Cursor = crHandPoint
@@ -725,9 +725,9 @@ object SchedulePersonalForm: TSchedulePersonalForm
               Enabled = False
               Images = Images.PX24
               ImageIndex = 5
-              OnClick = CopyDelButtonClick
               ShowHint = True
               ParentShowHint = False
+              OnClick = CopyDelButtonClick
             end
             object CopyCancelButton: TSpeedButton
               Cursor = crHandPoint
@@ -739,9 +739,9 @@ object SchedulePersonalForm: TSchedulePersonalForm
               Align = alLeft
               Images = Images.PX24
               ImageIndex = 8
-              OnClick = CopyCancelButtonClick
               ShowHint = True
               ParentShowHint = False
+              OnClick = CopyCancelButtonClick
             end
           end
           object CopyVT: TVirtualStringTree
@@ -807,8 +807,8 @@ object SchedulePersonalForm: TSchedulePersonalForm
           Align = alTop
           BevelOuter = bvNone
           BorderStyle = bsSingle
-          ClientHeight = 36
-          ClientWidth = 646
+          ClientHeight = 40
+          ClientWidth = 650
           ParentFont = False
           TabOrder = 0
           object VacationSaveButton: TSpeedButton
@@ -822,9 +822,9 @@ object SchedulePersonalForm: TSchedulePersonalForm
             Enabled = False
             Images = Images.PX24
             ImageIndex = 7
-            OnClick = VacationSaveButtonClick
             ShowHint = True
             ParentShowHint = False
+            OnClick = VacationSaveButtonClick
           end
           object VacationDelButton: TSpeedButton
             Cursor = crHandPoint
@@ -837,9 +837,9 @@ object SchedulePersonalForm: TSchedulePersonalForm
             Enabled = False
             Images = Images.PX24
             ImageIndex = 5
-            OnClick = VacationDelButtonClick
             ShowHint = True
             ParentShowHint = False
+            OnClick = VacationDelButtonClick
           end
           object VacationCancelButton: TSpeedButton
             Cursor = crHandPoint
@@ -852,9 +852,9 @@ object SchedulePersonalForm: TSchedulePersonalForm
             Enabled = False
             Images = Images.PX24
             ImageIndex = 8
-            OnClick = VacationCancelButtonClick
             ShowHint = True
             ParentShowHint = False
+            OnClick = VacationCancelButtonClick
           end
           object VacationEraseButton: TSpeedButton
             Cursor = crHandPoint
@@ -866,9 +866,9 @@ object SchedulePersonalForm: TSchedulePersonalForm
             Align = alLeft
             Images = Images.PX24
             ImageIndex = 10
-            OnClick = VacationEraseButtonClick
             ShowHint = True
             ParentShowHint = False
+            OnClick = VacationEraseButtonClick
           end
         end
         object VacationVT: TVirtualStringTree
@@ -922,8 +922,8 @@ object SchedulePersonalForm: TSchedulePersonalForm
         Align = alTop
         BevelOuter = bvNone
         BorderStyle = bsSingle
-        ClientHeight = 36
-        ClientWidth = 646
+        ClientHeight = 40
+        ClientWidth = 650
         ParentFont = False
         TabOrder = 0
         object HistoryDelButton: TSpeedButton
@@ -937,9 +937,9 @@ object SchedulePersonalForm: TSchedulePersonalForm
           Enabled = False
           Images = Images.PX24
           ImageIndex = 5
-          OnClick = HistoryDelButtonClick
           ShowHint = True
           ParentShowHint = False
+          OnClick = HistoryDelButtonClick
         end
         object HistoryEditButton: TSpeedButton
           Cursor = crHandPoint
@@ -952,9 +952,9 @@ object SchedulePersonalForm: TSchedulePersonalForm
           Enabled = False
           Images = Images.PX24
           ImageIndex = 6
-          OnClick = HistoryEditButtonClick
           ShowHint = True
           ParentShowHint = False
+          OnClick = HistoryEditButtonClick
         end
         object HistoryAddButton: TSpeedButton
           Cursor = crHandPoint
@@ -967,9 +967,9 @@ object SchedulePersonalForm: TSchedulePersonalForm
           Enabled = False
           Images = Images.PX24
           ImageIndex = 44
-          OnClick = HistoryAddButtonClick
           ShowHint = True
           ParentShowHint = False
+          OnClick = HistoryAddButtonClick
         end
       end
       object HistoryVT: TVirtualStringTree

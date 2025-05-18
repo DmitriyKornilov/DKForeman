@@ -8,10 +8,10 @@ object SchedulePersonalEditForm: TSchedulePersonalEditForm
   ClientHeight = 500
   ClientWidth = 800
   DesignTimePPI = 120
+  LCLVersion = '4.0.0.4'
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
-  LCLVersion = '3.2.0.0'
   object FirstDateLabel: TLabel
     AnchorSideLeft.Control = Owner
     AnchorSideTop.Control = FirstDatePicker
@@ -72,8 +72,8 @@ object SchedulePersonalEditForm: TSchedulePersonalEditForm
     BorderSpacing.Bottom = 8
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 388
-    ClientWidth = 780
+    ClientHeight = 392
+    ClientWidth = 784
     Color = clWhite
     ParentBackground = False
     ParentColor = False
@@ -148,8 +148,8 @@ object SchedulePersonalEditForm: TSchedulePersonalEditForm
       ImageIndex = 8
       Margin = 5
       Spacing = 5
-      OnClick = CancelButtonClick
       ParentFont = False
+      OnClick = CancelButtonClick
     end
     object SaveButton: TSpeedButton
       AnchorSideTop.Control = CancelButton
@@ -167,8 +167,8 @@ object SchedulePersonalEditForm: TSchedulePersonalEditForm
       ImageIndex = 7
       Margin = 5
       Spacing = 5
-      OnClick = SaveButtonClick
       ParentFont = False
+      OnClick = SaveButtonClick
     end
     object ButtonPanelBevel: TBevel
       Left = 0

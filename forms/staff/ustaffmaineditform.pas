@@ -108,14 +108,14 @@ begin
   FamilyValue:= STrim(FamilyEdit.Text);
   if FamilyValue=EmptyStr then
   begin
-    ShowInfo('Не указана фамилия!');
+    Inform('Не указана фамилия!');
     Exit;
   end;
 
   NameValue:= STrim(NameEdit.Text);
   if NameValue=EmptyStr then
   begin
-    ShowInfo('Не указано имя!');
+    Inform('Не указано имя!');
     Exit;
   end;
 

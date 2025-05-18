@@ -141,13 +141,13 @@ begin
   ScheduleName:= STrim(NameEdit.Text);
   if SEmpty(ScheduleName) then
   begin
-    ShowInfo('Не указано наименование графика!');
+    Inform('Не указано наименование графика!');
     Exit;
   end;
 
   if DataBase.ScheduleShiftIsExists(Cycle.ScheduleID, ScheduleName) then
   begin
-    ShowInfo('График с наименованием "' + ScheduleName + '" уже существует!');
+    Inform('График с наименованием "' + ScheduleName + '" уже существует!');
     Exit;
   end;
 

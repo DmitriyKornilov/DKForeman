@@ -84,7 +84,7 @@ begin
     TabNum:= STrim(TabNumEdit.Text);
     if SEmpty(TabNum) then
     begin
-      ShowInfo('Не указан табельный номер!');
+      Inform('Не указан табельный номер!');
       Exit;
     end;
     if DataBase.StaffTabNumIsExists(TabNumID, TabNum) then

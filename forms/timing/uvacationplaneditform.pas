@@ -129,7 +129,7 @@ begin
     ED2:= EndDate(Plan2FirstDate, Plan2Count+Plan2AddCount);
     if IsPeriodIntersect(Plan1FirstDate, ED1, Plan2FirstDate, ED2) then
     begin
-      ShowInfo('Периоды частей отпуска не должны пересекаться!');
+      Inform('Периоды частей отпуска не должны пересекаться!');
       Exit;
     end;
   end;

@@ -90,7 +90,7 @@ begin
 
   if PostDropDown.ItemIndex<0 then
   begin
-    ShowInfo('Не указана должность!');
+    Inform('Не указана должность!');
     Exit;
   end;
 

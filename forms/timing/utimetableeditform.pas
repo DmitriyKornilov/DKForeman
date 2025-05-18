@@ -123,7 +123,7 @@ begin
 
   if MainMarkDropDown.ItemIndex<0 then
   begin
-    ShowInfo('Не указан основной код табеля!');
+    Inform('Не указан основной код табеля!');
     Exit;
   end;
 
@@ -136,7 +136,7 @@ begin
              'Всё равно записать изменения?') then Exit;
       if SkipCheckBox.Checked and (SkipHoursSpinEdit.Value=0) then //частичное отсутствие
       begin
-        ShowInfo('Не указано количество пропущенных часов!');
+        Inform('Не указано количество пропущенных часов!');
         Exit;
       end;
     end;

@@ -115,7 +115,7 @@ begin
 
   if MarkDropDown.ItemIndex<0 then
   begin
-    ShowInfo('Не указан основной код табеля!');
+    Inform('Не указан основной код табеля!');
     Exit;
   end;
 

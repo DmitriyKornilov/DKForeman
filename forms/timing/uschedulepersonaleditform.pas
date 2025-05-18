@@ -78,7 +78,7 @@ begin
 
   if not Sheet.IsSelected then
   begin
-    ShowInfo('Не указан график сменности!');
+    Inform('Не указан график сменности!');
     Exit;
   end;
 

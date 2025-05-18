@@ -8,11 +8,11 @@ object TimetableEditForm: TTimetableEditForm
   ClientHeight = 418
   ClientWidth = 885
   DesignTimePPI = 120
+  Position = poScreenCenter
+  LCLVersion = '4.0.0.4'
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
-  Position = poScreenCenter
-  LCLVersion = '3.2.0.0'
   object CorrectionRadioButton: TRadioButton
     AnchorSideLeft.Control = Owner
     AnchorSideTop.Control = Owner
@@ -587,10 +587,10 @@ object TimetableEditForm: TTimetableEditForm
     BorderSpacing.Left = 8
     BorderSpacing.Top = 12
     MaxValue = 100000
-    OnChange = DayCountSpinEditChange
     ParentFont = False
     TabOrder = 3
     Value = 1
+    OnChange = DayCountSpinEditChange
   end
   object LastDateLabel1: TLabel
     AnchorSideLeft.Control = DayCountSpinEdit
@@ -693,8 +693,8 @@ object TimetableEditForm: TTimetableEditForm
       ImageIndex = 8
       Margin = 5
       Spacing = 5
-      OnClick = CancelButtonClick
       ParentFont = False
+      OnClick = CancelButtonClick
     end
     object SaveButton: TSpeedButton
       AnchorSideTop.Control = CancelButton
@@ -712,8 +712,8 @@ object TimetableEditForm: TTimetableEditForm
       ImageIndex = 7
       Margin = 5
       Spacing = 5
-      OnClick = SaveButtonClick
       ParentFont = False
+      OnClick = SaveButtonClick
     end
     object ButtonPanelBevel: TBevel
       Left = 0

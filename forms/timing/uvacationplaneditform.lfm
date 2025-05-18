@@ -7,9 +7,9 @@ object VacationPlanEditForm: TVacationPlanEditForm
   ClientHeight = 227
   ClientWidth = 660
   DesignTimePPI = 120
+  LCLVersion = '4.0.0.4'
   OnCreate = FormCreate
   OnShow = FormShow
-  LCLVersion = '3.2.0.0'
   object Plan2Label: TLabel
     AnchorSideLeft.Control = Owner
     AnchorSideTop.Control = Plan2DatePicker
@@ -298,8 +298,8 @@ object VacationPlanEditForm: TVacationPlanEditForm
       ImageIndex = 8
       Margin = 5
       Spacing = 5
-      OnClick = CancelButtonClick
       ParentFont = False
+      OnClick = CancelButtonClick
     end
     object SaveButton: TSpeedButton
       AnchorSideTop.Control = CancelButton
@@ -317,8 +317,8 @@ object VacationPlanEditForm: TVacationPlanEditForm
       ImageIndex = 7
       Margin = 5
       Spacing = 5
-      OnClick = SaveButtonClick
       ParentFont = False
+      OnClick = SaveButtonClick
     end
     object ButtonPanelBevel: TBevel
       Left = 0
