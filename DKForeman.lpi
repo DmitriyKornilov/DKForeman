@@ -389,6 +389,7 @@
         <Filename Value="forms\siz\usiznormeditform.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="SIZNormEditForm"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="USIZNormEditForm"/>
       </Unit>

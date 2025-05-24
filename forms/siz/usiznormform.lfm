@@ -251,6 +251,7 @@ object SIZNormForm: TSIZNormForm
           ImageIndex = 5
           ShowHint = True
           ParentShowHint = False
+          OnClick = ItemDelButtonClick
         end
         object ItemEditButton: TSpeedButton
           Cursor = crHandPoint
@@ -387,6 +388,7 @@ object SIZNormForm: TSIZNormForm
           ImageIndex = 5
           ShowHint = True
           ParentShowHint = False
+          OnClick = SubItemDelButtonClick
         end
         object SubItemEditButton: TSpeedButton
           Cursor = crHandPoint

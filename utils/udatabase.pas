@@ -290,9 +290,6 @@ type
     {Удаление графика сменности: True - ОК, False - ошибка}
     function ScheduleShiftDelete(const AScheduleID: Integer): Boolean;
 
-
-
-
     (**************************************************************************
                                       ОТПУСКА
     **************************************************************************)
@@ -475,8 +472,12 @@ type
     function SIZNormUpdate(const ANormID: Integer;
                           const ANormName, ATypicalName: String;
                           const ABeginDate, AEndDate: TDate): Boolean;
-    {Удаление нормы: True - ОК, False - ошибка}
+
+    {Удаление норм с обработкой всех таблиц: True - ОК, False - ошибка}
     function SIZNormDelete(const ANormID: Integer): Boolean;
+    function SIZNormItemDelete(const AItemID: Integer): Boolean;
+    function SIZNormSubItemDelete(const AItemID, ASubItemID, AReasonID, AOrderNum: Integer): Boolean;
+    procedure SIZNormSubItemInfoDelete(const AInfoIDs: TIntVector); //no commit
 
   end;
 
@@ -3615,7 +3616,7 @@ function TDataBase.SIZNormUpdate(const ANormID: Integer;
                           const ANormName, ATypicalName: String;
                           const ABeginDate, AEndDate: TDate): Boolean;
 begin
-   Result:= False;
+  Result:= False;
   QSetQuery(FQuery);
   try
     QSetSQL(
@@ -3636,8 +3637,274 @@ begin
 end;
 
 function TDataBase.SIZNormDelete(const ANormID: Integer): Boolean;
-begin
+var
+  InfoIDs: TIntVector;
 
+  procedure GetInfoIDs;
+  begin
+    InfoIDs:= nil;
+    QSetSQL(
+      'SELECT t1.InfoID ' +
+      'FROM SIZNORMSUBITEMINFO t1 ' +
+      'INNER JOIN SIZNORMSUBITEM t2 ON (t1.SubItemID=t2.SubItemID) ' +
+      'INNER JOIN SIZNORMITEM t3 ON (t2.ItemID=t3.ItemID) ' +
+      'WHERE t3.NormID = :NormID'
+    );
+    QParamInt('NormID', ANormID);
+    QOpen;
+    if not QIsEmpty then
+    begin
+      QFirst;
+      while not QEOF do
+      begin
+        VAppend(InfoIDs, QFieldInt('InfoID'));
+        QNext;
+      end;
+    end;
+    QClose;
+  end;
+
+begin
+  Result:= False;
+  QSetQuery(FQuery);
+  try
+    //определяем список InfoID для этой нормы
+    GetInfoIDs;
+    //удаляем эти InfoID (с обработкой)
+    SIZNormSubItemInfoDelete(InfoIDs);
+    //удаляем норму
+    Delete('SIZNORM', 'NormID', ANormID, False{no commit});
+
+    QCommit;
+    Result:= True;
+  except
+    QRollback;
+  end;
+end;
+
+function TDataBase.SIZNormItemDelete(const AItemID: Integer): Boolean;
+var
+  InfoIDs: TIntVector;
+
+  procedure GetInfoIDs;
+  begin
+    InfoIDs:= nil;
+    QSetSQL(
+      'SELECT t1.InfoID '+
+      'FROM SIZNORMSUBITEMINFO t1 ' +
+      'INNER JOIN SIZNORMSUBITEM t2 ON (t1.SubItemID=t2.SubItemID) ' +
+      'WHERE t2.ItemID = :ItemID'
+    );
+    QParamInt('ItemID', AItemID);
+    QOpen;
+    if not QIsEmpty then
+    begin
+      QFirst;
+      while not QEOF do
+      begin
+        VAppend(InfoIDs, QFieldInt('InfoID'));
+        QNext;
+      end;
+    end;
+    QClose;
+  end;
+
+begin
+  Result:= False;
+  QSetQuery(FQuery);
+  try
+    //определяем список InfoID для этого пункта норм
+    GetInfoIDs;
+    //удаляем эти InfoID (с обработкой)
+    SIZNormSubItemInfoDelete(InfoIDs);
+    //удаляем пункт нормы
+    Delete('SIZNORMITEM', 'ItemID', AItemID, False{no commit});
+
+    QCommit;
+    Result:= True;
+  except
+    QRollback;
+  end;
+end;
+
+function TDataBase.SIZNormSubItemDelete(const AItemID, ASubItemID,
+  AReasonID, AOrderNum: Integer): Boolean;
+var
+  SubItemIDs, InfoIDs, OrderNums: TIntVector;
+
+  procedure GetSubItemsAfter;
+  begin
+    SubItemIDs:= nil;
+    OrderNums:= nil;
+    QSetSQL(
+      'SELECT SubItemID, OrderNum '+
+      'FROM SIZNORMSUBITEM ' +
+      'WHERE (ItemID=:ItemID) AND (ReasonID=:ReasonID) AND (OrderNum>:BeginOrderNum) ' +
+      'ORDER BY OrderNum'
+    );
+    QParamInt('ItemID', AItemID);
+    QParamInt('ReasonID', AReasonID);
+    QParamInt('BeginOrderNum', AOrderNum);
+    QOpen;
+    if not QIsEmpty then
+    begin
+      QFirst;
+      while not QEOF do
+      begin
+        VAppend(SubItemIDs, QFieldInt('SubItemID'));
+        VAppend(OrderNums, QFieldInt('OrderNum'));
+        QNext;
+      end;
+    end;
+    QClose;
+  end;
+
+  procedure MoveSubItemsUp;
+  var
+    i: Integer;
+  begin
+    if not VIsNil(SubItemIDs) then
+    begin
+      QSetSQL(
+        'UPDATE SIZNORMSUBITEM ' +
+        'SET OrderNum=:OrderNum ' +
+        'WHERE SubItemID=:SubItemID'
+      );
+      for i:=0 to High(SubItemIDs) do
+      begin
+        QParamInt('OrderNum', OrderNums[i]-1);
+        QParamInt('SubItemID', SubItemIDs[i]);
+        QExec;
+      end;
+    end;
+  end;
+
+  procedure GetInfoIDs;
+  begin
+    InfoIDs:= nil;
+    QSetSQL(
+      'SELECT InfoID ' +
+      'FROM SIZNORMSUBITEMINFO ' +
+      'WHERE SubItemID = :SubItemID'
+    );
+    QParamInt('SubItemID', ASubItemID);
+    QOpen;
+    if not QIsEmpty then
+    begin
+      QFirst;
+      while not QEOF do
+      begin
+        VAppend(InfoIDs, QFieldInt('InfoID'));
+        QNext;
+      end;
+    end;
+    QClose;
+  end;
+
+begin
+  Result:= False;
+  QSetQuery(FQuery);
+  try
+    //определяем строки, лежащие ниже по порядку, чем AOrderNum
+    GetSubItemsAfter;
+    //сдвигаем вверх порядковые номера строк, лежащих ниже удаляемой
+    MoveSubItemsUp;
+    //определяем список InfoID для этой строки пункта норм
+    GetInfoIDs;
+    //удаляем эти InfoID (с обработкой)
+    SIZNormSubItemInfoDelete(InfoIDs);
+    //удаляем строку пункта нормы
+    Delete('SIZNORMSUBITEM', 'SubItemID', ASubItemID, False{no commit});
+
+    QCommit;
+    Result:= True;
+  except
+    QRollback;
+  end;
+end;
+
+procedure TDataBase.SIZNormSubItemInfoDelete(const AInfoIDs: TIntVector);
+var
+  i: Integer;
+  StoreIDs, EntryIDs: TInt64Vector;
+
+  function GetStoreIDsFromInfoID(const AInfoID: Integer): TInt64Vector;
+  begin
+    Result:= nil;
+    QSetSQL(
+      'SELECT t1.StoreID ' +
+      'FROM SIZSTAFFLOGINFO t1 ' +
+      'INNER JOIN SIZSTAFFLOG t2 ON (t1.LogID=t2.LogID) ' +
+      'INNER JOIN SIZNORMSUBITEMINFO t3 ON (t2.GettingInfoID=t3.InfoID) ' +
+      'WHERE (t2.GettingInfoID=t2.NowInfoID) AND (t3.InfoID = :InfoID)'
+    );
+    QParamInt('InfoID', AInfoID);
+    QOpen;
+    if not QIsEmpty then
+    begin
+      QFirst;
+      while not QEOF do
+      begin
+        VAppend(Result, QFieldInt64('StoreID'));
+        QNext;
+      end;
+    end;
+    QClose;
+  end;
+
+  function GetReturnedSizEntryIDs(const AInfoID: Integer): TInt64Vector;
+  begin
+    Result:= nil;
+    QSetSQL(
+      'SELECT t4.EntryID ' +
+      'FROM SIZSTAFFLOGINFO t1 ' +
+      'INNER JOIN SIZSTAFFLOG t2 ON (t1.LogID=t2.LogID) ' +
+      'INNER JOIN SIZNORMSUBITEMINFO t3 ON (t2.GettingInfoID=t3.InfoID) ' +
+      'INNER JOIN SIZSTAFFBACK t4 ON (t1.StoreID=t4.StoreID) ' +
+      'WHERE (t2.GettingInfoID=t2.NowInfoID) AND (t3.InfoID = :InfoID)'
+    );
+    QParamInt('InfoID', AInfoID);
+    QOpen;
+    if not QIsEmpty then
+    begin
+      QFirst;
+      while not QEOF do
+      begin
+        VAppend(Result, QFieldInt64('EntryID'));
+        QNext;
+      end;
+    end;
+    QClose;
+  end;
+
+begin
+  if VIsNil(AInfoIDs) then Exit;
+
+  QSetQuery(FQuery);
+
+  //получаем список StoreID, выданных СО СКЛАДА по этой строке подпункту норм
+  StoreIDs:= nil;
+  for i:=0 to High(AInfoIDs) do
+    StoreIDs:= VAdd(StoreIDs, GetStoreIdsFromInfoID(AInfoIDs[i]));
+
+  //получаем список EntryID тех сиз, что были возвращены на склад по этому подпункту норм
+  EntryIDs:= nil;
+  for i:=0 to High(AInfoIDs) do
+    EntryIDs:= VAdd(EntryIDs, GetReturnedSizEntryIDs(AInfoIDs[i]));
+
+  //удаляем эти возвращенные СИЗ из таблицы прихода на склад
+  Delete('SIZENTRY', 'EntryID', EntryIDs, False{no commit});
+
+  //удаляем эти StoreID из таблиц списания и возврата СИЗ
+  Delete('SIZSTOREWRITEOFF', 'StoreID', StoreIDs, False{no commit});
+  Delete('SIZSTAFFBACK', 'StoreID', StoreIDs, False{no commit});
+
+  //отмечаем эти StoreID на складе, как свободные
+  i:= 0;
+  UpdateInt64ID('SIZSTORE', 'IsBusy', 'StoreID', StoreIDs, i, False{no commit});
+
+  //удаляем сами InfoID
+  Delete('SIZNORMSUBITEMINFO', 'InfoID', AInfoIDs, False{no commit});
 end;
 
 end.
