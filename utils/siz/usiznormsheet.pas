@@ -48,17 +48,13 @@ type
     function FirstDataRow: Integer; override;
     function LastDataRow: Integer; override;
 
-    function IsSelectedCellCorrect(const ARow, {%H-}ACol: Integer): Boolean; //override;
+   // function IsSelectedCellCorrect(const ARow, {%H-}ACol: Integer): Boolean; //override;
     procedure Select(const ARow, {%H-}ACol: Integer); override;
     procedure Unselect; override;
     procedure SelectionMove(const AVertDelta: Integer); override;
 
-
-
     function RowToIndex(const ARow: Integer): Integer; override;
     function IndexToRow(const AIndex: Integer): Integer; override;
-
-
 
   private
     const
@@ -82,9 +78,8 @@ type
   public
     procedure Draw(const ASubItems: TNormSubItems; const AItemName: String;
                    const ASelectedIndex: Integer);
-    function SelectedSubItemIndex: Integer;
-    function CanUpSelection: Boolean;
-    function CanDownSelection: Boolean;
+    function CanUp: Boolean;
+    function CanDown: Boolean;
   end;
 
 implementation
@@ -108,12 +103,13 @@ end;
 
 procedure TSIZNormItemSheet.Select(const ARow, ACol: Integer);
 var
-  i, j, n: Integer;
+  i, j, ItemIndex: Integer;
 begin
-  n:= VIndexOf(FFirstItemIndexes, FLastItemIndexes, RowToIndex(ARow));
-  if n<0 then Exit;
-  FSelectedIndex:= n;
-  for i:= FFirstItemIndexes[n] to FLastItemIndexes[n] do
+  i:= RowToIndex(ARow);
+  ItemIndex:= VIndexOf(FFirstItemIndexes, FLastItemIndexes, i);
+  if ItemIndex<0 then Exit;
+  FSelectedIndex:= i;
+  for i:= FFirstItemIndexes[ItemIndex] to FLastItemIndexes[ItemIndex] do
     for j:= 1 to Writer.ColCount do
       SelectionAddCell(IndexToRow(i), j);
 end;
@@ -126,14 +122,14 @@ end;
 
 procedure TSIZNormItemSheet.SelectionMove(const AVertDelta: Integer);
 var
-  n: Integer;
+  ItemIndex: Integer;
 begin
   if not IsSelected then Exit;
-  n:= VIndexOf(FFirstItemIndexes, FLastItemIndexes, FSelectedIndex);
-  if n<0 then Exit;
-  n:= n + AVertDelta;
-  if not CheckIndex(High(FFirstItemIndexes), n) then Exit;
-  SetSelection(IndexToRow(FFirstItemIndexes[n]), 1);
+  ItemIndex:= VIndexOf(FFirstItemIndexes, FLastItemIndexes, FSelectedIndex);
+  if ItemIndex<0 then Exit;
+  ItemIndex:= ItemIndex + AVertDelta;
+  if not CheckIndex(High(FFirstItemIndexes), ItemIndex) then Exit;
+  SetSelection(IndexToRow(FFirstItemIndexes[ItemIndex]), 1);
 end;
 
 procedure TSIZNormItemSheet.ItemIndexesCalc;
@@ -236,10 +232,10 @@ begin
   Result:= VLast(FLastRows);
 end;
 
-function TSIZNormSubItemsSheet.IsSelectedCellCorrect(const ARow, ACol: Integer): Boolean;
-begin
-  Result:= CheckIndex(High(FFirstRows), RowToSubItemIndex(ARow));
-end;
+//function TSIZNormSubItemsSheet.IsSelectedCellCorrect(const ARow, ACol: Integer): Boolean;
+//begin
+//  Result:= CheckIndex(High(FFirstRows), RowToSubItemIndex(ARow));
+//end;
 
 function TSIZNormSubItemsSheet.RowToSubItemIndex(const ARow: Integer): Integer;
 begin
@@ -265,14 +261,14 @@ end;
 
 procedure TSIZNormSubItemsSheet.SelectionMove(const AVertDelta: Integer);
 var
-  n: Integer;
+  SubItemIndex: Integer;
 begin
   if not IsSelected then Exit;
-  n:= IndexToSubItemIndex(FSelectedIndex);
-  if n<0 then Exit;
-  n:= n + AVertDelta;
-  if not CheckIndex(High(FFirstRows), n) then Exit;
-  SetSelection(FFirstRows[n], 1);
+  SubItemIndex:= IndexToSubItemIndex(FSelectedIndex);
+  if SubItemIndex<0 then Exit;
+  SubItemIndex:= SubItemIndex + AVertDelta;
+  if not CheckIndex(High(FFirstRows), SubItemIndex) then Exit;
+  SetSelection(FFirstRows[SubItemIndex], 1);
 end;
 
 function TSIZNormSubItemsSheet.RowToIndex(const ARow: Integer): Integer;
@@ -304,7 +300,10 @@ function TSIZNormSubItemsSheet.IndexToSubItemInfoIndex(const AIndex: Integer): I
 begin
   Result:= -1;
   if AIndex<0 then Exit;
-  Result:= AIndex - 1000;
+  if AIndex<1000 then
+    Result:= 0
+  else
+    Result:= AIndex - 1000;
 end;
 
 procedure TSIZNormSubItemsSheet.CaptionDraw;
@@ -420,24 +419,24 @@ begin
   DrawingEnd;
 
   SetSelection(IndexToRow(ASelectedIndex), 1);
-
-  //if CanSelect and (ASelectedIndex>=0) then
-  //  Select(IndexToRow(ASelectedIndex), 1);
 end;
 
-function TSIZNormSubItemsSheet.SelectedSubItemIndex: Integer;
+function TSIZNormSubItemsSheet.CanUp: Boolean;
+var
+  SubItemIndex: Integer;
 begin
-  Result:= IndexToSubItemIndex(FSelectedIndex);
+  SubItemIndex:= IndexToSubItemIndex(FSelectedIndex);
+  Result:= IsSelected and (SubItemIndex>0) and
+           (FSubItems[SubItemIndex].ReasonID = FSubItems[SubItemIndex-1].ReasonID);
 end;
 
-function TSIZNormSubItemsSheet.CanUpSelection: Boolean;
+function TSIZNormSubItemsSheet.CanDown: Boolean;
+var
+  SubItemIndex: Integer;
 begin
-  Result:= IsSelected and (SelectedSubItemIndex>0);
-end;
-
-function TSIZNormSubItemsSheet.CanDownSelection: Boolean;
-begin
-  Result:= IsSelected and (SelectedSubItemIndex<High(FSubItems));
+  SubItemIndex:= IndexToSubItemIndex(FSelectedIndex);
+  Result:= IsSelected and (SubItemIndex<High(FSubItems)) and
+           (FSubItems[SubItemIndex].ReasonID = FSubItems[SubItemIndex+1].ReasonID);
 end;
 
 end.

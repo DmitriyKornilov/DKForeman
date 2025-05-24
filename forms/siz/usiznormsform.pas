@@ -226,7 +226,6 @@ end;
 procedure TSIZNormsForm.NormSubItemLoad;
 begin
   if not NormItemSheet.IsSelected then Exit;
-
   NormSubItemsDel(NormSubItems, 0, High(NormSubItems));
   if NormItemSheet.IsSelected then
     NormSubItemsLoad(ItemIDs[NormItemSheet.SelectedIndex], NormSubItems);
@@ -237,8 +236,8 @@ procedure TSIZNormsForm.NormSubItemSelect;
 begin
   SubItemDelButton.Enabled:= NormSubItemSheet.IsSelected;
   SubItemEditButton.Enabled:= NormSubItemSheet.IsSelected;
-  SubItemUpButton.Enabled:= NormSubItemSheet.CanUpSelection;
-  SubItemDownButton.Enabled:= NormSubItemSheet.CanDownSelection;
+  SubItemUpButton.Enabled:= NormSubItemSheet.CanUp;
+  SubItemDownButton.Enabled:= NormSubItemSheet.CanDown;
 end;
 
 procedure TSIZNormsForm.ViewUpdate(const AModeType: TModeType);
@@ -252,7 +251,10 @@ begin
   NormSubItemSheet.CanSelect:= ModeType=mtEditing;
   NormSubItemSheet.CanUnselect:= ModeType<>mtEditing;
   if ModeType=mtEditing then
-    NormSubItemSheet.SetSelection(2, 1) //!!!
+  begin
+    if Length(NormSubItems)>0 then
+      NormSubItemSheet.SetSelection(2, 1);
+  end
   else
     NormSubItemSheet.DelSelection;
 end;
