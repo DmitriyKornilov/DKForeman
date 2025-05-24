@@ -455,8 +455,6 @@ type
                              out ANormNames, ATypicalNames: TStrVector;
                              out ABeginDates, AEndDates: TDateVector): Boolean;
 
-    function SIZNormDelete(const ANormID: Integer): Boolean;
-
     {Загрузка из базы списка пунктов типовых норм: True - ОК, False - пусто}
     function SIZNormItemsLoad(const ANormID: Integer;
                               out AItemIDs, APostIDs: TIntVector;
@@ -468,6 +466,17 @@ type
     function SizNormItemDataLoad(const AItemID: Integer;
        out ASubItemIDs, ANums, ALifes, ASubItemOrderNums, AReasonIDs, AInfoIDs, ASizeTypes: TIntVector;
        out ASizNames, AUnits, ASpecLifeNames, AReasonNames: TStrVector): Boolean;
+
+    {Добавление новой нормы: True - ОК, False - ошибка}
+    function SIZNormAdd(out ANormID: Integer;
+                          const ANormName, ATypicalName: String;
+                          const ABeginDate, AEndDate: TDate): Boolean;
+    {Обновление нормы: True - ОК, False - ошибка}
+    function SIZNormUpdate(const ANormID: Integer;
+                          const ANormName, ATypicalName: String;
+                          const ABeginDate, AEndDate: TDate): Boolean;
+    {Удаление нормы: True - ОК, False - ошибка}
+    function SIZNormDelete(const ANormID: Integer): Boolean;
 
   end;
 
@@ -3438,11 +3447,6 @@ begin
   QClose;
 end;
 
-function TDataBase.SIZNormDelete(const ANormID: Integer): Boolean;
-begin
-
-end;
-
 function TDataBase.SIZNormItemsLoad(const ANormID: Integer;
                               out AItemIDs, APostIDs: TIntVector;
                               out AItemNames, APostNames: TStrVector): Boolean;
@@ -3579,6 +3583,61 @@ begin
     Result:= True;
   end;
   QClose;
+end;
+
+function TDataBase.SIZNormAdd(out ANormID: Integer;
+                          const ANormName, ATypicalName: String;
+                          const ABeginDate, AEndDate: TDate): Boolean;
+begin
+  Result:= False;
+  QSetQuery(FQuery);
+  try
+    //запись нормы
+    QSetSQL(
+      sqlINSERT('SIZNORM', ['NormName', 'TypicalName', 'BeginDate', 'EndDate'])
+    );
+    QParamStr('NormName', ANormName);
+    QParamStr('TypicalName', ATypicalName);
+    QParamDT('BeginDate', ABeginDate);
+    QParamDT('EndDate', AEndDate);
+    QExec;
+    //получение ID сделанной записи
+    ANormID:= LastWritedInt32ID('SIZNORM');
+
+    QCommit;
+    Result:= True;
+  except
+    QRollback;
+  end;
+end;
+
+function TDataBase.SIZNormUpdate(const ANormID: Integer;
+                          const ANormName, ATypicalName: String;
+                          const ABeginDate, AEndDate: TDate): Boolean;
+begin
+   Result:= False;
+  QSetQuery(FQuery);
+  try
+    QSetSQL(
+      sqlUPDATE('SIZNORM', ['NormName', 'TypicalName', 'BeginDate', 'EndDate']) +
+      'WHERE NormID = :NormID'
+    );
+    QParamInt('NormID', ANormID);
+    QParamStr('NormName', ANormName);
+    QParamStr('TypicalName', ATypicalName);
+    QParamDT('BeginDate', ABeginDate);
+    QParamDT('EndDate', AEndDate);
+    QExec;
+    QCommit;
+    Result:= True;
+  except
+    QRollback;
+  end;
+end;
+
+function TDataBase.SIZNormDelete(const ANormID: Integer): Boolean;
+begin
+
 end;
 
 end.

@@ -17,7 +17,7 @@ uses
   UStaffForm,
   UCalendarForm, UScheduleShiftForm, UVacationPlanForm,
   USchedulePersonalForm, UTimetableForm,
-  USIZNormsForm, USIZForm,
+  USIZNormForm, USIZForm,
   USSOForm,
   UStudyForm;
 
@@ -182,7 +182,7 @@ begin
     4: (CategoryForm as TVacationPlanForm).ViewUpdate(ModeType);
     5: (CategoryForm as TSchedulePersonalForm).ViewUpdate(ModeType);
     6: (CategoryForm as TTimetableForm).ViewUpdate(ModeType);
-    7: (CategoryForm as TSIZNormsForm).ViewUpdate(ModeType);
+    7: (CategoryForm as TSIZNormForm).ViewUpdate(ModeType);
     8: ;
     9: ;
   end;
@@ -201,7 +201,7 @@ begin
     4: (CategoryForm as TVacationPlanForm).SettingsSave;
     5: (CategoryForm as TSchedulePersonalForm).SettingsSave;
     6: (CategoryForm as TTimetableForm).SettingsSave;
-    //7: (CategoryForm as TSIZNormsForm).SettingsSave;   - no settings
+    //7: (CategoryForm as TSIZNormForm).SettingsSave;   - no settings
     8: ;
     9: ;
   end;
@@ -227,7 +227,7 @@ begin
       4: CategoryForm:= FormOnPanelCreate(TVacationPlanForm, MainPanel);
       5: CategoryForm:= FormOnPanelCreate(TSchedulePersonalForm, MainPanel);
       6: CategoryForm:= FormOnPanelCreate(TTimetableForm, MainPanel);
-      7: CategoryForm:= FormOnPanelCreate(TSIZNormsForm, MainPanel);
+      7: CategoryForm:= FormOnPanelCreate(TSIZNormForm, MainPanel);
       //7: CategoryForm:= FormOnPanelCreate(TSIZForm, MainPanel);
       //8: CategoryForm:= FormOnPanelCreate(TSSOForm, MainPanel);
       //9: CategoryForm:= FormOnPanelCreate(TStudyForm, MainPanel);

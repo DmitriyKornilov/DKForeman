@@ -20,8 +20,8 @@ uses
   USchedulePersonalEditForm, UVacationScheduleForm, USchedulePersonalMonthForm,
   UTimetableEditForm, UTimetableMonthForm, UChooseForm, UImages,
   UTimetableSheet, uschedule, UTimingUtils, UVacationPlanEditForm,
-  UVacationPlanningForm, USIZNormsForm, USIZNormSheet, USIZSizes, USIZTypes,
-  USIZUtils;
+  UVacationPlanningForm, USIZNormForm, USIZNormSheet, USIZSizes, USIZTypes,
+  USIZUtils, USIZNormEditForm;
 
 {$R *.res}
 

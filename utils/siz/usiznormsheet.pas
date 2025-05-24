@@ -390,11 +390,18 @@ begin
   FSubItems:= ASubItems;
   FItemName:= AItemName;
 
+  if Length(FSubItems)=0 then
+  begin
+    Writer.BeginEdit;
+    CaptionDraw;
+    Writer.EndEdit;
+    Exit;
+  end;
+
   FFirstRows:= nil;
   FLastRows:= nil;
 
   DrawingBegin;
-
   CaptionDraw;
 
   S:= MAIN_REASON;

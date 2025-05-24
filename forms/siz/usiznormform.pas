@@ -1,0 +1,313 @@
+unit USIZNormForm;
+
+{$mode ObjFPC}{$H+}
+
+interface
+
+uses
+  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, Buttons,
+  fpspreadsheetgrid, VirtualTrees, DividerBevel, DateUtils,
+  //Project utils
+  UDataBase, UConst, UTypes, UUtils, UImages, USIZNormSheet, USIZTypes,
+  //DK packages utils
+  DK_VSTTables, DK_Vector, DK_Dialogs, DK_CtrlUtils, DK_Const,
+  //Forms
+  USIZNormEditForm;
+
+type
+
+  { TSIZNormForm }
+
+  TSIZNormForm = class(TForm)
+    CloseButton: TSpeedButton;
+    ItemCaptionPanel: TPanel;
+    NormCaptionPanel: TPanel;
+    ExportButton: TSpeedButton;
+    ItemAddButton: TSpeedButton;
+    SubItemAddButton: TSpeedButton;
+    ItemCopyButton: TSpeedButton;
+    ItemDelButton: TSpeedButton;
+    SubItemDelButton: TSpeedButton;
+    ItemEditButton: TSpeedButton;
+    SubItemEditButton: TSpeedButton;
+    SubItemGrid: TsWorksheetGrid;
+    SubItemSheetPanel: TPanel;
+    ItemToolPanel: TPanel;
+    DividerBevel1: TDividerBevel;
+    ItemSheetPanel: TPanel;
+    SubItemDownButton: TSpeedButton;
+    SubItemUpButton: TSpeedButton;
+    SubItemToolPanel: TPanel;
+    SubItemPanel: TPanel;
+    NormAddButton: TSpeedButton;
+    NormDelButton: TSpeedButton;
+    NormEditButton: TSpeedButton;
+    NormToolPanel: TPanel;
+    NormPanel: TPanel;
+    MainPanel: TPanel;
+    ItemPanel: TPanel;
+    Splitter1: TSplitter;
+    NormVT: TVirtualStringTree;
+    Splitter2: TSplitter;
+    ToolPanel: TPanel;
+    ItemGrid: TsWorksheetGrid;
+    procedure CloseButtonClick(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
+    procedure FormShow(Sender: TObject);
+    procedure NormAddButtonClick(Sender: TObject);
+    procedure NormDelButtonClick(Sender: TObject);
+    procedure NormEditButtonClick(Sender: TObject);
+  private
+    ModeType: TModeType;
+
+    NormList: TVSTTable;
+    NormIDs: TIntVector;
+    BeginDates, EndDates: TDateVector;
+    NormNames, TypicalNames: TStrVector;
+
+    NormItemSheet: TSIZNormItemSheet;
+    ItemIDs, PostIDs: TIntVector;
+    ItemNames, PostNames: TStrVector;
+
+    NormSubItems: TNormSubItems;
+    NormSubItemSheet: TSIZNormSubItemsSheet;
+
+    procedure NormListCreate;
+    procedure NormListLoad(const SelectedID: Integer = -1);
+    procedure NormListSelect;
+    procedure NormListDelItem;
+
+    procedure NormItemLoad;
+    procedure NormItemSelect;
+
+    procedure NormSubItemLoad;
+    procedure NormSubItemSelect;
+
+    procedure SIZNormEditFormOpen(const AEditingType: TEditingType);
+  public
+    procedure ViewUpdate(const AModeType: TModeType);
+  end;
+
+var
+  SIZNormForm: TSIZNormForm;
+
+implementation
+
+uses UMainForm;
+
+{$R *.lfm}
+
+{ TSIZNormForm }
+
+procedure TSIZNormForm.CloseButtonClick(Sender: TObject);
+begin
+  MainForm.CategorySelect(0);
+end;
+
+procedure TSIZNormForm.FormCreate(Sender: TObject);
+begin
+  ModeType:= mtView;
+
+  SetToolPanels([
+    ToolPanel, NormToolPanel, ItemToolPanel, SubItemToolPanel
+  ]);
+  SetCaptionPanels([
+    NormCaptionPanel, ItemCaptionPanel
+  ]);
+  SetToolButtons([
+    CloseButton,
+    NormAddButton, NormDelButton, NormEditButton,
+    ItemAddButton, ItemDelButton, ItemEditButton, ItemCopyButton,
+    SubItemAddButton, SubItemDelButton, SubItemEditButton, SubItemUpButton, SubItemDownButton
+  ]);
+
+  Images.ToButtons([
+    ExportButton,
+    CloseButton,
+    NormAddButton, NormDelButton, NormEditButton,
+    ItemAddButton, ItemDelButton, ItemEditButton, ItemCopyButton,
+    SubItemAddButton, SubItemDelButton, SubItemEditButton, SubItemUpButton, SubItemDownButton
+  ]);
+
+  NormListCreate;
+  NormItemSheet:= TSIZNormItemSheet.Create(ItemGrid.Worksheet, ItemGrid, MainForm.GridFont);
+  NormItemSheet.OnSelect:= @NormItemSelect;
+  NormItemSheet.CanUnselect:= False;
+
+  NormSubItemSheet:= TSIZNormSubItemsSheet.Create(SubItemGrid.Worksheet, SubItemGrid, MainForm.GridFont);
+  NormSubItemSheet.OnSelect:=@NormSubItemSelect;
+  NormSubItemSheet.AutosizeColumnDisable;
+
+end;
+
+procedure TSIZNormForm.FormDestroy(Sender: TObject);
+begin
+  FreeAndNil(NormList);
+  FreeAndNil(NormItemSheet);
+  FreeAndNil(NormSubItemSheet);
+end;
+
+procedure TSIZNormForm.FormShow(Sender: TObject);
+begin
+  NormListLoad;
+end;
+
+procedure TSIZNormForm.NormAddButtonClick(Sender: TObject);
+begin
+  SIZNormEditFormOpen(etAdd);
+end;
+
+procedure TSIZNormForm.NormDelButtonClick(Sender: TObject);
+begin
+  NormListDelItem;
+end;
+
+procedure TSIZNormForm.NormEditButtonClick(Sender: TObject);
+begin
+  SIZNormEditFormOpen(etEdit);
+end;
+
+procedure TSIZNormForm.NormListCreate;
+begin
+  NormList:= TVSTTable.Create(NormVT);
+  NormList.CanSelect:= True;
+  NormList.CanUnselect:= False;
+  NormList.OnSelect:= @NormListSelect;
+  NormList.OnDelKeyDown:= @NormListDelItem;
+  NormList.SetSingleFont(MainForm.GridFont);
+  NormList.HeaderFont.Style:= [fsBold];
+
+  NormList.AddColumn('Период действия', 150);
+  NormList.AddColumn('Нормы предприятия', 500);
+  NormList.AddColumn('Типовые (отраслевые) нормы', 500);
+  NormList.Draw;
+end;
+
+procedure TSIZNormForm.NormListLoad(const SelectedID: Integer);
+var
+  SelectedNormID: Integer;
+begin
+  SelectedNormID:= GetSelectedID(NormList, NormIDs, SelectedID);
+
+  DataBase.SIZNormsLoad(NormIDs, NormNames, TypicalNames, BeginDates, EndDates);
+
+  NormList.Visible:= False;
+  try
+    NormList.ValuesClear;
+    NormList.SetColumn('Период действия', VPeriodToStr(BeginDates, EndDates), taLeftJustify);
+    NormList.SetColumn('Нормы предприятия', NormNames, taLeftJustify);
+    NormList.SetColumn('Типовые (отраслевые) нормы', TypicalNames, taLeftJustify);
+    NormList.Draw;
+    NormList.ReSelect(NormIDs, SelectedNormID, True);
+  finally
+    NormList.Visible:= True;
+  end;
+
+  if not VIsNil(NormIDs) then Exit;
+  NormItemSheet.Draw(nil, nil, 0);
+  NormSubItemSheet.Draw(nil, EmptyStr, 0);
+end;
+
+procedure TSIZNormForm.NormListSelect;
+begin
+  NormDelButton.Enabled:= NormList.IsSelected;
+  NormEditButton.Enabled:= NormList.IsSelected;
+  ItemAddButton.Enabled:= NormList.IsSelected;
+  NormItemLoad;
+end;
+
+procedure TSIZNormForm.NormListDelItem;
+begin
+  if not NormList.IsSelected then Exit;
+  if not Confirm('Удалить всю информацию по "' +
+                 NormNames[NormList.SelectedIndex] + '"?') then Exit;
+  DataBase.SIZNormDelete(NormIDs[NormList.SelectedIndex]);
+  NormListLoad;
+end;
+
+procedure TSIZNormForm.NormItemLoad;
+begin
+  if not NormList.IsSelected then Exit;
+
+  DataBase.SIZNormItemsLoad(NormIDs[NormList.SelectedIndex],
+                              ItemIDs, PostIDs, ItemNames, PostNames);
+  NormItemSheet.Draw(ItemNames, PostNames, 0);
+
+  if not VIsNil(ItemNames) then Exit;
+  NormSubItemSheet.Draw(nil, EmptyStr, 0);
+end;
+
+procedure TSIZNormForm.NormItemSelect;
+begin
+  ItemDelButton.Enabled:= NormItemSheet.IsSelected;
+  ItemEditButton.Enabled:= NormItemSheet.IsSelected;
+  ItemCopyButton.Enabled:= NormItemSheet.IsSelected;
+  SubItemAddButton.Enabled:= NormItemSheet.IsSelected;
+  NormSubItemLoad;
+end;
+
+procedure TSIZNormForm.NormSubItemLoad;
+begin
+  if not NormItemSheet.IsSelected then Exit;
+  NormSubItemsDel(NormSubItems, 0, High(NormSubItems));
+  NormSubItemsLoad(ItemIDs[NormItemSheet.SelectedIndex], NormSubItems);
+  NormSubItemSheet.Draw(NormSubItems, ItemNames[NormItemSheet.SelectedIndex], 0);
+end;
+
+procedure TSIZNormForm.NormSubItemSelect;
+begin
+  SubItemDelButton.Enabled:= NormSubItemSheet.IsSelected;
+  SubItemEditButton.Enabled:= NormSubItemSheet.IsSelected;
+  SubItemUpButton.Enabled:= NormSubItemSheet.CanUp;
+  SubItemDownButton.Enabled:= NormSubItemSheet.CanDown;
+end;
+
+procedure TSIZNormForm.SIZNormEditFormOpen(const AEditingType: TEditingType);
+var
+  SIZNormEditForm: TSIZNormEditForm;
+begin
+  SIZNormEditForm:= TSIZNormEditForm.Create(nil);
+  try
+
+    SIZNormEditForm.EditingType:= AEditingType;
+    if AEditingType=etEdit then
+    begin
+      SIZNormEditForm.NormID:= NormIDs[NormList.SelectedIndex];
+      SIZNormEditForm.NormNameEdit.Text:= NormNames[NormList.SelectedIndex];
+      SIZNormEditForm.TypicalNameEdit.Text:= TypicalNames[NormList.SelectedIndex];
+      SIZNormEditForm.BeginDatePicker.Date:= BeginDates[NormList.SelectedIndex];
+      SIZNormEditForm.EndDatePicker.Date:= EndDates[NormList.SelectedIndex];
+      SIZNormEditForm.InfEndDateCheckBox.Checked:=
+                            SameDate(EndDates[NormList.SelectedIndex], INFDATE);
+    end;
+
+    if SIZNormEditForm.ShowModal=mrOK then
+      NormListLoad(SIZNormEditForm.NormID);
+
+  finally
+    FreeAndNil(SIZNormEditForm);
+  end;
+end;
+
+procedure TSIZNormForm.ViewUpdate(const AModeType: TModeType);
+begin
+  ModeType:= AModeType;
+
+  NormToolPanel.Visible:= ModeType=mtEditing;
+  ItemToolPanel.Visible:= ModeType=mtEditing;
+  SubItemToolPanel.Visible:= ModeType=mtEditing;
+
+  NormSubItemSheet.CanSelect:= ModeType=mtEditing;
+  NormSubItemSheet.CanUnselect:= ModeType<>mtEditing;
+  if ModeType=mtEditing then
+  begin
+    if Length(NormSubItems)>0 then
+      NormSubItemSheet.SetSelection(2, 1);
+  end
+  else
+    NormSubItemSheet.DelSelection;
+end;
+
+end.
+
