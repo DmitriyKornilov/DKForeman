@@ -7,7 +7,6 @@ object SchedulePersonalForm: TSchedulePersonalForm
   ClientHeight = 678
   ClientWidth = 1799
   DesignTimePPI = 120
-  LCLVersion = '4.0.0.4'
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
@@ -22,8 +21,8 @@ object SchedulePersonalForm: TSchedulePersonalForm
     BorderSpacing.Right = 2
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 40
-    ClientWidth = 1795
+    ClientHeight = 36
+    ClientWidth = 1791
     ParentFont = False
     TabOrder = 0
     object YearPanel: TPanel
@@ -57,10 +56,10 @@ object SchedulePersonalForm: TSchedulePersonalForm
       end
     end
     object DividerBevel1: TDividerBevel
-      Left = 1731
+      Left = 1730
       Height = 36
       Top = 0
-      Width = 20
+      Width = 21
       Caption = 'DividerBevel1'
       Align = alRight
       BevelWidth = 2
@@ -86,7 +85,7 @@ object SchedulePersonalForm: TSchedulePersonalForm
       Left = 65
       Height = 36
       Top = 0
-      Width = 20
+      Width = 21
       Caption = 'DividerBevel2'
       Align = alLeft
       BevelWidth = 2
@@ -95,10 +94,10 @@ object SchedulePersonalForm: TSchedulePersonalForm
       ParentFont = False
     end
     object DividerBevel3: TDividerBevel
-      Left = 188
+      Left = 195
       Height = 36
       Top = 0
-      Width = 20
+      Width = 21
       Caption = 'DividerBevel3'
       Align = alLeft
       BevelWidth = 2
@@ -108,11 +107,11 @@ object SchedulePersonalForm: TSchedulePersonalForm
     end
     object ExportButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 85
+      Left = 86
       Height = 36
       Hint = 'Экспорт в формат электронной таблицы XLSX или ODS'
       Top = 0
-      Width = 103
+      Width = 109
       Align = alLeft
       AutoSize = True
       Caption = ' Экспорт '
@@ -126,11 +125,11 @@ object SchedulePersonalForm: TSchedulePersonalForm
     end
     object MonthScheduleButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 208
+      Left = 216
       Height = 36
       Hint = 'Общий график работы на месяц'
       Top = 0
-      Width = 218
+      Width = 224
       Align = alLeft
       AutoSize = True
       Caption = ' Общий график на месяц '
@@ -144,11 +143,11 @@ object SchedulePersonalForm: TSchedulePersonalForm
     end
     object VacationScheduleButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 426
+      Left = 440
       Height = 36
       Hint = 'График отпусков по форме Т-7'
       Top = 0
-      Width = 199
+      Width = 205
       Align = alLeft
       AutoSize = True
       Caption = ' График отпусков (Т-7) '
@@ -238,8 +237,8 @@ object SchedulePersonalForm: TSchedulePersonalForm
       BorderSpacing.Bottom = 2
       BevelOuter = bvNone
       BorderStyle = bsSingle
-      ClientHeight = 568
-      ClientWidth = 205
+      ClientHeight = 564
+      ClientWidth = 201
       Color = clWhite
       ParentBackground = False
       ParentColor = False
@@ -384,8 +383,8 @@ object SchedulePersonalForm: TSchedulePersonalForm
       BorderSpacing.Bottom = 2
       BevelOuter = bvNone
       BorderStyle = bsSingle
-      ClientHeight = 40
-      ClientWidth = 580
+      ClientHeight = 36
+      ClientWidth = 576
       ParentBackground = False
       ParentColor = False
       ParentFont = False
@@ -412,15 +411,15 @@ object SchedulePersonalForm: TSchedulePersonalForm
       BorderSpacing.Top = 2
       BevelOuter = bvNone
       BorderStyle = bsSingle
-      ClientHeight = 40
-      ClientWidth = 580
+      ClientHeight = 36
+      ClientWidth = 576
       TabOrder = 2
       object OrderLabel: TLabel
         AnchorSideLeft.Control = OrderButtonPanel
         AnchorSideLeft.Side = asrBottom
         AnchorSideTop.Control = ListOrderToolPanel
         AnchorSideTop.Side = asrCenter
-        Left = 100
+        Left = 101
         Height = 20
         Top = 8
         Width = 115
@@ -432,7 +431,7 @@ object SchedulePersonalForm: TSchedulePersonalForm
         AnchorSideLeft.Side = asrBottom
         AnchorSideTop.Control = ListOrderToolPanel
         AnchorSideTop.Side = asrCenter
-        Left = 221
+        Left = 222
         Height = 24
         Top = 6
         Width = 63
@@ -448,7 +447,7 @@ object SchedulePersonalForm: TSchedulePersonalForm
         AnchorSideLeft.Side = asrBottom
         AnchorSideTop.Control = ListOrderToolPanel
         AnchorSideTop.Side = asrCenter
-        Left = 290
+        Left = 291
         Height = 24
         Top = 6
         Width = 97
@@ -462,7 +461,7 @@ object SchedulePersonalForm: TSchedulePersonalForm
         AnchorSideLeft.Side = asrBottom
         AnchorSideTop.Control = ListOrderToolPanel
         AnchorSideTop.Side = asrCenter
-        Left = 393
+        Left = 394
         Height = 24
         Top = 6
         Width = 161
@@ -475,12 +474,12 @@ object SchedulePersonalForm: TSchedulePersonalForm
         Left = 0
         Height = 36
         Top = 0
-        Width = 100
+        Width = 101
         Align = alLeft
         AutoSize = True
         BevelOuter = bvNone
         ClientHeight = 36
-        ClientWidth = 100
+        ClientWidth = 101
         TabOrder = 3
         object AscendingButton: TSpeedButton
           Cursor = crHandPoint
@@ -515,7 +514,7 @@ object SchedulePersonalForm: TSchedulePersonalForm
           Left = 80
           Height = 36
           Top = 0
-          Width = 20
+          Width = 21
           Caption = 'DividerBevel4'
           Align = alLeft
           BevelWidth = 2
@@ -595,8 +594,8 @@ object SchedulePersonalForm: TSchedulePersonalForm
             Align = alTop
             BevelOuter = bvNone
             BorderStyle = bsSingle
-            ClientHeight = 40
-            ClientWidth = 650
+            ClientHeight = 36
+            ClientWidth = 646
             ParentFont = False
             TabOrder = 0
             object DayAddButton: TSpeedButton
@@ -695,8 +694,8 @@ object SchedulePersonalForm: TSchedulePersonalForm
             Align = alTop
             BevelOuter = bvNone
             BorderStyle = bsSingle
-            ClientHeight = 40
-            ClientWidth = 650
+            ClientHeight = 36
+            ClientWidth = 646
             ParentFont = False
             TabOrder = 0
             object CopySaveButton: TSpeedButton
@@ -807,8 +806,8 @@ object SchedulePersonalForm: TSchedulePersonalForm
           Align = alTop
           BevelOuter = bvNone
           BorderStyle = bsSingle
-          ClientHeight = 40
-          ClientWidth = 650
+          ClientHeight = 36
+          ClientWidth = 646
           ParentFont = False
           TabOrder = 0
           object VacationSaveButton: TSpeedButton
@@ -922,8 +921,8 @@ object SchedulePersonalForm: TSchedulePersonalForm
         Align = alTop
         BevelOuter = bvNone
         BorderStyle = bsSingle
-        ClientHeight = 40
-        ClientWidth = 650
+        ClientHeight = 36
+        ClientWidth = 646
         ParentFont = False
         TabOrder = 0
         object HistoryDelButton: TSpeedButton

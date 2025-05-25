@@ -180,6 +180,7 @@ type
     procedure CorrectionsLoad(const SelectedID: Integer = -1);
     procedure CorrectionDelete;
     procedure CorrectionSelect;
+    procedure CorrectionEdit;
     procedure CopyListLoad(const ASelectedDate: TDate = 0);
     procedure CopySelect;
 
@@ -205,6 +206,7 @@ type
     procedure HistoryLoad(const SelectedID: Integer = -1);
     procedure HistorySelect;
     procedure HistoryDelItem;
+    procedure HistoryEditItem;
 
     procedure VacationEditCreate;
     procedure VacationEditLoad;
@@ -284,16 +286,12 @@ end;
 
 procedure TSchedulePersonalForm.DayEditButtonClick(Sender: TObject);
 begin
-  ScheduleCorrectionEditFormOpen(Corrections.Dates[VSTDays.SelectedIndex]);
+  CorrectionEdit;
 end;
 
 procedure TSchedulePersonalForm.DayVTDblClick(Sender: TObject);
-var
-  D: TDate;
 begin
-  if not VSTDays.IsSelected then Exit;
-  D:= Corrections.Dates[VSTDays.SelectedIndex];
-  ScheduleCorrectionEditFormOpen(D);
+  CorrectionEdit;
 end;
 
 procedure TSchedulePersonalForm.AscendingButtonClick(Sender: TObject);
@@ -407,13 +405,12 @@ end;
 
 procedure TSchedulePersonalForm.HistoryEditButtonClick(Sender: TObject);
 begin
-  SchedulePersonalEditFormOpen(etEdit);
+  HistoryEditItem;
 end;
 
 procedure TSchedulePersonalForm.HistoryVTDblClick(Sender: TObject);
 begin
-  if not History.IsSelected then Exit;
-  SchedulePersonalEditFormOpen(etEdit);
+  HistoryEditItem;
 end;
 
 procedure TSchedulePersonalForm.SchedulePersonalMonthFormOpen;
@@ -715,6 +712,7 @@ begin
   VSTDays:= TVSTTable.Create(DayVT);
   VSTDays.OnSelect:= @CorrectionSelect;
   VSTDays.OnDelKeyDown:= @CorrectionDelete;
+  VSTDays.OnReturnKeyDown:= @CorrectionEdit;
   VSTDays.SetSingleFont(MainForm.GridFont);
   VSTDays.HeaderFont.Style:= [fsBold];
   VSTDays.CanSelect:= True;
@@ -793,6 +791,12 @@ begin
   DayDelButton.Enabled:= VSTDays.IsSelected;
   DayEditButton.Enabled:= DayDelButton.Enabled;
   DayCopyButton.Enabled:= DayDelButton.Enabled;
+end;
+
+procedure TSchedulePersonalForm.CorrectionEdit;
+begin
+  if not VSTDays.IsSelected then Exit;
+  ScheduleCorrectionEditFormOpen(Corrections.Dates[VSTDays.SelectedIndex]);
 end;
 
 procedure TSchedulePersonalForm.CopyListLoad(const ASelectedDate: TDate = 0);
@@ -1069,6 +1073,7 @@ begin
   History.CanUnselect:= False;
   History.OnSelect:= @HistorySelect;
   History.OnDelKeyDown:= @HistoryDelItem;
+  History.OnReturnKeyDown:= @HistoryEditItem;
   History.SetSingleFont(MainForm.GridFont);
   History.HeaderFont.Style:= [fsBold];
 
@@ -1131,6 +1136,12 @@ begin
 
   HistoryLoad;
   ScheduleUpdate;
+end;
+
+procedure TSchedulePersonalForm.HistoryEditItem;
+begin
+  if not History.IsSelected then Exit;
+  SchedulePersonalEditFormOpen(etEdit);
 end;
 
 procedure TSchedulePersonalForm.VacationEditCreate;
