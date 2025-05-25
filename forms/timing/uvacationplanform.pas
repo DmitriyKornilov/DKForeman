@@ -73,8 +73,10 @@ type
 
     procedure StaffListCreate;
     procedure StaffListLoad(const SelectedID: Integer = -1);
-    procedure StaffListSelect;
     procedure StaffListFilter(const AFilterString: String);
+    procedure StaffListItemSelect;
+    procedure StaffListItemEdit;
+
 
     procedure VacationPlanEditFormOpen;
     procedure VacationPlanningFormOpen;
@@ -103,7 +105,7 @@ end;
 
 procedure TVacationPlanForm.EditButtonClick(Sender: TObject);
 begin
-  VacationPlanEditFormOpen;
+  StaffListItemEdit;
 end;
 
 procedure TVacationPlanForm.ExportButtonClick(Sender: TObject);
@@ -183,8 +185,7 @@ end;
 
 procedure TVacationPlanForm.VTDblClick(Sender: TObject);
 begin
-  if not STaffList.IsSelected then Exit;
-  VacationPlanEditFormOpen;
+  StaffListItemEdit;
 end;
 
 procedure TVacationPlanForm.YearSpinEditChange(Sender: TObject);
@@ -268,7 +269,8 @@ end;
 procedure TVacationPlanForm.StaffListCreate;
 begin
   StaffList:= TVSTTable.Create(VT);
-  StaffList.OnSelect:= @StaffListSelect;
+  StaffList.OnSelect:= @StaffListItemSelect;
+  StaffList.OnReturnKeyDown:= @StaffListItemEdit;
   StaffList.SetSingleFont(MainForm.GridFont);
   StaffList.HeaderFont.Style:= [fsBold];
 
@@ -324,9 +326,15 @@ begin
   end;
 end;
 
-procedure TVacationPlanForm.StaffListSelect;
+procedure TVacationPlanForm.StaffListItemSelect;
 begin
   EditButton.Enabled:= StaffList.IsSelected;
+end;
+
+procedure TVacationPlanForm.StaffListItemEdit;
+begin
+  if not STaffList.IsSelected then Exit;
+  VacationPlanEditFormOpen;
 end;
 
 procedure TVacationPlanForm.StaffListFilter(const AFilterString: String);
