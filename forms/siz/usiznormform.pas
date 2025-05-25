@@ -12,7 +12,7 @@ uses
   //DK packages utils
   DK_VSTTables, DK_Vector, DK_Dialogs, DK_CtrlUtils, DK_Const,
   //Forms
-  USIZNormEditForm;
+  USIZNormEditForm, USIZNormItemEditForm;
 
 type
 
@@ -55,6 +55,7 @@ type
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure ItemAddButtonClick(Sender: TObject);
     procedure ItemDelButtonClick(Sender: TObject);
     procedure NormAddButtonClick(Sender: TObject);
     procedure NormDelButtonClick(Sender: TObject);
@@ -82,7 +83,7 @@ type
     procedure NormListDelItem;
     procedure NormListEditItem;
 
-    procedure NormItemListLoad;
+    procedure NormItemListLoad(const SelectedID: Integer = 0);
     procedure NormItemSelect;
     procedure NormItemDelete;
 
@@ -90,7 +91,12 @@ type
     procedure NormSubItemSelect;
     procedure NormSubItemDelete;
 
+    procedure NormButtonsEnabled;
+    procedure NormItemButtonsEnabled;
+    procedure NormSubItemButtonsEnabled;
+
     procedure SIZNormEditFormOpen(const AEditingType: TEditingType);
+    procedure SIZNormItemEditFormOpen(const AEditingType: TEditingType);
   public
     procedure ViewUpdate(const AModeType: TModeType);
   end;
@@ -163,6 +169,11 @@ begin
   NormListLoad;
 end;
 
+procedure TSIZNormForm.ItemAddButtonClick(Sender: TObject);
+begin
+  SIZNormItemEditFormOpen(etAdd);
+end;
+
 procedure TSIZNormForm.ItemDelButtonClick(Sender: TObject);
 begin
   NormItemDelete;
@@ -233,6 +244,9 @@ begin
     NormList.Visible:= True;
   end;
 
+  NormItemButtonsEnabled;
+  NormSubItemButtonsEnabled;
+
   if not VIsNil(NormIDs) then Exit;
   NormItemSheet.Draw(nil, nil, 0);
   NormSubItemSheet.Draw(nil, EmptyStr, 0);
@@ -240,9 +254,7 @@ end;
 
 procedure TSIZNormForm.NormListSelect;
 begin
-  NormDelButton.Enabled:= NormList.IsSelected;
-  NormEditButton.Enabled:= NormList.IsSelected;
-  ItemAddButton.Enabled:= NormList.IsSelected;
+  NormButtonsEnabled;
   NormItemListLoad;
 end;
 
@@ -263,15 +275,25 @@ begin
   SIZNormEditFormOpen(etEdit);
 end;
 
-procedure TSIZNormForm.NormItemListLoad;
+procedure TSIZNormForm.NormItemListLoad(const SelectedID: Integer);
+var
+  SelectedItemID, SelectedIndex: Integer;
 begin
   NormSubItemSheet.Clear;
   NormItemSheet.Clear;
   if not NormList.IsSelected then Exit;
 
+  SelectedItemID:= GetSelectedID(NormItemSheet, ItemIDs, SelectedID);
+
   DataBase.SIZNormItemsLoad(NormIDs[NormList.SelectedIndex],
                               ItemIDs, PostIDs, ItemNames, PostNames);
-  NormItemSheet.Draw(ItemNames, PostNames, 0);
+
+  SelectedIndex:= VIndexOf(ItemIDs, SelectedItemID);
+  if SelectedIndex<0 then SelectedIndex:= 0;
+  NormItemSheet.Draw(ItemNames, PostNames, SelectedIndex);
+
+  NormItemButtonsEnabled;
+  NormSubItemButtonsEnabled;
 
   if not VIsNil(ItemNames) then Exit;
   NormSubItemSheet.Draw(nil, EmptyStr, 0);
@@ -279,10 +301,7 @@ end;
 
 procedure TSIZNormForm.NormItemSelect;
 begin
-  ItemDelButton.Enabled:= NormItemSheet.IsSelected;
-  ItemEditButton.Enabled:= NormItemSheet.IsSelected;
-  ItemCopyButton.Enabled:= NormItemSheet.IsSelected;
-  SubItemAddButton.Enabled:= NormItemSheet.IsSelected;
+  NormItemButtonsEnabled;
   NormSubItemListLoad;
 end;
 
@@ -306,10 +325,7 @@ end;
 
 procedure TSIZNormForm.NormSubItemSelect;
 begin
-  SubItemDelButton.Enabled:= NormSubItemSheet.IsSelected;
-  SubItemEditButton.Enabled:= NormSubItemSheet.IsSelected;
-  SubItemUpButton.Enabled:= NormSubItemSheet.CanUp;
-  SubItemDownButton.Enabled:= NormSubItemSheet.CanDown;
+  NormSubItemButtonsEnabled;
 end;
 
 procedure TSIZNormForm.NormSubItemDelete;
@@ -323,6 +339,29 @@ begin
   DataBase.SIZNormSubItemDelete(ItemIDs[NormItemSheet.SelectedIndex],
                      SubItem.SubItemID, SubItem.ReasonID, SubItem.OrderNum );
   NormSubItemListLoad;
+end;
+
+procedure TSIZNormForm.NormButtonsEnabled;
+begin
+  NormDelButton.Enabled:= NormList.IsSelected;
+  NormEditButton.Enabled:= NormList.IsSelected;
+  ItemAddButton.Enabled:= NormList.IsSelected;
+end;
+
+procedure TSIZNormForm.NormItemButtonsEnabled;
+begin
+  ItemDelButton.Enabled:= NormItemSheet.IsSelected;
+  ItemEditButton.Enabled:= NormItemSheet.IsSelected;
+  ItemCopyButton.Enabled:= NormItemSheet.IsSelected;
+  SubItemAddButton.Enabled:= NormItemSheet.IsSelected;
+end;
+
+procedure TSIZNormForm.NormSubItemButtonsEnabled;
+begin
+  SubItemDelButton.Enabled:= NormSubItemSheet.IsSelected;
+  SubItemEditButton.Enabled:= NormSubItemSheet.IsSelected;
+  SubItemUpButton.Enabled:= NormSubItemSheet.CanUp;
+  SubItemDownButton.Enabled:= NormSubItemSheet.CanDown;
 end;
 
 procedure TSIZNormForm.SIZNormEditFormOpen(const AEditingType: TEditingType);
@@ -349,6 +388,22 @@ begin
 
   finally
     FreeAndNil(SIZNormEditForm);
+  end;
+end;
+
+procedure TSIZNormForm.SIZNormItemEditFormOpen(const AEditingType: TEditingType);
+var
+  SIZNormItemEditForm: TSIZNormItemEditForm;
+begin
+  SIZNormItemEditForm:= TSIZNormItemEditForm.Create(nil);
+  try
+    SIZNormItemEditForm.EditingType:= AEditingType;
+
+    if SIZNormItemEditForm.ShowModal=mrOK then
+      NormItemListLoad(SIZNormItemEditForm.ItemID);
+
+  finally
+    FreeAndNil(SIZNormItemEditForm);
   end;
 end;
 
