@@ -148,7 +148,8 @@ type
     procedure EditingTablesCreate;
     procedure MonthTimetableLoad;
     procedure MonthTimetableChange;
-    procedure MonthTimetableSelect;
+    procedure MonthTimetableDaySelect;
+    procedure MonthTimetableDayEdit;
     procedure CopyListLoad(const ASelectedDate: TDate = 0);
     procedure CopySelect;
 
@@ -301,17 +302,13 @@ begin
 end;
 
 procedure TTimetableForm.DayVTDblClick(Sender: TObject);
-var
-  D: TDate;
 begin
-  if not VSTDays.IsSelected then Exit;
-  D:= MonthDates[VSTDays.SelectedIndex];
-  TimetableEditFormOpen(D);
+  MonthTimetableDayEdit;
 end;
 
 procedure TTimetableForm.EditButtonClick(Sender: TObject);
 begin
-  TimetableEditFormOpen(MonthDates[VSTDays.SelectedIndex]);
+  MonthTimetableDayEdit;
 end;
 
 procedure TTimetableForm.FIORadioButtonClick(Sender: TObject);
@@ -538,7 +535,8 @@ var
   i: Integer;
 begin
   VSTDays:= TVSTTable.Create(DayVT);
-  VSTDays.OnSelect:= @MonthTimetableSelect;
+  VSTDays.OnSelect:= @MonthTimetableDaySelect;
+  VSTDays.OnReturnKeyDown:= @MonthTimetableDayEdit;
   VSTDays.SetSingleFont(MainForm.GridFont);
   VSTDays.HeaderFont.Style:= [fsBold];
   VSTDays.CanSelect:= True;
@@ -624,7 +622,7 @@ begin
     Sheet.ColorsUpdate(Colors);
 end;
 
-procedure TTimetableForm.MonthTimetableSelect;
+procedure TTimetableForm.MonthTimetableDaySelect;
 begin
   if VSTDays.IsSelected then
     Sheet.DayInGridSelect(MonthDates[VSTDays.SelectedIndex])
@@ -633,6 +631,12 @@ begin
 
   EditButton.Enabled:= VSTDays.IsSelected;
   CopyButton.Enabled:= EditButton.Enabled;
+end;
+
+procedure TTimetableForm.MonthTimetableDayEdit;
+begin
+  if not VSTDays.IsSelected then Exit;
+  TimetableEditFormOpen(MonthDates[VSTDays.SelectedIndex]);
 end;
 
 procedure TTimetableForm.CopyListLoad(const ASelectedDate: TDate);

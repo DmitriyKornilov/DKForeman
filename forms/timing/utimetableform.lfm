@@ -10,7 +10,6 @@ object TimetableForm: TTimetableForm
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
-  LCLVersion = '3.2.0.0'
   object ToolPanel: TPanel
     Left = 2
     Height = 40
@@ -50,17 +49,17 @@ object TimetableForm: TTimetableForm
         BorderSpacing.Top = 2
         BorderSpacing.Bottom = 2
         MinValue = 2010
-        OnChange = YearSpinEditChange
         TabStop = False
         TabOrder = 0
         Value = 2022
+        OnChange = YearSpinEditChange
       end
     end
     object DividerBevel1: TDividerBevel
-      Left = 1746
+      Left = 1745
       Height = 36
       Top = 0
-      Width = 20
+      Width = 21
       Caption = 'DividerBevel1'
       Align = alRight
       BevelWidth = 2
@@ -78,15 +77,15 @@ object TimetableForm: TTimetableForm
       Align = alRight
       Images = Images.PX24
       ImageIndex = 3
-      OnClick = CloseButtonClick
       ShowHint = True
       ParentShowHint = False
+      OnClick = CloseButtonClick
     end
     object DividerBevel2: TDividerBevel
       Left = 65
       Height = 36
       Top = 0
-      Width = 20
+      Width = 21
       Caption = 'DividerBevel2'
       Align = alLeft
       BevelWidth = 2
@@ -95,10 +94,10 @@ object TimetableForm: TTimetableForm
       ParentFont = False
     end
     object DividerBevel3: TDividerBevel
-      Left = 188
+      Left = 195
       Height = 36
       Top = 0
-      Width = 20
+      Width = 21
       Caption = 'DividerBevel3'
       Align = alLeft
       BevelWidth = 2
@@ -108,11 +107,11 @@ object TimetableForm: TTimetableForm
     end
     object ExportButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 85
+      Left = 86
       Height = 36
       Hint = 'Экспорт в формат электронной таблицы XLSX или ODS'
       Top = 0
-      Width = 103
+      Width = 109
       Align = alLeft
       AutoSize = True
       Caption = ' Экспорт '
@@ -120,17 +119,17 @@ object TimetableForm: TTimetableForm
       ImageIndex = 22
       Margin = 5
       Spacing = 5
-      OnClick = ExportButtonClick
       ShowHint = True
       ParentShowHint = False
+      OnClick = ExportButtonClick
     end
     object MonthTimetableButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 208
+      Left = 216
       Height = 36
       Hint = 'Общий табель учета рабочего времени на месяц'
       Top = 0
-      Width = 216
+      Width = 222
       Align = alLeft
       AutoSize = True
       Caption = ' Общий табель на месяц '
@@ -138,9 +137,9 @@ object TimetableForm: TTimetableForm
       ImageIndex = 45
       Margin = 5
       Spacing = 5
-      OnClick = MonthTimetableButtonClick
       ShowHint = True
       ParentShowHint = False
+      OnClick = MonthTimetableButtonClick
     end
   end
   object ListPanel: TPanel
@@ -215,7 +214,7 @@ object TimetableForm: TTimetableForm
         AnchorSideLeft.Side = asrBottom
         AnchorSideTop.Control = ListOrderToolPanel
         AnchorSideTop.Side = asrCenter
-        Left = 100
+        Left = 101
         Height = 20
         Top = 8
         Width = 115
@@ -227,7 +226,7 @@ object TimetableForm: TTimetableForm
         AnchorSideLeft.Side = asrBottom
         AnchorSideTop.Control = ListOrderToolPanel
         AnchorSideTop.Side = asrCenter
-        Left = 221
+        Left = 222
         Height = 24
         Top = 6
         Width = 63
@@ -243,7 +242,7 @@ object TimetableForm: TTimetableForm
         AnchorSideLeft.Side = asrBottom
         AnchorSideTop.Control = ListOrderToolPanel
         AnchorSideTop.Side = asrCenter
-        Left = 290
+        Left = 291
         Height = 24
         Top = 6
         Width = 97
@@ -257,7 +256,7 @@ object TimetableForm: TTimetableForm
         AnchorSideLeft.Side = asrBottom
         AnchorSideTop.Control = ListOrderToolPanel
         AnchorSideTop.Side = asrCenter
-        Left = 393
+        Left = 394
         Height = 24
         Top = 6
         Width = 161
@@ -270,12 +269,12 @@ object TimetableForm: TTimetableForm
         Left = 0
         Height = 36
         Top = 0
-        Width = 100
+        Width = 101
         Align = alLeft
         AutoSize = True
         BevelOuter = bvNone
         ClientHeight = 36
-        ClientWidth = 100
+        ClientWidth = 101
         TabOrder = 3
         object AscendingButton: TSpeedButton
           Cursor = crHandPoint
@@ -308,7 +307,7 @@ object TimetableForm: TTimetableForm
           Left = 80
           Height = 36
           Top = 0
-          Width = 20
+          Width = 21
           Caption = 'DividerBevel4'
           Align = alLeft
           BevelWidth = 2
@@ -537,7 +536,7 @@ object TimetableForm: TTimetableForm
         end
         object WriteButton: TSpeedButton
           Cursor = crHandPoint
-          Left = 222
+          Left = 223
           Height = 36
           Hint = 'Заполнить месяц по персональному графику'
           Top = 0
@@ -545,13 +544,13 @@ object TimetableForm: TTimetableForm
           Align = alLeft
           Images = Images.PX24
           ImageIndex = 29
-          OnClick = WriteButtonClick
           ShowHint = True
           ParentShowHint = False
+          OnClick = WriteButtonClick
         end
         object EraseButton: TSpeedButton
           Cursor = crHandPoint
-          Left = 262
+          Left = 263
           Height = 36
           Hint = 'Очистить месяц'
           Top = 0
@@ -559,13 +558,13 @@ object TimetableForm: TTimetableForm
           Align = alLeft
           Images = Images.PX24
           ImageIndex = 10
-          OnClick = EraseButtonClick
           ShowHint = True
           ParentShowHint = False
+          OnClick = EraseButtonClick
         end
         object EditButton: TSpeedButton
           Cursor = crHandPoint
-          Left = 302
+          Left = 303
           Height = 36
           Hint = 'Редактировать день'
           Top = 0
@@ -573,13 +572,13 @@ object TimetableForm: TTimetableForm
           Align = alLeft
           Images = Images.PX24
           ImageIndex = 6
-          OnClick = EditButtonClick
           ShowHint = True
           ParentShowHint = False
+          OnClick = EditButtonClick
         end
         object CopyButton: TSpeedButton
           Cursor = crHandPoint
-          Left = 342
+          Left = 343
           Height = 36
           Hint = 'Копировать день'
           Top = 0
@@ -587,15 +586,15 @@ object TimetableForm: TTimetableForm
           Align = alLeft
           Images = Images.PX24
           ImageIndex = 9
-          OnClick = CopyButtonClick
           ShowHint = True
           ParentShowHint = False
+          OnClick = CopyButtonClick
         end
         object DividerBevel5: TDividerBevel
           Left = 202
           Height = 36
           Top = 0
-          Width = 20
+          Width = 21
           Caption = 'DividerBevel5'
           Align = alLeft
           BevelWidth = 2
@@ -654,9 +653,9 @@ object TimetableForm: TTimetableForm
           Enabled = False
           Images = Images.PX24
           ImageIndex = 7
-          OnClick = CopySaveButtonClick
           ShowHint = True
           ParentShowHint = False
+          OnClick = CopySaveButtonClick
         end
         object CopyDelButton: TSpeedButton
           Cursor = crHandPoint
@@ -669,9 +668,9 @@ object TimetableForm: TTimetableForm
           Enabled = False
           Images = Images.PX24
           ImageIndex = 5
-          OnClick = CopyDelButtonClick
           ShowHint = True
           ParentShowHint = False
+          OnClick = CopyDelButtonClick
         end
         object CopyCancelButton: TSpeedButton
           Cursor = crHandPoint
@@ -683,9 +682,9 @@ object TimetableForm: TTimetableForm
           Align = alLeft
           Images = Images.PX24
           ImageIndex = 8
-          OnClick = CopyCancelButtonClick
           ShowHint = True
           ParentShowHint = False
+          OnClick = CopyCancelButtonClick
         end
       end
       object CopyVT: TVirtualStringTree
