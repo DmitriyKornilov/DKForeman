@@ -94,6 +94,7 @@ type
 
     procedure CorrectionDelete;
     procedure CorrectionSelect;
+    procedure CorrectionEdit;
     procedure CopySelect;
 
     function DayInListSelect(const ADate: TDate): Boolean;
@@ -123,12 +124,8 @@ begin
 end;
 
 procedure TCalendarForm.DayVTDblClick(Sender: TObject);
-var
-  D: TDate;
 begin
-  if not VSTDays.IsSelected then Exit;
-  D:= Corrections.Dates[VSTDays.SelectedIndex];
-  CalendarEditFormOpen(D);
+  CorrectionEdit;
 end;
 
 procedure TCalendarForm.FormShow(Sender: TObject);
@@ -206,7 +203,7 @@ end;
 
 procedure TCalendarForm.DayEditButtonClick(Sender: TObject);
 begin
-  CalendarEditFormOpen(Corrections.Dates[VSTDays.SelectedIndex]);
+  CorrectionEdit;
 end;
 
 procedure TCalendarForm.ExportButtonClick(Sender: TObject);
@@ -284,6 +281,7 @@ begin
   VSTDays:= TVSTTable.Create(DayVT);
   VSTDays.OnSelect:= @CorrectionSelect;
   VSTDays.OnDelKeyDown:= @CorrectionDelete;
+  VSTDays.OnReturnKeyDown:= @CorrectionEdit;
   VSTDays.SetSingleFont(MainForm.GridFont);
   VSTDays.HeaderFont.Style:= [fsBold];
   VSTDays.CanSelect:= True;
@@ -427,6 +425,12 @@ begin
   DayDelButton.Enabled:= VSTDays.IsSelected;
   DayEditButton.Enabled:= DayDelButton.Enabled;
   DayCopyButton.Enabled:= DayDelButton.Enabled;
+end;
+
+procedure TCalendarForm.CorrectionEdit;
+begin
+  if not VSTDays.IsSelected then Exit;
+  CalendarEditFormOpen(Corrections.Dates[VSTDays.SelectedIndex]);
 end;
 
 procedure TCalendarForm.CopySelect;
