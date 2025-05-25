@@ -77,6 +77,7 @@ end;
 
 procedure TSIZNormEditForm.FormShow(Sender: TObject);
 begin
+  SetEventButtons([SaveButton, CancelButton]);
   FormKeepMinSize(Self);
   NormNameEdit.SetFocus;
 end;

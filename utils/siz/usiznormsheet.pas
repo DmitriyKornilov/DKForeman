@@ -48,10 +48,11 @@ type
     function FirstDataRow: Integer; override;
     function LastDataRow: Integer; override;
 
-   // function IsSelectedCellCorrect(const ARow, {%H-}ACol: Integer): Boolean; //override;
+    function GetSelectedIndex: Integer; override;
     procedure Select(const ARow, {%H-}ACol: Integer); override;
     procedure Unselect; override;
     procedure SelectionMove(const AVertDelta: Integer); override;
+    function IsCellSelectable(const ARow, ACol: Integer): Boolean; override;
 
     function RowToIndex(const ARow: Integer): Integer; override;
     function IndexToRow(const AIndex: Integer): Integer; override;
@@ -232,10 +233,10 @@ begin
   Result:= VLast(FLastRows);
 end;
 
-//function TSIZNormSubItemsSheet.IsSelectedCellCorrect(const ARow, ACol: Integer): Boolean;
-//begin
-//  Result:= CheckIndex(High(FFirstRows), RowToSubItemIndex(ARow));
-//end;
+function TSIZNormSubItemsSheet.GetSelectedIndex: Integer;
+begin
+  Result:= IndexToSubItemIndex(inherited GetSelectedIndex);
+end;
 
 function TSIZNormSubItemsSheet.RowToSubItemIndex(const ARow: Integer): Integer;
 begin
@@ -269,6 +270,11 @@ begin
   SubItemIndex:= SubItemIndex + AVertDelta;
   if not CheckIndex(High(FFirstRows), SubItemIndex) then Exit;
   SetSelection(FFirstRows[SubItemIndex], 1);
+end;
+
+function TSIZNormSubItemsSheet.IsCellSelectable(const ARow, ACol: Integer): Boolean;
+begin
+  Result:= (inherited IsCellSelectable(ARow, ACol)) and (RowToIndex(ARow)>=0);
 end;
 
 function TSIZNormSubItemsSheet.RowToIndex(const ARow: Integer): Integer;

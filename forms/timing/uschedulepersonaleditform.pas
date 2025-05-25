@@ -64,6 +64,7 @@ end;
 
 procedure TSchedulePersonalEditForm.FormShow(Sender: TObject);
 begin
+  SetEventButtons([SaveButton, CancelButton]);
   FormKeepMinSize(Self, False);
 
   SchedulesUpdate;

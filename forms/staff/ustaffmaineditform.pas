@@ -74,6 +74,7 @@ end;
 
 procedure TStaffMainEditForm.FormShow(Sender: TObject);
 begin
+  SetEventButtons([SaveButton, CancelButton]);
   FormKeepMinSize(Self);
   FamilyEdit.SetFocus;
 end;

@@ -122,6 +122,7 @@ end;
 procedure TScheduleShiftEditForm.FormShow(Sender: TObject);
 begin
   Width:= Width + 5; //fix datetimepicker button size bug
+  SetEventButtons([SaveButton, CancelButton]);
   FormKeepMinSize(Self, False);
 
   FirstDatePicker.Date:= FirstDate;

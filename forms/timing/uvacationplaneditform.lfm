@@ -3,6 +3,7 @@ object VacationPlanEditForm: TVacationPlanEditForm
   Height = 227
   Top = 253
   Width = 660
+  BorderIcons = [biSystemMenu]
   Caption = 'Планируемый отпуск'
   ClientHeight = 227
   ClientWidth = 660
@@ -286,10 +287,10 @@ object VacationPlanEditForm: TVacationPlanEditForm
       AnchorSideRight.Control = ButtonPanel
       AnchorSideRight.Side = asrBottom
       Cursor = crHandPoint
-      Left = 535
-      Height = 34
+      Left = 529
+      Height = 40
       Top = 8
-      Width = 115
+      Width = 121
       Anchors = [akTop, akRight]
       AutoSize = True
       BorderSpacing.Right = 6
@@ -306,10 +307,10 @@ object VacationPlanEditForm: TVacationPlanEditForm
       AnchorSideTop.Side = asrCenter
       AnchorSideRight.Control = CancelButton
       Cursor = crHandPoint
-      Left = 414
-      Height = 34
+      Left = 402
+      Height = 40
       Top = 8
-      Width = 121
+      Width = 127
       Anchors = [akTop, akRight]
       AutoSize = True
       Caption = ' Сохранить '

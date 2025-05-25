@@ -77,6 +77,7 @@ end;
 
 procedure TStaffPostlogEditForm.FormShow(Sender: TObject);
 begin
+  SetEventButtons([SaveButton, CancelButton]);
   FormKeepMinSize(Self);
   DataBase.PostDictionaryLoad(PostDropDown, PostIDs, PostID);
 end;

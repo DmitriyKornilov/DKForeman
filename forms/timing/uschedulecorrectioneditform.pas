@@ -86,6 +86,7 @@ end;
 
 procedure TScheduleCorrectionEditForm.FormShow(Sender: TObject);
 begin
+  SetEventButtons([SaveButton, CancelButton]);
   FormKeepMinSize(Self);
 
   if SameDate(FirstDatePicker.Date, NULDATE) then

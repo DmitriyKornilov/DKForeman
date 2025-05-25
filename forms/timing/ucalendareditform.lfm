@@ -8,11 +8,11 @@ object CalendarEditForm: TCalendarEditForm
   ClientHeight = 200
   ClientWidth = 382
   DesignTimePPI = 120
+  Position = poScreenCenter
+  LCLVersion = '4.0.0.4'
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
-  Position = poScreenCenter
-  LCLVersion = '3.2.0.0'
   object PeriodLabel: TLabel
     AnchorSideLeft.Control = Owner
     AnchorSideTop.Control = FirstDatePicker
@@ -377,10 +377,10 @@ object CalendarEditForm: TCalendarEditForm
       AnchorSideRight.Control = ButtonPanel
       AnchorSideRight.Side = asrBottom
       Cursor = crHandPoint
-      Left = 257
-      Height = 34
+      Left = 251
+      Height = 40
       Top = 8
-      Width = 115
+      Width = 121
       Anchors = [akTop, akRight]
       AutoSize = True
       BorderSpacing.Right = 6
@@ -389,18 +389,18 @@ object CalendarEditForm: TCalendarEditForm
       ImageIndex = 8
       Margin = 5
       Spacing = 5
-      OnClick = CancelButtonClick
       ParentFont = False
+      OnClick = CancelButtonClick
     end
     object SaveButton: TSpeedButton
       AnchorSideTop.Control = CancelButton
       AnchorSideTop.Side = asrCenter
       AnchorSideRight.Control = CancelButton
       Cursor = crHandPoint
-      Left = 136
-      Height = 34
+      Left = 124
+      Height = 40
       Top = 8
-      Width = 121
+      Width = 127
       Anchors = [akTop, akRight]
       AutoSize = True
       Caption = ' Сохранить '
@@ -408,8 +408,8 @@ object CalendarEditForm: TCalendarEditForm
       ImageIndex = 7
       Margin = 5
       Spacing = 5
-      OnClick = SaveButtonClick
       ParentFont = False
+      OnClick = SaveButtonClick
     end
     object ButtonPanelBevel: TBevel
       Left = 0

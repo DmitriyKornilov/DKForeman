@@ -143,6 +143,7 @@ begin
   NormSubItemSheet:= TSIZNormSubItemsSheet.Create(SubItemGrid.Worksheet, SubItemGrid, MainForm.GridFont);
   NormSubItemSheet.OnSelect:= @NormSubItemSelect;
   NormSubItemSheet.OnDelete:= @NormSubItemDelete;
+  NormSubItemSheet.CanUnselect:= False;
   NormSubItemSheet.AutosizeColumnDisable;
 
 end;
@@ -204,13 +205,16 @@ procedure TSIZNormForm.NormListLoad(const SelectedID: Integer);
 var
   SelectedNormID: Integer;
 begin
+  NormSubItemSheet.Clear;
+  NormItemSheet.Clear;
+  NormList.ValuesClear;
+
   SelectedNormID:= GetSelectedID(NormList, NormIDs, SelectedID);
 
   DataBase.SIZNormsLoad(NormIDs, NormNames, TypicalNames, BeginDates, EndDates);
 
   NormList.Visible:= False;
   try
-    NormList.ValuesClear;
     NormList.SetColumn('Период действия', VPeriodToStr(BeginDates, EndDates), taLeftJustify);
     NormList.SetColumn('Нормы предприятия', NormNames, taLeftJustify);
     NormList.SetColumn('Типовые (отраслевые) нормы', TypicalNames, taLeftJustify);
@@ -244,6 +248,8 @@ end;
 
 procedure TSIZNormForm.NormItemListLoad;
 begin
+  NormSubItemSheet.Clear;
+  NormItemSheet.Clear;
   if not NormList.IsSelected then Exit;
 
   DataBase.SIZNormItemsLoad(NormIDs[NormList.SelectedIndex],
@@ -274,6 +280,7 @@ end;
 
 procedure TSIZNormForm.NormSubItemListLoad;
 begin
+  NormSubItemSheet.Clear;
   if not NormItemSheet.IsSelected then Exit;
   NormSubItemsDel(NormSubItems, 0, High(NormSubItems));
   NormSubItemsLoad(ItemIDs[NormItemSheet.SelectedIndex], NormSubItems);
@@ -337,7 +344,6 @@ begin
   SubItemToolPanel.Visible:= ModeType=mtEditing;
 
   NormSubItemSheet.CanSelect:= ModeType=mtEditing;
-  NormSubItemSheet.CanUnselect:= ModeType<>mtEditing;
   if ModeType=mtEditing then
   begin
     if Length(NormSubItems)>0 then

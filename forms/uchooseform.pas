@@ -126,9 +126,11 @@ begin
 
   if H>MIN_FORM_HEIGHT then
     ClientHeight:= H;
-  FormToScreenCenter(Self);
 
+  SetEventButtons([SaveButton, CancelButton]);
   FormKeepMinSize(Self, False);
+
+  FormToScreenCenter(Self);
 end;
 
 procedure TChooseForm.FormCreate(Sender: TObject);

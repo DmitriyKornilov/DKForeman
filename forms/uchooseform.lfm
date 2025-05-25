@@ -8,9 +8,9 @@ object ChooseForm: TChooseForm
   ClientHeight = 290
   ClientWidth = 600
   DesignTimePPI = 120
+  LCLVersion = '4.0.0.4'
   OnCreate = FormCreate
   OnShow = FormShow
-  LCLVersion = '3.2.0.0'
   object MainPanel: TPanel
     AnchorSideLeft.Control = Owner
     AnchorSideTop.Control = Owner
@@ -28,8 +28,8 @@ object ChooseForm: TChooseForm
     BorderSpacing.Bottom = 8
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 222
-    ClientWidth = 580
+    ClientHeight = 226
+    ClientWidth = 584
     Color = clWindow
     ParentBackground = False
     ParentColor = False
@@ -97,8 +97,8 @@ object ChooseForm: TChooseForm
       ImageIndex = 8
       Margin = 5
       Spacing = 5
-      OnClick = CancelButtonClick
       ParentFont = False
+      OnClick = CancelButtonClick
     end
     object SaveButton: TSpeedButton
       AnchorSideTop.Control = CancelButton
@@ -116,8 +116,8 @@ object ChooseForm: TChooseForm
       ImageIndex = 14
       Margin = 5
       Spacing = 5
-      OnClick = SaveButtonClick
       ParentFont = False
+      OnClick = SaveButtonClick
     end
     object ButtonPanelBevel: TBevel
       Left = 0

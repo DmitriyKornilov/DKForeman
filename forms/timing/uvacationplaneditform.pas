@@ -156,6 +156,7 @@ procedure TVacationPlanEditForm.FormShow(Sender: TObject);
 var
   BD, ED: TDate;
 begin
+  SetEventButtons([SaveButton, CancelButton]);
   FormKeepMinSize(Self);
 
   FirstLastDayInYear(YearNum, BD, ED);

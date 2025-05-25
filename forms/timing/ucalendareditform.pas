@@ -62,6 +62,7 @@ end;
 
 procedure TCalendarEditForm.FormShow(Sender: TObject);
 begin
+  SetEventButtons([SaveButton, CancelButton]);
   FormKeepMinSize(Self);
 
   FirstDatePicker.MinDate:= FirstDayInYear(Year);
