@@ -136,6 +136,7 @@ type
     procedure CorrectionsLoad(const SelectedID: Integer = -1);
     procedure CorrectionDelete;
     procedure CorrectionSelect;
+    procedure CorrectionEdit;
     procedure CopyListLoad(const ASelectedDate: TDate=0);
     procedure CopySelect;
 
@@ -143,6 +144,7 @@ type
     procedure ScheduleListSelect;
     procedure ScheduleListLoad(const SelectedID: Integer = -1);
     procedure ScheduleListDelItem;
+    procedure ScheduleListEditItem;
 
     procedure CycleLoad;
     procedure ScheduleLoad;
@@ -226,16 +228,12 @@ end;
 
 procedure TScheduleShiftForm.DayEditButtonClick(Sender: TObject);
 begin
-  ScheduleCorrectionEditFormOpen(Corrections.Dates[VSTDays.SelectedIndex]);
+  CorrectionEdit;
 end;
 
 procedure TScheduleShiftForm.DayVTDblClick(Sender: TObject);
-var
-  D: TDate;
 begin
-  if not VSTDays.IsSelected then Exit;
-  D:= Corrections.Dates[VSTDays.SelectedIndex];
-  ScheduleCorrectionEditFormOpen(D);
+  CorrectionEdit;
 end;
 
 procedure TScheduleShiftForm.ExportButtonClick(Sender: TObject);
@@ -339,13 +337,12 @@ end;
 
 procedure TScheduleShiftForm.ScheduleEditButtonClick(Sender: TObject);
 begin
-  ScheduleShiftEditFormOpen(etEdit);
+  ScheduleListEditItem;
 end;
 
 procedure TScheduleShiftForm.ScheduleListVTDblClick(Sender: TObject);
 begin
-  if not ScheduleList.IsSelected then Exit;
-  ScheduleShiftEditFormOpen(etEdit);
+  ScheduleListEditItem;
 end;
 
 procedure TScheduleShiftForm.ViewGridDblClick(Sender: TObject);
@@ -515,6 +512,7 @@ begin
   VSTDays:= TVSTTable.Create(DayVT);
   VSTDays.OnSelect:= @CorrectionSelect;
   VSTDays.OnDelKeyDown:= @CorrectionDelete;
+  VSTDays.OnReturnKeyDown:= @CorrectionEdit;
   VSTDays.SetSingleFont(MainForm.GridFont);
   VSTDays.HeaderFont.Style:= [fsBold];
   VSTDays.CanSelect:= True;
@@ -615,6 +613,12 @@ begin
   DayCopyButton.Enabled:= DayDelButton.Enabled;
 end;
 
+procedure TScheduleShiftForm.CorrectionEdit;
+begin
+  if not VSTDays.IsSelected then Exit;
+  ScheduleCorrectionEditFormOpen(Corrections.Dates[VSTDays.SelectedIndex]);
+end;
+
 procedure TScheduleShiftForm.CopyListLoad(const ASelectedDate: TDate);
 var
   Dates, TotalHours, NightHours, StrMarks, ShiftNums: TStrVector;
@@ -655,6 +659,7 @@ begin
   ScheduleList.CanUnselect:= False;
   ScheduleList.OnSelect:= @ScheduleListSelect;
   ScheduleList.OnDelKeyDown:= @ScheduleListDelItem;
+  ScheduleList.OnReturnKeyDown:= @ScheduleListEditItem;
   ScheduleList.SetSingleFont(MainForm.GridFont);
   ScheduleList.HeaderFont.Style:= [fsBold];
 
@@ -932,6 +937,12 @@ begin
                  '"?') then Exit;
   DataBase.ScheduleShiftDelete(ScheduleIDs[ScheduleList.SelectedIndex]);
   ScheduleListLoad;
+end;
+
+procedure TScheduleShiftForm.ScheduleListEditItem;
+begin
+  if not ScheduleList.IsSelected then Exit;
+  ScheduleShiftEditFormOpen(etEdit);
 end;
 
 procedure TScheduleShiftForm.SettingsLoad;
