@@ -124,16 +124,19 @@ type
     procedure StaffListUpdate;
     procedure StaffListSelect;
     procedure StaffListDelItem;
+    procedure StaffListEditItem;
 
     procedure TabNumListCreate;
     procedure TabNumListLoad(const SelectedID: Integer = -1);
     procedure TabNumListSelect;
     procedure TabNumListDelItem;
+    procedure TabNumListEditItem;
 
     procedure PostLogCreate;
     procedure PostLogLoad(const SelectedID: Integer = -1);
     procedure PostLogSelect;
     procedure PostLogDelItem;
+    procedure PostLogEditItem;
 
     procedure StaffMainEditFormOpen(const AEditingType: TEditingType);
     procedure StaffTabNumEditFormOpen(const AEditingType: TEditingType);
@@ -278,6 +281,12 @@ begin
   StaffListLoad;
 end;
 
+procedure TStaffForm.StaffListEditItem;
+begin
+  if not StaffList.IsSelected then Exit;
+  StaffMainEditFormOpen(etEdit);
+end;
+
 procedure TStaffForm.ListDelButtonClick(Sender: TObject);
 begin
  StaffListDelItem;
@@ -285,7 +294,7 @@ end;
 
 procedure TStaffForm.ListEditButtonClick(Sender: TObject);
 begin
-  StaffMainEditFormOpen(etEdit);
+  StaffListEditItem;
 end;
 
 procedure TStaffForm.PostLogAddButtonClick(Sender: TObject);
@@ -303,6 +312,12 @@ begin
     TabNumListLoad;
 end;
 
+procedure TStaffForm.PostLogEditItem;
+begin
+  if not PostLog.IsSelected then Exit;
+  StaffPostLogEditFormOpen(etEdit);
+end;
+
 procedure TStaffForm.PostLogDelButtonClick(Sender: TObject);
 begin
   PostLogDelItem;
@@ -310,19 +325,17 @@ end;
 
 procedure TStaffForm.PostLogEditButtonClick(Sender: TObject);
 begin
-  StaffPostLogEditFormOpen(etEdit);
+  PostLogEditItem;
 end;
 
 procedure TStaffForm.PostLogVTDblClick(Sender: TObject);
 begin
-  if not PostLog.IsSelected then Exit;
-  StaffPostLogEditFormOpen(etEdit);
+  PostLogEditItem;
 end;
 
 procedure TStaffForm.StaffVTDblClick(Sender: TObject);
 begin
-  if not StaffList.IsSelected then Exit;
-  StaffMainEditFormOpen(etEdit);
+  StaffListEditItem;
 end;
 
 procedure TStaffForm.TabNumListDelItem;
@@ -334,6 +347,12 @@ begin
   if not Confirm('Удалить всю информацию по табельному номеру "' + S + '"?') then Exit;
   DataBase.StaffTabNumDelete(TabNumListTabNumIDs[TabNumList.SelectedIndex]);
   TabNumListLoad;
+end;
+
+procedure TStaffForm.TabNumListEditItem;
+begin
+  if not TabNumList.IsSelected then Exit;
+  StaffTabNumEditFormOpen(etEdit);
 end;
 
 procedure TStaffForm.TabNumDelButtonClick(Sender: TObject);
@@ -348,14 +367,14 @@ end;
 
 procedure TStaffForm.TabNumEditButtonClick(Sender: TObject);
 begin
-  StaffTabNumEditFormOpen(etEdit);
+  TabNumListEditItem;
 end;
 
 procedure TStaffForm.TabNumVTDblClick(Sender: TObject);
 begin
-  if (not TabNumList.IsSelected) then Exit;
+  if not TabNumList.IsSelected then Exit;
   if SameDate(INFDATE, TabNumListDismissDates[TabNumList.SelectedIndex]) then
-    StaffTabNumEditFormOpen(etEdit)
+    TabNumListEditItem
   else
     StaffTabNumDismissCancel;
 end;
@@ -467,6 +486,7 @@ begin
   StaffList:= TVSTTable.Create(StaffVT);
   StaffList.OnSelect:= @StaffListSelect;
   StaffList.OnDelKeyDown:= @StaffListDelItem;
+  StaffList.OnReturnKeyDown:= @StaffListEditItem;
   StaffList.SetSingleFont(MainForm.GridFont);
   StaffList.HeaderFont.Style:= [fsBold];
 end;
@@ -577,6 +597,7 @@ begin
   TabNumList.CanUnselect:= False;
   TabNumList.OnSelect:= @TabNumListSelect;
   TabNumList.OnDelKeyDown:= @TabNumListDelItem;
+  TabNumList.OnReturnKeyDown:= @TabNumListEditItem;
   TabNumList.SetSingleFont(MainForm.GridFont);
   TabNumList.HeaderFont.Style:= [fsBold];
 
@@ -646,6 +667,7 @@ begin
   PostLog.CanUnselect:= False;
   PostLog.OnSelect:= @PostLogSelect;
   PostLog.OnDelKeyDown:= @PostLogDelItem;
+  PostLog.OnReturnKeyDown:= @PostLogEditItem;
   PostLog.SetSingleFont(MainForm.GridFont);
   PostLog.HeaderFont.Style:= [fsBold];
 

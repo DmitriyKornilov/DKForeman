@@ -137,12 +137,12 @@ begin
   NormListCreate;
   NormItemSheet:= TSIZNormItemSheet.Create(ItemGrid.Worksheet, ItemGrid, MainForm.GridFont);
   NormItemSheet.OnSelect:= @NormItemSelect;
-  NormItemSheet.OnDelete:= @NormItemDelete;
+  NormItemSheet.OnDelKeyDown:= @NormItemDelete;
   NormItemSheet.CanUnselect:= False;
 
   NormSubItemSheet:= TSIZNormSubItemsSheet.Create(SubItemGrid.Worksheet, SubItemGrid, MainForm.GridFont);
   NormSubItemSheet.OnSelect:= @NormSubItemSelect;
-  NormSubItemSheet.OnDelete:= @NormSubItemDelete;
+  NormSubItemSheet.OnDelKeyDown:= @NormSubItemDelete;
   NormSubItemSheet.CanUnselect:= False;
   NormSubItemSheet.AutosizeColumnDisable;
 
