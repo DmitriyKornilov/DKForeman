@@ -59,6 +59,7 @@ type
     procedure NormAddButtonClick(Sender: TObject);
     procedure NormDelButtonClick(Sender: TObject);
     procedure NormEditButtonClick(Sender: TObject);
+    procedure NormVTDblClick(Sender: TObject);
     procedure SubItemDelButtonClick(Sender: TObject);
   private
     ModeType: TModeType;
@@ -79,6 +80,7 @@ type
     procedure NormListLoad(const SelectedID: Integer = -1);
     procedure NormListSelect;
     procedure NormListDelItem;
+    procedure NormListEditItem;
 
     procedure NormItemListLoad;
     procedure NormItemSelect;
@@ -135,6 +137,7 @@ begin
   ]);
 
   NormListCreate;
+
   NormItemSheet:= TSIZNormItemSheet.Create(ItemGrid.Worksheet, ItemGrid, MainForm.GridFont);
   NormItemSheet.OnSelect:= @NormItemSelect;
   NormItemSheet.OnDelKeyDown:= @NormItemDelete;
@@ -177,7 +180,12 @@ end;
 
 procedure TSIZNormForm.NormEditButtonClick(Sender: TObject);
 begin
-  SIZNormEditFormOpen(etEdit);
+  NormListEditItem;
+end;
+
+procedure TSIZNormForm.NormVTDblClick(Sender: TObject);
+begin
+  NormListEditItem;
 end;
 
 procedure TSIZNormForm.SubItemDelButtonClick(Sender: TObject);
@@ -192,6 +200,7 @@ begin
   NormList.CanUnselect:= False;
   NormList.OnSelect:= @NormListSelect;
   NormList.OnDelKeyDown:= @NormListDelItem;
+  NormList.OnReturnKeyDown:= @NormListEditItem;
   NormList.SetSingleFont(MainForm.GridFont);
   NormList.HeaderFont.Style:= [fsBold];
 
@@ -239,11 +248,19 @@ end;
 
 procedure TSIZNormForm.NormListDelItem;
 begin
+  if ModeType<>mtEditing then Exit;
   if not NormList.IsSelected then Exit;
   if not Confirm('Удалить всю информацию по "' +
                  NormNames[NormList.SelectedIndex] + '"?') then Exit;
   DataBase.SIZNormDelete(NormIDs[NormList.SelectedIndex]);
   NormListLoad;
+end;
+
+procedure TSIZNormForm.NormListEditItem;
+begin
+  if ModeType<>mtEditing then Exit;
+  if not NormList.IsSelected then Exit;
+  SIZNormEditFormOpen(etEdit);
 end;
 
 procedure TSIZNormForm.NormItemListLoad;

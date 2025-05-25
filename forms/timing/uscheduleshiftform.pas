@@ -931,6 +931,7 @@ end;
 
 procedure TScheduleShiftForm.ScheduleListDelItem;
 begin
+  if ModeType<>mtEditing then Exit;
   if not ScheduleList.IsSelected then Exit;
   if not Confirm('Удалить график  "' +
                  ScheduleNames[ScheduleList.SelectedIndex] +
@@ -941,6 +942,7 @@ end;
 
 procedure TScheduleShiftForm.ScheduleListEditItem;
 begin
+  if ModeType<>mtEditing then Exit;
   if not ScheduleList.IsSelected then Exit;
   ScheduleShiftEditFormOpen(etEdit);
 end;

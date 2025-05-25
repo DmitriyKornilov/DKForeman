@@ -157,6 +157,7 @@ object SIZNormForm: TSIZNormForm
       Header.Columns = <>
       Header.MainColumn = -1
       TabOrder = 1
+      OnDblClick = NormVTDblClick
     end
     object NormCaptionPanel: TPanel
       Left = 0
