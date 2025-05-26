@@ -35,9 +35,9 @@ type
     //расчет начальных и конечных индексов пунктов норм по входящему списку
     procedure ItemIndexesCalc;
     procedure CaptionDraw;
+    procedure LineDraw(const AIndex: Integer);
   public
     procedure Draw(const AItemNames, APostNames: TStrVector; const ASelectedIndex: Integer);
-    procedure LineDraw(const AIndex: Integer);
   end;
 
   { TSIZNormSubItemsSheet }
@@ -204,7 +204,7 @@ begin
      if i<FLastItemIndexes[AIndex] then S:= S + ',';
      Writer.WriteText(R, 2, S);
   end;
-  Writer.SetAlignment(haCenter, vaTop);
+  Writer.SetAlignment(haCenter, vaCenter{vaTop});
   Writer.WriteText(RR, 1, R, 1, FItemNames[FFirstItemIndexes[AIndex]]);
   Writer.SetBackgroundDefault;
   Writer.DrawBorders(RR, 1, R, 1, cbtOuter);
@@ -330,11 +330,6 @@ begin
   Writer.SetAlignment(haLeft, vaCenter);
   Writer.SetFont(Font.Name, Font.Size, [fsBold, fsItalic], clBlack);
   Writer.WriteText(ARow, 1, ARow, 4, FSubItems[AIndex].Reason + ':', cbtOuter, True, True);
-  //if Writer.HasGrid then
-  //begin
-  //  Writer.SetFont(Font.Name, Font.Size, [], Writer.Grid.Color); //!!!!!
-  //  Writer.WriteNumber(ARow, 5, -1, cbtLeft); //!!!!!
-  //end;
   ARow:= ARow + 1;
 end;
 
@@ -342,21 +337,7 @@ procedure TSIZNormSubItemsSheet.LineDraw(var ARow: Integer; const AIndex: Intege
 var
   R,i,N: Integer;
   S: String;
-  //C: Integer;
-  //FS: TsFontStyles;
 begin
-  //if ASelected then
-  //begin
-  //  FX.SetBackground(HighlightColor);
-  //  C:= COLOR_WHITE;
-  //  FS:= [{fssBold}];
-  //end
-  //else begin
-  //  FX.SetBackground(COLOR_WHITE);
-  //  C:= COLOR_BLACK;
-  //  FS:= [{fssBold}];
-  //end;
-
   Writer.SetBackgroundDefault;
 
   N:= High(FSubItems[AIndex].Names);
@@ -372,11 +353,6 @@ begin
     Writer.WriteText(R, 2, FItemName);
     Writer.WriteText(R, 3, FSubItems[AIndex].Units[i]);
     Writer.WriteText(R, 4, FSubItems[AIndex].Lifes[i]);
-    //if Writer.HasGrid then
-    //begin
-    //  Writer.SetFont(Font.Name, Font.Size, [], Writer.Grid.Color);   //!!!!!!
-    //  Writer.WriteNumber(R, 5, FSubItems[AIndex].SubItemID, cbtLeft); //!!!!!
-    //end;
   end;
 
   for i:= 1 to 4 do

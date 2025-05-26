@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, DateUtils,
   //Project utils
-  UCalendar, UConst, USchedule, UTimetable, UWorkHours,
+  UCalendar, UConst, USchedule, UTimetable, UWorkHours, USIZTypes, USIZUtils,
   //DK packages utils
   DK_SQLite3, DK_SQLUtils, DK_Vector, DK_MAtrix, DK_StrUtils, DK_Const,
   DK_DateUtils, DK_VSTDropDown;
@@ -452,33 +452,6 @@ type
                              out ANormNames, ATypicalNames: TStrVector;
                              out ABeginDates, AEndDates: TDateVector): Boolean;
 
-    {Загрузка из базы списка пунктов типовых норм: True - ОК, False - пусто}
-    function SIZNormItemsLoad(const ANormID: Integer;
-                              out AItemIDs, APostIDs: TIntVector;
-                              out AItemNames, APostNames: TStrVector): Boolean;
-    function SIZNormItemsLoad(const ANormID: Integer;
-                              out AItemIDs: TIntVector; out AItemNames: TStrVector;
-                              out APostIDs: TIntMatrix; out APostNames: TStrMatrix): Boolean;
-
-    {Загрузка данных пункта типовых норм: True - ОК, False - пусто}
-    function SIZNormItemDataLoad(const AItemID: Integer;
-       out ASubItemIDs, ANums, ALifes, ASubItemOrderNums, AReasonIDs, AInfoIDs, ASizeTypes: TIntVector;
-       out ASizNames, AUnits, ASpecLifeNames, AReasonNames: TStrVector): Boolean;
-
-    {Загрузка списка соответствия должностей и пунктов норм: True - ОК, False - пусто}
-    function SIZItemsAndPostsAccordance(const ANormID: Integer;
-                                        out APostIDs, AItemIDs: TIntVector): Boolean;
-
-    {Проверка наличия в базе пункта нормы}
-    function SIZIsNormItemExists(const ANormID, AItemID: Integer;
-                                 const AItemName: String): Boolean;
-    {Проверка пересечения периода действия нормы для указанной должностис другими
-     пунктами и нормами}
-    function SIZNormItemIntersectionExists(const APostID, AItemID: Integer;
-                              const ABeginDate, AEndDate: TDate;
-                              out ANormName, AItemName: String): Boolean;
-
-
     {Добавление новой нормы: True - ОК, False - ошибка}
     function SIZNormAdd(out ANormID: Integer;
                           const ANormName, ATypicalName: String;
@@ -494,6 +467,82 @@ type
     function SIZNormSubItemDelete(const AItemID, ASubItemID, AReasonID, AOrderNum: Integer): Boolean;
     procedure SIZNormSubItemInfoDelete(const AInfoIDs: TIntVector); //no commit
 
+
+    {Загрузка из базы списка пунктов типовых норм: True - ОК, False - пусто}
+    function SIZNormItemsLoad(const ANormID: Integer;
+                              out AItemIDs, APostIDs: TIntVector;
+                              out AItemNames, APostNames: TStrVector): Boolean;
+    function SIZNormItemsLoad(const ANormID: Integer;
+                              out AItemIDs: TIntVector; out AItemNames: TStrVector;
+                              out APostIDs: TIntMatrix; out APostNames: TStrMatrix): Boolean;
+
+    {Загрузка данных пункта типовых норм: True - ОК, False - пусто}
+    function SIZNormItemDataLoad(const AItemID: Integer;
+       out ASubItemIDs, ANums, ALifes, ASubItemOrderNums, AReasonIDs, AInfoIDs, ASizeTypes: TIntVector;
+       out ASizNames, AUnits, ASpecLifeNames, AReasonNames: TStrVector): Boolean;
+
+    {Проверка наличия в базе пункта нормы}
+    function SIZIsNormItemExists(const ANormID, AItemID: Integer;
+                                 const AItemName: String): Boolean;
+    {Проверка пересечения периода действия нормы для указанной должностис другими
+     пунктами и нормами}
+    function SIZNormItemIntersectionExists(const APostID, AItemID: Integer;
+                              const ABeginDate, AEndDate: TDate;
+                              out ANormName, AItemName: String): Boolean;
+
+    {Загрузка списка соответствия должностей и пунктов норм с ANormID: True - ОК, False - пусто}
+    function SIZItemsAndPostsAccordanceLoad(const ANormID: Integer;
+                                        out APostIDs, AItemIDs: TIntVector): Boolean;
+    {Запись соответствий ID должностей APostIDs пункту нормы с AItemID: True - ОК, False - ошибка}
+    function SIZItemsAndPostsAccordanceAdd(const AItemID: Integer;
+                                        const APostIDs: TIntVector;
+                                        const ACommit: Boolean = True): Boolean;
+    {Запись нового пункта нормы: True - ОК, False - ошибка}
+    function SIZNormItemWrite(const ANormID: Integer; out AItemID: Integer;
+                              const AItemName: String;
+                              const ACommit: Boolean = True): Boolean;
+    {Добавление полностью нового пункта нормы: True - ОК, False - ошибка}
+    function SIZNormItemAdd(const ANormID: Integer; out AItemID: Integer;
+                            const AItemName: String; const APostIDs: TIntVector): Boolean;
+    {Обновление пункта нормы: True - ОК, False - ошибка}
+    function SIZNormItemUpdate(const AItemID: Integer;
+                            const AItemName: String; const APostIDs: TIntVector): Boolean;
+    {Копирование пункта в другие нормы: True - ОК, False - ошибка}
+    function SIZNormItemCopy(const ANormID, AItemID: Integer;
+                            const AItemName: String; const APostIDs: TIntVector): Boolean;
+
+
+
+    {Загрузка данных строки пункта типовых норм: True - ОК, False - пусто}
+    function SIZNormSubItemDataLoad(const ASubItemID: Integer;
+     out AInfoIDs, ANameIDs, ANums, ALifes, ASpecLifeIDs, AOrderNums: TIntVector): Boolean;
+
+    {Загрузка строк пункта: True - ОК, False - пусто}
+    function SIZNormSubItemsLoad(const AItemID: Integer; var ASubItems: TNormSubItems): Boolean;
+
+    {Запись новой строки пункта: True - ОК, False - ошибка}
+    function SIZNormSubItemWrite(const AItemID: Integer;
+                                 out ASubItemID: Integer;
+                                 const AReasonID, AOrderNum: Integer;
+                                 const ACommit: Boolean = True): Boolean;
+
+    {Запись нового Info строки пункта: True - ОК, False - ошибка}
+    function SIZNormSubItemInfoWrite(const ASourceSubItemID: Integer;
+                                    const ASourceInfo: TNormSubItemInfo;
+                                    out ADestInfoIDs: TIntVector;
+                                    const ACommit: Boolean = True): Boolean;
+
+
+
+    function SIZStaffSpecSizeLoad(const AInfoID: Integer;
+                               out ATabNumIDs, ASizeIDs, AHeightIDs: TIntVector): Boolean;
+    function SIZStaffSpecSizeWrite(const AInfoID, ATabNumID, ASizeID, AHeightID: Integer;
+                               const ACommit: Boolean = True): Boolean;
+    function SIZStaffSpecSizeWrite(const AInfoID: Integer;
+                               const ATabNumIDs, ASizeIDs, AHeightIDs: TIntVector;
+                               const ACommit: Boolean = True): Boolean;
+    function SIZStaffSpecSizeCopy(const ASourceInfoIDs, ADestInfoIDs: TIntVector;
+                                  const ACommit: Boolean = True): Boolean;
   end;
 
 
@@ -3601,7 +3650,7 @@ begin
   QClose;
 end;
 
-function TDataBase.SIZItemsAndPostsAccordance(const ANormID: Integer;
+function TDataBase.SIZItemsAndPostsAccordanceLoad(const ANormID: Integer;
                               out APostIDs, AItemIDs: TIntVector): Boolean;
 begin
   Result:= False;
@@ -3629,6 +3678,265 @@ begin
     Result:= True;
   end;
   QClose;
+end;
+
+function TDataBase.SIZItemsAndPostsAccordanceAdd(const AItemID: Integer;
+  const APostIDs: TIntVector; const ACommit: Boolean = True): Boolean;
+var
+  i: Integer;
+begin
+  Result:= False;
+  QSetQuery(FQuery);
+  try
+    //запись нормы
+    QSetSQL(
+      sqlINSERT('SIZNORMITEMPOST', ['ItemID', 'PostID'])
+    );
+    QParamInt('ItemID', AItemID);
+    for i:= 0 to High(APostIDs) do
+    begin
+      QParamInt('PostID', APostIDs[i]);
+      QExec;
+    end;
+
+    if ACommit then QCommit;
+    Result:= True;
+  except
+    if ACommit then QRollback;
+  end;
+end;
+
+function TDataBase.SIZNormItemWrite(const ANormID: Integer; out
+  AItemID: Integer; const AItemName: String; const ACommit: Boolean): Boolean;
+begin
+  Result:= False;
+  QSetQuery(FQuery);
+  try
+    //запись пункта нормы
+    QSetSQL(
+      sqlINSERT('SIZNORMITEM', ['ItemName', 'NormID'])
+    );
+    QParamInt('NormID', ANormID);
+    QParamStr('ItemName', AItemName);
+    QExec;
+    //получение ID сделанной записи
+    AItemID:= LastWritedInt32ID('SIZNORMITEM');
+    if ACommit then QCommit;
+    Result:= True;
+  except
+    if ACommit then QRollback;
+  end;
+end;
+
+function TDataBase.SIZNormItemAdd(const ANormID: Integer; out AItemID: Integer;
+  const AItemName: String; const APostIDs: TIntVector): Boolean;
+begin
+  Result:= False;
+  QSetQuery(FQuery);
+  try
+    //записываем пункт нормы в SIZNORMITEM
+    SIZNormItemWrite(ANormID, AItemID, AItemName, False{no commit});
+    //записываем все выбранные должности для пункта в SIZNORMITEMPOST
+    SIZItemsAndPostsAccordanceAdd(AItemID, APostIDs, False{no commit});
+    QCommit;
+    Result:= True;
+  except
+    QRollback;
+  end;
+end;
+
+function TDataBase.SIZNormItemUpdate(const AItemID: Integer;
+  const AItemName: String; const APostIDs: TIntVector): Boolean;
+begin
+  Result:= False;
+  QSetQuery(FQuery);
+  try
+    //обновляем наименование пункта
+    UpdateInt32ID('SIZNORMITEM', 'ItemName', 'ItemID', AItemID, AItemName, False{no commit});
+    //удаляем соответствие должностей этому пункту
+    Delete('SIZNORMITEMPOST', 'ItemID', AItemID, False{no commit});
+    //записываем все выбранные должности для пункта в SIZNORMITEMPOST
+    SIZItemsAndPostsAccordanceAdd(AItemID, APostIDs, False{no commit});
+    QCommit;
+    Result:= True;
+  except
+    QRollback;
+  end;
+end;
+
+function TDataBase.SIZNormItemCopy(const ANormID, AItemID: Integer;
+  const AItemName: String; const APostIDs: TIntVector): Boolean;
+var
+  i, DestItemID, DestSubItemID: Integer;
+  SourceSubItemIDs, ReasonIDs, SubItemOrderNums, DestInfoIDs: TIntVector;
+  SubItemInfo: TNormSubItemInfo;
+
+  procedure SourceItemLoad(const ASourceItemID: Integer;
+                               out ASubItemIDs, AReasonIDs, AOrderNums: TIntVector);
+  begin
+    ASubItemIDs:= nil;
+    AReasonIDs:= nil;
+    AOrderNums:= nil;
+    QSetQuery(FQuery);
+    QSetSQL(
+      'SELECT SubItemID, ReasonID, OrderNum '+
+      'FROM SIZNORMSUBITEM ' +
+      'WHERE ItemID = :ItemID ' +
+      'ORDER BY OrderNum');
+    QParamInt('ItemID', ASourceItemID);
+    QOpen;
+    if not QIsEmpty then
+    begin
+      QFirst;
+      while not QEOF do
+      begin
+        VAppend(ASubItemIDs, QFieldInt('SubItemID'));
+        VAppend(AReasonIDs, QFieldInt('ReasonID'));
+        VAppend(AOrderNums, QFieldInt('OrderNum'));
+        QNext;
+      end;
+    end;
+    QClose;
+  end;
+
+  procedure SourceInfoLoad(const ASubItemID: Integer; out AInfo: TNormSubItemInfo);
+  var
+    InfoIDs, NameIDs, Nums, Lifes, SpecLifeIDs, OrderNums: TIntVector;
+  begin
+    NormSubItemInfoClear(AInfo{%H-});
+    SIZNormSubItemDataLoad(ASubItemID, InfoIDs, NameIDs, Nums, Lifes, SpecLifeIDs, OrderNums);
+    NormSubItemInfoCut(AInfo, InfoIDs, NameIDs, Nums, Lifes, SpecLifeIDs, OrderNums);
+  end;
+
+begin
+  Result:= False;
+  QSetQuery(FQuery);
+  try
+    //записываем пункт
+    SIZNormItemWrite(ANormID, DestItemID, AItemName, False{no commit});
+
+    //достаем список строк пункта-источника
+    SourceItemLoad(AItemID, SourceSubItemIDs, ReasonIDs, SubItemOrderNums);
+
+    //пробегаем по всем строкам пункта-источника
+    for i:=0 to High(SourceSubItemIDs) do
+    begin
+      //достаем спиcок подстрок для строки-источника
+      SourceInfoLoad(SourceSubItemIDs[i], SubItemInfo);
+      //записываем строку пункта-цели в SIZNORMSUBITEM
+      SIZNormSubItemWrite(DestItemID, DestSubItemID, ReasonIDs[i],
+                          SubItemOrderNums[i], False{no commit});
+      //записываем инфо строки-цели SIZNORMSUBITEMINFO и получаем их ID
+      SIZNormSubItemInfoWrite(DestSubItemID, SubItemInfo, DestInfoIDs, False{no commit});
+      //копируем спец размеры СИЗ
+      SIZStaffSpecSizeCopy(SubItemInfo.InfoIDs, DestInfoIDs, False{no commit});
+    end;
+
+    //записываем все выбранные должности для пункта в SIZNORMITEMPOST
+    SIZItemsAndPostsAccordanceAdd(DestItemID, APostIDs, False{no commit});
+    QCommit;
+    Result:= True;
+  except
+    QRollback;
+  end;
+end;
+
+function TDataBase.SIZNormSubItemDataLoad(const ASubItemID: Integer;
+     out AInfoIDs, ANameIDs, ANums, ALifes,
+         ASpecLifeIDs, AOrderNums: TIntVector): Boolean;
+begin
+  Result:= False;
+  AInfoIDs:= nil;
+  ANameIDs:= nil;
+  ANums:= nil;
+  ALifes:= nil;
+  ASpecLifeIDs:= nil;
+  AOrderNums:= nil;
+  QSetQuery(FQuery);
+  QSetSQL(
+    'SELECT InfoID, NameID, Num, Life, SpecLifeID, OrderNum ' +
+    'FROM SIZNORMSUBITEMINFO ' +
+    'WHERE SubItemID = :SubItemID ' +
+    'ORDER BY OrderNum');
+  QParamInt('SubItemID', ASubItemID);
+  QOpen;
+  if not QIsEmpty then
+  begin
+    QFirst;
+    while not QEOF do
+    begin
+      VAppend(AInfoIDs, QFieldInt('InfoID'));
+      VAppend(ANameIDs, QFieldInt('NameID'));
+      VAppend(ANums, QFieldInt('Num'));
+      VAppend(ALifes, QFieldInt('Life'));
+      VAppend(ASpecLifeIDs, QFieldInt('SpecLifeID'));
+      VAppend(AOrderNums, QFieldInt('OrderNum'));
+      QNext;
+    end;
+    Result:= True;
+  end;
+  QClose;
+end;
+
+function TDataBase.SIZNormSubItemsLoad(const AItemID: Integer;
+  var ASubItems: TNormSubItems): Boolean;
+var
+  SubItemIDs, Nums, Lifes, SubItemOrderNums, ReasonIDs, InfoIDs, SizeTypes: TIntVector;
+  SizNames, Units, SpecLifeNames, ReasonNames: TStrVector;
+  SubItem: TNormSubItem;
+  Life: String;
+  i, SubItemID: Integer;
+begin
+  NormSubItemsClear(ASubItems);
+  Result:= SIZNormItemDataLoad(AItemID, SubItemIDs, Nums, Lifes,
+                               SubItemOrderNums, ReasonIDs, InfoIDs, SizeTypes,
+                               SizNames, Units, SpecLifeNames, ReasonNames);
+  if Length(SubItemIDs)=0 then Exit;
+  SubItemID:= -1;
+  for i:=0 to High(SubItemIDs) do
+  begin
+    //новая строка нормы
+    if SubItemIDs[i]<>SubItemID then
+    begin
+      //записываем сформированную строку в вектор
+      if i>0 then NormSubItemsAdd(ASubItems, SubItem{%H-});
+      //задаем новую строку нормы
+      NormSubItemNew(SubItem, SubItemIDs[i], SubItemOrderNums[i], ReasonIDs[i], ReasonNames[i]);
+      //запоминаем её ID
+      SubItemID:= SubItemIDs[i];
+    end;
+    //определяем срок службы
+    Life:= GetSizNumInLifeStr(Nums[i], Lifes[i], SpecLifeNames[i]);
+    //добавляем данные в строку
+    NormSubItemAdd(SubItem, InfoIDs[i], SizeTypes[i], SizNames[i], Units[i], Life);
+  end;
+  //записываем последнюю сформированную строку в вектор
+  NormSubItemsAdd(ASubItems, SubItem);
+end;
+
+function TDataBase.SIZNormSubItemWrite(const AItemID: Integer;
+                                 out ASubItemID: Integer;
+                                 const AReasonID, AOrderNum: Integer;
+                                 const ACommit: Boolean = True): Boolean;
+begin
+  Result:= False;
+  QSetQuery(FQuery);
+  try
+    //запись пункта нормы
+    QSetSQL(
+      sqlINSERT('SIZNORMSUBITEM', ['ItemID', 'ReasonID', 'OrderNum'])
+    );
+    QParamInt('ItemID', AItemID);
+    QParamInt('ReasonID', AReasonID);
+    QParamInt('OrderNum', AOrderNum);
+    QExec;
+    //получение ID сделанной записи
+    ASubItemID:= LastWritedInt32ID('SIZNORMSUBITEM');
+    if ACommit then QCommit;
+    Result:= True;
+  except
+    if ACommit then QRollback;
+  end;
 end;
 
 function TDataBase.SIZIsNormItemExists(const ANormID, AItemID: Integer;
@@ -3997,6 +4305,148 @@ begin
 
   //удаляем сами InfoID
   Delete('SIZNORMSUBITEMINFO', 'InfoID', AInfoIDs, False{no commit});
+end;
+
+function TDataBase.SIZNormSubItemInfoWrite(const ASourceSubItemID: Integer;
+                                    const ASourceInfo: TNormSubItemInfo;
+                                    out ADestInfoIDs: TIntVector;
+                                    const ACommit: Boolean = True): Boolean;
+var
+  i, DestInfoID: Integer;
+begin
+  ADestInfoIDs:= nil;
+  QSetQuery(FQuery);
+  try
+    for i:=0 to High(ASourceInfo.NameIDs) do
+    begin
+      //QSetSQL внутри цикла для LastWritedInt32ID
+      QSetSQL(
+        sqlINSERT('SIZNORMSUBITEMINFO',
+                 ['SubItemID', 'NameID', 'Num', 'Life', 'SpecLifeID', 'OrderNum'])
+      );
+      QParamInt('SubItemID', ASourceSubItemID);
+      QParamInt('NameID', ASourceInfo.NameIDs[i]);
+      QParamInt('Num', ASourceInfo.Nums[i]);
+      QParamInt('Life', ASourceInfo.Lifes[i]);
+      QParamInt('SpecLifeID', ASourceInfo.SpecLifeIDs[i]);
+      QParamInt('OrderNum', ASourceInfo.OrderNums[i]);
+      QExec;
+      //определяем ID записанной подстроки
+      DestInfoID:= LastWritedInt32ID('SIZNORMSUBITEMINFO');
+      //добавляем ID в вектор
+      VAppend(ADestInfoIDs, DestInfoID);
+    end;
+
+    if ACommit then QCommit;
+    Result:= True;
+  except
+    if ACommit then QRollback;
+  end;
+end;
+
+function TDataBase.SIZStaffSpecSizeLoad(const AInfoID: Integer;
+   out ATabNumIDs, ASizeIDs, AHeightIDs: TIntVector): Boolean;
+begin
+  Result:= False;
+  ATabNumIDs:= nil;
+  ASizeIDs:= nil;
+  AHeightIDs:= nil;
+  QSetQuery(FQuery);
+  QSetSQL(
+    'SELECT TabNumID, SizeID, HeightID ' +
+    'FROM SIZSTAFFSPECSIZE ' +
+    'WHERE InfoID = :InfoID');
+  QParamInt('InfoID', AInfoID);
+  QOpen;
+  if not QIsEmpty then
+  begin
+    QFirst;
+    while not QEOF do
+    begin
+      VAppend(ATabNumIDs, QFieldInt('TabNumID'));
+      VAppend(ASizeIDs, QFieldInt('SizeID'));
+      VAppend(AHeightIDs, QFieldInt('HeightID'));
+      QNext;
+    end;
+    Result:= True;
+  end;
+  QClose;
+end;
+
+function TDataBase.SIZStaffSpecSizeWrite(const AInfoID, ATabNumID, ASizeID,
+  AHeightID: Integer; const ACommit: Boolean): Boolean;
+begin
+  Result:= False;
+  QSetQuery(FQuery);
+  try
+    QSetSQL(
+      sqlINSERT('SIZSTAFFSPECSIZE', ['InfoID', 'TabNumID', 'SizeID', 'HeightID'])
+    );
+
+    QParamInt('InfoID', AInfoID);
+    QParamInt('TabNumID', ATabNumID);
+    QParamInt('SizeID', ASizeID);
+    QParamInt('HeightID', AHeightID);
+    QExec;
+
+    if ACommit then QCommit;
+    Result:= True;
+  except
+    if ACommit then QRollback;
+  end;
+end;
+
+function TDataBase.SIZStaffSpecSizeWrite(const AInfoID: Integer;
+                              const ATabNumIDs, ASizeIDs, AHeightIDs: TIntVector;
+                              const ACommit: Boolean): Boolean;
+var
+  i: Integer;
+begin
+  Result:= False;
+  QSetQuery(FQuery);
+  try
+    QSetSQL(
+      sqlINSERT('SIZSTAFFSPECSIZE', ['InfoID', 'TabNumID', 'SizeID', 'HeightID'])
+    );
+    QParamInt('InfoID', AInfoID);
+    for i:=0 to High(ATabNumIDs) do
+    begin
+      QParamInt('TabNumID', ATabNumIDs[i]);
+      QParamInt('SizeID', ASizeIDs[i]);
+      QParamInt('HeightID', AHeightIDs[i]);
+      QExec;
+    end;
+
+    if ACommit then QCommit;
+    Result:= True;
+  except
+    if ACommit then QRollback;
+  end;
+end;
+
+function TDataBase.SIZStaffSpecSizeCopy(const ASourceInfoIDs, ADestInfoIDs: TIntVector;
+                                  const ACommit: Boolean = True): Boolean;
+var
+  i: Integer;
+  TabNumIDs, SizeIDs, HeightIDs: TIntVector;
+begin
+  Result:= False;
+  QSetQuery(FQuery);
+  try
+    //пробегаем по всем подстрокам строк пункта типовых норм
+    for i:= 0 to High(ASourceInfoIDs) do
+    begin
+      //получаем данные по особым размерам СИЗ для пункта-источника
+      SIZStaffSpecSizeLoad(ASourceInfoIDs[i], TabNumIDs, SizeIDs, HeightIDs);
+      //пробегаем по всем полученным спецразмерам и записываем в инфо цели
+      SIZStaffSpecSizeWrite(ADestInfoIDs[i], TabNumIDs, SizeIDs, HeightIDs, False{no commit});
+    end;
+
+    if ACommit then QCommit;
+    Result:= True;
+  except
+    if ACommit then QRollback;
+  end;
 end;
 
 end.

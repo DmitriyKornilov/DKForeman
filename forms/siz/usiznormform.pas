@@ -159,7 +159,6 @@ begin
   NormSubItemSheet.OnDelKeyDown:= @NormSubItemDelete;
   NormSubItemSheet.CanUnselect:= False;
   NormSubItemSheet.AutosizeColumnDisable;
-
 end;
 
 procedure TSIZNormForm.FormDestroy(Sender: TObject);
@@ -345,7 +344,7 @@ begin
   NormSubItemSheet.Clear;
   if not NormItemSheet.IsSelected then Exit;
   NormSubItemsDel(NormSubItems, 0, High(NormSubItems));
-  NormSubItemsLoad(ItemIDs[NormItemSheet.SelectedIndex], NormSubItems);
+  DataBase.SIZNormSubItemsLoad(ItemIDs[NormItemSheet.SelectedIndex], NormSubItems);
   NormSubItemSheet.Draw(NormSubItems, ItemNames[NormItemSheet.SelectedIndex], 0);
 end;
 

@@ -9,7 +9,7 @@ uses
   //DK packages utils
   DK_Vector,
   //Project utils
-  UDataBase, USIZUtils;
+  USIZUtils;
 
 type
   TNormSubItem = record
@@ -38,8 +38,26 @@ type
   procedure NormSubItemsAdd(var ASubItems: TNormSubItems; const ASubItem: TNormSubItem);
   procedure NormSubItemsDel(var ASubItems: TNormSubItems; const AIndex1: Integer; AIndex2: Integer=-1);
   procedure NormSubItemsSwap(var ASubItems: TNormSubItems; const AIndex1, AIndex2: Integer);
-  procedure NormSubItemsLoad(const AItemID: Integer; var ASubItems: TNormSubItems);
   function  NormSubItemsIndexOf(const ASubItems: TNormSubItems; const ASubItemID: Integer): Integer;
+
+type
+  TNormSubItemInfo = record
+    InfoIDs    : TIntVector;
+    NameIDs    : TIntVector;
+    Nums       : TIntVector;
+    Lifes      : TIntVector;
+    SpecLifeIDs: TIntVector;
+    OrderNums  : TIntVector;
+  end;
+  procedure NormSubItemInfoClear(var ASubItemInfo: TNormSubItemInfo);
+  procedure NormSubItemInfoAdd(var ASubItemInfo: TNormSubItemInfo;
+                           const AInfoID, ANameID, ANum, ALife, ASpecLifeID, AOrderNum: Integer);
+  procedure NormSubItemInfoCut(var ASubItemInfo: TNormSubItemInfo;
+                               const AInfoIDs, ANameIDs, ANums, ALifes, ASpecLifeIDs, AOrderNums: TIntVector);
+  procedure NormSubItemInfoIns(var ASubItemInfo: TNormSubItemInfo;
+                           const AInfoID, ANameID, ANum, ALife, ASpecLifeID, AOrderNum, AIndex: Integer);
+  procedure NormSubItemInfoSwap(var ASubItemInfo: TNormSubItemInfo; const AIndex1, AIndex2: Integer);
+  procedure NormSubItemInfoDel(var ASubItemInfo: TNormSubItemInfo; const AIndex: Integer);
 
 
 implementation
@@ -160,41 +178,6 @@ begin
   ASubItems[AIndex2].OrderNum:= OrderNum2;
 end;
 
-procedure NormSubItemsLoad(const AItemID: Integer; var ASubItems: TNormSubItems);
-var
-  SubItemIDs, Nums, Lifes, SubItemOrderNums, ReasonIDs, InfoIDs, SizeTypes: TIntVector;
-  SizNames, Units, SpecLifeNames, ReasonNames: TStrVector;
-  SubItem: TNormSubItem;
-  Life: String;
-  i, SubItemID: Integer;
-begin
-  NormSubItemsClear(ASubItems);
-  DataBase.SIZNormItemDataLoad(AItemID, SubItemIDs, Nums, Lifes,
-                               SubItemOrderNums, ReasonIDs, InfoIDs, SizeTypes,
-                               SizNames, Units, SpecLifeNames, ReasonNames);
-  if Length(SubItemIDs)=0 then Exit;
-  SubItemID:= -1;
-  for i:=0 to High(SubItemIDs) do
-  begin
-    //новая строка нормы
-    if SubItemIDs[i]<>SubItemID then
-    begin
-      //записываем сформированную строку в вектор
-      if i>0 then NormSubItemsAdd(ASubItems, SubItem{%H-});
-      //задаем новую строку нормы
-      NormSubItemNew(SubItem, SubItemIDs[i], SubItemOrderNums[i], ReasonIDs[i], ReasonNames[i]);
-      //запоминаем её ID
-      SubItemID:= SubItemIDs[i];
-    end;
-    //определяем срок службы
-    Life:= GetSizNumInLifeStr(Nums[i], Lifes[i], SpecLifeNames[i]);
-    //добавляем данные в строку
-    NormSubItemAdd(SubItem, InfoIDs[i], SizeTypes[i], SizNames[i], Units[i], Life);
-  end;
-  //записываем последнюю сформированную строку в вектор
-  NormSubItemsAdd(ASubItems, SubItem);
-end;
-
 function  NormSubItemsIndexOf(const ASubItems: TNormSubItems; const ASubItemID: Integer): Integer;
 var
   i: Integer;
@@ -208,6 +191,71 @@ begin
       break;
     end;
   end;
+end;
+
+//--- TNormSubItemInfo ------------------------------------------------------------
+
+procedure NormSubItemInfoClear(var ASubItemInfo: TNormSubItemInfo);
+begin
+  ASubItemInfo.InfoIDs:= nil;
+  ASubItemInfo.NameIDs:= nil;
+  ASubItemInfo.Nums:= nil;
+  ASubItemInfo.Lifes:= nil;
+  ASubItemInfo.SpecLifeIDs:= nil;
+  ASubItemInfo.OrderNums:= nil;
+end;
+
+procedure NormSubItemInfoAdd(var ASubItemInfo: TNormSubItemInfo;
+                        const AInfoID, ANameID, ANum, ALife, ASpecLifeID, AOrderNum: Integer);
+begin
+  VAppend(ASubItemInfo.InfoIDs, AInfoID);
+  VAppend(ASubItemInfo.NameIDs, ANameID);
+  VAppend(ASubItemInfo.Nums, ANum);
+  VAppend(ASubItemInfo.Lifes, ALife);
+  VAppend(ASubItemInfo.SpecLifeIDs, ASpecLifeID);
+  VAppend(ASubItemInfo.OrderNums, AOrderNum);
+end;
+
+procedure NormSubItemInfoCut(var ASubItemInfo: TNormSubItemInfo;
+                               const AInfoIDs, ANameIDs, ANums, ALifes, ASpecLifeIDs, AOrderNums: TIntVector);
+begin
+  ASubItemInfo.InfoIDs:= VCut(AInfoIDs);
+  ASubItemInfo.NameIDs:= VCut(ANameIDs);
+  ASubItemInfo.Nums:= VCut(ANums);
+  ASubItemInfo.Lifes:= VCut(ALifes);
+  ASubItemInfo.SpecLifeIDs:= VCut(ASpecLifeIDs);
+  ASubItemInfo.OrderNums:= VCut(AOrderNums);
+end;
+
+procedure NormSubItemInfoIns(var ASubItemInfo: TNormSubItemInfo;
+                           const AInfoID, ANameID, ANum, ALife, ASpecLifeID, AOrderNum, AIndex: Integer);
+begin
+  VIns(ASubItemInfo.InfoIDs, AIndex, AInfoID);
+  VIns(ASubItemInfo.NameIDs, AIndex, ANameID);
+  VIns(ASubItemInfo.Nums, AIndex, ANum);
+  VIns(ASubItemInfo.Lifes, AIndex, ALife);
+  VIns(ASubItemInfo.SpecLifeIDs, AIndex, ASpecLifeID);
+  VIns(ASubItemInfo.OrderNums, AIndex, AOrderNum);
+end;
+
+procedure NormSubItemInfoSwap(var ASubItemInfo: TNormSubItemInfo; const AIndex1, AIndex2: Integer);
+begin
+  VSwap(ASubItemInfo.InfoIDs, AIndex1, AIndex2);
+  VSwap(ASubItemInfo.NameIDs, AIndex1, AIndex2);
+  VSwap(ASubItemInfo.Nums, AIndex1, AIndex2);
+  VSwap(ASubItemInfo.Lifes, AIndex1, AIndex2);
+  VSwap(ASubItemInfo.SpecLifeIDs, AIndex1, AIndex2);
+  VSwap(ASubItemInfo.OrderNums, AIndex1, AIndex2);
+end;
+
+procedure NormSubItemInfoDel(var ASubItemInfo: TNormSubItemInfo; const AIndex: Integer);
+begin
+  VDel(ASubItemInfo.InfoIDs, AIndex);
+  VDel(ASubItemInfo.NameIDs, AIndex);
+  VDel(ASubItemInfo.Nums, AIndex);
+  VDel(ASubItemInfo.Lifes, AIndex);
+  VDel(ASubItemInfo.SpecLifeIDs, AIndex);
+  VDel(ASubItemInfo.OrderNums, AIndex);
 end;
 
 end.

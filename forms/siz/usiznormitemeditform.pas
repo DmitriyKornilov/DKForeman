@@ -105,6 +105,7 @@ procedure TSIZNormItemEditForm.SaveButtonClick(Sender: TObject);
 var
   IsOK: Boolean;
   ItemName: String;
+  CheckedPostIDs: TIntVector;
 
   function IsCollision: Boolean;
   var
@@ -112,7 +113,7 @@ var
     IntersectionNormName, IntersectionItemName: String;
   begin
     Result:= False;
-    if EditType=etEdit then
+    if EditingType=etEdit then
       //при редактировании нужно проверять на существование все пункты, кроме этого (редактируемого)
       ThisItemID:= ItemID
     else
@@ -128,17 +129,19 @@ var
 
     //ищем пересечения периодов действия с уже записанными нормами
     //период действия записываемой нормы
-    for i:=0 to High(EditPostIDs) do //пробегаем по всем выбранным должностям
+    for i:=0 to High(EditablePostIDs) do //пробегаем по всем выбранным должностям
     begin
       if not PostList.Checked[i] then continue;
       //если есть пересечение по периодам действия - выход
-      if DataBase.SIZNormItemIntersectionExist(EditPostIDs[i], ThisItemID,
+      if DataBase.SIZNormItemIntersectionExists(EditablePostIDs[i], ThisItemID,
                              NormBDs[NormNameComboBox.ItemIndex],
                              NormEDs[NormNameComboBox.ItemIndex],
                              IntersectionNormName, IntersectionItemName) then
       begin
-        Inform('Период действия записываемого пункта норм для должности "' + EditPostNames[i] +
-               '" пересекается с периодом действия пункта "' + IntersectionItemName +
+        Inform('Период действия записываемого пункта норм для должности "' +
+               EditablePostNames[i] +
+               '" пересекается с периодом действия пункта "' +
+               IntersectionItemName +
                '" нормы "' + IntersectionNormName + '"!');
         Result:= True;
         Exit;
@@ -162,13 +165,16 @@ begin
 
   if IsCollision then Exit;
 
+  CheckedPostIDs:= VCut(EditablePostIDs, PostList.Selected);
+
   case EditingType of
-    etAdd:
-      IsOK:= True;
-    etEdit:
-      IsOK:= True;
+    etAdd: //новый пункт
+      IsOK:= DataBase.SIZNormItemAdd(NormID, ItemID, ItemName, CheckedPostIDs);
+    etEdit: //редактирование
+      IsOK:= DataBase.SIZNormItemUpdate(ItemID, ItemName, CheckedPostIDs);
     UTypes.etCustom: //копирование в другие типовые нормы
-      IsOK:= True;
+      IsOK:= DataBase.SIZNormItemCopy(NormIDs[NormNameComboBox.ItemIndex],
+                                      ItemID, ItemName, CheckedPostIDs);
   end;
 
   if not IsOK then Exit;
@@ -246,7 +252,7 @@ begin
   VDim(EditablePostChecks, Length(PostIDs), False);
 
   //достаем ID должностей уже приписанных к данной норме
-  DataBase.SIZItemsAndPostsAccordance(ANormID, BusyPostIDs, BusyItemIDs);
+  DataBase.SIZItemsAndPostsAccordanceLoad(ANormID, BusyPostIDs, BusyItemIDs);
 
   if EditingType=etEdit then //редактирование
     EditablePostListForEditLoad
