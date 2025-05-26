@@ -56,7 +56,10 @@ type
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure ItemAddButtonClick(Sender: TObject);
+    procedure ItemCopyButtonClick(Sender: TObject);
     procedure ItemDelButtonClick(Sender: TObject);
+    procedure ItemEditButtonClick(Sender: TObject);
+    procedure ItemGridDblClick(Sender: TObject);
     procedure NormAddButtonClick(Sender: TObject);
     procedure NormDelButtonClick(Sender: TObject);
     procedure NormEditButtonClick(Sender: TObject);
@@ -86,6 +89,7 @@ type
     procedure NormItemListLoad(const SelectedID: Integer = 0);
     procedure NormItemSelect;
     procedure NormItemDelete;
+    procedure NormItemEdit;
 
     procedure NormSubItemListLoad;
     procedure NormSubItemSelect;
@@ -147,6 +151,7 @@ begin
   NormItemSheet:= TSIZNormItemSheet.Create(ItemGrid.Worksheet, ItemGrid, MainForm.GridFont);
   NormItemSheet.OnSelect:= @NormItemSelect;
   NormItemSheet.OnDelKeyDown:= @NormItemDelete;
+  NormItemSheet.OnReturnKeyDown:= @NormItemEdit;
   NormItemSheet.CanUnselect:= False;
 
   NormSubItemSheet:= TSIZNormSubItemsSheet.Create(SubItemGrid.Worksheet, SubItemGrid, MainForm.GridFont);
@@ -174,9 +179,24 @@ begin
   SIZNormItemEditFormOpen(etAdd);
 end;
 
+procedure TSIZNormForm.ItemCopyButtonClick(Sender: TObject);
+begin
+  SIZNormItemEditFormOpen(etCustom);
+end;
+
 procedure TSIZNormForm.ItemDelButtonClick(Sender: TObject);
 begin
   NormItemDelete;
+end;
+
+procedure TSIZNormForm.ItemEditButtonClick(Sender: TObject);
+begin
+  NormItemEdit;
+end;
+
+procedure TSIZNormForm.ItemGridDblClick(Sender: TObject);
+begin
+  NormItemEdit;
 end;
 
 procedure TSIZNormForm.NormAddButtonClick(Sender: TObject);
@@ -314,6 +334,12 @@ begin
   NormItemListLoad;
 end;
 
+procedure TSIZNormForm.NormItemEdit;
+begin
+  if not NormItemSheet.IsSelected then Exit;
+  SIZNormItemEditFormOpen(etEdit);
+end;
+
 procedure TSIZNormForm.NormSubItemListLoad;
 begin
   NormSubItemSheet.Clear;
@@ -397,7 +423,15 @@ var
 begin
   SIZNormItemEditForm:= TSIZNormItemEditForm.Create(nil);
   try
+
     SIZNormItemEditForm.EditingType:= AEditingType;
+    SIZNormItemEditForm.NormID:= NormIDs[NormList.SelectedIndex];
+
+    if AEditingType<>etAdd then
+    begin
+      SIZNormItemEditForm.ItemID:= ItemIDs[NormItemSheet.SelectedIndex];
+      SIZNormItemEditForm.ItemNameEdit.Text:= ItemNames[NormItemSheet.SelectedIndex];
+    end;
 
     if SIZNormItemEditForm.ShowModal=mrOK then
       NormItemListLoad(SIZNormItemEditForm.ItemID);

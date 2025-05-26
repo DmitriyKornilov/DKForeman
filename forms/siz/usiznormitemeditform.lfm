@@ -12,6 +12,7 @@ object SIZNormItemEditForm: TSIZNormItemEditForm
   DesignTimePPI = 120
   Position = poScreenCenter
   OnCreate = FormCreate
+  OnDestroy = FormDestroy
   OnShow = FormShow
   object ButtonPanel: TPanel
     AnchorSideTop.Side = asrBottom
@@ -107,6 +108,7 @@ object SIZNormItemEditForm: TSIZNormItemEditForm
     ItemHeight = 20
     Style = csDropDownList
     TabOrder = 1
+    OnChange = NormNameComboBoxChange
   end
   object ItemNameLabel: TLabel
     AnchorSideLeft.Control = Owner
@@ -152,7 +154,7 @@ object SIZNormItemEditForm: TSIZNormItemEditForm
     Caption = 'Должности, на которые распространяется этот пункт:'
     ParentColor = False
   end
-  object PostVT: TVirtualStringTree
+  object PostPanel: TPanel
     AnchorSideLeft.Control = Owner
     AnchorSideTop.Control = PostLabel
     AnchorSideTop.Side = asrBottom
@@ -163,16 +165,29 @@ object SIZNormItemEditForm: TSIZNormItemEditForm
     Height = 250
     Top = 176
     Width = 584
-    Align = alCustom
     Anchors = [akTop, akLeft, akRight, akBottom]
     BorderSpacing.Left = 8
     BorderSpacing.Top = 8
     BorderSpacing.Right = 8
-    DefaultNodeHeight = 25
-    DefaultText = 'Node'
-    Header.AutoSizeIndex = 0
-    Header.Columns = <>
-    Header.MainColumn = -1
+    BevelOuter = bvNone
+    BorderStyle = bsSingle
+    ClientHeight = 246
+    ClientWidth = 580
     TabOrder = 3
+    object PostVT: TVirtualStringTree
+      Left = 0
+      Height = 246
+      Top = 0
+      Width = 580
+      Align = alClient
+      Anchors = [akBottom]
+      BorderStyle = bsNone
+      DefaultNodeHeight = 25
+      DefaultText = 'Node'
+      Header.AutoSizeIndex = 0
+      Header.Columns = <>
+      Header.MainColumn = -1
+      TabOrder = 0
+    end
   end
 end

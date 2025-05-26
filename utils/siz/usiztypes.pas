@@ -169,7 +169,7 @@ var
   i, SubItemID: Integer;
 begin
   NormSubItemsClear(ASubItems);
-  DataBase.SizNormItemDataLoad(AItemID, SubItemIDs, Nums, Lifes,
+  DataBase.SIZNormItemDataLoad(AItemID, SubItemIDs, Nums, Lifes,
                                SubItemOrderNums, ReasonIDs, InfoIDs, SizeTypes,
                                SizNames, Units, SpecLifeNames, ReasonNames);
   if Length(SubItemIDs)=0 then Exit;

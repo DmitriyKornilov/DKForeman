@@ -6,9 +6,9 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, StdCtrls,
-  Buttons,
+  Buttons, DateUtils,
   //DK packages utils
-  DK_CtrlUtils, DK_Const, DK_StrUtils, DK_Dialogs,
+  DK_CtrlUtils, DK_Const, DK_StrUtils, DK_Dialogs, DK_VSTTableTools, DK_Vector,
   //Project utils
   UDataBase, UTypes, UImages, VirtualTrees;
 
@@ -20,6 +20,7 @@ type
     ButtonPanel: TPanel;
     ButtonPanelBevel: TBevel;
     CancelButton: TSpeedButton;
+    PostPanel: TPanel;
     PostLabel: TLabel;
     NormNameComboBox: TComboBox;
     ItemNameEdit: TEdit;
@@ -29,12 +30,25 @@ type
     SaveButton: TSpeedButton;
     procedure CancelButtonClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure NormNameComboBoxChange(Sender: TObject);
     procedure SaveButtonClick(Sender: TObject);
   private
+    PostList: TVSTCheckList;
 
+    PostIDs, EditablePostIDs: TIntVector;
+    PostNames, EditablePostNames: TStrVector;
+    EditablePostChecks: TBoolVector;
+
+    NormIDs: TIntVector;
+    NormNames: TStrVector;
+    NormBDs, NormEDs: TDateVector;
+
+    function NormsLoad: Boolean;
+    procedure EditablePostListLoad(const ANormID: Integer);
   public
-    ItemID: Integer;
+    NormID, ItemID: Integer;
     EditingType: TEditingType;
   end;
 
@@ -53,11 +67,33 @@ begin
   Images.ToButtons([SaveButton, CancelButton]);
 end;
 
+procedure TSIZNormItemEditForm.FormDestroy(Sender: TObject);
+begin
+  if Assigned(PostList) then FreeAndNil(PostList);
+end;
+
 procedure TSIZNormItemEditForm.FormShow(Sender: TObject);
 begin
   SetEventButtons([SaveButton, CancelButton]);
-  //FormKeepMinSize(Self);
+
+  NormsLoad;
+
+  DataBase.KeyPickList('STAFFPOST', 'PostID', 'PostName',
+                       PostIDs, PostNames, True, 'PostName');
+  if VIsNil(PostIDs) then
+  begin
+    Inform('Нет ни одной должности в базе!');
+    Exit;
+  end;
+
+  EditablePostListLoad(NormID);
+
   ItemNameEdit.SetFocus;
+end;
+
+procedure TSIZNormItemEditForm.NormNameComboBoxChange(Sender: TObject);
+begin
+  EditablePostListLoad(NormIDs[NormNameComboBox.ItemIndex]);
 end;
 
 procedure TSIZNormItemEditForm.CancelButtonClick(Sender: TObject);
@@ -69,6 +105,47 @@ procedure TSIZNormItemEditForm.SaveButtonClick(Sender: TObject);
 var
   IsOK: Boolean;
   ItemName: String;
+
+  function IsCollision: Boolean;
+  var
+    i, ThisItemID: Integer;
+    IntersectionNormName, IntersectionItemName: String;
+  begin
+    Result:= False;
+    if EditType=etEdit then
+      //при редактировании нужно проверять на существование все пункты, кроме этого (редактируемого)
+      ThisItemID:= ItemID
+    else
+      //при добавлении и копировании нужно проверять на существование все пункты
+      ThisItemID:= 0;
+    if DataBase.SIZIsNormItemExists(NormIDs[NormNameComboBox.ItemIndex], ThisItemID, ItemName) then
+    begin
+      Inform('"' + NormNames[NormNameComboBox.ItemIndex] +
+               '" уже содержит пункт "' + ItemName + '"!');
+      Result:= True;
+      Exit;
+    end;
+
+    //ищем пересечения периодов действия с уже записанными нормами
+    //период действия записываемой нормы
+    for i:=0 to High(EditPostIDs) do //пробегаем по всем выбранным должностям
+    begin
+      if not PostList.Checked[i] then continue;
+      //если есть пересечение по периодам действия - выход
+      if DataBase.SIZNormItemIntersectionExist(EditPostIDs[i], ThisItemID,
+                             NormBDs[NormNameComboBox.ItemIndex],
+                             NormEDs[NormNameComboBox.ItemIndex],
+                             IntersectionNormName, IntersectionItemName) then
+      begin
+        Inform('Период действия записываемого пункта норм для должности "' + EditPostNames[i] +
+               '" пересекается с периодом действия пункта "' + IntersectionItemName +
+               '" нормы "' + IntersectionNormName + '"!');
+        Result:= True;
+        Exit;
+      end;
+    end;
+  end;
+
 begin
   ItemName:= STrim(ItemNameEdit.Text);
   if ItemName=EmptyStr then
@@ -77,6 +154,13 @@ begin
     Exit;
   end;
 
+  if PostList.IsAllUnchecked then
+  begin
+    Inform('Не выбрано ни одной должности (профессии)!');
+    Exit;
+  end;
+
+  if IsCollision then Exit;
 
   case EditingType of
     etAdd:
@@ -89,6 +173,96 @@ begin
 
   if not IsOK then Exit;
   ModalResult:= mrOK;
+end;
+
+function TSIZNormItemEditForm.NormsLoad: Boolean;
+var
+  i: Integer;
+  S: String;
+  TypicalNames: TStrVector;
+begin
+  Result:= DataBase.SIZNormsLoad(NormIDs, NormNames, TypicalNames, NormBDs, NormEDs);
+  if not Result then Exit;
+
+  for i:=0 to High(NormIDs) do
+  begin
+    if SameDate(NormEDs[i], INFDATE) then
+      S:= 'настоящее время)'
+    else
+      S:= FormatDateTime('dd.mm.yyyy)', NormEDs[i]);
+    S:= FormatDateTime(' (с dd.mm.yyyy по ', NormBDs[i]) + S;
+    NormNameComboBox.Items.Add(NormNames[i] + S);
+  end;
+  NormNameComboBox.ItemIndex:= VIndexOf(NormIDs, NormID);
+  NormNameComboBox.Enabled:= EditingType=UTypes.etCustom;
+end;
+
+procedure TSIZNormItemEditForm.EditablePostListLoad(const ANormID: Integer);
+var
+  BusyPostIDs, BusyItemIDs: TIntVector;
+
+  //для редактирования: нужно отметить все должности, записанные в этом пункте,
+  //а остальные занятые выкинуть
+  procedure EditablePostListForEditLoad;
+  var
+    i, N: Integer;
+  begin
+    for i:= 0 to High(BusyPostIDs) do
+    begin
+      //индекс должности в векторах
+      N:= VIndexOf(EditablePostIDs, BusyPostIDs[i]);
+      //если должность приписана этому пункту, устанавливаем отметку
+      if BusyItemIDs[i] = ItemID then
+        EditablePostChecks[N]:= True
+      else begin  //должность приписана другому пункту
+        //удаляем её из списка, т.к. она занята
+        VDel(EditablePostIDs, N);
+        VDel(EditablePostChecks, N);
+        VDel(EditablePostNames, N);
+      end;
+    end;
+  end;
+
+  //для добавления, копирования: нужно выкинуть все занятые должности
+  procedure EditablePostListForAddAndCopyLoad;
+  var
+    i, N: Integer;
+  begin
+    for i:= 0 to High(BusyPostIDs) do
+    begin
+      //индекс должности в векторах
+      N:= VIndexOf(EditablePostIDs, BusyPostIDs[i]);
+      //удаляем её из списка, т.к. она занята
+      VDel(EditablePostIDs, N);
+      VDel(EditablePostChecks, N);
+      VDel(EditablePostNames, N);
+    end;
+  end;
+
+begin
+  //ID и наименования всех должностей
+  EditablePostIDs:= VCut(PostIDs);
+  EditablePostNames:= VCut(PostNames);
+  VDim(EditablePostChecks, Length(PostIDs), False);
+
+  //достаем ID должностей уже приписанных к данной норме
+  DataBase.SIZItemsAndPostsAccordance(ANormID, BusyPostIDs, BusyItemIDs);
+
+  if EditingType=etEdit then //редактирование
+    EditablePostListForEditLoad
+  else  //добавление, копирование
+    EditablePostListForAddAndCopyLoad;
+
+  if VIsNil(EditablePostIDs) then
+  begin
+    Inform('Все должности распределены по другим пунктам!');
+    Exit;
+  end;
+
+  //отображаем список должностей
+  if Assigned(PostList) then FreeAndNil(PostList);
+  PostList:= TVSTCheckList.Create(PostVT, EmptyStr, EditablePostNames, nil);
+  PostList.Selected:= EditablePostChecks;
 end;
 
 end.

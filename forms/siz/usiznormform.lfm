@@ -268,6 +268,7 @@ object SIZNormForm: TSIZNormForm
           ImageIndex = 6
           ShowHint = True
           ParentShowHint = False
+          OnClick = ItemEditButtonClick
         end
         object ItemCopyButton: TSpeedButton
           Cursor = crHandPoint
@@ -282,6 +283,7 @@ object SIZNormForm: TSIZNormForm
           ImageIndex = 9
           ShowHint = True
           ParentShowHint = False
+          OnClick = ItemCopyButtonClick
         end
       end
       object ItemSheetPanel: TPanel
@@ -330,6 +332,7 @@ object SIZNormForm: TSIZNormForm
           TabOrder = 0
           TabStop = False
           TitleFont.Style = [fsBold]
+          OnDblClick = ItemGridDblClick
         end
       end
     end

@@ -459,10 +459,25 @@ type
     function SIZNormItemsLoad(const ANormID: Integer;
                               out AItemIDs: TIntVector; out AItemNames: TStrVector;
                               out APostIDs: TIntMatrix; out APostNames: TStrMatrix): Boolean;
+
     {Загрузка данных пункта типовых норм: True - ОК, False - пусто}
-    function SizNormItemDataLoad(const AItemID: Integer;
+    function SIZNormItemDataLoad(const AItemID: Integer;
        out ASubItemIDs, ANums, ALifes, ASubItemOrderNums, AReasonIDs, AInfoIDs, ASizeTypes: TIntVector;
        out ASizNames, AUnits, ASpecLifeNames, AReasonNames: TStrVector): Boolean;
+
+    {Загрузка списка соответствия должностей и пунктов норм: True - ОК, False - пусто}
+    function SIZItemsAndPostsAccordance(const ANormID: Integer;
+                                        out APostIDs, AItemIDs: TIntVector): Boolean;
+
+    {Проверка наличия в базе пункта нормы}
+    function SIZIsNormItemExists(const ANormID, AItemID: Integer;
+                                 const AItemName: String): Boolean;
+    {Проверка пересечения периода действия нормы для указанной должностис другими
+     пунктами и нормами}
+    function SIZNormItemIntersectionExists(const APostID, AItemID: Integer;
+                              const ABeginDate, AEndDate: TDate;
+                              out ANormName, AItemName: String): Boolean;
+
 
     {Добавление новой нормы: True - ОК, False - ошибка}
     function SIZNormAdd(out ANormID: Integer;
@@ -3526,7 +3541,7 @@ begin
   MAppend(APostNames, VCut(PostNames, I1, I2));
 end;
 
-function TDataBase.SizNormItemDataLoad(const AItemID: Integer; out ASubItemIDs,
+function TDataBase.SIZNormItemDataLoad(const AItemID: Integer; out ASubItemIDs,
   ANums, ALifes, ASubItemOrderNums, AReasonIDs, AInfoIDs,
   ASizeTypes: TIntVector; out ASizNames, AUnits, ASpecLifeNames,
   AReasonNames: TStrVector): Boolean;
@@ -3582,6 +3597,83 @@ begin
       QNext;
     end;
     Result:= True;
+  end;
+  QClose;
+end;
+
+function TDataBase.SIZItemsAndPostsAccordance(const ANormID: Integer;
+                              out APostIDs, AItemIDs: TIntVector): Boolean;
+begin
+  Result:= False;
+  APostIDs:= nil;
+  AItemIDs:= nil;
+
+  QSetQuery(FQuery);
+  QSetSQL(
+    'SELECT t1.ItemID, t1.PostID ' +
+    'FROM SIZNORMITEMPOST t1 ' +
+    'INNER JOIN SIZNORMITEM t2 ON (t1.ItemID = t2.ItemID) ' +
+    'WHERE t2.NormID = :NormID'
+  );
+  QParamInt('NormID', ANormID);
+  QOpen;
+  if not QIsEmpty then
+  begin
+    QFirst;
+    while not QEOF do
+    begin
+      VAppend(APostIDs, QFieldInt('PostID'));
+      VAppend(AItemIDs, QFieldInt('ItemID'));
+      QNext;
+    end;
+    Result:= True;
+  end;
+  QClose;
+end;
+
+function TDataBase.SIZIsNormItemExists(const ANormID, AItemID: Integer;
+  const AItemName: String): Boolean;
+begin
+  QSetQuery(FQuery);
+  QSetSQL(
+    'SELECT ItemID ' +
+    'FROM SIZNORMITEM ' +
+    'WHERE (ItemName= :ItemName) AND (ItemID<>:ItemID) AND (NormID=:NormID)'
+  );
+  QParamStr('ItemName', AItemName);
+  QParamInt('ItemID', AItemID);
+  QParamInt('NormID', ANormID);
+  QOpen;
+  Result:= not QIsEmpty;
+  QClose;
+end;
+
+function TDataBase.SIZNormItemIntersectionExists(const APostID, AItemID: Integer;
+              const ABeginDate, AEndDate: TDate;
+              out ANormName, AItemName: String): Boolean;
+begin
+  Result:= False;
+  ANormName:= EmptyStr;
+  AItemName:= EmptyStr;
+  QSetQuery(FQuery);
+  QSetSQL(
+    'SELECT t3.NormName, t2.ItemName ' +
+    'FROM SIZNORMITEMPOST t1 ' +
+    'INNER JOIN SIZNORMITEM t2 ON (t1.ItemID=t2.ItemID) ' +
+    'INNER JOIN SIZNORM t3 ON (t2.NormID=t3.NormID) ' +
+    'WHERE (t1.ItemID<>:ItemID) AND (t1.PostID=:PostID) AND (' +
+            SqlCROSS('t3.BeginDate', 't3.EndDate', ':BD', ':ED') + ')'
+  );
+  QParamInt('ItemID', AItemID);
+  QParamInt('PostID', APostID);
+  QParamDT('BD', ABeginDate);
+  QParamDT('ED', AEndDate);
+  QOpen;
+  if not QIsEmpty then
+  begin
+    Result:= True;
+    ANormName:= QFieldStr('NormName');
+    AItemName:= QFieldStr('ItemName');
   end;
   QClose;
 end;
