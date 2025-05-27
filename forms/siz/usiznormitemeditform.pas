@@ -6,11 +6,12 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, StdCtrls,
-  Buttons, DateUtils,
+  Buttons, BCButton, DateUtils, VirtualTrees,
   //DK packages utils
   DK_CtrlUtils, DK_Const, DK_StrUtils, DK_Dialogs, DK_VSTTableTools, DK_Vector,
+  DK_VSTDropDown,
   //Project utils
-  UDataBase, UTypes, UImages, VirtualTrees;
+  UDataBase, UTypes, UImages;
 
 type
 
@@ -20,9 +21,9 @@ type
     ButtonPanel: TPanel;
     ButtonPanelBevel: TBevel;
     CancelButton: TSpeedButton;
+    NormNameBCButton: TBCButton;
     PostPanel: TPanel;
     PostLabel: TLabel;
-    NormNameComboBox: TComboBox;
     ItemNameEdit: TEdit;
     ItemNameLabel: TLabel;
     NormNameLabel: TLabel;
@@ -32,10 +33,10 @@ type
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
-    procedure NormNameComboBoxChange(Sender: TObject);
     procedure SaveButtonClick(Sender: TObject);
   private
     PostList: TVSTCheckList;
+    NormNameDropDown: TVSTDropDown;
 
     PostIDs, EditablePostIDs: TIntVector;
     PostNames, EditablePostNames: TStrVector;
@@ -46,6 +47,8 @@ type
     NormBDs, NormEDs: TDateVector;
 
     function NormsLoad: Boolean;
+    procedure NormsItemSelect;
+
     procedure EditablePostListLoad(const ANormID: Integer);
   public
     NormID, ItemID: Integer;
@@ -65,18 +68,19 @@ procedure TSIZNormItemEditForm.FormCreate(Sender: TObject);
 begin
   ItemID:= -1;
   Images.ToButtons([SaveButton, CancelButton]);
+  NormNameDropDown:= TVSTDropDown.Create(NormNameBCButton);
+  NormNameDropDown.OnChange:= @NormsItemSelect;
 end;
 
 procedure TSIZNormItemEditForm.FormDestroy(Sender: TObject);
 begin
   if Assigned(PostList) then FreeAndNil(PostList);
+  FreeAndNil(NormNameDropDown);
 end;
 
 procedure TSIZNormItemEditForm.FormShow(Sender: TObject);
 begin
   SetEventButtons([SaveButton, CancelButton]);
-
-  NormsLoad;
 
   DataBase.KeyPickList('STAFFPOST', 'PostID', 'PostName',
                        PostIDs, PostNames, True, 'PostName');
@@ -87,13 +91,9 @@ begin
   end;
 
   EditablePostListLoad(NormID);
+  NormsLoad;
 
   ItemNameEdit.SetFocus;
-end;
-
-procedure TSIZNormItemEditForm.NormNameComboBoxChange(Sender: TObject);
-begin
-  EditablePostListLoad(NormIDs[NormNameComboBox.ItemIndex]);
 end;
 
 procedure TSIZNormItemEditForm.CancelButtonClick(Sender: TObject);
@@ -119,9 +119,9 @@ var
     else
       //при добавлении и копировании нужно проверять на существование все пункты
       ThisItemID:= 0;
-    if DataBase.SIZIsNormItemExists(NormIDs[NormNameComboBox.ItemIndex], ThisItemID, ItemName) then
+    if DataBase.SIZIsNormItemExists(NormIDs[NormNameDropDown.ItemIndex], ThisItemID, ItemName) then
     begin
-      Inform('"' + NormNames[NormNameComboBox.ItemIndex] +
+      Inform('"' + NormNames[NormNameDropDown.ItemIndex] +
                '" уже содержит пункт "' + ItemName + '"!');
       Result:= True;
       Exit;
@@ -134,8 +134,8 @@ var
       if not PostList.Checked[i] then continue;
       //если есть пересечение по периодам действия - выход
       if DataBase.SIZNormItemIntersectionExists(EditablePostIDs[i], ThisItemID,
-                             NormBDs[NormNameComboBox.ItemIndex],
-                             NormEDs[NormNameComboBox.ItemIndex],
+                             NormBDs[NormNameDropDown.ItemIndex],
+                             NormEDs[NormNameDropDown.ItemIndex],
                              IntersectionNormName, IntersectionItemName) then
       begin
         Inform('Период действия записываемого пункта норм для должности "' +
@@ -173,7 +173,7 @@ begin
     etEdit: //редактирование
       IsOK:= DataBase.SIZNormItemUpdate(ItemID, ItemName, CheckedPostIDs);
     UTypes.etCustom: //копирование в другие типовые нормы
-      IsOK:= DataBase.SIZNormItemCopy(NormIDs[NormNameComboBox.ItemIndex],
+      IsOK:= DataBase.SIZNormItemCopy(NormIDs[NormNameDropDown.ItemIndex],
                                       ItemID, ItemName, CheckedPostIDs);
   end;
 
@@ -187,6 +187,7 @@ var
   S: String;
   TypicalNames: TStrVector;
 begin
+  NormNameDropDown.Clear;
   Result:= DataBase.SIZNormsLoad(NormIDs, NormNames, TypicalNames, NormBDs, NormEDs);
   if not Result then Exit;
 
@@ -197,10 +198,17 @@ begin
     else
       S:= FormatDateTime('dd.mm.yyyy)', NormEDs[i]);
     S:= FormatDateTime(' (с dd.mm.yyyy по ', NormBDs[i]) + S;
-    NormNameComboBox.Items.Add(NormNames[i] + S);
+    NormNames[i]:= NormNames[i] + S;
   end;
-  NormNameComboBox.ItemIndex:= VIndexOf(NormIDs, NormID);
-  NormNameComboBox.Enabled:= EditingType=UTypes.etCustom;
+
+  NormNameDropDown.Items:= NormNames;
+  NormNameDropDown.ItemIndex:= VIndexOf(NormIDs, NormID);
+  NormNameDropDown.Enabled:= EditingType=UTypes.etCustom;
+end;
+
+procedure TSIZNormItemEditForm.NormsItemSelect;
+begin
+  EditablePostListLoad(NormIDs[NormNameDropDown.ItemIndex]);
 end;
 
 procedure TSIZNormItemEditForm.EditablePostListLoad(const ANormID: Integer);

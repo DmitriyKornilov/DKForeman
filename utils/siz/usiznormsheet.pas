@@ -72,6 +72,7 @@ type
     function IndexToSubItemIndex(const AIndex: Integer): Integer;
     function IndexToSubItemInfoIndex(const AIndex: Integer): Integer;
     function RowToSubItemIndex(const ARow: Integer): Integer;
+    function SubItemIndexToRow(const ASubItemIndex: Integer): Integer;
 
     procedure CaptionDraw;
     procedure ReasonDraw(var ARow: Integer; const AIndex: Integer);
@@ -243,6 +244,13 @@ begin
   Result:= IndexToSubItemIndex(RowToIndex(ARow));
 end;
 
+function TSIZNormSubItemsSheet.SubItemIndexToRow(const ASubItemIndex: Integer): Integer;
+begin
+  Result:= -1;
+  if ASubItemIndex<0 then Exit;
+  Result:= FFirstRows[ASubItemIndex];
+end;
+
 procedure TSIZNormSubItemsSheet.Select(const ARow, ACol: Integer);
 var
   i, j, n: Integer;
@@ -407,7 +415,8 @@ begin
 
   DrawingEnd;
 
-  SetSelection(IndexToRow(ASelectedIndex), 1);
+  SetSelection(SubItemIndexToRow(ASelectedIndex), 1);
+
 end;
 
 function TSIZNormSubItemsSheet.CanUp: Boolean;

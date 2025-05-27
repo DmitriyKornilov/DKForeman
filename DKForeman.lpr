@@ -21,7 +21,7 @@ uses
   UTimetableEditForm, UTimetableMonthForm, UChooseForm, UImages,
   UTimetableSheet, uschedule, UTimingUtils, UVacationPlanEditForm,
   UVacationPlanningForm, USIZNormForm, USIZNormSheet, USIZSizes, USIZTypes,
-  USIZUtils, USIZNormEditForm, USIZNormItemEditForm;
+  USIZUtils, USIZNormEditForm, USIZNormItemEditForm, USIZNormSubItemEditForm;
 
 {$R *.res}
 

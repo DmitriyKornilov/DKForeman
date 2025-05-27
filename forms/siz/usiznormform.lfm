@@ -379,6 +379,7 @@ object SIZNormForm: TSIZNormForm
           ImageIndex = 4
           ShowHint = True
           ParentShowHint = False
+          OnClick = SubItemAddButtonClick
         end
         object SubItemDelButton: TSpeedButton
           Cursor = crHandPoint
@@ -408,6 +409,7 @@ object SIZNormForm: TSIZNormForm
           ImageIndex = 6
           ShowHint = True
           ParentShowHint = False
+          OnClick = SubItemEditButtonClick
         end
         object SubItemUpButton: TSpeedButton
           Cursor = crHandPoint
@@ -483,6 +485,7 @@ object SIZNormForm: TSIZNormForm
           TabOrder = 0
           TabStop = False
           TitleFont.Style = [fsBold]
+          OnDblClick = SubItemGridDblClick
         end
       end
     end

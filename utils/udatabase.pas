@@ -9,7 +9,7 @@ uses
   //Project utils
   UCalendar, UConst, USchedule, UTimetable, UWorkHours, USIZTypes, USIZUtils,
   //DK packages utils
-  DK_SQLite3, DK_SQLUtils, DK_Vector, DK_MAtrix, DK_StrUtils, DK_Const,
+  DK_SQLite3, DK_SQLUtils, DK_Vector, DK_Matrix, DK_StrUtils, DK_Const,
   DK_DateUtils, DK_VSTDropDown;
 
 type
@@ -40,7 +40,6 @@ type
                                  out ADigMarks: TIntVector;
                                  const ASelectDigMark: Integer = -1;
                                  const AIDNotZero: Boolean = True);
-
 
 
     (**************************************************************************
@@ -534,6 +533,17 @@ type
 
 
 
+
+
+    {Загрузка ассортимента СИЗ: True - ОК, False - ошибка}
+    function SIZAssortmentLoad(out AClassNames: TStrVector;
+                              out ASizNames: TStrMatrix;
+                              out ASizNameIDs, ASizSizeTypes: TIntMatrix): Boolean;
+
+
+
+
+
     function SIZStaffSpecSizeLoad(const AInfoID: Integer;
                                out ATabNumIDs, ASizeIDs, AHeightIDs: TIntVector): Boolean;
     function SIZStaffSpecSizeWrite(const AInfoID, ATabNumID, ASizeID, AHeightID: Integer;
@@ -671,8 +681,6 @@ procedure TDataBase.PostDictionaryLoad(const ADropDown: TVSTDropDown;
 var
   Items: TStrVector;
 begin
-  //KeyPickLoad(AComboBox, APostIDs, 'STAFFPOST', 'PostID', 'PostName', 'PostName',
-  //            AIDNotZero, EmptyStr, ASelectPostID);
   KeyPickList('STAFFPOST', 'PostID', 'PostName', APostIDs, Items, AIDNotZero, 'PostName');
   ADropDown.KeyPick(Items, APostIDs, ASelectPostID);
 end;
@@ -4342,6 +4350,70 @@ begin
   except
     if ACommit then QRollback;
   end;
+end;
+
+function TDataBase.SIZAssortmentLoad(out AClassNames: TStrVector;
+                              out ASizNames: TStrMatrix;
+                              out ASizNameIDs, ASizSizeTypes: TIntMatrix): Boolean;
+var
+  OldClass, NewClass: String;
+  VNames: TStrVector;
+  VIDs, VSizeTypes: TIntVector;
+begin
+  Result:= False;
+
+  AClassNames:= nil;
+  ASizNames:= nil;
+  ASizNameIDs:= nil;
+  ASizSizeTypes:= nil;
+  VNames:= nil;
+  VIDs:= nil;
+  VSizeTypes:= nil;
+
+  QSetQuery(FQuery);
+  QSetSQL(
+    'SELECT t1.NameID, t1.SizName, t1.SizeType, t2.ClassName ' +
+    'FROM SIZNAMES t1 ' +
+    'INNER JOIN SIZCLASSES t2 ON (t1.ClassID=t2.ClassID) ' +
+    'ORDER BY t2.ClassName, t1.SizName'
+  );
+  QOpen;
+  if not QIsEmpty then
+  begin
+    OldClass:= EmptyStr;
+    QFirst;
+    while not QEOF do
+    begin
+      NewClass:= QFieldStr('ClassName');
+      if NewClass<>OldClass then //новый класс
+      begin
+        //записываем предыдущий класс в матрицы
+        if not VIsNil(VNames) then
+        begin
+          MAppend(ASizNames, VNames);
+          MAppend(ASizNameIDs, VIDs);
+          MAppend(ASizSizeTypes, VSizeTypes);
+        end;
+        VNames:= nil;
+        VIDs:= nil;
+        VSizeTypes:= nil;
+        //сохраняем название нового класса
+        OldClass:= NewClass;
+        //записываем новый класс в вектор
+        VAppend(AClassNames, NewClass);
+      end;
+      VAppend(VNames, QFieldStr('SizName'));
+      VAppend(VIDs, QFieldInt('NameID'));
+      VAppend(VSizeTypes, QFieldInt('SizeType'));
+      QNext;
+    end;
+    //записываем последний класс
+    MAppend(ASizNames, VNames);
+    MAppend(ASizNameIDs, VIDs);
+    MAppend(ASizSizeTypes, VSizeTypes);
+    Result:= True;
+  end;
+  QClose;
 end;
 
 function TDataBase.SIZStaffSpecSizeLoad(const AInfoID: Integer;

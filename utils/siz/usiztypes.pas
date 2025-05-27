@@ -7,9 +7,7 @@ interface
 uses
   Classes, SysUtils,
   //DK packages utils
-  DK_Vector,
-  //Project utils
-  USIZUtils;
+  DK_Vector;
 
 type
   TNormSubItem = record
@@ -80,7 +78,7 @@ end;
 
 procedure NormSubItemClear(var ASubItem: TNormSubItem);
 begin
-  NormSubItemNew(ASubItem, 0, -1, -1, EmptyStr);
+  NormSubItemNew(ASubItem, -1, -1, 0, EmptyStr);
 end;
 
 procedure NormSubItemAdd(var ASubItem: TNormSubItem; const AInfoID, ASizeType: Integer;
