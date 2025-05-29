@@ -137,7 +137,7 @@ procedure NormSubItemInfoSwap(var AInfo: TNormSubItemInfo;
                               const AIndex1, AIndex2: Integer);
 begin
   VSwap(AInfo.InfoIDs, AIndex1, AIndex2);
-  VSwap(AInfo.OrderNums, AIndex1, AIndex2);
+  //VSwap(AInfo.OrderNums, AIndex1, AIndex2); порядковые номера не меняются
   VSwap(AInfo.ClassIDs, AIndex1, AIndex2);
   VSwap(AInfo.NameIDs, AIndex1, AIndex2);
   VSwap(AInfo.Names, AIndex1, AIndex2);

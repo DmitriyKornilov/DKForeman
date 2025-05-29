@@ -258,7 +258,7 @@ object SIZNormSubItemEditForm: TSIZNormSubItemEditForm
     ClientWidth = 684
     ParentFont = False
     TabOrder = 4
-    object SubItemAddButton: TSpeedButton
+    object AddButton: TSpeedButton
       Cursor = crHandPoint
       Left = 0
       Height = 38
@@ -270,8 +270,9 @@ object SIZNormSubItemEditForm: TSIZNormSubItemEditForm
       ImageIndex = 4
       ShowHint = True
       ParentShowHint = False
+      OnClick = AddButtonClick
     end
-    object SubItemDelButton: TSpeedButton
+    object DelButton: TSpeedButton
       Cursor = crHandPoint
       Left = 40
       Height = 38
@@ -284,8 +285,9 @@ object SIZNormSubItemEditForm: TSIZNormSubItemEditForm
       ImageIndex = 5
       ShowHint = True
       ParentShowHint = False
+      OnClick = DelButtonClick
     end
-    object SubItemEditButton: TSpeedButton
+    object EditButton: TSpeedButton
       Cursor = crHandPoint
       Left = 80
       Height = 38
@@ -298,8 +300,9 @@ object SIZNormSubItemEditForm: TSIZNormSubItemEditForm
       ImageIndex = 6
       ShowHint = True
       ParentShowHint = False
+      OnClick = EditButtonClick
     end
-    object SubItemUpButton: TSpeedButton
+    object UpButton: TSpeedButton
       Cursor = crHandPoint
       Left = 120
       Height = 38
@@ -312,8 +315,9 @@ object SIZNormSubItemEditForm: TSIZNormSubItemEditForm
       ImageIndex = 48
       ShowHint = True
       ParentShowHint = False
+      OnClick = UpButtonClick
     end
-    object SubItemDownButton: TSpeedButton
+    object DownButton: TSpeedButton
       Cursor = crHandPoint
       Left = 160
       Height = 38
@@ -326,6 +330,7 @@ object SIZNormSubItemEditForm: TSIZNormSubItemEditForm
       ImageIndex = 49
       ShowHint = True
       ParentShowHint = False
+      OnClick = DownButtonClick
     end
   end
   object InfoPanel: TPanel

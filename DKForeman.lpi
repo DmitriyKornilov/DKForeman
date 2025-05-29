@@ -405,6 +405,7 @@
         <Filename Value="forms\siz\usiznormsubitemeditform.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="SIZNormSubItemEditForm"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="USIZNormSubItemEditForm"/>
       </Unit>

@@ -545,8 +545,9 @@ type
 
 
     {Загрузка ассортимента СИЗ: True - ОК, False - ошибка}
-    function SIZAssortmentLoad(out AClassNames: TStrVector;
-                              out ASizNames: TStrMatrix;
+    function SIZAssortmentLoad(out AClassIDs: TIntVector;
+                              out AClassNames: TStrVector;
+                              out ASizNames, ASizUnits: TStrMatrix;
                               out ASizNameIDs, ASizSizeTypes: TIntMatrix): Boolean;
 
 
@@ -4391,29 +4392,34 @@ begin
   end;
 end;
 
-function TDataBase.SIZAssortmentLoad(out AClassNames: TStrVector;
-                              out ASizNames: TStrMatrix;
+function TDataBase.SIZAssortmentLoad(out AClassIDs: TIntVector;
+                              out AClassNames: TStrVector;
+                              out ASizNames, ASizUnits: TStrMatrix;
                               out ASizNameIDs, ASizSizeTypes: TIntMatrix): Boolean;
 var
   OldClass, NewClass: String;
-  VNames: TStrVector;
+  VNames, VUnits: TStrVector;
   VIDs, VSizeTypes: TIntVector;
 begin
   Result:= False;
 
+  AClassIDs:= nil;
   AClassNames:= nil;
   ASizNames:= nil;
+  ASizUnits:= nil;
   ASizNameIDs:= nil;
   ASizSizeTypes:= nil;
   VNames:= nil;
+  VUnits:= nil;
   VIDs:= nil;
   VSizeTypes:= nil;
 
   QSetQuery(FQuery);
   QSetSQL(
-    'SELECT t1.NameID, t1.SizName, t1.SizeType, t2.ClassName ' +
+    'SELECT t1.NameID, t1.SizName, t1.SizeType, t1.ClassID, t2.ClassName, t3.UnitStringCode ' +
     'FROM SIZNAMES t1 ' +
     'INNER JOIN SIZCLASSES t2 ON (t1.ClassID=t2.ClassID) ' +
+    'INNER JOIN SIZUNIT t3 ON (t1.UnitID=t3.UnitID) ' +
     'ORDER BY t2.ClassName, t1.SizName'
   );
   QOpen;
@@ -4430,24 +4436,29 @@ begin
         if not VIsNil(VNames) then
         begin
           MAppend(ASizNames, VNames);
+          MAppend(ASizUnits, VUnits);
           MAppend(ASizNameIDs, VIDs);
           MAppend(ASizSizeTypes, VSizeTypes);
         end;
         VNames:= nil;
+        VUnits:= nil;
         VIDs:= nil;
         VSizeTypes:= nil;
         //сохраняем название нового класса
         OldClass:= NewClass;
         //записываем новый класс в вектор
         VAppend(AClassNames, NewClass);
+        VAppend(AClassIDs, QFieldInt('ClassID'));
       end;
       VAppend(VNames, QFieldStr('SizName'));
+      VAppend(VUnits, QFieldStr('UnitStringCode'));
       VAppend(VIDs, QFieldInt('NameID'));
       VAppend(VSizeTypes, QFieldInt('SizeType'));
       QNext;
     end;
     //записываем последний класс
     MAppend(ASizNames, VNames);
+    MAppend(ASizUnits, VUnits);
     MAppend(ASizNameIDs, VIDs);
     MAppend(ASizSizeTypes, VSizeTypes);
     Result:= True;
