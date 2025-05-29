@@ -23,6 +23,7 @@ type
     Nums       : TIntVector;   //кол-во
     LifeIDs    : TIntVector;   //ID особых сроков (=0 if Life>0)
     Lifes      : TIntVector;   //месяцы (=0 if LifeID>0)
+    LifeNames  : TStrVector;   //особый срок службы
     YearNums   : TStrVector;   //кол-во на год прописью (как в личной карточке)
   end;
 
@@ -31,7 +32,12 @@ type
                                const AInfoID, AOrderNum,
                                      AClassID, ANameID, ASizeType,
                                      ANum, ALifeID, ALife : Integer;
-                               const AName, AUnit, AYearNum: String);
+                               const AName, AUnit, ALifeName, AYearNum: String);
+  procedure NormSubItemInfoIns(var AInfo: TNormSubItemInfo;
+                               const AIndex, AInfoID, AOrderNum,
+                                     AClassID, ANameID, ASizeType,
+                                     ANum, ALifeID, ALife : Integer;
+                               const AName, AUnit, ALifeName, AYearNum: String);
   procedure NormSubItemInfoSwap(var AInfo: TNormSubItemInfo;
                                const AIndex1, AIndex2: Integer);
   procedure NormSubItemInfoDel(var AInfo: TNormSubItemInfo;
@@ -83,6 +89,7 @@ begin
   AInfo.Nums:= nil;
   AInfo.LifeIDs:= nil;
   AInfo.Lifes:= nil;
+  AInfo.LifeNames:= nil;
   AInfo.YearNums:= nil;
 end;
 
@@ -90,7 +97,7 @@ procedure NormSubItemInfoAdd(var AInfo: TNormSubItemInfo;
                              const AInfoID, AOrderNum,
                                    AClassID, ANameID, ASizeType,
                                    ANum, ALifeID, ALife : Integer;
-                             const AName, AUnit, AYearNum: String);
+                             const AName, AUnit, ALifeName, AYearNum: String);
 begin
   VAppend(AInfo.InfoIDs, AInfoID);
   VAppend(AInfo.OrderNums, AOrderNum);
@@ -102,7 +109,28 @@ begin
   VAppend(AInfo.Nums, ANum);
   VAppend(AInfo.LifeIDs, ALifeID);
   VAppend(AInfo.Lifes, ALife);
+  VAppend(AInfo.LifeNames, ALifeName);
   VAppend(AInfo.YearNums, AYearNum);
+end;
+
+procedure NormSubItemInfoIns(var AInfo: TNormSubItemInfo;
+                               const AIndex, AInfoID, AOrderNum,
+                                     AClassID, ANameID, ASizeType,
+                                     ANum, ALifeID, ALife : Integer;
+                               const AName, AUnit, ALifeName, AYearNum: String);
+begin
+  VIns(AInfo.InfoIDs, AIndex, AInfoID);
+  VIns(AInfo.OrderNums, AIndex, AOrderNum);
+  VIns(AInfo.ClassIDs, AIndex, AClassID);
+  VIns(AInfo.NameIDs, AIndex, ANameID);
+  VIns(AInfo.Names, AIndex, AName);
+  VIns(AInfo.Units, AIndex, AUnit);
+  VIns(AInfo.SizeTypes, AIndex, ASizeType);
+  VIns(AInfo.Nums, AIndex, ANum);
+  VIns(AInfo.LifeIDs, AIndex, ALifeID);
+  VIns(AInfo.Lifes, AIndex, ALife);
+  VIns(AInfo.LifeNames, AIndex, ALifeName);
+  VIns(AInfo.YearNums, AIndex, AYearNum);
 end;
 
 procedure NormSubItemInfoSwap(var AInfo: TNormSubItemInfo;
@@ -118,6 +146,7 @@ begin
   VSwap(AInfo.Nums, AIndex1, AIndex2);
   VSwap(AInfo.LifeIDs, AIndex1, AIndex2);
   VSwap(AInfo.Lifes, AIndex1, AIndex2);
+  VSwap(AInfo.LifeNames, AIndex1, AIndex2);
   VSwap(AInfo.YearNums, AIndex1, AIndex2);
 end;
 
@@ -134,6 +163,7 @@ begin
   VDel(AInfo.Nums, AIndex);
   VDel(AInfo.LifeIDs, AIndex);
   VDel(AInfo.Lifes, AIndex);
+  VDel(AInfo.LifeNames, AIndex);
   VDel(AInfo.YearNums, AIndex);
 end;
 
@@ -150,6 +180,7 @@ begin
   ADestInfo.Nums:= VCut(ASourceInfo.Nums);
   ADestInfo.LifeIDs:= VCut(ASourceInfo.LifeIDs);
   ADestInfo.Lifes:= VCut(ASourceInfo.Lifes);
+  ADestInfo.LifeNames:= VCut(ASourceInfo.LifeNames);
   ADestInfo.YearNums:= VCut(ASourceInfo.YearNums);
 end;
 

@@ -3821,7 +3821,8 @@ begin
       NormSubItemInfoAdd(AInfo, QFieldInt('InfoID'), QFieldInt('OrderNum'),
                                 QFieldInt('ClassID'), QFieldInt('NameID'),
                                 QFieldInt('SizeType'), Num, QFieldInt('SpecLifeID'),
-                                Life, QFieldStr('SizName'), UnitStr, YearNum);
+                                Life, QFieldStr('SizName'), UnitStr, SpecLifeName,
+                                YearNum);
       QNext;
     end;
     Result:= True;
@@ -3951,7 +3952,8 @@ begin
     YearNum:= SIZNumInLifeStr(Nums[i], Lifes[i], LifeNames[i]);
     NormSubItemInfoAdd(Info, InfoIDs[i], InfoOrderNums[i],
                        ClassIDs[i], NameIDs[i], SizeTypes[i], Nums[i],
-                       LifeIDs[i], Lifes[i], SizNames[i], Units[i], YearNum);
+                       LifeIDs[i], Lifes[i], SizNames[i], Units[i],
+                       LifeNames[i], YearNum);
 
   end;
   //записываем последнюю сформированную строку в вектор

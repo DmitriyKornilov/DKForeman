@@ -8,8 +8,8 @@ uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, StdCtrls,
   Spin, Buttons, BCButton, VirtualTrees,
   //DK packages utils
-  DK_CtrlUtils, DK_Const, DK_StrUtils, DK_Dialogs, DK_VSTTableTools, DK_Vector,
-  DK_Matrix, DK_VSTDropDown,
+  DK_CtrlUtils, DK_Const, DK_StrUtils, DK_Dialogs, DK_VSTTables, DK_VSTTableTools,
+  DK_Vector, DK_Matrix, DK_VSTDropDown,
   //Project utils
   UDataBase, UTypes, USIZUtils, USIZTypes, UImages;
 
@@ -22,8 +22,8 @@ type
     ButtonPanelBevel: TBevel;
     CancelButton: TSpeedButton;
     LifeBCButton: TBCButton;
-    SubItemPanel: TPanel;
-    SubItemVT: TVirtualStringTree;
+    InfoPanel: TPanel;
+    InfoVT: TVirtualStringTree;
     ReasonBCButton: TBCButton;
     ClassBCButton: TBCButton;
     SubItemAddButton: TSpeedButton;
@@ -62,11 +62,17 @@ type
     Names: TStrMatrix;
     NameIDs, SizeTypes: TIntMatrix;
 
+    InfoTable: TVSTTable;
+    OldInfo: TNormSubItemInfo;
+
     procedure ClassChange;
     procedure LifeChange;
+
+    procedure InfoShow(const AInfo: TNormSubItemInfo);
   public
     ItemID: Integer;
     SubItem: TNormSubItem;
+    //InfoTableFont: TFont;
     EditingType: TEditingType;
   end;
 
@@ -74,6 +80,8 @@ var
   SIZNormSubItemEditForm: TSIZNormSubItemEditForm;
 
 implementation
+
+uses UMainForm;
 
 {$R *.lfm}
 
@@ -97,6 +105,16 @@ begin
 
   NameList:= TVSTStringList.Create(NameVT, EmptyStr, nil);
 
+  InfoTable:= TVSTTable.Create(InfoVT);
+  InfoTable.SetSingleFont(MainForm.GridFont);
+  InfoTable.HeaderFont.Bold:= True;
+  InfoTable.AddColumn('Наименование', 200);
+  InfoTable.AddColumn('Количество', 100);
+  InfoTable.AddColumn('Срок службы',150);
+  InfoTable.AutosizeColumnEnable('Наименование');
+  InfoTable.CanSelect:= True;
+
+  NormSubItemInfoClear(OldInfo);
 end;
 
 procedure TSIZNormSubItemEditForm.CancelButtonClick(Sender: TObject);
@@ -110,11 +128,10 @@ begin
   FreeAndNil(ClassDropDown);
   FreeAndNil(LifeDropDown);
   FreeAndNil(NameList);
+  FreeAndNil(InfoTable);
 end;
 
 procedure TSIZNormSubItemEditForm.FormShow(Sender: TObject);
-var
-  n: Integer;
 begin
   SetEventButtons([SaveButton, CancelButton]);
 
@@ -128,16 +145,17 @@ begin
                        LifeIDs, LifeNames, False {with zero ID}, 'SpecLifeID');
   LifeNames[0]:= 'в месяцах';
   LifeDropDown.Items:= LifeNames;
-  n:= -1;
-  if not VIsNil(SubItem.Info.LifeIDs) then
-    n:= VIndexOf(LifeIDs, SubItem.Info.LifeIDs[0]);
-  if n<0 then n:= 0;
-  LifeDropDown.ItemIndex:= n;
+  LifeDropDown.ItemIndex:= 0;
 
   DataBase.SIZAssortmentLoad(ClassNames, Names, NameIDs, SizeTypes);
   ClassDropDown.Items:= ClassNames;
   ClassDropDown.ItemIndex:= 0;
 
+
+
+  if EditingType=etEdit then
+    NormSubItemInfoCopy(SubItem.Info, OldInfo);
+  InfoShow(SubItem.Info);
 end;
 
 procedure TSIZNormSubItemEditForm.LifeSpinEditChange(Sender: TObject);
@@ -171,6 +189,20 @@ procedure TSIZNormSubItemEditForm.LifeChange;
 begin
   LifeSpinEdit.Visible:= LifeDropDown.ItemIndex=0;
   YearsLabel.Visible:= LifeSpinEdit.Visible;
+end;
+
+procedure TSIZNormSubItemEditForm.InfoShow(const AInfo: TNormSubItemInfo);
+var
+  i: Integer;
+  V: TStrVector;
+begin
+  VDim(V{%H-}, Length(AInfo.Lifes));
+  for i:= 0 to High(AInfo.Lifes) do
+   V[i]:= SIZLifeStr(AInfo.Lifes[i], AInfo.LifeNames[i]);
+  InfoTable.SetColumn('Наименование', AInfo.Names, taLeftJustify);
+  InfoTable.SetColumn('Количество', VIntToStr(AInfo.Nums));
+  InfoTable.SetColumn('Срок службы', V);
+  InfoTable.Draw;
 end;
 
 end.

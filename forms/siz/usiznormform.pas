@@ -482,7 +482,7 @@ var
 begin
   SIZNormSubItemEditForm:= TSIZNormSubItemEditForm.Create(nil);
   try
-
+    //SIZNormSubItemEditForm.InfoTableFont.Assign(MainForm.GridFont);
     SIZNormSubItemEditForm.EditingType:= AEditingType;
     SIZNormSubItemEditForm.ItemID:= ItemIDs[NormItemSheet.SelectedIndex];
 

@@ -242,7 +242,7 @@ object SIZNormSubItemEditForm: TSIZNormSubItemEditForm
     AnchorSideTop.Side = asrBottom
     AnchorSideRight.Control = Owner
     AnchorSideRight.Side = asrBottom
-    AnchorSideBottom.Control = SubItemPanel
+    AnchorSideBottom.Control = InfoPanel
     Left = 8
     Height = 38
     Top = 440
@@ -328,7 +328,7 @@ object SIZNormSubItemEditForm: TSIZNormSubItemEditForm
       ParentShowHint = False
     end
   end
-  object SubItemPanel: TPanel
+  object InfoPanel: TPanel
     AnchorSideLeft.Control = Owner
     AnchorSideTop.Control = ToolPanel
     AnchorSideTop.Side = asrBottom
@@ -348,7 +348,7 @@ object SIZNormSubItemEditForm: TSIZNormSubItemEditForm
     ClientHeight = 146
     ClientWidth = 680
     TabOrder = 5
-    object SubItemVT: TVirtualStringTree
+    object InfoVT: TVirtualStringTree
       Left = 0
       Height = 146
       Top = 0
