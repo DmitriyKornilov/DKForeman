@@ -3816,7 +3816,7 @@ begin
       Num:= QFieldInt('Num');
       Life:= QFieldInt('Life');
       SpecLifeName:= QFieldStr('SpecLifeName');
-      YearNum:= GetSizNumInLifeStr(Num, Life, SpecLifeName);
+      YearNum:= SIZNumInLifeStr(Num, Life, SpecLifeName);
       UnitStr:= QFieldStr('UnitStringCode');
       NormSubItemInfoAdd(AInfo, QFieldInt('InfoID'), QFieldInt('OrderNum'),
                                 QFieldInt('ClassID'), QFieldInt('NameID'),
@@ -3948,7 +3948,7 @@ begin
       NormSubItemInfoClear(Info);
     end;
     //заполняем Info
-    YearNum:= GetSizNumInLifeStr(Nums[i], Lifes[i], LifeNames[i]);
+    YearNum:= SIZNumInLifeStr(Nums[i], Lifes[i], LifeNames[i]);
     NormSubItemInfoAdd(Info, InfoIDs[i], InfoOrderNums[i],
                        ClassIDs[i], NameIDs[i], SizeTypes[i], Nums[i],
                        LifeIDs[i], Lifes[i], SizNames[i], Units[i], YearNum);

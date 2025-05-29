@@ -11,32 +11,32 @@ uses
   //Project utils
   USIZSizes;
 
-function GetSizLifeInYearsStr(const AMonths: Extended): String;
-function GetSizLifeInMonthsStr(const AMonths: Extended): String;
-function GetSizLifeInMonthAndYears(const AMonths: Extended): String;
-function GetSizLifeStr(const ALife: Integer; const ASpecLife: String): String;
-function GetSizNumInLifeStr(const ANum, ALife: Integer; const ASpecLife: String): String;
-function GetSizLifeInMonthsFromDates(const AGivingDate, AWritingDate: TDate): Extended;
-function GetSizLifeInMonths(const AGettingCount, ANormCount, ANormLife, AWearPercent: Integer;
+function SIZLifeInYearsStr(const AMonths: Extended): String;
+function SIZLifeInMonthsStr(const AMonths: Extended): String;
+function SIZLifeInMonthAndYears(const AMonths: Extended): String;
+function SIZLifeStr(const ALife: Integer; const ASpecLife: String): String;
+function SIZNumInLifeStr(const ANum, ALife: Integer; const ASpecLife: String): String;
+function SIZLifeInMonthsFromDates(const AGivingDate, AWritingDate: TDate): Extended;
+function SIZLifeInMonths(const AGettingCount, ANormCount, ANormLife, AWearPercent: Integer;
                             const AUseWearPercent: Boolean = True): Extended;
-function GetSizWriteoffDate(const AGettingDate: TDate;
+function SIZWriteoffDate(const AGettingDate: TDate;
                             const AGettingCount, ANormCount, ANormLife, AWearPercent: Integer;
                             const AUseWearPercent: Boolean = True): TDate;
-function GetSizWriteoffDateStr(const AGettingDate: TDate;
+function SIZWriteoffDateStr(const AGettingDate: TDate;
                             const AGettingCount, ANormCount, ANormLife, AWearPercent: Integer;
                             const AUseWearPercent: Boolean = True): String;
-function GetSizWriteoffDateStr(const AWiteoffDate: TDate): String;
-function GetSizFullSize(const ASizeType, ASizeID: Integer;
+function SIZWriteoffDateStr(const AWiteoffDate: TDate): String;
+function SIZFullSize(const ASizeType, ASizeID: Integer;
                         const AHeightID: Integer = 0;
                         const ANotDefineValue: String = ''): String;
-function GetNormFullName(const ANormName, ATypicalName: String): String;
-procedure ChooseFromStaffAndSpecSizes(const ASpecSizeID, ASpecHeightID,
+function SIZNormFullName(const ANormName, ATypicalName: String): String;
+procedure SIZChooseFromStaffAndSpecSizes(const ASpecSizeID, ASpecHeightID,
                                       AStaffSizeID, AStaffHeightID: Integer;
                                       out ASizeID, AHeightID: Integer);
 
 implementation
 
-function GetSizLifeInYearsStr(const AMonths: Extended): String;
+function SIZLifeInYearsStr(const AMonths: Extended): String;
 var
   X, Y, M: Integer;
 begin
@@ -72,7 +72,7 @@ begin
   end;
 end;
 
-function GetSizLifeInMonthsStr(const AMonths: Extended): String;
+function SIZLifeInMonthsStr(const AMonths: Extended): String;
 var
   X, M: Integer;
 begin
@@ -99,7 +99,7 @@ begin
   end;
 end;
 
-function GetSizLifeInMonthAndYears(const AMonths: Extended): String;
+function SIZLifeInMonthAndYears(const AMonths: Extended): String;
 var
   MonthStr, YearStr: String;
 begin
@@ -108,14 +108,14 @@ begin
     Result:= '0 месяцев';
     Exit;
   end;
-  MonthStr:= GetSizLifeInMonthsStr(AMonths);
-  YearStr:= GetSizLifeInYearsStr(AMonths);
+  MonthStr:= SIZLifeInMonthsStr(AMonths);
+  YearStr:= SIZLifeInYearsStr(AMonths);
   Result:= MonthStr;
   if YearStr<>EmptyStr then
     Result:= MonthStr + ' (' + YearStr + ')';
 end;
 
-function GetSizLifeStr(const ALife: Integer; const ASpecLife: String): String;
+function SIZLifeStr(const ALife: Integer; const ASpecLife: String): String;
 var
   X: Integer;
 begin
@@ -153,7 +153,7 @@ begin
   end;
 end;
 
-function GetSizNumInLifeStr(const ANum, ALife: Integer; const ASpecLife: String): String;
+function SIZNumInLifeStr(const ANum, ALife: Integer; const ASpecLife: String): String;
 var
   NumStr, PeriodStr: String;
   X: Integer;
@@ -196,7 +196,7 @@ begin
   end;
 end;
 
-function GetSizLifeInMonthsFromDates(const AGivingDate, AWritingDate: TDate): Extended;
+function SIZLifeInMonthsFromDates(const AGivingDate, AWritingDate: TDate): Extended;
 var
   D: TDate;
   IntMonths: Integer;
@@ -221,7 +221,7 @@ begin
   end;
 end;
 
-function GetSizLifeInMonths(const AGettingCount, ANormCount, ANormLife, AWearPercent: Integer;
+function SIZLifeInMonths(const AGettingCount, ANormCount, ANormLife, AWearPercent: Integer;
                             const AUseWearPercent: Boolean = True): Extended;
 begin
   if AUseWearPercent and (AWearPercent>0) then
@@ -230,7 +230,7 @@ begin
     Result:= AGettingCount*ANormLife/ANormCount;
 end;
 
-function GetSizWriteoffDate(const AGettingDate: TDate;
+function SIZWriteoffDate(const AGettingDate: TDate;
                             const AGettingCount, ANormCount, ANormLife, AWearPercent: Integer;
                             const AUseWearPercent: Boolean = True): TDate;
 var
@@ -238,7 +238,7 @@ var
 begin
   if ANormLife>0 then
   begin
-    DeltaMonth:= GetSizLifeInMonths(AGettingCount, ANormCount, ANormLife,
+    DeltaMonth:= SIZLifeInMonths(AGettingCount, ANormCount, ANormLife,
                                    AWearPercent, AUseWearPercent);
     Result:= IncMonthExt(AGettingDate, DeltaMonth);
   end
@@ -246,7 +246,7 @@ begin
     Result:= INFDATE;
 end;
 
-function GetSizWriteoffDateStr(const AGettingDate: TDate;
+function SIZWriteoffDateStr(const AGettingDate: TDate;
                             const AGettingCount, ANormCount, ANormLife, AWearPercent: Integer;
                             const AUseWearPercent: Boolean = True): String;
 var
@@ -255,13 +255,13 @@ begin
   if ANormLife=0 then
     Result:= '-'
   else begin
-    D:= GetSizWriteoffDate(AGettingDate, AGettingCount, ANormCount, ANormLife,
+    D:= SIZWriteoffDate(AGettingDate, AGettingCount, ANormCount, ANormLife,
                          AWearPercent, AUseWearPercent);
     Result:= FormatDateTime('dd.mm.yyyy', D);
   end;
 end;
 
-function GetSizWriteoffDateStr(const AWiteoffDate: TDate): String;
+function SIZWriteoffDateStr(const AWiteoffDate: TDate): String;
 begin
   if SameDate(AWiteoffDate, INFDATE) then
     Result:= '-'
@@ -269,7 +269,7 @@ begin
     Result:= FormatDateTime('dd.mm.yyyy', AWiteoffDate);
 end;
 
-function GetSizFullSize(const ASizeType, ASizeID: Integer;
+function SIZFullSize(const ASizeType, ASizeID: Integer;
                         const AHeightID: Integer = 0;
                         const ANotDefineValue: String = ''): String;
 begin
@@ -289,7 +289,7 @@ begin
   end;
 end;
 
-function GetNormFullName(const ANormName, ATypicalName: String): String;
+function SIZNormFullName(const ANormName, ATypicalName: String): String;
 begin
   Result:= EmptyStr;
   if (ANormName=EmptyStr) and (ATypicalName=EmptyStr) then Exit;
@@ -299,7 +299,7 @@ begin
     else Result:= ATypicalName;
 end;
 
-procedure ChooseFromStaffAndSpecSizes(const ASpecSizeID, ASpecHeightID,
+procedure SIZChooseFromStaffAndSpecSizes(const ASpecSizeID, ASpecHeightID,
                                       AStaffSizeID, AStaffHeightID: Integer;
                                       out ASizeID, AHeightID: Integer);
 begin

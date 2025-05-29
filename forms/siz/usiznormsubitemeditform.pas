@@ -135,8 +135,6 @@ begin
   LifeDropDown.ItemIndex:= n;
 
   DataBase.SIZAssortmentLoad(ClassNames, Names, NameIDs, SizeTypes);
-  //DataBase.KeyPickList('SIZCLASSES', 'ClassID', 'ClassName',
-  //                     ClassIDs, ClassNames, True {without zero ID}, 'ClassName');
   ClassDropDown.Items:= ClassNames;
   ClassDropDown.ItemIndex:= 0;
 
@@ -144,7 +142,7 @@ end;
 
 procedure TSIZNormSubItemEditForm.LifeSpinEditChange(Sender: TObject);
 begin
-  YearsLabel.Caption:= '(' + GetSizLifeInYearsStr(LifeSpinEdit.Value) + ')';
+  YearsLabel.Caption:= '(' + SIZLifeInYearsStr(LifeSpinEdit.Value) + ')';
 end;
 
 procedure TSIZNormSubItemEditForm.SaveButtonClick(Sender: TObject);
