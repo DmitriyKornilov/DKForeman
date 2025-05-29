@@ -129,8 +129,8 @@ begin
   LifeNames[0]:= 'в месяцах';
   LifeDropDown.Items:= LifeNames;
   n:= -1;
-  if not VIsNil(SubItem.Lifes) then
-    n:= VIndexOf(LifeNames, SubItem.Lifes[0]);
+  if not VIsNil(SubItem.Info.LifeIDs) then
+    n:= VIndexOf(LifeIDs, SubItem.Info.LifeIDs[0]);
   if n<0 then n:= 0;
   LifeDropDown.ItemIndex:= n;
 

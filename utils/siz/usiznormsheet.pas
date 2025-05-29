@@ -348,19 +348,19 @@ var
 begin
   Writer.SetBackgroundDefault;
 
-  N:= High(FSubItems[AIndex].Names);
+  N:= High(FSubItems[AIndex].Info.Names);
   for i:=0 to N do
   begin
     Writer.SetFont(Font.Name, Font.Size, [], clBlack);
     R:= ARow + i;
     Writer.SetAlignment(haLeft, vaCenter);
-    S:= FSubItems[AIndex].Names[i];
+    S:= FSubItems[AIndex].Info.Names[i];
     if (N>0) and (i<N) then S:= S + ' или';
     Writer.WriteText(R, 1, S, cbtNone, True, True);
     Writer.SetAlignment(haCenter, vaCenter);
     Writer.WriteText(R, 2, FItemName);
-    Writer.WriteText(R, 3, FSubItems[AIndex].Units[i]);
-    Writer.WriteText(R, 4, FSubItems[AIndex].Lifes[i]);
+    Writer.WriteText(R, 3, FSubItems[AIndex].Info.Units[i]);
+    Writer.WriteText(R, 4, FSubItems[AIndex].Info.YearNums[i]);
   end;
 
   for i:= 1 to 4 do
