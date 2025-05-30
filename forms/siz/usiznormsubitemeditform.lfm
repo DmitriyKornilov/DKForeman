@@ -266,6 +266,7 @@ object SIZNormSubItemEditForm: TSIZNormSubItemEditForm
       Top = 0
       Width = 40
       Align = alLeft
+      Enabled = False
       Images = Images.PX24
       ImageIndex = 4
       ShowHint = True

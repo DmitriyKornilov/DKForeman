@@ -9,7 +9,7 @@ uses
   //DK packages utils
   DK_SheetTables, DK_SheetTypes, DK_Vector, DK_StrUtils, DK_Const,
   //Project utils
-  USIZTypes, UConst;
+  USIZTypes, USIZUtils, UConst;
 
 type
 
@@ -360,7 +360,10 @@ begin
     Writer.SetAlignment(haCenter, vaCenter);
     Writer.WriteText(R, 2, FItemName);
     Writer.WriteText(R, 3, FSubItems[AIndex].Info.Units[i]);
-    Writer.WriteText(R, 4, FSubItems[AIndex].Info.YearNums[i]);
+    S:= SIZNumInLifeStr(FSubItems[AIndex].Info.Nums[i],
+                        FSubItems[AIndex].Info.Lifes[i],
+                        FSubItems[AIndex].Info.LifeNames[i]);
+    Writer.WriteText(R, 4, S);
   end;
 
   for i:= 1 to 4 do

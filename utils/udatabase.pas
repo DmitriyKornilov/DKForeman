@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, DateUtils,
   //Project utils
-  UCalendar, UConst, USchedule, UTimetable, UWorkHours, USIZTypes, USIZUtils,
+  UCalendar, UConst, USchedule, UTimetable, UWorkHours, USIZTypes,
   //DK packages utils
   DK_SQLite3, DK_SQLUtils, DK_Vector, DK_Matrix, DK_StrUtils, DK_Const,
   DK_DateUtils, DK_VSTDropDown;
@@ -464,7 +464,8 @@ type
     function SIZNormDelete(const ANormID: Integer): Boolean;
     function SIZNormItemDelete(const AItemID: Integer): Boolean;
     function SIZNormSubItemDelete(const AItemID, ASubItemID, AReasonID, AOrderNum: Integer): Boolean;
-    procedure SIZNormSubItemInfoDelete(const AInfoIDs: TIntVector); //no commit
+    function SIZNormSubItemInfoDelete(const AInfoIDs: TIntVector;
+                                       const ACommit: Boolean = True): Boolean;
 
 
     {Загрузка из базы списка пунктов типовых норм: True - ОК, False - пусто}
@@ -519,12 +520,22 @@ type
                  AClassIDs, ANameIDs, ASizeTypes,
                  ANums, ALifeIDs, ALifes: TIntVector;
              out AReasonNames, ASizNames, AUnits, ALifeNames: TStrVector): Boolean;
+    {Следующий свободный OrderNum для строки пункта}
+    function SIZNormSubItemOrderNumFreeLoad(const AItemID, AReasonID: Integer): Integer;
+    {Сдвиг вверх (уменьшение) OrderNum строки пункт с AItemID для AReasonID,
+     начиная с ABeginOrderNum+1. No commit}
+    function SIZNormSubItemOrderNumDecrement(const AItemID, AReasonID, ABeginOrderNum: Integer): Boolean;
     {Загрузка строк пункта: True - ОК, False - пусто}
     function SIZNormSubItemsLoad(const AItemID: Integer; var ASubItems: TNormSubItems): Boolean;
 
     {Запись новой строки пункта: True - ОК, False - ошибка}
     function SIZNormSubItemWrite(const AItemID: Integer;
                                  out ASubItemID: Integer;
+                                 const AReasonID, AOrderNum: Integer;
+                                 const ACommit: Boolean = True): Boolean;
+    function SIZNormSubItemAdd(const AItemID: Integer; const ASubItem: TNormSubItem): Boolean;
+    {Обновление строки пункта: True - ОК, False - ошибка}
+    function SIZNormSubItemUpdate(const ASubItemID: Integer;
                                  const AReasonID, AOrderNum: Integer;
                                  const ACommit: Boolean = True): Boolean;
 
@@ -535,12 +546,18 @@ type
     function SIZNormSubItemInfoLoad(const ASubItemID: Integer;
                                     var AInfo: TNormSubItemInfo): Boolean;
     {Запись нового Info строки пункта: True - ОК, False - ошибка}
-    function SIZNormSubItemInfoWrite(const ASourceSubItemID: Integer;
-                                    const ASourceInfo: TNormSubItemInfo;
-                                    out ADestInfoIDs: TIntVector;
+    function SIZNormSubItemInfoWrite(const ASubItemID, ANameID,
+                                    ANum, ALife, ALifeID, AOrderNum: Integer;
+                                    out AInfoID: Integer;
                                     const ACommit: Boolean = True): Boolean;
-
-
+    function SIZNormSubItemInfoWrite(const ASubItemID: Integer;
+                                    const AInfo: TNormSubItemInfo;
+                                    out AInfoIDs: TIntVector;
+                                    const ACommit: Boolean = True): Boolean;
+    {Обновление Info: True - ОК, False - ошибка}
+    function SIZNormSubItemInfoUpdate(const AInfoID, ANameID,
+                                    ANum, ALife, ALifeID, AOrderNum: Integer;
+                                    const ACommit: Boolean = True): Boolean;
 
 
 
@@ -3789,9 +3806,6 @@ end;
 
 function TDataBase.SIZNormSubItemInfoLoad(const ASubItemID: Integer;
                                           var AInfo: TNormSubItemInfo): Boolean;
-var
-  YearNum, SpecLifeName, UnitStr: String;
-  Num, Life: Integer;
 begin
   Result:= False;
   NormSubItemInfoClear(AInfo);
@@ -3814,16 +3828,12 @@ begin
     QFirst;
     while not QEOF do
     begin
-      Num:= QFieldInt('Num');
-      Life:= QFieldInt('Life');
-      SpecLifeName:= QFieldStr('SpecLifeName');
-      YearNum:= SIZNumInLifeStr(Num, Life, SpecLifeName);
-      UnitStr:= QFieldStr('UnitStringCode');
       NormSubItemInfoAdd(AInfo, QFieldInt('InfoID'), QFieldInt('OrderNum'),
                                 QFieldInt('ClassID'), QFieldInt('NameID'),
-                                QFieldInt('SizeType'), Num, QFieldInt('SpecLifeID'),
-                                Life, QFieldStr('SizName'), UnitStr, SpecLifeName,
-                                YearNum);
+                                QFieldInt('SizeType'), QFieldInt('Num'),
+                                QFieldInt('SpecLifeID'), QFieldInt('Life'),
+                                QFieldStr('SizName'), QFieldStr('UnitStringCode'),
+                                QFieldStr('SpecLifeName'));
       QNext;
     end;
     Result:= True;
@@ -3909,6 +3919,74 @@ begin
   QClose;
 end;
 
+function TDataBase.SIZNormSubItemOrderNumFreeLoad(const AItemID, AReasonID: Integer): Integer;
+begin
+  QSetQuery(FQuery);
+  QSetSQL(
+    'SELECT COUNT(SubItemID) AS FreeOrderNum ' +
+    'FROM SIZNORMSUBITEM ' +
+    'WHERE (ItemID=:ItemID) AND (ReasonID=:ReasonID)'
+  );
+  QParamInt('ItemID', AItemID);
+  QParamInt('ReasonID', AReasonID);
+  QOpen;
+  QFirst;
+  Result:= QFieldInt('FreeOrderNum');
+  QClose;
+end;
+
+function TDataBase.SIZNormSubItemOrderNumDecrement(const AItemID, AReasonID,
+  ABeginOrderNum: Integer): Boolean;
+var
+  SubItemIDs, OrderNums: TIntvector;
+  i: Integer;
+begin
+  Result:= False;
+  SubItemIDs:= nil;
+  OrderNums:= nil;
+
+  //определяем строки, лежащие ниже по порядку, чем ABeginOrderNum
+  QSetQuery(FQuery);
+  QSetSQL(
+    'SELECT SubItemID, OrderNum ' +
+    'FROM SIZNORMSUBITEM ' +
+    'WHERE (ItemID=:ItemID) AND (ReasonID=:ReasonID) AND (OrderNum>:BeginOrderNum) ' +
+    'ORDER BY OrderNum'
+  );
+  QParamInt('ItemID', AItemID);
+  QParamInt('ReasonID', AReasonID);
+  QParamInt('BeginOrderNum', ABeginOrderNum);
+  QOpen;
+  if not QIsEmpty then
+  begin
+    QFirst;
+    while not QEOF do
+    begin
+      VAppend(SubItemIDs, QFieldInt('SubItemID'));
+      VAppend(OrderNums, QFieldInt('OrderNum'));
+      QNext;
+    end;
+  end;
+  QClose;
+
+  if VIsNil(SubItemIDs) then Exit;
+
+  //сдвигаем порядковые номера
+  QSetSQL(
+    'UPDATE SIZNORMSUBITEM ' +
+    'SET OrderNum=:OrderNum ' +
+    'WHERE SubItemID=:SubItemID'
+  );
+  for i:=0 to High(SubItemIDs) do
+  begin
+    QParamInt('OrderNum', OrderNums[i] - 1);
+    QParamInt('SubItemID', SubItemIDs[i]);
+    QExec;
+  end;
+
+  Result:= True;
+end;
+
 function TDataBase.SIZNormSubItemsLoad(const AItemID: Integer;
                                        var ASubItems: TNormSubItems): Boolean;
 var
@@ -3918,7 +3996,6 @@ var
   Nums, LifeIDs, Lifes: TIntVector;
   ReasonNames, SizNames, Units, LifeNames: TStrVector;
 
-  YearNum: String;
   i, SubItemID: Integer;
 
   SubItem: TNormSubItem;
@@ -3950,11 +4027,10 @@ begin
       NormSubItemInfoClear(Info);
     end;
     //заполняем Info
-    YearNum:= SIZNumInLifeStr(Nums[i], Lifes[i], LifeNames[i]);
     NormSubItemInfoAdd(Info, InfoIDs[i], InfoOrderNums[i],
                        ClassIDs[i], NameIDs[i], SizeTypes[i], Nums[i],
                        LifeIDs[i], Lifes[i], SizNames[i], Units[i],
-                       LifeNames[i], YearNum);
+                       LifeNames[i]);
 
   end;
   //записываем последнюю сформированную строку в вектор
@@ -3980,6 +4056,50 @@ begin
     QExec;
     //получение ID сделанной записи
     ASubItemID:= LastWritedInt32ID('SIZNORMSUBITEM');
+    if ACommit then QCommit;
+    Result:= True;
+  except
+    if ACommit then QRollback;
+  end;
+end;
+
+function TDataBase.SIZNormSubItemAdd(const AItemID: Integer;
+  const ASubItem: TNormSubItem): Boolean;
+var
+  SubItemID: Integer;
+  V: TIntVector;
+begin
+  QSetQuery(FQuery);
+  try
+    //записываем данные строки в SIZNORMSUBITEM
+    SIZNormSubItemWrite(AItemID, SubItemID, ASubItem.ReasonID,
+                        ASubItem.OrderNum, False{no commit});
+    //записываем инфо строки в SIZNORMSUBITEMINFO
+    SIZNormSubItemInfoWrite(SubItemID, ASubItem.Info, V, False{no commit});
+
+    QCommit;
+    Result:= True;
+  except
+    QRollback;
+  end;
+end;
+
+function TDataBase.SIZNormSubItemUpdate(const ASubItemID: Integer;
+                                 const AReasonID, AOrderNum: Integer;
+                                 const ACommit: Boolean = True): Boolean;
+begin
+  Result:= False;
+  QSetQuery(FQuery);
+  try
+    QSetSQL(
+      sqlUPDATE('SIZNORMSUBITEM', ['ReasonID', 'OrderNum']) +
+      'WHERE SubItemID = :SubItemID'
+    );
+    QParamInt('SubItemID', ASubItemID);
+    QParamInt('ReasonID', AReasonID);
+    QParamInt('OrderNum', AOrderNum);
+    QExec;
+
     if ACommit then QCommit;
     Result:= True;
   except
@@ -4119,7 +4239,7 @@ begin
     //определяем список InfoID для этой нормы
     GetInfoIDs;
     //удаляем эти InfoID (с обработкой)
-    SIZNormSubItemInfoDelete(InfoIDs);
+    SIZNormSubItemInfoDelete(InfoIDs, False{no commit});
     //удаляем норму
     Delete('SIZNORM', 'NormID', ANormID, False{no commit});
 
@@ -4164,7 +4284,7 @@ begin
     //определяем список InfoID для этого пункта норм
     GetInfoIDs;
     //удаляем эти InfoID (с обработкой)
-    SIZNormSubItemInfoDelete(InfoIDs);
+    SIZNormSubItemInfoDelete(InfoIDs, False{no commit});
     //удаляем пункт нормы
     Delete('SIZNORMITEM', 'ItemID', AItemID, False{no commit});
 
@@ -4260,7 +4380,7 @@ begin
     //определяем список InfoID для этой строки пункта норм
     GetInfoIDs;
     //удаляем эти InfoID (с обработкой)
-    SIZNormSubItemInfoDelete(InfoIDs);
+    SIZNormSubItemInfoDelete(InfoIDs, False{no commit});
     //удаляем строку пункта нормы
     Delete('SIZNORMSUBITEM', 'SubItemID', ASubItemID, False{no commit});
 
@@ -4271,7 +4391,8 @@ begin
   end;
 end;
 
-procedure TDataBase.SIZNormSubItemInfoDelete(const AInfoIDs: TIntVector);
+function TDataBase.SIZNormSubItemInfoDelete(const AInfoIDs: TIntVector;
+  const ACommit: Boolean): Boolean;
 var
   i: Integer;
   StoreIDs, EntryIDs: TInt64Vector;
@@ -4326,64 +4447,116 @@ var
   end;
 
 begin
+  Result:= False;
   if VIsNil(AInfoIDs) then Exit;
 
   QSetQuery(FQuery);
+  try
+    //получаем список StoreID, выданных СО СКЛАДА по этой строке подпункту норм
+    StoreIDs:= nil;
+    for i:=0 to High(AInfoIDs) do
+      StoreIDs:= VAdd(StoreIDs, GetStoreIdsFromInfoID(AInfoIDs[i]));
 
-  //получаем список StoreID, выданных СО СКЛАДА по этой строке подпункту норм
-  StoreIDs:= nil;
-  for i:=0 to High(AInfoIDs) do
-    StoreIDs:= VAdd(StoreIDs, GetStoreIdsFromInfoID(AInfoIDs[i]));
+    //получаем список EntryID тех сиз, что были возвращены на склад по этому подпункту норм
+    EntryIDs:= nil;
+    for i:=0 to High(AInfoIDs) do
+      EntryIDs:= VAdd(EntryIDs, GetReturnedSizEntryIDs(AInfoIDs[i]));
 
-  //получаем список EntryID тех сиз, что были возвращены на склад по этому подпункту норм
-  EntryIDs:= nil;
-  for i:=0 to High(AInfoIDs) do
-    EntryIDs:= VAdd(EntryIDs, GetReturnedSizEntryIDs(AInfoIDs[i]));
+    //удаляем эти возвращенные СИЗ из таблицы прихода на склад
+    Delete('SIZENTRY', 'EntryID', EntryIDs, False{no commit});
 
-  //удаляем эти возвращенные СИЗ из таблицы прихода на склад
-  Delete('SIZENTRY', 'EntryID', EntryIDs, False{no commit});
+    //удаляем эти StoreID из таблиц списания и возврата СИЗ
+    Delete('SIZSTOREWRITEOFF', 'StoreID', StoreIDs, False{no commit});
+    Delete('SIZSTAFFBACK', 'StoreID', StoreIDs, False{no commit});
 
-  //удаляем эти StoreID из таблиц списания и возврата СИЗ
-  Delete('SIZSTOREWRITEOFF', 'StoreID', StoreIDs, False{no commit});
-  Delete('SIZSTAFFBACK', 'StoreID', StoreIDs, False{no commit});
+    //отмечаем эти StoreID на складе, как свободные
+    i:= 0;
+    UpdateInt64ID('SIZSTORE', 'IsBusy', 'StoreID', StoreIDs, i, False{no commit});
 
-  //отмечаем эти StoreID на складе, как свободные
-  i:= 0;
-  UpdateInt64ID('SIZSTORE', 'IsBusy', 'StoreID', StoreIDs, i, False{no commit});
+    //удаляем сами InfoID
+    Delete('SIZNORMSUBITEMINFO', 'InfoID', AInfoIDs, False{no commit});
 
-  //удаляем сами InfoID
-  Delete('SIZNORMSUBITEMINFO', 'InfoID', AInfoIDs, False{no commit});
+    if ACommit then QCommit;
+    Result:= True;
+  except
+    if ACommit then QRollback;
+  end;
 end;
 
-function TDataBase.SIZNormSubItemInfoWrite(const ASourceSubItemID: Integer;
-                                    const ASourceInfo: TNormSubItemInfo;
-                                    out ADestInfoIDs: TIntVector;
+function TDataBase.SIZNormSubItemInfoWrite(const ASubItemID, ANameID,
+                                   ANum, ALife, ALifeID, AOrderNum: Integer;
+                                   out AInfoID: Integer;
+                                   const ACommit: Boolean = True): Boolean;
+begin
+  QSetQuery(FQuery);
+  try
+    QSetSQL(
+      sqlINSERT('SIZNORMSUBITEMINFO',
+               ['SubItemID', 'NameID', 'Num', 'Life', 'SpecLifeID', 'OrderNum'])
+    );
+    QParamInt('SubItemID', ASubItemID);
+    QParamInt('NameID', ANameID);
+    QParamInt('Num', ANum);
+    QParamInt('Life', ALife);
+    QParamInt('SpecLifeID', ALifeID);
+    QParamInt('OrderNum', AOrderNum);
+    QExec;
+    //определяем ID записанной подстроки
+    AInfoID:= LastWritedInt32ID('SIZNORMSUBITEMINFO');
+
+    if ACommit then QCommit;
+    Result:= True;
+  except
+    if ACommit then QRollback;
+  end;
+end;
+
+function TDataBase.SIZNormSubItemInfoWrite(const ASubItemID: Integer;
+                                    const AInfo: TNormSubItemInfo;
+                                    out AInfoIDs: TIntVector;
                                     const ACommit: Boolean = True): Boolean;
 var
   i, DestInfoID: Integer;
 begin
-  ADestInfoIDs:= nil;
+  AInfoIDs:= nil;
   QSetQuery(FQuery);
   try
-    for i:=0 to High(ASourceInfo.NameIDs) do
+    for i:=0 to High(AInfo.NameIDs) do
     begin
-      //QSetSQL внутри цикла для LastWritedInt32ID
-      QSetSQL(
-        sqlINSERT('SIZNORMSUBITEMINFO',
-                 ['SubItemID', 'NameID', 'Num', 'Life', 'SpecLifeID', 'OrderNum'])
-      );
-      QParamInt('SubItemID', ASourceSubItemID);
-      QParamInt('NameID', ASourceInfo.NameIDs[i]);
-      QParamInt('Num', ASourceInfo.Nums[i]);
-      QParamInt('Life', ASourceInfo.Lifes[i]);
-      QParamInt('SpecLifeID', ASourceInfo.LifeIDs[i]);
-      QParamInt('OrderNum', ASourceInfo.OrderNums[i]);
-      QExec;
-      //определяем ID записанной подстроки
-      DestInfoID:= LastWritedInt32ID('SIZNORMSUBITEMINFO');
+      SIZNormSubItemInfoWrite(ASubItemID, AInfo.NameIDs[i],
+                              AInfo.Nums[i], AInfo.Lifes[i],
+                              AInfo.LifeIDs[i], AInfo.OrderNums[i],
+                              DestInfoID, False{no commit});
       //добавляем ID в вектор
-      VAppend(ADestInfoIDs, DestInfoID);
+      VAppend(AInfoIDs, DestInfoID);
     end;
+
+    if ACommit then QCommit;
+    Result:= True;
+  except
+    if ACommit then QRollback;
+  end;
+end;
+
+function TDataBase.SIZNormSubItemInfoUpdate(const AInfoID, ANameID,
+                                    ANum, ALife, ALifeID, AOrderNum: Integer;
+                                    const ACommit: Boolean = True): Boolean;
+begin
+  Result:= False;
+  QSetQuery(FQuery);
+  try
+    QSetSQL(
+      sqlUPDATE('SIZNORMSUBITEMINFO',
+                ['NameID', 'Num', 'Life', 'SpecLifeID', 'OrderNum']) +
+      'WHERE InfoID = :InfoID'
+    );
+    QParamInt('InfoID', AInfoID);
+    QParamInt('NameID', ANameID);
+    QParamInt('Num', ANum);
+    QParamInt('Life', ALife);
+    QParamInt('SpecLifeID', ALifeID);
+    QParamInt('OrderNum', AOrderNum);
+    QExec;
 
     if ACommit then QCommit;
     Result:= True;
