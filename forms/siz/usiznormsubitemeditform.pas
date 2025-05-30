@@ -8,7 +8,7 @@ uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, StdCtrls,
   Spin, Buttons, BCButton, VirtualTrees,
   //DK packages utils
-  DK_CtrlUtils, DK_Const, DK_StrUtils, DK_Dialogs, DK_VSTTables, DK_VSTTableTools,
+  DK_CtrlUtils, DK_Const, DK_Dialogs, DK_VSTTables, DK_VSTTableTools,
   DK_Vector, DK_Matrix, DK_VSTDropDown,
   //Project utils
   UDataBase, UTypes, UUtils, USIZUtils, USIZTypes, UImages;
@@ -59,6 +59,9 @@ type
     ClassDropDown: TVSTDropDown;
     LifeDropDown: TVSTDropDown;
     NameList: TVSTStringList;
+    InfoTable: TVSTTable;
+
+    OldSubItem: TNormSubItem;
 
     ReasonIDs, LifeIDs: TIntVector;
     ReasonNames, LifeNames: TStrVector;
@@ -67,9 +70,6 @@ type
     ClassNames:TStrVector;
     Names, Units: TStrMatrix;
     NameIDs, SizeTypes: TIntMatrix;
-
-    InfoTable: TVSTTable;
-    Info: TNormSubItemInfo;
 
     procedure ClassChange;
     procedure LifeChange;
@@ -122,7 +122,8 @@ begin
 
   InfoTableCreate;
 
-  NormSubItemInfoClear(Info);
+  //NormSubItemInfoClear(Info);
+  NormSubItemClear(OldSubItem);
 end;
 
 procedure TSIZNormSubItemEditForm.CancelButtonClick(Sender: TObject);
@@ -172,7 +173,8 @@ begin
   AddButton.Enabled:= IsSIZExists;
 
   if EditingType=etEdit then
-    NormSubItemInfoCopy(SubItem.Info, Info);
+    NormSubItemCopy(SubItem, OldSubItem);
+    //NormSubItemInfoCopy(SubItem.Info, Info);
   InfoShow;
 end;
 
@@ -184,29 +186,25 @@ end;
 procedure TSIZNormSubItemEditForm.SaveButtonClick(Sender: TObject);
 var
   IsOK: Boolean;
-  ReasonID: Integer;
 begin
-  if VIsNil(Info.InfoIDs) then
+  if VIsNil(SubItem.Info.InfoIDs) then
   begin
     Inform('Не указано ни одного наименования!');
     Exit;
   end;
 
-  ReasonID:= ReasonIDs[ReasonDropDown.ItemIndex];
+  SubItem.ReasonID:= ReasonIDs[ReasonDropDown.ItemIndex];
+  SubItem.Reason:= ReasonNames[ReasonDropDown.ItemIndex];
   //получаем свободный порядковый номер строки пункта нормы,
   //если редактируемый SubItem "пустой" или изменилось доп. условие выдачи
-  if (SubItem.OrderNum<0) or (SubItem.ReasonID<>ReasonID) then
-    SubItem.OrderNum:= DataBase.SIZNormSubItemOrderNumFreeLoad(ItemID, ReasonID);
-
-  SubItem.ReasonID:= ReasonID;
-  SubItem.Reason:= ReasonNames[ReasonDropDown.ItemIndex];
-  NormSubItemInfoCopy(Info, SubItem.Info);
+  if (SubItem.OrderNum<0) or (SubItem.ReasonID<>OldSubItem.ReasonID) then
+    SubItem.OrderNum:= DataBase.SIZNormSubItemOrderNumFreeLoad(ItemID, SubItem.ReasonID);
 
   case EditingType of
     etAdd:
       IsOK:= DataBase.SIZNormSubItemAdd(ItemID, SubItem);
     etEdit:
-      IsOK:= True;
+      IsOK:= DataBase.SIZNormSubItemUpdate(ItemID, SubItem, OldSubItem);
   end;
 
   if not IsOK then Exit;
@@ -265,17 +263,17 @@ var
   i, SelectedID: Integer;
   V: TStrVector;
 begin
-  SelectedID:= GetSelectedID(InfoTable, Info.NameIDs, ASelectedNameID);
+  SelectedID:= GetSelectedID(InfoTable, SubItem.Info.NameIDs, ASelectedNameID);
 
   InfoTable.ValuesClear;
-  VDim(V{%H-}, Length(Info.Lifes));
-  for i:= 0 to High(Info.Lifes) do
-   V[i]:= SIZLifeStr(Info.Lifes[i], Info.LifeNames[i]);
-  InfoTable.SetColumn('Наименование', Info.Names, taLeftJustify);
-  InfoTable.SetColumn('Количество', VIntToStr(Info.Nums));
+  VDim(V{%H-}, Length(SubItem.Info.Lifes));
+  for i:= 0 to High(SubItem.Info.Lifes) do
+   V[i]:= SIZLifeStr(SubItem.Info.Lifes[i], SubItem.Info.LifeNames[i]);
+  InfoTable.SetColumn('Наименование', SubItem.Info.Names, taLeftJustify);
+  InfoTable.SetColumn('Количество', VIntToStr(SubItem.Info.Nums));
   InfoTable.SetColumn('Срок службы', V);
   InfoTable.Draw;
-  InfoTable.ReSelect(Info.NameIDs, SelectedID, True);
+  InfoTable.ReSelect(SubItem.Info.NameIDs, SelectedID, True);
 end;
 
 procedure TSIZNormSubItemEditForm.InfoRowSelect;
@@ -283,7 +281,7 @@ begin
   DelButton.Enabled:= InfoTable.IsSelected;
   EditButton.Enabled:= DelButton.Enabled;
   UpButton.Enabled:= InfoTable.SelectedIndex>0;
-  DownButton.Enabled:= InfoTable.SelectedIndex<High(Info.InfoIDs);
+  DownButton.Enabled:= InfoTable.SelectedIndex<High(SubItem.Info.InfoIDs);
 end;
 
 procedure TSIZNormSubItemEditForm.InfoRowAdd;
@@ -294,14 +292,14 @@ begin
   i:= ClassDropDown.ItemIndex;
   j:= NameList.ItemIndex;
 
-  k:= VIndexOf(Info.NameIDs, NameIDs[i, j]);
+  k:= VIndexOf(SubItem.Info.NameIDs, NameIDs[i, j]);
   if k>=0 then
   begin
     Inform('"' + Names[i, j] + '" уже есть в списке!');
     Exit;
   end;
 
-  k:= Length(Info.InfoIDs);
+  k:= Length(SubItem.Info.InfoIDs);
   if LifeDropDown.ItemIndex=0 then
   begin
     LifeName:= '<не указан>';
@@ -312,12 +310,12 @@ begin
     LifeName:= LifeNames[LifeDropDown.ItemIndex];
   end;
 
-  NormSubItemInfoAdd(Info, -1{need new ID}, k, ClassIDs[i], NameIDs[i, j],
+  NormSubItemInfoAdd(SubItem.Info, -1{need new ID}, k, ClassIDs[i], NameIDs[i, j],
                      SizeTypes[i, j], NumSpinEdit.Value,
                      LifeIDs[LifeDropDown.ItemIndex], Life,
                      Names[i, j], Units[i, j], LifeName);
 
-  InfoShow(Info.NameIDs[k]);
+  InfoShow(SubItem.Info.NameIDs[k]);
 end;
 
 procedure TSIZNormSubItemEditForm.InfoRowEditBegin;
@@ -334,20 +332,20 @@ begin
   AddButton.ImageIndex:= 14;
   AddButton.Hint:= 'Сохранить изменения';
 
-  Index:= VIndexOf(ClassIDs, Info.ClassIDs[InfoTable.SelectedIndex]);
+  Index:= VIndexOf(ClassIDs, SubItem.Info.ClassIDs[InfoTable.SelectedIndex]);
   if Index>=0 then
     ClassDropDown.ItemIndex:= Index;
 
-  Index:= VIndexOf(NameIDs[Index], Info.NameIDs[InfoTable.SelectedIndex]);
+  Index:= VIndexOf(NameIDs[Index], SubItem.Info.NameIDs[InfoTable.SelectedIndex]);
   if Index>=0 then
     NameList.ItemIndex:= Index;
 
-  Index:= VIndexOf(LifeIDs, Info.LifeIDs[InfoTable.SelectedIndex]);
+  Index:= VIndexOf(LifeIDs, SubItem.Info.LifeIDs[InfoTable.SelectedIndex]);
   if Index>=0 then
     LifeDropDown.ItemIndex:= Index;
 
-  NumSpinEdit.Value:= Info.Nums[InfoTable.SelectedIndex];
-  LifeSpinEdit.Value:= Info.Lifes[InfoTable.SelectedIndex];
+  NumSpinEdit.Value:= SubItem.Info.Nums[InfoTable.SelectedIndex];
+  LifeSpinEdit.Value:= SubItem.Info.Lifes[InfoTable.SelectedIndex];
 end;
 
 procedure TSIZNormSubItemEditForm.InfoRowEditEnd;
@@ -357,7 +355,7 @@ begin
   i:= ClassDropDown.ItemIndex;
   j:= NameList.ItemIndex;
 
-  k:= VIndexOf(Info.NameIDs, NameIDs[i, j], InfoTable.SelectedIndex);
+  k:= VIndexOf(SubItem.Info.NameIDs, NameIDs[i, j], InfoTable.SelectedIndex);
   if k>=0 then
   begin
     Inform('"' + Names[i, j] + '" уже есть в списке!');
@@ -365,25 +363,25 @@ begin
   end;
 
   k:= InfoTable.SelectedIndex;
-  Info.ClassIDs[k]:= ClassIDs[i];
-  Info.NameIDs[k]:= NameIDs[i, j];
-  Info.Names[k]:= Names[i, j];
-  Info.Units[k]:= Units[i, j];
-  Info.SizeTypes[k]:= SizeTypes[i, j];
-  Info.Nums[k]:= NumSpinEdit.Value;
-  Info.LifeIDs[k]:= LifeIDs[LifeDropDown.ItemIndex];
+  SubItem.Info.ClassIDs[k]:= ClassIDs[i];
+  SubItem.Info.NameIDs[k]:= NameIDs[i, j];
+  SubItem.Info.Names[k]:= Names[i, j];
+  SubItem.Info.Units[k]:= Units[i, j];
+  SubItem.Info.SizeTypes[k]:= SizeTypes[i, j];
+  SubItem.Info.Nums[k]:= NumSpinEdit.Value;
+  SubItem.Info.LifeIDs[k]:= LifeIDs[LifeDropDown.ItemIndex];
 
   if LifeDropDown.ItemIndex=0 then
   begin
-    Info.Lifes[k]:= LifeSpinEdit.Value;
-    Info.LifeNames[k]:= '<не указан>'
+    SubItem.Info.Lifes[k]:= LifeSpinEdit.Value;
+    SubItem.Info.LifeNames[k]:= '<не указан>'
   end
   else begin
-    Info.Lifes[k]:= 0;
-    Info.LifeNames[k]:= LifeNames[LifeDropDown.ItemIndex];
+    SubItem.Info.Lifes[k]:= 0;
+    SubItem.Info.LifeNames[k]:= LifeNames[LifeDropDown.ItemIndex];
   end;
 
-  InfoShow(Info.NameIDs[k]);
+  InfoShow(SubItem.Info.NameIDs[k]);
 
   InfoVT.Enabled:= True;
   InfoRowSelect;
@@ -396,20 +394,20 @@ var
   i, NameID: Integer;
 begin
   if not InfoTable.IsSelected then Exit;
-  if not Confirm('Удалить "' + Info.Names[InfoTable.SelectedIndex] + '"?') then Exit;
+  if not Confirm('Удалить "' + SubItem.Info.Names[InfoTable.SelectedIndex] + '"?') then Exit;
 
-  if InfoTable.SelectedIndex<High(Info.NameIDs) then
-    NameID:= Info.NameIDs[InfoTable.SelectedIndex+1]
+  if InfoTable.SelectedIndex<High(SubItem.Info.NameIDs) then
+    NameID:= SubItem.Info.NameIDs[InfoTable.SelectedIndex+1]
   else if InfoTable.SelectedIndex>0 then
-    NameID:= Info.NameIDs[InfoTable.SelectedIndex-1]
+    NameID:= SubItem.Info.NameIDs[InfoTable.SelectedIndex-1]
   else
     NameID:= -1;
 
   //удаляем выделенную строку из Info
-  NormSubItemInfoDel(Info, InfoTable.SelectedIndex);
+  NormSubItemInfoDel(SubItem.Info, InfoTable.SelectedIndex);
   //сдвигаем порядковые номера
-  for i:= InfoTable.SelectedIndex to High(Info.OrderNums) do
-    Info.OrderNums[i]:= i;
+  for i:= InfoTable.SelectedIndex to High(SubItem.Info.OrderNums) do
+    SubItem.Info.OrderNums[i]:= i;
 
   InfoShow(NameID);
 end;
@@ -419,8 +417,8 @@ var
   NameID, Index: Integer;
 begin
   Index:= InfoTable.SelectedIndex;
-  NameID:= Info.NameIDs[Index];
-  NormSubItemInfoSwap(Info, Index, Index + ADirection);
+  NameID:= SubItem.Info.NameIDs[Index];
+  NormSubItemInfoSwap(SubItem.Info, Index, Index + ADirection);
   InfoShow(NameID);
 end;
 

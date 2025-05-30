@@ -533,11 +533,13 @@ type
                                  out ASubItemID: Integer;
                                  const AReasonID, AOrderNum: Integer;
                                  const ACommit: Boolean = True): Boolean;
-    function SIZNormSubItemAdd(const AItemID: Integer; const ASubItem: TNormSubItem): Boolean;
+    function SIZNormSubItemAdd(const AItemID: Integer; var ASubItem: TNormSubItem): Boolean;
     {Обновление строки пункта: True - ОК, False - ошибка}
     function SIZNormSubItemUpdate(const ASubItemID: Integer;
                                  const AReasonID, AOrderNum: Integer;
                                  const ACommit: Boolean = True): Boolean;
+    function SIZNormSubItemUpdate(const AItemID: Integer;
+                                  const ANewSubItem, AOldSubItem: TNormSubItem): Boolean;
 
 
 
@@ -4064,18 +4066,18 @@ begin
 end;
 
 function TDataBase.SIZNormSubItemAdd(const AItemID: Integer;
-  const ASubItem: TNormSubItem): Boolean;
+  var ASubItem: TNormSubItem): Boolean;
 var
-  SubItemID: Integer;
   V: TIntVector;
 begin
   QSetQuery(FQuery);
   try
     //записываем данные строки в SIZNORMSUBITEM
-    SIZNormSubItemWrite(AItemID, SubItemID, ASubItem.ReasonID,
+    SIZNormSubItemWrite(AItemID, ASubItem.SubItemID, ASubItem.ReasonID,
                         ASubItem.OrderNum, False{no commit});
+
     //записываем инфо строки в SIZNORMSUBITEMINFO
-    SIZNormSubItemInfoWrite(SubItemID, ASubItem.Info, V, False{no commit});
+    SIZNormSubItemInfoWrite(ASubItem.SubItemID, ASubItem.Info, V, False{no commit});
 
     QCommit;
     Result:= True;
@@ -4104,6 +4106,74 @@ begin
     Result:= True;
   except
     if ACommit then QRollback;
+  end;
+end;
+
+function TDataBase.SIZNormSubItemUpdate(const AItemID: Integer;
+  const ANewSubItem, AOldSubItem: TNormSubItem): Boolean;
+var
+  i, n: Integer;
+  IDs, Indexes: TIntVector;
+begin
+  Result:= False;
+  QSetQuery(FQuery);
+  try
+    //изменилось доп условие (и => порядковый номер)
+    if ANewSubItem.ReasonID<>AOldSubItem.ReasonID then
+    begin
+      //записываем новые значения в SIZNORMSUBITEM
+      SIZNormSubItemUpdate(ANewSubItem.SubItemID, ANewSubItem.ReasonID,
+                           ANewSubItem.OrderNum, False{no commit});
+      //сдвигаем вверх порядковые номера для старого доп условия
+      SIZNormSubItemOrderNumDecrement(AItemID, AOldSubItem.ReasonID,
+                           AOldSubItem.OrderNum);
+    end;
+
+    //определяем InfoID для удаления и индексы подстрок для обновления
+    IDs:= nil;
+    Indexes:= nil;
+    for i:= 0 to High(AOldSubItem.Info.InfoIDs) do
+    begin
+      n:= VIndexOf(ANewSubItem.Info.InfoIDs, AOldSubItem.Info.InfoIDs[i]);
+      if n<0 then //этой подстроки больше нет, запоминаем ID для удаления
+        VAppend(IDs, AOldSubItem.Info.InfoIDs[i])
+      else begin //эта подстрока осталась, тогда если изменились значения, запоминаем индекс
+        if (ANewSubItem.Info.NameIDs[n]<>AOldSubItem.Info.NameIDs[i]) or
+           (ANewSubItem.Info.Nums[n]<>AOldSubItem.Info.Nums[i]) or
+           (ANewSubItem.Info.Lifes[n]<>AOldSubItem.Info.Lifes[i]) or
+           (ANewSubItem.Info.LifeIDs[n]<>AOldSubItem.Info.LifeIDs[i]) or
+           (ANewSubItem.Info.OrderNums[n]<>AOldSubItem.Info.OrderNums[i]) then
+           VAppend(Indexes, n);
+      end;
+    end;
+    //удаляем отсутствующие InfoID
+    SIZNormSubItemInfoDelete(IDs, False{no commit});
+    //обновляем изменившиеся значения
+    for i:= 0 to High(Indexes) do
+      SIZNormSubItemInfoUpdate(ANewSubItem.Info.InfoIDs[Indexes[i]],
+                               ANewSubItem.Info.NameIDs[Indexes[i]],
+                               ANewSubItem.Info.Nums[Indexes[i]],
+                               ANewSubItem.Info.Lifes[Indexes[i]],
+                               ANewSubItem.Info.LifeIDs[Indexes[i]],
+                               ANewSubItem.Info.OrderNums[Indexes[i]],
+                               False{no commit});
+
+    //записываем новые подстроки
+    for i:= 0 to High(ANewSubItem.Info.InfoIDs) do
+      if ANewSubItem.Info.InfoIDs[i]=-1 then
+        SIZNormSubItemInfoWrite(ANewSubItem.SubItemID,
+                               ANewSubItem.Info.NameIDs[i],
+                               ANewSubItem.Info.Nums[i],
+                               ANewSubItem.Info.Lifes[i],
+                               ANewSubItem.Info.LifeIDs[i],
+                               ANewSubItem.Info.OrderNums[i],
+                               ANewSubItem.Info.InfoIDs[i],
+                               False{no commit});
+
+    QCommit;
+    Result:= True;
+  except
+    QRollback;
   end;
 end;
 

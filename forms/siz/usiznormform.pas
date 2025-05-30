@@ -367,14 +367,15 @@ begin
   NormSubItemSheet.Clear;
   if not NormItemSheet.IsSelected then Exit;
 
+  NormSubItemsDel(NormSubItems, 0, High(NormSubItems));
+  DataBase.SIZNormSubItemsLoad(ItemIDs[NormItemSheet.SelectedIndex], NormSubItems);
+
   if ASelectedID>0 then
     SelectedIndex:= NormSubItemsIndexOf(NormSubItems, ASelectedID)
   else
     SelectedIndex:= NormSubItemSheet.SelectedIndex;
   if SelectedIndex<0 then SelectedIndex:= 0;
 
-  NormSubItemsDel(NormSubItems, 0, High(NormSubItems));
-  DataBase.SIZNormSubItemsLoad(ItemIDs[NormItemSheet.SelectedIndex], NormSubItems);
   NormSubItemSheet.Draw(NormSubItems, ItemNames[NormItemSheet.SelectedIndex], SelectedIndex);
 end;
 
@@ -482,7 +483,6 @@ var
 begin
   SIZNormSubItemEditForm:= TSIZNormSubItemEditForm.Create(nil);
   try
-    //SIZNormSubItemEditForm.InfoTableFont.Assign(MainForm.GridFont);
     SIZNormSubItemEditForm.EditingType:= AEditingType;
     SIZNormSubItemEditForm.ItemID:= ItemIDs[NormItemSheet.SelectedIndex];
 
