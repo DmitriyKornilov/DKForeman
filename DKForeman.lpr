@@ -21,7 +21,8 @@ uses
   UTimetableEditForm, UTimetableMonthForm, UChooseForm, UImages,
   UTimetableSheet, uschedule, UTimingUtils, UVacationPlanEditForm,
   UVacationPlanningForm, USIZNormForm, USIZNormSheet, USIZSizes, USIZTypes,
-  USIZUtils, USIZNormEditForm, USIZNormItemEditForm, USIZNormSubItemEditForm;
+  USIZUtils, USIZNormEditForm, USIZNormItemEditForm, USIZNormSubItemEditForm,
+  USearchForm;
 
 {$R *.res}
 
@@ -30,6 +31,7 @@ begin
   Application.Scaled:=True;
   Application.Initialize;
   Application.CreateForm(TMainForm, MainForm);
+  Application.CreateForm(TSearchForm, SearchForm);
   Application.Run;
 end.
 

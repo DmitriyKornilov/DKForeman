@@ -1,72 +1,21 @@
-object ChooseForm: TChooseForm
-  Left = 562
-  Height = 290
-  Top = 298
+object SearchForm: TSearchForm
+  Left = 377
+  Height = 500
+  Top = 250
   Width = 600
   BorderIcons = [biSystemMenu]
-  Caption = 'Выбор'
-  ClientHeight = 290
+  Caption = 'Поиск'
+  ClientHeight = 500
   ClientWidth = 600
   DesignTimePPI = 120
-  OnCreate = FormCreate
+  Position = poScreenCenter
+  OnDestroy = FormDestroy
   OnShow = FormShow
-  object MainPanel: TPanel
-    AnchorSideLeft.Control = Owner
-    AnchorSideTop.Control = Owner
-    AnchorSideRight.Control = Owner
-    AnchorSideRight.Side = asrBottom
-    AnchorSideBottom.Control = ButtonPanel
-    Left = 8
-    Height = 220
-    Top = 8
-    Width = 584
-    Anchors = [akTop, akLeft, akRight, akBottom]
-    BorderSpacing.Left = 8
-    BorderSpacing.Top = 8
-    BorderSpacing.Right = 8
-    BorderSpacing.Bottom = 8
-    BevelOuter = bvNone
-    BorderStyle = bsSingle
-    ClientHeight = 216
-    ClientWidth = 580
-    Color = clWindow
-    ParentBackground = False
-    ParentColor = False
-    TabOrder = 0
-    object VT1: TVirtualStringTree
-      Left = 0
-      Height = 102
-      Top = 0
-      Width = 580
-      Align = alTop
-      Anchors = []
-      BorderStyle = bsNone
-      DefaultText = 'Node'
-      Header.AutoSizeIndex = 0
-      Header.Columns = <>
-      Header.MainColumn = -1
-      TabOrder = 0
-    end
-    object VT2: TVirtualStringTree
-      Left = 0
-      Height = 40
-      Top = 102
-      Width = 580
-      Align = alTop
-      Anchors = []
-      BorderStyle = bsNone
-      DefaultText = 'Node'
-      Header.AutoSizeIndex = 0
-      Header.Columns = <>
-      Header.MainColumn = -1
-      TabOrder = 1
-    end
-  end
   object ButtonPanel: TPanel
     AnchorSideTop.Side = asrBottom
     Left = 2
     Height = 48
-    Top = 236
+    Top = 446
     Width = 596
     Align = alBottom
     Anchors = [akLeft, akRight]
@@ -77,7 +26,7 @@ object ChooseForm: TChooseForm
     BevelOuter = bvNone
     ClientHeight = 48
     ClientWidth = 596
-    TabOrder = 1
+    TabOrder = 0
     object CancelButton: TSpeedButton
       AnchorSideTop.Control = ButtonPanelBevel
       AnchorSideTop.Side = asrBottom
@@ -125,6 +74,56 @@ object ChooseForm: TChooseForm
       Width = 596
       Align = alTop
       Shape = bsTopLine
+    end
+  end
+  object FilterPanel: TPanel
+    Left = 8
+    Height = 40
+    Top = 8
+    Width = 584
+    Align = alTop
+    BorderSpacing.Left = 8
+    BorderSpacing.Top = 8
+    BorderSpacing.Right = 8
+    BevelOuter = bvNone
+    Caption = 'FilterPanel'
+    ParentBackground = False
+    TabOrder = 1
+  end
+  object NamePanel: TPanel
+    AnchorSideLeft.Control = Owner
+    AnchorSideTop.Control = FilterPanel
+    AnchorSideTop.Side = asrBottom
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
+    AnchorSideBottom.Control = ButtonPanel
+    Left = 8
+    Height = 386
+    Top = 48
+    Width = 584
+    Anchors = [akTop, akLeft, akRight, akBottom]
+    BorderSpacing.Left = 8
+    BorderSpacing.Right = 8
+    BorderSpacing.Bottom = 12
+    BevelOuter = bvNone
+    BorderStyle = bsSingle
+    ClientHeight = 382
+    ClientWidth = 580
+    TabOrder = 2
+    object NameVT: TVirtualStringTree
+      Left = 0
+      Height = 382
+      Top = 0
+      Width = 580
+      Align = alClient
+      Anchors = [akBottom]
+      BorderStyle = bsNone
+      DefaultNodeHeight = 25
+      DefaultText = 'Node'
+      Header.AutoSizeIndex = 0
+      Header.Columns = <>
+      Header.MainColumn = -1
+      TabOrder = 0
     end
   end
 end

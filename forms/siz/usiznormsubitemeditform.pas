@@ -11,13 +11,16 @@ uses
   DK_CtrlUtils, DK_Const, DK_Dialogs, DK_VSTTables, DK_VSTTableTools,
   DK_Vector, DK_Matrix, DK_VSTDropDown,
   //Project utils
-  UDataBase, UTypes, UUtils, USIZUtils, USIZTypes, UImages;
+  UDataBase, UTypes, UUtils, USIZUtils, USIZTypes, UImages,
+  //Forms
+  USearchForm;
 
 type
 
   { TSIZNormSubItemEditForm }
 
   TSIZNormSubItemEditForm = class(TForm)
+    SearchButton: TSpeedButton;
     ButtonPanel: TPanel;
     ButtonPanelBevel: TBevel;
     CancelButton: TSpeedButton;
@@ -53,6 +56,7 @@ type
     procedure FormShow(Sender: TObject);
     procedure LifeSpinEditChange(Sender: TObject);
     procedure SaveButtonClick(Sender: TObject);
+    procedure SearchButtonClick(Sender: TObject);
     procedure UpButtonClick(Sender: TObject);
   private
     ReasonDropDown: TVSTDropDown;
@@ -105,7 +109,14 @@ uses UMainForm;
 procedure TSIZNormSubItemEditForm.FormCreate(Sender: TObject);
 begin
   Images.ToButtons([SaveButton, CancelButton]);
+
+  ControlHeight(SearchButton, TOOL_PANEL_HEIGHT_DEFAULT-2);
   ControlHeight(ToolPanel, TOOL_PANEL_HEIGHT_DEFAULT-2);
+
+  SetToolButtons([
+    SearchButton,
+    AddButton, DelButton, EditButton, UpButton, DownButton
+  ]);
 
   ReasonDropDown:= TVSTDropDown.Create(ReasonBCButton);
   ReasonDropDown.DropDownCount:= 20;
@@ -122,7 +133,6 @@ begin
 
   InfoTableCreate;
 
-  //NormSubItemInfoClear(Info);
   NormSubItemClear(OldSubItem);
 end;
 
@@ -174,7 +184,6 @@ begin
 
   if EditingType=etEdit then
     NormSubItemCopy(SubItem, OldSubItem);
-    //NormSubItemInfoCopy(SubItem.Info, Info);
   InfoShow;
 end;
 
@@ -209,6 +218,17 @@ begin
 
   if not IsOK then Exit;
   ModalResult:= mrOK;
+end;
+
+procedure TSIZNormSubItemEditForm.SearchButtonClick(Sender: TObject);
+var
+  NameID, i, j: Integer;
+begin
+  if not Search('Фильтр по наименованию СИЗ:',
+                'SIZNAMES', 'NameID', 'SizName', NameID) then Exit;
+  if not MIndexOf(NameIDs, NameID, i, j) then Exit;
+  ClassDropDown.ItemIndex:= i;
+  NameList.ItemIndex:= j;
 end;
 
 procedure TSIZNormSubItemEditForm.DelButtonClick(Sender: TObject);

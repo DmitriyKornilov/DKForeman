@@ -82,12 +82,15 @@ object SIZNormSubItemEditForm: TSIZNormSubItemEditForm
     AnchorSideLeft.Control = Owner
     AnchorSideTop.Control = ReasonBCButton
     AnchorSideTop.Side = asrBottom
+    AnchorSideBottom.Control = ClassBCButton
     Left = 8
     Height = 20
-    Top = 81
+    Top = 99
     Width = 74
+    Anchors = [akLeft, akBottom]
     BorderSpacing.Left = 8
     BorderSpacing.Top = 12
+    BorderSpacing.Bottom = 8
     Caption = 'Класс СИЗ:'
     ParentColor = False
   end
@@ -95,12 +98,14 @@ object SIZNormSubItemEditForm: TSIZNormSubItemEditForm
     AnchorSideLeft.Control = Owner
     AnchorSideTop.Control = ClassBCButton
     AnchorSideTop.Side = asrBottom
+    AnchorSideBottom.Control = NamePanel
     Left = 8
     Height = 20
-    Top = 150
+    Top = 168
     Width = 142
     BorderSpacing.Left = 8
     BorderSpacing.Top = 12
+    BorderSpacing.Bottom = 8
     Caption = 'Наименование СИЗ:'
     ParentColor = False
   end
@@ -112,22 +117,21 @@ object SIZNormSubItemEditForm: TSIZNormSubItemEditForm
     AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Control = LifeBCButton
     Left = 8
-    Height = 201
-    Top = 178
+    Height = 183
+    Top = 196
     Width = 684
     Anchors = [akTop, akLeft, akRight, akBottom]
     BorderSpacing.Left = 8
-    BorderSpacing.Top = 8
     BorderSpacing.Right = 8
     BorderSpacing.Bottom = 12
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 197
+    ClientHeight = 179
     ClientWidth = 680
     TabOrder = 1
     object NameVT: TVirtualStringTree
       Left = 0
-      Height = 197
+      Height = 179
       Top = 0
       Width = 680
       Align = alClient
@@ -482,13 +486,13 @@ object SIZNormSubItemEditForm: TSIZNormSubItemEditForm
   object ClassBCButton: TBCButton
     Tag = -1
     AnchorSideLeft.Control = Owner
-    AnchorSideTop.Control = ClassLabel
+    AnchorSideTop.Control = SearchButton
     AnchorSideTop.Side = asrBottom
     AnchorSideRight.Control = Owner
     AnchorSideRight.Side = asrBottom
     Left = 8
     Height = 29
-    Top = 109
+    Top = 127
     Width = 684
     Anchors = [akTop, akLeft, akRight]
     StateClicked.Background.Gradient1.StartColor = 8404992
@@ -699,5 +703,26 @@ object SIZNormSubItemEditForm: TSIZNormSubItemEditForm
     TextApplyGlobalOpacity = False
     DropDownStyle = bdsCommon
     MemoryUsage = bmuHigh
+  end
+  object SearchButton: TSpeedButton
+    AnchorSideTop.Control = ReasonBCButton
+    AnchorSideTop.Side = asrBottom
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
+    Cursor = crHandPoint
+    Left = 652
+    Height = 38
+    Hint = 'Найти'
+    Top = 81
+    Width = 40
+    Align = alCustom
+    Anchors = [akTop, akRight]
+    BorderSpacing.Top = 12
+    BorderSpacing.Right = 8
+    Images = Images.PX24
+    ImageIndex = 58
+    ShowHint = True
+    ParentShowHint = False
+    OnClick = SearchButtonClick
   end
 end

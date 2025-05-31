@@ -573,6 +573,7 @@ type
 
 
 
+
     function SIZStaffSpecSizeLoad(const AInfoID: Integer;
                                out ATabNumIDs, ASizeIDs, AHeightIDs: TIntVector): Boolean;
     function SIZStaffSpecSizeWrite(const AInfoID, ATabNumID, ASizeID, AHeightID: Integer;
@@ -4113,7 +4114,7 @@ function TDataBase.SIZNormSubItemUpdate(const AItemID: Integer;
   const ANewSubItem, AOldSubItem: TNormSubItem): Boolean;
 var
   i, n: Integer;
-  IDs, Indexes: TIntVector;
+  DeleteIDs, Indexes: TIntVector;
 begin
   Result:= False;
   QSetQuery(FQuery);
@@ -4130,13 +4131,13 @@ begin
     end;
 
     //определяем InfoID для удаления и индексы подстрок для обновления
-    IDs:= nil;
+    DeleteIDs:= nil;
     Indexes:= nil;
     for i:= 0 to High(AOldSubItem.Info.InfoIDs) do
     begin
       n:= VIndexOf(ANewSubItem.Info.InfoIDs, AOldSubItem.Info.InfoIDs[i]);
       if n<0 then //этой подстроки больше нет, запоминаем ID для удаления
-        VAppend(IDs, AOldSubItem.Info.InfoIDs[i])
+        VAppend(DeleteIDs, AOldSubItem.Info.InfoIDs[i])
       else begin //эта подстрока осталась, тогда если изменились значения, запоминаем индекс
         if (ANewSubItem.Info.NameIDs[n]<>AOldSubItem.Info.NameIDs[i]) or
            (ANewSubItem.Info.Nums[n]<>AOldSubItem.Info.Nums[i]) or
@@ -4146,8 +4147,28 @@ begin
            VAppend(Indexes, n);
       end;
     end;
+
+    //записываем освободившиеся InfoID в новые подстроки
+    if not VIsNil(DeleteIDs) then
+    begin
+      for i:= 0 to High(ANewSubItem.Info.InfoIDs) do
+      begin
+        if ANewSubItem.Info.InfoIDs[i]=-1 then
+        begin
+          //запимываем InfoID
+          ANewSubItem.Info.InfoIDs[i]:= VLast(DeleteIDs);
+          //сохраняем индекс для обновления значений подстроки
+          VAppend(Indexes, i);
+          //удаляем вновь занятый InfoID
+          VDel(DeleteIDs, High(DeleteIDs));
+          //завершение, если незанятые InfoID закончились
+          if VIsNil(DeleteIDs) then break;
+        end;
+      end;
+    end;
+
     //удаляем отсутствующие InfoID
-    SIZNormSubItemInfoDelete(IDs, False{no commit});
+    SIZNormSubItemInfoDelete(DeleteIDs, False{no commit});
     //обновляем изменившиеся значения
     for i:= 0 to High(Indexes) do
       SIZNormSubItemInfoUpdate(ANewSubItem.Info.InfoIDs[Indexes[i]],
