@@ -416,6 +416,13 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="USearchForm"/>
       </Unit>
+      <Unit>
+        <Filename Value="forms\siz\usizsizeform.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="SIZSizeForm"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="USIZSizeForm"/>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

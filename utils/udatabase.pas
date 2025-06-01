@@ -574,7 +574,12 @@ type
 
 
 
-
+    function SIZStaffSizeLoad(const AFilterValue: String;
+                          const AOrderType, AListType: Byte;
+                          out AStaffIDs, AClothes, AHeights, AShoes, AHeadDress,
+                              AMittens, AGloves, AGasmasks, ARespirators: TIntVector;
+                          out AFamilies, ANames, APatronymics: TStrVector;
+                          out ABornDates: TDateVector): Boolean;
 
     function SIZStaffSpecSizeLoad(const AInfoID: Integer;
                                out ATabNumIDs, ASizeIDs, AHeightIDs: TIntVector): Boolean;
@@ -4784,6 +4789,91 @@ begin
     MAppend(ASizUnits, VUnits);
     MAppend(ASizNameIDs, VIDs);
     MAppend(ASizSizeTypes, VSizeTypes);
+    Result:= True;
+  end;
+  QClose;
+end;
+
+function TDataBase.SIZStaffSizeLoad(const AFilterValue: String;
+                          const AOrderType, AListType: Byte;
+                          out AStaffIDs, AClothes, AHeights, AShoes, AHeadDress,
+                              AMittens, AGloves, AGasmasks, ARespirators: TIntVector;
+                          out AFamilies, ANames, APatronymics: TStrVector;
+                          out ABornDates: TDateVector): Boolean;
+var
+  SQLStr, S: String;
+begin
+  Result:= False;
+  AStaffIDs:= nil;
+  AClothes:= nil;
+  AHeights:= nil;
+  AShoes:= nil;
+  AHeadDress:= nil;
+  AMittens:= nil;
+  AGloves:= nil;
+  AGasmasks:= nil;
+  ARespirators:= nil;
+  AFamilies:= nil;
+  ANames:= nil;
+  APatronymics:= nil;
+  ABornDates:= nil;
+
+  SQLStr:=
+    'SELECT DISTINCT t1.*, t2.Family, t2.Name, t2.Patronymic, t2.BornDate ' +
+    'FROM SIZSTAFFSIZE t1 ' +
+    'INNER JOIN STAFFMAIN t2 ON (t1.StaffID=t2.StaffID) ' +
+    'INNER JOIN STAFFTABNUM t3 ON (t1.StaffID=t3.StaffID) ' +
+    'WHERE (t1.StaffID>0) ';
+
+  if AListType>0 then
+  begin
+    case AListType of
+    1: SQLStr:= SQLStr + 'AND (t3.DismissDate>= :ADate) ';
+    2: SQLStr:= SQLStr + 'AND (t3.DismissDate< :ADate) ';
+    end;
+  end;
+
+  if not SEmpty(AFilterValue) then
+    SQLStr:= SQLStr + 'AND (t2.FullName LIKE :FilterValue)';
+
+  S:= 't2.Family, t2.Name, t2.Patronymic, t2.BornDate';
+  SQLStr:= SQLStr + 'ORDER BY ';
+  case AOrderType of
+  0: SQLStr:= SQLStr + S;
+  1: SQLStr:= SQLStr + 't1.Clothes, t1.Height, ' + S;
+  2: SQLStr:= SQLStr + 't1.Shoes, ' + S;
+  3: SQLStr:= SQLStr + 't1.HeadDress, ' + S;
+  4: SQLStr:= SQLStr + 't1.Mittens, ' + S;
+  5: SQLStr:= SQLStr + 't1.Gloves, ' + S;
+  6: SQLStr:= SQLStr + 't1.Gasmask, ' + S;
+  7: SQLStr:= SQLStr + 't1.Respirator, ' + S;
+  end;
+
+  QSetQuery(FQuery);
+  QSetSQL(SQLStr);
+  QParamDT('ADate', Date);
+  QParamStr('FilterValue', '%'+AFilterValue+'%');
+  QOpen;
+  if not QIsEmpty then
+  begin
+    QFirst;
+    while not QEOF do
+    begin
+      VAppend(AStaffIDs, QFieldInt('StaffID'));
+      VAppend(AClothes, QFieldInt('Clothes'));
+      VAppend(AHeights, QFieldInt('Height'));
+      VAppend(AShoes, QFieldInt('Shoes'));
+      VAppend(AHeadDress, QFieldInt('HeadDress'));
+      VAppend(AMittens, QFieldInt('Mittens'));
+      VAppend(AGloves, QFieldInt('Gloves'));
+      VAppend(AGasmasks, QFieldInt('Gasmask'));
+      VAppend(ARespirators, QFieldInt('Respirator'));
+      VAppend(AFamilies, QFieldStr('Family'));
+      VAppend(ANames, QFieldStr('Name'));
+      VAppend(APatronymics, QFieldStr('Patronymic'));
+      VAppend(ABornDates, QFieldDT('BornDate'));
+      QNext;
+    end;
     Result:= True;
   end;
   QClose;

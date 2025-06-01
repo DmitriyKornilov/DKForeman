@@ -17,7 +17,7 @@ uses
   UStaffForm,
   UCalendarForm, UScheduleShiftForm, UVacationPlanForm,
   USchedulePersonalForm, UTimetableForm,
-  USIZNormForm, USIZForm,
+  USIZNormForm, USIZSizeForm, USIZForm,
   USSOForm,
   UStudyForm;
 
@@ -87,6 +87,7 @@ type
     procedure SIZCardsMenuItemClick(Sender: TObject);
     procedure SIZNormsMenuItemClick(Sender: TObject);
     procedure SIZReasonMenuItemClick(Sender: TObject);
+    procedure SIZSizesMenuItemClick(Sender: TObject);
     procedure SIZSpecLifeMenuItemClick(Sender: TObject);
     procedure SIZUnitMenuItemClick(Sender: TObject);
     procedure SSOListMenuItemClick(Sender: TObject);
@@ -190,6 +191,7 @@ begin
     7: (CategoryForm as TSIZNormForm).ViewUpdate(ModeType);
     8: ;
     9: ;
+    10: (CategoryForm as TSIZSizeForm).ViewUpdate(ModeType);
   end;
 
 end;
@@ -206,9 +208,10 @@ begin
     4: (CategoryForm as TVacationPlanForm).SettingsSave;
     5: (CategoryForm as TSchedulePersonalForm).SettingsSave;
     6: (CategoryForm as TTimetableForm).SettingsSave;
-    //7: (CategoryForm as TSIZNormForm).SettingsSave;   - no settings
+    //7: TSIZNormForm   - no settings
     8: ;
     9: ;
+    10: (CategoryForm as TSIZSizeForm).SettingsSave;
   end;
 end;
 
@@ -236,6 +239,7 @@ begin
       //7: CategoryForm:= FormOnPanelCreate(TSIZForm, MainPanel);
       //8: CategoryForm:= FormOnPanelCreate(TSSOForm, MainPanel);
       //9: CategoryForm:= FormOnPanelCreate(TStudyForm, MainPanel);
+      10: CategoryForm:= FormOnPanelCreate(TSIZSizeForm, MainPanel);
     end;
     if Assigned(CategoryForm) then
     begin
@@ -467,14 +471,19 @@ begin
   //CategorySelect(9);
 end;
 
-procedure TMainForm.PostListMenuItemClick(Sender: TObject);
+procedure TMainForm.SIZSizesMenuItemClick(Sender: TObject);
 begin
-  DictionarySelect(1);
+  CategorySelect(10);
 end;
 
 procedure TMainForm.RefreshButtonClick(Sender: TObject);
 begin
 
+end;
+
+procedure TMainForm.PostListMenuItemClick(Sender: TObject);
+begin
+  DictionarySelect(1);
 end;
 
 procedure TMainForm.TimetableMarkMenuItemClick(Sender: TObject);

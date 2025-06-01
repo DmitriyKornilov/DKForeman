@@ -264,6 +264,7 @@ object MainForm: TMainForm
     object SIZSizesMenuItem: TMenuItem
       Caption = 'Размеры спецодежды и обуви сотрудников'
       ImageIndex = 39
+      OnClick = SIZSizesMenuItemClick
     end
     object SIZCardsMenuItem: TMenuItem
       Caption = 'Учет выдачи средств индивидуальной защиты'

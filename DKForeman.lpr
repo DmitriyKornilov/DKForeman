@@ -22,7 +22,7 @@ uses
   UTimetableSheet, uschedule, UTimingUtils, UVacationPlanEditForm,
   UVacationPlanningForm, USIZNormForm, USIZNormSheet, USIZSizes, USIZTypes,
   USIZUtils, USIZNormEditForm, USIZNormItemEditForm, USIZNormSubItemEditForm,
-  USearchForm;
+  USearchForm, USIZSizeForm;
 
 {$R *.res}
 
@@ -31,7 +31,6 @@ begin
   Application.Scaled:=True;
   Application.Initialize;
   Application.CreateForm(TMainForm, MainForm);
-  Application.CreateForm(TSearchForm, SearchForm);
   Application.Run;
 end.
 

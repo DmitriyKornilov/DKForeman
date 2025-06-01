@@ -120,7 +120,7 @@ type
     procedure StaffListFilter(const AFilterString: String);
     procedure StaffListCreate;
     procedure StaffListColumnSet;
-    procedure StaffListLoad(const SelectedID: Integer = -1);
+    procedure StaffListLoad(const ASelectedID: Integer = -1);
     procedure StaffListUpdate;
     procedure StaffListSelect;
     procedure StaffListDelItem;
@@ -517,16 +517,16 @@ begin
   end;
 end;
 
-procedure TStaffForm.StaffListLoad(const SelectedID: Integer = -1);
+procedure TStaffForm.StaffListLoad(const ASelectedID: Integer = -1);
 var
   StrDismissDates: TStrVector;
-  SelectedStaffID: Integer;
+  SelectedID: Integer;
   IsDescOrder: Boolean;
   ListOrderType: Byte;
 begin
   if not CanLoadStaffList then Exit;
 
-  SelectedStaffID:= GetSelectedID(StaffList, StaffIDs, SelectedID);
+  SelectedID:= GetSelectedID(StaffList, StaffIDs, ASelectedID);
 
   if ModeType=mtEditing then
   begin
@@ -568,7 +568,7 @@ begin
     end;
     StaffList.Draw;
     if ModeType=mtEditing then
-      StaffList.ReSelect(StaffIDs, SelectedStaffID, True)  //возвращаем выделение строки
+      StaffList.ReSelect(StaffIDs, SelectedID, True)  //возвращаем выделение строки
     else
       StaffList.ColumnVisibles:= ParamList.Checkeds['ColumnsList'];
   finally

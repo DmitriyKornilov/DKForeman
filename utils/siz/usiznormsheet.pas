@@ -5,7 +5,7 @@ unit USIZNormSheet;
 interface
 
 uses
-  Classes, SysUtils, Graphics, //fpsTypes,
+  Classes, SysUtils, Graphics,
   //DK packages utils
   DK_SheetTables, DK_SheetTypes, DK_Vector, DK_StrUtils, DK_Const,
   //Project utils
@@ -57,7 +57,6 @@ type
 
     function RowToIndex(const ARow: Integer): Integer; override;
     function IndexToRow(const AIndex: Integer): Integer; override;
-
   private
     const
       COLUMN1_WIDTH = 300; //наименование СИЗ
@@ -397,7 +396,6 @@ begin
     Writer.DrawBorders(ARow, i, ARow+N, i, cbtOuter);
 
   ARow:= ARow + N + 1;
-
 end;
 
 procedure TSIZNormSubItemsSheet.Draw(const ASubItems: TNormSubItems;
@@ -446,7 +444,6 @@ begin
   DrawingEnd;
 
   SetSelection(SubItemIndexToRow(ASelectedIndex), 1);
-
 end;
 
 function TSIZNormSubItemsSheet.CanUp: Boolean;
@@ -488,8 +485,6 @@ begin
   Writer.WriteText(ARow, 1, ARow, Writer.ColCount, FNorm.NormName, cbtNone, True, True);
   ARow:= ARow+1;
   Writer.WriteText(ARow, 1, ARow, Writer.ColCount, '('+FNorm.TypicalName+')', cbtNone, True, True);
-
-
 end;
 
 procedure TSIZNormSheet.CaptionDraw(var ARow: Integer);
@@ -505,8 +500,6 @@ begin
   Writer.SetRowHeight(ARow, TITLE_HEIGHT);
   Writer.SetRepeatedRows(ARow, ARow);
 end;
-
-
 
 procedure TSIZNormSheet.ItemDraw(var ARow: Integer; const AItem: TNormItem);
 var
