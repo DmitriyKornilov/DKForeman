@@ -540,7 +540,9 @@ type
                                  const ACommit: Boolean = True): Boolean;
     function SIZNormSubItemUpdate(const AItemID: Integer;
                                   const ANewSubItem, AOldSubItem: TNormSubItem): Boolean;
-
+    {Перестановка местами пунктов: True - ОК, False - ошибка}
+    function SIZNormSubItemSwap(const ASubItemID1, AOrderNum1,
+                                      ASubItemID2, AOrderNum2: Integer): Boolean;
 
 
 
@@ -4079,6 +4081,30 @@ begin
 
     //записываем инфо строки в SIZNORMSUBITEMINFO
     SIZNormSubItemInfoWrite(ASubItem.SubItemID, ASubItem.Info, V, False{no commit});
+
+    QCommit;
+    Result:= True;
+  except
+    QRollback;
+  end;
+end;
+
+function TDataBase.SIZNormSubItemSwap(const ASubItemID1, AOrderNum1,
+                                  ASubItemID2, AOrderNum2: Integer): Boolean;
+begin
+  Result:= False;
+  QSetQuery(FQuery);
+  try
+    QSetSQL(
+      sqlUPDATE('SIZNORMSUBITEM', ['OrderNum']) +
+      'WHERE SubItemID = :SubItemID'
+    );
+    QParamInt('SubItemID', ASubItemID1);
+    QParamInt('OrderNum', AOrderNum2);
+    QExec;
+    QParamInt('SubItemID', ASubItemID2);
+    QParamInt('OrderNum', AOrderNum1);
+    QExec;
 
     QCommit;
     Result:= True;

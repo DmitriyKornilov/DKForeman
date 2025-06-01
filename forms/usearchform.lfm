@@ -90,7 +90,7 @@ object SearchForm: TSearchForm
     ParentBackground = False
     TabOrder = 1
   end
-  object NamePanel: TPanel
+  object ListPanel: TPanel
     AnchorSideLeft.Control = Owner
     AnchorSideTop.Control = FilterPanel
     AnchorSideTop.Side = asrBottom
@@ -110,7 +110,7 @@ object SearchForm: TSearchForm
     ClientHeight = 382
     ClientWidth = 580
     TabOrder = 2
-    object NameVT: TVirtualStringTree
+    object ListVT: TVirtualStringTree
       Left = 0
       Height = 382
       Top = 0

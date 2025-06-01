@@ -66,8 +66,10 @@ type
     procedure NormVTDblClick(Sender: TObject);
     procedure SubItemAddButtonClick(Sender: TObject);
     procedure SubItemDelButtonClick(Sender: TObject);
+    procedure SubItemDownButtonClick(Sender: TObject);
     procedure SubItemEditButtonClick(Sender: TObject);
     procedure SubItemGridDblClick(Sender: TObject);
+    procedure SubItemUpButtonClick(Sender: TObject);
   private
     ModeType: TModeType;
 
@@ -98,6 +100,7 @@ type
     procedure NormSubItemSelect;
     procedure NormSubItemDelete;
     procedure NormSubItemEdit;
+    procedure NormSubItemSwap(const AIndex1, AIndex2: Integer);
 
     procedure NormButtonsEnabled;
     procedure NormItemButtonsEnabled;
@@ -242,6 +245,16 @@ end;
 procedure TSIZNormForm.SubItemGridDblClick(Sender: TObject);
 begin
   NormSubItemEdit;
+end;
+
+procedure TSIZNormForm.SubItemUpButtonClick(Sender: TObject);
+begin
+  NormSubItemSwap(NormSubItemSheet.SelectedIndex, NormSubItemSheet.SelectedIndex - 1);
+end;
+
+procedure TSIZNormForm.SubItemDownButtonClick(Sender: TObject);
+begin
+  NormSubItemSwap(NormSubItemSheet.SelectedIndex, NormSubItemSheet.SelectedIndex + 1);
 end;
 
 procedure TSIZNormForm.NormListCreate;
@@ -401,6 +414,16 @@ procedure TSIZNormForm.NormSubItemEdit;
 begin
   if not NormSubItemSheet.IsSelected then Exit;
   SIZNormSubItemEditFormOpen(etEdit);
+end;
+
+procedure TSIZNormForm.NormSubItemSwap(const AIndex1, AIndex2: Integer);
+begin
+  if not DataBase.SIZNormSubItemSwap(NormSubItems[AIndex1].SubItemID,
+                                     NormSubItems[AIndex1].OrderNum,
+                                     NormSubItems[AIndex2].SubItemID,
+                                     NormSubItems[AIndex2].OrderNum) then Exit;
+  NormSubItemsSwap(NormSubItems, AIndex1, AIndex2);
+  NormSubItemSheet.Draw(NormSubItems, ItemNames[NormItemSheet.SelectedIndex], AIndex2);
 end;
 
 procedure TSIZNormForm.NormButtonsEnabled;

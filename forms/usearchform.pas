@@ -21,8 +21,8 @@ type
     ButtonPanelBevel: TBevel;
     CancelButton: TSpeedButton;
     FilterPanel: TPanel;
-    NamePanel: TPanel;
-    NameVT: TVirtualStringTree;
+    ListPanel: TPanel;
+    ListVT: TVirtualStringTree;
     SaveButton: TSpeedButton;
     procedure CancelButtonClick(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -86,7 +86,7 @@ begin
   SetEventButtons([SaveButton, CancelButton]);
   Images.ToButtons([SaveButton, CancelButton]);
   CreateFilterControls(FilterCaption, FilterPanel, @ListFilter);
-  List:= TVSTStringList.Create(NameVT, EmptyStr, nil);
+  List:= TVSTStringList.Create(ListVT, EmptyStr, nil);
   ListLoad;
 end;
 
