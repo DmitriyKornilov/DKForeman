@@ -886,6 +886,12 @@ begin
   StaffShortNames:= StaffNamesForPersonalTiming(Families, Names, Patronymics, TabNums, PostNames, False);
   ScheduleNames:= StaffNamesForScheduleNames(Families, Names, Patronymics, TabNums, True);
 
+  ExportButton.Enabled:= not VIsNil(TabNumIDs);
+  MonthScheduleButton.Enabled:= ExportButton.Enabled;
+  VacationScheduleButton.Enabled:= ExportButton.Enabled;
+  VacationEraseButton.Enabled:= ExportButton.Enabled;
+  DayAddButton.Enabled:= ExportButton.Enabled;
+
   StaffList.Visible:= False;
   try
     StaffList.ValuesClear;

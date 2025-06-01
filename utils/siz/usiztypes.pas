@@ -57,6 +57,7 @@ type
 
 type
   TNormSubItems = array of TNormSubItem;
+
   procedure NormSubItemsClear(var ASubItems: TNormSubItems);
   procedure NormSubItemsAdd(var ASubItems: TNormSubItems;
                             const ASubItem: TNormSubItem);
@@ -68,6 +69,36 @@ type
                             const ASubItemID: Integer): Integer;
   procedure NormSubItemsCopy(const ASourceSubItems: TNormSubItems;
                             var ADestSubItems: TNormSubItems);
+
+type
+  TNormItem = record
+    ItemID: Integer;
+    ItemName: String;
+    PostIDs: TIntVector;
+    PostNames: TStrVector;
+    SubItems: TNormSubItems;
+  end;
+
+  procedure NormItemClear(var AItem: TNormItem);
+  procedure NormItemCopy(const ASourceItem: TNormItem; var ADestItem: TNormItem);
+
+type
+  TNormItems = array of TNormItem;
+
+  procedure NormItemsClear(var AItems: TNormItems);
+  procedure NormItemsAdd(var AItems: TNormItems; const AItem: TNormItem);
+
+type
+  TNorm = record
+    NormID: Integer;
+    NormName: String;
+    TypicalName: String;
+    BeginDate: TDate;
+    EndDate: TDate;
+    Items: TNormItems;
+  end;
+
+  procedure NormClear(var ANorm: TNorm);
 
 implementation
 
@@ -260,6 +291,51 @@ begin
   SetLength(ADestSubItems, Length(ASourceSubItems));
   for i:= 0 to High(ASourceSubItems) do
     NormSubItemCopy(ASourceSubItems[i], ADestSubItems[i]);
+end;
+
+procedure NormItemClear(var AItem: TNormItem);
+begin
+  AItem.ItemID:= -1;
+  AItem.ItemName:= EmptyStr;
+  AItem.PostIDs:= nil;
+  AItem.PostNames:= nil;
+  NormSubItemsClear(AItem.SubItems);
+end;
+
+procedure NormItemCopy(const ASourceItem: TNormItem; var ADestItem: TNormItem);
+begin
+  ADestItem.ItemName:= ASourceItem.ItemName;
+  ADestItem.PostIDs:= VCut(ASourceItem.PostIDs);
+  ADestItem.PostNames:= VCut(ASourceItem.PostNames);
+  NormSubItemsCopy(ASourceItem.SubItems, ADestItem.SubItems);
+end;
+
+procedure NormItemsClear(var AItems: TNormItems);
+var
+  i: Integer;
+begin
+  for i:= 0 to High(AItems) do
+    NormItemClear(AItems[i]);
+  AItems:= nil;
+end;
+
+procedure NormItemsAdd(var AItems: TNormItems; const AItem: TNormItem);
+var
+  N: Integer;
+begin
+  N:= Length(AItems);
+  SetLength(AItems, N+1);
+  NormItemCopy(AItem, AItems[N]);
+end;
+
+procedure NormClear(var ANorm: TNorm);
+begin
+  ANorm.NormID:= -1;
+  ANorm.NormName:= EmptyStr;
+  ANorm.TypicalName:= EmptyStr;
+  ANorm.BeginDate:= 0;
+  ANorm.EndDate:= 0;
+  NormItemsClear(ANorm.Items);
 end;
 
 end.

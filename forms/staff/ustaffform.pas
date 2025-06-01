@@ -549,6 +549,8 @@ begin
   StrDismissDates:= VDateToStr(DismissDates, True);
   VChangeIf(StrDismissDates, EmptyStr, EMPTY_MARK);
 
+  ExportButton.Enabled:= not VIsNil(StaffIDs);
+
   StaffList.Visible:= False;
   try
     StaffList.ValuesClear;

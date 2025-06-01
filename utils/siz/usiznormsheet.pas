@@ -25,7 +25,8 @@ type
     procedure SelectionMove(const AVertDelta: Integer); override;
   private
     const
-      COLUMN1_WIDTH = 100;
+      COLUMN1_WIDTH = 100; //пункт типовых норм
+      COLUMN2_WIDTH = 300; //должность (профессия)
       TITLE_HEIGHT = 35;
     var
       FItemNames, FPostNames: TStrVector;
@@ -59,10 +60,10 @@ type
 
   private
     const
-      COLUMN1_WIDTH = 300;
-      COLUMN2_WIDTH = 100;
-      COLUMN3_WIDTH = 100;
-      COLUMN4_WIDTH = 100;
+      COLUMN1_WIDTH = 300; //наименование СИЗ
+      COLUMN2_WIDTH = 100; //пункт типовых норм
+      COLUMN3_WIDTH = 100; //единица измерения
+      COLUMN4_WIDTH = 100; //количество на год
       TITLE_HEIGHT = 35;
     var
       FSubItems: TNormSubItems;
@@ -84,13 +85,39 @@ type
     function CanDown: Boolean;
   end;
 
+  { TSIZNormSheet }
+
+  TSIZNormSheet = class (TCustomSheet)
+  protected
+    function SetWidths: TIntVector; override;
+  private
+    const
+      COLUMN1_WIDTH = 100; //пункт типовых норм
+      COLUMN2_WIDTH = 200; //должность (профессия)
+      COLUMN3_WIDTH = 300; //наименование СИЗ
+      COLUMN4_WIDTH = 100; //единица измерения
+      COLUMN5_WIDTH = 100; //количество на год
+      TITLE_HEIGHT = 35;
+    var
+      FNorm: TNorm;
+
+    procedure TitleDraw(var ARow: Integer);
+    procedure CaptionDraw(var ARow: Integer);
+    procedure ItemDraw(var ARow: Integer; const AItem: TNormItem);
+  public
+    procedure Draw(const ANorm: TNorm);
+  end;
+
 implementation
 
 { TSIZNormItemSheet }
 
 function TSIZNormItemSheet.SetWidths: TIntVector;
 begin
-  Result:= VCreateInt([COLUMN1_WIDTH, 300]);
+  Result:= VCreateInt([
+    COLUMN1_WIDTH,
+    COLUMN2_WIDTH
+  ]);
 end;
 
 function TSIZNormItemSheet.FirstDataRow: Integer;
@@ -347,11 +374,11 @@ var
   S: String;
 begin
   Writer.SetBackgroundDefault;
+  Writer.SetFont(Font.Name, Font.Size, [], clBlack);
 
   N:= High(FSubItems[AIndex].Info.Names);
   for i:=0 to N do
   begin
-    Writer.SetFont(Font.Name, Font.Size, [], clBlack);
     R:= ARow + i;
     Writer.SetAlignment(haLeft, vaCenter);
     S:= FSubItems[AIndex].Info.Names[i];
@@ -438,6 +465,139 @@ begin
   SubItemIndex:= IndexToSubItemIndex(FSelectedIndex);
   Result:= IsSelected and (SubItemIndex<High(FSubItems)) and
            (FSubItems[SubItemIndex].ReasonID = FSubItems[SubItemIndex+1].ReasonID);
+end;
+
+{ TSIZNormSheet }
+
+function TSIZNormSheet.SetWidths: TIntVector;
+begin
+  Result:= VCreateInt([
+    COLUMN1_WIDTH,
+    COLUMN2_WIDTH,
+    COLUMN3_WIDTH,
+    COLUMN4_WIDTH,
+    COLUMN5_WIDTH
+  ]);
+end;
+
+procedure TSIZNormSheet.TitleDraw(var ARow: Integer);
+begin
+  Writer.SetBackgroundDefault;
+  Writer.SetAlignment(haCenter, vaCenter);
+  Writer.SetFont(Font.Name, Font.Size+2, [fsBold], clBlack);
+  Writer.WriteText(ARow, 1, ARow, Writer.ColCount, FNorm.NormName, cbtNone, True, True);
+  ARow:= ARow+1;
+  Writer.WriteText(ARow, 1, ARow, Writer.ColCount, '('+FNorm.TypicalName+')', cbtNone, True, True);
+
+
+end;
+
+procedure TSIZNormSheet.CaptionDraw(var ARow: Integer);
+begin
+  Writer.SetBackgroundDefault;
+  Writer.SetAlignment(haCenter, vaCenter);
+  Writer.SetFont(Font.Name, Font.Size, [fsBold], clBlack);
+  Writer.WriteText(ARow, 1, 'Пункт типовых норм', cbtOuter);
+  Writer.WriteText(ARow, 2, 'Должность (профессия)', cbtOuter);
+  Writer.WriteText(ARow, 3, 'Наименование средств индивидуальной защиты', cbtOuter);
+  Writer.WriteText(ARow, 4, 'Единица измерения', cbtOuter);
+  Writer.WriteText(ARow, 5, 'Количество' + SYMBOL_BREAK + 'на год', cbtOuter);
+  Writer.SetRowHeight(ARow, TITLE_HEIGHT);
+  Writer.SetRepeatedRows(ARow, ARow);
+end;
+
+
+
+procedure TSIZNormSheet.ItemDraw(var ARow: Integer; const AItem: TNormItem);
+var
+  i, R, R1, R2: Integer;
+  S: String;
+
+  procedure ReasonDraw(var AR: Integer; const AIndex: Integer);
+  begin
+    Writer.SetBackgroundDefault;
+    Writer.SetAlignment(haLeft, vaCenter);
+    Writer.SetFont(Font.Name, Font.Size, [fsBold, fsItalic], clBlack);
+    Writer.WriteText(AR, 3, AR, 5, AItem.SubItems[AIndex].Reason + ':', cbtOuter, True, True);
+    AR:= AR + 1;
+  end;
+
+  procedure LineDraw(var AR: Integer; const AIndex: Integer);
+  var
+    RR, j, N: Integer;
+    SS: String;
+  begin
+    Writer.SetBackgroundDefault;
+    Writer.SetFont(Font.Name, Font.Size, [], clBlack);
+
+    N:= High(AItem.SubItems[AIndex].Info.Names);
+    for j:=0 to N do
+    begin
+      RR:= AR + j;
+      Writer.SetAlignment(haLeft, vaCenter);
+      SS:= AItem.SubItems[AIndex].Info.Names[j];
+      if (N>0) and (j<N) then SS:= SS + ' или';
+      Writer.WriteText(RR, 3, SS, cbtNone, True, True);
+      Writer.SetAlignment(haCenter, vaCenter);
+      Writer.WriteText(RR, 4, AItem.SubItems[AIndex].Info.Units[j]);
+      SS:= SIZNumInLifeStr(AItem.SubItems[AIndex].Info.Nums[j],
+                          AItem.SubItems[AIndex].Info.Lifes[j],
+                          AItem.SubItems[AIndex].Info.LifeNames[j]);
+      Writer.WriteText(RR, 5, SS);
+    end;
+
+    for j:= 3 to 5 do
+      Writer.DrawBorders(AR, j, AR+N, j, cbtOuter);
+
+    AR:= AR + N;
+  end;
+
+begin
+  S:= MAIN_REASON;
+  R1:= ARow;
+  R:= ARow-1;
+  for i:=0 to High(AItem.SubItems) do
+  begin
+    R:= R + 1;
+    if AItem.SubItems[i].Reason<>S then
+    begin
+      ReasonDraw(R, i);
+      S:= AItem.SubItems[i].Reason;
+    end;
+    LineDraw(R, i);
+  end;
+  R2:= R;
+
+  Writer.SetBackgroundDefault;
+  Writer.SetFont(Font.Name, Font.Size, [{fsBold}], clBlack);
+  Writer.SetAlignment(haCenter, vaTop);
+  Writer.WriteText(R1, 1, R2, 1, AItem.ItemName, cbtOuter);
+  Writer.SetAlignment(haLeft, vaTop);
+  S:= VVectorToStr(AItem.PostNames, ',' + SYMBOL_BREAK);
+  Writer.WriteText(R1, 2, R2, 2, S, cbtOuter);
+
+  ARow:= R2;
+end;
+
+procedure TSIZNormSheet.Draw(const ANorm: TNorm);
+var
+  i, R: Integer;
+begin
+  FNorm:= ANorm;
+
+  Writer.BeginEdit;
+
+  R:= 1;
+  TitleDraw(R);
+  R:= R + 2;
+  CaptionDraw(R);
+  for i:=0 to High(ANorm.Items) do
+  begin
+    R:= R + 1;
+    ItemDraw(R, ANorm.Items[i]);
+  end;
+
+  Writer.EndEdit;
 end;
 
 end.

@@ -6,7 +6,6 @@ object MainForm: TMainForm
   ClientHeight = 326
   ClientWidth = 1020
   DesignTimePPI = 120
-  LCLVersion = '4.0.0.4'
   WindowState = wsMaximized
   OnCreate = FormCreate
   OnDestroy = FormDestroy
@@ -22,8 +21,8 @@ object MainForm: TMainForm
     BorderSpacing.Right = 2
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 40
-    ClientWidth = 1016
+    ClientHeight = 36
+    ClientWidth = 1012
     ParentFont = False
     TabOrder = 0
     object AboutButton: TSpeedButton
@@ -254,22 +253,42 @@ object MainForm: TMainForm
       ImageIndex = 56
       OnClick = SIZNormsMenuItemClick
     end
-    object SIZMenuItem: TMenuItem
-      Caption = 'Средства индивидуальной защиты'
+    object SIZStorageMenuItem: TMenuItem
+      Caption = 'Склад средств индивидуальной защиты'
+      ImageIndex = 59
+    end
+    object SIZRequestMenuItem: TMenuItem
+      Caption = 'Заявка на поступление средств индивидуальной защиты'
+      ImageIndex = 61
+    end
+    object SIZSizesMenuItem: TMenuItem
+      Caption = 'Размеры спецодежды и обуви сотрудников'
+      ImageIndex = 39
+    end
+    object SIZCardsMenuItem: TMenuItem
+      Caption = 'Учет выдачи средств индивидуальной защиты'
       ImageIndex = 34
-      OnClick = SIZMenuItemClick
+      OnClick = SIZCardsMenuItemClick
     end
     object Separator3: TMenuItem
       Caption = '-'
     end
     object SSONormsMenuItem: TMenuItem
-      Caption = 'Нормы выдачи смывающих и обезвреживающих средств'
+      Caption = 'Нормы выдачи средств смывающих и обезвреживающих'
       ImageIndex = 56
     end
-    object SSOMenuItem: TMenuItem
-      Caption = 'Средства смывающие и обезвреживающие'
+    object SSOStorageMenuItem: TMenuItem
+      Caption = 'Склад средств смывающих и обезвреживающих'
+      ImageIndex = 60
+    end
+    object SSORequestMenuItem: TMenuItem
+      Caption = 'Заявка на поступление средств смывающих и обезвреживающих'
+      ImageIndex = 61
+    end
+    object SSOCardsMenuItem: TMenuItem
+      Caption = 'Учет выдачи средств смывающих и обезвреживающих'
       ImageIndex = 35
-      OnClick = SSOMenuItemClick
+      OnClick = SSOCardsMenuItemClick
     end
     object Separator4: TMenuItem
       Caption = '-'

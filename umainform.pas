@@ -32,6 +32,11 @@ type
     DividerBevel2: TDividerBevel;
     DividerBevel3: TDividerBevel;
     DictionaryButton: TSpeedButton;
+    SSORequestMenuItem: TMenuItem;
+    SIZRequestMenuItem: TMenuItem;
+    SSOStorageMenuItem: TMenuItem;
+    SIZStorageMenuItem: TMenuItem;
+    SIZSizesMenuItem: TMenuItem;
     StaffButton: TSpeedButton;
     SIZNormsMenuItem: TMenuItem;
     SSONormsMenuItem: TMenuItem;
@@ -50,8 +55,8 @@ type
     VacationPlaneMenuItem: TMenuItem;
     PersonalScheduleMenuItem: TMenuItem;
     TimetableMenuItem: TMenuItem;
-    SIZMenuItem: TMenuItem;
-    SSOMenuItem: TMenuItem;
+    SIZCardsMenuItem: TMenuItem;
+    SSOCardsMenuItem: TMenuItem;
     StudyMenuItem: TMenuItem;
     DictionaryMenu: TPopupMenu;
     PostListMenuItem: TMenuItem;
@@ -79,13 +84,13 @@ type
     procedure SettingButtonClick(Sender: TObject);
     procedure ShiftScheduleMenuItemClick(Sender: TObject);
     procedure SIZListMenuItemClick(Sender: TObject);
-    procedure SIZMenuItemClick(Sender: TObject);
+    procedure SIZCardsMenuItemClick(Sender: TObject);
     procedure SIZNormsMenuItemClick(Sender: TObject);
     procedure SIZReasonMenuItemClick(Sender: TObject);
     procedure SIZSpecLifeMenuItemClick(Sender: TObject);
     procedure SIZUnitMenuItemClick(Sender: TObject);
     procedure SSOListMenuItemClick(Sender: TObject);
-    procedure SSOMenuItemClick(Sender: TObject);
+    procedure SSOCardsMenuItemClick(Sender: TObject);
     procedure SSOUnitMenuItemClick(Sender: TObject);
     procedure StaffButtonClick(Sender: TObject);
     procedure StudyMenuItemClick(Sender: TObject);
@@ -447,12 +452,12 @@ begin
   CategorySelect(7);
 end;
 
-procedure TMainForm.SIZMenuItemClick(Sender: TObject);
+procedure TMainForm.SIZCardsMenuItemClick(Sender: TObject);
 begin
   //CategorySelect(7);
 end;
 
-procedure TMainForm.SSOMenuItemClick(Sender: TObject);
+procedure TMainForm.SSOCardsMenuItemClick(Sender: TObject);
 begin
   //CategorySelect(8);
 end;

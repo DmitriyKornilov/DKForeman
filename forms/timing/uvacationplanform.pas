@@ -304,6 +304,9 @@ begin
                                       RecrutDates, Part1FirstDates, Part2FirstDates,
                                       Part1Counts, Part1AddCounts, Part2Counts, Part2AddCounts);
 
+  ExportButton.Enabled:= not VIsNil(TabNumIDs);
+  PlanButton.Enabled:= ExportButton.Enabled;
+  ScheduleButton.Enabled:= ExportButton.Enabled;
 
   StaffList.Visible:= False;
   try

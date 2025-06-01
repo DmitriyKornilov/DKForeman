@@ -69,6 +69,7 @@ object SIZNormForm: TSIZNormForm
       Spacing = 5
       ShowHint = True
       ParentShowHint = False
+      OnClick = ExportButtonClick
     end
   end
   object NormPanel: TPanel

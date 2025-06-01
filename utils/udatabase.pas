@@ -475,7 +475,7 @@ type
     function SIZNormItemsLoad(const ANormID: Integer;
                               out AItemIDs: TIntVector; out AItemNames: TStrVector;
                               out APostIDs: TIntMatrix; out APostNames: TStrMatrix): Boolean;
-
+    function SIZNormItemLoad(const AItemID: Integer; out AItem: TNormItem): Boolean;
 
 
     {Проверка наличия в базе пункта нормы}
@@ -3624,8 +3624,41 @@ begin
   MAppend(APostNames, VCut(PostNames, I1, I2));
 end;
 
+function TDataBase.SIZNormItemLoad(const AItemID: Integer; out AItem: TNormItem): Boolean;
+begin
+  Result:= False;
+  NormItemClear(AItem{%H-});
+  if AItemID<=0 then Exit;
+  AItem.ItemID:= AItemID;
 
+  QSetQuery(FQuery);
+  QSetSQL(
+    'SELECT t1.ItemID, t1.PostID, t2.ItemName, t3.PostName ' +
+    'FROM SIZNORMITEMPOST t1 ' +
+    'INNER JOIN SIZNORMITEM t2 ON (t1.ItemID=t2.ItemID) ' +
+    'INNER JOIN STAFFPOST t3 ON (t1.PostID=t3.PostID) ' +
+    'WHERE t1.ItemID = :ItemID '
+  );
+  QParamInt('ItemID', AItemID);
+  QOpen;
+  if not QIsEmpty then
+  begin
+    QFirst;
+    AItem.ItemName:= QFieldStr('ItemName');
+    while not QEOF do
+    begin
+      VAppend(AItem.PostIDs, QFieldInt('PostID'));
+      VAppend(AItem.PostNames, QFieldStr('PostName'));
+      QNext;
+    end;
+    Result:= True;
+  end;
+  QClose;
 
+  if not Result then Exit;
+
+  SIZNormSubItemsLoad(AItemID, AItem.SubItems);
+end;
 
 function TDataBase.SIZItemsAndPostsAccordanceLoad(const ANormID: Integer;
                               out APostIDs, AItemIDs: TIntVector): Boolean;

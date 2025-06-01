@@ -518,6 +518,11 @@ begin
   StaffShortNames:= StaffNamesForPersonalTiming(Families, Names, Patronymics, TabNums, PostNames, False);
   TimetableNames:= StaffNamesForScheduleNames(Families, Names, Patronymics, TabNums, True);
 
+  ExportButton.Enabled:= not VIsNil(TabNumIDs);
+  MonthTimetableButton.Enabled:= ExportButton.Enabled;
+  WriteButton.Enabled:= ExportButton.Enabled;
+  EraseButton.Enabled:= ExportButton.Enabled;
+
   StaffList.Visible:= False;
   try
     StaffList.ValuesClear;

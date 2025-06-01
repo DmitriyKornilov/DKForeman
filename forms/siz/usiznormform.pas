@@ -10,9 +10,9 @@ uses
   //Project utils
   UDataBase, UConst, UTypes, UUtils, UImages, USIZNormSheet, USIZTypes,
   //DK packages utils
-  DK_VSTTables, DK_Vector, DK_Dialogs, DK_CtrlUtils, DK_Const,
+  DK_VSTTables, DK_Vector, DK_Dialogs, DK_CtrlUtils, DK_Const, DK_SheetExporter,
   //Forms
-  USIZNormEditForm, USIZNormItemEditForm, USIZNormSubItemEditForm;
+  USIZNormEditForm, USIZNormItemEditForm, USIZNormSubItemEditForm, UChooseForm;
 
 type
 
@@ -52,6 +52,7 @@ type
     ToolPanel: TPanel;
     ItemGrid: TsWorksheetGrid;
     procedure CloseButtonClick(Sender: TObject);
+    procedure ExportButtonClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -109,6 +110,8 @@ type
     procedure SIZNormEditFormOpen(const AEditingType: TEditingType);
     procedure SIZNormItemEditFormOpen(const AEditingType: TEditingType);
     procedure SIZNormSubItemEditFormOpen(const AEditingType: TEditingType);
+
+    procedure NormExport;
   public
     procedure ViewUpdate(const AModeType: TModeType);
   end;
@@ -123,11 +126,6 @@ uses UMainForm;
 {$R *.lfm}
 
 { TSIZNormForm }
-
-procedure TSIZNormForm.CloseButtonClick(Sender: TObject);
-begin
-  MainForm.CategorySelect(0);
-end;
 
 procedure TSIZNormForm.FormCreate(Sender: TObject);
 begin
@@ -180,6 +178,16 @@ end;
 procedure TSIZNormForm.FormShow(Sender: TObject);
 begin
   NormListLoad;
+end;
+
+procedure TSIZNormForm.ExportButtonClick(Sender: TObject);
+begin
+  NormExport;
+end;
+
+procedure TSIZNormForm.CloseButtonClick(Sender: TObject);
+begin
+  MainForm.CategorySelect(0);
 end;
 
 procedure TSIZNormForm.ItemAddButtonClick(Sender: TObject);
@@ -297,6 +305,8 @@ begin
     NormList.Visible:= True;
   end;
 
+  ExportButton.Enabled:= not VIsNil(ItemIDs);
+
   NormItemButtonsEnabled;
   NormSubItemButtonsEnabled;
 
@@ -340,6 +350,8 @@ begin
 
   DataBase.SIZNormItemsLoad(NormIDs[NormList.SelectedIndex],
                               ItemIDs, PostIDs, ItemNames, PostNames);
+
+  ExportButton.Enabled:= not VIsNil(ItemIDs);
 
   SelectedIndex:= VIndexOf(ItemIDs, SelectedID);
   if SelectedIndex<0 then SelectedIndex:= 0;
@@ -519,6 +531,75 @@ begin
 
   finally
     FreeAndNil(SIZNormSubItemEditForm);
+  end;
+end;
+
+procedure TSIZNormForm.NormExport;
+var
+  S: String;
+  V: TStrVector;
+  ChooseIndex: Integer;
+  Norm: TNorm;
+  Sheet: TSIZNormSheet;
+  Worksheet: TsWorksheet;
+  Exporter: TSheetsExporter;
+
+  procedure SingleItemLoad;
+  var
+    Item: TNormItem;
+  begin
+    DataBase.SIZNormItemLoad(ItemIDs[NormItemSheet.SelectedIndex], Item);
+    NormItemsAdd(Norm.Items, Item);
+  end;
+
+  procedure AllItemsLoad;
+  var
+    i: Integer;
+    V: TIntVector;
+    Item: TNormItem;
+  begin
+    V:= VUnique(ItemIDs);
+    for i:= 0 to High(V) do
+    begin
+      DataBase.SIZNormItemLoad(V[i], Item);
+      NormItemsAdd(Norm.Items, Item);
+    end;
+  end;
+
+begin
+  if not NormList.IsSelected then Exit;
+  if not NormItemSheet.IsSelected then Exit;
+
+  NormClear(Norm);
+  Norm.NormName:= NormNames[NormList.SelectedIndex];
+  Norm.TypicalName:= TypicalNames[NormList.SelectedIndex];
+  Norm.BeginDate:= BeginDates[NormList.SelectedIndex];
+  Norm.EndDate:= EndDates[NormList.SelectedIndex];
+
+  S:= 'Сохранить в файл:';
+  V:= VCreateStr([
+    NormNames[NormList.SelectedIndex] + ', пункт ' + ItemNames[NormItemSheet.SelectedIndex],
+    NormNames[NormList.SelectedIndex] + ', все пункты '
+  ]);
+  if not Choose(S, V, ChooseIndex) then Exit;
+
+  case ChooseIndex of
+  0: SingleItemLoad;
+  1: AllItemsLoad;
+  end;
+
+  Exporter:= TSheetsExporter.Create;
+  try
+    Worksheet:= Exporter.AddWorksheet('Лист1');
+    Sheet:= TSIZNormSheet.Create(Worksheet, nil, MainForm.GridFont);
+    try
+      Sheet.Draw(Norm);
+      Exporter.Save('Выполнено!', NormNames[NormList.SelectedIndex]);
+    finally
+      FreeAndNil(Sheet);
+    end;
+  finally
+    FreeAndNil(Exporter);
   end;
 end;
 

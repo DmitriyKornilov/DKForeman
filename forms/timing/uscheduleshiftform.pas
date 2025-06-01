@@ -916,6 +916,11 @@ begin
 
   DataBase.ScheduleMainListLoad(ScheduleIDs, WeekHours, CycleCounts, ScheduleNames);
 
+  ExportButton.Enabled:= not VIsNil(ScheduleIDs);
+  CalendarButton.Enabled:= ExportButton.Enabled;
+  MonthButton.Enabled:= ExportButton.Enabled;
+  DayAddButton.Enabled:= ExportButton.Enabled;
+
   ScheduleList.Visible:= False;
   try
     ScheduleList.ValuesClear;

@@ -7,6 +7,7 @@ object StaffForm: TStaffForm
   ClientHeight = 457
   ClientWidth = 1140
   DesignTimePPI = 120
+  LCLVersion = '4.0.0.4'
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
@@ -21,8 +22,8 @@ object StaffForm: TStaffForm
     BorderSpacing.Right = 2
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 36
-    ClientWidth = 1132
+    ClientHeight = 40
+    ClientWidth = 1136
     ParentFont = False
     TabOrder = 0
     object CloseButton: TSpeedButton
@@ -173,8 +174,8 @@ object StaffForm: TStaffForm
         BorderSpacing.Bottom = 2
         BevelOuter = bvNone
         BorderStyle = bsSingle
-        ClientHeight = 36
-        ClientWidth = 606
+        ClientHeight = 40
+        ClientWidth = 610
         ParentBackground = False
         ParentColor = False
         ParentFont = False
@@ -258,8 +259,8 @@ object StaffForm: TStaffForm
         BorderSpacing.Top = 2
         BevelOuter = bvNone
         BorderStyle = bsSingle
-        ClientHeight = 36
-        ClientWidth = 606
+        ClientHeight = 40
+        ClientWidth = 610
         TabOrder = 2
         object OrderLabel: TLabel
           AnchorSideLeft.Control = OrderButtonPanel
@@ -405,8 +406,8 @@ object StaffForm: TStaffForm
           Align = alTop
           BevelOuter = bvNone
           BorderStyle = bsSingle
-          ClientHeight = 36
-          ClientWidth = 208
+          ClientHeight = 40
+          ClientWidth = 212
           ParentFont = False
           TabOrder = 0
           object TabNumAddButton: TSpeedButton
@@ -547,8 +548,8 @@ object StaffForm: TStaffForm
           Align = alTop
           BevelOuter = bvNone
           BorderStyle = bsSingle
-          ClientHeight = 36
-          ClientWidth = 208
+          ClientHeight = 40
+          ClientWidth = 212
           ParentFont = False
           TabOrder = 0
           object PostLogAddButton: TSpeedButton
