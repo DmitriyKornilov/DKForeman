@@ -145,6 +145,14 @@ var
 begin
   ParamList:= TVSTParamList.Create(SettingClientPanel);
 
+  S:= 'Включать в список:';
+  V:= VCreateStr([
+    'всех',
+    'работающих на текущую дату',
+    'уволенных на текущую дату'
+  ]);
+  ParamList.AddStringList('ListType', S, V, @SizeListLoad, 1);
+
   S:= 'Сортировать список по:';
   V:= VCreateStr([
     'Ф.И.О.',
@@ -157,14 +165,6 @@ begin
     'размеру респиратора'
   ]);
   ParamList.AddStringList('OrderType', S, V, @SizeListLoad);
-
-  S:= 'Включать в список:';
-  V:= VCreateStr([
-    'всех',
-    'работающих на текущую дату',
-    'уволенных на текущую дату'
-  ]);
-  ParamList.AddStringList('ListType', S, V, @SizeListLoad, 1);
 
   S:= 'Отображать столбцы:';
   V:= VCreateStr([
@@ -287,12 +287,12 @@ end;
 
 procedure TSIZSizeForm.SettingsLoad;
 begin
-
+  ParamList.Params:= DataBase.SettingsLoad(SETTING_NAMES_SIZSIZEFORM);
 end;
 
 procedure TSIZSizeForm.SettingsSave;
 begin
-
+  DataBase.SettingsUpdate(SETTING_NAMES_SIZSIZEFORM, ParamList.Params);
 end;
 
 procedure TSIZSizeForm.ViewUpdate(const AModeType: TModeType);

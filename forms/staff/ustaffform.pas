@@ -386,6 +386,15 @@ var
 begin
   ParamList:= TVSTParamList.Create(SettingClientPanel);
 
+  S:= 'Включать в список:';
+  V:= VCreateStr([
+    'всех',
+    'работающих на текущую дату',
+    'уволенных на текущую дату',
+    'без табельного номера'
+  ]);
+  ParamList.AddStringList('ListType', S, V, @ListTypeSelect, 1);
+
   S:= 'Сортировать список по:';
   V:= VCreateStr([
     'Ф.И.О.',
@@ -396,15 +405,6 @@ begin
     'дате увольнения'
   ]);
   ParamList.AddStringList('OrderType', S, V, @OrderTypeSelect);
-
-  S:= 'Включать в список:';
-  V:= VCreateStr([
-    'всех',
-    'работающих на текущую дату',
-    'уволенных на текущую дату',
-    'без табельного номера'
-  ]);
-  ParamList.AddStringList('ListType', S, V, @ListTypeSelect, 1);
 
   S:= 'Отображать столбцы:';
   V:= VCreateStr([

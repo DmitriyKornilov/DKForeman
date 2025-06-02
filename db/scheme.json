@@ -1032,7 +1032,19 @@
         "VACATIONPLANFORM.NAMETYPE",
         "VACATIONPLANNINGFORM.ZOOM",
         "CALENDARFORM.ZOOM",
-        "VACATIONSCHEDULEFORM.ZOOM"
+        "VACATIONSCHEDULEFORM.ZOOM",
+        "SIZSIZEFORM.LISTTYPE",
+        "SIZSIZEFORM.ORDERTYPE",
+        "SIZSIZEFORM.NUMBER",
+        "SIZSIZEFORM.STAFFNAME",
+        "SIZSIZEFORM.CLOTHES",
+        "SIZSIZEFORM.SHOES",
+        "SIZSIZEFORM.HEADDRESS",
+        "SIZSIZEFORM.MITTENS",
+        "SIZSIZEFORM.GLOVES",
+        "SIZSIZEFORM.GASMASK",
+        "SIZSIZEFORM.RESPIRATOR",
+        "SIZSIZEFORM.NAMETYPE"
       ],
       "ReferenceTo" : {
         "TableName" : "",
@@ -1139,7 +1151,19 @@
         "0",
         "100",
         "100",
-        "100"
+        "100",
+        "1",
+        "0",
+        "1",
+        "1",
+        "1",
+        "1",
+        "1",
+        "1",
+        "1",
+        "1",
+        "1",
+        "0"
       ],
       "ReferenceTo" : {
         "TableName" : "",

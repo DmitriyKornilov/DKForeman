@@ -277,9 +277,12 @@ begin
   if (ASizeType=0) or ((ASizeID=0) and (AHeightID=0)) then Exit;
   case ASizeType of
   1: begin
-       if (ASizeID>0) and (AHeightID>0) then Result:= CLOTHES[ASizeID] + '/' + MANHEIGHTS[AHeightID]
-       else if ASizeID>0 then Result:= CLOTHES[ASizeID]
-         else Result:= MANHEIGHTS[ASizeID];
+       if (ASizeID>0) and (AHeightID>0) then
+         Result:= CLOTHES[ASizeID] + '/' + MANHEIGHTS[AHeightID]
+       else if ASizeID>0 then
+         Result:= CLOTHES[ASizeID]
+       else
+         Result:= MANHEIGHTS[ASizeID];
      end;
   2: Result:= SHOES[ASizeID];
   3: Result:= HEADDRESS[ASizeID];
@@ -292,11 +295,13 @@ end;
 function SIZNormFullName(const ANormName, ATypicalName: String): String;
 begin
   Result:= EmptyStr;
-  if (ANormName=EmptyStr) and (ATypicalName=EmptyStr) then Exit;
-  if (ANormName<>EmptyStr) and (ATypicalName<>EmptyStr) then
+  if SEmpty(ANormName) and SEmpty(ATypicalName) then Exit;
+  if (not SEmpty(ANormName)) and (not SEmpty(ATypicalName)) then
     Result:= ANormName + ' (' + ATypicalName + ')'
-  else if ANormName<>EmptyStr then Result:= ANormName
-    else Result:= ATypicalName;
+  else if not SEmpty(ANormName) then
+    Result:= ANormName
+  else
+    Result:= ATypicalName;
 end;
 
 procedure SIZChooseFromStaffAndSpecSizes(const ASpecSizeID, ASpecHeightID,
