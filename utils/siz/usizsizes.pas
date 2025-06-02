@@ -27,33 +27,37 @@ const
 
 type
 
-  TSizStaffSizeIndexes = record
-    Clothes, Height, Shoes, HeadDress,
-    Mittens, Gloves, Gasmask, Respirator: Integer;
+  TSIZStaffSizeIndexes = record
+    Clothes,
+    Height,
+    Shoes,
+    HeadDress,
+    Mittens,
+    Gloves,
+    Gasmask,
+    Respirator: Integer;
   end;
-  procedure SizStaffSizeIndexesClear(var AStaffSizes: TSizStaffSizeIndexes);
-  procedure SizStaffSizesForSizeType(const AStaffSizes: TSizStaffSizeIndexes;
+  procedure SIZStaffSizeIndexesClear(var AStaffSizes: TSIZStaffSizeIndexes);
+  procedure SIZStaffSizesForSizeType(const AStaffSizes: TSIZStaffSizeIndexes;
                                      const ASizeType: Integer;
                                      out ASizeID, AHeightID: Integer);
 type
 
-  TSizStaffSizes = record
-    Clothes, Height, Shoes, HeadDress,
-    Mittens, Gloves, Gasmask, Respirator: String;
+  TSIZStaffSizes = record
+    Clothes,
+    Height,
+    Shoes,
+    HeadDress,
+    Mittens,
+    Gloves,
+    Gasmask,
+    Respirator: String;
   end;
-  procedure SizStaffSizesClear(var AStaffSizes: TSizStaffSizes);
-
-  procedure LoadHeights(const AStrings: TStrings);
-  procedure LoadClothes(const AStrings: TStrings);
-  procedure LoadShoes(const AStrings: TStrings);
-  procedure LoadHeadDress(const AStrings: TStrings);
-  procedure LoadMittens(const AStrings: TStrings);
-  procedure LoadGasmask(const AStrings: TStrings);
-  procedure LoadRespirator(const AStrings: TStrings);
+  procedure SIZStaffSizesClear(var AStaffSizes: TSIZStaffSizes);
 
 implementation
 
-procedure SizStaffSizeIndexesClear(var AStaffSizes: TSizStaffSizeIndexes);
+procedure SIZStaffSizeIndexesClear(var AStaffSizes: TSIZStaffSizeIndexes);
 begin
   AStaffSizes.Clothes:= 0;
   AStaffSizes.Height:= 0;
@@ -65,7 +69,7 @@ begin
   AStaffSizes.Respirator:= 0;
 end;
 
-procedure SizStaffSizesForSizeType(const AStaffSizes: TSizStaffSizeIndexes;
+procedure SIZStaffSizesForSizeType(const AStaffSizes: TSIZStaffSizeIndexes;
                                    const ASizeType: Integer;
                                    out ASizeID, AHeightID: Integer);
 begin
@@ -86,7 +90,7 @@ begin
   end;
 end;
 
-procedure SizStaffSizesClear(var AStaffSizes: TSizStaffSizes);
+procedure SIZStaffSizesClear(var AStaffSizes: TSIZStaffSizes);
 begin
   AStaffSizes.Clothes:= EmptyStr;
   AStaffSizes.Height:= EmptyStr;
@@ -96,76 +100,6 @@ begin
   AStaffSizes.Gloves:= EmptyStr;
   AStaffSizes.Gasmask:= EmptyStr;
   AStaffSizes.Respirator:= EmptyStr;
-end;
-
-procedure LoadHeights(const AStrings: TStrings);
-var
-  i: Integer;
-begin
-  AStrings.Clear;
-  AStrings.Add('<нет>');
-  for i:= 1 to High(MANHEIGHTS) do
-    AStrings.Add(MANHEIGHTS[i]);
-end;
-
-procedure LoadClothes(const AStrings: TStrings);
-var
-  i: Integer;
-begin
-  AStrings.Clear;
-  AStrings.Add('<нет>');
-  for i:= 1 to High(CLOTHES) do
-    AStrings.Add(CLOTHES[i]);
-end;
-
-procedure LoadShoes(const AStrings: TStrings);
-var
-  i: Integer;
-begin
-  AStrings.Clear;
-  AStrings.Add('<нет>');
-  for i:= 1 to High(SHOES) do
-    AStrings.Add(SHOES[i]);
-end;
-
-procedure LoadHeadDress(const AStrings: TStrings);
-var
-  i: Integer;
-begin
-  AStrings.Clear;
-  AStrings.Add('<нет>');
-  for i:= 1 to High(HEADDRESS) do
-    AStrings.Add(HEADDRESS[i]);
-end;
-
-procedure LoadMittens(const AStrings: TStrings);
-var
-  i: Integer;
-begin
-  AStrings.Clear;
-  AStrings.Add('<нет>');
-  for i:= 1 to High(MITTENS) do
-    AStrings.Add(MITTENS[i]);
-end;
-
-procedure LoadGasmask(const AStrings: TStrings);
-var
-  i: Integer;
-begin
-  AStrings.Clear;
-  AStrings.Add('<нет>');
-  for i:= 1 to High(GASMASK) do
-    AStrings.Add(GASMASK[i]);
-end;
-
-procedure LoadRespirator(const AStrings: TStrings);
-var
-  i: Integer;
-begin
-  AStrings.Clear;
-  AStrings.Add('<нет>');
-  for i:= 1 to High(RESPIRATOR) do
-    AStrings.Add(RESPIRATOR[i]);
 end;
 
 end.

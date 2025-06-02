@@ -11,7 +11,9 @@ uses
   UDataBase, UConst, UTypes, UUtils, UImages, USIZSizes,
   //DK packages utils
   DK_VSTParamList, DK_Vector, DK_VSTTables, DK_VSTTypes, DK_Filter, DK_CtrlUtils,
-  DK_StrUtils;
+  DK_StrUtils,
+  //Forms
+  USIZSizeEditForm;
 
 type
 
@@ -281,8 +283,29 @@ begin
 end;
 
 procedure TSIZSizeForm.SizeListEdit;
+var
+  SIZSizeEditForm: TSIZSizeEditForm;
 begin
+  if not SizeList.IsSelected then Exit;
 
+  SIZSizeEditForm:= TSIZSizeEditForm.Create(nil);
+  try
+    SIZSizeEditForm.StaffID:= StaffIDs[SizeList.SelectedIndex];
+    SIZSizeEditForm.SizeIndexes.Height:= Heights[SizeList.SelectedIndex];
+    SIZSizeEditForm.SizeIndexes.Clothes:= Clothes[SizeList.SelectedIndex];
+    SIZSizeEditForm.SizeIndexes.Shoes:= Shoes[SizeList.SelectedIndex];
+    SIZSizeEditForm.SizeIndexes.HeadDress:= HeadDress[SizeList.SelectedIndex];
+    SIZSizeEditForm.SizeIndexes.Mittens:= Mittens[SizeList.SelectedIndex];
+    SIZSizeEditForm.SizeIndexes.Gloves:= Gloves[SizeList.SelectedIndex];
+    SIZSizeEditForm.SizeIndexes.Gasmask:= Gasmasks[SizeList.SelectedIndex];
+    SIZSizeEditForm.SizeIndexes.Respirator:= Respirators[SizeList.SelectedIndex];
+
+    if SIZSizeEditForm.ShowModal=mrOK then
+      SizeListLoad;
+
+  finally
+    FreeAndNil(SIZSizeEditForm);
+  end;
 end;
 
 procedure TSIZSizeForm.SettingsLoad;

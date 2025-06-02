@@ -22,7 +22,7 @@ uses
   UTimetableSheet, uschedule, UTimingUtils, UVacationPlanEditForm,
   UVacationPlanningForm, USIZNormForm, USIZNormSheet, USIZSizes, USIZTypes,
   USIZUtils, USIZNormEditForm, USIZNormItemEditForm, USIZNormSubItemEditForm,
-  USearchForm, USIZSizeForm;
+  USearchForm, USIZSizeForm, USIZSizeEditForm;
 
 {$R *.res}
 

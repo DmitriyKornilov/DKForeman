@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, DateUtils,
   //Project utils
-  UCalendar, UConst, USchedule, UTimetable, UWorkHours, USIZTypes,
+  UCalendar, UConst, USchedule, UTimetable, UWorkHours, USIZTypes, USIZSizes,
   //DK packages utils
   DK_SQLite3, DK_SQLUtils, DK_Vector, DK_Matrix, DK_StrUtils, DK_Const,
   DK_DateUtils, DK_VSTDropDown;
@@ -467,7 +467,6 @@ type
     function SIZNormSubItemInfoDelete(const AInfoIDs: TIntVector;
                                        const ACommit: Boolean = True): Boolean;
 
-
     {Загрузка из базы списка пунктов типовых норм: True - ОК, False - пусто}
     function SIZNormItemsLoad(const ANormID: Integer;
                               out AItemIDs, APostIDs: TIntVector;
@@ -508,11 +507,6 @@ type
     function SIZNormItemCopy(const ANormID, AItemID: Integer;
                             const AItemName: String; const APostIDs: TIntVector): Boolean;
 
-
-
-
-
-
     {Загрузка полных данных по строкам пункта типовых норм: True - ОК, False - пусто}
     function SIZNormSubItemsDataLoad(const AItemID: Integer;
              out ASubItemIDs, ASubItemOrderNums, AReasonIDs,
@@ -544,8 +538,6 @@ type
     function SIZNormSubItemSwap(const ASubItemID1, AOrderNum1,
                                       ASubItemID2, AOrderNum2: Integer): Boolean;
 
-
-
     {Загрузка данных строки пункта типовых норм: True - ОК, False - пусто}
     function SIZNormSubItemInfoLoad(const ASubItemID: Integer;
                                     var AInfo: TNormSubItemInfo): Boolean;
@@ -563,23 +555,24 @@ type
                                     ANum, ALife, ALifeID, AOrderNum: Integer;
                                     const ACommit: Boolean = True): Boolean;
 
-
-
     {Загрузка ассортимента СИЗ: True - ОК, False - ошибка}
     function SIZAssortmentLoad(out AClassIDs: TIntVector;
                               out AClassNames: TStrVector;
                               out ASizNames, ASizUnits: TStrMatrix;
                               out ASizNameIDs, ASizSizeTypes: TIntMatrix): Boolean;
 
-
-
-
+    (**************************************************************************
+                                РАЗМЕРЫ СИЗ
+    **************************************************************************)
     function SIZStaffSizeLoad(const AFilterValue: String;
                           const AOrderType, AListType: Byte;
                           out AStaffIDs, AClothes, AHeights, AShoes, AHeadDress,
                               AMittens, AGloves, AGasmasks, ARespirators: TIntVector;
                           out AFamilies, ANames, APatronymics: TStrVector;
                           out ABornDates: TDateVector): Boolean;
+    function SIZStaffSizeUpdate(const AStaffID: Integer;
+                          const ASizeIndexes: TSIZStaffSizeIndexes): Boolean;
+
 
     function SIZStaffSpecSizeLoad(const AInfoID: Integer;
                                out ATabNumIDs, ASizeIDs, AHeightIDs: TIntVector): Boolean;
@@ -4877,6 +4870,34 @@ begin
     Result:= True;
   end;
   QClose;
+end;
+
+function TDataBase.SIZStaffSizeUpdate(const AStaffID: Integer;
+                         const ASizeIndexes: TSIZStaffSizeIndexes): Boolean;
+begin
+  Result:= False;
+  QSetQuery(FQuery);
+  try
+    QSetSQL(
+      sqlUPDATE('SIZSTAFFSIZE', ['Clothes', 'Height', 'Shoes', 'HeadDress',
+                                 'Mittens', 'Gloves', 'Gasmask', 'Respirator']) +
+      'WHERE StaffID = :StaffID'
+    );
+    QParamInt('StaffID', AStaffID);
+    QParamInt('Clothes',  ASizeIndexes.Clothes);
+    QParamInt('Height', ASizeIndexes.Height);
+    QParamInt('Shoes', ASizeIndexes.Shoes);
+    QParamInt('HeadDress', ASizeIndexes.HeadDress);
+    QParamInt('Mittens', ASizeIndexes.Mittens);
+    QParamInt('Gloves', ASizeIndexes.Gloves);
+    QParamInt('Gasmask', ASizeIndexes.Gasmask);
+    QParamInt('Respirator', ASizeIndexes.Respirator);
+    QExec;
+    QCommit;
+    Result:= True;
+  except
+    QRollback;
+  end;
 end;
 
 function TDataBase.SIZStaffSpecSizeLoad(const AInfoID: Integer;

@@ -5,6 +5,7 @@
     <PathDelim Value="\"/>
     <General>
       <SessionStorage Value="InProjectDir"/>
+      <AutoCreateForms Value="False"/>
       <Title Value="DKForeman"/>
       <Scaled Value="True"/>
       <ResourceType Value="res"/>
@@ -422,6 +423,13 @@
         <ComponentName Value="SIZSizeForm"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="USIZSizeForm"/>
+      </Unit>
+      <Unit>
+        <Filename Value="forms\siz\usizsizeeditform.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="SIZSizeEditForm"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="USIZSizeEditForm"/>
       </Unit>
     </Units>
   </ProjectOptions>
