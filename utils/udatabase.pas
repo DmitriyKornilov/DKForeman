@@ -160,9 +160,13 @@ type
 
 
     {Постоянная должность таб номера на дату
-    (или первая после даты, если на эту дату еще не работал)}
-    procedure StaffPostForDate(const ATabNumID: Integer;
+    (или первая после даты, если на эту дату еще не работал): True - ОК, False - пусто (уволен)}
+    function StaffPostForDate(const ATabNumID: Integer;
                                const ADate: TDate;
+                               out APostID: Integer;
+                               out APostName, ARank: String): Boolean;
+    {Последня постоянная должность}
+    procedure StaffPostLast(const ATabNumID: Integer;
                                out APostID: Integer;
                                out APostName, ARank: String);
 
@@ -583,6 +587,27 @@ type
                                const ACommit: Boolean = True): Boolean;
     function SIZStaffSpecSizeCopy(const ASourceInfoIDs, ADestInfoIDs: TIntVector;
                                   const ACommit: Boolean = True): Boolean;
+
+
+    (**************************************************************************
+                                ЛИЧНЫЕ КАРТОЧКИ СИЗ
+    **************************************************************************)
+
+  {Cписок сотрудников
+     AListType - включать в список 0-всех, 1-работающих на текущую дату, 2-уволенных
+     AOrderType - сортировка: 0-ФИО, 1-табельный номер, 2-должность
+     AIsDescOrder=True - сортировка по убыванию, False - по возрастанию
+     AFilterValue - фильтр по Ф.И.О.
+     True - ОК, False - список пуст}
+  function SIZStaffListForPersonalCardsLoad(const AFilterValue: String;
+                             const AListType, AOrderType: Byte;
+                             const AIsDescOrder: Boolean;
+                             out ATabNumIDs: TIntVector;
+                             out AFs, ANs, APs, ATabNums, APostNames: TStrVector): Boolean;
+
+
+
+
   end;
 
 
@@ -591,8 +616,6 @@ var
   DataBase: TDataBase;
 
 implementation
-
-
 
 { TDataBase }
 
@@ -1450,11 +1473,13 @@ begin
   QClose;
 end;
 
-procedure TDataBase.StaffPostForDate(const ATabNumID: Integer;
-                                     const ADate: TDate;
-                                     out APostID: Integer;
-                                     out APostName, ARank: String);
+function TDataBase.StaffPostForDate(const ATabNumID: Integer;
+                               const ADate: TDate;
+                               out APostID: Integer;
+                               out APostName, ARank: String): Boolean;
 begin
+  Result:= False;
+
   APostName:= EmptyStr;
   ARank:= EmptyStr;
   APostID:= 0;
@@ -1471,6 +1496,36 @@ begin
     'LIMIT 1'
   );
   QParamDT('DateValue', ADate);
+  QParamInt('TabNumID', ATabNumID);
+  QOpen;
+  if not QIsEmpty then
+  begin
+    QFirst;
+    APostName:= QFieldStr('PostName');
+    ARank:= QFieldStr('Rank');
+    APostID:= QFieldInt('PostID');
+    Result:= True;
+  end;
+  QClose;
+end;
+
+procedure TDataBase.StaffPostLast(const ATabNumID: Integer;
+                               out APostID: Integer;
+                               out APostName, ARank: String);
+begin
+  APostName:= EmptyStr;
+  ARank:= EmptyStr;
+  APostID:= 0;
+
+  QSetQuery(FQuery);
+  QSetSQL(
+    'SELECT t1.Rank, t1.PostID, t2.PostName ' +
+    'FROM STAFFPOSTLOG t1 ' +
+    'INNER JOIN STAFFPOST t2 ON (t1.PostID=t2.PostID) ' +
+    'WHERE (t1.TabNumID = :TabNumID) AND (t1.PostTemp = 0) ' +
+    'ORDER BY t1.FirstDate DESC ' +
+    'LIMIT 1'
+  );
   QParamInt('TabNumID', ATabNumID);
   QOpen;
   if not QIsEmpty then
@@ -5003,6 +5058,101 @@ begin
   except
     if ACommit then QRollback;
   end;
+end;
+
+function TDataBase.SIZStaffListForPersonalCardsLoad(const AFilterValue: String;
+                             const AListType, AOrderType: Byte;
+                             const AIsDescOrder: Boolean;
+                             out ATabNumIDs: TIntVector;
+                             out AFs, ANs, APs, ATabNums, APostNames: TStrVector): Boolean;
+var
+  SQLStr: String;
+  i, PostID: Integer;
+  PostName, Rank: String;
+  Indexes: TIntVector;
+begin
+  ATabNumIDs:= nil;
+  AFs:= nil;
+  ANs:= nil;
+  APs:= nil;
+  ATabNums:= nil;
+  APostNames:= nil;
+
+  SQLStr:=
+    'SELECT t1.TabNumID, t1.TabNum, ' +
+           't2.Name, t2.Patronymic, t2.Family ' +
+    'FROM STAFFTABNUM t1 ' +
+    'INNER JOIN STAFFMAIN t2 ON (t1.StaffID=t2.StaffID) ' +
+    'WHERE (t1.TabNumID>0) ';
+
+  if not SEmpty(AFilterValue) then
+    SQLStr:= SQLStr + 'AND (t2.FullName LIKE :FilterValue) ';
+
+  if AListType>0 then
+  begin
+    case AListType of
+    1: SQLStr:= SQLStr + 'AND (t1.DismissDate>= :ADate) ';
+    2: SQLStr:= SQLStr + 'AND (t1.DismissDate< :ADate) ';
+    end;
+  end;
+
+  case AOrderType of
+  0: if AIsDescOrder then
+       SQLStr:= SQLStr + 'ORDER BY t2.Family DESC, t2.Name DESC, t2.Patronymic DESC'
+     else
+       SQLStr:= SQLStr + 'ORDER BY t2.Family, t2.Name, t2.Patronymic';
+  1: if AIsDescOrder then
+       SQLStr:= SQLStr + 'ORDER BY t1.TabNum DESC'
+     else
+       SQLStr:= SQLStr + 'ORDER BY t1.TabNum';
+  2: SQLStr:= SQLStr + 'ORDER BY t2.Family, t2.Name, t2.Patronymic';
+  end;
+
+  QSetQuery(FQuery);
+  QSetSQL(SQLStr);
+  QParamDT('ADate', Date);
+  QParamStr('FilterValue', '%'+AFilterValue+'%');
+  QOpen;
+  if not QIsEmpty then
+  begin
+    QFirst;
+    while not QEOF do
+    begin
+      VAppend(ATabNumIDs, QFieldInt('TabNumID'));
+      VAppend(AFs, QFieldStr('Family'));
+      VAppend(ANs, QFieldStr('Name'));
+      VAppend(APs, QFieldStr('Patronymic'));
+      VAppend(ATabNums, QFieldStr('TabNum'));
+      QNext;
+    end;
+    Result:= True;
+  end;
+  QClose;
+
+  if not Result then Exit;
+
+  //актуальные должности и разряды на текущую дату (или последние, если уволен)
+  for i:= 0 to High(ATabNumIDs) do
+  begin
+    if not StaffPostForDate(ATabNumIDs[i], Date, PostID, PostName, Rank) then
+      StaffPostLast(ATabNumIDs[i], PostID, PostName, Rank);
+    VAppend(APostNames, PostName);
+  end;
+
+  //сортировка по наименованию должности
+  if AOrderType<>2 then Exit;
+
+  if AIsDescOrder then
+    VSort(APostNames, Indexes, True)
+  else
+    VSort(APostNames, Indexes, False);
+
+  ATabNumIDs:= VReplace(ATabNumIDs, Indexes);
+  AFs:= VReplace(AFs, Indexes);
+  ANs:= VReplace(ANs, Indexes);
+  APs:= VReplace(APs, Indexes);
+  ATabNums:= VReplace(ATabNums, Indexes);
+  APostNames:= VReplace(APostNames, Indexes);
 end;
 
 end.

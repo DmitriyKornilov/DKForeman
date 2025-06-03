@@ -10,7 +10,8 @@ uses
   //Project utils
   UDataBase, UConst, UTypes, UTimingUtils, UImages,
   //DK packages utils
-  DK_VSTTables, DK_VSTParamList, DK_VSTEdit, DK_Vector, DK_Filter, DK_CtrlUtils;
+  DK_VSTTables, DK_VSTParamList, DK_Vector, DK_Filter, DK_CtrlUtils,
+  DK_StrUtils;
 
 type
 
@@ -47,9 +48,14 @@ type
     StaffListVT: TVirtualStringTree;
     TabNumRadioButton: TRadioButton;
     ToolPanel: TPanel;
+    procedure AscendingButtonClick(Sender: TObject);
     procedure CloseButtonClick(Sender: TObject);
+    procedure DescendingButtonClick(Sender: TObject);
+    procedure FIORadioButtonClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
+    procedure PostRadioButtonClick(Sender: TObject);
+    procedure TabNumRadioButtonClick(Sender: TObject);
   private
     CanDraw: Boolean;
     FilterString: String;
@@ -61,7 +67,7 @@ type
 
     TabNumIDs: TIntVector;
     StaffLongNames, StaffShortNames: TStrVector;
-    RecrutDates, DismissDates: TDateVector;
+    //RecrutDates, DismissDates: TDateVector;
     Families, Names, Patronymics, TabNums, PostNames: TStrVector;
 
     procedure ParamListCreate;
@@ -133,6 +139,35 @@ begin
   MainForm.CategorySelect(0);
 end;
 
+procedure TSIZStaffForm.DescendingButtonClick(Sender: TObject);
+begin
+  DescendingButton.Visible:= False;
+  AscendingButton.Visible:= True;
+  StaffListLoad;
+end;
+
+procedure TSIZStaffForm.FIORadioButtonClick(Sender: TObject);
+begin
+  StaffListLoad;
+end;
+
+procedure TSIZStaffForm.PostRadioButtonClick(Sender: TObject);
+begin
+  StaffListLoad;
+end;
+
+procedure TSIZStaffForm.TabNumRadioButtonClick(Sender: TObject);
+begin
+  StaffListLoad;
+end;
+
+procedure TSIZStaffForm.AscendingButtonClick(Sender: TObject);
+begin
+  AscendingButton.Visible:= False;
+  DescendingButton.Visible:= True;
+  StaffListLoad;
+end;
+
 procedure TSIZStaffForm.ParamListCreate;
 var
   S: String;
@@ -171,13 +206,48 @@ begin
 end;
 
 procedure TSIZStaffForm.StaffListLoad;
+var
+  SelectedID: Integer;
+  OrderType: Byte;
+  IsDescOrder: Boolean;
 begin
+  SelectedID:= GetSelectedID(StaffList, TabNumIDs, -1);
 
+  if FIORadioButton.Checked then
+    OrderType:= 0
+  else if TabNumRadioButton.Checked then
+    OrderType:= 1
+  else if PostRadioButton.Checked then
+    OrderType:= 2;
+
+  IsDescOrder:= not DescendingButton.Visible;
+
+  DataBase.SIZStaffListForPersonalCardsLoad(STrimLeft(FilterString),
+                             ParamList.Selected['ListType'],
+                             OrderType, IsDescOrder, TabNumIDs,
+                             Families, Names, Patronymics, TabNums, PostNames);
+  StaffLongNames:= StaffNamesForPersonalTiming(Families, Names, Patronymics, TabNums, PostNames, True);
+  StaffShortNames:= StaffNamesForPersonalTiming(Families, Names, Patronymics, TabNums, PostNames, False);
+
+  StaffList.Visible:= False;
+  try
+    StaffList.ValuesClear;
+    StaffList.SetColumn('№ п/п', VIntToStr(VOrder(Length(TabNumIDs))));
+    StaffList.SetColumn('Сотрудник', StaffShortNames, taLeftJustify);
+    StaffList.Draw;
+    StaffList.ReSelect(TabNumIDs, SelectedID, True);  //возвращаем выделение строки
+  finally
+    StaffList.Visible:= True;
+  end;
 end;
 
 procedure TSIZStaffForm.StaffListSelect;
 begin
+  CardListCaptionPanel.Caption:= '  Личные карточки учета выдачи СИЗ';
+  if not StaffList.IsSelected then Exit;
 
+  CardListCaptionPanel.Caption:= CardListCaptionPanel.Caption + ': ' +
+                                StaffLongNames[StaffList.SelectedIndex];
 end;
 
 procedure TSIZStaffForm.CardListCreate;

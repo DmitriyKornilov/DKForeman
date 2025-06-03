@@ -177,7 +177,7 @@ type
     procedure ParamListCreate;
 
     procedure EditingTablesCreate;
-    procedure CorrectionsLoad(const SelectedID: Integer = -1);
+    procedure CorrectionsLoad(const ASelectedID: Integer = -1);
     procedure CorrectionDelete;
     procedure CorrectionSelect;
     procedure CorrectionEdit;
@@ -187,7 +187,7 @@ type
     procedure StaffListFilter(const AFilterString: String);
     procedure StaffListCreate;
     procedure StaffListSelect;
-    procedure StaffListLoad(const SelectedID: Integer = -1);
+    procedure StaffListLoad(const ASelectedID: Integer = -1);
 
     procedure ScheduleLoad;
     procedure ScheduleUpdate;
@@ -732,13 +732,13 @@ begin
   VSTCopy.Draw;
 end;
 
-procedure TSchedulePersonalForm.CorrectionsLoad(const SelectedID: Integer = -1);
+procedure TSchedulePersonalForm.CorrectionsLoad(const ASelectedID: Integer = -1);
 var
-  SelectedCorrectionID: Integer;
+  SelectedID: Integer;
   Dates, ShiftNums: TStrVector;
   BD, ED: TDate;
 begin
-  SelectedCorrectionID:= GetSelectedID(VSTDays, CorrectIDs, SelectedID);
+  SelectedID:= GetSelectedID(VSTDays, CorrectIDs, ASelectedID);
 
   VSTDays.ValuesClear;
 
@@ -761,7 +761,7 @@ begin
     VSTDays.SetColumn(SCHEDULE_CORRECTION_COLUMN_NAMES[3], VWorkHoursToStr(Corrections.HoursNight));
     VSTDays.SetColumn(SCHEDULE_CORRECTION_COLUMN_NAMES[4], Corrections.StrMarks);
     VSTDays.Draw;
-    VSTDays.ReSelect(CorrectIDs, SelectedCorrectionID);
+    VSTDays.ReSelect(CorrectIDs, SelectedID);
   finally
     VSTDays.Visible:= True;
   end;
@@ -859,14 +859,14 @@ begin
   ScheduleChange;
 end;
 
-procedure TSchedulePersonalForm.StaffListLoad(const SelectedID: Integer = -1);
+procedure TSchedulePersonalForm.StaffListLoad(const ASelectedID: Integer = -1);
 var
-  SelectedTabNumID: Integer;
+  SelectedID: Integer;
   BD, ED: TDate;
   OrderType: Byte;
   IsDescOrder: Boolean;
 begin
-  SelectedTabNumID:= GetSelectedID(StaffList, TabNumIDs, SelectedID);
+  SelectedID:= GetSelectedID(StaffList, TabNumIDs, ASelectedID);
   FirstLastDayInYear(YearSpinEdit.Value, BD, ED);
 
   if FIORadioButton.Checked then
@@ -898,7 +898,7 @@ begin
     StaffList.SetColumn('№ п/п', VIntToStr(VOrder(Length(TabNumIDs))));
     StaffList.SetColumn('Сотрудник', StaffShortNames, taLeftJustify);
     StaffList.Draw;
-    StaffList.ReSelect(TabNumIDs, SelectedTabNumID, True);  //возвращаем выделение строки
+    StaffList.ReSelect(TabNumIDs, SelectedID, True);  //возвращаем выделение строки
   finally
     StaffList.Visible:= True;
   end;

@@ -436,6 +436,7 @@
         <Filename Value="forms\siz\usizstaffform.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="SIZStaffForm"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="USIZStaffForm"/>
       </Unit>

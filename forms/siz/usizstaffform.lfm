@@ -1,38 +1,37 @@
 object SIZStaffForm: TSIZStaffForm
   Left = 377
-  Height = 478
+  Height = 382
   Top = 250
-  Width = 1190
+  Width = 952
   Align = alClient
   BorderStyle = bsNone
   Caption = 'SIZStaffForm'
-  ClientHeight = 478
-  ClientWidth = 1190
-  DesignTimePPI = 120
+  ClientHeight = 382
+  ClientWidth = 952
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   object ToolPanel: TPanel
     Left = 2
-    Height = 40
+    Height = 32
     Top = 2
-    Width = 1186
+    Width = 948
     Align = alTop
     BorderSpacing.Left = 2
     BorderSpacing.Top = 2
     BorderSpacing.Right = 2
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 36
-    ClientWidth = 1182
+    ClientHeight = 28
+    ClientWidth = 944
     ParentFont = False
     TabOrder = 0
     object CloseButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 1142
-      Height = 36
+      Left = 912
+      Height = 28
       Hint = 'Закрыть'
       Top = 0
-      Width = 40
+      Width = 32
       Align = alRight
       Images = Images.PX24
       ImageIndex = 3
@@ -41,10 +40,10 @@ object SIZStaffForm: TSIZStaffForm
       OnClick = CloseButtonClick
     end
     object DividerBevel1: TDividerBevel
-      Left = 1121
-      Height = 36
+      Left = 894
+      Height = 28
       Top = 0
-      Width = 21
+      Width = 18
       Caption = 'DividerBevel1'
       Align = alRight
       BevelWidth = 2
@@ -55,10 +54,10 @@ object SIZStaffForm: TSIZStaffForm
     object ExportButton: TSpeedButton
       Cursor = crHandPoint
       Left = 0
-      Height = 36
+      Height = 28
       Hint = 'Экспорт в формат электронной таблицы XLSX или ODS'
       Top = 0
-      Width = 109
+      Width = 96
       Align = alLeft
       AutoSize = True
       Caption = ' Экспорт '
@@ -72,16 +71,16 @@ object SIZStaffForm: TSIZStaffForm
   end
   object SettingPanel: TPanel
     Left = 2
-    Height = 432
-    Top = 44
-    Width = 300
+    Height = 344
+    Top = 36
+    Width = 240
     Align = alLeft
     BorderSpacing.Left = 2
     BorderSpacing.Top = 2
     BorderSpacing.Bottom = 2
     BevelOuter = bvNone
-    ClientHeight = 432
-    ClientWidth = 300
+    ClientHeight = 344
+    ClientWidth = 240
     Color = clWindow
     ParentBackground = False
     ParentColor = False
@@ -89,9 +88,9 @@ object SIZStaffForm: TSIZStaffForm
     Visible = False
     object SettingClientPanel: TPanel
       Left = 0
-      Height = 400
-      Top = 32
-      Width = 300
+      Height = 318
+      Top = 26
+      Width = 240
       Align = alClient
       BevelOuter = bvNone
       BorderStyle = bsSingle
@@ -100,9 +99,9 @@ object SIZStaffForm: TSIZStaffForm
     end
     object SettingCaptionPanel: TPanel
       Left = 0
-      Height = 30
+      Height = 24
       Top = 0
-      Width = 300
+      Width = 240
       Align = alTop
       Alignment = taLeftJustify
       BorderSpacing.Bottom = 2
@@ -118,69 +117,69 @@ object SIZStaffForm: TSIZStaffForm
     end
   end
   object SettingSplitter: TSplitter
-    Left = 302
-    Height = 436
-    Top = 42
-    Width = 6
+    Left = 242
+    Height = 348
+    Top = 34
+    Width = 5
     ResizeStyle = rsLine
     Visible = False
   end
   object MainPanel: TPanel
-    Left = 308
-    Height = 436
-    Top = 42
-    Width = 882
+    Left = 247
+    Height = 348
+    Top = 34
+    Width = 705
     Align = alClient
     BevelOuter = bvNone
-    ClientHeight = 436
-    ClientWidth = 882
+    ClientHeight = 348
+    ClientWidth = 705
     TabOrder = 3
     object StaffPanel: TPanel
       Left = 2
-      Height = 432
+      Height = 344
       Top = 2
-      Width = 580
+      Width = 464
       Align = alLeft
       BorderSpacing.Left = 2
       BorderSpacing.Top = 2
       BorderSpacing.Bottom = 2
       BevelOuter = bvNone
-      ClientHeight = 432
-      ClientWidth = 580
+      ClientHeight = 344
+      ClientWidth = 464
       TabOrder = 0
       object StaffListVT: TVirtualStringTree
         Left = 0
-        Height = 316
-        Top = 74
-        Width = 580
+        Height = 250
+        Top = 60
+        Width = 464
         Align = alClient
         DefaultText = 'Node'
         Header.AutoSizeIndex = 0
         Header.Columns = <>
         Header.MainColumn = -1
-        Margin = 50
+        Margin = 40
         TabOrder = 0
       end
       object StaffFilterToolPanel: TPanel
         Left = 0
-        Height = 40
-        Top = 32
-        Width = 580
+        Height = 32
+        Top = 26
+        Width = 464
         Align = alTop
         BorderSpacing.Bottom = 2
         BevelOuter = bvNone
         BorderStyle = bsSingle
-        ClientHeight = 36
-        ClientWidth = 576
+        ClientHeight = 28
+        ClientWidth = 460
         ParentBackground = False
         ParentColor = False
         ParentFont = False
         TabOrder = 1
         object FilterPanel: TPanel
           Left = 0
-          Height = 36
+          Height = 28
           Top = 0
-          Width = 576
+          Width = 460
           Align = alClient
           AutoSize = True
           BevelOuter = bvNone
@@ -191,25 +190,25 @@ object SIZStaffForm: TSIZStaffForm
       end
       object StaffOrderToolPanel: TPanel
         Left = 0
-        Height = 40
-        Top = 392
-        Width = 580
+        Height = 32
+        Top = 312
+        Width = 464
         Align = alBottom
         BorderSpacing.Top = 2
         BevelOuter = bvNone
         BorderStyle = bsSingle
-        ClientHeight = 36
-        ClientWidth = 576
+        ClientHeight = 28
+        ClientWidth = 460
         TabOrder = 2
         object OrderLabel: TLabel
           AnchorSideLeft.Control = OrderButtonPanel
           AnchorSideLeft.Side = asrBottom
           AnchorSideTop.Control = StaffOrderToolPanel
           AnchorSideTop.Side = asrCenter
-          Left = 101
-          Height = 20
-          Top = 8
-          Width = 115
+          Left = 82
+          Height = 15
+          Top = 7
+          Width = 91
           Caption = 'Сортировать по:'
           ParentColor = False
         end
@@ -218,85 +217,90 @@ object SIZStaffForm: TSIZStaffForm
           AnchorSideLeft.Side = asrBottom
           AnchorSideTop.Control = StaffOrderToolPanel
           AnchorSideTop.Side = asrCenter
-          Left = 222
-          Height = 24
-          Top = 6
-          Width = 63
-          BorderSpacing.Left = 6
+          Left = 178
+          Height = 19
+          Top = 5
+          Width = 54
+          BorderSpacing.Left = 5
           Caption = 'Ф.И.О.'
           Checked = True
           TabOrder = 1
           TabStop = True
+          OnClick = FIORadioButtonClick
         end
         object PostRadioButton: TRadioButton
           AnchorSideLeft.Control = FIORadioButton
           AnchorSideLeft.Side = asrBottom
           AnchorSideTop.Control = StaffOrderToolPanel
           AnchorSideTop.Side = asrCenter
-          Left = 291
-          Height = 24
-          Top = 6
-          Width = 97
-          BorderSpacing.Left = 6
+          Left = 237
+          Height = 19
+          Top = 5
+          Width = 79
+          BorderSpacing.Left = 5
           Caption = 'должности'
           TabOrder = 0
+          OnClick = PostRadioButtonClick
         end
         object TabNumRadioButton: TRadioButton
           AnchorSideLeft.Control = PostRadioButton
           AnchorSideLeft.Side = asrBottom
           AnchorSideTop.Control = StaffOrderToolPanel
           AnchorSideTop.Side = asrCenter
-          Left = 394
-          Height = 24
-          Top = 6
-          Width = 161
-          BorderSpacing.Left = 6
+          Left = 321
+          Height = 19
+          Top = 5
+          Width = 129
+          BorderSpacing.Left = 5
           Caption = 'табельному номеру'
           TabOrder = 2
+          OnClick = TabNumRadioButtonClick
         end
         object OrderButtonPanel: TPanel
           Left = 0
-          Height = 36
+          Height = 28
           Top = 0
-          Width = 101
+          Width = 82
           Align = alLeft
           AutoSize = True
           BevelOuter = bvNone
-          ClientHeight = 36
-          ClientWidth = 101
+          ClientHeight = 28
+          ClientWidth = 82
           TabOrder = 3
           object AscendingButton: TSpeedButton
             Cursor = crHandPoint
             Left = 0
-            Height = 36
+            Height = 28
             Hint = 'Изменить порядок сортировки'
             Top = 0
-            Width = 40
+            Width = 32
             Align = alLeft
             Images = Images.PX24
             ImageIndex = 15
             Visible = False
             ShowHint = True
             ParentShowHint = False
+            OnClick = AscendingButtonClick
           end
           object DescendingButton: TSpeedButton
             Cursor = crHandPoint
-            Left = 40
-            Height = 36
+            Left = 32
+            Height = 28
             Hint = 'Изменить порядок сортировки'
             Top = 0
-            Width = 40
+            Width = 32
             Align = alLeft
             Images = Images.PX24
             ImageIndex = 16
             ShowHint = True
             ParentShowHint = False
+            OnClick = DescendingButtonClick
           end
           object DividerBevel4: TDividerBevel
-            Left = 80
-            Height = 36
+            Left = 64
+            Height = 28
             Top = 0
-            Width = 21
+            Width = 18
             Caption = 'DividerBevel4'
             Align = alLeft
             BevelWidth = 2
@@ -308,9 +312,9 @@ object SIZStaffForm: TSIZStaffForm
       end
       object StaffCaptionPanel: TPanel
         Left = 0
-        Height = 30
+        Height = 24
         Top = 0
-        Width = 580
+        Width = 464
         Align = alTop
         Alignment = taLeftJustify
         BorderSpacing.Bottom = 2
@@ -323,41 +327,41 @@ object SIZStaffForm: TSIZStaffForm
       end
     end
     object StaffSplitter: TSplitter
-      Left = 582
-      Height = 436
+      Left = 466
+      Height = 348
       Top = 0
-      Width = 6
+      Width = 5
       ResizeStyle = rsLine
     end
     object CardPanel: TPanel
-      Left = 588
-      Height = 432
+      Left = 471
+      Height = 344
       Top = 2
-      Width = 292
+      Width = 232
       Align = alClient
       BorderSpacing.Top = 2
       BorderSpacing.Right = 2
       BorderSpacing.Bottom = 2
       BevelOuter = bvNone
-      ClientHeight = 432
-      ClientWidth = 292
+      ClientHeight = 344
+      ClientWidth = 232
       TabOrder = 2
       object CardListPanel: TPanel
         Left = 0
-        Height = 240
+        Height = 192
         Top = 0
-        Width = 292
+        Width = 232
         Align = alTop
         BevelOuter = bvNone
         Caption = 'CardListPanel'
-        ClientHeight = 240
-        ClientWidth = 292
+        ClientHeight = 192
+        ClientWidth = 232
         TabOrder = 0
         object CardListCaptionPanel: TPanel
           Left = 0
-          Height = 30
+          Height = 24
           Top = 0
-          Width = 292
+          Width = 232
           Align = alTop
           Alignment = taLeftJustify
           BorderSpacing.Bottom = 2
@@ -370,33 +374,33 @@ object SIZStaffForm: TSIZStaffForm
         end
         object CardListVT: TVirtualStringTree
           Left = 0
-          Height = 208
-          Top = 32
-          Width = 292
+          Height = 166
+          Top = 26
+          Width = 232
           Align = alClient
           DefaultText = 'Node'
           Header.AutoSizeIndex = 0
           Header.Columns = <>
           Header.MainColumn = -1
-          Margin = 50
+          Margin = 40
           TabOrder = 1
         end
       end
       object CardSplitter: TSplitter
         Cursor = crVSplit
         Left = 0
-        Height = 6
-        Top = 240
-        Width = 292
+        Height = 5
+        Top = 192
+        Width = 232
         Align = alTop
         ResizeAnchor = akTop
         ResizeStyle = rsLine
       end
       object FormPanel: TPanel
         Left = 0
-        Height = 186
-        Top = 246
-        Width = 292
+        Height = 147
+        Top = 197
+        Width = 232
         Align = alClient
         BevelOuter = bvNone
         Caption = 'FormPanel'
