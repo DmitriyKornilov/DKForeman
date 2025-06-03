@@ -139,12 +139,12 @@
         <UnitName Value="UTimetableForm"/>
       </Unit>
       <Unit>
-        <Filename Value="forms\siz\usizform.pas"/>
+        <Filename Value="forms\siz\usizstorageform.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="SIZForm"/>
+        <ComponentName Value="SIZStorageForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <UnitName Value="USIZForm"/>
+        <UnitName Value="USIZStorageForm"/>
       </Unit>
       <Unit>
         <Filename Value="forms\sso\ussoform.pas"/>
@@ -421,6 +421,7 @@
         <Filename Value="forms\siz\usizsizeform.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="SIZSizeForm"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="USIZSizeForm"/>
       </Unit>
@@ -430,6 +431,13 @@
         <ComponentName Value="SIZSizeEditForm"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="USIZSizeEditForm"/>
+      </Unit>
+      <Unit>
+        <Filename Value="forms\siz\usizstaffform.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="SIZStaffForm"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="USIZStaffForm"/>
       </Unit>
     </Units>
   </ProjectOptions>

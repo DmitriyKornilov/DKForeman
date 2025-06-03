@@ -17,7 +17,7 @@ uses
   UStaffForm,
   UCalendarForm, UScheduleShiftForm, UVacationPlanForm,
   USchedulePersonalForm, UTimetableForm,
-  USIZNormForm, USIZSizeForm, USIZForm,
+  USIZNormForm, USIZSizeForm, USIZStaffForm, USIZStorageForm,
   USSOForm,
   UStudyForm;
 
@@ -55,7 +55,7 @@ type
     VacationPlaneMenuItem: TMenuItem;
     PersonalScheduleMenuItem: TMenuItem;
     TimetableMenuItem: TMenuItem;
-    SIZCardsMenuItem: TMenuItem;
+    SIZStaffMenuItem: TMenuItem;
     SSOCardsMenuItem: TMenuItem;
     StudyMenuItem: TMenuItem;
     DictionaryMenu: TPopupMenu;
@@ -84,7 +84,7 @@ type
     procedure SettingButtonClick(Sender: TObject);
     procedure ShiftScheduleMenuItemClick(Sender: TObject);
     procedure SIZListMenuItemClick(Sender: TObject);
-    procedure SIZCardsMenuItemClick(Sender: TObject);
+    procedure SIZStaffMenuItemClick(Sender: TObject);
     procedure SIZNormsMenuItemClick(Sender: TObject);
     procedure SIZReasonMenuItemClick(Sender: TObject);
     procedure SIZSizesMenuItemClick(Sender: TObject);
@@ -189,9 +189,10 @@ begin
     5: (CategoryForm as TSchedulePersonalForm).ViewUpdate(ModeType);
     6: (CategoryForm as TTimetableForm).ViewUpdate(ModeType);
     7: (CategoryForm as TSIZNormForm).ViewUpdate(ModeType);
-    8: ;
-    9: ;
+    8: ; //SIZStorage
+    9: ; //SIZRequest
     10: (CategoryForm as TSIZSizeForm).ViewUpdate(ModeType);
+    11: (CategoryForm as TSIZStaffForm).ViewUpdate(ModeType);
   end;
 
 end;
@@ -209,9 +210,10 @@ begin
     5: (CategoryForm as TSchedulePersonalForm).SettingsSave;
     6: (CategoryForm as TTimetableForm).SettingsSave;
     //7: TSIZNormForm   - no settings
-    8: ;
-    9: ;
+    8: ; //SIZStorage
+    9: ; //SIZRequest
     10: (CategoryForm as TSIZSizeForm).SettingsSave;
+    11: (CategoryForm as TSIZStaffForm).SettingsSave;
   end;
 end;
 
@@ -236,10 +238,10 @@ begin
       5: CategoryForm:= FormOnPanelCreate(TSchedulePersonalForm, MainPanel);
       6: CategoryForm:= FormOnPanelCreate(TTimetableForm, MainPanel);
       7: CategoryForm:= FormOnPanelCreate(TSIZNormForm, MainPanel);
-      //7: CategoryForm:= FormOnPanelCreate(TSIZForm, MainPanel);
-      //8: CategoryForm:= FormOnPanelCreate(TSSOForm, MainPanel);
-      //9: CategoryForm:= FormOnPanelCreate(TStudyForm, MainPanel);
+      //8: CategoryForm:= FormOnPanelCreate(TSIZStorageForm, MainPanel);
+      //9: CategoryForm:= FormOnPanelCreate(TSIZReaquestForm, MainPanel);
       10: CategoryForm:= FormOnPanelCreate(TSIZSizeForm, MainPanel);
+      11: CategoryForm:= FormOnPanelCreate(TSIZStaffForm, MainPanel);
     end;
     if Assigned(CategoryForm) then
     begin
@@ -456,11 +458,6 @@ begin
   CategorySelect(7);
 end;
 
-procedure TMainForm.SIZCardsMenuItemClick(Sender: TObject);
-begin
-  //CategorySelect(7);
-end;
-
 procedure TMainForm.SSOCardsMenuItemClick(Sender: TObject);
 begin
   //CategorySelect(8);
@@ -474,6 +471,11 @@ end;
 procedure TMainForm.SIZSizesMenuItemClick(Sender: TObject);
 begin
   CategorySelect(10);
+end;
+
+procedure TMainForm.SIZStaffMenuItemClick(Sender: TObject);
+begin
+  CategorySelect(11);
 end;
 
 procedure TMainForm.RefreshButtonClick(Sender: TObject);

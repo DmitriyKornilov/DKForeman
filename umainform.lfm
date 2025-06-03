@@ -266,10 +266,10 @@ object MainForm: TMainForm
       ImageIndex = 39
       OnClick = SIZSizesMenuItemClick
     end
-    object SIZCardsMenuItem: TMenuItem
+    object SIZStaffMenuItem: TMenuItem
       Caption = 'Учет выдачи средств индивидуальной защиты'
       ImageIndex = 34
-      OnClick = SIZCardsMenuItemClick
+      OnClick = SIZStaffMenuItemClick
     end
     object Separator3: TMenuItem
       Caption = '-'
