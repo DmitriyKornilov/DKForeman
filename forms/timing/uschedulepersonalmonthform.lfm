@@ -7,6 +7,7 @@ object SchedulePersonalMonthForm: TSchedulePersonalMonthForm
   ClientHeight = 561
   ClientWidth = 1249
   DesignTimePPI = 120
+  LCLVersion = '4.0.0.4'
   WindowState = wsMaximized
   OnCreate = FormCreate
   OnDestroy = FormDestroy
@@ -22,8 +23,8 @@ object SchedulePersonalMonthForm: TSchedulePersonalMonthForm
     BorderSpacing.Right = 2
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 36
-    ClientWidth = 1241
+    ClientHeight = 40
+    ClientWidth = 1245
     ParentFont = False
     TabOrder = 0
     object ListToolPanel: TPanel
@@ -460,8 +461,8 @@ object SchedulePersonalMonthForm: TSchedulePersonalMonthForm
       BorderSpacing.Top = 2
       BevelOuter = bvNone
       BorderStyle = bsSingle
-      ClientHeight = 36
-      ClientWidth = 1241
+      ClientHeight = 40
+      ClientWidth = 1245
       TabOrder = 0
       object OrderLabel: TLabel
         AnchorSideLeft.Control = ListOrderToolPanel
@@ -608,8 +609,8 @@ object SchedulePersonalMonthForm: TSchedulePersonalMonthForm
         BorderSpacing.Bottom = 2
         BevelOuter = bvNone
         BorderStyle = bsSingle
-        ClientHeight = 388
-        ClientWidth = 885
+        ClientHeight = 392
+        ClientWidth = 889
         Color = clWhite
         ParentBackground = False
         ParentColor = False
@@ -676,9 +677,10 @@ object SchedulePersonalMonthForm: TSchedulePersonalMonthForm
         Left = 0
         Height = 30
         Top = 0
-        Width = 891
+        Width = 889
         Align = alTop
         Alignment = taLeftJustify
+        BorderSpacing.Right = 2
         BorderSpacing.Bottom = 2
         BevelOuter = bvNone
         BorderStyle = bsSingle

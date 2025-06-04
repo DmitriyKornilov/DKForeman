@@ -136,17 +136,16 @@ object StaffForm: TStaffForm
     ClientWidth = 832
     TabOrder = 3
     object ListPanel: TPanel
-      Left = 2
+      Left = 0
       Height = 411
       Top = 2
-      Width = 610
+      Width = 612
       Align = alClient
-      BorderSpacing.Left = 2
       BorderSpacing.Top = 2
       BorderSpacing.Bottom = 2
       BevelOuter = bvNone
       ClientHeight = 411
-      ClientWidth = 610
+      ClientWidth = 612
       ParentBackground = False
       ParentColor = False
       TabOrder = 0
@@ -154,7 +153,7 @@ object StaffForm: TStaffForm
         Left = 0
         Height = 295
         Top = 74
-        Width = 610
+        Width = 612
         Align = alClient
         DefaultNodeHeight = 25
         DefaultText = 'Node'
@@ -168,13 +167,13 @@ object StaffForm: TStaffForm
         Left = 0
         Height = 40
         Top = 32
-        Width = 610
+        Width = 612
         Align = alTop
         BorderSpacing.Bottom = 2
         BevelOuter = bvNone
         BorderStyle = bsSingle
         ClientHeight = 36
-        ClientWidth = 606
+        ClientWidth = 608
         ParentBackground = False
         ParentColor = False
         ParentFont = False
@@ -228,7 +227,7 @@ object StaffForm: TStaffForm
           Left = 141
           Height = 36
           Top = 0
-          Width = 465
+          Width = 467
           Align = alClient
           AutoSize = True
           BevelOuter = bvNone
@@ -253,13 +252,13 @@ object StaffForm: TStaffForm
         Left = 0
         Height = 40
         Top = 371
-        Width = 610
+        Width = 612
         Align = alBottom
         BorderSpacing.Top = 2
         BevelOuter = bvNone
         BorderStyle = bsSingle
         ClientHeight = 36
-        ClientWidth = 606
+        ClientWidth = 608
         TabOrder = 2
         object OrderLabel: TLabel
           AnchorSideLeft.Control = OrderButtonPanel
@@ -360,7 +359,7 @@ object StaffForm: TStaffForm
         Left = 0
         Height = 30
         Top = 0
-        Width = 610
+        Width = 612
         Align = alTop
         Alignment = taLeftJustify
         BorderSpacing.Bottom = 2

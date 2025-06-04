@@ -24,13 +24,12 @@ type
     DividerBevel1: TDividerBevel;
     DividerBevel2: TDividerBevel;
     DividerBevel3: TDividerBevel;
-    DividerBevel4: TDividerBevel;
-    ExportButton: TSpeedButton;
-    PlanButton: TSpeedButton;
-    FilterPanel: TPanel;
-    LeftSplitter: TSplitter;
+    DividerBevel5: TDividerBevel;
     EditButton: TSpeedButton;
-    ListToolPanel: TPanel;
+    ExportButton: TSpeedButton;
+    FilterPanel: TPanel;
+    PlanButton: TSpeedButton;
+    SettingSplitter: TSplitter;
     MainPanel: TPanel;
     SettingCaptionPanel: TPanel;
     ListCaptionPanel: TPanel;
@@ -125,7 +124,7 @@ begin
   ModeType:= mtView;
 
   SetToolPanels([
-    ToolPanel, ListToolPanel
+    ToolPanel
   ]);
   SetCaptionPanels([
     SettingCaptionPanel, ListCaptionPanel
@@ -379,16 +378,17 @@ begin
     if ModeType=mtSetting then
     begin
       SettingPanel.Visible:= True;
-      LeftSplitter.Visible:= True;
+      SettingSplitter.Visible:= True;
     end
     else begin
-      LeftSplitter.Visible:= False;
+      SettingSplitter.Visible:= False;
       SettingPanel.Visible:= False;
     end;
 
     StaffList.CanUnselect:= ModeType<>mtEditing;
     StaffList.CanSelect:= ModeType=mtEditing;
-    ListToolPanel.Visible:= ModeType=mtEditing;
+    EditButton.Visible:= ModeType=mtEditing;
+    ExportButton.Visible:= ModeType<>mtEditing;
 
     MainPanel.BorderSpacing.Left:= 2*Ord(ModeType<>mtSetting);
 

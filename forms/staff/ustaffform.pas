@@ -880,6 +880,7 @@ begin
     end;
 
     ListPanel.BorderSpacing.Right:= 2*Ord(ModeType<>mtEditing);
+    MainPanel.BorderSpacing.Left:= 2*Ord(ModeType<>mtSetting);
 
     StaffList.CanUnselect:= ModeType<>mtEditing;
     StaffList.CanSelect:= ModeType=mtEditing;

@@ -339,6 +339,8 @@ begin
     ExportButton.Visible:= ModeType<>mtEditing;
     EditButton.Visible:= ModeType=mtEditing;
 
+    MainPanel.BorderSpacing.Left:= 2*Ord(ModeType<>mtSetting);
+
     SizeListLoad;
 
   finally

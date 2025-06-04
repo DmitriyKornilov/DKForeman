@@ -70,6 +70,10 @@ type
     //RecrutDates, DismissDates: TDateVector;
     Families, Names, Patronymics, TabNums, PostNames: TStrVector;
 
+    ItemIDs: TIntVector;
+    CardPostNames, NormNames, ItemNames: TStrVector;
+    CardBDs, CardEDs: TDateVector;
+
     procedure ParamListCreate;
 
     procedure StaffListCreate;
@@ -78,6 +82,7 @@ type
     procedure StaffListSelect;
 
     procedure CardListCreate;
+    procedure CardListLoad;
     procedure CardListSelect;
 
     procedure SettingsLoad;
@@ -248,6 +253,8 @@ begin
 
   CardListCaptionPanel.Caption:= CardListCaptionPanel.Caption + ': ' +
                                 StaffLongNames[StaffList.SelectedIndex];
+
+  CardListLoad;
 end;
 
 procedure TSIZStaffForm.CardListCreate;
@@ -265,6 +272,28 @@ begin
   CardList.AddColumn('Типовые нормы', 300);
   CardList.AutosizeColumnEnable('Типовые нормы');
   CardList.Draw;
+end;
+
+procedure TSIZStaffForm.CardListLoad;
+begin
+  if not StaffList.IsSelected then Exit;
+
+  DataBase.SIZPersonalCardListLoad(TabNumIDs[StaffList.SelectedIndex],
+                                   ItemIDs, CardPostNames, NormNames, ItemNames,
+                                   CardBDs, CardEDs);
+
+  CardList.Visible:= False;
+  try
+    CardList.ValuesClear;
+    CardList.SetColumn('Период действия', VPeriodToStr(CardBDs, CardEDs){, taLeftJustify});
+    CardList.SetColumn('Должность (профессия)', CardPostNames, taLeftJustify);
+    CardList.SetColumn('Пункт', ItemNames);
+    CardList.SetColumn('Типовые нормы', NormNames, taLeftJustify);
+    CardList.Draw;
+    CardList.Select(0);
+  finally
+    CardList.Visible:= True;
+  end;
 end;
 
 procedure TSIZStaffForm.CardListSelect;
@@ -297,6 +326,8 @@ begin
       SettingSplitter.Visible:= False;
       SettingPanel.Visible:= False;
     end;
+
+    MainPanel.BorderSpacing.Left:= 2*Ord(ModeType<>mtSetting);
 
     StaffListLoad;
 

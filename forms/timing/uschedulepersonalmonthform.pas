@@ -546,7 +546,7 @@ procedure TSchedulePersonalMonthForm.StaffListLoad;
 begin
   if not CanLoadAndDraw then Exit;
 
-  ScheduleCaptionPanel.Caption:= 'График работы на ' + MonthDropDown.Text + ' ' +
+  ScheduleCaptionPanel.Caption:= '  График работы на ' + MonthDropDown.Text + ' ' +
                                  YearSpinEdit.Text + ' года';
 
   VStaffList.Visible:= False;

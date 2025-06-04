@@ -319,6 +319,11 @@ procedure TSIZNormForm.NormListSelect;
 begin
   NormButtonsEnabled;
   NormItemListLoad;
+
+  ItemCaptionPanel.Caption:= '  Пункты типовых норм';
+  if NormList.IsSelected then
+    ItemCaptionPanel.Caption:= ItemCaptionPanel.Caption + ': ' +
+                               NormNames[NormList.SelectedIndex];
 end;
 
 procedure TSIZNormForm.NormListDelItem;

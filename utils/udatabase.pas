@@ -7,7 +7,8 @@ interface
 uses
   Classes, SysUtils, DateUtils,
   //Project utils
-  UCalendar, UConst, USchedule, UTimetable, UWorkHours, USIZTypes, USIZSizes,
+  UCalendar, UConst, USchedule, UTimetable, UWorkHours,
+  USIZTypes, USIZSizes, USIZUtils,
   //DK packages utils
   DK_SQLite3, DK_SQLUtils, DK_Vector, DK_Matrix, DK_StrUtils, DK_Const,
   DK_DateUtils, DK_VSTDropDown;
@@ -593,21 +594,27 @@ type
                                 ЛИЧНЫЕ КАРТОЧКИ СИЗ
     **************************************************************************)
 
-  {Cписок сотрудников
+    {Cписок сотрудников
      AListType - включать в список 0-всех, 1-работающих на текущую дату, 2-уволенных
      AOrderType - сортировка: 0-ФИО, 1-табельный номер, 2-должность
      AIsDescOrder=True - сортировка по убыванию, False - по возрастанию
      AFilterValue - фильтр по Ф.И.О.
      True - ОК, False - список пуст}
-  function SIZStaffListForPersonalCardsLoad(const AFilterValue: String;
+    function SIZStaffListForPersonalCardsLoad(const AFilterValue: String;
                              const AListType, AOrderType: Byte;
                              const AIsDescOrder: Boolean;
                              out ATabNumIDs: TIntVector;
                              out AFs, ANs, APs, ATabNums, APostNames: TStrVector): Boolean;
 
+    function SIZPersonalCardDataLoad(const ATabNumID: Integer;
+                 out AItemIDs: TIntVector;
+                 out APostNames, ANormNames, ATypicalNames, AItemNames: TStrVector;
+                 out ATabNumBDs, ATabNumEDs, ANormBDs, ANormEDs: TDateVector): Boolean;
 
-
-
+    function SIZPersonalCardListLoad(const ATabNumID: Integer;
+                 out AItemIDs: TIntVector;
+                 out APostNames, ANormNames, AItemNames: TStrVector;
+                 out ACardBDs, ACardEDs: TDateVector): Boolean;
   end;
 
 
@@ -5153,6 +5160,114 @@ begin
   APs:= VReplace(APs, Indexes);
   ATabNums:= VReplace(ATabNums, Indexes);
   APostNames:= VReplace(APostNames, Indexes);
+end;
+
+function TDataBase.SIZPersonalCardDataLoad(const ATabNumID: Integer;
+                 out AItemIDs: TIntVector;
+                 out APostNames, ANormNames, ATypicalNames, AItemNames: TStrVector;
+                 out ATabNumBDs, ATabNumEDs, ANormBDs, ANormEDs: TDateVector): Boolean;
+begin
+  Result:= False;
+
+  AItemIDs:= nil;
+  APostNames:= nil;
+  ANormNames:= nil;
+  ATypicalNames:= nil;
+  AItemNames:= nil;
+  ATabNumBDs:= nil;
+  ATabNumEDs:= nil;
+  ANormBDs:= nil;
+  ANormEDs:= nil;
+
+  QSetQuery(FQuery);
+  QSetSQL(
+    'SELECT t1.FirstDate, t1.LastDate, t2.PostName, t3.ItemID, t4.ItemName, ' +
+           't5.NormName, t5.TypicalName, t5.BeginDate, t5.EndDate ' +
+    'FROM STAFFPOSTLOG t1 ' +
+    'INNER JOIN STAFFPOST t2 ON (t1.PostID=t2.PostID) ' +
+    'INNER JOIN SIZNORMITEMPOST t3 ON (t1.PostID=t3.PostID) ' +
+    'INNER JOIN SIZNORMITEM t4 ON (t3.ItemID=t4.ItemID) '  +
+    'INNER JOIN SIZNORM t5 ON (t4.NormID=t5.NormID) ' +
+    'WHERE (t1.TabNumID=:TabNumID) AND (t1.PostTemp=0) AND (' +
+            SqlCROSS('t1.FirstDate', 't1.LastDate', 't5.BeginDate', 't5.EndDate') + ') ' +
+    'ORDER BY t1.FirstDate DESC, t5.BeginDate DESC');
+  QParamInt('TabNumID', ATabNumID);
+  QOpen;
+  if not QIsEmpty then
+  begin
+    QFirst;
+    while not QEOF do
+    begin
+      VAppend(AItemIDs, QFieldInt('ItemID'));
+      VAppend(APostNames, QFieldStr('PostName'));
+      VAppend(ANormNames, QFieldStr('NormName'));
+      VAppend(ATypicalNames, QFieldStr('TypicalName'));
+      VAppend(AItemNames, QFieldStr('ItemName'));
+      VAppend(ATabNumBDs, QFieldDT('FirstDate'));
+      VAppend(ATabNumEDs, QFieldDT('LastDate'));
+      VAppend(ANormBDs, QFieldDT('BeginDate'));
+      VAppend(ANormEDs, QFieldDT('EndDate'));
+      QNext;
+    end;
+    Result:= True;
+  end;
+  QClose;
+end;
+
+function TDataBase.SIZPersonalCardListLoad(const ATabNumID: Integer;
+                 out AItemIDs: TIntVector;
+                 out APostNames, ANormNames, AItemNames: TStrVector;
+                 out ACardBDs, ACardEDs: TDateVector): Boolean;
+var
+  ItemIDs: TIntVector;
+  PostNames, NormNames, TypicalNames, ItemNames: TStrVector;
+  TabNumBDs, TabNumEDs, NormBDs, NormEDs: TDateVector;
+  i: Integer;
+begin
+  Result:= False;
+
+  AItemIDs:= nil;
+  APostNames:= nil;
+  ANormNames:= nil;
+  AItemNames:= nil;
+  ACardBDs:= nil;
+  ACardEDs:= nil;
+
+  if ATabNumID<=0 then Exit; //еще не назначен таб номер
+
+  Result:= SIZPersonalCardDataLoad(ATabNumID, ItemIDs,
+                                  PostNames, NormNames, TypicalNames, ItemNames,
+                                  TabNumBDs, TabNumEDs, NormBDs, NormEDs);
+  if not Result then Exit;
+
+  for i:= High(ItemIDs) downto 0 do
+  begin
+    VIns(AItemIDs, 0, ItemIDs[i]);
+    VIns(AItemNames, 0, ItemNames[i]);
+    VIns(APostNames, 0, PostNames[i]);
+    VIns(ANormNames, 0, SIZNormFullName(NormNames[i], TypicalNames[i]));
+    VIns(ACardBDs, 0, MaxDate(TabNumBDs[i], NormBDs[i]));
+    VIns(ACardEDs, 0, MinDate(TabNumEDs[i], NormEDs[i]));
+  end;
+
+  for i:= 1 to High(ItemIDs) do
+    ACardEDs[i]:= IncDay(ACardBDs[i-1], -1);
+
+  i:= High(AItemIDs)-1;
+  while i>=0 do
+  begin
+    if (AItemIDs[i]=AItemIDs[i+1]) and (APostNames[i]=APostNames[i+1]) then
+    begin
+      ACardEDs[i+1]:= ACardEDs[i];
+      VDel(AItemIDs, i);
+      VDel(AItemNames, i);
+      VDel(APostNames, i);
+      VDel(ANormNames, i);
+      VDel(ACardBDs, i);
+      VDel(ACardEDs, i);
+    end;
+    i:= i-1;
+  end;
 end;
 
 end.

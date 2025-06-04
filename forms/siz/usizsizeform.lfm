@@ -164,18 +164,17 @@ object SIZSizeForm: TSIZSizeForm
     Visible = False
   end
   object MainPanel: TPanel
-    Left = 310
+    Left = 308
     Height = 365
     Top = 44
-    Width = 590
+    Width = 592
     Align = alClient
-    BorderSpacing.Left = 2
     BorderSpacing.Top = 2
     BorderSpacing.Right = 2
     BorderSpacing.Bottom = 2
     BevelOuter = bvNone
     ClientHeight = 365
-    ClientWidth = 590
+    ClientWidth = 592
     ParentBackground = False
     ParentColor = False
     TabOrder = 3
@@ -183,7 +182,7 @@ object SIZSizeForm: TSIZSizeForm
       Left = 0
       Height = 365
       Top = 0
-      Width = 590
+      Width = 592
       Align = alClient
       DefaultNodeHeight = 25
       DefaultText = 'Node'

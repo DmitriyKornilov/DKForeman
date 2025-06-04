@@ -2,10 +2,10 @@ object VacationPlanForm: TVacationPlanForm
   Left = 499
   Height = 557
   Top = 182
-  Width = 975
+  Width = 1302
   Caption = 'VacationPlanForm'
   ClientHeight = 557
-  ClientWidth = 975
+  ClientWidth = 1302
   DesignTimePPI = 120
   OnCreate = FormCreate
   OnDestroy = FormDestroy
@@ -14,7 +14,7 @@ object VacationPlanForm: TVacationPlanForm
     Left = 2
     Height = 40
     Top = 2
-    Width = 971
+    Width = 1298
     Align = alTop
     BorderSpacing.Left = 2
     BorderSpacing.Top = 2
@@ -22,7 +22,7 @@ object VacationPlanForm: TVacationPlanForm
     BevelOuter = bvNone
     BorderStyle = bsSingle
     ClientHeight = 36
-    ClientWidth = 967
+    ClientWidth = 1294
     ParentFont = False
     TabOrder = 0
     object YearPanel: TPanel
@@ -56,7 +56,7 @@ object VacationPlanForm: TVacationPlanForm
       end
     end
     object DividerBevel1: TDividerBevel
-      Left = 906
+      Left = 1233
       Height = 36
       Top = 0
       Width = 21
@@ -69,7 +69,7 @@ object VacationPlanForm: TVacationPlanForm
     end
     object CloseButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 927
+      Left = 1254
       Height = 36
       Hint = 'Закрыть'
       Top = 0
@@ -94,7 +94,7 @@ object VacationPlanForm: TVacationPlanForm
       ParentFont = False
     end
     object DividerBevel3: TDividerBevel
-      Left = 195
+      Left = 449
       Height = 36
       Top = 0
       Width = 21
@@ -107,7 +107,7 @@ object VacationPlanForm: TVacationPlanForm
     end
     object ExportButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 86
+      Left = 981
       Height = 36
       Hint = 'Экспорт в формат электронной таблицы XLSX или ODS'
       Top = 0
@@ -125,7 +125,7 @@ object VacationPlanForm: TVacationPlanForm
     end
     object ScheduleButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 374
+      Left = 244
       Height = 36
       Hint = 'График отпусков по форме Т-7'
       Top = 0
@@ -143,7 +143,7 @@ object VacationPlanForm: TVacationPlanForm
     end
     object PlanButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 216
+      Left = 86
       Height = 36
       Hint = 'Планирование отпусков на год'
       Top = 0
@@ -159,79 +159,60 @@ object VacationPlanForm: TVacationPlanForm
       ParentShowHint = False
       OnClick = PlanButtonClick
     end
+    object FilterPanel: TPanel
+      Left = 470
+      Height = 36
+      Top = 0
+      Width = 450
+      Align = alLeft
+      BevelOuter = bvNone
+      Caption = 'FilterPanel'
+      ParentBackground = False
+      TabOrder = 1
+    end
+    object DividerBevel5: TDividerBevel
+      Left = 920
+      Height = 36
+      Top = 0
+      Width = 21
+      Caption = 'DividerBevel5'
+      Align = alLeft
+      BevelWidth = 2
+      Font.Style = [fsBold]
+      Orientation = trVertical
+      ParentFont = False
+    end
+    object EditButton: TSpeedButton
+      Cursor = crHandPoint
+      Left = 941
+      Height = 36
+      Hint = 'Редактировать'
+      Top = 0
+      Width = 40
+      Align = alLeft
+      Enabled = False
+      Images = Images.PX24
+      ImageIndex = 6
+      ShowHint = True
+      ParentShowHint = False
+      OnClick = EditButtonClick
+    end
   end
   object MainPanel: TPanel
     Left = 308
     Height = 515
     Top = 42
-    Width = 667
+    Width = 994
     Align = alClient
     BevelOuter = bvNone
     ClientHeight = 515
-    ClientWidth = 667
+    ClientWidth = 994
     TabOrder = 1
-    object ListToolPanel: TPanel
-      Left = 0
-      Height = 40
-      Top = 34
-      Width = 665
-      Align = alTop
-      BorderSpacing.Top = 2
-      BorderSpacing.Right = 2
-      BorderSpacing.Bottom = 2
-      BevelOuter = bvNone
-      BorderStyle = bsSingle
-      ClientHeight = 36
-      ClientWidth = 661
-      ParentBackground = False
-      ParentColor = False
-      ParentFont = False
-      TabOrder = 0
-      Visible = False
-      object EditButton: TSpeedButton
-        Cursor = crHandPoint
-        Left = 0
-        Height = 36
-        Hint = 'Редактировать'
-        Top = 0
-        Width = 40
-        Align = alLeft
-        Enabled = False
-        Images = Images.PX24
-        ImageIndex = 6
-        ShowHint = True
-        ParentShowHint = False
-        OnClick = EditButtonClick
-      end
-      object FilterPanel: TPanel
-        Left = 61
-        Height = 36
-        Top = 0
-        Width = 600
-        Align = alLeft
-        BevelOuter = bvNone
-        Caption = 'FilterPanel'
-        ParentBackground = False
-        TabOrder = 0
-      end
-      object DividerBevel4: TDividerBevel
-        Left = 40
-        Height = 36
-        Top = 0
-        Width = 21
-        Caption = 'DividerBevel3'
-        Align = alLeft
-        BevelWidth = 2
-        Font.Style = [fsBold]
-        Orientation = trVertical
-        ParentFont = False
-      end
-    end
     object VT: TVirtualStringTree
       Left = 0
-      Height = 437
-      Top = 76
-      Width = 665
+      Height = 479
+      Top = 34
+      Width = 992
       Align = alClient
       BorderSpacing.Top = 2
       BorderSpacing.Right = 2
@@ -241,14 +222,14 @@ object VacationPlanForm: TVacationPlanForm
       Header.AutoSizeIndex = 0
       Header.Columns = <>
       Header.MainColumn = -1
-      TabOrder = 1
+      TabOrder = 0
       OnDblClick = VTDblClick
     end
     object ListCaptionPanel: TPanel
       Left = 0
       Height = 30
       Top = 2
-      Width = 665
+      Width = 992
       Align = alTop
       Alignment = taLeftJustify
       BorderSpacing.Top = 2
@@ -262,7 +243,7 @@ object VacationPlanForm: TVacationPlanForm
       ParentBackground = False
       ParentColor = False
       ParentFont = False
-      TabOrder = 2
+      TabOrder = 1
     end
   end
   object SettingPanel: TPanel
@@ -312,7 +293,7 @@ object VacationPlanForm: TVacationPlanForm
       TabOrder = 1
     end
   end
-  object LeftSplitter: TSplitter
+  object SettingSplitter: TSplitter
     Left = 302
     Height = 515
     Top = 42
