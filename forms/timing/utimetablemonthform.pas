@@ -502,6 +502,8 @@ begin
 end;
 
 procedure TTimetableMonthForm.StaffListCreate;
+var
+  i: Integer;
 begin
   VStaffList:= TVSTCheckTable.Create(VStaffListVT);
   VStaffList.OnSelect:= @VStaffListSelect;
@@ -509,12 +511,9 @@ begin
   VStaffList.SetSingleFont(MainForm.GridFont);
   VStaffList.SelectedBGColor:= VStaffListVT.Color;
   VStaffList.HeaderFont.Style:= [fsBold];
-  VStaffList.AddColumn('Фамилия И.О.', 200);
-  VStaffList.AddColumn('Табельный номер', 150);
-  VStaffList.AddColumn('Должность', 300);
-  VStaffList.AddColumn('В должности', 150);
-  VStaffList.AddColumn('График', 200);
-  VStaffList.AddColumn('В графике', 150);
+  for i:= 0 to High(TIMING_MONTH_STAFFLIST_COLUMN_NAMES) do
+    VStaffList.AddColumn(TIMING_MONTH_STAFFLIST_COLUMN_NAMES[i],
+                         TIMING_MONTH_STAFFLIST_COLUMN_WIDTHS[i]);
   VStaffList.AutosizeColumnDisable;
   VStaffList.Draw;
 
@@ -524,12 +523,9 @@ begin
   MStaffList.StopSelectEventWhileCheckAll:= True;
   MStaffList.SetSingleFont(MainForm.GridFont);
   MStaffList.HeaderFont.Style:= [fsBold];
-  MStaffList.AddColumn('Фамилия И.О.', 200);
-  MStaffList.AddColumn('Табельный номер', 150);
-  MStaffList.AddColumn('Должность', 300);
-  MStaffList.AddColumn('В должности', 150);
-  MStaffList.AddColumn('График', 200);
-  MStaffList.AddColumn('В графике', 150);
+  for i:= 0 to High(TIMING_MONTH_STAFFLIST_COLUMN_NAMES) do
+    MStaffList.AddColumn(TIMING_MONTH_STAFFLIST_COLUMN_NAMES[i],
+                         TIMING_MONTH_STAFFLIST_COLUMN_WIDTHS[i]);
   MStaffList.AutosizeColumnDisable;
   MStaffList.Draw;
 end;
@@ -575,12 +571,12 @@ procedure TTimetableMonthForm.StaffListLoad;
                      MRecrutDates, MDismissDates, MPostBDs, MPostEDs, MScheduleBDs, MScheduleEDs,
                      False{short names});
     MStaffList.SetCategories(CategoryNames);
-    MStaffList.SetColumn('Фамилия И.О.', MStaffNames, taLeftJustify);
-    MStaffList.SetColumn('Табельный номер', MTabNums);
-    MStaffList.SetColumn('Должность', MPostNames, taLeftJustify);
-    MStaffList.SetColumn('В должности', MPeriodToStr(MPostBDs, MPostEDs), taLeftJustify);
-    MStaffList.SetColumn('График', MScheduleNames, taLeftJustify);
-    MStaffList.SetColumn('В графике', MPeriodToStr(MScheduleBDs, MScheduleEDs), taLeftJustify);
+    MStaffList.SetColumn(TIMING_MONTH_STAFFLIST_COLUMN_NAMES[0], MStaffNames, taLeftJustify);
+    MStaffList.SetColumn(TIMING_MONTH_STAFFLIST_COLUMN_NAMES[1], MTabNums);
+    MStaffList.SetColumn(TIMING_MONTH_STAFFLIST_COLUMN_NAMES[2], MPostNames, taLeftJustify);
+    MStaffList.SetColumn(TIMING_MONTH_STAFFLIST_COLUMN_NAMES[3], MPeriodToStr(MPostBDs, MPostEDs), taLeftJustify);
+    MStaffList.SetColumn(TIMING_MONTH_STAFFLIST_COLUMN_NAMES[4], MScheduleNames, taLeftJustify);
+    MStaffList.SetColumn(TIMING_MONTH_STAFFLIST_COLUMN_NAMES[5], MPeriodToStr(MScheduleBDs, MScheduleEDs), taLeftJustify);
     MStaffList.Draw;
     MStaffList.ExpandAll(True);
     MStaffList.CheckAll(True);
@@ -594,12 +590,12 @@ procedure TTimetableMonthForm.StaffListLoad;
                      VStaffNames, VTabNums, VPostNames, VScheduleNames,
                      VRecrutDates, VDismissDates, VPostBDs, VPostEDs, VScheduleBDs, VScheduleEDs,
                      False{short names});
-    VStaffList.SetColumn('Фамилия И.О.', VStaffNames, taLeftJustify);
-    VStaffList.SetColumn('Табельный номер', VTabNums);
-    VStaffList.SetColumn('Должность', VPostNames, taLeftJustify);
-    VStaffList.SetColumn('В должности', VPeriodToStr(VPostBDs, VPostEDs), taLeftJustify);
-    VStaffList.SetColumn('График', VScheduleNames, taLeftJustify);
-    VStaffList.SetColumn('В графике', VPeriodToStr(VScheduleBDs, VScheduleEDs), taLeftJustify);
+    VStaffList.SetColumn(TIMING_MONTH_STAFFLIST_COLUMN_NAMES[0], VStaffNames, taLeftJustify);
+    VStaffList.SetColumn(TIMING_MONTH_STAFFLIST_COLUMN_NAMES[1], VTabNums);
+    VStaffList.SetColumn(TIMING_MONTH_STAFFLIST_COLUMN_NAMES[2], VPostNames, taLeftJustify);
+    VStaffList.SetColumn(TIMING_MONTH_STAFFLIST_COLUMN_NAMES[3], VPeriodToStr(VPostBDs, VPostEDs), taLeftJustify);
+    VStaffList.SetColumn(TIMING_MONTH_STAFFLIST_COLUMN_NAMES[4], VScheduleNames, taLeftJustify);
+    VStaffList.SetColumn(TIMING_MONTH_STAFFLIST_COLUMN_NAMES[5], VPeriodToStr(VScheduleBDs, VScheduleEDs), taLeftJustify);
     VStaffList.Draw;
     VStaffList.CheckAll(True);
   end;

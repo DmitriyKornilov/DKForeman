@@ -268,6 +268,8 @@ begin
 end;
 
 procedure TVacationPlanningForm.StaffListCreate;
+var
+  i: Integer;
 begin
   VStaffList:= TVSTCheckTable.Create(VStaffListVT);
   VStaffList.OnSelect:= @VStaffListSelect;
@@ -275,10 +277,9 @@ begin
   VStaffList.SetSingleFont(MainForm.GridFont);
   VStaffList.SelectedBGColor:= VStaffListVT.Color;
   VStaffList.HeaderFont.Style:= [fsBold];
-  VStaffList.AddColumn('Фамилия И.О.', 200);
-  VStaffList.AddColumn('Табельный номер', 150);
-  VStaffList.AddColumn('Должность', 300);
-  VStaffList.AddColumn('График на начало года', 200);
+  for i:= 0 to High(VACATION_PLANNING_STAFFLIST_COLUMN_NAMES) do
+    VStaffList.AddColumn(VACATION_PLANNING_STAFFLIST_COLUMN_NAMES[i],
+                        VACATION_PLANNING_STAFFLIST_COLUMN_WIDTHS[i]);
   VStaffList.AutosizeColumnDisable;
   VStaffList.Draw;
 
@@ -288,10 +289,9 @@ begin
   MStaffList.StopSelectEventWhileCheckAll:= True;
   MStaffList.SetSingleFont(MainForm.GridFont);
   MStaffList.HeaderFont.Style:= [fsBold];
-  MStaffList.AddColumn('Фамилия И.О.', 200);
-  MStaffList.AddColumn('Табельный номер', 150);
-  MStaffList.AddColumn('Должность', 300);
-  MStaffList.AddColumn('График на начало года', 200);
+  for i:= 0 to High(VACATION_PLANNING_STAFFLIST_COLUMN_NAMES) do
+    MStaffList.AddColumn(VACATION_PLANNING_STAFFLIST_COLUMN_NAMES[i],
+                        VACATION_PLANNING_STAFFLIST_COLUMN_WIDTHS[i]);
   MStaffList.AutosizeColumnDisable;
   MStaffList.Draw;
 end;
@@ -303,10 +303,10 @@ procedure TVacationPlanningForm.StaffListLoad;
                    MTabNumIDs, MStaffNames, MTabNums, MPostNames, MScheduleNames);
 
     MStaffList.SetCategories(CategoryNames);
-    MStaffList.SetColumn('Фамилия И.О.', MStaffNames, taLeftJustify);
-    MStaffList.SetColumn('Табельный номер', MTabNums);
-    MStaffList.SetColumn('Должность', MPostNames, taLeftJustify);
-    MStaffList.SetColumn('График на начало года', MScheduleNames, taLeftJustify);
+    MStaffList.SetColumn(VACATION_PLANNING_STAFFLIST_COLUMN_NAMES[0], MStaffNames, taLeftJustify);
+    MStaffList.SetColumn(VACATION_PLANNING_STAFFLIST_COLUMN_NAMES[1], MTabNums);
+    MStaffList.SetColumn(VACATION_PLANNING_STAFFLIST_COLUMN_NAMES[2], MPostNames, taLeftJustify);
+    MStaffList.SetColumn(VACATION_PLANNING_STAFFLIST_COLUMN_NAMES[3], MScheduleNames, taLeftJustify);
     MStaffList.Draw;
     MStaffList.ExpandAll(True);
     MStaffList.CheckAll(True);
@@ -317,10 +317,10 @@ procedure TVacationPlanningForm.StaffListLoad;
   begin
     StaffListForVacationPlanningLoad(YearSpinEdit.Value, OrderType,
                 VTabNumIDs, VStaffNames, VTabNums, VPostNames, VScheduleNames);
-    VStaffList.SetColumn('Фамилия И.О.', VStaffNames, taLeftJustify);
-    VStaffList.SetColumn('Табельный номер', VTabNums);
-    VStaffList.SetColumn('Должность', VPostNames, taLeftJustify);
-    VStaffList.SetColumn('График на начало года', VScheduleNames, taLeftJustify);
+    VStaffList.SetColumn(VACATION_PLANNING_STAFFLIST_COLUMN_NAMES[0], VStaffNames, taLeftJustify);
+    VStaffList.SetColumn(VACATION_PLANNING_STAFFLIST_COLUMN_NAMES[1], VTabNums);
+    VStaffList.SetColumn(VACATION_PLANNING_STAFFLIST_COLUMN_NAMES[2], VPostNames, taLeftJustify);
+    VStaffList.SetColumn(VACATION_PLANNING_STAFFLIST_COLUMN_NAMES[3], VScheduleNames, taLeftJustify);
     VStaffList.Draw;
     VStaffList.CheckAll(True);
   end;
@@ -720,16 +720,6 @@ begin
   if not Sheet.IsSelected then Exit;
   VacationPlanEditFormOpen;
 end;
-
-//procedure TVacationPlanningForm.ViewGridDrawCell(Sender: TObject; aCol,
-//  aRow: Integer; aRect: TRect; aState: TGridDrawState);
-//begin
-//  //fix frozen pane border drawing
-//  if not ((ACol=4) and ((ARow=1) or (ARow=2))) then Exit;
-//  ViewGrid.Canvas.Pen.Color:= clBlack;
-//  ViewGrid.Canvas.Pen.Style:= psSolid;
-//  ViewGrid.Canvas.Line(aRect.Right-1, aRect.Top, aRect.Right-1, aRect.Bottom);
-//end;
 
 procedure TVacationPlanningForm.YearSpinEditChange(Sender: TObject);
 begin

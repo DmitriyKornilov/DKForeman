@@ -7,11 +7,10 @@ object VacationPlanningForm: TVacationPlanningForm
   ClientHeight = 502
   ClientWidth = 1015
   DesignTimePPI = 120
+  WindowState = wsMaximized
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
-  LCLVersion = '3.2.0.0'
-  WindowState = wsMaximized
   object ToolPanel: TPanel
     Left = 2
     Height = 40
@@ -31,12 +30,12 @@ object VacationPlanningForm: TVacationPlanningForm
       Left = 0
       Height = 36
       Top = 0
-      Width = 352
+      Width = 360
       Align = alLeft
       AutoSize = True
       BevelOuter = bvNone
       ClientHeight = 36
-      ClientWidth = 352
+      ClientWidth = 360
       TabOrder = 0
       object YearPanel: TPanel
         Left = 0
@@ -62,15 +61,15 @@ object VacationPlanningForm: TVacationPlanningForm
           BorderSpacing.Top = 2
           BorderSpacing.Bottom = 2
           MinValue = 2010
-          OnChange = YearSpinEditChange
           TabStop = False
           TabOrder = 0
           Value = 2022
+          OnChange = YearSpinEditChange
         end
       end
       object CheckAllButton: TSpeedButton
         Cursor = crHandPoint
-        Left = 85
+        Left = 86
         Height = 36
         Hint = 'Выбрать всех сотрудников'
         Top = 0
@@ -78,13 +77,13 @@ object VacationPlanningForm: TVacationPlanningForm
         Align = alLeft
         Images = Images.PX24
         ImageIndex = 12
-        OnClick = CheckAllButtonClick
         ShowHint = True
         ParentShowHint = False
+        OnClick = CheckAllButtonClick
       end
       object UncheckAllButton: TSpeedButton
         Cursor = crHandPoint
-        Left = 125
+        Left = 126
         Height = 36
         Hint = 'Снять выбор со всех сотрудников'
         Top = 0
@@ -92,15 +91,15 @@ object VacationPlanningForm: TVacationPlanningForm
         Align = alLeft
         Images = Images.PX24
         ImageIndex = 13
-        OnClick = UncheckAllButtonClick
         ShowHint = True
         ParentShowHint = False
+        OnClick = UncheckAllButtonClick
       end
       object DividerBevel2: TDividerBevel
-        Left = 165
+        Left = 166
         Height = 36
         Top = 0
-        Width = 20
+        Width = 21
         Caption = 'DividerBevel2'
         Align = alLeft
         BevelWidth = 2
@@ -112,7 +111,7 @@ object VacationPlanningForm: TVacationPlanningForm
         Left = 65
         Height = 36
         Top = 0
-        Width = 20
+        Width = 21
         Caption = 'DividerBevel3'
         Align = alLeft
         BevelWidth = 2
@@ -122,11 +121,11 @@ object VacationPlanningForm: TVacationPlanningForm
       end
       object PlanButton: TSpeedButton
         Cursor = crHandPoint
-        Left = 185
+        Left = 187
         Height = 36
         Hint = 'Перейти к планированию отпусков на год'
         Top = 0
-        Width = 167
+        Width = 173
         Align = alLeft
         AutoSize = True
         Caption = ' К планированию '
@@ -134,37 +133,37 @@ object VacationPlanningForm: TVacationPlanningForm
         ImageIndex = 19
         Margin = 5
         Spacing = 5
-        OnClick = PlanButtonClick
         ShowHint = True
         ParentShowHint = False
+        OnClick = PlanButtonClick
       end
     end
     object PlanToolPanel: TPanel
-      Left = 352
+      Left = 360
       Height = 36
       Top = 0
-      Width = 528
+      Width = 541
       Align = alLeft
       AutoSize = True
       BevelOuter = bvNone
       ClientHeight = 36
-      ClientWidth = 528
+      ClientWidth = 541
       TabOrder = 1
       Visible = False
       object EditPanel: TPanel
-        Left = 308
+        Left = 320
         Height = 36
         Top = 0
-        Width = 220
+        Width = 221
         Align = alLeft
         AutoSize = True
         BevelOuter = bvNone
         ClientHeight = 36
-        ClientWidth = 220
+        ClientWidth = 221
         TabOrder = 0
         object EditButton: TSpeedButton
           Cursor = crHandPoint
-          Left = 20
+          Left = 21
           Height = 36
           Hint = 'Редактировать даты'
           Top = 0
@@ -173,13 +172,13 @@ object VacationPlanningForm: TVacationPlanningForm
           Enabled = False
           Images = Images.PX24
           ImageIndex = 6
-          OnClick = EditButtonClick
           ShowHint = True
           ParentShowHint = False
+          OnClick = EditButtonClick
         end
         object PrevMonthButton: TSpeedButton
           Cursor = crHandPoint
-          Left = 60
+          Left = 61
           Height = 36
           Hint = 'На месяц назад'
           Top = 0
@@ -188,13 +187,13 @@ object VacationPlanningForm: TVacationPlanningForm
           Enabled = False
           Images = Images.PX24
           ImageIndex = 52
-          OnClick = PrevMonthButtonClick
           ShowHint = True
           ParentShowHint = False
+          OnClick = PrevMonthButtonClick
         end
         object PrevDayButton: TSpeedButton
           Cursor = crHandPoint
-          Left = 100
+          Left = 101
           Height = 36
           Hint = 'На день назад'
           Top = 0
@@ -203,13 +202,13 @@ object VacationPlanningForm: TVacationPlanningForm
           Enabled = False
           Images = Images.PX24
           ImageIndex = 53
-          OnClick = PrevDayButtonClick
           ShowHint = True
           ParentShowHint = False
+          OnClick = PrevDayButtonClick
         end
         object NextDayButton: TSpeedButton
           Cursor = crHandPoint
-          Left = 140
+          Left = 141
           Height = 36
           Hint = 'На день вперед'
           Top = 0
@@ -218,15 +217,15 @@ object VacationPlanningForm: TVacationPlanningForm
           Enabled = False
           Images = Images.PX24
           ImageIndex = 54
-          OnClick = NextDayButtonClick
           ShowHint = True
           ParentShowHint = False
+          OnClick = NextDayButtonClick
         end
         object DividerBevel4: TDividerBevel
           Left = 0
           Height = 36
           Top = 0
-          Width = 20
+          Width = 21
           Caption = 'DividerBevel4'
           Align = alLeft
           BevelWidth = 2
@@ -236,7 +235,7 @@ object VacationPlanningForm: TVacationPlanningForm
         end
         object NextMonthButton: TSpeedButton
           Cursor = crHandPoint
-          Left = 180
+          Left = 181
           Height = 36
           Hint = 'На месяц вперед'
           Top = 0
@@ -247,18 +246,18 @@ object VacationPlanningForm: TVacationPlanningForm
           GroupIndex = 2
           Images = Images.PX24
           ImageIndex = 55
-          OnClick = NextMonthButtonClick
           ShowHint = True
           ParentShowHint = False
+          OnClick = NextMonthButtonClick
         end
       end
       object ExportButton: TSpeedButton
         Cursor = crHandPoint
-        Left = 205
+        Left = 211
         Height = 36
         Hint = 'Экспорт в формат электронной таблицы XLSX или ODS'
         Top = 0
-        Width = 103
+        Width = 109
         Align = alLeft
         AutoSize = True
         Caption = ' Экспорт '
@@ -266,9 +265,9 @@ object VacationPlanningForm: TVacationPlanningForm
         ImageIndex = 22
         Margin = 5
         Spacing = 5
-        OnClick = ExportButtonClick
         ShowHint = True
         ParentShowHint = False
+        OnClick = ExportButtonClick
       end
       object ListButton: TSpeedButton
         Cursor = crHandPoint
@@ -276,7 +275,7 @@ object VacationPlanningForm: TVacationPlanningForm
         Height = 36
         Hint = 'Вернуться к выбору года и списка сотрудников'
         Top = 0
-        Width = 205
+        Width = 211
         Align = alLeft
         AutoSize = True
         Caption = ' К выбору сотрудников '
@@ -284,16 +283,16 @@ object VacationPlanningForm: TVacationPlanningForm
         ImageIndex = 18
         Margin = 5
         Spacing = 5
-        OnClick = ListButtonClick
         ShowHint = True
         ParentShowHint = False
+        OnClick = ListButtonClick
       end
     end
     object DividerBevel1: TDividerBevel
-      Left = 947
+      Left = 946
       Height = 36
       Top = 0
-      Width = 20
+      Width = 21
       Caption = 'DividerBevel1'
       Align = alRight
       BevelWidth = 2
@@ -311,9 +310,9 @@ object VacationPlanningForm: TVacationPlanningForm
       Align = alRight
       Images = Images.PX24
       ImageIndex = 3
-      OnClick = CloseButtonClick
       ShowHint = True
       ParentShowHint = False
+      OnClick = CloseButtonClick
     end
   end
   object PlanPanel: TPanel

@@ -78,27 +78,65 @@ const
   SSO_SIZETYPE_KEYS: array of Integer =
     (0,                1           );
   SSO_SIZETYPE_PICKS: array of String  =
-    ('индивидуально', 'дозированно');
+    ('лично', 'дозатор');
 
   POST_STATUS_KEYS: array of Integer =
     (0,            1          );
   POST_STATUS_PICKS: array of String  =
     ('Постоянная', 'Временная');
 
+  STAFF_STAFFLIST_COLUMN_NAMES: array of String  =
+    ('№ п/п', 'Ф.И.О', 'Дата рождения', 'Пол',  'Табельный номер', 'Дата приема', 'Дата увольнения', 'Разряд', 'Должность');
+  STAFF_STAFFLIST_COLUMN_WIDTHS: array of Integer =
+    ( 50,      220,     120,             50,     120,               120,           120,               60,       200       );
+
+  STAFF_TABNUMLIST_COLUMN_NAMES: array of String  =
+    ('Табельный номер', 'Дата приема', 'Дата увольнения', 'Разряд', 'Последняя (текущая) должность');
+  STAFF_TABNUMLIST_COLUMN_WIDTHS: array of Integer =
+    ( 120,               120,           120,               60,        200          );
+
+  STAFF_POSTLIST_COLUMN_NAMES: array of String  =
+    ('Статус должности', 'Дата начала', 'Дата окончания', 'Разряд', 'Должность');
+  STAFF_POSTLIST_COLUMN_WIDTHS: array of Integer =
+    ( 120,               120,           120,               60,        200          );
+
+
   CALENDAR_CORRECTION_COLUMN_NAMES: array of String  =
     ('Дата', 'Статус', 'Заменяемый день');
   CALENDAR_CORRECTION_COLUMN_WIDTHS: array of Integer =
     (80,     110,      150              );
+
   SCHEDULE_CORRECTION_COLUMN_NAMES: array of String  =
     ('Дата', '№ смены', 'Всего часов', 'Ночных часов', 'Код табеля');
   SCHEDULE_CORRECTION_COLUMN_WIDTHS: array of Integer =
-    (70,     70,        80,            90,             70          );
+    ( 70,     70,        80,            90,             70          );
+
+  SCHEDULESHIFT_LIST_COLUMN_NAMES: array of String  =
+    ('№ п/п', 'Наименование графика', 'Часов в неделю');
+  SCHEDULESHIFT_LIST_COLUMN_WIDTHS: array of Integer =
+    (50,      300,                    120             );
+
+  TIMING_MONTH_STAFFLIST_COLUMN_NAMES: array of String  =
+    ('Фамилия И.О.', 'Табельный номер', 'Должность', 'В должности', 'График на начало месяца', 'В графике');
+  TIMING_MONTH_STAFFLIST_COLUMN_WIDTHS: array of Integer =
+    ( 200,            150,               300,         150,           200,                       150       );
+
   VACATION_EDIT_COLUMN_NAMES: array of String  =
     ('Отпуск', 'Дата начала', 'Основной (дней)', 'Дополнительный (дней)');
   VACATION_EDIT_COLUMN_WIDTHS: array of Integer =
     (150,       100,           120,               150                   );
   VACATION_EDIT_ROW_NAMES: array of String  =
     ('Планируемый (1 часть)', 'Фактический (1 часть)', 'Планируемый (2 часть)', 'Фактический (2 часть)');
+
+  VACATION_PLAN_STAFFLIST_COLUMN_NAMES: array of String  =
+    ('№ п/п', 'Ф.И.О', 'Табельный номер', 'Должность на начало года', 'Дата приема', 'Отпуск (1 часть)', 'Отпуск (2 часть)');
+  VACATION_PLAN_STAFFLIST_COLUMN_WIDTHS: array of Integer =
+    ( 50,      250,     120,               300,                        100,           150,                150              );
+
+  VACATION_PLANNING_STAFFLIST_COLUMN_NAMES: array of String  =
+    ('Фамилия И.О.', 'Табельный номер', 'Должность', 'График на начало года');
+  VACATION_PLANNING_STAFFLIST_COLUMN_WIDTHS: array of Integer =
+    ( 200,            150,               300,         200                   );
 
   TIMETABLE_CORRECTION_COLUMN_NAMES: array of String  =
     ('Дата', 'Табель', 'График сменности', '№ смены');

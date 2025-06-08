@@ -261,27 +261,23 @@ begin
     FullNames:= VNameShort(Families, Names, Patronymics)
   else
     FullNames:= VNameLong(Families, Names, Patronymics);
-  StaffList.SetColumn('Ф.И.О', FullNames, taLeftJustify);
+  StaffList.SetColumn(VACATION_PLAN_STAFFLIST_COLUMN_NAMES[1], FullNames, taLeftJustify);
   StaffList.Refresh;
 end;
 
 procedure TVacationPlanForm.StaffListCreate;
+var
+  i: Integer;
 begin
   StaffList:= TVSTTable.Create(VT);
   StaffList.OnSelect:= @StaffListItemSelect;
   StaffList.OnReturnKeyDown:= @StaffListItemEdit;
   StaffList.SetSingleFont(MainForm.GridFont);
   StaffList.HeaderFont.Style:= [fsBold];
-
-  StaffList.AddColumn('№ п/п', 50);
-  StaffList.AddColumn('Ф.И.О', 250);
-  StaffList.AddColumn('Табельный номер', 120);
-  StaffList.AddColumn('Должность на начало года', 300);
-  StaffList.AddColumn('Дата приема', 100);
-  StaffList.AddColumn('Отпуск (1 часть)', 150);
-  StaffList.AddColumn('Отпуск (2 часть)', 150);
+  for i:= 0 to High(VACATION_PLAN_STAFFLIST_COLUMN_NAMES) do
+    StaffList.AddColumn(VACATION_PLAN_STAFFLIST_COLUMN_NAMES[i],
+                        VACATION_PLAN_STAFFLIST_COLUMN_WIDTHS[i]);
   StaffList.AutosizeColumnDisable;
-
   StaffList.Draw;
 end;
 
@@ -311,15 +307,15 @@ begin
   try
     StaffList.ValuesClear;
     V:= VIntToStr(VOrder(Length(TabNumIDs)));
-    StaffList.SetColumn('№ п/п', V);
+    StaffList.SetColumn(VACATION_PLAN_STAFFLIST_COLUMN_NAMES[0], V);
     NameTypeSelect;
-    StaffList.SetColumn('Табельный номер', TabNums);
-    StaffList.SetColumn('Должность на начало года', PostNames, taLeftJustify);
-    StaffList.SetColumn('Дата приема', VFormatDateTime('dd.mm.yyyy', RecrutDates));
+    StaffList.SetColumn(VACATION_PLAN_STAFFLIST_COLUMN_NAMES[2], TabNums);
+    StaffList.SetColumn(VACATION_PLAN_STAFFLIST_COLUMN_NAMES[3], PostNames, taLeftJustify);
+    StaffList.SetColumn(VACATION_PLAN_STAFFLIST_COLUMN_NAMES[4], VFormatDateTime('dd.mm.yyyy', RecrutDates));
     V:= VVacationPart(Part1FirstDates, Part1Counts, Part1AddCounts);
-    StaffList.SetColumn('Отпуск (1 часть)', V);
+    StaffList.SetColumn(VACATION_PLAN_STAFFLIST_COLUMN_NAMES[5], V);
     V:= VVacationPart(Part2FirstDates, Part2Counts, Part2AddCounts);
-    StaffList.SetColumn('Отпуск (2 часть)', V);
+    StaffList.SetColumn(VACATION_PLAN_STAFFLIST_COLUMN_NAMES[6], V);
     StaffList.Draw;
     if ModeType=mtEditing then
       StaffList.ReSelect(TabNumIDs, SelectedTabNumID, True);

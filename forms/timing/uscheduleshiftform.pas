@@ -653,6 +653,8 @@ begin
 end;
 
 procedure TScheduleShiftForm.ScheduleListCreate;
+var
+  i: Integer;
 begin
   ScheduleList:= TVSTTable.Create(ScheduleListVT);
   ScheduleList.CanSelect:= True;
@@ -662,11 +664,10 @@ begin
   ScheduleList.OnReturnKeyDown:= @ScheduleListEditItem;
   ScheduleList.SetSingleFont(MainForm.GridFont);
   ScheduleList.HeaderFont.Style:= [fsBold];
-
-  ScheduleList.AddColumn('№ п/п', 50);
-  ScheduleList.AddColumn('Наименование графика', 300);
-  ScheduleList.AddColumn('Часов в неделю', 120);
-  ScheduleList.AutosizeColumnEnable('Наименование графика');
+  for i:= 0 to High(SCHEDULESHIFT_LIST_COLUMN_NAMES) do
+    ScheduleList.AddColumn(SCHEDULESHIFT_LIST_COLUMN_NAMES[i],
+                      SCHEDULESHIFT_LIST_COLUMN_WIDTHS[i]);
+  ScheduleList.AutosizeColumnEnable(1);
   ScheduleList.Draw;
 end;
 
@@ -924,9 +925,9 @@ begin
   ScheduleList.Visible:= False;
   try
     ScheduleList.ValuesClear;
-    ScheduleList.SetColumn('№ п/п', VIntToStr(VOrder(Length(ScheduleIDs))));
-    ScheduleList.SetColumn('Наименование графика', ScheduleNames, taLeftJustify);
-    ScheduleList.SetColumn('Часов в неделю', VIntToStr(WeekHours));
+    ScheduleList.SetColumn(SCHEDULESHIFT_LIST_COLUMN_NAMES[0], VIntToStr(VOrder(Length(ScheduleIDs))));
+    ScheduleList.SetColumn(SCHEDULESHIFT_LIST_COLUMN_NAMES[1], ScheduleNames, taLeftJustify);
+    ScheduleList.SetColumn(SCHEDULESHIFT_LIST_COLUMN_NAMES[2], VIntToStr(WeekHours));
     ScheduleList.Draw;
     ScheduleList.ReSelect(ScheduleIDs, SelectedScheduleID, True);  //возвращаем выделение строки
   finally

@@ -462,7 +462,7 @@ begin
     FullNames:= VNameShort(Families, Names, Patronymics)
   else
     FullNames:= VNameLong(Families, Names, Patronymics);
-  StaffList.SetColumn('Ф.И.О', FullNames, taLeftJustify);
+  StaffList.SetColumn(STAFF_STAFFLIST_COLUMN_NAMES[1], FullNames, taLeftJustify);
   StaffList.Refresh;
 end;
 
@@ -492,25 +492,24 @@ begin
 end;
 
 procedure TStaffForm.StaffListColumnSet;
+var
+  i: Integer;
 begin
   StaffList.Visible:= False;
   try
     StaffList.Clear;
-    StaffList.AddColumn('№ п/п', 50);
-    StaffList.AddColumn('Ф.И.О', 220);
-    StaffList.AddColumn('Дата рождения', 120);
-    StaffList.AddColumn('Пол', 50);
+    for i:= 0 to 3 do
+      StaffList.AddColumn(STAFF_STAFFLIST_COLUMN_NAMES[i],
+                          STAFF_STAFFLIST_COLUMN_WIDTHS[i]);
     if ModeType<>mtEditing then
     begin
-      StaffList.AddColumn('Табельный номер', 120);
-      StaffList.AddColumn('Дата приема', 120);
-      StaffList.AddColumn('Дата увольнения', 120);
-      StaffList.AddColumn('Разряд', 60);
-      StaffList.AddColumn('Должность', 200);
-      StaffList.AutosizeColumnEnable('Должность');
+      for i:= 4 to High(STAFF_STAFFLIST_COLUMN_NAMES) do
+      StaffList.AddColumn(STAFF_STAFFLIST_COLUMN_NAMES[i],
+                          STAFF_STAFFLIST_COLUMN_WIDTHS[i]);
+      StaffList.AutosizeColumnEnable(STAFF_STAFFLIST_COLUMN_NAMES[8]);
     end
     else
-      StaffList.AutosizeColumnEnable('Ф.И.О');
+      StaffList.AutosizeColumnEnable(STAFF_STAFFLIST_COLUMN_NAMES[1]);
     StaffList.Draw;
   finally
     StaffList.Visible:= True;
@@ -554,17 +553,17 @@ begin
   StaffList.Visible:= False;
   try
     StaffList.ValuesClear;
-    StaffList.SetColumn('№ п/п', VIntToStr(VOrder(Length(StaffIDs))));
+    StaffList.SetColumn(STAFF_STAFFLIST_COLUMN_NAMES[0], VIntToStr(VOrder(Length(StaffIDs))));
     NameTypeSelect;
-    StaffList.SetColumn('Дата рождения', VDateToStr(BornDates, True));
-    StaffList.SetColumn('Пол', StrGenders);
+    StaffList.SetColumn(STAFF_STAFFLIST_COLUMN_NAMES[2], VDateToStr(BornDates, True));
+    StaffList.SetColumn(STAFF_STAFFLIST_COLUMN_NAMES[3], StrGenders);
     if ModeType<>mtEditing then
     begin
-      StaffList.SetColumn('Табельный номер', TabNums);
-      StaffList.SetColumn('Дата приема', VDateToStr(RecrutDates, True));
-      StaffList.SetColumn('Дата увольнения', StrDismissDates);
-      StaffList.SetColumn('Разряд', Ranks);
-      StaffList.SetColumn('Должность', PostNames, taLeftJustify);
+      StaffList.SetColumn(STAFF_STAFFLIST_COLUMN_NAMES[4], TabNums);
+      StaffList.SetColumn(STAFF_STAFFLIST_COLUMN_NAMES[5], VDateToStr(RecrutDates, True));
+      StaffList.SetColumn(STAFF_STAFFLIST_COLUMN_NAMES[6], StrDismissDates);
+      StaffList.SetColumn(STAFF_STAFFLIST_COLUMN_NAMES[7], Ranks);
+      StaffList.SetColumn(STAFF_STAFFLIST_COLUMN_NAMES[8], PostNames, taLeftJustify);
     end;
     StaffList.Draw;
     if ModeType=mtEditing then
@@ -593,6 +592,8 @@ begin
 end;
 
 procedure TStaffForm.TabNumListCreate;
+var
+  i: Integer;
 begin
   TabNumList:= TVSTTable.Create(TabNumVT);
   TabNumList.CanSelect:= True;
@@ -602,12 +603,9 @@ begin
   TabNumList.OnReturnKeyDown:= @TabNumListEditItem;
   TabNumList.SetSingleFont(MainForm.GridFont);
   TabNumList.HeaderFont.Style:= [fsBold];
-
-  TabNumList.AddColumn('Табельный номер', 120);
-  TabNumList.AddColumn('Дата приема', 120);
-  TabNumList.AddColumn('Дата увольнения', 120);
-  TabNumList.AddColumn('Разряд', 60);
-  TabNumList.AddColumn('Последняя (текущая) должность', 200);
+  for i:= 0 to High(STAFF_TABNUMLIST_COLUMN_NAMES) do
+    TabNumList.AddColumn(STAFF_TABNUMLIST_COLUMN_NAMES[i],
+                         STAFF_TABNUMLIST_COLUMN_WIDTHS[i]);
   TabNumList.Draw;
 end;
 
@@ -634,11 +632,11 @@ begin
   TabNumList.Visible:= False;
   try
     TabNumList.ValuesClear;
-    TabNumList.SetColumn('Табельный номер', TabNumListTabNums);
-    TabNumList.SetColumn('Дата приема', VDateToStr(TabNumListRecrutDates, True));
-    TabNumList.SetColumn('Дата увольнения', StrDismissDates);
-    TabNumList.SetColumn('Разряд', TabNumListRanks);
-    TabNumList.SetColumn('Последняя (текущая) должность', TabNumListPostNames, taLeftJustify);
+    TabNumList.SetColumn(STAFF_TABNUMLIST_COLUMN_NAMES[0], TabNumListTabNums);
+    TabNumList.SetColumn(STAFF_TABNUMLIST_COLUMN_NAMES[1], VDateToStr(TabNumListRecrutDates, True));
+    TabNumList.SetColumn(STAFF_TABNUMLIST_COLUMN_NAMES[2], StrDismissDates);
+    TabNumList.SetColumn(STAFF_TABNUMLIST_COLUMN_NAMES[3], TabNumListRanks);
+    TabNumList.SetColumn(STAFF_TABNUMLIST_COLUMN_NAMES[4], TabNumListPostNames, taLeftJustify);
     TabNumList.Draw;
     TabNumList.ReSelect(TabNumListTabNumIDs, SelectedTabNumID, True); //возвращаем выделение строки
   finally
@@ -663,6 +661,8 @@ begin
 end;
 
 procedure TStaffForm.PostLogCreate;
+var
+  i: Integer;
 begin
   PostLog:= TVSTTable.Create(PostLogVT);
   PostLog.CanSelect:= True;
@@ -672,12 +672,9 @@ begin
   PostLog.OnReturnKeyDown:= @PostLogEditItem;
   PostLog.SetSingleFont(MainForm.GridFont);
   PostLog.HeaderFont.Style:= [fsBold];
-
-  PostLog.AddColumn('Статус должности', 120);
-  PostLog.AddColumn('Дата начала', 120);
-  PostLog.AddColumn('Дата окончания', 120);
-  PostLog.AddColumn('Разряд', 60);
-  PostLog.AddColumn('Должность', 200);
+  for i:= 0 to High(STAFF_POSTLIST_COLUMN_NAMES) do
+    PostLog.AddColumn(STAFF_POSTLIST_COLUMN_NAMES[i],
+                      STAFF_POSTLIST_COLUMN_WIDTHS[i]);
   PostLog.Draw;
 end;
 
@@ -704,11 +701,11 @@ begin
   PostLog.Visible:= False;
   try
     PostLog.ValuesClear;
-    PostLog.SetColumn('Статус должности', VPickFromKey(PostLogPostTemps, POST_TEMP_KEYS, POST_TEMP_PICKS));
-    PostLog.SetColumn('Дата начала', VDateToStr(PostLogFirstDates, True));
-    PostLog.SetColumn('Дата окончания', StrLastDates);
-    PostLog.SetColumn('Разряд', PostLogRanks);
-    PostLog.SetColumn('Должность', PostLogPostNames, taLeftJustify);
+    PostLog.SetColumn(STAFF_POSTLIST_COLUMN_NAMES[0], VPickFromKey(PostLogPostTemps, POST_TEMP_KEYS, POST_TEMP_PICKS));
+    PostLog.SetColumn(STAFF_POSTLIST_COLUMN_NAMES[1], VDateToStr(PostLogFirstDates, True));
+    PostLog.SetColumn(STAFF_POSTLIST_COLUMN_NAMES[2], StrLastDates);
+    PostLog.SetColumn(STAFF_POSTLIST_COLUMN_NAMES[3], PostLogRanks);
+    PostLog.SetColumn(STAFF_POSTLIST_COLUMN_NAMES[4], PostLogPostNames, taLeftJustify);
     PostLog.Draw;
     PostLog.ReSelect(PostLogIDs, SelectedPostLogID, True);  //возвращаем выделение строки
   finally
