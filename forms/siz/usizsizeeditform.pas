@@ -21,22 +21,20 @@ type
     ButtonPanelBevel: TBevel;
     CancelButton: TSpeedButton;
     RespiratorLabel: TLabel;
-    GlovesLabel: TLabel;
     GasmaskLabel: TLabel;
-    MittensDressLabel: TLabel;
+    HandLabel: TLabel;
     ShoesLabel: TLabel;
     GasmaskBCButton: TBCButton;
     HeightLabel: TLabel;
     ClothesLabel: TLabel;
     RespiratorBCButton: TBCButton;
-    MittensBCButton: TBCButton;
-    GlovesBCButton: TBCButton;
+    HandBCButton: TBCButton;
     ShoesBCButton: TBCButton;
     HeightBCButton: TBCButton;
     ClothesBCButton: TBCButton;
     SaveButton: TSpeedButton;
-    HeadDressBCButton: TBCButton;
-    HeadDressLabel: TLabel;
+    HeadBCButton: TBCButton;
+    HeadLabel: TLabel;
     procedure CancelButtonClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -46,9 +44,8 @@ type
     HeightDD: TVSTDropDown;
     ClothesDD: TVSTDropDown;
     ShoesDD: TVSTDropDown;
-    HeadDressDD: TVSTDropDown;
-    MittensDD: TVSTDropDown;
-    GlovesDD: TVSTDropDown;
+    HeadDD: TVSTDropDown;
+    HandDD: TVSTDropDown;
     GasmaskDD: TVSTDropDown;
     RespiratorDD: TVSTDropDown;
   public
@@ -87,11 +84,10 @@ begin
   DropDownCreate(HeightDD, HeightBCButton, MANHEIGHTS);
   DropDownCreate(ClothesDD, ClothesBCButton, CLOTHES);
   DropDownCreate(ShoesDD, ShoesBCButton, SHOES);
-  DropDownCreate(HeadDressDD, HeadDressBCButton, HEADDRESS);
-  DropDownCreate(MittensDD, MittensBCButton, MITTENS);
-  DropDownCreate(GlovesDD, GlovesBCButton, MITTENS);
-  DropDownCreate(GasmaskDD, GasmaskBCButton, GASMASK);
-  DropDownCreate(RespiratorDD, RespiratorBCButton, RESPIRATOR);
+  DropDownCreate(HeadDD, HeadBCButton, HEADDRESS);
+  DropDownCreate(HandDD, HandBCButton, HANDS);
+  DropDownCreate(GasmaskDD, GasmaskBCButton, GASMASKS);
+  DropDownCreate(RespiratorDD, RespiratorBCButton, RESPIRATORS);
 end;
 
 procedure TSIZSizeEditForm.FormDestroy(Sender: TObject);
@@ -99,9 +95,8 @@ begin
   FreeAndNil(HeightDD);
   FreeAndNil(ClothesDD);
   FreeAndNil(ShoesDD);
-  FreeAndNil(HeadDressDD);
-  FreeAndNil(MittensDD);
-  FreeAndNil(GlovesDD);
+  FreeAndNil(HeadDD);
+  FreeAndNil(HandDD);
   FreeAndNil(GasmaskDD);
   FreeAndNil(RespiratorDD);
 end;
@@ -114,9 +109,8 @@ begin
   HeightDD.ItemIndex:= SizeIndexes.Height;
   ClothesDD.ItemIndex:= SizeIndexes.Clothes;
   ShoesDD.ItemIndex:= SizeIndexes.Shoes;
-  HeadDressDD.ItemIndex:= SizeIndexes.HeadDress;
-  MittensDD.ItemIndex:= SizeIndexes.Mittens;
-  GlovesDD.ItemIndex:= SizeIndexes.Gloves;
+  HeadDD.ItemIndex:= SizeIndexes.Head;
+  HandDD.ItemIndex:= SizeIndexes.Hand;
   GasmaskDD.ItemIndex:= SizeIndexes.Gasmask;
   RespiratorDD.ItemIndex:= SizeIndexes.Respirator;
 end;
@@ -128,9 +122,8 @@ begin
   SizeIndexes.Height:= HeightDD.ItemIndex;
   SizeIndexes.Clothes:= ClothesDD.ItemIndex;
   SizeIndexes.Shoes:= ShoesDD.ItemIndex;
-  SizeIndexes.HeadDress:= HeadDressDD.ItemIndex;
-  SizeIndexes.Mittens:= MittensDD.ItemIndex;
-  SizeIndexes.Gloves:= GlovesDD.ItemIndex;
+  SizeIndexes.Head:= HeadDD.ItemIndex;
+  SizeIndexes.Hand:= HandDD.ItemIndex;
   SizeIndexes.Gasmask:= GasmaskDD.ItemIndex;
   SizeIndexes.Respirator:= RespiratorDD.ItemIndex;
 

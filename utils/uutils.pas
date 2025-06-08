@@ -55,7 +55,7 @@ end;
 
 function PeriodToStr(const ABeginDate, AEndDate: TDate): String;
 begin
-  Result:= FormatDateTime('dd.mm.yyyy - ', ABeginDate);
+  Result:= FormatDateTime('dd.mm.yyyy — ', ABeginDate);
   if SameDate(AEndDate, INFDATE) then
     Result:= Result + 'наст. время'
   else

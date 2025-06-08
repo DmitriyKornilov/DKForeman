@@ -9,7 +9,7 @@ uses
   //DK packages utils
   DK_SheetTables, DK_SheetTypes, DK_Vector, DK_StrUtils, DK_Const,
   //Project utils
-  USIZTypes, USIZUtils, UConst;
+  USIZNormTypes, USIZUtils, UConst;
 
 type
 

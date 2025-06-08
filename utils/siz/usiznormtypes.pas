@@ -1,4 +1,4 @@
-unit USIZTypes;
+unit USIZNormTypes;
 
 {$mode ObjFPC}{$H+}
 

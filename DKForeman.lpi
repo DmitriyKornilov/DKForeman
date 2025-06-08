@@ -147,14 +147,6 @@
         <UnitName Value="USIZStorageForm"/>
       </Unit>
       <Unit>
-        <Filename Value="forms\sso\ussoform.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="SSOForm"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-        <UnitName Value="USSOForm"/>
-      </Unit>
-      <Unit>
         <Filename Value="forms\study\ustudyform.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="StudyForm"/>
@@ -382,9 +374,9 @@
         <UnitName Value="USIZUtils"/>
       </Unit>
       <Unit>
-        <Filename Value="utils\siz\usiztypes.pas"/>
+        <Filename Value="utils\siz\usiznormtypes.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="USIZTypes"/>
+        <UnitName Value="USIZNormTypes"/>
       </Unit>
       <Unit>
         <Filename Value="forms\siz\usiznormeditform.pas"/>
@@ -429,6 +421,7 @@
         <Filename Value="forms\siz\usizsizeeditform.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="SIZSizeEditForm"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="USIZSizeEditForm"/>
       </Unit>
@@ -440,6 +433,13 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="USIZStaffForm"/>
       </Unit>
+      <Unit>
+        <Filename Value="forms\siz\usiznameeditform.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="SIZNameEditForm"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="USIZNameEditForm"/>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -450,7 +450,7 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
-      <OtherUnitFiles Value="forms\calendar;utils;forms\staff;forms\timing;forms\siz;forms\sso;forms\study;utils\timing;forms;utils\siz"/>
+      <OtherUnitFiles Value="forms\calendar;utils;forms\staff;forms\timing;forms\siz;forms\study;utils\timing;forms;utils\siz"/>
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <Linking>

@@ -259,10 +259,10 @@ object MainForm: TMainForm
     end
     object SIZRequestMenuItem: TMenuItem
       Caption = 'Заявка на поступление средств индивидуальной защиты'
-      ImageIndex = 61
+      ImageIndex = 60
     end
     object SIZSizesMenuItem: TMenuItem
-      Caption = 'Размеры спецодежды и обуви сотрудников'
+      Caption = 'Размеры средств индивидуальной защиты сотрудников'
       ImageIndex = 39
       OnClick = SIZSizesMenuItemClick
     end
@@ -272,26 +272,6 @@ object MainForm: TMainForm
       OnClick = SIZStaffMenuItemClick
     end
     object Separator3: TMenuItem
-      Caption = '-'
-    end
-    object SSONormsMenuItem: TMenuItem
-      Caption = 'Нормы выдачи средств смывающих и обезвреживающих'
-      ImageIndex = 56
-    end
-    object SSOStorageMenuItem: TMenuItem
-      Caption = 'Склад средств смывающих и обезвреживающих'
-      ImageIndex = 60
-    end
-    object SSORequestMenuItem: TMenuItem
-      Caption = 'Заявка на поступление средств смывающих и обезвреживающих'
-      ImageIndex = 61
-    end
-    object SSOCardsMenuItem: TMenuItem
-      Caption = 'Учет выдачи средств смывающих и обезвреживающих'
-      ImageIndex = 35
-      OnClick = SSOCardsMenuItemClick
-    end
-    object Separator4: TMenuItem
       Caption = '-'
     end
     object StudyMenuItem: TMenuItem
@@ -331,24 +311,6 @@ object MainForm: TMainForm
       Caption = 'Дополнительные условия выдачи средств индивидуальной защиты'
       ImageIndex = 40
       OnClick = SIZReasonMenuItemClick
-    end
-    object SIZSpecLifeMenuItem: TMenuItem
-      Caption = 'Особые сроки службы средств индивидуальной защиты'
-      ImageIndex = 41
-      OnClick = SIZSpecLifeMenuItemClick
-    end
-    object Separator2: TMenuItem
-      Caption = '-'
-    end
-    object SSOListMenuItem: TMenuItem
-      Caption = 'Перечень смывающих и обезвреживающих средств'
-      ImageIndex = 35
-      OnClick = SSOListMenuItemClick
-    end
-    object SSOUnitMenuItem: TMenuItem
-      Caption = 'Единицы измерения смывающих и обезвреживающих средств'
-      ImageIndex = 57
-      OnClick = SSOUnitMenuItemClick
     end
   end
 end

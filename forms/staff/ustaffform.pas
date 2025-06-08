@@ -701,7 +701,7 @@ begin
   PostLog.Visible:= False;
   try
     PostLog.ValuesClear;
-    PostLog.SetColumn(STAFF_POSTLIST_COLUMN_NAMES[0], VPickFromKey(PostLogPostTemps, POST_TEMP_KEYS, POST_TEMP_PICKS));
+    PostLog.SetColumn(STAFF_POSTLIST_COLUMN_NAMES[0], VPickFromKey(PostLogPostTemps, POST_STATUS_KEYS, POST_STATUS_PICKS));
     PostLog.SetColumn(STAFF_POSTLIST_COLUMN_NAMES[1], VDateToStr(PostLogFirstDates, True));
     PostLog.SetColumn(STAFF_POSTLIST_COLUMN_NAMES[2], StrLastDates);
     PostLog.SetColumn(STAFF_POSTLIST_COLUMN_NAMES[3], PostLogRanks);

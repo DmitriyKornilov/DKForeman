@@ -8,7 +8,7 @@ uses
   Classes, SysUtils, DateUtils,
   //Project utils
   UCalendar, UConst, USchedule, UTimetable, UWorkHours,
-  USIZTypes, USIZSizes, USIZUtils,
+  USIZNormTypes, USIZSizes, USIZUtils,
   //DK packages utils
   DK_SQLite3, DK_SQLUtils, DK_Vector, DK_Matrix, DK_StrUtils, DK_Const,
   DK_DateUtils, DK_VSTDropDown;
@@ -571,8 +571,8 @@ type
     **************************************************************************)
     function SIZStaffSizeLoad(const AFilterValue: String;
                           const AOrderType, AListType: Byte;
-                          out AStaffIDs, AClothes, AHeights, AShoes, AHeadDress,
-                              AMittens, AGloves, AGasmasks, ARespirators: TIntVector;
+                          out AStaffIDs, AClothes, AHeights, AShoes, AHeads,
+                              AHands, AGasmasks, ARespirators: TIntVector;
                           out AFamilies, ANames, APatronymics: TStrVector;
                           out ABornDates: TDateVector): Boolean;
     function SIZStaffSizeUpdate(const AStaffID: Integer;
@@ -4851,8 +4851,8 @@ end;
 
 function TDataBase.SIZStaffSizeLoad(const AFilterValue: String;
                           const AOrderType, AListType: Byte;
-                          out AStaffIDs, AClothes, AHeights, AShoes, AHeadDress,
-                              AMittens, AGloves, AGasmasks, ARespirators: TIntVector;
+                          out AStaffIDs, AClothes, AHeights, AShoes, AHeads,
+                              AHands, AGasmasks, ARespirators: TIntVector;
                           out AFamilies, ANames, APatronymics: TStrVector;
                           out ABornDates: TDateVector): Boolean;
 var
@@ -4863,9 +4863,8 @@ begin
   AClothes:= nil;
   AHeights:= nil;
   AShoes:= nil;
-  AHeadDress:= nil;
-  AMittens:= nil;
-  AGloves:= nil;
+  AHeads:= nil;
+  AHands:= nil;
   AGasmasks:= nil;
   ARespirators:= nil;
   AFamilies:= nil;
@@ -4897,11 +4896,10 @@ begin
   0: SQLStr:= SQLStr + S;
   1: SQLStr:= SQLStr + 't1.Clothes, t1.Height, ' + S;
   2: SQLStr:= SQLStr + 't1.Shoes, ' + S;
-  3: SQLStr:= SQLStr + 't1.HeadDress, ' + S;
-  4: SQLStr:= SQLStr + 't1.Mittens, ' + S;
-  5: SQLStr:= SQLStr + 't1.Gloves, ' + S;
-  6: SQLStr:= SQLStr + 't1.Gasmask, ' + S;
-  7: SQLStr:= SQLStr + 't1.Respirator, ' + S;
+  3: SQLStr:= SQLStr + 't1.Head, ' + S;
+  4: SQLStr:= SQLStr + 't1.Hand, ' + S;
+  5: SQLStr:= SQLStr + 't1.Gasmask, ' + S;
+  6: SQLStr:= SQLStr + 't1.Respirator, ' + S;
   end;
 
   QSetQuery(FQuery);
@@ -4918,9 +4916,8 @@ begin
       VAppend(AClothes, QFieldInt('Clothes'));
       VAppend(AHeights, QFieldInt('Height'));
       VAppend(AShoes, QFieldInt('Shoes'));
-      VAppend(AHeadDress, QFieldInt('HeadDress'));
-      VAppend(AMittens, QFieldInt('Mittens'));
-      VAppend(AGloves, QFieldInt('Gloves'));
+      VAppend(AHeads, QFieldInt('Head'));
+      VAppend(AHands, QFieldInt('Hand'));
       VAppend(AGasmasks, QFieldInt('Gasmask'));
       VAppend(ARespirators, QFieldInt('Respirator'));
       VAppend(AFamilies, QFieldStr('Family'));
@@ -4941,17 +4938,16 @@ begin
   QSetQuery(FQuery);
   try
     QSetSQL(
-      sqlUPDATE('SIZSTAFFSIZE', ['Clothes', 'Height', 'Shoes', 'HeadDress',
-                                 'Mittens', 'Gloves', 'Gasmask', 'Respirator']) +
+      sqlUPDATE('SIZSTAFFSIZE', ['Clothes', 'Height', 'Shoes', 'Head',
+                                 'Hand', 'Gasmask', 'Respirator']) +
       'WHERE StaffID = :StaffID'
     );
     QParamInt('StaffID', AStaffID);
     QParamInt('Clothes',  ASizeIndexes.Clothes);
     QParamInt('Height', ASizeIndexes.Height);
     QParamInt('Shoes', ASizeIndexes.Shoes);
-    QParamInt('HeadDress', ASizeIndexes.HeadDress);
-    QParamInt('Mittens', ASizeIndexes.Mittens);
-    QParamInt('Gloves', ASizeIndexes.Gloves);
+    QParamInt('Head', ASizeIndexes.Head);
+    QParamInt('Hand', ASizeIndexes.Hand);
     QParamInt('Gasmask', ASizeIndexes.Gasmask);
     QParamInt('Respirator', ASizeIndexes.Respirator);
     QExec;

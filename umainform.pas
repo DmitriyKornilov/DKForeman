@@ -10,15 +10,13 @@ uses
 
   //DK packages utils
   DK_HeapTrace, DK_Const, DK_LCLStrRus, DK_CtrlUtils, DK_Fonts, DK_VSTTypes,
-  DK_Vector,
   //Project utils
   UDataBase, UImages, UConst, UTypes,
   //Forms
   UStaffForm,
   UCalendarForm, UScheduleShiftForm, UVacationPlanForm,
   USchedulePersonalForm, UTimetableForm,
-  USIZNormForm, USIZSizeForm, USIZStaffForm, USIZStorageForm,
-  USSOForm,
+  USIZNameEditForm, USIZNormForm, USIZSizeForm, USIZStaffForm, USIZStorageForm,
   UStudyForm;
 
 type
@@ -32,38 +30,29 @@ type
     DividerBevel2: TDividerBevel;
     DividerBevel3: TDividerBevel;
     DictionaryButton: TSpeedButton;
-    SSORequestMenuItem: TMenuItem;
     SIZRequestMenuItem: TMenuItem;
-    SSOStorageMenuItem: TMenuItem;
     SIZStorageMenuItem: TMenuItem;
     SIZSizesMenuItem: TMenuItem;
     StaffButton: TSpeedButton;
     SIZNormsMenuItem: TMenuItem;
-    SSONormsMenuItem: TMenuItem;
     Separator3: TMenuItem;
-    Separator4: TMenuItem;
     TimingButton: TSpeedButton;
     TimetableMarkMenuItem: TMenuItem;
     SIZListMenuItem: TMenuItem;
     SIZUnitMenuItem: TMenuItem;
     SIZReasonMenuItem: TMenuItem;
-    SIZSpecLifeMenuItem: TMenuItem;
-    SSOListMenuItem: TMenuItem;
-    SSOUnitMenuItem: TMenuItem;
     ShiftScheduleMenuItem: TMenuItem;
     SafetyButton: TSpeedButton;
     VacationPlaneMenuItem: TMenuItem;
     PersonalScheduleMenuItem: TMenuItem;
     TimetableMenuItem: TMenuItem;
     SIZStaffMenuItem: TMenuItem;
-    SSOCardsMenuItem: TMenuItem;
     StudyMenuItem: TMenuItem;
     DictionaryMenu: TPopupMenu;
     PostListMenuItem: TMenuItem;
     MainPanel: TPanel;
     SafetyMenu: TPopupMenu;
     Separator1: TMenuItem;
-    Separator2: TMenuItem;
     TimingMenu: TPopupMenu;
     RefreshButton: TSpeedButton;
     SettingButton: TSpeedButton;
@@ -88,11 +77,7 @@ type
     procedure SIZNormsMenuItemClick(Sender: TObject);
     procedure SIZReasonMenuItemClick(Sender: TObject);
     procedure SIZSizesMenuItemClick(Sender: TObject);
-    procedure SIZSpecLifeMenuItemClick(Sender: TObject);
     procedure SIZUnitMenuItemClick(Sender: TObject);
-    procedure SSOListMenuItemClick(Sender: TObject);
-    procedure SSOCardsMenuItemClick(Sender: TObject);
-    procedure SSOUnitMenuItemClick(Sender: TObject);
     procedure StaffButtonClick(Sender: TObject);
     procedure StudyMenuItemClick(Sender: TObject);
     procedure TimetableMarkMenuItemClick(Sender: TObject);
@@ -256,8 +241,6 @@ end;
 
 procedure TMainForm.DictionarySelect(const ADictionary: Byte);
 var
-  VKeys: TIntVector;
-  VPicks: TStrVector;
   IsOK: Boolean;
 begin
   IsOK:= False;
@@ -276,30 +259,7 @@ begin
                           [nil,             nil,             TIMETABLE_TYPEMARK_KEYS,  nil],
                           [nil,             nil,             TIMETABLE_TYPEMARK_PICKS, nil],
                           GridFont);
-    3: begin
-         DataBase.KeyPickList('SIZUNIT', 'UnitID', 'UnitName', VKeys, VPicks);
-         IsOK:= DataBase.EditDoubleTable('Перечень средств индивидуальной защиты',
-                         'SIZCLASSES', 'ClassID',
-                         ['ClassName'],
-                         ['Наименование класса'],
-                         [ctString],
-                         [True],
-                         [200],
-                         [taLeftJustify],
-                         True, ['ClassName'], 1, nil, nil,
-                         'SIZNAMES', 'NameID',
-                         ['SIZName', 'UnitID', 'SizeType'],
-                         ['Наименование',     'Единица измерения', 'Тип размера'],
-                         [ctString,            ctKeyPick,           ctKeyPick   ],
-                         [True,                True,                True        ],
-                         [300,                 150,                 150         ],
-                         [taLeftJustify,       taCenter,            taCenter    ],
-                         True, ['SIZName'], 1,
-                         [nil,                 VKeys,               SIZ_SIZETYPE_KEYS ],
-                         [nil,                 VPicks,              SIZ_SIZETYPE_PICKS],
-                         'ClassID', GridFont);
-
-       end;
+    3: IsOK:= FormModalShow(TSIZNameEditForm)=mrOK;
     4: IsOK:= DataBase.EditTable('Единицы измерения средств индивидуальной защиты',
                           'SIZUNIT', 'UnitID',
                           ['UnitName',     'UnitDigitalCode', 'UnitStringCode'      ],
@@ -311,41 +271,6 @@ begin
                           True, ['UnitName'], 1, nil, nil, GridFont);
     5: IsOK:= DataBase.EditList('Дополнительные условия выдачи СИЗ',
                          'SIZREASON', 'ReasonID', 'ReasonName', True, True, 400, GridFont);
-    6: IsOK:= DataBase.EditList('Особые сроки службы СИЗ',
-                         'SIZSPECLIFE', 'SpecLifeID', 'SpecLifeName', True, True, 400, GridFont);
-    7: begin
-         DataBase.KeyPickList('SSOUNIT', 'UnitID', 'UnitName', VKeys, VPicks);
-         IsOK:= DataBase.EditDoubleTable('Перечень средств индивидуальной защиты',
-                         'SSOCLASSES', 'ClassID',
-                         ['ClassName'],
-                         ['Наименование класса'],
-                         [ctString],
-                         [True],
-                         [200],
-                         [taLeftJustify],
-                         True, ['ClassName'], 1, nil, nil,
-                         'SSONAMES', 'NameID',
-                         ['SSOName', 'UnitID', 'Method'],
-                         ['Наименование', 'Единица измерения', 'Способ выдачи'],
-                         [ctString,        ctKeyPick,           ctKeyPick   ],
-                         [True,            True,                True        ],
-                         [300,             150,                 150         ],
-                         [taLeftJustify,   taCenter,            taCenter    ],
-                         True, ['SSOName'], 1,
-                         [nil,             VKeys,               SSO_SIZETYPE_KEYS ],
-                         [nil,             VPicks,              SSO_SIZETYPE_PICKS],
-                         'ClassID', GridFont);
-
-       end;
-    8: IsOK:= DataBase.EditTable('Единицы измерения смывающих и обезвреживающих средств',
-                          'SSOUNIT', 'UnitID',
-                          ['UnitName',     'UnitDigitalCode', 'UnitStringCode'      ],
-                          ['Наименование', 'Код',             'Условное обозначение'],
-                          [ ctString,       ctInteger,         ctString             ],
-                          [ True,           True,              True                 ],
-                          [ 400,            100,               200                  ],
-                          [ taLeftJustify,  taCenter,          taCenter             ],
-                          True, ['UnitName'], 1, nil, nil, GridFont);
   end;
 
   if IsOK then ViewUpdate;
@@ -458,10 +383,7 @@ begin
   CategorySelect(7);
 end;
 
-procedure TMainForm.SSOCardsMenuItemClick(Sender: TObject);
-begin
-  //CategorySelect(8);
-end;
+
 
 procedure TMainForm.StudyMenuItemClick(Sender: TObject);
 begin
@@ -506,21 +428,6 @@ end;
 procedure TMainForm.SIZReasonMenuItemClick(Sender: TObject);
 begin
   DictionarySelect(5);
-end;
-
-procedure TMainForm.SIZSpecLifeMenuItemClick(Sender: TObject);
-begin
-  DictionarySelect(6);
-end;
-
-procedure TMainForm.SSOListMenuItemClick(Sender: TObject);
-begin
-  DictionarySelect(7);
-end;
-
-procedure TMainForm.SSOUnitMenuItemClick(Sender: TObject);
-begin
-  DictionarySelect(8);
 end;
 
 procedure TMainForm.ExitButtonClick(Sender: TObject);

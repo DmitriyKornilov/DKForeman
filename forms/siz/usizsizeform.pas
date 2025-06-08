@@ -47,8 +47,8 @@ type
     SizeList: TVSTTable;
     ParamList: TVSTParamList;
 
-    StaffIDs, Clothes, Heights, Shoes, HeadDress,
-    Mittens, Gloves, Gasmasks, Respirators: TIntVector;
+    StaffIDs, Clothes, Heights, Shoes, Heads,
+    Hands, Gasmasks, Respirators: TIntVector;
     BornDates: TDateVector;
     Families, Names, Patronymics, FullNames: TStrVector;
 
@@ -202,26 +202,21 @@ begin
   FullNames:= VSum(FullNames, ', ');
   FullNames:= VSum(FullNames, VDateToStr(BornDates));
   FullNames:= VSum(FullNames, ' г.р.');
-  SizeList.SetColumn('Ф.И.О', FullNames, taLeftJustify);
+  SizeList.SetColumn(SIZSIZE_STAFFLIST_COLUMN_NAMES[1], FullNames, taLeftJustify);
   SizeList.Refresh;
 end;
 
 procedure TSIZSizeForm.SizeListCreate;
+var
+  i: Integer;
 begin
   SizeList:= TVSTTable.Create(ListVT);
   SizeList.OnReturnKeyDown:= @SizeListEdit;
   SizeList.SetSingleFont(MainForm.GridFont);
   SizeList.HeaderFont.Style:= [fsBold];
-
-  SizeList.AddColumn('№ п/п', 50);
-  SizeList.AddColumn('Ф.И.О', 300);
-  SizeList.AddColumn('Одежда', 100);
-  SizeList.AddColumn('Обувь', 100);
-  SizeList.AddColumn('Головной убор', 100);
-  SizeList.AddColumn('Рукавицы', 100);
-  SizeList.AddColumn('Перчатки', 100);
-  SizeList.AddColumn('Противогаз', 100);
-  SizeList.AddColumn('Респиратор', 100);
+  for i:= 0 to High(SIZSIZE_STAFFLIST_COLUMN_NAMES) do
+    SizeList.AddColumn(SIZSIZE_STAFFLIST_COLUMN_NAMES[i],
+                       SIZSIZE_STAFFLIST_COLUMN_WIDTHS[i]);
   SizeList.AutosizeColumnDisable;
   SizeList.Draw;
 end;
@@ -249,8 +244,8 @@ begin
   DataBase.SIZStaffSizeLoad(STrimLeft(FilterString),
                             ParamList.Selected['OrderType'],
                             ParamList.Selected['ListType'],
-                            StaffIDs, Clothes, Heights, Shoes, HeadDress,
-                            Mittens, Gloves, Gasmasks, Respirators,
+                            StaffIDs, Clothes, Heights, Shoes, Heads,
+                            Hands, Gasmasks, Respirators,
                             Families, Names, Patronymics, BornDates);
 
   ExportButton.Enabled:= not VIsNil(StaffIDs);
@@ -259,19 +254,18 @@ begin
   SizeList.Visible:= False;
   try
     SizeList.ValuesClear;
-    SizeList.SetColumn('№ п/п', VIntToStr(VOrder(Length(StaffIDs))));
+    SizeList.SetColumn(SIZSIZE_STAFFLIST_COLUMN_NAMES[0], VIntToStr(VOrder(Length(StaffIDs))));
     NameTypeSelect;
     V:= VReplace(USIZSizes.CLOTHES, Clothes);
     V:= VSum(V, '/');
     V:= VSum(V, VReplace(USIZSizes.MANHEIGHTS, Heights));
     VChangeIf(V, '/', EmptyStr);
-    SizeList.SetColumn('Одежда', V);
-    SizeList.SetColumn('Обувь', VReplace(USIZSizes.SHOES, Shoes));
-    SizeList.SetColumn('Головной убор', VReplace(USIZSizes.HEADDRESS, HeadDress));
-    SizeList.SetColumn('Рукавицы', VReplace(USIZSizes.MITTENS, Mittens));
-    SizeList.SetColumn('Перчатки', VReplace(USIZSizes.MITTENS, Gloves));
-    SizeList.SetColumn('Противогаз', VReplace(USIZSizes.GASMASK, Gasmasks));
-    SizeList.SetColumn('Респиратор', VReplace(USIZSizes.RESPIRATOR, Respirators));
+    SizeList.SetColumn(SIZSIZE_STAFFLIST_COLUMN_NAMES[2], V);
+    SizeList.SetColumn(SIZSIZE_STAFFLIST_COLUMN_NAMES[3], VReplace(USIZSizes.SHOES, Shoes));
+    SizeList.SetColumn(SIZSIZE_STAFFLIST_COLUMN_NAMES[4], VReplace(USIZSizes.HEADDRESS, Heads));
+    SizeList.SetColumn(SIZSIZE_STAFFLIST_COLUMN_NAMES[5], VReplace(USIZSizes.HANDS, Hands));
+    SizeList.SetColumn(SIZSIZE_STAFFLIST_COLUMN_NAMES[6], VReplace(USIZSizes.GASMASKS, Gasmasks));
+    SizeList.SetColumn(SIZSIZE_STAFFLIST_COLUMN_NAMES[7], VReplace(USIZSizes.RESPIRATORS, Respirators));
 
     SizeList.Draw;
     if ModeType=mtEditing then
@@ -294,9 +288,8 @@ begin
     SIZSizeEditForm.SizeIndexes.Height:= Heights[SizeList.SelectedIndex];
     SIZSizeEditForm.SizeIndexes.Clothes:= Clothes[SizeList.SelectedIndex];
     SIZSizeEditForm.SizeIndexes.Shoes:= Shoes[SizeList.SelectedIndex];
-    SIZSizeEditForm.SizeIndexes.HeadDress:= HeadDress[SizeList.SelectedIndex];
-    SIZSizeEditForm.SizeIndexes.Mittens:= Mittens[SizeList.SelectedIndex];
-    SIZSizeEditForm.SizeIndexes.Gloves:= Gloves[SizeList.SelectedIndex];
+    SIZSizeEditForm.SizeIndexes.Head:= Heads[SizeList.SelectedIndex];
+    SIZSizeEditForm.SizeIndexes.Hand:= Hands[SizeList.SelectedIndex];
     SIZSizeEditForm.SizeIndexes.Gasmask:= Gasmasks[SizeList.SelectedIndex];
     SIZSizeEditForm.SizeIndexes.Respirator:= Respirators[SizeList.SelectedIndex];
 

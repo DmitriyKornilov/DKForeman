@@ -8,7 +8,7 @@ uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, Buttons,
   fpspreadsheetgrid, VirtualTrees, DividerBevel, DateUtils,
   //Project utils
-  UDataBase, UConst, UTypes, UUtils, UImages, USIZNormSheet, USIZTypes,
+  UDataBase, UConst, UTypes, UUtils, UImages, USIZNormSheet, USIZNormTypes,
   //DK packages utils
   DK_VSTTables, DK_Vector, DK_Dialogs, DK_CtrlUtils, DK_Const, DK_SheetExporter,
   //Forms

@@ -8,18 +8,15 @@
     "SCHEDULEMAIN",
     "SETTINGS",
     "SHIFTCOLORS",
-    "SIZCLASSES",
     "SIZDOC",
     "SIZENTRY",
-    "SIZFMU85PERIOD",
-    "SIZNAMES",
+    "SIZNAME",
     "SIZNORM",
     "SIZNORMITEM",
     "SIZNORMITEMPOST",
     "SIZNORMSUBITEM",
     "SIZNORMSUBITEMINFO",
     "SIZREASON",
-    "SIZSPECLIFE",
     "SIZSTAFFBACK",
     "SIZSTAFFLOG",
     "SIZSTAFFLOGINFO",
@@ -28,17 +25,6 @@
     "SIZSTORE",
     "SIZSTOREWRITEOFF",
     "SIZUNIT",
-    "SSOCLASSES",
-    "SSODOC",
-    "SSOENTRY",
-    "SSOFMU85PERIOD",
-    "SSONAMES",
-    "SSONORM",
-    "SSONORMITEM",
-    "SSONORMITEMPOST",
-    "SSOSTAFFLOG",
-    "SSOSTORE",
-    "SSOUNIT",
     "STAFFMAIN",
     "STAFFPOST",
     "STAFFPOSTLOG",
@@ -1241,89 +1227,6 @@
     "IndexesList" : [
     ]
   },
-  "SIZCLASSES" : {
-    "Description" : "КЛАССЫ СИЗ",
-    "Notes" : [
-    ],
-    "FieldsList" : [
-      "CLASSID",
-      "CLASSNAME"
-    ],
-    "CLASSID" : {
-      "FieldType" : "INTEGER",
-      "PrimaryKey" : true,
-      "Status" : true,
-      "NotNull" : true,
-      "DefaultValue" : "",
-      "Description" : [
-        "ID класса "
-      ],
-      "ExistingValues" : [
-        "1",
-        "2",
-        "3",
-        "4",
-        "5",
-        "6",
-        "7",
-        "8",
-        "9",
-        "10",
-        "11"
-      ],
-      "ReferenceTo" : {
-        "TableName" : "",
-        "FieldName" : "",
-        "OnDelete" : 4,
-        "OnUpdate" : 4
-      },
-      "ReferenceFrom" : {
-        "TableNames" : [
-          "SIZNAMES"
-        ],
-        "FieldNames" : [
-          "CLASSID"
-        ]
-      }
-    },
-    "CLASSNAME" : {
-      "FieldType" : "TEXT",
-      "PrimaryKey" : false,
-      "Status" : true,
-      "NotNull" : true,
-      "DefaultValue" : "",
-      "Description" : [
-        "Наименование класса"
-      ],
-      "ExistingValues" : [
-        "Одежда летняя",
-        "Одежда зимняя",
-        "Одежда особая",
-        "Обувь летняя",
-        "Обувь зимняя",
-        "Обувь особая",
-        "Головные уборы",
-        "Средства защиты органов дыхания",
-        "Средства защиты органов зрения",
-        "Средства защиты органов слуха",
-        "Средства защиты рук"
-      ],
-      "ReferenceTo" : {
-        "TableName" : "",
-        "FieldName" : "",
-        "OnDelete" : 4,
-        "OnUpdate" : 4
-      },
-      "ReferenceFrom" : {
-        "TableNames" : [
-        ],
-        "FieldNames" : [
-        ]
-      }
-    },
-    "IndexesList" : [
-    ]
-  },
   "SIZDOC" : {
     "Description" : "СПИСОК ДОКУМЕНТОВ ВЫДАЧИ/СПИСАНИЯ/ВОЗВРАТА СИЗ",
     "Notes" : [
@@ -1559,7 +1462,7 @@
       "ExistingValues" : [
       ],
       "ReferenceTo" : {
-        "TableName" : "SIZNAMES",
+        "TableName" : "SIZNAME",
         "FieldName" : "NAMEID",
         "OnDelete" : 0,
         "OnUpdate" : 0
@@ -1718,73 +1621,14 @@
     "IndexesList" : [
     ]
   },
-  "SIZFMU85PERIOD" : {
-    "Description" : "ПЕРИОД ДЛЯ ФОРМЫ ФМУ-85 (СИЗ)",
-    "Notes" : [
-    ],
-    "FieldsList" : [
-      "DOCID",
-      "PERIOD"
-    ],
-    "DOCID" : {
-      "FieldType" : "INTEGER",
-      "PrimaryKey" : false,
-      "Status" : true,
-      "NotNull" : true,
-      "DefaultValue" : "",
-      "Description" : [
-        "ID документа"
-      ],
-      "ExistingValues" : [
-      ],
-      "ReferenceTo" : {
-        "TableName" : "SIZDOC",
-        "FieldName" : "DOCID",
-        "OnDelete" : 0,
-        "OnUpdate" : 0
-      },
-      "ReferenceFrom" : {
-        "TableNames" : [
-        ],
-        "FieldNames" : [
-        ]
-      }
-    },
-    "PERIOD" : {
-      "FieldType" : "TEXT",
-      "PrimaryKey" : false,
-      "Status" : false,
-      "NotNull" : true,
-      "DefaultValue" : "",
-      "Description" : [
-        "Период"
-      ],
-      "ExistingValues" : [
-      ],
-      "ReferenceTo" : {
-        "TableName" : "",
-        "FieldName" : "",
-        "OnDelete" : 4,
-        "OnUpdate" : 4
-      },
-      "ReferenceFrom" : {
-        "TableNames" : [
-        ],
-        "FieldNames" : [
-        ]
-      }
-    },
-    "IndexesList" : [
-    ]
-  },
-  "SIZNAMES" : {
+  "SIZNAME" : {
     "Description" : "НАИМЕНОВАНИЯ СИЗ",
     "Notes" : [
     ],
     "FieldsList" : [
       "NAMEID",
       "SIZNAME",
-      "CLASSID",
+      "SIZTYPE",
       "UNITID",
       "SIZETYPE"
     ],
@@ -1838,22 +1682,30 @@
         ]
       }
     },
-    "CLASSID" : {
+    "SIZTYPE" : {
       "FieldType" : "INTEGER",
       "PrimaryKey" : false,
       "Status" : false,
       "NotNull" : true,
       "DefaultValue" : "",
       "Description" : [
-        "ID класса СИЗ"
+        "Тип СИЗ:",
+        "1 - Одежда специальная защитная,",
+        "2 - Средства защиты головы,",
+        "3 - Средства защиты ног,",
+        "4 - Средства защиты рук,",
+        "5 - Средства защиты глаз,",
+        "6 - Средства защиты органов дыхания,",
+        "7 - Средства защиты органов слуха,",
+        "8 - Средства дерматологические"
       ],
       "ExistingValues" : [
       ],
       "ReferenceTo" : {
-        "TableName" : "SIZCLASSES",
-        "FieldName" : "CLASSID",
-        "OnDelete" : 0,
-        "OnUpdate" : 0
+        "TableName" : "",
+        "FieldName" : "",
+        "OnDelete" : 4,
+        "OnUpdate" : 4
       },
       "ReferenceFrom" : {
         "TableNames" : [
@@ -1893,15 +1745,16 @@
       "NotNull" : true,
       "DefaultValue" : "0",
       "Description" : [
-        "Тип размера:",
+        "Тип размера / способ выдачи:",
         "0 - без размера,",
         "1 - размер одежды/рост,",
         "2 - обувь,",
         "3 - головной убор,",
-        "4 - рукавицы,",
-        "5 - перчатки,",
-        "6 - противогаз,",
-        "7 - респиратор"
+        "4 - рукавицы/перчатки,",
+        "5 - противогаз (маска),",
+        "6 - респиратор (полумаска),",
+        "7 - лично,",
+        "8 - дозатор"
       ],
       "ExistingValues" : [
       ],
@@ -1928,7 +1781,6 @@
     "FieldsList" : [
       "NORMID",
       "NORMNAME",
-      "TYPICALNAME",
       "BEGINDATE",
       "ENDDATE"
     ],
@@ -1966,30 +1818,6 @@
       "DefaultValue" : "",
       "Description" : [
         "Наименование нормы"
-      ],
-      "ExistingValues" : [
-      ],
-      "ReferenceTo" : {
-        "TableName" : "",
-        "FieldName" : "",
-        "OnDelete" : 4,
-        "OnUpdate" : 4
-      },
-      "ReferenceFrom" : {
-        "TableNames" : [
-        ],
-        "FieldNames" : [
-        ]
-      }
-    },
-    "TYPICALNAME" : {
-      "FieldType" : "TEXT",
-      "PrimaryKey" : false,
-      "Status" : false,
-      "NotNull" : false,
-      "DefaultValue" : "",
-      "Description" : [
-        "Наименование отраслевой/федеральной нормы"
       ],
       "ExistingValues" : [
       ],
@@ -2063,7 +1891,7 @@
     ],
     "FieldsList" : [
       "ITEMID",
-      "ITEMNAME",
+      "OREDRNUM",
       "NORMID"
     ],
     "ITEMID" : {
@@ -2094,14 +1922,14 @@
         ]
       }
     },
-    "ITEMNAME" : {
-      "FieldType" : "TEXT",
+    "OREDRNUM" : {
+      "FieldType" : "INTEGER",
       "PrimaryKey" : false,
       "Status" : false,
       "NotNull" : true,
       "DefaultValue" : "",
       "Description" : [
-        "Наименование пункта"
+        "№ п/п"
       ],
       "ExistingValues" : [
       ],
@@ -2143,16 +1971,7 @@
       }
     },
     "IndexesList" : [
-      "ITEMNAMENORMID"
-    ],
-    "ITEMNAMENORMID" : {
-      "Unique" : true,
-      "Where" : "",
-      "IndexFieldNames" : [
-        "ITEMNAME",
-        "NORMID"
-      ]
-    }
+    ]
   },
   "SIZNORMITEMPOST" : {
     "Description" : "СООТВЕТСТВИЕ ПУНКТА ТИПОВОЙ НОРМЫ ВЫДАЧИ СИЗ ДОЛЖНОСТИ РАБОТНИКА",
@@ -2332,8 +2151,8 @@
       "NAMEID",
       "NUM",
       "LIFE",
-      "SPECLIFEID",
-      "ORDERNUM"
+      "ORDERNUM",
+      "CLAUSENAME"
     ],
     "INFOID" : {
       "FieldType" : "INTEGER",
@@ -2443,7 +2262,7 @@
       "NotNull" : true,
       "DefaultValue" : "0",
       "Description" : [
-        "Срок службы СИЗ (количество месяцев)"
+        "Срок службы СИЗ (количество месяцев, 0 - до износа)"
       ],
       "ExistingValues" : [
       ],
@@ -2460,30 +2279,6 @@
         ]
       }
     },
-    "SPECLIFEID" : {
-      "FieldType" : "INTEGER",
-      "PrimaryKey" : false,
-      "Status" : false,
-      "NotNull" : true,
-      "DefaultValue" : "0",
-      "Description" : [
-        "ID особого срока службы СИЗ"
-      ],
-      "ExistingValues" : [
-      ],
-      "ReferenceTo" : {
-        "TableName" : "SIZSPECLIFE",
-        "FieldName" : "SPECLIFEID",
-        "OnDelete" : 2,
-        "OnUpdate" : 0
-      },
-      "ReferenceFrom" : {
-        "TableNames" : [
-        ],
-        "FieldNames" : [
-        ]
-      }
-    },
     "ORDERNUM" : {
       "FieldType" : "INTEGER",
       "PrimaryKey" : false,
@@ -2492,6 +2287,30 @@
       "DefaultValue" : "",
       "Description" : [
         "Порядковый номер для отображения в строке"
+      ],
+      "ExistingValues" : [
+      ],
+      "ReferenceTo" : {
+        "TableName" : "",
+        "FieldName" : "",
+        "OnDelete" : 4,
+        "OnUpdate" : 4
+      },
+      "ReferenceFrom" : {
+        "TableNames" : [
+        ],
+        "FieldNames" : [
+        ]
+      }
+    },
+    "CLAUSENAME" : {
+      "FieldType" : "TEXT",
+      "PrimaryKey" : false,
+      "Status" : false,
+      "NotNull" : true,
+      "DefaultValue" : "",
+      "Description" : [
+        "Пункт Норм"
       ],
       "ExistingValues" : [
       ],
@@ -2555,69 +2374,6 @@
       ],
       "ExistingValues" : [
         "<не указано>"
-      ],
-      "ReferenceTo" : {
-        "TableName" : "",
-        "FieldName" : "",
-        "OnDelete" : 4,
-        "OnUpdate" : 4
-      },
-      "ReferenceFrom" : {
-        "TableNames" : [
-        ],
-        "FieldNames" : [
-        ]
-      }
-    },
-    "IndexesList" : [
-    ]
-  },
-  "SIZSPECLIFE" : {
-    "Description" : "СПИСОК ОСОБЫХ СРОКОВ СЛУЖБЫ СИЗ",
-    "Notes" : [
-    ],
-    "FieldsList" : [
-      "SPECLIFEID",
-      "SPECLIFENAME"
-    ],
-    "SPECLIFEID" : {
-      "FieldType" : "INTEGER",
-      "PrimaryKey" : true,
-      "Status" : true,
-      "NotNull" : true,
-      "DefaultValue" : "",
-      "Description" : [
-      ],
-      "ExistingValues" : [
-        "0",
-        "1",
-        "2"
-      ],
-      "ReferenceTo" : {
-        "TableName" : "",
-        "FieldName" : "",
-        "OnDelete" : 4,
-        "OnUpdate" : 4
-      },
-      "ReferenceFrom" : {
-        "TableNames" : [
-        ],
-        "FieldNames" : [
-        ]
-      }
-    },
-    "SPECLIFENAME" : {
-      "FieldType" : "TEXT",
-      "PrimaryKey" : false,
-      "Status" : true,
-      "NotNull" : true,
-      "DefaultValue" : "",
-      "Description" : [
-      ],
-      "ExistingValues" : [
-        "<не указан>",
-        "дежурное",
-        "до износа"
       ],
       "ReferenceTo" : {
         "TableName" : "",
@@ -3022,9 +2778,8 @@
       "CLOTHES",
       "HEIGHT",
       "SHOES",
-      "HEADDRESS",
-      "MITTENS",
-      "GLOVES",
+      "HEAD",
+      "HAND",
       "GASMASK",
       "RESPIRATOR"
     ],
@@ -3124,7 +2879,7 @@
         ]
       }
     },
-    "HEADDRESS" : {
+    "HEAD" : {
       "FieldType" : "INTEGER",
       "PrimaryKey" : false,
       "Status" : false,
@@ -3148,38 +2903,14 @@
         ]
       }
     },
-    "MITTENS" : {
+    "HAND" : {
       "FieldType" : "INTEGER",
       "PrimaryKey" : false,
       "Status" : false,
       "NotNull" : true,
       "DefaultValue" : "0",
       "Description" : [
-        "Размер рукавиц"
-      ],
-      "ExistingValues" : [
-      ],
-      "ReferenceTo" : {
-        "TableName" : "",
-        "FieldName" : "",
-        "OnDelete" : 4,
-        "OnUpdate" : 4
-      },
-      "ReferenceFrom" : {
-        "TableNames" : [
-        ],
-        "FieldNames" : [
-        ]
-      }
-    },
-    "GLOVES" : {
-      "FieldType" : "INTEGER",
-      "PrimaryKey" : false,
-      "Status" : false,
-      "NotNull" : true,
-      "DefaultValue" : "0",
-      "Description" : [
-        "Размер перчаток"
+        "Размер рукавиц/перчаток"
       ],
       "ExistingValues" : [
       ],
@@ -3587,7 +3318,14 @@
         "0",
         "1",
         "2",
-        "3"
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "10"
       ],
       "ReferenceTo" : {
         "TableName" : "",
@@ -3597,10 +3335,8 @@
       },
       "ReferenceFrom" : {
         "TableNames" : [
-          "SIZNAMES"
         ],
         "FieldNames" : [
-          "UNITID"
         ]
       }
     },
@@ -3617,7 +3353,14 @@
         "<не указана>",
         "Штука",
         "Пара",
-        "Комплект"
+        "Комплект",
+        "Грамм",
+        "Килограмм",
+        "Кубический дециметр",
+        "Кубический сантиметр",
+        "Литр",
+        "Миллиграмм",
+        "Миллилитр"
       ],
       "ReferenceTo" : {
         "TableName" : "",
@@ -3645,7 +3388,14 @@
         "0",
         "796",
         "715",
-        "839"
+        "839",
+        "163",
+        "166",
+        "112",
+        "111",
+        "112",
+        "161",
+        "111"
       ],
       "ReferenceTo" : {
         "TableName" : "",
@@ -3673,1342 +3423,14 @@
         " ",
         "шт",
         "пар",
-        "компл"
-      ],
-      "ReferenceTo" : {
-        "TableName" : "",
-        "FieldName" : "",
-        "OnDelete" : 4,
-        "OnUpdate" : 4
-      },
-      "ReferenceFrom" : {
-        "TableNames" : [
-        ],
-        "FieldNames" : [
-        ]
-      }
-    },
-    "IndexesList" : [
-    ]
-  },
-  "SSOCLASSES" : {
-    "Description" : "КЛАССЫ ССО (1122н)",
-    "Notes" : [
-    ],
-    "FieldsList" : [
-      "CLASSID",
-      "CLASSNAME"
-    ],
-    "CLASSID" : {
-      "FieldType" : "INTEGER",
-      "PrimaryKey" : true,
-      "Status" : true,
-      "NotNull" : true,
-      "DefaultValue" : "",
-      "Description" : [
-        "ID класса"
-      ],
-      "ExistingValues" : [
-        "1",
-        "2",
-        "3"
-      ],
-      "ReferenceTo" : {
-        "TableName" : "",
-        "FieldName" : "",
-        "OnDelete" : 4,
-        "OnUpdate" : 4
-      },
-      "ReferenceFrom" : {
-        "TableNames" : [
-          "SSONAMES"
-        ],
-        "FieldNames" : [
-          "CLASSID"
-        ]
-      }
-    },
-    "CLASSNAME" : {
-      "FieldType" : "TEXT",
-      "PrimaryKey" : false,
-      "Status" : true,
-      "NotNull" : true,
-      "DefaultValue" : "",
-      "Description" : [
-        "Наименование класса"
-      ],
-      "ExistingValues" : [
-        "Защитные средства",
-        "Очищающие средства",
-        "Восстанавливающие средства"
-      ],
-      "ReferenceTo" : {
-        "TableName" : "",
-        "FieldName" : "",
-        "OnDelete" : 4,
-        "OnUpdate" : 4
-      },
-      "ReferenceFrom" : {
-        "TableNames" : [
-        ],
-        "FieldNames" : [
-        ]
-      }
-    },
-    "IndexesList" : [
-    ]
-  },
-  "SSODOC" : {
-    "Description" : "СПИСОК ДОКУМЕНТОВ ВЫДАЧИ/СПИСАНИЯ ССО",
-    "Notes" : [
-    ],
-    "FieldsList" : [
-      "DOCID",
-      "DOCNAME",
-      "DOCDATE",
-      "DOCNUM",
-      "DOCTYPE"
-    ],
-    "DOCID" : {
-      "FieldType" : "INTEGER",
-      "PrimaryKey" : true,
-      "Status" : true,
-      "NotNull" : true,
-      "DefaultValue" : "",
-      "Description" : [
-        "ID документа"
-      ],
-      "ExistingValues" : [
-      ],
-      "ReferenceTo" : {
-        "TableName" : "",
-        "FieldName" : "",
-        "OnDelete" : 4,
-        "OnUpdate" : 4
-      },
-      "ReferenceFrom" : {
-        "TableNames" : [
-          "SSOFMU85PERIOD",
-          "SSOENTRY",
-          "SSOSTAFFLOG"
-        ],
-        "FieldNames" : [
-          "DOCID",
-          "DOCID",
-          "GETTINGDOCID"
-        ]
-      }
-    },
-    "DOCNAME" : {
-      "FieldType" : "TEXT",
-      "PrimaryKey" : false,
-      "Status" : false,
-      "NotNull" : true,
-      "DefaultValue" : "",
-      "Description" : [
-        "Наименование документа "
-      ],
-      "ExistingValues" : [
-      ],
-      "ReferenceTo" : {
-        "TableName" : "",
-        "FieldName" : "",
-        "OnDelete" : 4,
-        "OnUpdate" : 4
-      },
-      "ReferenceFrom" : {
-        "TableNames" : [
-        ],
-        "FieldNames" : [
-        ]
-      }
-    },
-    "DOCDATE" : {
-      "FieldType" : "DATETIME",
-      "PrimaryKey" : false,
-      "Status" : false,
-      "NotNull" : true,
-      "DefaultValue" : "",
-      "Description" : [
-        "Дата составления документа "
-      ],
-      "ExistingValues" : [
-      ],
-      "ReferenceTo" : {
-        "TableName" : "",
-        "FieldName" : "",
-        "OnDelete" : 4,
-        "OnUpdate" : 4
-      },
-      "ReferenceFrom" : {
-        "TableNames" : [
-        ],
-        "FieldNames" : [
-        ]
-      }
-    },
-    "DOCNUM" : {
-      "FieldType" : "TEXT",
-      "PrimaryKey" : false,
-      "Status" : false,
-      "NotNull" : true,
-      "DefaultValue" : "",
-      "Description" : [
-        "Номер документа "
-      ],
-      "ExistingValues" : [
-      ],
-      "ReferenceTo" : {
-        "TableName" : "",
-        "FieldName" : "",
-        "OnDelete" : 4,
-        "OnUpdate" : 4
-      },
-      "ReferenceFrom" : {
-        "TableNames" : [
-        ],
-        "FieldNames" : [
-        ]
-      }
-    },
-    "DOCTYPE" : {
-      "FieldType" : "INTEGER",
-      "PrimaryKey" : false,
-      "Status" : false,
-      "NotNull" : true,
-      "DefaultValue" : "0",
-      "Description" : [
-        "Тип документа:",
-        "0 - поступление",
-        "1 - выдача (ФМУ-85)"
-      ],
-      "ExistingValues" : [
-      ],
-      "ReferenceTo" : {
-        "TableName" : "",
-        "FieldName" : "",
-        "OnDelete" : 4,
-        "OnUpdate" : 4
-      },
-      "ReferenceFrom" : {
-        "TableNames" : [
-        ],
-        "FieldNames" : [
-        ]
-      }
-    },
-    "IndexesList" : [
-      "DOCNAMENUMDATE"
-    ],
-    "DOCNAMENUMDATE" : {
-      "Unique" : true,
-      "Where" : "",
-      "IndexFieldNames" : [
-        "DOCNAME",
-        "DOCDATE",
-        "DOCNUM"
-      ]
-    }
-  },
-  "SSOENTRY" : {
-    "Description" : "СПИСОК ПОСТУПЛЕНИЯ ССО НА СКЛАД",
-    "Notes" : [
-    ],
-    "FieldsList" : [
-      "ENTRYID",
-      "NOMNUM",
-      "NAMEID",
-      "CERTIFICATE",
-      "ENTRYVOLUME",
-      "ENTRYCOUNT",
-      "DOCID"
-    ],
-    "ENTRYID" : {
-      "FieldType" : "INTEGER",
-      "PrimaryKey" : true,
-      "Status" : true,
-      "NotNull" : true,
-      "DefaultValue" : "",
-      "Description" : [
-        "ID поступления"
-      ],
-      "ExistingValues" : [
-      ],
-      "ReferenceTo" : {
-        "TableName" : "",
-        "FieldName" : "",
-        "OnDelete" : 4,
-        "OnUpdate" : 4
-      },
-      "ReferenceFrom" : {
-        "TableNames" : [
-          "SSOSTORE"
-        ],
-        "FieldNames" : [
-          "ENTRYID"
-        ]
-      }
-    },
-    "NOMNUM" : {
-      "FieldType" : "TEXT",
-      "PrimaryKey" : false,
-      "Status" : false,
-      "NotNull" : true,
-      "DefaultValue" : "",
-      "Description" : [
-        "Номенклатурный номер"
-      ],
-      "ExistingValues" : [
-      ],
-      "ReferenceTo" : {
-        "TableName" : "",
-        "FieldName" : "",
-        "OnDelete" : 4,
-        "OnUpdate" : 4
-      },
-      "ReferenceFrom" : {
-        "TableNames" : [
-        ],
-        "FieldNames" : [
-        ]
-      }
-    },
-    "NAMEID" : {
-      "FieldType" : "INTEGER",
-      "PrimaryKey" : false,
-      "Status" : false,
-      "NotNull" : true,
-      "DefaultValue" : "",
-      "Description" : [
-        "ID наименования средства"
-      ],
-      "ExistingValues" : [
-      ],
-      "ReferenceTo" : {
-        "TableName" : "SSONAMES",
-        "FieldName" : "NAMEID",
-        "OnDelete" : 0,
-        "OnUpdate" : 0
-      },
-      "ReferenceFrom" : {
-        "TableNames" : [
-        ],
-        "FieldNames" : [
-        ]
-      }
-    },
-    "CERTIFICATE" : {
-      "FieldType" : "TEXT",
-      "PrimaryKey" : false,
-      "Status" : false,
-      "NotNull" : false,
-      "DefaultValue" : "",
-      "Description" : [
-        "Сертификат соответствия"
-      ],
-      "ExistingValues" : [
-      ],
-      "ReferenceTo" : {
-        "TableName" : "",
-        "FieldName" : "",
-        "OnDelete" : 4,
-        "OnUpdate" : 4
-      },
-      "ReferenceFrom" : {
-        "TableNames" : [
-        ],
-        "FieldNames" : [
-        ]
-      }
-    },
-    "ENTRYVOLUME" : {
-      "FieldType" : "INTEGER",
-      "PrimaryKey" : false,
-      "Status" : false,
-      "NotNull" : true,
-      "DefaultValue" : "100",
-      "Description" : [
-        "Объем 1 единицы (1 дозы) средства"
-      ],
-      "ExistingValues" : [
-      ],
-      "ReferenceTo" : {
-        "TableName" : "",
-        "FieldName" : "",
-        "OnDelete" : 4,
-        "OnUpdate" : 4
-      },
-      "ReferenceFrom" : {
-        "TableNames" : [
-        ],
-        "FieldNames" : [
-        ]
-      }
-    },
-    "ENTRYCOUNT" : {
-      "FieldType" : "INTEGER",
-      "PrimaryKey" : false,
-      "Status" : false,
-      "NotNull" : true,
-      "DefaultValue" : "1",
-      "Description" : [
-        "Количество единиц (доз) поступившего средства"
-      ],
-      "ExistingValues" : [
-      ],
-      "ReferenceTo" : {
-        "TableName" : "",
-        "FieldName" : "",
-        "OnDelete" : 4,
-        "OnUpdate" : 4
-      },
-      "ReferenceFrom" : {
-        "TableNames" : [
-        ],
-        "FieldNames" : [
-        ]
-      }
-    },
-    "DOCID" : {
-      "FieldType" : "INTEGER",
-      "PrimaryKey" : false,
-      "Status" : false,
-      "NotNull" : true,
-      "DefaultValue" : "",
-      "Description" : [
-        "ID документа"
-      ],
-      "ExistingValues" : [
-      ],
-      "ReferenceTo" : {
-        "TableName" : "SSODOC",
-        "FieldName" : "DOCID",
-        "OnDelete" : 0,
-        "OnUpdate" : 0
-      },
-      "ReferenceFrom" : {
-        "TableNames" : [
-        ],
-        "FieldNames" : [
-        ]
-      }
-    },
-    "IndexesList" : [
-    ]
-  },
-  "SSOFMU85PERIOD" : {
-    "Description" : "ПЕРИОД ДЛЯ ФОРМЫ ФМУ-85 (ССО)",
-    "Notes" : [
-    ],
-    "FieldsList" : [
-      "DOCID",
-      "PERIOD"
-    ],
-    "DOCID" : {
-      "FieldType" : "INTEGER",
-      "PrimaryKey" : false,
-      "Status" : true,
-      "NotNull" : true,
-      "DefaultValue" : "",
-      "Description" : [
-        "ID документа"
-      ],
-      "ExistingValues" : [
-      ],
-      "ReferenceTo" : {
-        "TableName" : "SSODOC",
-        "FieldName" : "DOCID",
-        "OnDelete" : 0,
-        "OnUpdate" : 0
-      },
-      "ReferenceFrom" : {
-        "TableNames" : [
-        ],
-        "FieldNames" : [
-        ]
-      }
-    },
-    "PERIOD" : {
-      "FieldType" : "TEXT",
-      "PrimaryKey" : false,
-      "Status" : false,
-      "NotNull" : true,
-      "DefaultValue" : "",
-      "Description" : [
-        "Период"
-      ],
-      "ExistingValues" : [
-      ],
-      "ReferenceTo" : {
-        "TableName" : "",
-        "FieldName" : "",
-        "OnDelete" : 4,
-        "OnUpdate" : 4
-      },
-      "ReferenceFrom" : {
-        "TableNames" : [
-        ],
-        "FieldNames" : [
-        ]
-      }
-    },
-    "IndexesList" : [
-    ]
-  },
-  "SSONAMES" : {
-    "Description" : "НАИМЕНОВАНИЯ ССО",
-    "Notes" : [
-    ],
-    "FieldsList" : [
-      "NAMEID",
-      "SSONAME",
-      "CLASSID",
-      "UNITID",
-      "METHOD"
-    ],
-    "NAMEID" : {
-      "FieldType" : "INTEGER",
-      "PrimaryKey" : true,
-      "Status" : true,
-      "NotNull" : true,
-      "DefaultValue" : "",
-      "Description" : [
-        "ID наименование средства"
-      ],
-      "ExistingValues" : [
-      ],
-      "ReferenceTo" : {
-        "TableName" : "",
-        "FieldName" : "",
-        "OnDelete" : 4,
-        "OnUpdate" : 4
-      },
-      "ReferenceFrom" : {
-        "TableNames" : [
-          "SSONORMITEM",
-          "SSOENTRY"
-        ],
-        "FieldNames" : [
-          "NAMEID",
-          "NAMEID"
-        ]
-      }
-    },
-    "SSONAME" : {
-      "FieldType" : "TEXT",
-      "PrimaryKey" : false,
-      "Status" : true,
-      "NotNull" : true,
-      "DefaultValue" : "",
-      "Description" : [
-        "Наименование средства"
-      ],
-      "ExistingValues" : [
-      ],
-      "ReferenceTo" : {
-        "TableName" : "",
-        "FieldName" : "",
-        "OnDelete" : 4,
-        "OnUpdate" : 4
-      },
-      "ReferenceFrom" : {
-        "TableNames" : [
-        ],
-        "FieldNames" : [
-        ]
-      }
-    },
-    "CLASSID" : {
-      "FieldType" : "INTEGER",
-      "PrimaryKey" : false,
-      "Status" : false,
-      "NotNull" : true,
-      "DefaultValue" : "",
-      "Description" : [
-        "ID класса средства"
-      ],
-      "ExistingValues" : [
-      ],
-      "ReferenceTo" : {
-        "TableName" : "SSOCLASSES",
-        "FieldName" : "CLASSID",
-        "OnDelete" : 0,
-        "OnUpdate" : 0
-      },
-      "ReferenceFrom" : {
-        "TableNames" : [
-        ],
-        "FieldNames" : [
-        ]
-      }
-    },
-    "UNITID" : {
-      "FieldType" : "INTEGER",
-      "PrimaryKey" : false,
-      "Status" : false,
-      "NotNull" : true,
-      "DefaultValue" : "0",
-      "Description" : [
-        "ID единицы измерения средства"
-      ],
-      "ExistingValues" : [
-      ],
-      "ReferenceTo" : {
-        "TableName" : "SSOUNIT",
-        "FieldName" : "UNITID",
-        "OnDelete" : 2,
-        "OnUpdate" : 0
-      },
-      "ReferenceFrom" : {
-        "TableNames" : [
-        ],
-        "FieldNames" : [
-        ]
-      }
-    },
-    "METHOD" : {
-      "FieldType" : "INTEGER",
-      "PrimaryKey" : false,
-      "Status" : false,
-      "NotNull" : true,
-      "DefaultValue" : "0",
-      "Description" : [
-        "Метод выдачи:",
-        "0 - индивидуально (кусок, туба, упаковка и т.д.),",
-        "1 - посредством дозирующей системы"
-      ],
-      "ExistingValues" : [
-      ],
-      "ReferenceTo" : {
-        "TableName" : "",
-        "FieldName" : "",
-        "OnDelete" : 4,
-        "OnUpdate" : 4
-      },
-      "ReferenceFrom" : {
-        "TableNames" : [
-        ],
-        "FieldNames" : [
-        ]
-      }
-    },
-    "IndexesList" : [
-    ]
-  },
-  "SSONORM" : {
-    "Description" : "СПИСОК ТИПОВЫХ НОРМ ВЫДАЧИ ССО",
-    "Notes" : [
-    ],
-    "FieldsList" : [
-      "NORMID",
-      "NORMNAME",
-      "TYPICALNAME",
-      "BEGINDATE",
-      "ENDDATE"
-    ],
-    "NORMID" : {
-      "FieldType" : "INTEGER",
-      "PrimaryKey" : true,
-      "Status" : true,
-      "NotNull" : true,
-      "DefaultValue" : "",
-      "Description" : [
-        "ID нормы"
-      ],
-      "ExistingValues" : [
-      ],
-      "ReferenceTo" : {
-        "TableName" : "",
-        "FieldName" : "",
-        "OnDelete" : 4,
-        "OnUpdate" : 4
-      },
-      "ReferenceFrom" : {
-        "TableNames" : [
-          "SSONORMITEM"
-        ],
-        "FieldNames" : [
-          "NORMID"
-        ]
-      }
-    },
-    "NORMNAME" : {
-      "FieldType" : "TEXT",
-      "PrimaryKey" : false,
-      "Status" : true,
-      "NotNull" : true,
-      "DefaultValue" : "",
-      "Description" : [
-        "Наименование нормы"
-      ],
-      "ExistingValues" : [
-      ],
-      "ReferenceTo" : {
-        "TableName" : "",
-        "FieldName" : "",
-        "OnDelete" : 4,
-        "OnUpdate" : 4
-      },
-      "ReferenceFrom" : {
-        "TableNames" : [
-        ],
-        "FieldNames" : [
-        ]
-      }
-    },
-    "TYPICALNAME" : {
-      "FieldType" : "TEXT",
-      "PrimaryKey" : false,
-      "Status" : false,
-      "NotNull" : false,
-      "DefaultValue" : "",
-      "Description" : [
-        "Наименование отраслевой (федеральной нормы)"
-      ],
-      "ExistingValues" : [
-      ],
-      "ReferenceTo" : {
-        "TableName" : "",
-        "FieldName" : "",
-        "OnDelete" : 4,
-        "OnUpdate" : 4
-      },
-      "ReferenceFrom" : {
-        "TableNames" : [
-        ],
-        "FieldNames" : [
-        ]
-      }
-    },
-    "BEGINDATE" : {
-      "FieldType" : "DATETIME",
-      "PrimaryKey" : false,
-      "Status" : false,
-      "NotNull" : true,
-      "DefaultValue" : "",
-      "Description" : [
-        "Дата первого дня действия нормы"
-      ],
-      "ExistingValues" : [
-      ],
-      "ReferenceTo" : {
-        "TableName" : "",
-        "FieldName" : "",
-        "OnDelete" : 4,
-        "OnUpdate" : 4
-      },
-      "ReferenceFrom" : {
-        "TableNames" : [
-        ],
-        "FieldNames" : [
-        ]
-      }
-    },
-    "ENDDATE" : {
-      "FieldType" : "DATETIME",
-      "PrimaryKey" : false,
-      "Status" : false,
-      "NotNull" : true,
-      "DefaultValue" : "",
-      "Description" : [
-        "Дата последнего дня действия нормы"
-      ],
-      "ExistingValues" : [
-      ],
-      "ReferenceTo" : {
-        "TableName" : "",
-        "FieldName" : "",
-        "OnDelete" : 4,
-        "OnUpdate" : 4
-      },
-      "ReferenceFrom" : {
-        "TableNames" : [
-        ],
-        "FieldNames" : [
-        ]
-      }
-    },
-    "IndexesList" : [
-    ]
-  },
-  "SSONORMITEM" : {
-    "Description" : "ПУНКТЫ ТИПОВОЙ НОРМЫ ВЫДАЧИ ССО",
-    "Notes" : [
-    ],
-    "FieldsList" : [
-      "ITEMID",
-      "ITEMNAME",
-      "NORMID",
-      "NAMEID",
-      "VOLUME"
-    ],
-    "ITEMID" : {
-      "FieldType" : "INTEGER",
-      "PrimaryKey" : true,
-      "Status" : true,
-      "NotNull" : true,
-      "DefaultValue" : "",
-      "Description" : [
-        "ID пункта нормы"
-      ],
-      "ExistingValues" : [
-      ],
-      "ReferenceTo" : {
-        "TableName" : "",
-        "FieldName" : "",
-        "OnDelete" : 4,
-        "OnUpdate" : 4
-      },
-      "ReferenceFrom" : {
-        "TableNames" : [
-          "SSONORMITEMPOST",
-          "SSOSTAFFLOG"
-        ],
-        "FieldNames" : [
-          "ITEMID",
-          "ITEMID"
-        ]
-      }
-    },
-    "ITEMNAME" : {
-      "FieldType" : "TEXT",
-      "PrimaryKey" : false,
-      "Status" : false,
-      "NotNull" : true,
-      "DefaultValue" : "",
-      "Description" : [
-        "Наименование пункта"
-      ],
-      "ExistingValues" : [
-      ],
-      "ReferenceTo" : {
-        "TableName" : "",
-        "FieldName" : "",
-        "OnDelete" : 4,
-        "OnUpdate" : 4
-      },
-      "ReferenceFrom" : {
-        "TableNames" : [
-        ],
-        "FieldNames" : [
-        ]
-      }
-    },
-    "NORMID" : {
-      "FieldType" : "INTEGER",
-      "PrimaryKey" : false,
-      "Status" : false,
-      "NotNull" : true,
-      "DefaultValue" : "",
-      "Description" : [
-        "ID нормы"
-      ],
-      "ExistingValues" : [
-      ],
-      "ReferenceTo" : {
-        "TableName" : "SSONORM",
-        "FieldName" : "NORMID",
-        "OnDelete" : 0,
-        "OnUpdate" : 0
-      },
-      "ReferenceFrom" : {
-        "TableNames" : [
-        ],
-        "FieldNames" : [
-        ]
-      }
-    },
-    "NAMEID" : {
-      "FieldType" : "INTEGER",
-      "PrimaryKey" : false,
-      "Status" : false,
-      "NotNull" : true,
-      "DefaultValue" : "",
-      "Description" : [
-        "ID наименования средства"
-      ],
-      "ExistingValues" : [
-      ],
-      "ReferenceTo" : {
-        "TableName" : "SSONAMES",
-        "FieldName" : "NAMEID",
-        "OnDelete" : 0,
-        "OnUpdate" : 0
-      },
-      "ReferenceFrom" : {
-        "TableNames" : [
-        ],
-        "FieldNames" : [
-        ]
-      }
-    },
-    "VOLUME" : {
-      "FieldType" : "INTEGER",
-      "PrimaryKey" : false,
-      "Status" : false,
-      "NotNull" : true,
-      "DefaultValue" : "100",
-      "Description" : [
-        "Количество (объем) на месяц"
-      ],
-      "ExistingValues" : [
-      ],
-      "ReferenceTo" : {
-        "TableName" : "",
-        "FieldName" : "",
-        "OnDelete" : 4,
-        "OnUpdate" : 4
-      },
-      "ReferenceFrom" : {
-        "TableNames" : [
-        ],
-        "FieldNames" : [
-        ]
-      }
-    },
-    "IndexesList" : [
-      "ITEMNAMENORMID"
-    ],
-    "ITEMNAMENORMID" : {
-      "Unique" : true,
-      "Where" : "",
-      "IndexFieldNames" : [
-        "ITEMNAME",
-        "NORMID"
-      ]
-    }
-  },
-  "SSONORMITEMPOST" : {
-    "Description" : "СООТВЕТСТВИЕ ПУНКТОВ ТИПОВОЙ НОРМЫ ВЫДАЧИ ССО ДОЛЖНОСТИ РАБОТНИКА",
-    "Notes" : [
-    ],
-    "FieldsList" : [
-      "ITEMID",
-      "POSTID"
-    ],
-    "ITEMID" : {
-      "FieldType" : "INTEGER",
-      "PrimaryKey" : false,
-      "Status" : false,
-      "NotNull" : true,
-      "DefaultValue" : "",
-      "Description" : [
-        "ID пункта нормы выдачи"
-      ],
-      "ExistingValues" : [
-      ],
-      "ReferenceTo" : {
-        "TableName" : "SSONORMITEM",
-        "FieldName" : "ITEMID",
-        "OnDelete" : 0,
-        "OnUpdate" : 0
-      },
-      "ReferenceFrom" : {
-        "TableNames" : [
-        ],
-        "FieldNames" : [
-        ]
-      }
-    },
-    "POSTID" : {
-      "FieldType" : "INTEGER",
-      "PrimaryKey" : false,
-      "Status" : false,
-      "NotNull" : true,
-      "DefaultValue" : "",
-      "Description" : [
-        "ID должности"
-      ],
-      "ExistingValues" : [
-      ],
-      "ReferenceTo" : {
-        "TableName" : "STAFFPOST",
-        "FieldName" : "POSTID",
-        "OnDelete" : 0,
-        "OnUpdate" : 0
-      },
-      "ReferenceFrom" : {
-        "TableNames" : [
-        ],
-        "FieldNames" : [
-        ]
-      }
-    },
-    "IndexesList" : [
-    ]
-  },
-  "SSOSTAFFLOG" : {
-    "Description" : "ЖУРНАЛ ВЫДАЧИ СИЗ РАБОТНИКАМ",
-    "Notes" : [
-    ],
-    "FieldsList" : [
-      "LOGID",
-      "TABNUMID",
-      "GETTINGDATE",
-      "GETTINGDOCID",
-      "ITEMID",
-      "STOREID"
-    ],
-    "LOGID" : {
-      "FieldType" : "INTEGER",
-      "PrimaryKey" : true,
-      "Status" : true,
-      "NotNull" : true,
-      "DefaultValue" : "",
-      "Description" : [
-        "ID записи журнала выдачи"
-      ],
-      "ExistingValues" : [
-      ],
-      "ReferenceTo" : {
-        "TableName" : "",
-        "FieldName" : "",
-        "OnDelete" : 4,
-        "OnUpdate" : 4
-      },
-      "ReferenceFrom" : {
-        "TableNames" : [
-        ],
-        "FieldNames" : [
-        ]
-      }
-    },
-    "TABNUMID" : {
-      "FieldType" : "INTEGER",
-      "PrimaryKey" : false,
-      "Status" : false,
-      "NotNull" : true,
-      "DefaultValue" : "",
-      "Description" : [
-        "ID табельного номера"
-      ],
-      "ExistingValues" : [
-      ],
-      "ReferenceTo" : {
-        "TableName" : "STAFFTABNUM",
-        "FieldName" : "TABNUMID",
-        "OnDelete" : 0,
-        "OnUpdate" : 0
-      },
-      "ReferenceFrom" : {
-        "TableNames" : [
-        ],
-        "FieldNames" : [
-        ]
-      }
-    },
-    "GETTINGDATE" : {
-      "FieldType" : "DATETIME",
-      "PrimaryKey" : false,
-      "Status" : false,
-      "NotNull" : true,
-      "DefaultValue" : "",
-      "Description" : [
-        "Дата выдачи"
-      ],
-      "ExistingValues" : [
-      ],
-      "ReferenceTo" : {
-        "TableName" : "",
-        "FieldName" : "",
-        "OnDelete" : 4,
-        "OnUpdate" : 4
-      },
-      "ReferenceFrom" : {
-        "TableNames" : [
-        ],
-        "FieldNames" : [
-        ]
-      }
-    },
-    "GETTINGDOCID" : {
-      "FieldType" : "INTEGER",
-      "PrimaryKey" : false,
-      "Status" : false,
-      "NotNull" : true,
-      "DefaultValue" : "",
-      "Description" : [
-        "ID документа выдачи"
-      ],
-      "ExistingValues" : [
-      ],
-      "ReferenceTo" : {
-        "TableName" : "SSODOC",
-        "FieldName" : "DOCID",
-        "OnDelete" : 0,
-        "OnUpdate" : 0
-      },
-      "ReferenceFrom" : {
-        "TableNames" : [
-        ],
-        "FieldNames" : [
-        ]
-      }
-    },
-    "ITEMID" : {
-      "FieldType" : "INTEGER",
-      "PrimaryKey" : false,
-      "Status" : false,
-      "NotNull" : true,
-      "DefaultValue" : "",
-      "Description" : [
-        "ID пункта нормы выдачи"
-      ],
-      "ExistingValues" : [
-      ],
-      "ReferenceTo" : {
-        "TableName" : "SSONORMITEM",
-        "FieldName" : "ITEMID",
-        "OnDelete" : 0,
-        "OnUpdate" : 0
-      },
-      "ReferenceFrom" : {
-        "TableNames" : [
-        ],
-        "FieldNames" : [
-        ]
-      }
-    },
-    "STOREID" : {
-      "FieldType" : "INTEGER",
-      "PrimaryKey" : false,
-      "Status" : false,
-      "NotNull" : true,
-      "DefaultValue" : "",
-      "Description" : [
-        "ID единицы средства на складе"
-      ],
-      "ExistingValues" : [
-      ],
-      "ReferenceTo" : {
-        "TableName" : "SSOSTORE",
-        "FieldName" : "STOREID",
-        "OnDelete" : 0,
-        "OnUpdate" : 0
-      },
-      "ReferenceFrom" : {
-        "TableNames" : [
-        ],
-        "FieldNames" : [
-        ]
-      }
-    },
-    "IndexesList" : [
-    ]
-  },
-  "SSOSTORE" : {
-    "Description" : "СПИСОК ССО НА СКЛАДЕ",
-    "Notes" : [
-    ],
-    "FieldsList" : [
-      "STOREID",
-      "ENTRYID",
-      "ISBUSY"
-    ],
-    "STOREID" : {
-      "FieldType" : "INTEGER",
-      "PrimaryKey" : true,
-      "Status" : true,
-      "NotNull" : true,
-      "DefaultValue" : "",
-      "Description" : [
-        "ID единицы средства на складе"
-      ],
-      "ExistingValues" : [
-      ],
-      "ReferenceTo" : {
-        "TableName" : "",
-        "FieldName" : "",
-        "OnDelete" : 4,
-        "OnUpdate" : 4
-      },
-      "ReferenceFrom" : {
-        "TableNames" : [
-          "SSOSTAFFLOG"
-        ],
-        "FieldNames" : [
-          "STOREID"
-        ]
-      }
-    },
-    "ENTRYID" : {
-      "FieldType" : "INTEGER",
-      "PrimaryKey" : false,
-      "Status" : false,
-      "NotNull" : true,
-      "DefaultValue" : "",
-      "Description" : [
-        "ID поступления средства на склад"
-      ],
-      "ExistingValues" : [
-      ],
-      "ReferenceTo" : {
-        "TableName" : "SSOENTRY",
-        "FieldName" : "ENTRYID",
-        "OnDelete" : 0,
-        "OnUpdate" : 0
-      },
-      "ReferenceFrom" : {
-        "TableNames" : [
-        ],
-        "FieldNames" : [
-        ]
-      }
-    },
-    "ISBUSY" : {
-      "FieldType" : "INTEGER",
-      "PrimaryKey" : false,
-      "Status" : false,
-      "NotNull" : true,
-      "DefaultValue" : "0",
-      "Description" : [
-        "0 - свободно для выдачи,",
-        "1 - занято (выдано)"
-      ],
-      "ExistingValues" : [
-      ],
-      "ReferenceTo" : {
-        "TableName" : "",
-        "FieldName" : "",
-        "OnDelete" : 4,
-        "OnUpdate" : 4
-      },
-      "ReferenceFrom" : {
-        "TableNames" : [
-        ],
-        "FieldNames" : [
-        ]
-      }
-    },
-    "IndexesList" : [
-    ]
-  },
-  "SSOUNIT" : {
-    "Description" : "ЕДИНИЦЫ ИЗМЕРЕНИЯ ССО",
-    "Notes" : [
-    ],
-    "FieldsList" : [
-      "UNITID",
-      "UNITNAME",
-      "UNITDIGITALCODE",
-      "UNITSTRINGCODE"
-    ],
-    "UNITID" : {
-      "FieldType" : "INTEGER",
-      "PrimaryKey" : true,
-      "Status" : true,
-      "NotNull" : true,
-      "DefaultValue" : "",
-      "Description" : [
-        "ID единицы измерения"
-      ],
-      "ExistingValues" : [
-        "0",
-        "1",
-        "2",
-        "3",
-        "4",
-        "5",
-        "6",
-        "7"
-      ],
-      "ReferenceTo" : {
-        "TableName" : "",
-        "FieldName" : "",
-        "OnDelete" : 4,
-        "OnUpdate" : 4
-      },
-      "ReferenceFrom" : {
-        "TableNames" : [
-          "SSONAMES"
-        ],
-        "FieldNames" : [
-          "UNITID"
-        ]
-      }
-    },
-    "UNITNAME" : {
-      "FieldType" : "TEXT",
-      "PrimaryKey" : false,
-      "Status" : true,
-      "NotNull" : true,
-      "DefaultValue" : "",
-      "Description" : [
-        "Наименование"
-      ],
-      "ExistingValues" : [
-        "<не указана>",
-        "Миллилитр",
-        "Грамм",
-        "Кубический сантиметр",
-        "Литр",
-        "Кубический дециметр",
-        "Килограмм",
-        "Миллиграмм"
-      ],
-      "ReferenceTo" : {
-        "TableName" : "",
-        "FieldName" : "",
-        "OnDelete" : 4,
-        "OnUpdate" : 4
-      },
-      "ReferenceFrom" : {
-        "TableNames" : [
-        ],
-        "FieldNames" : [
-        ]
-      }
-    },
-    "UNITDIGITALCODE" : {
-      "FieldType" : "INTEGER",
-      "PrimaryKey" : false,
-      "Status" : false,
-      "NotNull" : true,
-      "DefaultValue" : "",
-      "Description" : [
-        "Цифровой код единицы (не уникальный)"
-      ],
-      "ExistingValues" : [
-        "0",
-        "111",
-        "163",
-        "111",
-        "112",
-        "112",
-        "166",
-        "161"
-      ],
-      "ReferenceTo" : {
-        "TableName" : "",
-        "FieldName" : "",
-        "OnDelete" : 4,
-        "OnUpdate" : 4
-      },
-      "ReferenceFrom" : {
-        "TableNames" : [
-        ],
-        "FieldNames" : [
-        ]
-      }
-    },
-    "UNITSTRINGCODE" : {
-      "FieldType" : "TEXT",
-      "PrimaryKey" : false,
-      "Status" : true,
-      "NotNull" : true,
-      "DefaultValue" : "",
-      "Description" : [
-        "Буквенный код единицы измерения"
-      ],
-      "ExistingValues" : [
-        " ",
-        "мл",
+        "компл",
         "г",
+        "кг",
+        "куб. дм",
         "куб. см",
         "л",
-        "куб. дм",
-        "кг",
-        "мг"
+        "мг",
+        "мл"
       ],
       "ReferenceTo" : {
         "TableName" : "",
@@ -5243,11 +3665,9 @@
       "ReferenceFrom" : {
         "TableNames" : [
           "STAFFPOSTLOG",
-          "SIZNORMITEMPOST",
-          "SSONORMITEMPOST"
+          "SIZNORMITEMPOST"
         ],
         "FieldNames" : [
-          "POSTID",
           "POSTID",
           "POSTID"
         ]
@@ -5635,11 +4055,9 @@
           "STAFFSCHEDULE",
           "STAFFVACATION",
           "SIZSTAFFSPECSIZE",
-          "SIZSTAFFLOG",
-          "SSOSTAFFLOG"
+          "SIZSTAFFLOG"
         ],
         "FieldNames" : [
-          "TABNUMID",
           "TABNUMID",
           "TABNUMID",
           "TABNUMID",

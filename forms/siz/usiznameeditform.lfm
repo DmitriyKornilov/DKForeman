@@ -1,0 +1,63 @@
+object SIZNameEditForm: TSIZNameEditForm
+  Left = 377
+  Height = 464
+  Top = 250
+  Width = 811
+  BorderIcons = [biSystemMenu, biMaximize]
+  Caption = 'Перечень средств индивидуальной защиты'
+  ClientHeight = 464
+  ClientWidth = 811
+  DesignTimePPI = 120
+  Position = poScreenCenter
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  object TypePanel: TPanel
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
+    Left = 2
+    Height = 460
+    Top = 2
+    Width = 275
+    Align = alLeft
+    BorderSpacing.Left = 2
+    BorderSpacing.Top = 2
+    BorderSpacing.Right = 2
+    BorderSpacing.Bottom = 2
+    BevelOuter = bvNone
+    BorderStyle = bsSingle
+    ClientHeight = 456
+    ClientWidth = 271
+    TabOrder = 0
+    object TypeVT: TVirtualStringTree
+      Left = 0
+      Height = 456
+      Top = 0
+      Width = 271
+      Align = alClient
+      Anchors = [akBottom]
+      BorderStyle = bsNone
+      DefaultNodeHeight = 25
+      DefaultText = 'Node'
+      Header.AutoSizeIndex = 0
+      Header.Columns = <>
+      Header.MainColumn = -1
+      TabOrder = 0
+    end
+  end
+  object Splitter: TSplitter
+    Left = 279
+    Height = 464
+    Top = 0
+    Width = 6
+    ResizeStyle = rsLine
+  end
+  object NamePanel: TPanel
+    Left = 285
+    Height = 464
+    Top = 0
+    Width = 526
+    Align = alClient
+    BevelOuter = bvNone
+    TabOrder = 2
+  end
+end

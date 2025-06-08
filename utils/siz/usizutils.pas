@@ -286,9 +286,9 @@ begin
      end;
   2: Result:= SHOES[ASizeID];
   3: Result:= HEADDRESS[ASizeID];
-  4,5: Result:= MITTENS[ASizeID];
-  6: Result:= GASMASK[ASizeID];
-  7: Result:= RESPIRATOR[ASizeID];
+  4,5: Result:= HANDS[ASizeID];
+  6: Result:= GASMASKS[ASizeID];
+  7: Result:= RESPIRATORS[ASizeID];
   end;
 end;
 
