@@ -134,7 +134,7 @@ object TimetableForm: TTimetableForm
       AutoSize = True
       Caption = ' Общий табель на месяц '
       Images = Images.PX24
-      ImageIndex = 45
+      ImageIndex = 43
       Margin = 5
       Spacing = 5
       ShowHint = True

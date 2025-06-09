@@ -406,6 +406,7 @@
         <Filename Value="forms\usearchform.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="SearchForm"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="USearchForm"/>
       </Unit>

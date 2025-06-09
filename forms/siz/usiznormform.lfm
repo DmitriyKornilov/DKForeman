@@ -9,7 +9,6 @@ object SIZNormForm: TSIZNormForm
   ClientHeight = 577
   ClientWidth = 1000
   DesignTimePPI = 120
-  LCLVersion = '4.0.0.4'
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
@@ -24,8 +23,8 @@ object SIZNormForm: TSIZNormForm
     BorderSpacing.Right = 2
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 40
-    ClientWidth = 996
+    ClientHeight = 36
+    ClientWidth = 992
     ParentFont = False
     TabOrder = 0
     object CloseButton: TSpeedButton
@@ -95,8 +94,8 @@ object SIZNormForm: TSIZNormForm
       BorderSpacing.Bottom = 2
       BevelOuter = bvNone
       BorderStyle = bsSingle
-      ClientHeight = 40
-      ClientWidth = 996
+      ClientHeight = 36
+      ClientWidth = 992
       ParentBackground = False
       ParentColor = False
       ParentFont = False
@@ -223,8 +222,8 @@ object SIZNormForm: TSIZNormForm
         BorderSpacing.Bottom = 2
         BevelOuter = bvNone
         BorderStyle = bsSingle
-        ClientHeight = 40
-        ClientWidth = 700
+        ClientHeight = 36
+        ClientWidth = 696
         ParentFont = False
         TabOrder = 0
         object ItemAddButton: TSpeedButton
@@ -287,6 +286,34 @@ object SIZNormForm: TSIZNormForm
           ParentShowHint = False
           OnClick = ItemCopyButtonClick
         end
+        object ItemUpButton: TSpeedButton
+          Cursor = crHandPoint
+          Left = 160
+          Height = 36
+          Hint = 'Переместить строку вверх'
+          Top = 0
+          Width = 40
+          Align = alLeft
+          Enabled = False
+          Images = Images.PX24
+          ImageIndex = 46
+          ShowHint = True
+          ParentShowHint = False
+        end
+        object ItemDownButton: TSpeedButton
+          Cursor = crHandPoint
+          Left = 200
+          Height = 36
+          Hint = 'Переместить строку вниз'
+          Top = 0
+          Width = 40
+          Align = alLeft
+          Enabled = False
+          Images = Images.PX24
+          ImageIndex = 47
+          ShowHint = True
+          ParentShowHint = False
+        end
       end
       object ItemSheetPanel: TPanel
         Left = 0
@@ -296,8 +323,8 @@ object SIZNormForm: TSIZNormForm
         Align = alClient
         BevelOuter = bvNone
         BorderStyle = bsSingle
-        ClientHeight = 199
-        ClientWidth = 700
+        ClientHeight = 195
+        ClientWidth = 696
         TabOrder = 1
         object ItemGrid: TsWorksheetGrid
           Left = 0
@@ -364,8 +391,8 @@ object SIZNormForm: TSIZNormForm
         BorderSpacing.Bottom = 2
         BevelOuter = bvNone
         BorderStyle = bsSingle
-        ClientHeight = 40
-        ClientWidth = 290
+        ClientHeight = 36
+        ClientWidth = 286
         ParentFont = False
         TabOrder = 0
         object SubItemAddButton: TSpeedButton
@@ -423,7 +450,7 @@ object SIZNormForm: TSIZNormForm
           Align = alLeft
           Enabled = False
           Images = Images.PX24
-          ImageIndex = 48
+          ImageIndex = 46
           ShowHint = True
           ParentShowHint = False
           OnClick = SubItemUpButtonClick
@@ -438,7 +465,7 @@ object SIZNormForm: TSIZNormForm
           Align = alLeft
           Enabled = False
           Images = Images.PX24
-          ImageIndex = 49
+          ImageIndex = 47
           ShowHint = True
           ParentShowHint = False
           OnClick = SubItemDownButtonClick
@@ -452,8 +479,8 @@ object SIZNormForm: TSIZNormForm
         Align = alClient
         BevelOuter = bvNone
         BorderStyle = bsSingle
-        ClientHeight = 201
-        ClientWidth = 290
+        ClientHeight = 197
+        ClientWidth = 286
         TabOrder = 1
         object SubItemGrid: TsWorksheetGrid
           Left = 0

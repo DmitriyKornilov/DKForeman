@@ -134,7 +134,7 @@ object VacationPlanForm: TVacationPlanForm
       AutoSize = True
       Caption = ' График отпусков (Т-7) '
       Images = Images.PX24
-      ImageIndex = 46
+      ImageIndex = 44
       Margin = 5
       Spacing = 5
       ShowHint = True
@@ -152,7 +152,7 @@ object VacationPlanForm: TVacationPlanForm
       AutoSize = True
       Caption = ' Планирование '
       Images = Images.PX24
-      ImageIndex = 51
+      ImageIndex = 57
       Margin = 5
       Spacing = 5
       ShowHint = True

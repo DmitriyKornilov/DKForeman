@@ -29,6 +29,7 @@ type
     ItemDelButton: TSpeedButton;
     SubItemDelButton: TSpeedButton;
     ItemEditButton: TSpeedButton;
+    ItemDownButton: TSpeedButton;
     SubItemEditButton: TSpeedButton;
     SubItemGrid: TsWorksheetGrid;
     SubItemSheetPanel: TPanel;
@@ -49,6 +50,7 @@ type
     Splitter1: TSplitter;
     NormVT: TVirtualStringTree;
     Splitter2: TSplitter;
+    ItemUpButton: TSpeedButton;
     ToolPanel: TPanel;
     ItemGrid: TsWorksheetGrid;
     procedure CloseButtonClick(Sender: TObject);

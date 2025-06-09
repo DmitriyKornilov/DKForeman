@@ -7,7 +7,6 @@ object ScheduleShiftForm: TScheduleShiftForm
   ClientHeight = 802
   ClientWidth = 1251
   DesignTimePPI = 120
-  LCLVersion = '4.0.0.4'
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
@@ -22,8 +21,8 @@ object ScheduleShiftForm: TScheduleShiftForm
     BorderSpacing.Right = 2
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 40
-    ClientWidth = 1247
+    ClientHeight = 36
+    ClientWidth = 1243
     ParentFont = False
     TabOrder = 0
     object YearPanel: TPanel
@@ -135,7 +134,7 @@ object ScheduleShiftForm: TScheduleShiftForm
       AutoSize = True
       Caption = ' График-календарь '
       Images = Images.PX24
-      ImageIndex = 47
+      ImageIndex = 45
       Margin = 5
       Spacing = 5
       ShowHint = True
@@ -153,7 +152,7 @@ object ScheduleShiftForm: TScheduleShiftForm
       AutoSize = True
       Caption = ' Сводный график '
       Images = Images.PX24
-      ImageIndex = 45
+      ImageIndex = 43
       Margin = 5
       Spacing = 5
       ShowHint = True
@@ -247,8 +246,8 @@ object ScheduleShiftForm: TScheduleShiftForm
         BorderSpacing.Bottom = 2
         BevelOuter = bvNone
         BorderStyle = bsSingle
-        ClientHeight = 40
-        ClientWidth = 512
+        ClientHeight = 36
+        ClientWidth = 508
         ParentFont = False
         TabOrder = 0
         Visible = False
@@ -382,8 +381,8 @@ object ScheduleShiftForm: TScheduleShiftForm
             Align = alTop
             BevelOuter = bvNone
             BorderStyle = bsSingle
-            ClientHeight = 40
-            ClientWidth = 512
+            ClientHeight = 36
+            ClientWidth = 508
             ParentFont = False
             TabOrder = 0
             object DayAddButton: TSpeedButton
@@ -482,8 +481,8 @@ object ScheduleShiftForm: TScheduleShiftForm
             Align = alTop
             BevelOuter = bvNone
             BorderStyle = bsSingle
-            ClientHeight = 40
-            ClientWidth = 512
+            ClientHeight = 36
+            ClientWidth = 508
             ParentFont = False
             TabOrder = 0
             object CopySaveButton: TSpeedButton
@@ -644,8 +643,8 @@ object ScheduleShiftForm: TScheduleShiftForm
       BorderSpacing.Bottom = 2
       BevelOuter = bvNone
       BorderStyle = bsSingle
-      ClientHeight = 724
-      ClientWidth = 377
+      ClientHeight = 720
+      ClientWidth = 373
       Color = clWhite
       ParentBackground = False
       ParentColor = False

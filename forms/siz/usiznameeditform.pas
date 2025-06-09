@@ -8,7 +8,7 @@ uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls,
   VirtualTrees,
   //DK packages utils
-  DK_VSTTableTools, DK_VSTTypes, DK_DBTable, DK_Vector,
+  DK_VSTTables, DK_VSTTypes, DK_DBTable, DK_Vector,
   //Project utils
   UDataBase, UConst;
 
@@ -24,13 +24,16 @@ type
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
   private
-    TypeList: TVSTStringList;
+    TypeList: TVSTTable;
     NameTable: TDBTable;
 
     UnitIDs: TIntVector;
     UnitNames: TStrVector;
 
     procedure TypeSelect;
+    procedure SizeTypeChoose(out AColumnName: String;
+                             out AKeys: TIntVector;
+                             out APicks: TStrVector);
   public
 
   end;
@@ -50,9 +53,15 @@ procedure TSIZNameEditForm.FormCreate(Sender: TObject);
 begin
   DataBase.KeyPickList('SIZUNIT', 'UnitID', 'UnitName', UnitIDs, UnitNames);
 
-  TypeList:= TVSTStringList.Create(TypeVT, EmptyStr, nil);
+  TypeList:= TVSTTable.Create(TypeVT);
+  TypeList.CanSelect:= True;
+  TypeList.CanUnselect:= True;
   TypeList.OnSelect:= @TypeSelect;
-  TypeList.Update(SIZ_TYPE_PICKS);
+  TypeList.HeaderVisible:= False;
+  TypeList.AddColumn(EmptyStr);
+  TypeList.SetColumn(0, SIZ_TYPE_PICKS, taLeftJustify);
+  TypeList.Draw;
+  TypeList.Select(0);
 end;
 
 procedure TSIZNameEditForm.FormDestroy(Sender: TObject);
@@ -61,40 +70,89 @@ begin
   FreeAndNil(TypeList);
 end;
 
+procedure TSIZNameEditForm.SizeTypeChoose(out AColumnName: String;
+                             out AKeys: TIntVector;
+                             out APicks: TStrVector);
+begin
+  if TypeList.SelectedIndex=High(SIZ_TYPE_PICKS) then
+    AColumnName:= 'Способ выдачи'
+  else
+    AColumnName:= 'Тип размера';
+
+  case TypeList.SelectedIndex of
+  0: //Одежда специальная защитная
+    begin
+      AKeys:= VCreateInt([0, SIZ_SIZETYPE_KEYS[1]]);
+      APicks:= VCreateStr(['<нет>', SIZ_SIZETYPE_PICKS[1]]);
+    end;
+  1: //Средства защиты ног
+    begin
+      AKeys:= VCreateInt([0, SIZ_SIZETYPE_KEYS[2]]);
+      APicks:= VCreateStr(['<нет>', SIZ_SIZETYPE_PICKS[2]]);
+    end;
+  2: //Средства защиты головы
+    begin
+      AKeys:= VCreateInt([0, SIZ_SIZETYPE_KEYS[3]]);
+      APicks:= VCreateStr(['<нет>', SIZ_SIZETYPE_PICKS[3]]);
+    end;
+  3: //Средства защиты рук
+    begin
+      AKeys:= VCreateInt([0, SIZ_SIZETYPE_KEYS[4]]);
+      APicks:= VCreateStr(['<нет>', SIZ_SIZETYPE_PICKS[4]]);
+    end;
+  4: //Средства защиты глаз
+    begin
+      AKeys:= VCreateInt([0, SIZ_SIZETYPE_KEYS[3], SIZ_SIZETYPE_KEYS[5]]);
+      APicks:= VCreateStr(['<нет>', SIZ_SIZETYPE_PICKS[3], SIZ_SIZETYPE_PICKS[5]]);
+    end;
+  5: //Средства защиты органов дыхания
+    begin
+      AKeys:= VCreateInt([0, SIZ_SIZETYPE_KEYS[5], SIZ_SIZETYPE_KEYS[6]]);
+      APicks:= VCreateStr(['<нет>', SIZ_SIZETYPE_PICKS[5], SIZ_SIZETYPE_PICKS[6]]);
+    end;
+  6: //Средства защиты органов слуха
+    begin
+      AKeys:= VCreateInt([0, SIZ_SIZETYPE_KEYS[3]]);
+      APicks:= VCreateStr(['<нет>', SIZ_SIZETYPE_PICKS[3]]);
+    end;
+  7: //Средства дерматологические
+    begin
+      AKeys:= SSO_SIZETYPE_KEYS;
+      APicks:= SSO_SIZETYPE_PICKS;
+    end;
+  end;
+end;
+
 procedure TSIZNameEditForm.TypeSelect;
 var
   SizeColumn: String;
   SizeKeys: TIntVector;
   SizePicks: TStrVector;
 begin
-  if TypeList.ItemIndex=High(SIZ_TYPE_PICKS) then
-  begin
-    SizeColumn:= 'Способ выдачи';
-    SizeKeys:= SSO_SIZETYPE_KEYS;
-    SizePicks:= SSO_SIZETYPE_PICKS;
-  end
-  else begin
-    SizeColumn:= 'Тип размера';
-    SizeKeys:= SIZ_SIZETYPE_KEYS;
-    SizePicks:= SIZ_SIZETYPE_PICKS;
-  end;
+  SizeTypeChoose(SizeColumn, SizeKeys, SizePicks);
 
-  if Assigned(NameTable) then FreeAndNil(NameTable);
-  NameTable:= TDBTable.Create(NamePanel, DataBase.Query);
-  NameTable.Edit.HeaderFont.Style:= [fsBold];
-  NameTable.Settings(MainForm.GridFont, 'SIZNAME', 'NameID',
-    ['SIZName',      'UnitID',            'SizeType' ],
-    ['Наименование', 'Единица измерения',  SizeColumn],
-    [ctString,        ctKeyPick,           ctKeyPick ],
-    [True,            True,                True      ],
-    [300,             150,                 150       ],
-    [taLeftJustify,   taCenter,            taCenter  ],
-    True, True, ['SIZName'], 1,
-    [nil,             UnitIDs,             SizeKeys  ],
-    [nil,             UnitNames,           SizePicks ],
-    'SizType'
-  );
-  NameTable.Update(IntToStr(SIZ_TYPE_KEYS[TypeList.ItemIndex]));
+  NamePanel.Visible:= False;
+  try
+    if Assigned(NameTable) then FreeAndNil(NameTable);
+    NameTable:= TDBTable.Create(NamePanel, DataBase.Query);
+    NameTable.Edit.HeaderFont.Style:= [fsBold];
+    NameTable.Settings(MainForm.GridFont, 'SIZNAME', 'NameID',
+      ['SIZName',      'UnitID',            'SizeType' ],
+      ['Наименование', 'Единица измерения',  SizeColumn],
+      [ctString,        ctKeyPick,           ctKeyPick ],
+      [True,            True,                True      ],
+      [300,             150,                 150       ],
+      [taLeftJustify,   taCenter,            taCenter  ],
+      True, True, ['SIZName'], 1,
+      [nil,             UnitIDs,             SizeKeys  ],
+      [nil,             UnitNames,           SizePicks ],
+      'SizType'
+    );
+    NameTable.Update(IntToStr(SIZ_TYPE_KEYS[TypeList.SelectedIndex]));
+
+  finally
+    NamePanel.Visible:= True;
+  end;
 end;
 
 end.

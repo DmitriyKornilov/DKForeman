@@ -7,7 +7,6 @@ object TimetableMonthForm: TTimetableMonthForm
   ClientHeight = 548
   ClientWidth = 1193
   DesignTimePPI = 120
-  LCLVersion = '4.0.0.4'
   WindowState = wsMaximized
   OnCreate = FormCreate
   OnDestroy = FormDestroy
@@ -23,8 +22,8 @@ object TimetableMonthForm: TTimetableMonthForm
     BorderSpacing.Right = 2
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 40
-    ClientWidth = 1189
+    ClientHeight = 36
+    ClientWidth = 1185
     ParentFont = False
     TabOrder = 0
     object ListToolPanel: TPanel
@@ -294,7 +293,7 @@ object TimetableMonthForm: TTimetableMonthForm
           Width = 40
           Align = alLeft
           Images = Images.PX24
-          ImageIndex = 48
+          ImageIndex = 46
           ShowHint = True
           ParentShowHint = False
           OnClick = RowUpButtonClick
@@ -308,7 +307,7 @@ object TimetableMonthForm: TTimetableMonthForm
           Width = 40
           Align = alLeft
           Images = Images.PX24
-          ImageIndex = 49
+          ImageIndex = 47
           ShowHint = True
           ParentShowHint = False
           OnClick = RowDownButtonClick
@@ -322,7 +321,7 @@ object TimetableMonthForm: TTimetableMonthForm
           Width = 40
           Align = alLeft
           Images = Images.PX24
-          ImageIndex = 50
+          ImageIndex = 48
           ShowHint = True
           ParentShowHint = False
           OnClick = RowMergeButtonClick
@@ -461,8 +460,8 @@ object TimetableMonthForm: TTimetableMonthForm
       BorderSpacing.Top = 2
       BevelOuter = bvNone
       BorderStyle = bsSingle
-      ClientHeight = 40
-      ClientWidth = 1189
+      ClientHeight = 36
+      ClientWidth = 1185
       TabOrder = 0
       object OrderLabel: TLabel
         AnchorSideLeft.Control = ListOrderToolPanel
@@ -610,8 +609,8 @@ object TimetableMonthForm: TTimetableMonthForm
         BorderSpacing.Bottom = 2
         BevelOuter = bvNone
         BorderStyle = bsSingle
-        ClientHeight = 307
-        ClientWidth = 834
+        ClientHeight = 303
+        ClientWidth = 830
         Color = clWhite
         ParentBackground = False
         ParentColor = False

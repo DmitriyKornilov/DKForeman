@@ -186,7 +186,7 @@ object VacationPlanningForm: TVacationPlanningForm
           Align = alLeft
           Enabled = False
           Images = Images.PX24
-          ImageIndex = 52
+          ImageIndex = 49
           ShowHint = True
           ParentShowHint = False
           OnClick = PrevMonthButtonClick
@@ -201,7 +201,7 @@ object VacationPlanningForm: TVacationPlanningForm
           Align = alLeft
           Enabled = False
           Images = Images.PX24
-          ImageIndex = 53
+          ImageIndex = 50
           ShowHint = True
           ParentShowHint = False
           OnClick = PrevDayButtonClick
@@ -216,7 +216,7 @@ object VacationPlanningForm: TVacationPlanningForm
           Align = alLeft
           Enabled = False
           Images = Images.PX24
-          ImageIndex = 54
+          ImageIndex = 51
           ShowHint = True
           ParentShowHint = False
           OnClick = NextDayButtonClick
@@ -245,7 +245,7 @@ object VacationPlanningForm: TVacationPlanningForm
           Enabled = False
           GroupIndex = 2
           Images = Images.PX24
-          ImageIndex = 55
+          ImageIndex = 52
           ShowHint = True
           ParentShowHint = False
           OnClick = NextMonthButtonClick

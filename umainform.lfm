@@ -250,20 +250,20 @@ object MainForm: TMainForm
     Top = 113
     object SIZNormsMenuItem: TMenuItem
       Caption = 'Нормы выдачи средств индивидуальной защиты'
-      ImageIndex = 56
+      ImageIndex = 53
       OnClick = SIZNormsMenuItemClick
     end
     object SIZStorageMenuItem: TMenuItem
       Caption = 'Склад средств индивидуальной защиты'
-      ImageIndex = 59
+      ImageIndex = 55
     end
     object SIZRequestMenuItem: TMenuItem
       Caption = 'Заявка на поступление средств индивидуальной защиты'
-      ImageIndex = 60
+      ImageIndex = 56
     end
     object SIZSizesMenuItem: TMenuItem
       Caption = 'Размеры средств индивидуальной защиты сотрудников'
-      ImageIndex = 39
+      ImageIndex = 38
       OnClick = SIZSizesMenuItemClick
     end
     object SIZStaffMenuItem: TMenuItem
@@ -276,7 +276,7 @@ object MainForm: TMainForm
     end
     object StudyMenuItem: TMenuItem
       Caption = 'Инструктажи, аттестация и обучение'
-      ImageIndex = 36
+      ImageIndex = 35
       OnClick = StudyMenuItemClick
     end
   end
@@ -286,12 +286,12 @@ object MainForm: TMainForm
     Top = 176
     object PostListMenuItem: TMenuItem
       Caption = 'Перечень должностей (профессий)'
-      ImageIndex = 37
+      ImageIndex = 36
       OnClick = PostListMenuItemClick
     end
     object TimetableMarkMenuItem: TMenuItem
       Caption = 'Коды табеля учета рабочего времени'
-      ImageIndex = 38
+      ImageIndex = 37
       OnClick = TimetableMarkMenuItemClick
     end
     object Separator1: TMenuItem
@@ -304,12 +304,12 @@ object MainForm: TMainForm
     end
     object SIZUnitMenuItem: TMenuItem
       Caption = 'Единицы измерения средств индивидуальной защиты'
-      ImageIndex = 39
+      ImageIndex = 38
       OnClick = SIZUnitMenuItemClick
     end
     object SIZReasonMenuItem: TMenuItem
       Caption = 'Дополнительные условия выдачи средств индивидуальной защиты'
-      ImageIndex = 40
+      ImageIndex = 39
       OnClick = SIZReasonMenuItemClick
     end
   end
