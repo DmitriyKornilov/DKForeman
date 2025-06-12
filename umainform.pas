@@ -270,11 +270,14 @@ begin
                           ['Наименование', 'Код',             'Условное обозначение'],
                           [ ctString,       ctInteger,         ctString             ],
                           [ True,           True,              True                 ],
-                          [ 400,            100,               200                  ],
+                          [ 300,            100,               200                  ],
                           [ taLeftJustify,  taCenter,          taCenter             ],
-                          True, ['UnitName'], 1, nil, nil, GridFont);
+                          True, ['UnitName'], 1, nil, nil, GridFont,
+                          True, 'Фильтр:');
     5: IsOK:= DataBase.EditList('Дополнительные условия выдачи СИЗ',
-                         'SIZREASON', 'ReasonID', 'ReasonName', True, True, 400, GridFont);
+                         'SIZREASON', 'ReasonID', 'ReasonName',
+                          True, True, 400, GridFont,
+                          True, 'Фильтр:');
   end;
 
   if IsOK then ViewUpdate;
@@ -300,7 +303,7 @@ begin
   ]);
 
   TimingMenu.Images:= ChooseImageListForScreenPPI(Images.PX24, Images.PX30,
-                                                  Images.PX36, Images.PX42);//Images.ForCurrentPPI;
+                                                  Images.PX36, Images.PX42);
   SafetyMenu.Images:= TimingMenu.Images;
   DictionaryMenu.Images:= TimingMenu.Images;
 

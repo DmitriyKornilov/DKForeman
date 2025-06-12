@@ -157,7 +157,7 @@ begin
   NamePanel.Visible:= False;
   try
     if Assigned(NameTable) then FreeAndNil(NameTable);
-    NameTable:= TDBTable.Create(MainForm.GridFont, NamePanel, DataBase);
+    NameTable:= TDBTable.Create(MainForm.GridFont, NamePanel, DataBase, True, 'Фильтр:');
     NameTable.Edit.HeaderFont.Style:= [fsBold];
     NameTable.Settings('SIZNAME', 'NameID',
       ['SIZName',      'UnitID',            'SizeType' ],
