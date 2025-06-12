@@ -92,7 +92,7 @@ type
   TNorm = record
     NormID: Integer;
     NormName: String;
-    TypicalName: String;
+    Note: String;
     BeginDate: TDate;
     EndDate: TDate;
     Items: TNormItems;
@@ -332,7 +332,7 @@ procedure NormClear(var ANorm: TNorm);
 begin
   ANorm.NormID:= -1;
   ANorm.NormName:= EmptyStr;
-  ANorm.TypicalName:= EmptyStr;
+  ANorm.Note:= EmptyStr;
   ANorm.BeginDate:= 0;
   ANorm.EndDate:= 0;
   NormItemsClear(ANorm.Items);

@@ -2,13 +2,14 @@ object SIZNameEditForm: TSIZNameEditForm
   Left = 377
   Height = 464
   Top = 250
-  Width = 1000
+  Width = 1100
   BorderIcons = [biSystemMenu, biMaximize]
   Caption = 'Перечень средств индивидуальной защиты'
   ClientHeight = 464
-  ClientWidth = 1000
+  ClientWidth = 1100
   DesignTimePPI = 120
   Position = poScreenCenter
+  LCLVersion = '4.0.0.4'
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   object TypePanel: TPanel
@@ -17,21 +18,21 @@ object SIZNameEditForm: TSIZNameEditForm
     Left = 2
     Height = 460
     Top = 2
-    Width = 275
+    Width = 350
     Align = alLeft
     BorderSpacing.Left = 2
     BorderSpacing.Top = 2
     BorderSpacing.Bottom = 2
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 456
-    ClientWidth = 271
+    ClientHeight = 460
+    ClientWidth = 350
     TabOrder = 0
     object TypeVT: TVirtualStringTree
       Left = 0
       Height = 456
       Top = 0
-      Width = 271
+      Width = 346
       Align = alClient
       Anchors = [akBottom]
       BorderStyle = bsNone
@@ -44,17 +45,17 @@ object SIZNameEditForm: TSIZNameEditForm
     end
   end
   object Splitter: TSplitter
-    Left = 277
+    Left = 352
     Height = 464
     Top = 0
     Width = 6
     ResizeStyle = rsLine
   end
   object NamePanel: TPanel
-    Left = 283
+    Left = 358
     Height = 460
     Top = 2
-    Width = 715
+    Width = 740
     Align = alClient
     BorderSpacing.Top = 2
     BorderSpacing.Right = 2

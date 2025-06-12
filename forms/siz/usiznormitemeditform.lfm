@@ -11,6 +11,7 @@ object SIZNormItemEditForm: TSIZNormItemEditForm
   Constraints.MinWidth = 600
   DesignTimePPI = 120
   Position = poScreenCenter
+  LCLVersion = '4.0.0.4'
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
@@ -152,8 +153,8 @@ object SIZNormItemEditForm: TSIZNormItemEditForm
     BorderSpacing.Right = 8
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 245
-    ClientWidth = 580
+    ClientHeight = 249
+    ClientWidth = 584
     TabOrder = 2
     object PostVT: TVirtualStringTree
       Left = 0

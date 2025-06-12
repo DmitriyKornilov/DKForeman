@@ -24,10 +24,10 @@ type
     BeginDatePicker: TDateTimePicker;
     EndDatePicker: TDateTimePicker;
     NormNameEdit: TEdit;
-    TypicalNameEdit: TEdit;
+    NoteEdit: TEdit;
     NormNameLabel: TLabel;
     BeginDateLabel: TLabel;
-    TypicalNameLabel: TLabel;
+    NoteLabel: TLabel;
     EndDateLabel: TLabel;
     SaveButton: TSpeedButton;
     procedure BeginDatePickerChange(Sender: TObject);
@@ -38,7 +38,7 @@ type
     procedure NormNameEditKeyDown(Sender: TObject; var Key: Word;
       {%H-}Shift: TShiftState);
     procedure SaveButtonClick(Sender: TObject);
-    procedure TypicalNameEditKeyDown(Sender: TObject; var Key: Word;
+    procedure NoteEditKeyDown(Sender: TObject; var Key: Word;
       {%H-}Shift: TShiftState);
   private
 
@@ -99,31 +99,31 @@ end;
 procedure TSIZNormEditForm.NormNameEditKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
-  if Key=VK_RETURN then TypicalNameEdit.SetFocus;
+  if Key=VK_RETURN then NoteEdit.SetFocus;
 end;
 
 procedure TSIZNormEditForm.SaveButtonClick(Sender: TObject);
 var
   IsOK: Boolean;
-  NormName, TypicalName: String;
+  NormName, Note: String;
 begin
   IsOK:= False;
 
   NormName:= STrim(NormNameEdit.Text);
   if NormName=EmptyStr then
   begin
-    Inform('Не указано наименование норм предприятия!');
+    Inform('Не указано наименование норм выдачи СИЗ!');
     Exit;
   end;
 
-  TypicalName:= STrim(TypicalNameEdit.Text);
+  Note:= STrim(NoteEdit.Text);
 
   case EditingType of
     etAdd:
-      IsOK:= DataBase.SIZNormAdd(NormID, NormName, TypicalName,
+      IsOK:= DataBase.SIZNormAdd(NormID, NormName, Note,
                                  BeginDatePicker.Date, EndDatePicker.Date);
     etEdit:
-      IsOK:= DataBase.SIZNormUpdate(NormID, NormName, TypicalName,
+      IsOK:= DataBase.SIZNormUpdate(NormID, NormName, Note,
                                  BeginDatePicker.Date, EndDatePicker.Date);
   end;
 
@@ -131,7 +131,7 @@ begin
   ModalResult:= mrOK;
 end;
 
-procedure TSIZNormEditForm.TypicalNameEditKeyDown(Sender: TObject;
+procedure TSIZNormEditForm.NoteEditKeyDown(Sender: TObject;
   var Key: Word; Shift: TShiftState);
 begin
   if Key=VK_RETURN then BeginDatePicker.SetFocus;

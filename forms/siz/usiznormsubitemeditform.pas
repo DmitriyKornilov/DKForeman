@@ -225,7 +225,7 @@ var
   NameID, i, j: Integer;
 begin
   if not Search('Фильтр по наименованию СИЗ:',
-                'SIZNAMES', 'NameID', 'SizName', NameID) then Exit;
+                'SIZNAME', 'NameID', 'SizName', NameID) then Exit;
   if not MIndexOf(NameIDs, NameID, i, j) then Exit;
   ClassDropDown.ItemIndex:= i;
   NameList.ItemIndex:= j;

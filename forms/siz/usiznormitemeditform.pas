@@ -185,10 +185,10 @@ function TSIZNormItemEditForm.NormsLoad: Boolean;
 var
   i: Integer;
   S: String;
-  TypicalNames: TStrVector;
+  Notes: TStrVector;
 begin
   NormNameDropDown.Clear;
-  Result:= DataBase.SIZNormsLoad(NormIDs, NormNames, TypicalNames, NormBDs, NormEDs);
+  Result:= DataBase.SIZNormsLoad(NormIDs, NormNames, Notes, NormBDs, NormEDs);
   if not Result then Exit;
 
   for i:=0 to High(NormIDs) do

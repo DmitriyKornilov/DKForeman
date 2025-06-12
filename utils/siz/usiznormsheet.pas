@@ -484,7 +484,7 @@ begin
   Writer.SetFont(Font.Name, Font.Size+2, [fsBold], clBlack);
   Writer.WriteText(ARow, 1, ARow, Writer.ColCount, FNorm.NormName, cbtNone, True, True);
   ARow:= ARow+1;
-  Writer.WriteText(ARow, 1, ARow, Writer.ColCount, '('+FNorm.TypicalName+')', cbtNone, True, True);
+  Writer.WriteText(ARow, 1, ARow, Writer.ColCount, '('+FNorm.Note+')', cbtNone, True, True);
 end;
 
 procedure TSIZNormSheet.CaptionDraw(var ARow: Integer);

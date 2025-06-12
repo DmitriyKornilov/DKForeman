@@ -17,7 +17,9 @@ uses
   UCalendarForm, UScheduleShiftForm, UVacationPlanForm,
   USchedulePersonalForm, UTimetableForm,
   USIZNameEditForm, USIZNormForm, USIZSizeForm, USIZStaffForm, USIZStorageForm,
-  UStudyForm;
+  UStudyForm,
+
+  USearchForm;
 
 type
 
@@ -246,19 +248,21 @@ begin
   IsOK:= False;
   case ADictionary of
     1: IsOK:= DataBase.EditList('Перечень должностей (профессий)',
-                         'STAFFPOST', 'PostID', 'PostName', True, True, 400, GridFont);
+                         'STAFFPOST', 'PostID', 'PostName',
+                         True, True, 400, GridFont,
+                         True, 'Фильтр:');
     2: IsOK:= DataBase.EditTable('Коды табеля учета рабочего времени',
                           'TIMETABLEMARK', 'DigMark',
                           ['DigMark',      'StrMark',       'TypeMark', 'Note'        ],
                           ['Цифровой код', 'Буквенный код', 'Статус',   'Описание'    ],
                           [ ctInteger,      ctString,        ctKeyPick,  ctString     ],
                           [ True,           True,            True,       True         ],
-                          [ 100,            100,             100,        400          ],
+                          [ 100,            100,             100,        500          ],
                           [ taCenter,       taCenter,        taCenter,   taLeftJustify],
                           True, ['DigMark'], 4,
                           [nil,             nil,             TIMETABLE_TYPEMARK_KEYS,  nil],
                           [nil,             nil,             TIMETABLE_TYPEMARK_PICKS, nil],
-                          GridFont);
+                          GridFont, True, 'Фильтр:');
     3: IsOK:= FormModalShow(TSIZNameEditForm)=mrOK;
     4: IsOK:= DataBase.EditTable('Единицы измерения средств индивидуальной защиты',
                           'SIZUNIT', 'UnitID',

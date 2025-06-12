@@ -79,7 +79,7 @@ type
     NormList: TVSTTable;
     NormIDs: TIntVector;
     BeginDates, EndDates: TDateVector;
-    NormNames, TypicalNames: TStrVector;
+    NormNames, Notes: TStrVector;
 
     NormItemSheet: TSIZNormItemSheet;
     ItemIDs, PostIDs: TIntVector;
@@ -279,8 +279,8 @@ begin
   NormList.HeaderFont.Style:= [fsBold];
 
   NormList.AddColumn('Период действия', 150);
-  NormList.AddColumn('Нормы предприятия', 500);
-  NormList.AddColumn('Типовые (отраслевые) нормы', 500);
+  NormList.AddColumn('Нормы выдачи СИЗ', 500);
+  NormList.AddColumn('Примечание', 500);
   NormList.Draw;
 end;
 
@@ -294,13 +294,13 @@ begin
 
   SelectedID:= GetSelectedID(NormList, NormIDs, ASelectedID);
 
-  DataBase.SIZNormsLoad(NormIDs, NormNames, TypicalNames, BeginDates, EndDates);
+  DataBase.SIZNormsLoad(NormIDs, NormNames, Notes, BeginDates, EndDates);
 
   NormList.Visible:= False;
   try
     NormList.SetColumn('Период действия', VPeriodToStr(BeginDates, EndDates), taLeftJustify);
-    NormList.SetColumn('Нормы предприятия', NormNames, taLeftJustify);
-    NormList.SetColumn('Типовые (отраслевые) нормы', TypicalNames, taLeftJustify);
+    NormList.SetColumn('Нормы выдачи СИЗ', NormNames, taLeftJustify);
+    NormList.SetColumn('Примечание', Notes, taLeftJustify);
     NormList.Draw;
     NormList.ReSelect(NormIDs, SelectedID, True);
   finally
@@ -480,7 +480,7 @@ begin
     begin
       SIZNormEditForm.NormID:= NormIDs[NormList.SelectedIndex];
       SIZNormEditForm.NormNameEdit.Text:= NormNames[NormList.SelectedIndex];
-      SIZNormEditForm.TypicalNameEdit.Text:= TypicalNames[NormList.SelectedIndex];
+      SIZNormEditForm.NoteEdit.Text:= Notes[NormList.SelectedIndex];
       SIZNormEditForm.BeginDatePicker.Date:= BeginDates[NormList.SelectedIndex];
       SIZNormEditForm.EndDatePicker.Date:= EndDates[NormList.SelectedIndex];
       SIZNormEditForm.InfEndDateCheckBox.Checked:=
@@ -579,7 +579,7 @@ begin
 
   NormClear(Norm);
   Norm.NormName:= NormNames[NormList.SelectedIndex];
-  Norm.TypicalName:= TypicalNames[NormList.SelectedIndex];
+  Norm.Note:= Notes[NormList.SelectedIndex];
   Norm.BeginDate:= BeginDates[NormList.SelectedIndex];
   Norm.EndDate:= EndDates[NormList.SelectedIndex];
 

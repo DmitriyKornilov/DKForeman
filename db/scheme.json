@@ -1690,6 +1690,7 @@
       "DefaultValue" : "",
       "Description" : [
         "Тип СИЗ:",
+        "0 - Средства дерматологические,",
         "1 - Одежда специальная защитная,",
         "2 - Средства защиты головы,",
         "3 - Средства защиты ног,",
@@ -1697,7 +1698,7 @@
         "5 - Средства защиты глаз,",
         "6 - Средства защиты органов дыхания,",
         "7 - Средства защиты органов слуха,",
-        "8 - Средства дерматологические"
+        "8 - Средства защиты лица"
       ],
       "ExistingValues" : [
       ],
@@ -1782,7 +1783,8 @@
       "NORMID",
       "NORMNAME",
       "BEGINDATE",
-      "ENDDATE"
+      "ENDDATE",
+      "NOTE"
     ],
     "NORMID" : {
       "FieldType" : "INTEGER",
@@ -1866,6 +1868,30 @@
       "DefaultValue" : "",
       "Description" : [
         "Дата последнего дня действия нормы"
+      ],
+      "ExistingValues" : [
+      ],
+      "ReferenceTo" : {
+        "TableName" : "",
+        "FieldName" : "",
+        "OnDelete" : 4,
+        "OnUpdate" : 4
+      },
+      "ReferenceFrom" : {
+        "TableNames" : [
+        ],
+        "FieldNames" : [
+        ]
+      }
+    },
+    "NOTE" : {
+      "FieldType" : "TEXT",
+      "PrimaryKey" : false,
+      "Status" : false,
+      "NotNull" : false,
+      "DefaultValue" : "",
+      "Description" : [
+        "Примечание"
       ],
       "ExistingValues" : [
       ],

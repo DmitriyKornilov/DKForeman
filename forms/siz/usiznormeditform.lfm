@@ -85,10 +85,10 @@ object SIZNormEditForm: TSIZNormEditForm
     Left = 8
     Height = 20
     Top = 12
-    Width = 248
+    Width = 240
     BorderSpacing.Left = 8
     BorderSpacing.Top = 12
-    Caption = 'Наименование норм предприятия:'
+    Caption = 'Наименование норм выдачи СИЗ:'
     ParentColor = False
   end
   object NormNameEdit: TEdit
@@ -109,22 +109,22 @@ object SIZNormEditForm: TSIZNormEditForm
     TabOrder = 1
     OnKeyDown = NormNameEditKeyDown
   end
-  object TypicalNameLabel: TLabel
+  object NoteLabel: TLabel
     AnchorSideLeft.Control = Owner
     AnchorSideTop.Control = NormNameEdit
     AnchorSideTop.Side = asrBottom
     Left = 8
     Height = 20
     Top = 80
-    Width = 310
+    Width = 90
     BorderSpacing.Left = 8
     BorderSpacing.Top = 12
-    Caption = 'Наименование типовых (отраслевых) норм:'
+    Caption = 'Примечание'
     ParentColor = False
   end
-  object TypicalNameEdit: TEdit
+  object NoteEdit: TEdit
     AnchorSideLeft.Control = Owner
-    AnchorSideTop.Control = TypicalNameLabel
+    AnchorSideTop.Control = NoteLabel
     AnchorSideTop.Side = asrBottom
     AnchorSideRight.Control = Owner
     AnchorSideRight.Side = asrBottom
@@ -138,7 +138,7 @@ object SIZNormEditForm: TSIZNormEditForm
     BorderSpacing.Right = 8
     MaxLength = 500
     TabOrder = 2
-    OnKeyDown = TypicalNameEditKeyDown
+    OnKeyDown = NoteEditKeyDown
   end
   object BeginDateLabel: TLabel
     AnchorSideLeft.Control = Owner
@@ -156,7 +156,7 @@ object SIZNormEditForm: TSIZNormEditForm
   object BeginDatePicker: TDateTimePicker
     AnchorSideLeft.Control = BeginDateLabel
     AnchorSideLeft.Side = asrBottom
-    AnchorSideTop.Control = TypicalNameEdit
+    AnchorSideTop.Control = NoteEdit
     AnchorSideTop.Side = asrBottom
     AnchorSideRight.Control = Owner
     AnchorSideRight.Side = asrBottom

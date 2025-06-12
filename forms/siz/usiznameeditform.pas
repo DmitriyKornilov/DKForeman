@@ -54,6 +54,7 @@ begin
   DataBase.KeyPickList('SIZUNIT', 'UnitID', 'UnitName', UnitIDs, UnitNames);
 
   TypeList:= TVSTTable.Create(TypeVT);
+  TypeList.SetSingleFont(MainForm.GridFont);
   TypeList.CanSelect:= True;
   TypeList.CanUnselect:= True;
   TypeList.OnSelect:= @TypeSelect;
@@ -74,53 +75,75 @@ procedure TSIZNameEditForm.SizeTypeChoose(out AColumnName: String;
                              out AKeys: TIntVector;
                              out APicks: TStrVector);
 begin
-  if TypeList.SelectedIndex=High(SIZ_TYPE_PICKS) then
-    AColumnName:= 'Способ выдачи'
-  else
+  if TypeList.SelectedIndex=0 then
+  begin
+    AColumnName:= 'Способ выдачи';
+    AKeys:= SSO_SIZETYPE_KEYS;
+    APicks:= SSO_SIZETYPE_PICKS;
+  end
+  else begin
     AColumnName:= 'Тип размера';
-
-  case TypeList.SelectedIndex of
-  0: //Одежда специальная защитная
-    begin
-      AKeys:= VCreateInt([0, SIZ_SIZETYPE_KEYS[1]]);
-      APicks:= VCreateStr(['<нет>', SIZ_SIZETYPE_PICKS[1]]);
-    end;
-  1: //Средства защиты ног
-    begin
-      AKeys:= VCreateInt([0, SIZ_SIZETYPE_KEYS[2]]);
-      APicks:= VCreateStr(['<нет>', SIZ_SIZETYPE_PICKS[2]]);
-    end;
-  2: //Средства защиты головы
-    begin
-      AKeys:= VCreateInt([0, SIZ_SIZETYPE_KEYS[3]]);
-      APicks:= VCreateStr(['<нет>', SIZ_SIZETYPE_PICKS[3]]);
-    end;
-  3: //Средства защиты рук
-    begin
-      AKeys:= VCreateInt([0, SIZ_SIZETYPE_KEYS[4]]);
-      APicks:= VCreateStr(['<нет>', SIZ_SIZETYPE_PICKS[4]]);
-    end;
-  4: //Средства защиты глаз
-    begin
-      AKeys:= VCreateInt([0, SIZ_SIZETYPE_KEYS[3], SIZ_SIZETYPE_KEYS[5]]);
-      APicks:= VCreateStr(['<нет>', SIZ_SIZETYPE_PICKS[3], SIZ_SIZETYPE_PICKS[5]]);
-    end;
-  5: //Средства защиты органов дыхания
-    begin
-      AKeys:= VCreateInt([0, SIZ_SIZETYPE_KEYS[5], SIZ_SIZETYPE_KEYS[6]]);
-      APicks:= VCreateStr(['<нет>', SIZ_SIZETYPE_PICKS[5], SIZ_SIZETYPE_PICKS[6]]);
-    end;
-  6: //Средства защиты органов слуха
-    begin
-      AKeys:= VCreateInt([0, SIZ_SIZETYPE_KEYS[3]]);
-      APicks:= VCreateStr(['<нет>', SIZ_SIZETYPE_PICKS[3]]);
-    end;
-  7: //Средства дерматологические
-    begin
-      AKeys:= SSO_SIZETYPE_KEYS;
-      APicks:= SSO_SIZETYPE_PICKS;
-    end;
+    AKeys:= SIZ_SIZETYPE_KEYS;
+    APicks:= SIZ_SIZETYPE_PICKS;
   end;
+
+  //case TypeList.SelectedIndex of
+  //0: //Средства дерматологические
+  //  begin
+  //    AKeys:= SSO_SIZETYPE_KEYS;
+  //    APicks:= SSO_SIZETYPE_PICKS;
+  //  end;
+  //1: //Одежда специальная защитная
+  //  begin
+  //    AKeys:= VCreateInt([0, SIZ_SIZETYPE_KEYS[1]]);
+  //    APicks:= VCreateStr(['<нет>', SIZ_SIZETYPE_PICKS[1]]);
+  //  end;
+  //2: //Средства защиты ног
+  //  begin
+  //    AKeys:= VCreateInt([0, SIZ_SIZETYPE_KEYS[2]]);
+  //    APicks:= VCreateStr(['<нет>', SIZ_SIZETYPE_PICKS[2]]);
+  //  end;
+  //3: //Средства защиты головы
+  //  begin
+  //    AKeys:= VCreateInt([0, SIZ_SIZETYPE_KEYS[3]]);
+  //    APicks:= VCreateStr(['<нет>', SIZ_SIZETYPE_PICKS[3]]);
+  //  end;
+  //4: //Средства защиты рук
+  //  begin
+  //    AKeys:= VCreateInt([0, SIZ_SIZETYPE_KEYS[4]]);
+  //    APicks:= VCreateStr(['<нет>', SIZ_SIZETYPE_PICKS[4]]);
+  //  end;
+  //5: //Средства защиты глаз
+  //  begin
+  //    AKeys:= VCreateInt([0, SIZ_SIZETYPE_KEYS[3], SIZ_SIZETYPE_KEYS[5]]);
+  //    APicks:= VCreateStr(['<нет>', SIZ_SIZETYPE_PICKS[3], SIZ_SIZETYPE_PICKS[5]]);
+  //  end;
+  //6: //Средства защиты органов дыхания
+  //  begin
+  //    AKeys:= VCreateInt([0, SIZ_SIZETYPE_KEYS[5], SIZ_SIZETYPE_KEYS[6]]);
+  //    APicks:= VCreateStr(['<нет>', SIZ_SIZETYPE_PICKS[5], SIZ_SIZETYPE_PICKS[6]]);
+  //  end;
+  //7: //Средства защиты органов слуха
+  //  begin
+  //    AKeys:= VCreateInt([0, SIZ_SIZETYPE_KEYS[3]]);
+  //    APicks:= VCreateStr(['<нет>', SIZ_SIZETYPE_PICKS[3]]);
+  //  end;
+  //8: //Средства защиты лица
+  //  begin
+  //    AKeys:= VCreateInt([0, SIZ_SIZETYPE_KEYS[3], SIZ_SIZETYPE_KEYS[5]]);
+  //    APicks:= VCreateStr(['<нет>', SIZ_SIZETYPE_PICKS[3], SIZ_SIZETYPE_PICKS[5]]);
+  //  end;
+  //9: //Средства защиты от падения с высоты
+  //  begin
+  //    AKeys:= VCreateInt([0, SIZ_SIZETYPE_KEYS[1]]);
+  //    APicks:= VCreateStr(['<нет>', SIZ_SIZETYPE_PICKS[1]]);
+  //  end;
+  //10: //Средства защиты опорно-двигательного аппарата
+  //  begin
+  //    AKeys:= VCreateInt([0, SIZ_SIZETYPE_KEYS[1]]);
+  //    APicks:= VCreateStr(['<нет>', SIZ_SIZETYPE_PICKS[1]]);
+  //  end;
+  //end;
 end;
 
 procedure TSIZNameEditForm.TypeSelect;
@@ -134,9 +157,9 @@ begin
   NamePanel.Visible:= False;
   try
     if Assigned(NameTable) then FreeAndNil(NameTable);
-    NameTable:= TDBTable.Create(NamePanel, DataBase.Query);
+    NameTable:= TDBTable.Create(MainForm.GridFont, NamePanel, DataBase);
     NameTable.Edit.HeaderFont.Style:= [fsBold];
-    NameTable.Settings(MainForm.GridFont, 'SIZNAME', 'NameID',
+    NameTable.Settings('SIZNAME', 'NameID',
       ['SIZName',      'UnitID',            'SizeType' ],
       ['Наименование', 'Единица измерения',  SizeColumn],
       [ctString,        ctKeyPick,           ctKeyPick ],
@@ -148,7 +171,7 @@ begin
       [nil,             UnitNames,           SizePicks ],
       'SizType'
     );
-    NameTable.Update(IntToStr(SIZ_TYPE_KEYS[TypeList.SelectedIndex]));
+    NameTable.MasterIDUpdate(IntToStr(SIZ_TYPE_KEYS[TypeList.SelectedIndex]));
 
   finally
     NamePanel.Visible:= True;

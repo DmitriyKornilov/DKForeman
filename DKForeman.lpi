@@ -438,6 +438,7 @@
         <Filename Value="forms\siz\usiznameeditform.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="SIZNameEditForm"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="USIZNameEditForm"/>
       </Unit>

@@ -453,16 +453,16 @@ type
     **************************************************************************)
     {Загрузка из базы списка типовых норм: True - ОК, False - пусто}
     function SIZNormsLoad(out ANormIDs: TIntVector;
-                             out ANormNames, ATypicalNames: TStrVector;
+                             out ANormNames, ANotes: TStrVector;
                              out ABeginDates, AEndDates: TDateVector): Boolean;
 
     {Добавление новой нормы: True - ОК, False - ошибка}
     function SIZNormAdd(out ANormID: Integer;
-                          const ANormName, ATypicalName: String;
+                          const ANormName, ANote: String;
                           const ABeginDate, AEndDate: TDate): Boolean;
     {Обновление нормы: True - ОК, False - ошибка}
     function SIZNormUpdate(const ANormID: Integer;
-                          const ANormName, ATypicalName: String;
+                          const ANormName, ANote: String;
                           const ABeginDate, AEndDate: TDate): Boolean;
 
     {Удаление норм с обработкой всех таблиц: True - ОК, False - ошибка}
@@ -3571,20 +3571,20 @@ begin
 end;
 
 function TDataBase.SIZNormsLoad(out ANormIDs: TIntVector;
-                             out ANormNames, ATypicalNames: TStrVector;
+                             out ANormNames, ANotes: TStrVector;
                              out ABeginDates, AEndDates: TDateVector): Boolean;
 begin
   Result:= False;
 
   ANormIDs:= nil;
   ANormNames:= nil;
-  ATypicalNames:= nil;
+  ANotes:= nil;
   ABeginDates:= nil;
   AEndDates:= nil;
 
   QSetQuery(FQuery);
   QSetSQL(
-    sqlSELECT('SIZNORM', ['NormID', 'NormName', 'TypicalName', 'BeginDate', 'EndDate']) +
+    sqlSELECT('SIZNORM', ['NormID', 'NormName', 'BeginDate', 'EndDate', 'Note']) +
     'WHERE NormID>0 ' +
     'ORDER BY BeginDate DESC'
   );
@@ -3596,7 +3596,7 @@ begin
     begin
       VAppend(ANormIDs, QFieldInt('NormID'));
       VAppend(ANormNames, QFieldStr('NormName'));
-      VAppend(ATypicalNames, QFieldStr('TypicalName'));
+      VAppend(ANotes, QFieldStr('Note'));
       VAppend(ABeginDates, QFieldDT('BeginDate'));
       VAppend(AEndDates, QFieldDT('EndDate'));
       QNext;
@@ -4365,7 +4365,7 @@ begin
 end;
 
 function TDataBase.SIZNormAdd(out ANormID: Integer;
-                          const ANormName, ATypicalName: String;
+                          const ANormName, ANote: String;
                           const ABeginDate, AEndDate: TDate): Boolean;
 begin
   Result:= False;
@@ -4373,10 +4373,10 @@ begin
   try
     //запись нормы
     QSetSQL(
-      sqlINSERT('SIZNORM', ['NormName', 'TypicalName', 'BeginDate', 'EndDate'])
+      sqlINSERT('SIZNORM', ['NormName', 'Note', 'BeginDate', 'EndDate'])
     );
     QParamStr('NormName', ANormName);
-    QParamStr('TypicalName', ATypicalName);
+    QParamStr('Note', ANote);
     QParamDT('BeginDate', ABeginDate);
     QParamDT('EndDate', AEndDate);
     QExec;
@@ -4391,19 +4391,19 @@ begin
 end;
 
 function TDataBase.SIZNormUpdate(const ANormID: Integer;
-                          const ANormName, ATypicalName: String;
+                          const ANormName, ANote: String;
                           const ABeginDate, AEndDate: TDate): Boolean;
 begin
   Result:= False;
   QSetQuery(FQuery);
   try
     QSetSQL(
-      sqlUPDATE('SIZNORM', ['NormName', 'TypicalName', 'BeginDate', 'EndDate']) +
+      sqlUPDATE('SIZNORM', ['NormName', 'Note', 'BeginDate', 'EndDate']) +
       'WHERE NormID = :NormID'
     );
     QParamInt('NormID', ANormID);
     QParamStr('NormName', ANormName);
-    QParamStr('TypicalName', ATypicalName);
+    QParamStr('Note', ANote);
     QParamDT('BeginDate', ABeginDate);
     QParamDT('EndDate', AEndDate);
     QExec;
