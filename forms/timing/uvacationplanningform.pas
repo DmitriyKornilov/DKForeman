@@ -129,8 +129,6 @@ type
 
     procedure PlanDateMove(const ADelta: Integer; const AMonth: Boolean);
 
-    procedure SetEditButtonsEnabled;
-
     procedure LegendCreate;
 
     procedure SettingsSave;
@@ -514,8 +512,36 @@ begin
 end;
 
 procedure TVacationPlanningForm.PlanSelect;
+var
+  i, n: Integer;
+  D: TDate;
+  b: Boolean;
 begin
-  SetEditButtonsEnabled;
+  EditButton.Enabled:= Sheet.IsSelected;
+  i:= Sheet.SelectedIndex;
+  if Sheet.SelectedPart= 1 then
+    D:= Plan1Dates[i]
+  else
+    D:= Plan2Dates[i];
+
+  if D>0 then
+  begin
+    ViewGrid.Visible:= False;
+    try
+      ViewGrid.Col:= 369;
+      ViewGrid.Col:= 4 + DayNumberInYear(D);
+    finally
+      ViewGrid.Visible:= True;
+    end;
+  end;
+
+  b:= Sheet.IsSelected and (D>0);
+  PrevMonthButton.Enabled:= b and (MonthOf(D)>1);
+  NextMonthButton.Enabled:= b and (MonthOf(D)<12);
+  n:= Calendar.HoliDaysCount(Calendar.BeginDate, IncDay(D,-1));
+  PrevDayButton.Enabled:= b and (DayNumberInYear(D)>1+n);
+  n:= Calendar.HoliDaysCount(IncDay(D), Calendar.EndDate);
+  NextDayButton.Enabled:= b and (DayNumberInYear(D)<DaysInYear(D)-n);
 end;
 
 procedure TVacationPlanningForm.PlanStat;
@@ -589,6 +615,8 @@ begin
   Sheet.VacationLineDraw(i, Plan1Dates[i], Plan2Dates[i],
                      Plan1Counts[i], Plan1AddCounts[i], Plan2Counts[i], Plan2AddCounts[i]);
 
+  PlanSelect;
+  PlanStat;
 end;
 
 procedure TVacationPlanningForm.PlanDateMove(const ADelta: Integer; const AMonth: Boolean);
@@ -622,30 +650,9 @@ begin
   Sheet.VacationLineDraw(i, Plan1Dates[i], Plan2Dates[i],
                          Plan1Counts[i], Plan1AddCounts[i],
                          Plan2Counts[i], Plan2AddCounts[i]);
+
+  PlanSelect;
   PlanStat;
-  SetEditButtonsEnabled;
-end;
-
-procedure TVacationPlanningForm.SetEditButtonsEnabled;
-var
-  i, n: Integer;
-  D: TDate;
-  b: Boolean;
-begin
-  EditButton.Enabled:= Sheet.IsSelected;
-  i:= Sheet.SelectedIndex;
-  if Sheet.SelectedPart= 1 then
-    D:= Plan1Dates[i]
-  else
-    D:= Plan2Dates[i];
-
-  b:= Sheet.IsSelected and (D>0);
-  PrevMonthButton.Enabled:= b and (MonthOf(D)>1);
-  NextMonthButton.Enabled:= b and (MonthOf(D)<12);
-  n:= Calendar.HoliDaysCount(Calendar.BeginDate, IncDay(D,-1));
-  PrevDayButton.Enabled:= b and (DayNumberInYear(D)>1+n);
-  n:= Calendar.HoliDaysCount(IncDay(D), Calendar.EndDate);
-  NextDayButton.Enabled:= b and (DayNumberInYear(D)<DaysInYear(D)-n);
 end;
 
 procedure TVacationPlanningForm.LegendCreate;

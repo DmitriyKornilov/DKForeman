@@ -17,9 +17,7 @@ uses
   UCalendarForm, UScheduleShiftForm, UVacationPlanForm,
   USchedulePersonalForm, UTimetableForm,
   USIZNameEditForm, USIZNormForm, USIZSizeForm, USIZStaffForm, USIZStorageForm,
-  UStudyForm,
-
-  USearchForm;
+  UStudyForm;
 
 type
 
@@ -126,6 +124,8 @@ implementation
       добавлен YEARNUM}
 {TODO учесть замену в таблице SIZENTRY типа NOMNUM с INTEGER на TEXT}
 {TODO учесть в таблице SIZSTAFFLOGINFO поле SINGLECOMPLECT - пока удалено}
+
+{TODO проверить TDataBase.SIZNormSubItemInfoDelete на соответствие изменениям в БД}
 
 {SQLITE_CONSTRAINT_UNIQUE!!!!!!!!!!!!!!!}
 

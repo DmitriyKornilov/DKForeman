@@ -3404,7 +3404,7 @@
     "UNITDIGITALCODE" : {
       "FieldType" : "INTEGER",
       "PrimaryKey" : false,
-      "Status" : true,
+      "Status" : false,
       "NotNull" : true,
       "DefaultValue" : "",
       "Description" : [
