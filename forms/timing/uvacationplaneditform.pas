@@ -49,13 +49,15 @@ type
 var
   VacationPlanEditForm: TVacationPlanEditForm;
 
-  function VacationPlanEditFormShow(const AYear, ATabNumID: Integer;
+  function VacationPlanEditFormShow(const AStaffStr: String;
+              const AYear, ATabNumID: Integer;
               const APlan1Date, APlan2Date: TDate;
               const APlan1Count, APlan1AddCount, APlan2Count, APlan2AddCount: Integer): Integer;
 
 implementation
 
-function VacationPlanEditFormShow(const AYear, ATabNumID: Integer;
+function VacationPlanEditFormShow(const AStaffStr: String;
+            const AYear, ATabNumID: Integer;
             const APlan1Date, APlan2Date: TDate;
             const APlan1Count, APlan1AddCount, APlan2Count, APlan2AddCount: Integer): Integer;
 var
@@ -63,6 +65,7 @@ var
 begin
   Form:= TVacationPlanEditForm.Create(nil);
   try
+    Form.Caption:= Form.Caption + ': ' + AStaffStr;
     Form.YearNum:= AYear;
     Form.TabNumID:= ATabNumID;
 

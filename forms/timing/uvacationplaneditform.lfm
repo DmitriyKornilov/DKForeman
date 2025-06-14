@@ -9,6 +9,7 @@ object VacationPlanEditForm: TVacationPlanEditForm
   ClientWidth = 660
   DesignTimePPI = 120
   Position = poScreenCenter
+  LCLVersion = '4.0.0.4'
   OnCreate = FormCreate
   OnShow = FormShow
   object Plan2Label: TLabel

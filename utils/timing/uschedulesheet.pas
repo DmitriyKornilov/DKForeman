@@ -42,12 +42,17 @@ type
       FCalendar: TCalendar;
       FSelectedRowIndex, FSelectedCol: Integer;
       FOnSelect: TSheetEvent;
+      FClickedRow: Integer;
+
+      FPlan1Dates, FPlan2Dates: TDateVector;
+      FPlan1Counts, FPlan1AddCounts, FPlan2Counts, FPlan2AddCounts: TIntVector;
 
     function DateToIndex(const ADate: TDate): Integer;
-    function ColToIndex(const ACol: Integer): Integer;
-    function IndexToCol(const AIndex: Integer): Integer;
-    function IndexToRow(const AIndex: Integer): Integer;
-    function RowToIndex(const ARow: Integer): Integer;
+    function VacationEndDate(const ABeginDate: TDate; const ADaysCount: Integer): TDate;
+    function IsVacationDayCell(const ARow, ACol: Integer; out APart: Integer): Boolean;
+
+    function PartToDateCol(const APart: Integer): Integer;
+    function DateColToPart(const ACol: Integer): Integer;
 
     procedure CaptionDraw;
 
@@ -80,12 +85,18 @@ type
                 const APlan1Date, APlan2Date: TDate;
                 const APlan1Count, APlan1AddCount, APlan2Count, APlan2AddCount: Integer);
 
+    function ColToIndex(const ACol: Integer): Integer;
+    function IndexToCol(const AIndex: Integer): Integer;
+    function IndexToRow(const AIndex: Integer): Integer;
+    function RowToIndex(const ARow: Integer): Integer;
+
     procedure Select(const ARowIndex, ACol: Integer);
     procedure Unselect(const ANeedDoEvent: Boolean);
     function IsSelected: Boolean;
     function SelectedPart: Integer;
     property SelectedIndex: Integer read FSelectedRowIndex;
     property SelectedCol: Integer read FSelectedCol;
+    property ClickedRow: Integer read FClickedRow;
     property OnSelect: TSheetEvent read FOnSelect write FOnSelect;
   end;
 
@@ -1104,6 +1115,57 @@ begin
   Result:= DayNumberInYear(ADate) - 1;
 end;
 
+function TVacationPlanSheet.VacationEndDate(const ABeginDate: TDate;
+                                            const ADaysCount: Integer): TDate;
+var
+  HolidaysCount: Integer;
+begin
+  Result:= IncDay(ABeginDate, ADaysCount-1);
+  HolidaysCount:= FCalendar.HoliDaysCount(ABeginDate, Result);
+  if HolidaysCount>0 then
+    Result:= IncDay(Result, HolidaysCount);
+  if CompareDate(Result, FCalendar.EndDate)>0 then
+    Result:= FCalendar.EndDate;
+end;
+
+function TVacationPlanSheet.IsVacationDayCell(const ARow, ACol: Integer;
+                                              out APart: Integer): Boolean;
+var
+  RowIndex: Integer;
+
+  function VacationCheck(const AFirstDate: TDate; const ADaysCount: Integer): Boolean;
+  var
+    FirstCol, LastCol: Integer;
+    LastDate: TDate;
+  begin
+    Result:= False;
+    if AFirstDate>0 then
+    begin
+      FirstCol:= IndexToCol(DateToIndex(AFirstDate));
+      LastDate:= VacationEndDate(AFirstDate, ADaysCount);
+      LastCol:= IndexToCol(DateToIndex(LastDate));
+      Result:= (ACol>=FirstCol) and (ACol<=LastCol);
+    end;
+  end;
+
+begin
+  Result:= False;
+  APart:= 0;
+
+  RowIndex:= RowToIndex(ARow);
+
+  Result:= VacationCheck(FPlan1Dates[RowIndex],
+                         FPlan1Counts[RowIndex] + FPlan1AddCounts[RowIndex]);
+  if Result then
+    APart:= 1
+  else begin
+    Result:= VacationCheck(FPlan2Dates[RowIndex],
+                         FPlan2Counts[RowIndex] + FPlan2AddCounts[RowIndex]);
+    if Result then
+      APart:= 2;
+  end;
+end;
+
 function TVacationPlanSheet.ColToIndex(const ACol: Integer): Integer;
 begin
   Result:= ACol - FFirstDateCol;
@@ -1203,12 +1265,18 @@ begin
     Writer.SetBackground(DefaultSelectionBGColor);
     Writer.WriteBackground(IndexToRow(ARowIndex), ACol);
     Writer.SetBackgroundDefault;
+
+    VacationLineDraw(ARowIndex, FPlan1Dates[ARowIndex], FPlan2Dates[ARowIndex],
+                     FPlan1Counts[ARowIndex], FPlan1AddCounts[ARowIndex],
+                     FPlan2Counts[ARowIndex], FPlan2AddCounts[ARowIndex]);
   end;
 
   if Assigned(FOnSelect) then FOnSelect;
 end;
 
 procedure TVacationPlanSheet.Unselect(const ANeedDoEvent: Boolean);
+var
+  RowIndex: Integer;
 begin
   if IsSelected then
   begin
@@ -1216,8 +1284,13 @@ begin
     Writer.WriteBackground(IndexToRow(FSelectedRowIndex), FSelectedCol);
   end;
 
-  FSelectedRowIndex:= -1;
+  RowIndex:= FSelectedRowIndex;
   FSelectedCol:= 0;
+  FSelectedRowIndex:= -1;
+
+  VacationLineDraw(RowIndex, FPlan1Dates[RowIndex], FPlan2Dates[RowIndex],
+                     FPlan1Counts[RowIndex], FPlan1AddCounts[RowIndex],
+                     FPlan2Counts[RowIndex], FPlan2AddCounts[RowIndex]);
 
   if ANeedDoEvent and Assigned(FOnSelect) then FOnSelect;
 end;
@@ -1225,14 +1298,20 @@ end;
 procedure TVacationPlanSheet.MouseDown(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 var
-  R, C: Integer;
+  R, C, P: Integer;
 begin
   if FLastRow<=2 then Exit;
   if Button=mbLeft then
   begin
      (Sender as TsWorksheetGrid).MouseToCell(X, Y, C, R);
-     if not ((C in [3, 4]) and ((R>2) and (R<=FLastRow))) then Exit;
+     FClickedRow:= R;
+     if not (
+       ((C in [3, 4]) or IsVacationDayCell(R, C, P)) and
+       ((R>2) and (R<=FLastRow))
+     ) then Exit;
      Unselect(False);
+     if P>0 then
+       C:= PartToDateCol(P);
      Select(RowToIndex(R), C);
   end
   else if Button=mbRight then
@@ -1258,18 +1337,6 @@ procedure TVacationPlanSheet.VacationLineDraw(const AIndex: Integer;
 var
   R, C: Integer;
   S: String;
-
-  function GetEndDate(const ABeginDate: TDate; const ADaysCount: Integer): TDate;
-  var
-    HolidaysCount: Integer;
-  begin
-    Result:= IncDay(ABeginDate, ADaysCount-1);
-    HolidaysCount:= FCalendar.HoliDaysCount(ABeginDate, Result);
-    if HolidaysCount>0 then
-      Result:= IncDay(Result, HolidaysCount);
-    if CompareDate(Result, FCalendar.EndDate)>0 then
-      Result:= FCalendar.EndDate;
-  end;
 
   procedure ColorClear;
   var
@@ -1298,10 +1365,12 @@ var
     end;
   end;
 
-  procedure VacationDraw(const ABeginDate: TDate; const ACount, AAddCount: Integer);
+  procedure VacationDraw(const ABeginDate: TDate; const ACount, AAddCount: Integer;
+                         const AIsSelected: Boolean);
   var
     FirstDate, EndDate: TDate;
     FirstIndex, LastIndex: Integer;
+    DayColor: TColor;
   begin
     FirstDate:= ABeginDate;
     EndDate:= IncDay(FirstDate, -1);
@@ -1309,22 +1378,35 @@ var
     begin
       FirstDate:= IncDay(EndDate);
       FirstIndex:= DateToIndex(FirstDate);
-      EndDate:= GetEndDate(FirstDate, ACount);
+      EndDate:= VacationEndDate(FirstDate, ACount);
       LastIndex:= DateToIndex(EndDate);
-      ColorDraw(FirstIndex, LastIndex, COLORS_CALENDAR[DAY_STATUS_OFFDAY]);
+      DayColor:= COLORS_CALENDAR[DAY_STATUS_OFFDAY];
+      if AIsSelected then
+        DayColor:= ColorIncLightness(DayColor, -50);
+      ColorDraw(FirstIndex, LastIndex, DayColor);
     end;
     if AAddCount>0 then
     begin
       FirstDate:= IncDay(EndDate);
       FirstIndex:= DateToIndex(FirstDate);
-      EndDate:= GetEndDate(FirstDate, AAddCount);
+      EndDate:= VacationEndDate(FirstDate, AAddCount);
       LastIndex:= DateToIndex(EndDate);
-      ColorDraw(FirstIndex, LastIndex, COLORS_CALENDAR[DAY_STATUS_BEFORE]);
+      DayColor:= COLORS_CALENDAR[DAY_STATUS_BEFORE];
+      if AIsSelected then
+        DayColor:= ColorIncLightness(DayColor, -50);
+      ColorDraw(FirstIndex, LastIndex, DayColor);
     end;
     Writer.SetBackgroundDefault;
   end;
 
 begin
+  FPlan1Dates[AIndex]:= APlan1Date;
+  FPlan2Dates[AIndex]:= APlan2Date;
+  FPlan1Counts[AIndex]:= APlan1Count;
+  FPlan2Counts[AIndex]:= APlan2Count;
+  FPlan1AddCounts[AIndex]:= APlan1AddCount;
+  FPlan2AddCounts[AIndex]:= APlan2AddCount;
+
   Writer.SetFont(Font.Name, Font.Size, [{fsBold}], clBlack);
   Writer.SetAlignment(haCenter, vaCenter);
 
@@ -1344,8 +1426,10 @@ begin
   Writer.SetBackgroundDefault;
 
   ColorClear;
-  VacationDraw(APlan1Date, APlan1Count, APlan1AddCount);
-  VacationDraw(APlan2Date, APlan2Count, APlan2AddCount);
+  VacationDraw(APlan1Date, APlan1Count, APlan1AddCount,
+               (SelectedIndex=AIndex) and (SelectedPart=1));
+  VacationDraw(APlan2Date, APlan2Count, APlan2AddCount,
+               (SelectedIndex=AIndex) and (SelectedPart=2));
 end;
 
 function TVacationPlanSheet.IsSelected: Boolean;
@@ -1353,11 +1437,21 @@ begin
   Result:= (FSelectedRowIndex>=0) and (FSelectedCol>0);
 end;
 
-function TVacationPlanSheet.SelectedPart: Integer;
+function TVacationPlanSheet.PartToDateCol(const APart: Integer): Integer;
+begin
+  Result:= APart + 2;
+end;
+
+function TVacationPlanSheet.DateColToPart(const ACol: Integer): Integer;
 begin
   Result:= 0;
-  if FSelectedCol>0 then
-    Result:= FSelectedCol - 2;
+  if ACol>0 then
+    Result:= ACol - 2;
+end;
+
+function TVacationPlanSheet.SelectedPart: Integer;
+begin
+  Result:= DateColToPart(FSelectedCol);
 end;
 
 constructor TVacationPlanSheet.Create(const ACalendar: TCalendar;
@@ -1417,6 +1511,13 @@ procedure TVacationPlanSheet.LineDraw(const AIndex: Integer;
 begin
   StaffLineDraw(AIndex, AStaffName, ATabNum);
   ScheduleLineDraw(AIndex, ASchedule);
+
+  VRedim(FPlan1Dates, AIndex+1);
+  VRedim(FPlan2Dates, AIndex+1);
+  VRedim(FPlan1Counts, AIndex+1);
+  VRedim(FPlan2Counts, AIndex+1);
+  VRedim(FPlan1AddCounts, AIndex+1);
+  VRedim(FPlan2AddCounts, AIndex+1);
   VacationLineDraw(AIndex, APlan1Date, APlan2Date,
                    APlan1Count, APlan1AddCount, APlan2Count, APlan2AddCount);
 end;

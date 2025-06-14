@@ -122,12 +122,12 @@ type
     procedure PlanRedraw;
     procedure PlanSelect;
     procedure PlanStat;
+    procedure PlanLine(const ANeedColumnShow: Boolean);
+    procedure PlanDateMove(const ADelta: Integer; const AMonth: Boolean);
     procedure PlanExport;
 
     procedure VacationLoad(const AIndex: Integer);
     procedure VacationPlanEditFormOpen;
-
-    procedure PlanDateMove(const ADelta: Integer; const AMonth: Boolean);
 
     procedure LegendCreate;
 
@@ -446,8 +446,6 @@ var
 begin
   if not CanLoadAndDraw then Exit;
 
-
-
   DataClear;
 
   if OrderType<=1 then
@@ -489,9 +487,21 @@ begin
 end;
 
 procedure TVacationPlanningForm.PlanDraw(const AZoomPercent: Integer);
+var
+  i, j: Integer;
 begin
   if not CanLoadAndDraw then Exit;
   if not Assigned(Sheet) then Exit;
+
+  if Sheet.IsSelected then
+  begin
+    i:= Sheet.SelectedIndex;
+    j:= Sheet.SelectedCol;
+  end
+  else begin
+    i:= -1;
+    j:= -1;
+  end;
 
   ViewGrid.Visible:= False;
   Screen.Cursor:= crHourGlass;
@@ -500,6 +510,8 @@ begin
     Sheet.Zoom(ZoomPercent);
     Sheet.Draw(StaffNames, TabNums, Schedules, Plan1Dates, Plan2Dates,
                Plan1Counts, Plan1AddCounts, Plan2Counts, Plan2AddCounts);
+    if i>=0 then
+      Sheet.Select(i, j);
   finally
     ViewGrid.Visible:= True;
     Screen.Cursor:= crDefault;
@@ -512,36 +524,8 @@ begin
 end;
 
 procedure TVacationPlanningForm.PlanSelect;
-var
-  i, n: Integer;
-  D: TDate;
-  b: Boolean;
 begin
-  EditButton.Enabled:= Sheet.IsSelected;
-  i:= Sheet.SelectedIndex;
-  if Sheet.SelectedPart= 1 then
-    D:= Plan1Dates[i]
-  else
-    D:= Plan2Dates[i];
-
-  if D>0 then
-  begin
-    ViewGrid.Visible:= False;
-    try
-      ViewGrid.Col:= 369;
-      ViewGrid.Col:= 4 + DayNumberInYear(D);
-    finally
-      ViewGrid.Visible:= True;
-    end;
-  end;
-
-  b:= Sheet.IsSelected and (D>0);
-  PrevMonthButton.Enabled:= b and (MonthOf(D)>1);
-  NextMonthButton.Enabled:= b and (MonthOf(D)<12);
-  n:= Calendar.HoliDaysCount(Calendar.BeginDate, IncDay(D,-1));
-  PrevDayButton.Enabled:= b and (DayNumberInYear(D)>1+n);
-  n:= Calendar.HoliDaysCount(IncDay(D), Calendar.EndDate);
-  NextDayButton.Enabled:= b and (DayNumberInYear(D)<DaysInYear(D)-n);
+  PlanLine(True);
 end;
 
 procedure TVacationPlanningForm.PlanStat;
@@ -564,6 +548,42 @@ begin
     end;
   end;
   StatSheet.Update(V);
+end;
+
+procedure TVacationPlanningForm.PlanLine(const ANeedColumnShow: Boolean);
+var
+  n: Integer;
+  D: TDate;
+  b: Boolean;
+begin
+  D:= 0;
+  if Sheet.IsSelected then
+  begin
+    if Sheet.SelectedPart= 1 then
+      D:= Plan1Dates[Sheet.SelectedIndex]
+    else
+      D:= Plan2Dates[Sheet.SelectedIndex];
+
+    if ANeedColumnShow and (D>0) then
+    begin
+      ViewGrid.Visible:= False;
+      try
+        ViewGrid.Col:= 369;
+        ViewGrid.Col:= 4 + DayNumberInYear(D);
+      finally
+        ViewGrid.Visible:= True;
+      end;
+    end;
+  end;
+
+  EditButton.Enabled:= Sheet.IsSelected;
+  b:= Sheet.IsSelected and (D>0);
+  PrevMonthButton.Enabled:= b and (MonthOf(D)>1);
+  NextMonthButton.Enabled:= b and (MonthOf(D)<12);
+  n:= Calendar.HoliDaysCount(Calendar.BeginDate, IncDay(D,-1));
+  PrevDayButton.Enabled:= b and (DayNumberInYear(D)>1+n);
+  n:= Calendar.HoliDaysCount(IncDay(D), Calendar.EndDate);
+  NextDayButton.Enabled:= b and (DayNumberInYear(D)<DaysInYear(D)-n);
 end;
 
 procedure TVacationPlanningForm.PlanExport;
@@ -603,18 +623,19 @@ end;
 procedure TVacationPlanningForm.VacationPlanEditFormOpen;
 var
   i: Integer;
+  S: String;
 begin
   i:= Sheet.SelectedIndex;
 
-  if VacationPlanEditFormShow(YearSpinEdit.Value, TabNumIDs[i],
+  S:= StaffNameForVacationPlanning(StaffNames[i], TabNums[i]);
+  if VacationPlanEditFormShow(S, YearSpinEdit.Value, TabNumIDs[i],
                           Plan1Dates[i], Plan2Dates[i],
                           Plan1Counts[i], Plan1AddCounts[i],
                           Plan2Counts[i], Plan2AddCounts[i]) <> mrOK then Exit;
 
   VacationLoad(i);
-  Sheet.VacationLineDraw(i, Plan1Dates[i], Plan2Dates[i],
-                     Plan1Counts[i], Plan1AddCounts[i], Plan2Counts[i], Plan2AddCounts[i]);
-
+  Sheet.VacationLineDraw(i, Plan1Dates[i], Plan2Dates[i], Plan1Counts[i],
+                         Plan1AddCounts[i], Plan2Counts[i], Plan2AddCounts[i]);
   PlanSelect;
   PlanStat;
 end;
@@ -647,11 +668,9 @@ begin
   if not DataBase.VacationPlanDateUpdate(YearSpinEdit.Value,
                                     TabNumIDs[i], p, D) then Exit;
 
-  Sheet.VacationLineDraw(i, Plan1Dates[i], Plan2Dates[i],
-                         Plan1Counts[i], Plan1AddCounts[i],
-                         Plan2Counts[i], Plan2AddCounts[i]);
-
-  PlanSelect;
+  Sheet.VacationLineDraw(i, Plan1Dates[i], Plan2Dates[i], Plan1Counts[i],
+                         Plan1AddCounts[i], Plan2Counts[i], Plan2AddCounts[i]);
+  PlanLine(AMonth);
   PlanStat;
 end;
 
@@ -687,7 +706,7 @@ procedure TVacationPlanningForm.SettingsLoad;
 var
   SettingValues: TIntVector;
 begin
-  SettingValues:= DataBase.SettingsLoad(SETTING_NAMES_SCHEDULEPERSONALMONTHFORM);
+  SettingValues:= DataBase.SettingsLoad(SETTING_NAMES_VACATIONPLANNINGFORM);
   ZoomPercent:= SettingValues[0];
 end;
 
@@ -725,6 +744,7 @@ end;
 procedure TVacationPlanningForm.ViewGridDblClick(Sender: TObject);
 begin
   if not Sheet.IsSelected then Exit;
+  if Sheet.RowToIndex(Sheet.ClickedRow)<>Sheet.SelectedIndex then Exit;
   VacationPlanEditFormOpen;
 end;
 

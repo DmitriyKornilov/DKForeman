@@ -344,11 +344,13 @@ end;
 procedure TVacationPlanForm.VacationPlanEditFormOpen;
 var
   i, TabNumID: Integer;
+  S: String;
 begin
   i:= StaffList.SelectedIndex;
   TabNumID:= TabNumIDs[i];
 
-  if VacationPlanEditFormShow(YearSpinEdit.Value, TabNumID,
+  S:= StaffNameForVacationPlanning(SNameShort(Families[i], Names[i], Patronymics[i]), TabNums[i]);
+  if VacationPlanEditFormShow(S, YearSpinEdit.Value, TabNumID,
                           Part1FirstDates[i], Part2FirstDates[i],
                           Part1Counts[i], Part1AddCounts[i],
                           Part2Counts[i], Part2AddCounts[i]) <> mrOK then Exit;

@@ -47,7 +47,7 @@ uses
                    out ATabNumIDs: TIntMatrix;
                    out AStaffNames, ATabNums, APostNames, AScheduleNames: TStrMatrix): Boolean;
 
-
+  function StaffNameForVacationPlanning(const AStaffName, ATabNum: String): String;
   function StaffNameForVacationPlanning(const AStaffName, ATabNum, APostName: String): String;
   function StaffNameForVacationPlanning(const AStaffNames, ATabNums, APostNames: TStrVector): TStrVector;
 
@@ -382,9 +382,14 @@ begin
   AddToMatrix(N1, N2);
 end;
 
+function StaffNameForVacationPlanning(const AStaffName, ATabNum: String): String;
+begin
+  Result:= AStaffName + ' [' + ATabNum + ']';
+end;
+
 function StaffNameForVacationPlanning(const AStaffName, ATabNum, APostName: String): String;
 begin
-  Result:= AStaffName + ' [' + ATabNum + '] - ';
+  Result:= StaffNameForVacationPlanning(AStaffName, ATabNum) + ' - ';
   if SSame(APostName, '<не указана>') then
      Result:= Result + '<должность не указана>'
   else
