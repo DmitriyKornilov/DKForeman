@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, Graphics,
   //DK packages utils
-  DK_SheetTables, DK_SheetTypes, DK_Vector, DK_StrUtils, DK_Const,
+  DK_SheetTables, DK_SheetTypes, DK_Vector,DK_Matrix, DK_StrUtils, DK_Const,
   //Project utils
   USIZNormTypes, USIZUtils, UConst;
 
@@ -20,25 +20,36 @@ type
     function SetWidths: TIntVector; override;
     function FirstDataRow: Integer; override;
     function LastDataRow: Integer; override;
+
     procedure Select(const ARow, {%H-}ACol: Integer); override;
     procedure Unselect; override;
     procedure SelectionMove(const AVertDelta: Integer); override;
   private
     const
-      COLUMN1_WIDTH = 100; //пункт типовых норм
+      COLUMN1_WIDTH = 50; //№п/п
       COLUMN2_WIDTH = 300; //должность (профессия)
       TITLE_HEIGHT = 35;
     var
-      FItemNames, FPostNames: TStrVector;
+      FPostNames: TStrMatrix;
+      FOrderNums: TIntVector;
       //начальный и конечный индексы пункта в входящих списках
       FFirstItemIndexes, FLastItemIndexes: TIntVector;
 
     //расчет начальных и конечных индексов пунктов норм по входящему списку
     procedure ItemIndexesCalc;
+
     procedure CaptionDraw;
     procedure LineDraw(const AIndex: Integer);
   public
-    procedure Draw(const AItemNames, APostNames: TStrVector; const ASelectedIndex: Integer);
+    procedure Draw(const AOrderNums: TIntVector;
+                   const APostNames: TStrMatrix;
+                   const ASelectedIndex: Integer);
+    procedure Swap(const AIndex1, AIndex2: Integer);
+    function IndexToItemIndex(const AIndex: Integer): Integer;
+    function ItemIndexToIndex(const AIndex: Integer): Integer;
+    function SelectedItemIndex: Integer;
+    function CanUp: Boolean;
+    function CanDown: Boolean;
   end;
 
   { TSIZNormSubItemsSheet }
@@ -126,7 +137,7 @@ end;
 
 function TSIZNormItemSheet.LastDataRow: Integer;
 begin
-  Result:= FirstDataRow + High(FItemNames);
+  Result:= FirstDataRow + VLast(FLastItemIndexes);
 end;
 
 procedure TSIZNormItemSheet.Select(const ARow, ACol: Integer);
@@ -134,7 +145,7 @@ var
   i, j, ItemIndex: Integer;
 begin
   i:= RowToIndex(ARow);
-  ItemIndex:= VIndexOf(FFirstItemIndexes, FLastItemIndexes, i);
+  ItemIndex:= IndexToItemIndex(i);
   if ItemIndex<0 then Exit;
   FSelectedIndex:= i;
   for i:= FFirstItemIndexes[ItemIndex] to FLastItemIndexes[ItemIndex] do
@@ -153,7 +164,7 @@ var
   ItemIndex: Integer;
 begin
   if not IsSelected then Exit;
-  ItemIndex:= VIndexOf(FFirstItemIndexes, FLastItemIndexes, FSelectedIndex);
+  ItemIndex:= IndexToItemIndex(FSelectedIndex);
   if ItemIndex<0 then Exit;
   ItemIndex:= ItemIndex + AVertDelta;
   if not CheckIndex(High(FFirstItemIndexes), ItemIndex) then Exit;
@@ -162,25 +173,20 @@ end;
 
 procedure TSIZNormItemSheet.ItemIndexesCalc;
 var
-  S: String;
-  i: Integer;
+  i, n: Integer;
 begin
   FFirstItemIndexes:= nil;
   FLastItemIndexes:= nil;
-  if VIsNil(FItemNames) then Exit;
+  if MIsNil(FPostNames) then Exit;
 
-  S:= FItemNames[0];
-  VAppend(FFirstItemIndexes, 0);
-  for i:= 1 to High(FItemNames) do
+  n:= -1;
+  for i:= 0 to High(FPostNames) do
   begin
-    if not SSame(FItemNames[i], S) then
-    begin
-      VAppend(FLastItemIndexes, i-1);
-      VAppend(FFirstItemIndexes, i);
-      S:= FItemNames[i];
-    end;
+    n:= n + 1;
+    VAppend(FFirstItemIndexes, n);
+    n:= n + High(FPostNames[i]);
+    VAppend(FLastItemIndexes, n);
   end;
-  VAppend(FLastItemIndexes, High(FItemNames));
 end;
 
 procedure TSIZNormItemSheet.CaptionDraw;
@@ -188,29 +194,69 @@ begin
   Writer.SetBackgroundDefault;
   Writer.SetAlignment(haCenter, vaCenter);
   Writer.SetFont(Font.Name, Font.Size, [fsBold], clBlack);
-  Writer.WriteText(1, 1, 'Пункт типовых норм', cbtOuter);
-  Writer.WriteText(1, 2, 'Должность (профессия)', cbtOuter);
+  Writer.WriteText(1, 1, '№ п/п', cbtOuter);
+  Writer.WriteText(1, 2, 'Наименование профессии (должности)', cbtOuter);
   Writer.SetRowHeight(1, TITLE_HEIGHT);
 end;
 
-procedure TSIZNormItemSheet.Draw(const AItemNames, APostNames: TStrVector;
-  const ASelectedIndex: Integer);
+procedure TSIZNormItemSheet.Draw(const AOrderNums: TIntVector;
+                   const APostNames: TStrMatrix;
+                   const ASelectedIndex: Integer);
 var
   i: Integer;
 begin
-  FItemNames:= AItemNames;
+  FOrderNums:= AOrderNums;
   FPostNames:= APostNames;
 
-  DrawingBegin;
+  if VIsNil(AOrderNums) then
+  begin
+    Writer.BeginEdit;
+    CaptionDraw;
+    Writer.EndEdit;
+    Exit;
+  end;
 
+  DrawingBegin;
   CaptionDraw;
   ItemIndexesCalc;
   for i:= 0 to High(FFirstItemIndexes) do
     LineDraw(i);
-
   DrawingEnd;
 
-  SetSelection(IndexToRow(ASelectedIndex), 1);
+  SetSelection(IndexToRow(ItemIndexToIndex(ASelectedIndex)), 1);
+end;
+
+procedure TSIZNormItemSheet.Swap(const AIndex1, AIndex2: Integer);
+begin
+  VSwap(FFirstItemIndexes, AIndex1, AIndex2);
+  VSwap(FLastItemIndexes, AIndex1, AIndex2);
+end;
+
+function TSIZNormItemSheet.IndexToItemIndex(const AIndex: Integer): Integer;
+begin
+  Result:= VIndexOf(FFirstItemIndexes, FLastItemIndexes, AIndex);
+end;
+
+function TSIZNormItemSheet.ItemIndexToIndex(const AIndex: Integer): Integer;
+begin
+  Result:= -1;
+  if VIsNil(FFirstItemIndexes) then Exit;
+  Result:= FFirstItemIndexes[AIndex];
+end;
+
+function TSIZNormItemSheet.SelectedItemIndex: Integer;
+begin
+  Result:= IndexToItemIndex(SelectedIndex);
+end;
+
+function TSIZNormItemSheet.CanUp: Boolean;
+begin
+  Result:= IsSelected and (SelectedItemIndex>0);
+end;
+
+function TSIZNormItemSheet.CanDown: Boolean;
+begin
+  Result:= IsSelected and (SelectedItemIndex<High(FOrderNums));
 end;
 
 procedure TSIZNormItemSheet.LineDraw(const AIndex: Integer);
@@ -220,19 +266,18 @@ var
 begin
   Writer.SetBackgroundDefault;
   Writer.SetFont(Font.Name, Font.Size, [{fsBold}], clBlack);
-  i:= FFirstItemIndexes[AIndex];
-  RR:= IndexToRow(i);
+  RR:= IndexToRow(FFirstItemIndexes[AIndex]);
   R:= RR - 1;
   Writer.SetAlignment(haLeft, vaCenter);
   for i:= FFirstItemIndexes[AIndex] to FLastItemIndexes[AIndex] do
   begin
      R:= R + 1;
-     S:= FPostNames[i];
+     S:= FPostNames[AIndex, i-FFirstItemIndexes[AIndex]];
      if i<FLastItemIndexes[AIndex] then S:= S + ',';
      Writer.WriteText(R, 2, S);
   end;
   Writer.SetAlignment(haCenter, vaCenter{vaTop});
-  Writer.WriteText(RR, 1, R, 1, FItemNames[FFirstItemIndexes[AIndex]]);
+  Writer.WriteNumber(RR, 1, R, 1, FOrderNums[AIndex]+1);
   Writer.SetBackgroundDefault;
   Writer.DrawBorders(RR, 1, R, 1, cbtOuter);
   Writer.DrawBorders(RR, 2, R, 2, cbtOuter);
@@ -564,7 +609,7 @@ begin
   Writer.SetBackgroundDefault;
   Writer.SetFont(Font.Name, Font.Size, [{fsBold}], clBlack);
   Writer.SetAlignment(haCenter, vaTop);
-  Writer.WriteText(R1, 1, R2, 1, AItem.ItemName, cbtOuter);
+  Writer.WriteNumber(R1, 1, R2, 1, AItem.OrderNum+1, cbtOuter);
   Writer.SetAlignment(haLeft, vaTop);
   S:= VVectorToStr(AItem.PostNames, ',' + SYMBOL_BREAK);
   Writer.WriteText(R1, 2, R2, 2, S, cbtOuter);

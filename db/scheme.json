@@ -1917,7 +1917,7 @@
     ],
     "FieldsList" : [
       "ITEMID",
-      "OREDRNUM",
+      "ORDERNUM",
       "NORMID"
     ],
     "ITEMID" : {
@@ -1948,7 +1948,7 @@
         ]
       }
     },
-    "OREDRNUM" : {
+    "ORDERNUM" : {
       "FieldType" : "INTEGER",
       "PrimaryKey" : false,
       "Status" : false,

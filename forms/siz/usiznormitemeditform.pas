@@ -24,8 +24,6 @@ type
     NormNameBCButton: TBCButton;
     PostPanel: TPanel;
     PostLabel: TLabel;
-    ItemNameEdit: TEdit;
-    ItemNameLabel: TLabel;
     NormNameLabel: TLabel;
     PostVT: TVirtualStringTree;
     SaveButton: TSpeedButton;
@@ -92,8 +90,6 @@ begin
 
   EditablePostListLoad(NormID);
   NormsLoad;
-
-  ItemNameEdit.SetFocus;
 end;
 
 procedure TSIZNormItemEditForm.CancelButtonClick(Sender: TObject);
@@ -104,13 +100,12 @@ end;
 procedure TSIZNormItemEditForm.SaveButtonClick(Sender: TObject);
 var
   IsOK: Boolean;
-  ItemName: String;
   CheckedPostIDs: TIntVector;
 
   function IsCollision: Boolean;
   var
     i, ThisItemID: Integer;
-    IntersectionNormName, IntersectionItemName: String;
+    IntersectionNormName, IntersectionOrderNum: String;
   begin
     Result:= False;
     if EditingType=etEdit then
@@ -119,13 +114,6 @@ var
     else
       //при добавлении и копировании нужно проверять на существование все пункты
       ThisItemID:= 0;
-    if DataBase.SIZIsNormItemExists(NormIDs[NormNameDropDown.ItemIndex], ThisItemID, ItemName) then
-    begin
-      Inform('"' + NormNames[NormNameDropDown.ItemIndex] +
-               '" уже содержит пункт "' + ItemName + '"!');
-      Result:= True;
-      Exit;
-    end;
 
     //ищем пересечения периодов действия с уже записанными нормами
     //период действия записываемой нормы
@@ -136,12 +124,12 @@ var
       if DataBase.SIZNormItemIntersectionExists(EditablePostIDs[i], ThisItemID,
                              NormBDs[NormNameDropDown.ItemIndex],
                              NormEDs[NormNameDropDown.ItemIndex],
-                             IntersectionNormName, IntersectionItemName) then
+                             IntersectionNormName, IntersectionOrderNum) then
       begin
         Inform('Период действия записываемого пункта норм для должности "' +
                EditablePostNames[i] +
-               '" пересекается с периодом действия пункта "' +
-               IntersectionItemName +
+               '" пересекается с периодом действия пункта № "' +
+               IntersectionOrderNum +
                '" нормы "' + IntersectionNormName + '"!');
         Result:= True;
         Exit;
@@ -150,12 +138,6 @@ var
   end;
 
 begin
-  ItemName:= STrim(ItemNameEdit.Text);
-  if ItemName=EmptyStr then
-  begin
-    Inform('Не указано наименование пункта!');
-    Exit;
-  end;
 
   if PostList.IsAllUnchecked then
   begin
@@ -169,12 +151,12 @@ begin
 
   case EditingType of
     etAdd: //новый пункт
-      IsOK:= DataBase.SIZNormItemAdd(NormID, ItemID, ItemName, CheckedPostIDs);
+      IsOK:= DataBase.SIZNormItemAdd(NormID, ItemID, CheckedPostIDs);
     etEdit: //редактирование
-      IsOK:= DataBase.SIZNormItemUpdate(ItemID, ItemName, CheckedPostIDs);
+      IsOK:= DataBase.SIZNormItemUpdate(ItemID, CheckedPostIDs);
     UTypes.etCustom: //копирование в другие типовые нормы
       IsOK:= DataBase.SIZNormItemCopy(NormIDs[NormNameDropDown.ItemIndex],
-                                      ItemID, ItemName, CheckedPostIDs);
+                                      ItemID, CheckedPostIDs);
   end;
 
   if not IsOK then Exit;

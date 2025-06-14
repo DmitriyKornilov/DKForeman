@@ -11,7 +11,6 @@ object SIZNormItemEditForm: TSIZNormItemEditForm
   Constraints.MinWidth = 600
   DesignTimePPI = 120
   Position = poScreenCenter
-  LCLVersion = '4.0.0.4'
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
@@ -92,44 +91,14 @@ object SIZNormItemEditForm: TSIZNormItemEditForm
     Caption = 'Типовые нормы:'
     ParentColor = False
   end
-  object ItemNameLabel: TLabel
+  object PostLabel: TLabel
     AnchorSideLeft.Control = Owner
     AnchorSideTop.Control = NormNameBCButton
     AnchorSideTop.Side = asrBottom
+    AnchorSideRight.Side = asrBottom
     Left = 8
     Height = 20
     Top = 81
-    Width = 265
-    BorderSpacing.Left = 8
-    BorderSpacing.Top = 12
-    Caption = 'Наименование пункта типовых норм:'
-    ParentColor = False
-  end
-  object ItemNameEdit: TEdit
-    AnchorSideLeft.Control = Owner
-    AnchorSideTop.Control = ItemNameLabel
-    AnchorSideTop.Side = asrBottom
-    AnchorSideRight.Control = Owner
-    AnchorSideRight.Side = asrBottom
-    Left = 8
-    Height = 28
-    Top = 109
-    Width = 584
-    Anchors = [akTop, akLeft, akRight]
-    BorderSpacing.Left = 8
-    BorderSpacing.Top = 8
-    BorderSpacing.Right = 8
-    MaxLength = 100
-    TabOrder = 1
-  end
-  object PostLabel: TLabel
-    AnchorSideLeft.Control = Owner
-    AnchorSideTop.Control = ItemNameEdit
-    AnchorSideTop.Side = asrBottom
-    AnchorSideRight.Side = asrBottom
-    Left = 8
-    Height = 20
-    Top = 149
     Width = 373
     BorderSpacing.Left = 8
     BorderSpacing.Top = 12
@@ -144,8 +113,8 @@ object SIZNormItemEditForm: TSIZNormItemEditForm
     AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Control = ButtonPanel
     Left = 8
-    Height = 249
-    Top = 177
+    Height = 317
+    Top = 109
     Width = 584
     Anchors = [akTop, akLeft, akRight, akBottom]
     BorderSpacing.Left = 8
@@ -153,12 +122,12 @@ object SIZNormItemEditForm: TSIZNormItemEditForm
     BorderSpacing.Right = 8
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 249
-    ClientWidth = 584
-    TabOrder = 2
+    ClientHeight = 313
+    ClientWidth = 580
+    TabOrder = 1
     object PostVT: TVirtualStringTree
       Left = 0
-      Height = 245
+      Height = 313
       Top = 0
       Width = 580
       Align = alClient

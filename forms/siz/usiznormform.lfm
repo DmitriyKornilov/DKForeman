@@ -9,7 +9,6 @@ object SIZNormForm: TSIZNormForm
   ClientHeight = 577
   ClientWidth = 1000
   DesignTimePPI = 120
-  LCLVersion = '4.0.0.4'
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
@@ -24,8 +23,8 @@ object SIZNormForm: TSIZNormForm
     BorderSpacing.Right = 2
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 40
-    ClientWidth = 996
+    ClientHeight = 36
+    ClientWidth = 992
     ParentFont = False
     TabOrder = 0
     object CloseButton: TSpeedButton
@@ -95,8 +94,8 @@ object SIZNormForm: TSIZNormForm
       BorderSpacing.Bottom = 2
       BevelOuter = bvNone
       BorderStyle = bsSingle
-      ClientHeight = 40
-      ClientWidth = 996
+      ClientHeight = 36
+      ClientWidth = 992
       ParentBackground = False
       ParentColor = False
       ParentFont = False
@@ -223,8 +222,8 @@ object SIZNormForm: TSIZNormForm
         BorderSpacing.Bottom = 2
         BevelOuter = bvNone
         BorderStyle = bsSingle
-        ClientHeight = 40
-        ClientWidth = 700
+        ClientHeight = 36
+        ClientWidth = 696
         ParentFont = False
         TabOrder = 0
         object ItemAddButton: TSpeedButton
@@ -300,6 +299,7 @@ object SIZNormForm: TSIZNormForm
           ImageIndex = 46
           ShowHint = True
           ParentShowHint = False
+          OnClick = ItemUpButtonClick
         end
         object ItemDownButton: TSpeedButton
           Cursor = crHandPoint
@@ -314,6 +314,7 @@ object SIZNormForm: TSIZNormForm
           ImageIndex = 47
           ShowHint = True
           ParentShowHint = False
+          OnClick = ItemDownButtonClick
         end
       end
       object ItemSheetPanel: TPanel
@@ -324,8 +325,8 @@ object SIZNormForm: TSIZNormForm
         Align = alClient
         BevelOuter = bvNone
         BorderStyle = bsSingle
-        ClientHeight = 199
-        ClientWidth = 700
+        ClientHeight = 195
+        ClientWidth = 696
         TabOrder = 1
         object ItemGrid: TsWorksheetGrid
           Left = 0
@@ -392,8 +393,8 @@ object SIZNormForm: TSIZNormForm
         BorderSpacing.Bottom = 2
         BevelOuter = bvNone
         BorderStyle = bsSingle
-        ClientHeight = 40
-        ClientWidth = 290
+        ClientHeight = 36
+        ClientWidth = 286
         ParentFont = False
         TabOrder = 0
         object SubItemAddButton: TSpeedButton
@@ -480,8 +481,8 @@ object SIZNormForm: TSIZNormForm
         Align = alClient
         BevelOuter = bvNone
         BorderStyle = bsSingle
-        ClientHeight = 201
-        ClientWidth = 290
+        ClientHeight = 197
+        ClientWidth = 286
         TabOrder = 1
         object SubItemGrid: TsWorksheetGrid
           Left = 0
