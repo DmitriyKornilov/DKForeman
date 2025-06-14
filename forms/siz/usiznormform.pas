@@ -64,7 +64,9 @@ type
     procedure ItemDelButtonClick(Sender: TObject);
     procedure ItemDownButtonClick(Sender: TObject);
     procedure ItemEditButtonClick(Sender: TObject);
+    procedure ItemGridChangeBounds(Sender: TObject);
     procedure ItemGridDblClick(Sender: TObject);
+    procedure ItemSheetPanelChangeBounds(Sender: TObject);
     procedure ItemUpButtonClick(Sender: TObject);
     procedure NormAddButtonClick(Sender: TObject);
     procedure NormDelButtonClick(Sender: TObject);
@@ -88,8 +90,6 @@ type
     PostIDs: TIntMatrix;
     PostNames: TStrMatrix;
     NormItemSheet: TSIZNormItemSheet;
-    //ItemIDs, PostIDs, ItemOrderNums: TIntVector;
-    //PostNames: TStrVector;
 
     NormSubItems: TNormSubItems;
     NormSubItemSheet: TSIZNormSubItemsSheet;
@@ -219,9 +219,19 @@ begin
   NormItemEdit;
 end;
 
+procedure TSIZNormForm.ItemGridChangeBounds(Sender: TObject);
+begin
+  //NormItemSheet.Draw(ItemOrderNums, PostNames, NormItemSheet.SelectedIndex);
+end;
+
 procedure TSIZNormForm.ItemGridDblClick(Sender: TObject);
 begin
   NormItemEdit;
+end;
+
+procedure TSIZNormForm.ItemSheetPanelChangeBounds(Sender: TObject);
+begin
+  NormItemSheet.Draw(ItemOrderNums, PostNames, NormItemSheet.SelectedIndex);
 end;
 
 procedure TSIZNormForm.ItemUpButtonClick(Sender: TObject);
@@ -331,7 +341,7 @@ begin
 
   if not VIsNil(NormIDs) then Exit;
   NormItemSheet.Draw(nil, nil, 0);
-  NormSubItemSheet.Draw(nil, EmptyStr, 0);
+  NormSubItemSheet.Draw(nil, 0);
 end;
 
 procedure TSIZNormForm.NormListSelect;
@@ -339,7 +349,7 @@ begin
   NormButtonsEnabled;
   NormItemListLoad;
 
-  ItemCaptionPanel.Caption:= '  Пункты типовых норм';
+  ItemCaptionPanel.Caption:= '  Пункты норм';
   if NormList.IsSelected then
     ItemCaptionPanel.Caption:= ItemCaptionPanel.Caption + ': ' +
                                NormNames[NormList.SelectedIndex];
@@ -385,13 +395,13 @@ begin
   NormSubItemButtonsEnabled;
 
   if not VIsNil(ItemIDs) then Exit;
-  NormSubItemSheet.Draw(nil, EmptyStr, 0);
+  NormSubItemSheet.Draw(nil, 0);
 end;
 
 procedure TSIZNormForm.NormItemSelect;
 begin
   NormItemButtonsEnabled;
-  //NormSubItemListLoad;
+  NormSubItemListLoad;
 end;
 
 procedure TSIZNormForm.NormItemDelete;
@@ -427,53 +437,53 @@ procedure TSIZNormForm.NormSubItemListLoad(const ASelectedID: Integer);
 var
   SelectedIndex: Integer;
 begin
-  //NormSubItemSheet.Clear;
-  //if not NormItemSheet.IsSelected then Exit;
-  //
-  //NormSubItemsDel(NormSubItems, 0, High(NormSubItems));
-  //DataBase.SIZNormSubItemsLoad(ItemIDs[NormItemSheet.SelectedIndex], NormSubItems);
-  //
-  //if ASelectedID>0 then
-  //  SelectedIndex:= NormSubItemsIndexOf(NormSubItems, ASelectedID)
-  //else
-  //  SelectedIndex:= NormSubItemSheet.SelectedIndex;
-  //if SelectedIndex<0 then SelectedIndex:= 0;
-  //
-  //NormSubItemSheet.Draw(NormSubItems, ItemOrderNums[NormItemSheet.SelectedIndex], SelectedIndex);
+  NormSubItemSheet.Clear;
+  if not NormItemSheet.IsSelected then Exit;
+
+  NormSubItemsDel(NormSubItems, 0, High(NormSubItems));
+  DataBase.SIZNormSubItemsLoad(ItemIDs[NormItemSheet.SelectedIndex], NormSubItems);
+
+  if ASelectedID>0 then
+    SelectedIndex:= NormSubItemsIndexOf(NormSubItems, ASelectedID)
+  else
+    SelectedIndex:= NormSubItemSheet.SelectedIndex;
+  if SelectedIndex<0 then SelectedIndex:= 0;
+
+  NormSubItemSheet.Draw(NormSubItems, SelectedIndex);
 end;
 
 procedure TSIZNormForm.NormSubItemSelect;
 begin
-  //NormSubItemButtonsEnabled;
+  NormSubItemButtonsEnabled;
 end;
 
 procedure TSIZNormForm.NormSubItemDelete;
 var
   SubItem: TNormSubItem;
 begin
-  //if not NormSubItemSheet.IsSelected then Exit;
-  //if not Confirm('Удалить всю информацию по строке?') then Exit;
-  //
-  //SubItem:= NormSubItems[NormSubItemSheet.SelectedIndex];
-  //DataBase.SIZNormSubItemDelete(ItemIDs[NormItemSheet.SelectedIndex],
-  //                   SubItem.SubItemID, SubItem.ReasonID, SubItem.OrderNum );
-  //NormSubItemListLoad;
+  if not NormSubItemSheet.IsSelected then Exit;
+  if not Confirm('Удалить всю информацию по строке?') then Exit;
+
+  SubItem:= NormSubItems[NormSubItemSheet.SelectedIndex];
+  DataBase.SIZNormSubItemDelete(ItemIDs[NormItemSheet.SelectedIndex],
+                     SubItem.SubItemID, SubItem.ReasonID, SubItem.OrderNum );
+  NormSubItemListLoad;
 end;
 
 procedure TSIZNormForm.NormSubItemEdit;
 begin
-  //if not NormSubItemSheet.IsSelected then Exit;
-  //SIZNormSubItemEditFormOpen(etEdit);
+  if not NormSubItemSheet.IsSelected then Exit;
+  SIZNormSubItemEditFormOpen(etEdit);
 end;
 
 procedure TSIZNormForm.NormSubItemSwap(const AIndex1, AIndex2: Integer);
 begin
-  //if not DataBase.SIZNormSubItemSwap(NormSubItems[AIndex1].SubItemID,
-  //                                   NormSubItems[AIndex1].OrderNum,
-  //                                   NormSubItems[AIndex2].SubItemID,
-  //                                   NormSubItems[AIndex2].OrderNum) then Exit;
-  //NormSubItemsSwap(NormSubItems, AIndex1, AIndex2);
-  //NormSubItemSheet.Draw(NormSubItems, ItemOrderNums[NormItemSheet.SelectedIndex], AIndex2);
+  if not DataBase.SIZNormSubItemSwap(NormSubItems[AIndex1].SubItemID,
+                                     NormSubItems[AIndex1].OrderNum,
+                                     NormSubItems[AIndex2].SubItemID,
+                                     NormSubItems[AIndex2].OrderNum) then Exit;
+  NormSubItemsSwap(NormSubItems, AIndex1, AIndex2);
+  NormSubItemSheet.Draw(NormSubItems, AIndex2);
 end;
 
 procedure TSIZNormForm.NormButtonsEnabled;

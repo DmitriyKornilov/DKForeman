@@ -28,7 +28,7 @@ type
     const
       COLUMN1_WIDTH = 50; //№п/п
       COLUMN2_WIDTH = 300; //должность (профессия)
-      TITLE_HEIGHT = 35;
+      TITLE_HEIGHT = 80;//35;
     var
       FPostNames: TStrMatrix;
       FOrderNums: TIntVector;
@@ -70,11 +70,11 @@ type
     function IndexToRow(const AIndex: Integer): Integer; override;
   private
     const
-      COLUMN1_WIDTH = 300; //наименование СИЗ
-      COLUMN2_WIDTH = 100; //пункт типовых норм
-      COLUMN3_WIDTH = 100; //единица измерения
-      COLUMN4_WIDTH = 100; //количество на год
-      TITLE_HEIGHT = 35;
+      COLUMN1_WIDTH = 100; //Тип СИЗ
+      COLUMN2_WIDTH = 200; //Наименование СИЗ
+      COLUMN3_WIDTH = 200; //Нормы выдачи
+      COLUMN4_WIDTH = 200; //Основание выдачи (пункты норм)
+      TITLE_HEIGHT = 80;//35;
     var
       FSubItems: TNormSubItems;
       FItemName: String;
@@ -89,7 +89,7 @@ type
     procedure ReasonDraw(var ARow: Integer; const AIndex: Integer);
     procedure LineDraw(var ARow: Integer; const AIndex: Integer);
   public
-    procedure Draw(const ASubItems: TNormSubItems; const AItemName: String;
+    procedure Draw(const ASubItems: TNormSubItems;
                    const ASelectedIndex: Integer);
     function CanUp: Boolean;
     function CanDown: Boolean;
@@ -192,7 +192,7 @@ end;
 procedure TSIZNormItemSheet.CaptionDraw;
 begin
   Writer.SetBackgroundDefault;
-  Writer.SetAlignment(haCenter, vaCenter);
+  Writer.SetAlignment(haCenter, vaTop);
   Writer.SetFont(Font.Name, Font.Size, [fsBold], clBlack);
   Writer.WriteText(1, 1, '№ п/п', cbtOuter);
   Writer.WriteText(1, 2, 'Наименование профессии (должности)', cbtOuter);
@@ -268,15 +268,15 @@ begin
   Writer.SetFont(Font.Name, Font.Size, [{fsBold}], clBlack);
   RR:= IndexToRow(FFirstItemIndexes[AIndex]);
   R:= RR - 1;
-  Writer.SetAlignment(haLeft, vaCenter);
+  Writer.SetAlignment(haLeft, vaTop);
   for i:= FFirstItemIndexes[AIndex] to FLastItemIndexes[AIndex] do
   begin
      R:= R + 1;
      S:= FPostNames[AIndex, i-FFirstItemIndexes[AIndex]];
      if i<FLastItemIndexes[AIndex] then S:= S + ',';
-     Writer.WriteText(R, 2, S);
+     Writer.WriteText(R, 2, S, cbtNone, True, True);
   end;
-  Writer.SetAlignment(haCenter, vaCenter{vaTop});
+  Writer.SetAlignment(haCenter, vaTop);
   Writer.WriteNumber(RR, 1, R, 1, FOrderNums[AIndex]+1);
   Writer.SetBackgroundDefault;
   Writer.DrawBorders(RR, 1, R, 1, cbtOuter);
@@ -394,12 +394,20 @@ end;
 procedure TSIZNormSubItemsSheet.CaptionDraw;
 begin
   Writer.SetBackgroundDefault;
-  Writer.SetAlignment(haCenter, vaCenter);
+  Writer.SetAlignment(haCenter, vaTop);
   Writer.SetFont(Font.Name, Font.Size, [fsBold], clBlack);
-  Writer.WriteText(1, 1, 'Наименование средств индивидуальной защиты', cbtOuter);
-  Writer.WriteText(1, 2, 'Пункт типовых норм', cbtOuter);
-  Writer.WriteText(1, 3, 'Единица измерения', cbtOuter);
-  Writer.WriteText(1, 4, 'Количество' + SYMBOL_BREAK + 'на год', cbtOuter);
+  Writer.WriteText(1, 1, 'Тип СИЗ', cbtOuter);
+  Writer.WriteText(1, 2, 'Наименование СИЗ ' + SYMBOL_BREAK +
+                         '(с указанием конкретных данных о ' +
+                         'конструкции, классе защиты, категориях эффективности ' +
+                         'и/или эксплуатационных уровнях)', cbtOuter);
+  Writer.WriteText(1, 3, 'Нормы выдачи' + SYMBOL_BREAK +
+                         'с указанием периодичности выдачи, ' +
+                         'количества на период, единицы измерения (штуки, ' +
+                         'пары, комплекты, г, мл)', cbtOuter);
+  Writer.WriteText(1, 4, 'Основание выдачи СИЗ' + SYMBOL_BREAK +
+                         '(пункты Единых типовых норм, ' +
+                         'правил по охране труда и иных документов)', cbtOuter);
   Writer.SetRowHeight(1, TITLE_HEIGHT);
 end;
 
@@ -432,8 +440,7 @@ begin
     Writer.WriteText(R, 2, FItemName);
     Writer.WriteText(R, 3, FSubItems[AIndex].Info.Units[i]);
     S:= SIZNumInLifeStr(FSubItems[AIndex].Info.Nums[i],
-                        FSubItems[AIndex].Info.Lifes[i],
-                        FSubItems[AIndex].Info.LifeNames[i]);
+                        FSubItems[AIndex].Info.Lifes[i]);
     Writer.WriteText(R, 4, S);
   end;
 
@@ -444,14 +451,13 @@ begin
 end;
 
 procedure TSIZNormSubItemsSheet.Draw(const ASubItems: TNormSubItems;
-                                     const AItemName: String;
                                      const ASelectedIndex: Integer);
 var
   i, R: Integer;
   S: String;
 begin
   FSubItems:= ASubItems;
-  FItemName:= AItemName;
+  FItemName:= 'ЗАМЕНИ!';
 
   if Length(FSubItems)=0 then
   begin
@@ -579,8 +585,7 @@ var
       Writer.SetAlignment(haCenter, vaCenter);
       Writer.WriteText(RR, 4, AItem.SubItems[AIndex].Info.Units[j]);
       SS:= SIZNumInLifeStr(AItem.SubItems[AIndex].Info.Nums[j],
-                          AItem.SubItems[AIndex].Info.Lifes[j],
-                          AItem.SubItems[AIndex].Info.LifeNames[j]);
+                          AItem.SubItems[AIndex].Info.Lifes[j]);
       Writer.WriteText(RR, 5, SS);
     end;
 

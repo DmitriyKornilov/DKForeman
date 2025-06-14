@@ -288,7 +288,7 @@ begin
   InfoTable.ValuesClear;
   VDim(V{%H-}, Length(SubItem.Info.Lifes));
   for i:= 0 to High(SubItem.Info.Lifes) do
-   V[i]:= SIZLifeStr(SubItem.Info.Lifes[i], SubItem.Info.LifeNames[i]);
+   V[i]:= SIZLifeStr(SubItem.Info.Lifes[i]);
   InfoTable.SetColumn('Наименование', SubItem.Info.Names, taLeftJustify);
   InfoTable.SetColumn('Количество', VIntToStr(SubItem.Info.Nums));
   InfoTable.SetColumn('Срок службы', V);
@@ -330,10 +330,11 @@ begin
     LifeName:= LifeNames[LifeDropDown.ItemIndex];
   end;
 
-  NormSubItemInfoAdd(SubItem.Info, -1{need new ID}, k, ClassIDs[i], NameIDs[i, j],
-                     SizeTypes[i, j], NumSpinEdit.Value,
-                     LifeIDs[LifeDropDown.ItemIndex], Life,
-                     Names[i, j], Units[i, j], LifeName);
+  //!!!!!!!!!!!!!!!!!!!!!
+  //NormSubItemInfoAdd(SubItem.Info, -1{need new ID}, k, ClassIDs[i], NameIDs[i, j],
+  //                   SizeTypes[i, j], NumSpinEdit.Value,
+  //                   LifeIDs[LifeDropDown.ItemIndex], Life,
+  //                   Names[i, j], Units[i, j], LifeName);
 
   InfoShow(SubItem.Info.NameIDs[k]);
 end;
@@ -352,7 +353,7 @@ begin
   AddButton.ImageIndex:= 14;
   AddButton.Hint:= 'Сохранить изменения';
 
-  Index:= VIndexOf(ClassIDs, SubItem.Info.ClassIDs[InfoTable.SelectedIndex]);
+  Index:= VIndexOf(ClassIDs, SubItem.Info.SIZTypes[InfoTable.SelectedIndex]);
   if Index>=0 then
     ClassDropDown.ItemIndex:= Index;
 
@@ -360,9 +361,10 @@ begin
   if Index>=0 then
     NameList.ItemIndex:= Index;
 
-  Index:= VIndexOf(LifeIDs, SubItem.Info.LifeIDs[InfoTable.SelectedIndex]);
-  if Index>=0 then
-    LifeDropDown.ItemIndex:= Index;
+  //!!!!!!!!!!!!!!!!!
+  //Index:= VIndexOf(LifeIDs, SubItem.Info.LifeIDs[InfoTable.SelectedIndex]);
+  //if Index>=0 then
+  //  LifeDropDown.ItemIndex:= Index;
 
   NumSpinEdit.Value:= SubItem.Info.Nums[InfoTable.SelectedIndex];
   LifeSpinEdit.Value:= SubItem.Info.Lifes[InfoTable.SelectedIndex];
@@ -383,22 +385,22 @@ begin
   end;
 
   k:= InfoTable.SelectedIndex;
-  SubItem.Info.ClassIDs[k]:= ClassIDs[i];
+  SubItem.Info.SIZTypes[k]:= ClassIDs[i];
   SubItem.Info.NameIDs[k]:= NameIDs[i, j];
   SubItem.Info.Names[k]:= Names[i, j];
   SubItem.Info.Units[k]:= Units[i, j];
   SubItem.Info.SizeTypes[k]:= SizeTypes[i, j];
   SubItem.Info.Nums[k]:= NumSpinEdit.Value;
-  SubItem.Info.LifeIDs[k]:= LifeIDs[LifeDropDown.ItemIndex];
+  //SubItem.Info.LifeIDs[k]:= LifeIDs[LifeDropDown.ItemIndex];
 
   if LifeDropDown.ItemIndex=0 then
   begin
     SubItem.Info.Lifes[k]:= LifeSpinEdit.Value;
-    SubItem.Info.LifeNames[k]:= '<не указан>'
+    //SubItem.Info.LifeNames[k]:= '<не указан>'
   end
   else begin
     SubItem.Info.Lifes[k]:= 0;
-    SubItem.Info.LifeNames[k]:= LifeNames[LifeDropDown.ItemIndex];
+    //SubItem.Info.LifeNames[k]:= LifeNames[LifeDropDown.ItemIndex];
   end;
 
   InfoShow(SubItem.Info.NameIDs[k]);

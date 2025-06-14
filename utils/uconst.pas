@@ -83,6 +83,11 @@ const
   SIZ_SIZETYPE_PICKS: array of String  =
     ('<нет>', 'одежда', 'обувь', 'головной убор', 'рукавицы/перчатки', 'противогаз/маска', 'респиратор/полумаска');
 
+  SIZ_SPECLIFE_KEYS: array of Integer =
+    (-1,          0         );
+  SIZ_SPECLIFE_PICKS: array of String =
+    ('дежурное', 'до износа');
+
   SSO_SIZETYPE_KEYS: array of Integer =
     (7,        8       );
   SSO_SIZETYPE_PICKS: array of String  =

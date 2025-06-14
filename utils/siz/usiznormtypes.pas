@@ -14,24 +14,23 @@ type
     InfoIDs    : TIntVector;
     OrderNums  : TIntVector;
     //СИЗ
-    ClassIDs   : TIntVector;
+    SIZTypes   : TIntVector;
     NameIDs    : TIntVector;
     Names      : TStrVector;
     Units      : TStrVector;   //str code
     SizeTypes  : TIntVector;
     //норма
     Nums       : TIntVector;   //кол-во
-    LifeIDs    : TIntVector;   //ID особых сроков (=0 if Life>0)
-    Lifes      : TIntVector;   //месяцы (=0 if LifeID>0)
-    LifeNames  : TStrVector;   //особый срок службы
+    Lifes      : TIntVector;   //месяцы (0 = до износа, -1 = дежурное )
+    ClauseNames: TStrVector;
   end;
 
   procedure NormSubItemInfoClear(var AInfo: TNormSubItemInfo);
   procedure NormSubItemInfoAdd(var AInfo: TNormSubItemInfo;
                                const AInfoID, AOrderNum,
-                                     AClassID, ANameID, ASizeType,
-                                     ANum, ALifeID, ALife : Integer;
-                               const AName, AUnit, ALifeName: String);
+                                     ASIZType, ANameID, ASizeType,
+                                     ANum, ALife : Integer;
+                               const AName, AUnit, AClauseName: String);
   procedure NormSubItemInfoSwap(var AInfo: TNormSubItemInfo;
                                const AIndex1, AIndex2: Integer);
   procedure NormSubItemInfoDel(var AInfo: TNormSubItemInfo;
@@ -107,34 +106,32 @@ procedure NormSubItemInfoClear(var AInfo: TNormSubItemInfo);
 begin
   AInfo.InfoIDs:= nil;
   AInfo.OrderNums:= nil;
-  AInfo.ClassIDs:= nil;
+  AInfo.SIZTypes:= nil;
   AInfo.NameIDs:= nil;
   AInfo.Names:= nil;
   AInfo.Units:= nil;
   AInfo.SizeTypes:= nil;
   AInfo.Nums:= nil;
-  AInfo.LifeIDs:= nil;
   AInfo.Lifes:= nil;
-  AInfo.LifeNames:= nil;
+  AInfo.ClauseNames:= nil;
 end;
 
 procedure NormSubItemInfoAdd(var AInfo: TNormSubItemInfo;
                              const AInfoID, AOrderNum,
-                                   AClassID, ANameID, ASizeType,
-                                   ANum, ALifeID, ALife : Integer;
-                             const AName, AUnit, ALifeName: String);
+                                   ASIZType, ANameID, ASizeType,
+                                   ANum, ALife : Integer;
+                             const AName, AUnit, AClauseName: String);
 begin
   VAppend(AInfo.InfoIDs, AInfoID);
   VAppend(AInfo.OrderNums, AOrderNum);
-  VAppend(AInfo.ClassIDs, AClassID);
+  VAppend(AInfo.SIZTypes, ASIZType);
   VAppend(AInfo.NameIDs, ANameID);
   VAppend(AInfo.Names, AName);
   VAppend(AInfo.Units, AUnit);
   VAppend(AInfo.SizeTypes, ASizeType);
   VAppend(AInfo.Nums, ANum);
-  VAppend(AInfo.LifeIDs, ALifeID);
   VAppend(AInfo.Lifes, ALife);
-  VAppend(AInfo.LifeNames, ALifeName);
+  VAppend(AInfo.ClauseNames, AClauseName);
 end;
 
 procedure NormSubItemInfoSwap(var AInfo: TNormSubItemInfo;
@@ -142,15 +139,14 @@ procedure NormSubItemInfoSwap(var AInfo: TNormSubItemInfo;
 begin
   VSwap(AInfo.InfoIDs, AIndex1, AIndex2);
   //AInfo.OrderNums no swap
-  VSwap(AInfo.ClassIDs, AIndex1, AIndex2);
+  VSwap(AInfo.SIZTypes, AIndex1, AIndex2);
   VSwap(AInfo.NameIDs, AIndex1, AIndex2);
   VSwap(AInfo.Names, AIndex1, AIndex2);
   VSwap(AInfo.Units, AIndex1, AIndex2);
   VSwap(AInfo.SizeTypes, AIndex1, AIndex2);
   VSwap(AInfo.Nums, AIndex1, AIndex2);
-  VSwap(AInfo.LifeIDs, AIndex1, AIndex2);
   VSwap(AInfo.Lifes, AIndex1, AIndex2);
-  VSwap(AInfo.LifeNames, AIndex1, AIndex2);
+  VSwap(AInfo.ClauseNames, AIndex1, AIndex2);
 end;
 
 procedure NormSubItemInfoDel(var AInfo: TNormSubItemInfo;
@@ -158,15 +154,14 @@ procedure NormSubItemInfoDel(var AInfo: TNormSubItemInfo;
 begin
   VDel(AInfo.InfoIDs, AIndex);
   VDel(AInfo.OrderNums, AIndex);
-  VDel(AInfo.ClassIDs, AIndex);
+  VDel(AInfo.SIZTypes, AIndex);
   VDel(AInfo.NameIDs, AIndex);
   VDel(AInfo.Names, AIndex);
   VDel(AInfo.Units, AIndex);
   VDel(AInfo.SizeTypes, AIndex);
   VDel(AInfo.Nums, AIndex);
-  VDel(AInfo.LifeIDs, AIndex);
   VDel(AInfo.Lifes, AIndex);
-  VDel(AInfo.LifeNames, AIndex);
+  VDel(AInfo.ClauseNames, AIndex);
 end;
 
 procedure NormSubItemInfoCopy(const ASourceInfo: TNormSubItemInfo;
@@ -174,15 +169,14 @@ procedure NormSubItemInfoCopy(const ASourceInfo: TNormSubItemInfo;
 begin
   ADestInfo.InfoIDs:= VCut(ASourceInfo.InfoIDs);
   ADestInfo.OrderNums:= VCut(ASourceInfo.OrderNums);
-  ADestInfo.ClassIDs:= VCut(ASourceInfo.ClassIDs);
+  ADestInfo.SIZTypes:= VCut(ASourceInfo.SIZTypes);
   ADestInfo.NameIDs:= VCut(ASourceInfo.NameIDs);
   ADestInfo.Names:= VCut(ASourceInfo.Names);
   ADestInfo.Units:= VCut(ASourceInfo.Units);
   ADestInfo.SizeTypes:= VCut(ASourceInfo.SizeTypes);
   ADestInfo.Nums:= VCut(ASourceInfo.Nums);
-  ADestInfo.LifeIDs:= VCut(ASourceInfo.LifeIDs);
   ADestInfo.Lifes:= VCut(ASourceInfo.Lifes);
-  ADestInfo.LifeNames:= VCut(ASourceInfo.LifeNames);
+  ADestInfo.ClauseNames:= VCut(ASourceInfo.ClauseNames);
 end;
 
 procedure NormSubItemNew(var ASubItem: TNormSubItem;

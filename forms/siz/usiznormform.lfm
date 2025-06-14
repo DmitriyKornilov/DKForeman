@@ -170,7 +170,7 @@ object SIZNormForm: TSIZNormForm
       BorderSpacing.Bottom = 2
       BevelOuter = bvNone
       BorderStyle = bsSingle
-      Caption = '  Типовые нормы'
+      Caption = '  Нормы выдачи СИЗ'
       Color = clBtnFace
       Font.Style = [fsBold]
       ParentBackground = False
@@ -328,6 +328,7 @@ object SIZNormForm: TSIZNormForm
         ClientHeight = 195
         ClientWidth = 696
         TabOrder = 1
+        OnChangeBounds = ItemSheetPanelChangeBounds
         object ItemGrid: TsWorksheetGrid
           Left = 0
           Height = 195
@@ -363,6 +364,7 @@ object SIZNormForm: TSIZNormForm
           TabOrder = 0
           TabStop = False
           TitleFont.Style = [fsBold]
+          OnChangeBounds = ItemGridChangeBounds
           OnDblClick = ItemGridDblClick
         end
       end
@@ -532,7 +534,7 @@ object SIZNormForm: TSIZNormForm
       BorderSpacing.Bottom = 2
       BevelOuter = bvNone
       BorderStyle = bsSingle
-      Caption = '  Пункты типовых норм'
+      Caption = '  Пункты норм'
       Font.Style = [fsBold]
       ParentColor = False
       ParentFont = False

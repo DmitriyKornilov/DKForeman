@@ -9,13 +9,13 @@ uses
   //DK packages utils
   DK_DateUtils, DK_StrUtils, DK_Const,
   //Project utils
-  USIZSizes;
+  UConst, USIZSizes;
 
 function SIZLifeInYearsStr(const AMonths: Extended): String;
 function SIZLifeInMonthsStr(const AMonths: Extended): String;
 function SIZLifeInMonthAndYears(const AMonths: Extended): String;
-function SIZLifeStr(const ALife: Integer; const ASpecLife: String): String;
-function SIZNumInLifeStr(const ANum, ALife: Integer; const ASpecLife: String): String;
+function SIZLifeStr(const ALife: Integer): String;
+function SIZNumInLifeStr(const ANum, ALife: Integer): String;
 function SIZLifeInMonthsFromDates(const AGivingDate, AWritingDate: TDate): Extended;
 function SIZLifeInMonths(const AGettingCount, ANormCount, ANormLife, AWearPercent: Integer;
                             const AUseWearPercent: Boolean = True): Extended;
@@ -115,12 +115,16 @@ begin
     Result:= MonthStr + ' (' + YearStr + ')';
 end;
 
-function SIZLifeStr(const ALife: Integer; const ASpecLife: String): String;
+function SIZLifeStr(const ALife: Integer): String;
 var
   X: Integer;
 begin
-  Result:= ASpecLife;
-  if ALife=0 then Exit;
+  if ALife<0 then
+  begin
+    Result:= SIZ_SPECLIFE_PICKS[ALife];
+    Exit;
+  end;
+
   if ALife=12 then
   begin
     Result:= '1 год';
@@ -153,13 +157,13 @@ begin
   end;
 end;
 
-function SIZNumInLifeStr(const ANum, ALife: Integer; const ASpecLife: String): String;
+function SIZNumInLifeStr(const ANum, ALife: Integer): String;
 var
   NumStr, PeriodStr: String;
   X: Integer;
 begin
-  if ALife=0 then
-    Result:= ASpecLife
+  if ALife<0 then
+    Result:= SIZ_SPECLIFE_PICKS[ALife]
   else begin
     NumStr:= IntToStr(ANum);
     PeriodStr:= IntToStr(ALife);

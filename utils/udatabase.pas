@@ -523,9 +523,9 @@ type
     function SIZNormSubItemsDataLoad(const AItemID: Integer;
              out ASubItemIDs, ASubItemOrderNums, AReasonIDs,
                  AInfoIDs, AInfoOrderNums,
-                 AClassIDs, ANameIDs, ASizeTypes,
-                 ANums, ALifeIDs, ALifes: TIntVector;
-             out AReasonNames, ASizNames, AUnits, ALifeNames: TStrVector): Boolean;
+                 ASIZTypes, ANameIDs, ASizeTypes,
+                 ANums, ALifes: TIntVector;
+             out AReasonNames, ASizNames, AUnits, AClauseNames: TStrVector): Boolean;
     {Следующий свободный OrderNum для строки пункта}
     function SIZNormSubItemOrderNumFreeLoad(const AItemID, AReasonID: Integer): Integer;
     {Сдвиг вверх (уменьшение) OrderNum строки пункт с AItemID для AReasonID,
@@ -555,7 +555,8 @@ type
                                     var AInfo: TNormSubItemInfo): Boolean;
     {Запись нового Info строки пункта: True - ОК, False - ошибка}
     function SIZNormSubItemInfoWrite(const ASubItemID, ANameID,
-                                    ANum, ALife, ALifeID, AOrderNum: Integer;
+                                    ANum, ALife, AOrderNum: Integer;
+                                    const AClauseName: String;
                                     out AInfoID: Integer;
                                     const ACommit: Boolean = True): Boolean;
     function SIZNormSubItemInfoWrite(const ASubItemID: Integer;
@@ -564,14 +565,15 @@ type
                                     const ACommit: Boolean = True): Boolean;
     {Обновление Info: True - ОК, False - ошибка}
     function SIZNormSubItemInfoUpdate(const AInfoID, ANameID,
-                                    ANum, ALife, ALifeID, AOrderNum: Integer;
+                                    ANum, ALife, AOrderNum: Integer;
+                                    const AClauseName: String;
                                     const ACommit: Boolean = True): Boolean;
 
     {Загрузка ассортимента СИЗ: True - ОК, False - ошибка}
-    function SIZAssortmentLoad(out AClassIDs: TIntVector;
-                              out AClassNames: TStrVector;
-                              out ASizNames, ASizUnits: TStrMatrix;
-                              out ASizNameIDs, ASizSizeTypes: TIntMatrix): Boolean;
+    function SIZAssortmentLoad(out ASIZTypes: TIntVector;
+                              out ATypeNames: TStrVector;
+                              out ASIZNames, AUnits: TStrMatrix;
+                              out ANameIDs, ASizeTypes: TIntMatrix): Boolean;
 
     (**************************************************************************
                                 РАЗМЕРЫ СИЗ
@@ -3948,13 +3950,12 @@ begin
 
   QSetQuery(FQuery);
   QSetSQL(
-    'SELECT t1.InfoID, t1.NameID, t1.Num, t1.Life, t1.SpecLifeID, t1.OrderNum, ' +
-           't2.SizName, t2.SizeType, t2.ClassID, ' +
-           't3.UnitStringCode, t4.SpecLifeName ' +
+    'SELECT t1.InfoID, t1.NameID, t1.Num, t1.Life, t1.ClauseName, t1.OrderNum, ' +
+           't2.SIZName, t2.SizeType, t2.SIZType, ' +
+           't3.UnitStringCode ' +
     'FROM SIZNORMSUBITEMINFO t1 ' +
-    'INNER JOIN t2 SIZNAMES ON (t1.NameID=t2.NameID) ' +
+    'INNER JOIN t2 SIZNAME ON (t1.NameID=t2.NameID) ' +
     'INNER JOIN t3 SIZUNIT ON (t2.UnitID=t3.UnitID) ' +
-    'INNER JOIN t4 SIZSPECLIFE ON (t1.SpecLifeID=t4.SpecLifeID) ' +
     'WHERE t1.SubItemID = :SubItemID ' +
     'ORDER BY t1.OrderNum');
   QParamInt('SubItemID', ASubItemID);
@@ -3965,11 +3966,10 @@ begin
     while not QEOF do
     begin
       NormSubItemInfoAdd(AInfo, QFieldInt('InfoID'), QFieldInt('OrderNum'),
-                                QFieldInt('ClassID'), QFieldInt('NameID'),
+                                QFieldInt('SIZType'), QFieldInt('NameID'),
                                 QFieldInt('SizeType'), QFieldInt('Num'),
-                                QFieldInt('SpecLifeID'), QFieldInt('Life'),
-                                QFieldStr('SizName'), QFieldStr('UnitStringCode'),
-                                QFieldStr('SpecLifeName'));
+                                QFieldInt('Life'), QFieldStr('SIZName'),
+                                QFieldStr('UnitStringCode'), QFieldStr('ClauseName'));
       QNext;
     end;
     Result:= True;
@@ -3980,9 +3980,9 @@ end;
 function TDataBase.SIZNormSubItemsDataLoad(const AItemID: Integer;
              out ASubItemIDs, ASubItemOrderNums, AReasonIDs,
                  AInfoIDs, AInfoOrderNums,
-                 AClassIDs, ANameIDs, ASizeTypes,
-                 ANums, ALifeIDs, ALifes: TIntVector;
-             out AReasonNames, ASizNames, AUnits, ALifeNames: TStrVector): Boolean;
+                 ASIZTypes, ANameIDs, ASizeTypes,
+                 ANums, ALifes: TIntVector;
+             out AReasonNames, ASizNames, AUnits, AClauseNames: TStrVector): Boolean;
 begin
   Result:= False;
 
@@ -3994,32 +3994,29 @@ begin
   AInfoIDs:= nil;
   AInfoOrderNums:= nil;
 
-  AClassIDs:= nil;
+  ASIZTypes:= nil;
   ANameIDs:= nil;
   ASizNames:= nil;
   AUnits:= nil;
   ASizeTypes:= nil;
 
   ANums:= nil;
-  ALifeIDs:= nil;
   ALifes:= nil;
-  ALifeNames:= nil;
+  AClauseNames:= nil;
 
   QSetQuery(FQuery);
   QSetSQL(
-    'SELECT t1.SubItemID, t1.Num, t1.Life, t1.InfoID, t1.SpecLifeID, ' +
+    'SELECT t1.SubItemID, t1.Num, t1.Life, t1.InfoID, t1.ClauseName, ' +
            't1.OrderNum AS InfoOrderNum, t1.NameID, ' +
            't2.ReasonID, t2.OrderNum AS SubItemOrderNum, ' +
-           't3.SizName, t3.SizeType, t3.ClassID, ' +
-           't4.SpecLifeName, ' +
-           't5.ReasonName, ' +
-           't6.UnitStringCode ' +
+           't3.SizName, t3.SizeType, t3.SIZType, ' +
+           't4.ReasonName, ' +
+           't5.UnitStringCode ' +
     'FROM SIZNORMSUBITEMINFO t1 ' +
     'INNER JOIN SIZNORMSUBITEM t2 ON (t1.SubItemID=t2.SubItemID) ' +
-    'INNER JOIN SIZNAMES t3 ON (t1.NameID=t3.NameID) ' +
-    'INNER JOIN SIZSPECLIFE t4 ON (t1.SpecLifeID=t4.SpecLifeID) ' +
-    'INNER JOIN SIZREASON t5 ON (t2.ReasonID=t5.ReasonID) ' +
-    'INNER JOIN SIZUNIT t6 ON (t3.UnitID=t6.UnitID) ' +
+    'INNER JOIN SIZNAME t3 ON (t1.NameID=t3.NameID) ' +
+    'INNER JOIN SIZREASON t4 ON (t2.ReasonID=t4.ReasonID) ' +
+    'INNER JOIN SIZUNIT t5 ON (t3.UnitID=t5.UnitID) ' +
     'WHERE t2.ItemID = :ItemID ' +
     'ORDER BY t2.ReasonID, t2.OrderNum, t1.OrderNum');
   QParamInt('ItemID', AItemID);
@@ -4037,16 +4034,14 @@ begin
       VAppend(AInfoIDs, QFieldInt('InfoID'));
       VAppend(AInfoOrderNums, QFieldInt('InfoOrderNum'));
 
-      VAppend(AClassIDs, QFieldInt('ClassID'));
+      VAppend(ASIZTypes, QFieldInt('SIZType'));
       VAppend(ANameIDs, QFieldInt('NameID'));
       VAppend(ASizNames, QFieldStr('SizName'));
       VAppend(AUnits, QFieldStr('UnitStringCode'));
       VAppend(ASizeTypes, QFieldInt('SizeType'));
 
       VAppend(ANums, QFieldInt('Num'));
-      VAppend(ALifeIDs, QFieldInt('SpecLifeID'));
       VAppend(ALifes, QFieldInt('Life'));
-      VAppend(ALifeNames, QFieldStr('SpecLifeName'));
 
       QNext;
     end;
@@ -4128,9 +4123,9 @@ function TDataBase.SIZNormSubItemsLoad(const AItemID: Integer;
 var
   SubItemIDs, SubItemOrderNums, ReasonIDs: TIntVector;
   InfoIDs, InfoOrderNums: TIntVector;
-  ClassIDs, NameIDs, SizeTypes: TIntVector;
-  Nums, LifeIDs, Lifes: TIntVector;
-  ReasonNames, SizNames, Units, LifeNames: TStrVector;
+  SIZTypes, NameIDs, SizeTypes: TIntVector;
+  Nums, Lifes: TIntVector;
+  ReasonNames, SizNames, Units, ClauseNames: TStrVector;
 
   i, SubItemID: Integer;
 
@@ -4139,8 +4134,8 @@ var
 begin
   NormSubItemsClear(ASubItems);
   Result:= SIZNormSubItemsDataLoad(AItemID, SubItemIDs, SubItemOrderNums, ReasonIDs,
-                    InfoIDs, InfoOrderNums, ClassIDs, NameIDs, SizeTypes, Nums,
-                    LifeIDs, Lifes, ReasonNames, SizNames, Units, LifeNames);
+                    InfoIDs, InfoOrderNums, SIZTypes, NameIDs, SizeTypes, Nums,
+                    Lifes, ReasonNames, SizNames, Units, ClauseNames);
   if not Result then Exit;
   SubItemID:= -1;
   for i:=0 to High(SubItemIDs) do
@@ -4164,9 +4159,8 @@ begin
     end;
     //заполняем Info
     NormSubItemInfoAdd(Info, InfoIDs[i], InfoOrderNums[i],
-                       ClassIDs[i], NameIDs[i], SizeTypes[i], Nums[i],
-                       LifeIDs[i], Lifes[i], SizNames[i], Units[i],
-                       LifeNames[i]);
+                       SIZTypes[i], NameIDs[i], SizeTypes[i], Nums[i],
+                       Lifes[i], SizNames[i], Units[i], ClauseNames[i]);
 
   end;
   //записываем последнюю сформированную строку в вектор
@@ -4298,8 +4292,8 @@ begin
       else begin //эта подстрока осталась, тогда если изменились значения, запоминаем индекс
         if (ANewSubItem.Info.NameIDs[n]<>AOldSubItem.Info.NameIDs[i]) or
            (ANewSubItem.Info.Nums[n]<>AOldSubItem.Info.Nums[i]) or
+           (ANewSubItem.Info.ClauseNames[n]<>AOldSubItem.Info.ClauseNames[i]) or
            (ANewSubItem.Info.Lifes[n]<>AOldSubItem.Info.Lifes[i]) or
-           (ANewSubItem.Info.LifeIDs[n]<>AOldSubItem.Info.LifeIDs[i]) or
            (ANewSubItem.Info.OrderNums[n]<>AOldSubItem.Info.OrderNums[i]) then
            VAppend(Indexes, n);
       end;
@@ -4332,8 +4326,8 @@ begin
                                ANewSubItem.Info.NameIDs[Indexes[i]],
                                ANewSubItem.Info.Nums[Indexes[i]],
                                ANewSubItem.Info.Lifes[Indexes[i]],
-                               ANewSubItem.Info.LifeIDs[Indexes[i]],
                                ANewSubItem.Info.OrderNums[Indexes[i]],
+                               ANewSubItem.Info.ClauseNames[Indexes[i]],
                                False{no commit});
 
     //записываем новые подстроки
@@ -4343,8 +4337,8 @@ begin
                                ANewSubItem.Info.NameIDs[i],
                                ANewSubItem.Info.Nums[i],
                                ANewSubItem.Info.Lifes[i],
-                               ANewSubItem.Info.LifeIDs[i],
                                ANewSubItem.Info.OrderNums[i],
+                               ANewSubItem.Info.ClauseNames[i],
                                ANewSubItem.Info.InfoIDs[i],
                                False{no commit});
 
@@ -4750,7 +4744,8 @@ begin
 end;
 
 function TDataBase.SIZNormSubItemInfoWrite(const ASubItemID, ANameID,
-                                   ANum, ALife, ALifeID, AOrderNum: Integer;
+                                   ANum, ALife, AOrderNum: Integer;
+                                   const AClauseName: String;
                                    out AInfoID: Integer;
                                    const ACommit: Boolean = True): Boolean;
 begin
@@ -4758,13 +4753,13 @@ begin
   try
     QSetSQL(
       sqlINSERT('SIZNORMSUBITEMINFO',
-               ['SubItemID', 'NameID', 'Num', 'Life', 'SpecLifeID', 'OrderNum'])
+               ['SubItemID', 'NameID', 'Num', 'Life', 'ClauseName', 'OrderNum'])
     );
     QParamInt('SubItemID', ASubItemID);
     QParamInt('NameID', ANameID);
     QParamInt('Num', ANum);
     QParamInt('Life', ALife);
-    QParamInt('SpecLifeID', ALifeID);
+    QParamStr('ClauseName', AClauseName);
     QParamInt('OrderNum', AOrderNum);
     QExec;
     //определяем ID записанной подстроки
@@ -4791,7 +4786,7 @@ begin
     begin
       SIZNormSubItemInfoWrite(ASubItemID, AInfo.NameIDs[i],
                               AInfo.Nums[i], AInfo.Lifes[i],
-                              AInfo.LifeIDs[i], AInfo.OrderNums[i],
+                              AInfo.OrderNums[i], AInfo.ClauseNames[i],
                               DestInfoID, False{no commit});
       //добавляем ID в вектор
       VAppend(AInfoIDs, DestInfoID);
@@ -4805,7 +4800,8 @@ begin
 end;
 
 function TDataBase.SIZNormSubItemInfoUpdate(const AInfoID, ANameID,
-                                    ANum, ALife, ALifeID, AOrderNum: Integer;
+                                    ANum, ALife, AOrderNum: Integer;
+                                    const AClauseName: String;
                                     const ACommit: Boolean = True): Boolean;
 begin
   Result:= False;
@@ -4813,14 +4809,14 @@ begin
   try
     QSetSQL(
       sqlUPDATE('SIZNORMSUBITEMINFO',
-                ['NameID', 'Num', 'Life', 'SpecLifeID', 'OrderNum']) +
+                ['NameID', 'Num', 'Life', 'ClauseName', 'OrderNum']) +
       'WHERE InfoID = :InfoID'
     );
     QParamInt('InfoID', AInfoID);
     QParamInt('NameID', ANameID);
     QParamInt('Num', ANum);
     QParamInt('Life', ALife);
-    QParamInt('SpecLifeID', ALifeID);
+    QParamStr('ClauseName', AClauseName);
     QParamInt('OrderNum', AOrderNum);
     QExec;
 
@@ -4831,23 +4827,23 @@ begin
   end;
 end;
 
-function TDataBase.SIZAssortmentLoad(out AClassIDs: TIntVector;
-                              out AClassNames: TStrVector;
-                              out ASizNames, ASizUnits: TStrMatrix;
-                              out ASizNameIDs, ASizSizeTypes: TIntMatrix): Boolean;
+function TDataBase.SIZAssortmentLoad(out ASIZTypes: TIntVector;
+                              out ATypeNames: TStrVector;
+                              out ASIZNames, AUnits: TStrMatrix;
+                              out ANameIDs, ASizeTypes: TIntMatrix): Boolean;
 var
-  OldClass, NewClass: String;
+  OldType, NewType: Integer;
   VNames, VUnits: TStrVector;
   VIDs, VSizeTypes: TIntVector;
 begin
   Result:= False;
 
-  AClassIDs:= nil;
-  AClassNames:= nil;
-  ASizNames:= nil;
-  ASizUnits:= nil;
-  ASizNameIDs:= nil;
-  ASizSizeTypes:= nil;
+  ASIZTypes:= nil;
+  ATypeNames:= nil;
+  ASIZNames:= nil;
+  AUnits:= nil;
+  ANameIDs:= nil;
+  ASizeTypes:= nil;
   VNames:= nil;
   VUnits:= nil;
   VIDs:= nil;
@@ -4855,51 +4851,50 @@ begin
 
   QSetQuery(FQuery);
   QSetSQL(
-    'SELECT t1.NameID, t1.SizName, t1.SizeType, t1.ClassID, t2.ClassName, t3.UnitStringCode ' +
-    'FROM SIZNAMES t1 ' +
-    'INNER JOIN SIZCLASSES t2 ON (t1.ClassID=t2.ClassID) ' +
-    'INNER JOIN SIZUNIT t3 ON (t1.UnitID=t3.UnitID) ' +
-    'ORDER BY t2.ClassName, t1.SizName'
+    'SELECT t1.NameID, t1.SIZName, t1.SizeType, t1.SIZType, t2.UnitStringCode ' +
+    'FROM SIZNAME t1 ' +
+    'INNER JOIN SIZUNIT t2 ON (t1.UnitID=t2.UnitID) ' +
+    'ORDER BY t1.SIZType, t1.SSIZName'
   );
   QOpen;
   if not QIsEmpty then
   begin
-    OldClass:= EmptyStr;
+    OldType:= -1;
     QFirst;
     while not QEOF do
     begin
-      NewClass:= QFieldStr('ClassName');
-      if NewClass<>OldClass then //новый класс
+      NewType:= QFieldInt('SIZType');
+      if NewType<>OldType then //новый класс
       begin
         //записываем предыдущий класс в матрицы
         if not VIsNil(VNames) then
         begin
-          MAppend(ASizNames, VNames);
-          MAppend(ASizUnits, VUnits);
-          MAppend(ASizNameIDs, VIDs);
-          MAppend(ASizSizeTypes, VSizeTypes);
+          MAppend(ASIZNames, VNames);
+          MAppend(AUnits, VUnits);
+          MAppend(ANameIDs, VIDs);
+          MAppend(ASizeTypes, VSizeTypes);
         end;
         VNames:= nil;
         VUnits:= nil;
         VIDs:= nil;
         VSizeTypes:= nil;
         //сохраняем название нового класса
-        OldClass:= NewClass;
+        OldType:= NewType;
         //записываем новый класс в вектор
-        VAppend(AClassNames, NewClass);
-        VAppend(AClassIDs, QFieldInt('ClassID'));
+        VAppend(ATypeNames, SIZ_TYPE_PICKS[NewType]);
+        VAppend(ASIZTypes, QFieldInt('SIZType'));
       end;
-      VAppend(VNames, QFieldStr('SizName'));
+      VAppend(VNames, QFieldStr('SIZName'));
       VAppend(VUnits, QFieldStr('UnitStringCode'));
       VAppend(VIDs, QFieldInt('NameID'));
       VAppend(VSizeTypes, QFieldInt('SizeType'));
       QNext;
     end;
     //записываем последний класс
-    MAppend(ASizNames, VNames);
-    MAppend(ASizUnits, VUnits);
-    MAppend(ASizNameIDs, VIDs);
-    MAppend(ASizSizeTypes, VSizeTypes);
+    MAppend(ASIZNames, VNames);
+    MAppend(AUnits, VUnits);
+    MAppend(ANameIDs, VIDs);
+    MAppend(ASizeTypes, VSizeTypes);
     Result:= True;
   end;
   QClose;
