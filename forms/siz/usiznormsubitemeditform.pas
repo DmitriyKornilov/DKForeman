@@ -9,9 +9,9 @@ uses
   Spin, Buttons, BCButton, VirtualTrees,
   //DK packages utils
   DK_CtrlUtils, DK_Const, DK_Dialogs, DK_VSTTables, DK_VSTTableTools,
-  DK_Vector, DK_Matrix, DK_VSTDropDown,
+  DK_Vector, DK_Matrix, DK_VSTDropDown, DK_StrUtils,
   //Project utils
-  UDataBase, UTypes, UUtils, USIZUtils, USIZNormTypes, UImages,
+  UDataBase, UTypes, UConst, UUtils, USIZUtils, USIZNormTypes, UImages,
   //Forms
   USearchForm;
 
@@ -20,6 +20,8 @@ type
   { TSIZNormSubItemEditForm }
 
   TSIZNormSubItemEditForm = class(TForm)
+    ClauseNameEdit: TEdit;
+    ClauseNameLabel: TLabel;
     SearchButton: TSpeedButton;
     ButtonPanel: TPanel;
     ButtonPanelBevel: TBevel;
@@ -28,7 +30,7 @@ type
     InfoPanel: TPanel;
     InfoVT: TVirtualStringTree;
     ReasonBCButton: TBCButton;
-    ClassBCButton: TBCButton;
+    TypeBCButton: TBCButton;
     AddButton: TSpeedButton;
     DelButton: TSpeedButton;
     DownButton: TSpeedButton;
@@ -38,7 +40,7 @@ type
     YearsLabel: TLabel;
     NumLabel: TLabel;
     LifeLabel: TLabel;
-    ClassLabel: TLabel;
+    TypeLabel: TLabel;
     ReasonLabel: TLabel;
     NameLabel: TLabel;
     NamePanel: TPanel;
@@ -60,22 +62,21 @@ type
     procedure UpButtonClick(Sender: TObject);
   private
     ReasonDropDown: TVSTDropDown;
-    ClassDropDown: TVSTDropDown;
+    TypeDropDown: TVSTDropDown;
     LifeDropDown: TVSTDropDown;
     NameList: TVSTStringList;
     InfoTable: TVSTTable;
 
     OldSubItem: TNormSubItem;
 
-    ReasonIDs, LifeIDs: TIntVector;
-    ReasonNames, LifeNames: TStrVector;
+    ReasonIDs: TIntVector;
+    ReasonNames: TStrVector;
 
-    ClassIDs: TIntVector;
-    ClassNames:TStrVector;
+    SIZTypes: TIntVector;
     Names, Units: TStrMatrix;
     NameIDs, SizeTypes: TIntMatrix;
 
-    procedure ClassChange;
+    procedure TypeChange;
     procedure LifeChange;
 
     procedure InfoTableCreate;
@@ -89,6 +90,10 @@ type
     procedure InfoRowMove(const ADirection: Integer);
     procedure InfoRowMoveUp;
     procedure InfoRowMoveDown;
+
+    function ValuesGetAndVerify(out AClauseName: String;
+                            out ATypeIndex, ANameIndex, ALife: Integer;
+                            const ANameSkipIndex: Integer = -1): Boolean;
   public
     ItemID: Integer;
     SubItem: TNormSubItem;
@@ -121,9 +126,9 @@ begin
   ReasonDropDown:= TVSTDropDown.Create(ReasonBCButton);
   ReasonDropDown.DropDownCount:= 20;
 
-  ClassDropDown:= TVSTDropDown.Create(ClassBCButton);
-  ClassDropDown.DropDownCount:= 20;
-  ClassDropDown.OnChange:= @ClassChange;
+  TypeDropDown:= TVSTDropDown.Create(TypeBCButton);
+  TypeDropDown.DropDownCount:= 20;
+  TypeDropDown.OnChange:= @TypeChange;
 
   LifeDropDown:= TVSTDropDown.Create(LifeBCButton);
   LifeDropDown.DropDownCount:= 20;
@@ -152,7 +157,7 @@ end;
 procedure TSIZNormSubItemEditForm.FormDestroy(Sender: TObject);
 begin
   FreeAndNil(ReasonDropDown);
-  FreeAndNil(ClassDropDown);
+  FreeAndNil(TypeDropDown);
   FreeAndNil(LifeDropDown);
   FreeAndNil(NameList);
   FreeAndNil(InfoTable);
@@ -170,16 +175,13 @@ begin
   ReasonDropDown.Items:= ReasonNames;
   ReasonDropDown.ItemIndex:= VIndexOf(ReasonIDs, SubItem.ReasonID);
 
-  DataBase.KeyPickList('SIZSPECLIFE', 'SpecLifeID', 'SpecLifeName',
-                       LifeIDs, LifeNames, False {with zero ID}, 'SpecLifeID');
-  LifeNames[0]:= 'в месяцах';
-  LifeDropDown.Items:= LifeNames;
+  LifeDropDown.Items:= VAdd(VCreateStr(['в месяцах']), SIZ_LIFE_PICKS);
   LifeDropDown.ItemIndex:= 0;
 
-  IsSIZExists:= DataBase.SIZAssortmentLoad(ClassIDs, ClassNames, Names, Units, NameIDs, SizeTypes);
-  ClassDropDown.Items:= ClassNames;
+  IsSIZExists:= DataBase.SIZAssortmentLoad(SIZTypes, Names, Units, NameIDs, SizeTypes);
+  TypeDropDown.Items:= VPickFromKey(SIZTypes, SIZ_TYPE_KEYS, SIZ_TYPE_PICKS);
   if IsSIZExists then
-    ClassDropDown.ItemIndex:= 0;
+    TypeDropDown.ItemIndex:= 0;
   AddButton.Enabled:= IsSIZExists;
 
   if EditingType=etEdit then
@@ -189,7 +191,10 @@ end;
 
 procedure TSIZNormSubItemEditForm.LifeSpinEditChange(Sender: TObject);
 begin
-  YearsLabel.Caption:= '(' + SIZLifeInYearsStr(LifeSpinEdit.Value) + ')';
+  if LifeSpinEdit.Value<12 then
+    YearsLabel.Caption:= EmptyStr
+  else
+    YearsLabel.Caption:= '(' + SIZLifeInYearsStr(LifeSpinEdit.Value) + ')';
 end;
 
 procedure TSIZNormSubItemEditForm.SaveButtonClick(Sender: TObject);
@@ -227,7 +232,7 @@ begin
   if not Search('Фильтр по наименованию СИЗ:',
                 'SIZNAME', 'NameID', 'SizName', NameID) then Exit;
   if not MIndexOf(NameIDs, NameID, i, j) then Exit;
-  ClassDropDown.ItemIndex:= i;
+  TypeDropDown.ItemIndex:= i;
   NameList.ItemIndex:= j;
 end;
 
@@ -251,9 +256,9 @@ begin
   InfoRowMoveUp;
 end;
 
-procedure TSIZNormSubItemEditForm.ClassChange;
+procedure TSIZNormSubItemEditForm.TypeChange;
 begin
-  NameList.Update(Names[ClassDropDown.ItemIndex]);
+  NameList.Update(Names[TypeDropDown.ItemIndex]);
 end;
 
 procedure TSIZNormSubItemEditForm.LifeChange;
@@ -267,10 +272,10 @@ begin
   InfoTable:= TVSTTable.Create(InfoVT);
   InfoTable.SetSingleFont(MainForm.GridFont);
   InfoTable.HeaderFont.Bold:= True;
-  InfoTable.AddColumn('Наименование', 200);
-  InfoTable.AddColumn('Количество', 100);
-  InfoTable.AddColumn('Срок службы',150);
-  InfoTable.AutosizeColumnEnable('Наименование');
+  InfoTable.AddColumn('Наименование СИЗ', 200);
+  InfoTable.AddColumn('Нормы выдачи', 150);
+  InfoTable.AddColumn('Основание выдачи',300);
+  InfoTable.AutosizeColumnEnable('Наименование СИЗ');
   InfoTable.CanSelect:= True;
   InfoTable.CanUnselect:= False;
   InfoTable.OnSelect:= @InfoRowSelect;
@@ -285,13 +290,16 @@ var
 begin
   SelectedID:= GetSelectedID(InfoTable, SubItem.Info.NameIDs, ASelectedNameID);
 
-  InfoTable.ValuesClear;
+
   VDim(V{%H-}, Length(SubItem.Info.Lifes));
   for i:= 0 to High(SubItem.Info.Lifes) do
-   V[i]:= SIZLifeStr(SubItem.Info.Lifes[i]);
-  InfoTable.SetColumn('Наименование', SubItem.Info.Names, taLeftJustify);
-  InfoTable.SetColumn('Количество', VIntToStr(SubItem.Info.Nums));
-  InfoTable.SetColumn('Срок службы', V);
+   V[i]:= SubItem.Info.Units[i] + ', ' +
+          SIZNumInLifeStr(SubItem.Info.Nums[i], SubItem.Info.Lifes[i]);
+
+  InfoTable.ValuesClear;
+  InfoTable.SetColumn('Наименование СИЗ', SubItem.Info.Names, taLeftJustify);
+  InfoTable.SetColumn('Нормы выдачи', V);
+  InfoTable.SetColumn('Основание выдачи', SubItem.Info.ClauseNames, taLeftJustify);
   InfoTable.Draw;
   InfoTable.ReSelect(SubItem.Info.NameIDs, SelectedID, True);
 end;
@@ -306,37 +314,18 @@ end;
 
 procedure TSIZNormSubItemEditForm.InfoRowAdd;
 var
-  i, j, k, Life: Integer;
-  LifeName: String;
+  i, j, OrderNum, Life: Integer;
+  ClauseName: String;
 begin
-  i:= ClassDropDown.ItemIndex;
-  j:= NameList.ItemIndex;
+  if not ValuesGetAndVerify(ClauseName, i, j, Life) then Exit;
 
-  k:= VIndexOf(SubItem.Info.NameIDs, NameIDs[i, j]);
-  if k>=0 then
-  begin
-    Inform('"' + Names[i, j] + '" уже есть в списке!');
-    Exit;
-  end;
+  OrderNum:= Length(SubItem.Info.InfoIDs);
 
-  k:= Length(SubItem.Info.InfoIDs);
-  if LifeDropDown.ItemIndex=0 then
-  begin
-    LifeName:= '<не указан>';
-    Life:= LifeSpinEdit.Value;
-  end
-  else begin
-    Life:= 0;
-    LifeName:= LifeNames[LifeDropDown.ItemIndex];
-  end;
+  NormSubItemInfoAdd(SubItem.Info, -1{need new ID}, OrderNum, SIZTypes[i],
+                     NameIDs[i, j], SizeTypes[i, j], NumSpinEdit.Value,
+                     Life, Names[i, j], Units[i, j], ClauseName);
 
-  //!!!!!!!!!!!!!!!!!!!!!
-  //NormSubItemInfoAdd(SubItem.Info, -1{need new ID}, k, ClassIDs[i], NameIDs[i, j],
-  //                   SizeTypes[i, j], NumSpinEdit.Value,
-  //                   LifeIDs[LifeDropDown.ItemIndex], Life,
-  //                   Names[i, j], Units[i, j], LifeName);
-
-  InfoShow(SubItem.Info.NameIDs[k]);
+  InfoShow(SubItem.Info.NameIDs[OrderNum]);
 end;
 
 procedure TSIZNormSubItemEditForm.InfoRowEditBegin;
@@ -353,55 +342,72 @@ begin
   AddButton.ImageIndex:= 14;
   AddButton.Hint:= 'Сохранить изменения';
 
-  Index:= VIndexOf(ClassIDs, SubItem.Info.SIZTypes[InfoTable.SelectedIndex]);
+  Index:= VIndexOf(SIZTypes, SubItem.Info.SIZTypes[InfoTable.SelectedIndex]);
   if Index>=0 then
-    ClassDropDown.ItemIndex:= Index;
+    TypeDropDown.ItemIndex:= Index;
 
   Index:= VIndexOf(NameIDs[Index], SubItem.Info.NameIDs[InfoTable.SelectedIndex]);
   if Index>=0 then
     NameList.ItemIndex:= Index;
 
-  //!!!!!!!!!!!!!!!!!
-  //Index:= VIndexOf(LifeIDs, SubItem.Info.LifeIDs[InfoTable.SelectedIndex]);
-  //if Index>=0 then
-  //  LifeDropDown.ItemIndex:= Index;
+  Index:= SubItem.Info.Lifes[InfoTable.SelectedIndex];
+  if Index>0 then
+    Index:= 0
+  else
+    Index:= VIndexOf(SIZ_LIFE_KEYS, Index) + 1;
+  LifeDropDown.ItemIndex:= Index;
 
   NumSpinEdit.Value:= SubItem.Info.Nums[InfoTable.SelectedIndex];
   LifeSpinEdit.Value:= SubItem.Info.Lifes[InfoTable.SelectedIndex];
+  ClauseNameEdit.Text:= SubItem.Info.ClauseNames[InfoTable.SelectedIndex];
+end;
+
+function TSIZNormSubItemEditForm.ValuesGetAndVerify(out AClauseName: String;
+                            out ATypeIndex, ANameIndex, ALife: Integer;
+                            const ANameSkipIndex: Integer = -1): Boolean;
+begin
+  Result:= False;
+
+  ATypeIndex:= TypeDropDown.ItemIndex;
+  ANameIndex:= NameList.ItemIndex;
+
+  if VIndexOf(SubItem.Info.NameIDs, NameIDs[ATypeIndex, ANameIndex], ANameSkipIndex)>=0 then
+  begin
+    Inform('"' + Names[ATypeIndex, ANameIndex] + '" уже есть в списке!');
+    Exit;
+  end;
+
+  AClauseName:= STrim(ClauseNameEdit.Text);
+  if SEmpty(AClauseName) then
+  begin
+    Inform('Не указан пункт Норм!');
+    Exit;
+  end;
+
+  if LifeDropDown.ItemIndex=0 then
+    ALife:= LifeSpinEdit.Value
+  else
+    ALife:= SIZ_LIFE_KEYS[LifeDropDown.ItemIndex-1];
+
+  Result:= True;
 end;
 
 procedure TSIZNormSubItemEditForm.InfoRowEditEnd;
 var
-  i, j, k: Integer;
+  i, j, k, Life: Integer;
+  ClauseName: String;
 begin
-  i:= ClassDropDown.ItemIndex;
-  j:= NameList.ItemIndex;
-
-  k:= VIndexOf(SubItem.Info.NameIDs, NameIDs[i, j], InfoTable.SelectedIndex);
-  if k>=0 then
-  begin
-    Inform('"' + Names[i, j] + '" уже есть в списке!');
-    Exit;
-  end;
+  if not ValuesGetAndVerify(ClauseName, i, j, Life, InfoTable.SelectedIndex) then Exit;
 
   k:= InfoTable.SelectedIndex;
-  SubItem.Info.SIZTypes[k]:= ClassIDs[i];
+  SubItem.Info.SIZTypes[k]:= SIZTypes[i];
   SubItem.Info.NameIDs[k]:= NameIDs[i, j];
   SubItem.Info.Names[k]:= Names[i, j];
   SubItem.Info.Units[k]:= Units[i, j];
   SubItem.Info.SizeTypes[k]:= SizeTypes[i, j];
   SubItem.Info.Nums[k]:= NumSpinEdit.Value;
-  //SubItem.Info.LifeIDs[k]:= LifeIDs[LifeDropDown.ItemIndex];
-
-  if LifeDropDown.ItemIndex=0 then
-  begin
-    SubItem.Info.Lifes[k]:= LifeSpinEdit.Value;
-    //SubItem.Info.LifeNames[k]:= '<не указан>'
-  end
-  else begin
-    SubItem.Info.Lifes[k]:= 0;
-    //SubItem.Info.LifeNames[k]:= LifeNames[LifeDropDown.ItemIndex];
-  end;
+  SubItem.Info.ClauseNames[k]:= ClauseName;
+  SubItem.Info.Lifes[k]:= Life;
 
   InfoShow(SubItem.Info.NameIDs[k]);
 

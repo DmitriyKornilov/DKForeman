@@ -488,7 +488,7 @@ type
     //function SIZIsNormItemExists(const ANormID, AItemID: Integer;
     //                             const AItemName: String): Boolean;
     {Проверка пересечения периода действия нормы для указанной должности с другими
-     пунктами и нормами}
+     пунктами этой и других норм}
     function SIZNormItemIntersectionExists(const APostID, AItemID: Integer;
                               const ABeginDate, AEndDate: TDate;
                               out ANormName, AOrderNum: String): Boolean;
@@ -571,7 +571,7 @@ type
 
     {Загрузка ассортимента СИЗ: True - ОК, False - ошибка}
     function SIZAssortmentLoad(out ASIZTypes: TIntVector;
-                              out ATypeNames: TStrVector;
+                              //out ATypeNames: TStrVector;
                               out ASIZNames, AUnits: TStrMatrix;
                               out ANameIDs, ASizeTypes: TIntMatrix): Boolean;
 
@@ -4043,6 +4043,8 @@ begin
       VAppend(ANums, QFieldInt('Num'));
       VAppend(ALifes, QFieldInt('Life'));
 
+      VAppend(AClauseNames, QFieldStr('ClauseName'));
+
       QNext;
     end;
     Result:= True;
@@ -4828,7 +4830,7 @@ begin
 end;
 
 function TDataBase.SIZAssortmentLoad(out ASIZTypes: TIntVector;
-                              out ATypeNames: TStrVector;
+                              //out ATypeNames: TStrVector;
                               out ASIZNames, AUnits: TStrMatrix;
                               out ANameIDs, ASizeTypes: TIntMatrix): Boolean;
 var
@@ -4839,7 +4841,7 @@ begin
   Result:= False;
 
   ASIZTypes:= nil;
-  ATypeNames:= nil;
+  //ATypeNames:= nil;
   ASIZNames:= nil;
   AUnits:= nil;
   ANameIDs:= nil;
@@ -4854,7 +4856,7 @@ begin
     'SELECT t1.NameID, t1.SIZName, t1.SizeType, t1.SIZType, t2.UnitStringCode ' +
     'FROM SIZNAME t1 ' +
     'INNER JOIN SIZUNIT t2 ON (t1.UnitID=t2.UnitID) ' +
-    'ORDER BY t1.SIZType, t1.SSIZName'
+    'ORDER BY t1.SIZType, t1.SIZName'
   );
   QOpen;
   if not QIsEmpty then
@@ -4866,7 +4868,7 @@ begin
       NewType:= QFieldInt('SIZType');
       if NewType<>OldType then //новый класс
       begin
-        //записываем предыдущий класс в матрицы
+        //записываем предыдущий тип в матрицы
         if not VIsNil(VNames) then
         begin
           MAppend(ASIZNames, VNames);
@@ -4880,8 +4882,8 @@ begin
         VSizeTypes:= nil;
         //сохраняем название нового класса
         OldType:= NewType;
-        //записываем новый класс в вектор
-        VAppend(ATypeNames, SIZ_TYPE_PICKS[NewType]);
+        //записываем новый тип в вектор
+       // VAppend(ATypeNames, SIZ_TYPE_PICKS[NewType]);
         VAppend(ASIZTypes, QFieldInt('SIZType'));
       end;
       VAppend(VNames, QFieldStr('SIZName'));

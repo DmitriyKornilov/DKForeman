@@ -119,9 +119,9 @@ function SIZLifeStr(const ALife: Integer): String;
 var
   X: Integer;
 begin
-  if ALife<0 then
+  if ALife<=0 then
   begin
-    Result:= SIZ_SPECLIFE_PICKS[ALife];
+    Result:= SIZ_LIFE_PICKS[ALife];
     Exit;
   end;
 
@@ -162,16 +162,15 @@ var
   NumStr, PeriodStr: String;
   X: Integer;
 begin
-  if ALife<0 then
-    Result:= SIZ_SPECLIFE_PICKS[ALife]
+  NumStr:= IntToStr(ANum);
+  if ALife<=0 then //особый срок службы
+    Result:= NumStr + ' ' + SIZ_LIFE_PICKS[ALife]
+  else if ALife=1 then //ровно 1 месяц
+    Result:= NumStr + ' на 1 месяц'
+  else if ALife=12 then //ровно 1 год
+      Result:= NumStr + ' на 1 год'
   else begin
-    NumStr:= IntToStr(ANum);
     PeriodStr:= IntToStr(ALife);
-    if ALife=12 then
-    begin
-      Result:= NumStr;
-      Exit;
-    end;
     if ALife<12 then //меньше года
     begin
       Result:= NumStr + ' на ' + PeriodStr + ' месяц';

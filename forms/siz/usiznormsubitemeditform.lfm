@@ -1,16 +1,15 @@
 object SIZNormSubItemEditForm: TSIZNormSubItemEditForm
   Left = 377
-  Height = 710
+  Height = 800
   Top = 250
-  Width = 700
+  Width = 800
   Anchors = [akLeft]
   BorderIcons = [biSystemMenu, biMaximize]
   Caption = 'Строка пункта типовой нормы'
-  ClientHeight = 710
-  ClientWidth = 700
+  ClientHeight = 800
+  ClientWidth = 800
   DesignTimePPI = 120
   Position = poScreenCenter
-  LCLVersion = '4.0.0.4'
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
@@ -18,8 +17,8 @@ object SIZNormSubItemEditForm: TSIZNormSubItemEditForm
     AnchorSideTop.Side = asrBottom
     Left = 2
     Height = 48
-    Top = 656
-    Width = 696
+    Top = 746
+    Width = 796
     Align = alBottom
     AutoSize = True
     BorderSpacing.Left = 2
@@ -28,7 +27,7 @@ object SIZNormSubItemEditForm: TSIZNormSubItemEditForm
     BorderSpacing.Bottom = 6
     BevelOuter = bvNone
     ClientHeight = 48
-    ClientWidth = 696
+    ClientWidth = 796
     TabOrder = 0
     object CancelButton: TSpeedButton
       AnchorSideTop.Control = ButtonPanelBevel
@@ -36,7 +35,7 @@ object SIZNormSubItemEditForm: TSIZNormSubItemEditForm
       AnchorSideRight.Control = ButtonPanel
       AnchorSideRight.Side = asrBottom
       Cursor = crHandPoint
-      Left = 569
+      Left = 669
       Height = 40
       Top = 8
       Width = 121
@@ -56,7 +55,7 @@ object SIZNormSubItemEditForm: TSIZNormSubItemEditForm
       AnchorSideTop.Side = asrCenter
       AnchorSideRight.Control = CancelButton
       Cursor = crHandPoint
-      Left = 442
+      Left = 542
       Height = 40
       Top = 8
       Width = 127
@@ -74,30 +73,30 @@ object SIZNormSubItemEditForm: TSIZNormSubItemEditForm
       Left = 0
       Height = 8
       Top = 0
-      Width = 696
+      Width = 796
       Align = alTop
       Shape = bsTopLine
     end
   end
-  object ClassLabel: TLabel
+  object TypeLabel: TLabel
     AnchorSideLeft.Control = Owner
     AnchorSideTop.Control = ReasonBCButton
     AnchorSideTop.Side = asrBottom
-    AnchorSideBottom.Control = ClassBCButton
+    AnchorSideBottom.Control = TypeBCButton
     Left = 8
     Height = 20
     Top = 99
-    Width = 74
+    Width = 61
     Anchors = [akLeft, akBottom]
     BorderSpacing.Left = 8
     BorderSpacing.Top = 12
     BorderSpacing.Bottom = 8
-    Caption = 'Класс СИЗ:'
+    Caption = 'Тип СИЗ:'
     ParentColor = False
   end
   object NameLabel: TLabel
     AnchorSideLeft.Control = Owner
-    AnchorSideTop.Control = ClassBCButton
+    AnchorSideTop.Control = TypeBCButton
     AnchorSideTop.Side = asrBottom
     AnchorSideBottom.Control = NamePanel
     Left = 8
@@ -120,21 +119,21 @@ object SIZNormSubItemEditForm: TSIZNormSubItemEditForm
     Left = 8
     Height = 183
     Top = 196
-    Width = 684
+    Width = 784
     Anchors = [akTop, akLeft, akRight, akBottom]
     BorderSpacing.Left = 8
     BorderSpacing.Right = 8
     BorderSpacing.Bottom = 12
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 183
-    ClientWidth = 684
+    ClientHeight = 179
+    ClientWidth = 780
     TabOrder = 1
     object NameVT: TVirtualStringTree
       Left = 0
       Height = 179
       Top = 0
-      Width = 680
+      Width = 780
       Align = alClient
       Anchors = [akBottom]
       BorderStyle = bsNone
@@ -165,7 +164,7 @@ object SIZNormSubItemEditForm: TSIZNormSubItemEditForm
     AnchorSideBottom.Control = NumSpinEdit
     Left = 8
     Height = 20
-    Top = 396
+    Top = 395
     Width = 84
     BorderSpacing.Left = 8
     BorderSpacing.Bottom = 8
@@ -173,18 +172,17 @@ object SIZNormSubItemEditForm: TSIZNormSubItemEditForm
     ParentColor = False
   end
   object NumSpinEdit: TSpinEdit
-    AnchorSideLeft.Control = NumLabel
+    AnchorSideLeft.Control = ClauseNameLabel
     AnchorSideLeft.Side = asrBottom
-    AnchorSideTop.Control = NamePanel
-    AnchorSideTop.Side = asrBottom
+    AnchorSideTop.Control = LifeBCButton
+    AnchorSideTop.Side = asrCenter
     AnchorSideRight.Control = NumLabel
     AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Control = ToolPanel
-    Left = 100
+    Left = 103
     Height = 28
-    Top = 392
+    Top = 391
     Width = 70
-    Anchors = [akLeft, akBottom]
     BorderSpacing.Left = 8
     BorderSpacing.Top = 12
     BorderSpacing.Bottom = 12
@@ -199,7 +197,7 @@ object SIZNormSubItemEditForm: TSIZNormSubItemEditForm
     AnchorSideTop.Control = LifeBCButton
     AnchorSideTop.Side = asrCenter
     AnchorSideBottom.Control = NumSpinEdit
-    Left = 190
+    Left = 193
     Height = 20
     Top = 395
     Width = 94
@@ -214,7 +212,7 @@ object SIZNormSubItemEditForm: TSIZNormSubItemEditForm
     AnchorSideTop.Control = LifeBCButton
     AnchorSideTop.Side = asrCenter
     AnchorSideRight.Side = asrBottom
-    Left = 500
+    Left = 503
     Height = 28
     Top = 391
     Width = 70
@@ -232,7 +230,7 @@ object SIZNormSubItemEditForm: TSIZNormSubItemEditForm
     AnchorSideTop.Control = LifeBCButton
     AnchorSideTop.Side = asrCenter
     AnchorSideBottom.Control = NumSpinEdit
-    Left = 578
+    Left = 581
     Height = 20
     Top = 395
     Width = 45
@@ -250,8 +248,8 @@ object SIZNormSubItemEditForm: TSIZNormSubItemEditForm
     AnchorSideBottom.Control = InfoPanel
     Left = 8
     Height = 38
-    Top = 440
-    Width = 684
+    Top = 480
+    Width = 784
     Align = alCustom
     Anchors = [akLeft, akRight, akBottom]
     BorderSpacing.Left = 8
@@ -260,7 +258,7 @@ object SIZNormSubItemEditForm: TSIZNormSubItemEditForm
     BorderSpacing.Bottom = 8
     BevelOuter = bvNone
     ClientHeight = 38
-    ClientWidth = 684
+    ClientWidth = 784
     ParentFont = False
     TabOrder = 4
     object AddButton: TSpeedButton
@@ -347,23 +345,23 @@ object SIZNormSubItemEditForm: TSIZNormSubItemEditForm
     AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Control = ButtonPanel
     Left = 8
-    Height = 150
-    Top = 486
-    Width = 684
+    Height = 200
+    Top = 526
+    Width = 784
     Anchors = [akLeft, akRight, akBottom]
     BorderSpacing.Left = 8
     BorderSpacing.Top = 8
     BorderSpacing.Right = 8
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 150
-    ClientWidth = 684
+    ClientHeight = 196
+    ClientWidth = 780
     TabOrder = 5
     object InfoVT: TVirtualStringTree
       Left = 0
-      Height = 146
+      Height = 196
       Top = 0
-      Width = 680
+      Width = 780
       Align = alClient
       Anchors = [akBottom]
       BorderStyle = bsNone
@@ -385,7 +383,7 @@ object SIZNormSubItemEditForm: TSIZNormSubItemEditForm
     Left = 8
     Height = 29
     Top = 40
-    Width = 684
+    Width = 784
     Anchors = [akTop, akLeft, akRight]
     StateClicked.Background.Gradient1.StartColor = 8404992
     StateClicked.Background.Gradient1.EndColor = 4194304
@@ -484,7 +482,7 @@ object SIZNormSubItemEditForm: TSIZNormSubItemEditForm
     DropDownStyle = bdsCommon
     MemoryUsage = bmuHigh
   end
-  object ClassBCButton: TBCButton
+  object TypeBCButton: TBCButton
     Tag = -1
     AnchorSideLeft.Control = Owner
     AnchorSideTop.Control = SearchButton
@@ -494,7 +492,7 @@ object SIZNormSubItemEditForm: TSIZNormSubItemEditForm
     Left = 8
     Height = 29
     Top = 127
-    Width = 684
+    Width = 784
     Anchors = [akTop, akLeft, akRight]
     StateClicked.Background.Gradient1.StartColor = 8404992
     StateClicked.Background.Gradient1.EndColor = 4194304
@@ -601,8 +599,8 @@ object SIZNormSubItemEditForm: TSIZNormSubItemEditForm
     AnchorSideTop.Side = asrBottom
     AnchorSideRight.Control = Owner
     AnchorSideRight.Side = asrBottom
-    AnchorSideBottom.Control = ToolPanel
-    Left = 292
+    AnchorSideBottom.Control = ClauseNameEdit
+    Left = 295
     Height = 29
     Top = 391
     Width = 200
@@ -711,7 +709,7 @@ object SIZNormSubItemEditForm: TSIZNormSubItemEditForm
     AnchorSideRight.Control = Owner
     AnchorSideRight.Side = asrBottom
     Cursor = crHandPoint
-    Left = 652
+    Left = 752
     Height = 38
     Hint = 'Найти'
     Top = 81
@@ -725,5 +723,35 @@ object SIZNormSubItemEditForm: TSIZNormSubItemEditForm
     ShowHint = True
     ParentShowHint = False
     OnClick = SearchButtonClick
+  end
+  object ClauseNameEdit: TEdit
+    AnchorSideLeft.Control = ClauseNameLabel
+    AnchorSideLeft.Side = asrBottom
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
+    AnchorSideBottom.Control = ToolPanel
+    Left = 103
+    Height = 28
+    Top = 432
+    Width = 689
+    Anchors = [akLeft, akRight, akBottom]
+    BorderSpacing.Left = 8
+    BorderSpacing.Right = 8
+    BorderSpacing.Bottom = 12
+    TabOrder = 6
+  end
+  object ClauseNameLabel: TLabel
+    AnchorSideLeft.Control = Owner
+    AnchorSideTop.Control = ClauseNameEdit
+    AnchorSideTop.Side = asrCenter
+    AnchorSideBottom.Control = NumSpinEdit
+    Left = 8
+    Height = 20
+    Top = 436
+    Width = 87
+    BorderSpacing.Left = 8
+    BorderSpacing.Bottom = 8
+    Caption = 'Пункт Норм:'
+    ParentColor = False
   end
 end

@@ -206,24 +206,24 @@ object SIZNormForm: TSIZNormForm
       Left = 0
       Height = 241
       Top = 32
-      Width = 700
+      Width = 500
       Align = alLeft
       BorderSpacing.Bottom = 2
       BevelOuter = bvNone
       ClientHeight = 241
-      ClientWidth = 700
+      ClientWidth = 500
       TabOrder = 0
       object ItemToolPanel: TPanel
         Left = 0
         Height = 40
         Top = 0
-        Width = 700
+        Width = 500
         Align = alTop
         BorderSpacing.Bottom = 2
         BevelOuter = bvNone
         BorderStyle = bsSingle
         ClientHeight = 36
-        ClientWidth = 696
+        ClientWidth = 496
         ParentFont = False
         TabOrder = 0
         object ItemAddButton: TSpeedButton
@@ -321,19 +321,19 @@ object SIZNormForm: TSIZNormForm
         Left = 0
         Height = 199
         Top = 42
-        Width = 700
+        Width = 500
         Align = alClient
         BevelOuter = bvNone
         BorderStyle = bsSingle
         ClientHeight = 195
-        ClientWidth = 696
+        ClientWidth = 496
         TabOrder = 1
         OnChangeBounds = ItemSheetPanelChangeBounds
         object ItemGrid: TsWorksheetGrid
           Left = 0
           Height = 195
           Top = 0
-          Width = 696
+          Width = 496
           AutoExpand = []
           DisplayFixedColRow = False
           FrozenBorderPen.Style = psClear
@@ -364,39 +364,38 @@ object SIZNormForm: TSIZNormForm
           TabOrder = 0
           TabStop = False
           TitleFont.Style = [fsBold]
-          OnChangeBounds = ItemGridChangeBounds
           OnDblClick = ItemGridDblClick
         end
       end
     end
     object Splitter2: TSplitter
-      Left = 700
+      Left = 500
       Height = 243
       Top = 32
       Width = 6
       ResizeStyle = rsLine
     end
     object SubItemPanel: TPanel
-      Left = 706
+      Left = 506
       Height = 243
       Top = 32
-      Width = 290
+      Width = 490
       Align = alClient
       BevelOuter = bvNone
       ClientHeight = 243
-      ClientWidth = 290
+      ClientWidth = 490
       TabOrder = 2
       object SubItemToolPanel: TPanel
         Left = 0
         Height = 40
         Top = 0
-        Width = 290
+        Width = 490
         Align = alTop
         BorderSpacing.Bottom = 2
         BevelOuter = bvNone
         BorderStyle = bsSingle
         ClientHeight = 36
-        ClientWidth = 286
+        ClientWidth = 486
         ParentFont = False
         TabOrder = 0
         object SubItemAddButton: TSpeedButton
@@ -479,18 +478,18 @@ object SIZNormForm: TSIZNormForm
         Left = 0
         Height = 201
         Top = 42
-        Width = 290
+        Width = 490
         Align = alClient
         BevelOuter = bvNone
         BorderStyle = bsSingle
         ClientHeight = 197
-        ClientWidth = 286
+        ClientWidth = 486
         TabOrder = 1
         object SubItemGrid: TsWorksheetGrid
           Left = 0
           Height = 197
           Top = 0
-          Width = 286
+          Width = 486
           AutoExpand = []
           DisplayFixedColRow = False
           FrozenBorderPen.Style = psClear

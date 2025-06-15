@@ -1651,9 +1651,11 @@
       },
       "ReferenceFrom" : {
         "TableNames" : [
-          "SIZENTRY"
+          "SIZENTRY",
+          "SIZNORMSUBITEMINFO"
         ],
         "FieldNames" : [
+          "NAMEID",
           "NAMEID"
         ]
       }
@@ -2245,7 +2247,7 @@
       "ExistingValues" : [
       ],
       "ReferenceTo" : {
-        "TableName" : "SIZNAMES",
+        "TableName" : "SIZNAME",
         "FieldName" : "NAMEID",
         "OnDelete" : 0,
         "OnUpdate" : 0

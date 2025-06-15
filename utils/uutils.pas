@@ -31,6 +31,7 @@ function GetSelectedID(const ATable: TVSTTable; const AIDValues: TIntVector;
                        const ASelectedID: Integer = -1): Integer;
 begin
   Result:= -1;
+  if VIsNil(AIDValues) then Exit;
   if ASelectedID>0 then
     Result:= ASelectedID
   else if Assigned(ATable) and ATable.IsSelected then
@@ -41,6 +42,7 @@ function GetSelectedID(const ATable: TCustomSheetTable; const AIDValues: TIntVec
                        const ASelectedID: Integer  = -1): Integer;
 begin
   Result:= -1;
+  if VIsNil(AIDValues) then Exit;
   if ASelectedID>0 then
     Result:= ASelectedID
   else if Assigned(ATable) and ATable.IsSelected then

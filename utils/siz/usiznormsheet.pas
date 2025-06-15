@@ -26,9 +26,9 @@ type
     procedure SelectionMove(const AVertDelta: Integer); override;
   private
     const
-      COLUMN1_WIDTH = 50; //№п/п
+      COLUMN1_WIDTH = 30; //№п/п
       COLUMN2_WIDTH = 300; //должность (профессия)
-      TITLE_HEIGHT = 80;//35;
+      TITLE_HEIGHT = 70;//35;
     var
       FPostNames: TStrMatrix;
       FOrderNums: TIntVector;
@@ -70,14 +70,13 @@ type
     function IndexToRow(const AIndex: Integer): Integer; override;
   private
     const
-      COLUMN1_WIDTH = 100; //Тип СИЗ
-      COLUMN2_WIDTH = 200; //Наименование СИЗ
-      COLUMN3_WIDTH = 200; //Нормы выдачи
-      COLUMN4_WIDTH = 200; //Основание выдачи (пункты норм)
-      TITLE_HEIGHT = 80;//35;
+      COLUMN1_WIDTH = 130; //Тип СИЗ
+      COLUMN2_WIDTH = 300; //Наименование СИЗ
+      COLUMN3_WIDTH = 260; //Нормы выдачи
+      COLUMN4_WIDTH = 260; //Основание выдачи (пункты норм)
+      TITLE_HEIGHT = 70;//35;
     var
       FSubItems: TNormSubItems;
-      FItemName: String;
       FFirstRows, FLastRows: TIntVector;
 
     function IndexToSubItemIndex(const AIndex: Integer): Integer;
@@ -195,7 +194,7 @@ begin
   Writer.SetAlignment(haCenter, vaTop);
   Writer.SetFont(Font.Name, Font.Size, [fsBold], clBlack);
   Writer.WriteText(1, 1, '№ п/п', cbtOuter);
-  Writer.WriteText(1, 2, 'Наименование профессии (должности)', cbtOuter);
+  Writer.WriteText(1, 2, 'Наименование профессии' + SYMBOL_BREAK + '(должности)', cbtOuter);
   Writer.SetRowHeight(1, TITLE_HEIGHT);
 end;
 
@@ -422,26 +421,64 @@ end;
 
 procedure TSIZNormSubItemsSheet.LineDraw(var ARow: Integer; const AIndex: Integer);
 var
-  R,i,N: Integer;
+  R, i, N: Integer;
   S: String;
 begin
   Writer.SetBackgroundDefault;
   Writer.SetFont(Font.Name, Font.Size, [], clBlack);
 
   N:= High(FSubItems[AIndex].Info.Names);
+
+  //Тип СИЗ
+  Writer.SetAlignment(haCenter, vaTop);
+  if VSame(FSubItems[AIndex].Info.SIZTypes) then
+  begin
+    S:= SIZ_TYPE_PICKS[FSubItems[AIndex].Info.SIZTypes[0]];
+    Writer.WriteText(ARow, 1, ARow+N, 1, S, cbtNone, True, True);
+  end
+  else begin
+    for i:=0 to N do
+    begin
+      R:= ARow + i;
+      S:= SIZ_TYPE_PICKS[FSubItems[AIndex].Info.SIZTypes[i]];
+      Writer.WriteText(R, 1, S, cbtNone, True, True);
+    end;
+  end;
+
+  //Наименование СИЗ
+  Writer.SetAlignment(haLeft, vaTop);
   for i:=0 to N do
   begin
     R:= ARow + i;
-    Writer.SetAlignment(haLeft, vaCenter);
     S:= FSubItems[AIndex].Info.Names[i];
     if (N>0) and (i<N) then S:= S + ' или';
-    Writer.WriteText(R, 1, S, cbtNone, True, True);
-    Writer.SetAlignment(haCenter, vaCenter);
-    Writer.WriteText(R, 2, FItemName);
-    Writer.WriteText(R, 3, FSubItems[AIndex].Info.Units[i]);
-    S:= SIZNumInLifeStr(FSubItems[AIndex].Info.Nums[i],
+    Writer.WriteText(R, 2, S, cbtNone, True, True);
+  end;
+
+  //Нормы выдачи
+  Writer.SetAlignment(haCenter, vaTop);
+  for i:=0 to N do
+  begin
+    R:= ARow + i;
+    S:= FSubItems[AIndex].Info.Units[i] + ', ' +
+        SIZNumInLifeStr(FSubItems[AIndex].Info.Nums[i],
                         FSubItems[AIndex].Info.Lifes[i]);
-    Writer.WriteText(R, 4, S);
+    Writer.WriteText(R, 3, S, cbtNone, True, True);
+  end;
+
+  //Основание выдачи (пункты ЕТН)
+  if VSame(FSubItems[AIndex].Info.ClauseNames) then
+  begin
+    S:= FSubItems[AIndex].Info.ClauseNames[0];
+    Writer.WriteText(ARow, 4, ARow+N, 4, S, cbtNone, True, True);
+  end
+  else begin
+    for i:=0 to N do
+    begin
+      R:= ARow + i;
+      S:= FSubItems[AIndex].Info.ClauseNames[i];
+      Writer.WriteText(R, 4, S, cbtNone, True, True);
+    end;
   end;
 
   for i:= 1 to 4 do
@@ -457,7 +494,6 @@ var
   S: String;
 begin
   FSubItems:= ASubItems;
-  FItemName:= 'ЗАМЕНИ!';
 
   if Length(FSubItems)=0 then
   begin
