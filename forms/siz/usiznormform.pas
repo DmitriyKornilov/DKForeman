@@ -620,7 +620,7 @@ begin
   S:= 'Сохранить в файл:';
   V:= VCreateStr([
     NormNames[NormList.SelectedIndex] + ', пункт №' +
-    IntToStr(ItemOrderNums[NormItemSheet.SelectedIndex]),
+    IntToStr(ItemOrderNums[NormItemSheet.SelectedIndex]+1),
     NormNames[NormList.SelectedIndex] + ', все пункты '
   ]);
   if not Choose(S, V, ChooseIndex) then Exit;
