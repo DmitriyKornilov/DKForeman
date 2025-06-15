@@ -21,6 +21,7 @@ type
     function FirstDataRow: Integer; override;
     function LastDataRow: Integer; override;
 
+    function GetSelectedIndex: Integer; override;
     procedure Select(const ARow, {%H-}ACol: Integer); override;
     procedure Unselect; override;
     procedure SelectionMove(const AVertDelta: Integer); override;
@@ -47,7 +48,6 @@ type
     procedure Swap(const AIndex1, AIndex2: Integer);
     function IndexToItemIndex(const AIndex: Integer): Integer;
     function ItemIndexToIndex(const AIndex: Integer): Integer;
-    function SelectedItemIndex: Integer;
     function CanUp: Boolean;
     function CanDown: Boolean;
   end;
@@ -137,6 +137,11 @@ end;
 function TSIZNormItemSheet.LastDataRow: Integer;
 begin
   Result:= FirstDataRow + VLast(FLastItemIndexes);
+end;
+
+function TSIZNormItemSheet.GetSelectedIndex: Integer;
+begin
+  Result:= IndexToItemIndex(inherited GetSelectedIndex);
 end;
 
 procedure TSIZNormItemSheet.Select(const ARow, ACol: Integer);
@@ -243,19 +248,14 @@ begin
   Result:= FFirstItemIndexes[AIndex];
 end;
 
-function TSIZNormItemSheet.SelectedItemIndex: Integer;
-begin
-  Result:= IndexToItemIndex(SelectedIndex);
-end;
-
 function TSIZNormItemSheet.CanUp: Boolean;
 begin
-  Result:= IsSelected and (SelectedItemIndex>0);
+  Result:= IsSelected and (SelectedIndex>0);
 end;
 
 function TSIZNormItemSheet.CanDown: Boolean;
 begin
-  Result:= IsSelected and (SelectedItemIndex<High(FOrderNums));
+  Result:= IsSelected and (SelectedIndex<High(FOrderNums));
 end;
 
 procedure TSIZNormItemSheet.LineDraw(const AIndex: Integer);

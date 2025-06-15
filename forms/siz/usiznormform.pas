@@ -225,17 +225,17 @@ end;
 
 procedure TSIZNormForm.ItemSheetPanelChangeBounds(Sender: TObject);
 begin
-  NormItemSheet.Draw(ItemOrderNums, PostNames, NormItemSheet.SelectedItemIndex);
+  NormItemSheet.Draw(ItemOrderNums, PostNames, NormItemSheet.SelectedIndex);
 end;
 
 procedure TSIZNormForm.ItemUpButtonClick(Sender: TObject);
 begin
-  NormItemSwap(NormItemSheet.SelectedItemIndex, NormItemSheet.SelectedItemIndex - 1);
+  NormItemSwap(NormItemSheet.SelectedIndex, NormItemSheet.SelectedIndex - 1);
 end;
 
 procedure TSIZNormForm.ItemDownButtonClick(Sender: TObject);
 begin
-  NormItemSwap(NormItemSheet.SelectedItemIndex, NormItemSheet.SelectedItemIndex + 1);
+  NormItemSwap(NormItemSheet.SelectedIndex, NormItemSheet.SelectedIndex + 1);
 end;
 
 procedure TSIZNormForm.NormAddButtonClick(Sender: TObject);
@@ -402,9 +402,9 @@ procedure TSIZNormForm.NormItemDelete;
 begin
   if not NormItemSheet.IsSelected then Exit;
   if not Confirm('Удалить всю информацию по пункту №"' +
-                 IntToStr(ItemOrderNums[NormItemSheet.SelectedItemIndex]) +
+                 IntToStr(ItemOrderNums[NormItemSheet.SelectedIndex]) +
                  '"?') then Exit;
-  DataBase.SIZNormItemDelete(ItemIDs[NormItemSheet.SelectedItemIndex]);
+  DataBase.SIZNormItemDelete(ItemIDs[NormItemSheet.SelectedIndex]);
   NormItemListLoad;
 end;
 
@@ -435,7 +435,7 @@ begin
   if not NormItemSheet.IsSelected then Exit;
 
   NormSubItemsDel(NormSubItems, 0, High(NormSubItems));
-  DataBase.SIZNormSubItemsLoad(ItemIDs[NormItemSheet.SelectedItemIndex], NormSubItems);
+  DataBase.SIZNormSubItemsLoad(ItemIDs[NormItemSheet.SelectedIndex], NormSubItems);
 
   if ASelectedID>0 then
     SelectedIndex:= NormSubItemsIndexOf(NormSubItems, ASelectedID)
@@ -459,7 +459,7 @@ begin
   if not Confirm('Удалить всю информацию по строке?') then Exit;
 
   SubItem:= NormSubItems[NormSubItemSheet.SelectedIndex];
-  DataBase.SIZNormSubItemDelete(ItemIDs[NormItemSheet.SelectedItemIndex],
+  DataBase.SIZNormSubItemDelete(ItemIDs[NormItemSheet.SelectedIndex],
                      SubItem.SubItemID, SubItem.ReasonID, SubItem.OrderNum );
   NormSubItemListLoad;
 end;
@@ -543,7 +543,7 @@ begin
     SIZNormItemEditForm.NormID:= NormIDs[NormList.SelectedIndex];
 
     if AEditingType<>etAdd then
-      SIZNormItemEditForm.ItemID:= ItemIDs[NormItemSheet.SelectedItemIndex];
+      SIZNormItemEditForm.ItemID:= ItemIDs[NormItemSheet.SelectedIndex];
 
     if SIZNormItemEditForm.ShowModal=mrOK then
       NormItemListLoad(SIZNormItemEditForm.ItemID);
@@ -560,7 +560,7 @@ begin
   SIZNormSubItemEditForm:= TSIZNormSubItemEditForm.Create(nil);
   try
     SIZNormSubItemEditForm.EditingType:= AEditingType;
-    SIZNormSubItemEditForm.ItemID:= ItemIDs[NormItemSheet.SelectedItemIndex];
+    SIZNormSubItemEditForm.ItemID:= ItemIDs[NormItemSheet.SelectedIndex];
 
     if AEditingType=etAdd then
       NormSubItemClear(SIZNormSubItemEditForm.SubItem)
@@ -589,7 +589,7 @@ var
   var
     Item: TNormItem;
   begin
-    DataBase.SIZNormItemLoad(ItemIDs[NormItemSheet.SelectedItemIndex], Item);
+    DataBase.SIZNormItemLoad(ItemIDs[NormItemSheet.SelectedIndex], Item);
     NormItemsAdd(Norm.Items, Item);
   end;
 
@@ -620,7 +620,7 @@ begin
   S:= 'Сохранить в файл:';
   V:= VCreateStr([
     NormNames[NormList.SelectedIndex] + ', пункт №' +
-    IntToStr(ItemOrderNums[NormItemSheet.SelectedItemIndex]),
+    IntToStr(ItemOrderNums[NormItemSheet.SelectedIndex]),
     NormNames[NormList.SelectedIndex] + ', все пункты '
   ]);
   if not Choose(S, V, ChooseIndex) then Exit;
