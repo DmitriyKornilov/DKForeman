@@ -9,6 +9,7 @@ object SIZNormForm: TSIZNormForm
   ClientHeight = 577
   ClientWidth = 1000
   DesignTimePPI = 120
+  LCLVersion = '4.0.0.4'
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
@@ -23,8 +24,8 @@ object SIZNormForm: TSIZNormForm
     BorderSpacing.Right = 2
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 36
-    ClientWidth = 992
+    ClientHeight = 40
+    ClientWidth = 996
     ParentFont = False
     TabOrder = 0
     object CloseButton: TSpeedButton
@@ -94,8 +95,8 @@ object SIZNormForm: TSIZNormForm
       BorderSpacing.Bottom = 2
       BevelOuter = bvNone
       BorderStyle = bsSingle
-      ClientHeight = 36
-      ClientWidth = 992
+      ClientHeight = 40
+      ClientWidth = 996
       ParentBackground = False
       ParentColor = False
       ParentFont = False
@@ -222,8 +223,8 @@ object SIZNormForm: TSIZNormForm
         BorderSpacing.Bottom = 2
         BevelOuter = bvNone
         BorderStyle = bsSingle
-        ClientHeight = 36
-        ClientWidth = 496
+        ClientHeight = 40
+        ClientWidth = 500
         ParentFont = False
         TabOrder = 0
         object ItemAddButton: TSpeedButton
@@ -325,8 +326,8 @@ object SIZNormForm: TSIZNormForm
         Align = alClient
         BevelOuter = bvNone
         BorderStyle = bsSingle
-        ClientHeight = 195
-        ClientWidth = 496
+        ClientHeight = 199
+        ClientWidth = 500
         TabOrder = 1
         OnChangeBounds = ItemSheetPanelChangeBounds
         object ItemGrid: TsWorksheetGrid
@@ -394,8 +395,8 @@ object SIZNormForm: TSIZNormForm
         BorderSpacing.Bottom = 2
         BevelOuter = bvNone
         BorderStyle = bsSingle
-        ClientHeight = 36
-        ClientWidth = 486
+        ClientHeight = 40
+        ClientWidth = 490
         ParentFont = False
         TabOrder = 0
         object SubItemAddButton: TSpeedButton
@@ -482,8 +483,8 @@ object SIZNormForm: TSIZNormForm
         Align = alClient
         BevelOuter = bvNone
         BorderStyle = bsSingle
-        ClientHeight = 197
-        ClientWidth = 486
+        ClientHeight = 201
+        ClientWidth = 490
         TabOrder = 1
         object SubItemGrid: TsWorksheetGrid
           Left = 0

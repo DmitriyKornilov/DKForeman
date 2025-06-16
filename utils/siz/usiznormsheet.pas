@@ -103,12 +103,11 @@ type
   private
     const
       COLUMN1_WIDTH = 40;  //№п/п
-      COLUMN2_WIDTH = 130; //должность (профессия)
-      COLUMN3_WIDTH = 130; //Тип СИЗ
-      COLUMN4_WIDTH = 150; //Наименование СИЗ
-      COLUMN5_WIDTH = 150; //Нормы выдачи
-      COLUMN6_WIDTH = 150; //Основание выдачи (пункты норм)
-      //TITLE_HEIGHT = 70;//35;
+      COLUMN2_WIDTH = 120; //должность (профессия)
+      COLUMN3_WIDTH = 120; //Тип СИЗ
+      COLUMN4_WIDTH = 130; //Наименование СИЗ
+      COLUMN5_WIDTH = 130; //Нормы выдачи
+      COLUMN6_WIDTH = 120; //Основание выдачи (пункты норм)
     var
       FNorm: TNorm;
 
@@ -572,10 +571,11 @@ begin
                          'с указанием периодичности выдачи, ' +
                          'количества на период, единицы измерения (штуки, ' +
                          'пары, комплекты, г, мл)', cbtOuter, True, True);
-  Writer.WriteText(ARow, 6, 'Основание выдачи СИЗ' + SYMBOL_BREAK +
+  Writer.WriteText(ARow, 6, 'Основание' + SYMBOL_BREAK +
+                         'выдачи СИЗ' + SYMBOL_BREAK +
                          '(пункты Единых типовых норм, ' +
                          'правил по охране труда и иных документов)', cbtOuter, True, True);
-  //Writer.SetRowHeight(ARow, TITLE_HEIGHT);
+
   Writer.SetRepeatedRows(ARow, ARow);
 end;
 

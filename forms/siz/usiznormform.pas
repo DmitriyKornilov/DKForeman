@@ -636,6 +636,7 @@ begin
     Sheet:= TSIZNormSheet.Create(Worksheet, nil, MainForm.GridFont);
     try
       Sheet.Draw(Norm);
+      Exporter.PageMargins(10, 20, 10, 10, 0, 0);
       Exporter.Save('Выполнено!', NormNames[NormList.SelectedIndex]);
     finally
       FreeAndNil(Sheet);
