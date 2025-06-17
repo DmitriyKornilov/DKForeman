@@ -427,12 +427,12 @@
         <UnitName Value="USIZSizeEditForm"/>
       </Unit>
       <Unit>
-        <Filename Value="forms\siz\usizstaffform.pas"/>
+        <Filename Value="forms\siz\usizcardform.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="SIZStaffForm"/>
+        <ComponentName Value="SIZCardForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <UnitName Value="USIZStaffForm"/>
+        <UnitName Value="USIZCardForm"/>
       </Unit>
       <Unit>
         <Filename Value="forms\siz\usiznameeditform.pas"/>
@@ -441,6 +441,34 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="USIZNameEditForm"/>
+      </Unit>
+      <Unit>
+        <Filename Value="forms\siz\usizcardfrontform.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="SIZCardFrontForm"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="USIZCardFrontForm"/>
+      </Unit>
+      <Unit>
+        <Filename Value="forms\siz\usizcardbackform.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="SIZCardBackForm"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="USIZCardBackForm"/>
+      </Unit>
+      <Unit>
+        <Filename Value="forms\siz\usizcardstatusform.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="SIZCardStatusForm"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="USIZCardStatusForm"/>
+      </Unit>
+      <Unit>
+        <Filename Value="utils\siz\usizcardsheet.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="USIZCardSheet"/>
       </Unit>
     </Units>
   </ProjectOptions>

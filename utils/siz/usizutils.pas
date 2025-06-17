@@ -29,7 +29,7 @@ function SIZWriteoffDateStr(const AWiteoffDate: TDate): String;
 function SIZFullSize(const ASizeType, ASizeID: Integer;
                         const AHeightID: Integer = 0;
                         const ANotDefineValue: String = ''): String;
-function SIZNormFullName(const ANormName, ATypicalName: String): String;
+function SIZNormFullName(const ANormName, ANormNote: String): String;
 procedure SIZChooseFromStaffAndSpecSizes(const ASpecSizeID, ASpecHeightID,
                                       AStaffSizeID, AStaffHeightID: Integer;
                                       out ASizeID, AHeightID: Integer);
@@ -295,16 +295,16 @@ begin
   end;
 end;
 
-function SIZNormFullName(const ANormName, ATypicalName: String): String;
+function SIZNormFullName(const ANormName, ANormNote: String): String;
 begin
   Result:= EmptyStr;
-  if SEmpty(ANormName) and SEmpty(ATypicalName) then Exit;
-  if (not SEmpty(ANormName)) and (not SEmpty(ATypicalName)) then
-    Result:= ANormName + ' (' + ATypicalName + ')'
+  if SEmpty(ANormName) and SEmpty(ANormNote) then Exit;
+  if (not SEmpty(ANormName)) and (not SEmpty(ANormNote)) then
+    Result:= ANormName + ' (' + ANormNote + ')'
   else if not SEmpty(ANormName) then
     Result:= ANormName
   else
-    Result:= ATypicalName;
+    Result:= ANormNote;
 end;
 
 procedure SIZChooseFromStaffAndSpecSizes(const ASpecSizeID, ASpecHeightID,

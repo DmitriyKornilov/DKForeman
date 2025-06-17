@@ -16,7 +16,7 @@ uses
   UStaffForm,
   UCalendarForm, UScheduleShiftForm, UVacationPlanForm,
   USchedulePersonalForm, UTimetableForm,
-  USIZNameEditForm, USIZNormForm, USIZSizeForm, USIZStaffForm, USIZStorageForm,
+  USIZNameEditForm, USIZNormForm, USIZSizeForm, USIZCardForm, USIZStorageForm,
   UStudyForm;
 
 type
@@ -179,7 +179,7 @@ begin
     8: ; //SIZStorage
     9: ; //SIZRequest
     10: (CategoryForm as TSIZSizeForm).ViewUpdate(ModeType);
-    11: (CategoryForm as TSIZStaffForm).ViewUpdate(ModeType);
+    11: (CategoryForm as TSIZCardForm).ViewUpdate(ModeType);
   end;
 
 end;
@@ -200,7 +200,7 @@ begin
     8: ; //SIZStorage
     9: ; //SIZRequest
     10: (CategoryForm as TSIZSizeForm).SettingsSave;
-    11: (CategoryForm as TSIZStaffForm).SettingsSave;
+    11: (CategoryForm as TSIZCardForm).SettingsSave;
   end;
 end;
 
@@ -228,7 +228,7 @@ begin
       //8: CategoryForm:= FormOnPanelCreate(TSIZStorageForm, MainPanel);
       //9: CategoryForm:= FormOnPanelCreate(TSIZReaquestForm, MainPanel);
       10: CategoryForm:= FormOnPanelCreate(TSIZSizeForm, MainPanel);
-      11: CategoryForm:= FormOnPanelCreate(TSIZStaffForm, MainPanel);
+      11: CategoryForm:= FormOnPanelCreate(TSIZCardForm, MainPanel);
     end;
     if Assigned(CategoryForm) then
     begin

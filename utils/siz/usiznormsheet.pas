@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, Graphics, fpstypes,
   //DK packages utils
-  DK_SheetTables, DK_SheetTypes, DK_Vector,DK_Matrix, DK_StrUtils, DK_Const,
+  DK_SheetTables, DK_SheetTypes, DK_Vector, DK_Matrix, DK_StrUtils, DK_Const,
   DK_SheetWriter,
   //Project utils
   USIZNormTypes, USIZUtils, UConst;

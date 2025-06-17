@@ -22,7 +22,8 @@ uses
   UTimetableSheet, uschedule, UTimingUtils, UVacationPlanEditForm,
   UVacationPlanningForm, USIZNormForm, USIZNormSheet, USIZSizes, USIZNormTypes,
   USIZUtils, USIZNormEditForm, USIZNormItemEditForm, USIZNormSubItemEditForm,
-  USearchForm, USIZSizeForm, USIZSizeEditForm, USIZStaffForm, USIZNameEditForm;
+  USearchForm, USIZSizeForm, USIZSizeEditForm, USIZCardForm, USIZNameEditForm,
+  USIZCardFrontForm, USIZCardBackForm, USIZCardStatusForm, USIZCardSheet;
 
 {$R *.res}
 

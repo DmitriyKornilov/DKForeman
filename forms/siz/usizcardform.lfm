@@ -1,21 +1,22 @@
-object SIZStaffForm: TSIZStaffForm
+object SIZCardForm: TSIZCardForm
   Left = 377
   Height = 478
   Top = 250
-  Width = 1190
+  Width = 1300
   Align = alClient
   BorderStyle = bsNone
-  Caption = 'SIZStaffForm'
+  Caption = 'SIZCardForm'
   ClientHeight = 478
-  ClientWidth = 1190
+  ClientWidth = 1300
   DesignTimePPI = 120
   OnCreate = FormCreate
   OnDestroy = FormDestroy
+  OnShow = FormShow
   object ToolPanel: TPanel
     Left = 2
     Height = 40
     Top = 2
-    Width = 1186
+    Width = 1296
     Align = alTop
     BorderSpacing.Left = 2
     BorderSpacing.Top = 2
@@ -23,12 +24,12 @@ object SIZStaffForm: TSIZStaffForm
     BevelOuter = bvNone
     BorderStyle = bsSingle
     ClientHeight = 36
-    ClientWidth = 1182
+    ClientWidth = 1292
     ParentFont = False
     TabOrder = 0
     object CloseButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 1142
+      Left = 1252
       Height = 36
       Hint = 'Закрыть'
       Top = 0
@@ -41,7 +42,7 @@ object SIZStaffForm: TSIZStaffForm
       OnClick = CloseButtonClick
     end
     object DividerBevel1: TDividerBevel
-      Left = 1121
+      Left = 1231
       Height = 36
       Top = 0
       Width = 21
@@ -129,11 +130,11 @@ object SIZStaffForm: TSIZStaffForm
     Left = 308
     Height = 436
     Top = 42
-    Width = 882
+    Width = 992
     Align = alClient
     BevelOuter = bvNone
     ClientHeight = 436
-    ClientWidth = 882
+    ClientWidth = 992
     TabOrder = 3
     object StaffPanel: TPanel
       Left = 0
@@ -338,31 +339,31 @@ object SIZStaffForm: TSIZStaffForm
       Left = 586
       Height = 432
       Top = 2
-      Width = 294
+      Width = 404
       Align = alClient
       BorderSpacing.Top = 2
       BorderSpacing.Right = 2
       BorderSpacing.Bottom = 2
       BevelOuter = bvNone
       ClientHeight = 432
-      ClientWidth = 294
+      ClientWidth = 404
       TabOrder = 2
       object CardListPanel: TPanel
         Left = 0
         Height = 240
         Top = 0
-        Width = 294
+        Width = 404
         Align = alTop
         BevelOuter = bvNone
         Caption = 'CardListPanel'
         ClientHeight = 240
-        ClientWidth = 294
+        ClientWidth = 404
         TabOrder = 0
         object CardListCaptionPanel: TPanel
           Left = 0
           Height = 30
           Top = 0
-          Width = 294
+          Width = 404
           Align = alTop
           Alignment = taLeftJustify
           BorderSpacing.Bottom = 2
@@ -377,7 +378,7 @@ object SIZStaffForm: TSIZStaffForm
           Left = 0
           Height = 208
           Top = 32
-          Width = 294
+          Width = 404
           Align = alClient
           DefaultText = 'Node'
           Header.AutoSizeIndex = 0
@@ -392,20 +393,148 @@ object SIZStaffForm: TSIZStaffForm
         Left = 0
         Height = 6
         Top = 240
-        Width = 294
+        Width = 404
         Align = alTop
         ResizeAnchor = akTop
         ResizeStyle = rsLine
       end
-      object FormPanel: TPanel
+      object ViewPanel: TPanel
         Left = 0
         Height = 186
         Top = 246
-        Width = 294
+        Width = 404
         Align = alClient
         BevelOuter = bvNone
-        Caption = 'FormPanel'
+        ClientHeight = 186
+        ClientWidth = 404
         TabOrder = 2
+        object ViewCaptionPanel: TPanel
+          Left = 0
+          Height = 30
+          Top = 0
+          Width = 404
+          Align = alTop
+          Alignment = taLeftJustify
+          BorderSpacing.Bottom = 2
+          BevelOuter = bvNone
+          BorderStyle = bsSingle
+          Caption = '  Личная карточка: '
+          Font.Style = [fsBold]
+          ParentFont = False
+          TabOrder = 0
+        end
+        object ViewButtonPanel: TPanel
+          Left = 0
+          Height = 30
+          Top = 32
+          Width = 404
+          Align = alTop
+          BevelOuter = bvNone
+          ClientHeight = 30
+          ClientWidth = 404
+          TabOrder = 1
+          object FrontTabButton: TColorSpeedButton
+            Cursor = crHandPoint
+            Left = 0
+            Height = 30
+            Top = 0
+            Width = 150
+            Align = alLeft
+            Caption = 'Лицевая сторона'
+            Down = True
+            Font.Color = clBlack
+            GroupIndex = 1
+            ParentFont = False
+            OnClick = FrontTabButtonClick
+            TextAutoSize = True
+            Toggle = False
+            Pressed = False
+            PopupMode = False
+            StateNormal.Color = 14803425
+            StateNormal.BorderColor = 11382189
+            StateNormal.BorderWidth = 1
+            StateHover.Color = 16511461
+            StateHover.BorderColor = 14120960
+            StateHover.BorderWidth = 1
+            StateActive.Color = 16245964
+            StateActive.BorderColor = 10048512
+            StateActive.BorderWidth = 1
+            StateDisabled.Color = 13421772
+            StateDisabled.BorderColor = 12566463
+            StateDisabled.BorderWidth = 1
+          end
+          object BackTabButton: TColorSpeedButton
+            Cursor = crHandPoint
+            Left = 152
+            Height = 30
+            Top = 0
+            Width = 159
+            Align = alLeft
+            AutoSize = True
+            BorderSpacing.Left = 2
+            BorderSpacing.Right = 2
+            Caption = '  Оборотная сторона  '
+            Font.Color = clBlack
+            GroupIndex = 1
+            ParentFont = False
+            OnClick = BackTabButtonClick
+            TextAutoSize = True
+            Toggle = False
+            Pressed = False
+            PopupMode = False
+            StateNormal.Color = 14803425
+            StateNormal.BorderColor = 11382189
+            StateNormal.BorderWidth = 1
+            StateHover.Color = 16511461
+            StateHover.BorderColor = 14120960
+            StateHover.BorderWidth = 1
+            StateActive.Color = 16245964
+            StateActive.BorderColor = 10048512
+            StateActive.BorderWidth = 1
+            StateDisabled.Color = 13421772
+            StateDisabled.BorderColor = 12566463
+            StateDisabled.BorderWidth = 1
+          end
+          object StatusTabButton: TColorSpeedButton
+            Cursor = crHandPoint
+            Left = 313
+            Height = 30
+            Top = 0
+            Width = 63
+            Align = alLeft
+            Caption = '  Статус  '
+            Font.Color = clBlack
+            GroupIndex = 1
+            ParentFont = False
+            OnClick = StatusTabButtonClick
+            TextAutoSize = True
+            Toggle = False
+            Pressed = False
+            PopupMode = False
+            StateNormal.Color = 14803425
+            StateNormal.BorderColor = 11382189
+            StateNormal.BorderWidth = 1
+            StateHover.Color = 16511461
+            StateHover.BorderColor = 14120960
+            StateHover.BorderWidth = 1
+            StateActive.Color = 16245964
+            StateActive.BorderColor = 10048512
+            StateActive.BorderWidth = 1
+            StateDisabled.Color = 13421772
+            StateDisabled.BorderColor = 12566463
+            StateDisabled.BorderWidth = 1
+          end
+        end
+        object FormPanel: TPanel
+          Left = 0
+          Height = 124
+          Top = 62
+          Width = 404
+          Align = alClient
+          BevelOuter = bvNone
+          Caption = 'FormPanel'
+          TabOrder = 2
+        end
       end
     end
   end

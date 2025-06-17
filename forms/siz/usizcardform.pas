@@ -1,4 +1,4 @@
-unit USIZStaffForm;
+unit USIZCardForm;
 
 {$mode ObjFPC}{$H+}
 
@@ -6,19 +6,27 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, VirtualTrees,
-  Buttons, DividerBevel, StdCtrls,
+  Buttons, DividerBevel, StdCtrls, ComCtrls, fpspreadsheetgrid,
   //Project utils
-  UDataBase, UConst, UTypes, UTimingUtils, UImages,
+  UDataBase, UConst, UTypes, UTimingUtils, UImages, ColorSpeedButton,
   //DK packages utils
-  DK_VSTTables, DK_VSTParamList, DK_Vector, DK_Filter, DK_CtrlUtils,
-  DK_StrUtils;
+  DK_VSTTables, DK_VSTParamList, DK_Vector, DK_Filter, DK_CtrlUtils, DK_Color,
+  DK_StrUtils,
+  //Forms
+  USIZCardFrontForm, USIZCardBackForm, USIZCardStatusForm;
 
 type
 
-  { TSIZStaffForm }
+  { TSIZCardForm }
 
-  TSIZStaffForm = class(TForm)
+  TSIZCardForm = class(TForm)
     AscendingButton: TSpeedButton;
+    FormPanel: TPanel;
+    StatusTabButton: TColorSpeedButton;
+    FrontTabButton: TColorSpeedButton;
+    BackTabButton: TColorSpeedButton;
+    ViewButtonPanel: TPanel;
+    ViewCaptionPanel: TPanel;
     CloseButton: TSpeedButton;
     DescendingButton: TSpeedButton;
     DividerBevel1: TDividerBevel;
@@ -26,7 +34,7 @@ type
     ExportButton: TSpeedButton;
     FilterPanel: TPanel;
     FIORadioButton: TRadioButton;
-    FormPanel: TPanel;
+    ViewPanel: TPanel;
     SettingSplitter: TSplitter;
     CardSplitter: TSplitter;
     CardListCaptionPanel: TPanel;
@@ -49,17 +57,24 @@ type
     TabNumRadioButton: TRadioButton;
     ToolPanel: TPanel;
     procedure AscendingButtonClick(Sender: TObject);
+    procedure BackTabButtonClick(Sender: TObject);
     procedure CloseButtonClick(Sender: TObject);
     procedure DescendingButtonClick(Sender: TObject);
     procedure FIORadioButtonClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
+    procedure FormShow(Sender: TObject);
+    procedure FrontTabButtonClick(Sender: TObject);
     procedure PostRadioButtonClick(Sender: TObject);
+    procedure StatusTabButtonClick(Sender: TObject);
     procedure TabNumRadioButtonClick(Sender: TObject);
   private
     CanDraw: Boolean;
     FilterString: String;
     ModeType: TModeType;
+
+    Category: Byte;
+    CategoryForm: TForm;
 
     ParamList: TVSTParamList;
     StaffList: TVSTTable;
@@ -70,8 +85,8 @@ type
     //RecrutDates, DismissDates: TDateVector;
     Families, Names, Patronymics, TabNums, PostNames: TStrVector;
 
-    ItemIDs: TIntVector;
-    CardPostNames, NormNames, ItemNames: TStrVector;
+    CardIDs, CardItemIDs: TIntVector;
+    CardPostNames, CardNums, CardNormNames: TStrVector;
     CardBDs, CardEDs: TDateVector;
 
     procedure ParamListCreate;
@@ -85,6 +100,10 @@ type
     procedure CardListLoad;
     procedure CardListSelect;
 
+    procedure CategorySelect(const ACategory: Byte);
+    procedure CardSettingsSave;
+    procedure CardViewUpdate;
+
     procedure SettingsLoad;
   public
     procedure SettingsSave;
@@ -92,7 +111,7 @@ type
   end;
 
 var
-  SIZStaffForm: TSIZStaffForm;
+  SIZCardForm: TSIZCardForm;
 
 implementation
 
@@ -100,9 +119,9 @@ uses UMainForm;
 
 {$R *.lfm}
 
-{ TSIZStaffForm }
+{ TSIZCardForm }
 
-procedure TSIZStaffForm.FormCreate(Sender: TObject);
+procedure TSIZCardForm.FormCreate(Sender: TObject);
 begin
   ModeType:= mtView;
 
@@ -110,7 +129,8 @@ begin
     ToolPanel, StaffFilterToolPanel, StaffOrderToolPanel
   ]);
   SetCaptionPanels([
-    StaffCaptionPanel, SettingCaptionPanel, CardListCaptionPanel
+    StaffCaptionPanel, SettingCaptionPanel, CardListCaptionPanel,
+    ViewCaptionPanel
   ]);
   SetToolButtons([
     CloseButton, AscendingButton, DescendingButton
@@ -120,6 +140,11 @@ begin
     ExportButton,
     CloseButton, AscendingButton, DescendingButton
   ]);
+
+  ControlHeight(ViewButtonPanel, Round(TOOL_PANEL_HEIGHT_DEFAULT*0.65));
+  FrontTabButton.StateActive.Color:= DefaultSelectionBGColor;
+  BackTabButton.StateActive.Color:= DefaultSelectionBGColor;
+  StatusTabButton.StateActive.Color:= DefaultSelectionBGColor;
 
   CanDraw:= False;
 
@@ -132,48 +157,70 @@ begin
   CanDraw:= True;
 end;
 
-procedure TSIZStaffForm.FormDestroy(Sender: TObject);
+procedure TSIZCardForm.FormDestroy(Sender: TObject);
 begin
   FreeAndNil(ParamList);
   FreeAndNil(StaffList);
   FreeAndNil(CardList);
 end;
 
-procedure TSIZStaffForm.CloseButtonClick(Sender: TObject);
+procedure TSIZCardForm.FormShow(Sender: TObject);
+begin
+  FrontTabButton.Width:= BackTabButton.Width;
+  StatusTabButton.Width:= BackTabButton.Width;
+  CategorySelect(1);
+end;
+
+procedure TSIZCardForm.FrontTabButtonClick(Sender: TObject);
+begin
+  CategorySelect(1);
+end;
+
+procedure TSIZCardForm.BackTabButtonClick(Sender: TObject);
+begin
+  CategorySelect(2);
+end;
+
+procedure TSIZCardForm.StatusTabButtonClick(Sender: TObject);
+begin
+  CategorySelect(3);
+end;
+
+procedure TSIZCardForm.CloseButtonClick(Sender: TObject);
 begin
   MainForm.CategorySelect(0);
 end;
 
-procedure TSIZStaffForm.DescendingButtonClick(Sender: TObject);
+procedure TSIZCardForm.DescendingButtonClick(Sender: TObject);
 begin
   DescendingButton.Visible:= False;
   AscendingButton.Visible:= True;
   StaffListLoad;
 end;
 
-procedure TSIZStaffForm.FIORadioButtonClick(Sender: TObject);
+procedure TSIZCardForm.FIORadioButtonClick(Sender: TObject);
 begin
   StaffListLoad;
 end;
 
-procedure TSIZStaffForm.PostRadioButtonClick(Sender: TObject);
+procedure TSIZCardForm.PostRadioButtonClick(Sender: TObject);
 begin
   StaffListLoad;
 end;
 
-procedure TSIZStaffForm.TabNumRadioButtonClick(Sender: TObject);
+procedure TSIZCardForm.TabNumRadioButtonClick(Sender: TObject);
 begin
   StaffListLoad;
 end;
 
-procedure TSIZStaffForm.AscendingButtonClick(Sender: TObject);
+procedure TSIZCardForm.AscendingButtonClick(Sender: TObject);
 begin
   AscendingButton.Visible:= False;
   DescendingButton.Visible:= True;
   StaffListLoad;
 end;
 
-procedure TSIZStaffForm.ParamListCreate;
+procedure TSIZCardForm.ParamListCreate;
 var
   S: String;
   V: TStrVector;
@@ -189,7 +236,7 @@ begin
   ParamList.AddStringList('ListType', S, V, @StaffListLoad, 1);
 end;
 
-procedure TSIZStaffForm.StaffListCreate;
+procedure TSIZCardForm.StaffListCreate;
 begin
   StaffList:= TVSTTable.Create(StaffListVT);
   StaffList.CanSelect:= True;
@@ -204,13 +251,13 @@ begin
   StaffList.Draw;
 end;
 
-procedure TSIZStaffForm.StaffListFilter(const AFilterString: String);
+procedure TSIZCardForm.StaffListFilter(const AFilterString: String);
 begin
   FilterString:= AFilterString;
   StaffListLoad;
 end;
 
-procedure TSIZStaffForm.StaffListLoad;
+procedure TSIZCardForm.StaffListLoad;
 var
   SelectedID: Integer;
   OrderType: Byte;
@@ -246,7 +293,7 @@ begin
   end;
 end;
 
-procedure TSIZStaffForm.StaffListSelect;
+procedure TSIZCardForm.StaffListSelect;
 begin
   CardListCaptionPanel.Caption:= '  Личные карточки учета выдачи СИЗ';
   if not StaffList.IsSelected then Exit;
@@ -257,7 +304,7 @@ begin
   CardListLoad;
 end;
 
-procedure TSIZStaffForm.CardListCreate;
+procedure TSIZCardForm.CardListCreate;
 begin
   CardList:= TVSTTable.Create(CardListVT);
   CardList.CanSelect:= True;
@@ -266,29 +313,30 @@ begin
   CardList.SetSingleFont(MainForm.GridFont);
   CardList.HeaderFont.Style:= [fsBold];
 
+  CardList.AddColumn('Номер', 80);
   CardList.AddColumn('Период действия', 150);
   CardList.AddColumn('Должность (профессия)', 300);
-  CardList.AddColumn('Пункт', 100);
-  CardList.AddColumn('Типовые нормы', 300);
-  CardList.AutosizeColumnEnable('Типовые нормы');
+  CardList.AddColumn('Нормы выдачи СИЗ', 300);
+  CardList.AutosizeColumnEnable('Нормы выдачи СИЗ');
   CardList.Draw;
 end;
 
-procedure TSIZStaffForm.CardListLoad;
+procedure TSIZCardForm.CardListLoad;
 begin
   if not StaffList.IsSelected then Exit;
 
-  DataBase.SIZPersonalCardListLoad(TabNumIDs[StaffList.SelectedIndex],
-                                   ItemIDs, CardPostNames, NormNames, ItemNames,
-                                   CardBDs, CardEDs);
+  DataBase.SIZPersonalCardListLoad(TabNumIDs[StaffList.SelectedIndex], CardIDs,
+                                   CardItemIDs, CardNums, CardPostNames,
+                                   CardNormNames,CardBDs, CardEDs);
+  VChangeIf(CardNums, EmptyStr, 'б/н');
 
   CardList.Visible:= False;
   try
     CardList.ValuesClear;
+    CardList.SetColumn('Номер', CardNums);
     CardList.SetColumn('Период действия', VPeriodToStr(CardBDs, CardEDs){, taLeftJustify});
     CardList.SetColumn('Должность (профессия)', CardPostNames, taLeftJustify);
-    CardList.SetColumn('Пункт', ItemNames);
-    CardList.SetColumn('Типовые нормы', NormNames, taLeftJustify);
+    CardList.SetColumn('Нормы выдачи СИЗ', CardNormNames, taLeftJustify);
     CardList.Draw;
     CardList.Select(0);
   finally
@@ -296,22 +344,79 @@ begin
   end;
 end;
 
-procedure TSIZStaffForm.CardListSelect;
+procedure TSIZCardForm.CardListSelect;
 begin
-
+  ViewCaptionPanel.Caption:= '  Личная карточка: ';
+  if CardList.IsSelected then
+    ViewCaptionPanel.Caption:= ViewCaptionPanel.Caption +
+      CardNums[CardList.SelectedIndex] +
+      ' (' +
+      PeriodToStr(CardBDs[CardList.SelectedIndex], CardEDs[CardList.SelectedIndex]) +
+      ')';
 end;
 
-procedure TSIZStaffForm.SettingsLoad;
+procedure TSIZCardForm.CategorySelect(const ACategory: Byte);
+begin
+  if ACategory=Category then Exit;
+
+  Screen.Cursor:= crHourGlass;
+  FormPanel.Visible:= False;
+  try
+    CardSettingsSave;
+    Category:= ACategory;
+
+    if Assigned(CategoryForm) then FreeAndNil(CategoryForm);
+    case Category of
+      1: CategoryForm:= FormOnPanelCreate(TSIZCardFrontForm, FormPanel);
+      2: CategoryForm:= FormOnPanelCreate(TSIZCardBackForm, FormPanel);
+      3: CategoryForm:= FormOnPanelCreate(TSIZCardStatusForm, FormPanel);
+    end;
+    if Assigned(CategoryForm) then
+    begin
+      CategoryForm.Show;
+      CardViewUpdate;
+    end;
+
+  finally
+    Screen.Cursor:= crDefault;
+    FormPanel.Visible:= True;
+  end;
+end;
+
+procedure TSIZCardForm.CardSettingsSave;
+begin
+  if not Assigned(CategoryForm) then Exit;
+
+  case Category of
+    1: (CategoryForm as TSIZCardFrontForm).SettingsSave;
+    2: (CategoryForm as TSIZCardBackForm).SettingsSave;
+    3: (CategoryForm as TSIZCardStatusForm).SettingsSave;
+  end;
+end;
+
+procedure TSIZCardForm.CardViewUpdate;
+begin
+  if not Assigned(CategoryForm) then Exit;
+
+  case Category of
+    1: (CategoryForm as TSIZCardFrontForm).ViewUpdate(ModeType);
+    2: (CategoryForm as TSIZCardBackForm).ViewUpdate(ModeType);
+    3: (CategoryForm as TSIZCardStatusForm).ViewUpdate(ModeType);
+  end;
+end;
+
+procedure TSIZCardForm.SettingsLoad;
 begin
   ParamList.Params:= DataBase.SettingsLoad(SETTING_NAMES_SIZSTAFFORM);
 end;
 
-procedure TSIZStaffForm.SettingsSave;
+procedure TSIZCardForm.SettingsSave;
 begin
   DataBase.SettingsUpdate(SETTING_NAMES_SIZSTAFFORM, ParamList.Params);
+  CardSettingsSave;
 end;
 
-procedure TSIZStaffForm.ViewUpdate(const AModeType: TModeType);
+procedure TSIZCardForm.ViewUpdate(const AModeType: TModeType);
 begin
   MainPanel.Visible:= False;
   try
@@ -330,6 +435,8 @@ begin
     MainPanel.BorderSpacing.Left:= 2*Ord(ModeType<>mtSetting);
 
     StaffListLoad;
+
+    CardViewUpdate;
 
   finally
     MainPanel.Visible:= True;

@@ -361,6 +361,18 @@ const
     'SIZSTAFFORM.LISTTYPE'
   );
 
+  SETTING_NAMES_SIZCARDFRONTFORM: array of String  =  (
+    'SIZCARDFRONTFORM.ZOOM'
+  );
+
+  SETTING_NAMES_SIZCARDBACKFORM: array of String  =  (
+    'SIZCARDBACKFORM.ZOOM'
+  );
+
+  SETTING_NAMES_SIZCARDSTATUSFORM: array of String  =  (
+    'SIZCARDSTATUSFORM.ZOOM'
+  );
+
 implementation
 
 end.
