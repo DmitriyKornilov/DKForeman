@@ -584,6 +584,8 @@ type
                               AHands, AGasmasks, ARespirators: TIntVector;
                           out AFamilies, ANames, APatronymics: TStrVector;
                           out ABornDates: TDateVector): Boolean;
+    function SIZStaffSizeLoad(const AStaffID: Integer;
+                          var ASizeIndexes: TSIZStaffSizeIndexes): Boolean;
     function SIZStaffSizeUpdate(const AStaffID: Integer;
                           const ASizeIndexes: TSIZStaffSizeIndexes): Boolean;
 
@@ -612,8 +614,8 @@ type
     function SIZStaffListForPersonalCardsLoad(const AFilterValue: String;
                              const AListType, AOrderType: Byte;
                              const AIsDescOrder: Boolean;
-                             out ATabNumIDs: TIntVector;
-                             out AFs, ANs, APs, ATabNums, APostNames: TStrVector): Boolean;
+                             out AStaffIDs, ATabNumIDs: TIntVector;
+                             out AFs, ANs, APs, AGenders, ATabNums, APostNames: TStrVector): Boolean;
 
     function SIZPersonalCardDataLoad(const ATabNumID: Integer;
                  out ACardIDs, AItemIDs: TIntVector;
@@ -4984,6 +4986,35 @@ begin
   QClose;
 end;
 
+function TDataBase.SIZStaffSizeLoad(const AStaffID: Integer;
+  var ASizeIndexes: TSIZStaffSizeIndexes): Boolean;
+begin
+  Result:= False;
+  SIZStaffSizeIndexesClear(ASizeIndexes);
+
+  QSetQuery(FQuery);
+  QSetSQL(
+    sqlSELECT('SIZSTAFFSIZE', ['Clothes', 'Height', 'Shoes', 'Head',
+                               'Hand', 'Gasmask', 'Respirator']) +
+    'WHERE StaffID = :StaffID'
+  );
+  QParamInt('StaffID', AStaffID);
+  QOpen;
+  if not QIsEmpty then
+  begin
+    QFirst;
+    ASizeIndexes.Clothes:= QFieldInt('Clothes');
+    ASizeIndexes.Height:= QFieldInt('Height');
+    ASizeIndexes.Shoes:= QFieldInt('Shoes');
+    ASizeIndexes.Head:= QFieldInt('Head');
+    ASizeIndexes.Hand:= QFieldInt('Hand');
+    ASizeIndexes.Gasmask:= QFieldInt('Gasmask');
+    ASizeIndexes.Respirator:= QFieldInt('Respirator');
+    Result:= True;
+  end;
+  QClose;
+end;
+
 function TDataBase.SIZStaffSizeUpdate(const AStaffID: Integer;
                          const ASizeIndexes: TSIZStaffSizeIndexes): Boolean;
 begin
@@ -5119,24 +5150,26 @@ end;
 function TDataBase.SIZStaffListForPersonalCardsLoad(const AFilterValue: String;
                              const AListType, AOrderType: Byte;
                              const AIsDescOrder: Boolean;
-                             out ATabNumIDs: TIntVector;
-                             out AFs, ANs, APs, ATabNums, APostNames: TStrVector): Boolean;
+                             out AStaffIDs, ATabNumIDs: TIntVector;
+                             out AFs, ANs, APs, AGenders, ATabNums, APostNames: TStrVector): Boolean;
 var
   SQLStr: String;
   i, PostID: Integer;
   PostName, Rank: String;
   Indexes: TIntVector;
 begin
+  AStaffIDs:= nil;
   ATabNumIDs:= nil;
   AFs:= nil;
   ANs:= nil;
   APs:= nil;
+  AGenders:= nil;
   ATabNums:= nil;
   APostNames:= nil;
 
   SQLStr:=
-    'SELECT t1.TabNumID, t1.TabNum, ' +
-           't2.Name, t2.Patronymic, t2.Family ' +
+    'SELECT t1.StaffID, t1.TabNumID, t1.TabNum, ' +
+           't2.Name, t2.Patronymic, t2.Family, t2.Gender ' +
     'FROM STAFFTABNUM t1 ' +
     'INNER JOIN STAFFMAIN t2 ON (t1.StaffID=t2.StaffID) ' +
     'WHERE (t1.TabNumID>0) ';
@@ -5174,10 +5207,12 @@ begin
     QFirst;
     while not QEOF do
     begin
+      VAppend(AStaffIDs, QFieldInt('StaffID'));
       VAppend(ATabNumIDs, QFieldInt('TabNumID'));
       VAppend(AFs, QFieldStr('Family'));
       VAppend(ANs, QFieldStr('Name'));
       VAppend(APs, QFieldStr('Patronymic'));
+      VAppend(AGenders, GENDER_PICKS[QFieldInt('Gender')]);
       VAppend(ATabNums, QFieldStr('TabNum'));
       QNext;
     end;

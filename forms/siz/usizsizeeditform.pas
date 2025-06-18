@@ -81,7 +81,7 @@ begin
 
   SIZStaffSizeIndexesClear(SizeIndexes);
 
-  DropDownCreate(HeightDD, HeightBCButton, MANHEIGHTS);
+  DropDownCreate(HeightDD, HeightBCButton, PERSONHEIGHTS);
   DropDownCreate(ClothesDD, ClothesBCButton, CLOTHES);
   DropDownCreate(ShoesDD, ShoesBCButton, SHOES);
   DropDownCreate(HeadDD, HeadBCButton, HEADDRESS);

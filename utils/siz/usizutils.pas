@@ -14,8 +14,9 @@ uses
 function SIZLifeInYearsStr(const AMonths: Extended): String;
 function SIZLifeInMonthsStr(const AMonths: Extended): String;
 function SIZLifeInMonthAndYears(const AMonths: Extended): String;
-function SIZLifeStr(const ALife: Integer): String;
-function SIZNumInLifeStr(const ANum, ALife: Integer): String;
+//function SIZLifeStr(const ALife: Integer): String;
+function SIZNumLifeStr(const ANum, ALife: Integer): String;
+function SIZLifePeriod(const ALife: Integer): String;
 function SIZLifeInMonthsFromDates(const AGivingDate, AWritingDate: TDate): Extended;
 function SIZLifeInMonths(const AGettingCount, ANormCount, ANormLife, AWearPercent: Integer;
                             const AUseWearPercent: Boolean = True): Extended;
@@ -115,49 +116,56 @@ begin
     Result:= MonthStr + ' (' + YearStr + ')';
 end;
 
-function SIZLifeStr(const ALife: Integer): String;
-var
-  X: Integer;
+{function SIZLifeStr(const ALife: Integer): String;
+//var
+//  X: Integer;
 begin
-  if ALife<=0 then
-  begin
-    Result:= SIZ_LIFE_PICKS[ALife];
-    Exit;
-  end;
+  if ALife=1 then
+    Result:= '1 месяц'
+  else if ALife=12 then
+    Result:= '1 год'
+  else
+    Result:= SIZLifePeriod(ALife);
 
-  if ALife=12 then
-  begin
-    Result:= '1 год';
-    Exit;
-  end;
-  if ALife<12 then //меньше года
-  begin
-    Result:= IntToStr(ALife) + ' месяц';
-    if (ALife>=2) and (ALife<=4) then
-      Result:= Result + 'а'
-    else
-      Result:= Result + 'ев';
-  end
-  else begin //больше года
-    if (ALife mod 12) = 0 then //целое кол-во лет
-    begin
-      X:= ALife div 12;
-      Result:= IntToStr(X);
-      if (X>=2) and (X<=4) then
-        Result:= Result + ' года'
-      else
-        Result:= Result + ' лет';
-    end
-    else begin
-      if ((2*ALife) mod 12) = 0 then //кол-во лет кратное половине года
-        Result:= Format('%.1f года', [ALife/12])
-      else
-        Result:= Format('%.2f года', [ALife/12]);
-    end;
-  end;
-end;
+  //if ALife<=0 then
+  //begin
+  //  Result:= SIZ_LIFE_PICKS[ALife];
+  //  Exit;
+  //end;
+  //
+  //if ALife=12 then
+  //begin
+  //  Result:= '1 год';
+  //  Exit;
+  //end;
+  //if ALife<12 then //меньше года
+  //begin
+  //  Result:= IntToStr(ALife) + ' месяц';
+  //  if (ALife>=2) and (ALife<=4) then
+  //    Result:= Result + 'а'
+  //  else
+  //    Result:= Result + 'ев';
+  //end
+  //else begin //больше года
+  //  if (ALife mod 12) = 0 then //целое кол-во лет
+  //  begin
+  //    X:= ALife div 12;
+  //    Result:= IntToStr(X);
+  //    if (X>=2) and (X<=4) then
+  //      Result:= Result + ' года'
+  //    else
+  //      Result:= Result + ' лет';
+  //  end
+  //  else begin
+  //    if ((2*ALife) mod 12) = 0 then //кол-во лет кратное половине года
+  //      Result:= Format('%.1f года', [ALife/12])
+  //    else
+  //      Result:= Format('%.2f года', [ALife/12]);
+  //  end;
+  //end;
+end;   }
 
-function SIZNumInLifeStr(const ANum, ALife: Integer): String;
+function SIZNumLifeStr(const ANum, ALife: Integer): String;
 var
   NumStr, PeriodStr: String;
   X: Integer;
@@ -194,6 +202,47 @@ begin
           Result:= NumStr + Format(' на %.1f года', [ALife/12])
         else
           Result:= NumStr + Format(' на %.2f года', [ALife/12]);
+      end;
+    end;
+  end;
+end;
+
+function SIZLifePeriod(const ALife: Integer): String;
+var
+  PeriodStr: String;
+  X: Integer;
+begin
+  if ALife<=0 then //особый срок службы
+    Result:= SIZ_LIFE_PICKS[ALife]
+  else if ALife=1 then //ровно 1 месяц
+    Result:= 'месяц'
+  else if ALife=12 then //ровно 1 год
+      Result:= 'год'
+  else begin
+    PeriodStr:= IntToStr(ALife);
+    if ALife<12 then //меньше года
+    begin
+      Result:= PeriodStr + 'месяц';
+      if (ALife>=2) and (ALife<=4) then
+        Result:= Result + 'а'
+      else
+        Result:= Result + 'ев';
+    end
+    else begin //больше года
+      if (ALife mod 12) = 0 then //целое кол-во лет
+      begin
+        X:= ALife div 12;
+        Result:= IntToStr(X);
+        if (X>=2) and (X<=4) then
+          Result:= Result + ' года'
+        else
+          Result:= Result + ' лет';
+      end
+      else begin
+        if ((2*ALife) mod 12) = 0 then //кол-во лет кратное половине года
+          Result:= Format('%.1f года', [ALife/12])
+        else
+          Result:= Format('%.2f года', [ALife/12]);
       end;
     end;
   end;
@@ -281,11 +330,11 @@ begin
   case ASizeType of
   1: begin
        if (ASizeID>0) and (AHeightID>0) then
-         Result:= CLOTHES[ASizeID] + '/' + MANHEIGHTS[AHeightID]
+         Result:= CLOTHES[ASizeID] + '/' + PERSONHEIGHTS[AHeightID]
        else if ASizeID>0 then
          Result:= CLOTHES[ASizeID]
        else
-         Result:= MANHEIGHTS[ASizeID];
+         Result:= PERSONHEIGHTS[ASizeID];
      end;
   2: Result:= SHOES[ASizeID];
   3: Result:= HEADDRESS[ASizeID];

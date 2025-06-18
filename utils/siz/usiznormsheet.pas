@@ -125,6 +125,13 @@ type
                        const ASameCheck: Boolean;
                        const AHorAlignment: TsHorAlignment;
                        const AVertAlignment: TsVertAlignment);
+  procedure VectorDraw(const AWriter: TSheetWriter;
+                       const AVector: TStrVector;
+                       const ARow, ACol1, ACol2: Integer;
+                       const AMiddleStr: String;
+                       const ASameCheck: Boolean;
+                       const AHorAlignment: TsHorAlignment;
+                       const AVertAlignment: TsVertAlignment);
 
 implementation
 
@@ -451,7 +458,7 @@ begin
   VDim(V, N+1);
   for i:=0 to N do
     V[i]:= FSubItems[AIndex].Info.Units[i] + ', ' +
-           SIZNumInLifeStr(FSubItems[AIndex].Info.Nums[i],
+           SIZNumLifeStr(FSubItems[AIndex].Info.Nums[i],
                            FSubItems[AIndex].Info.Lifes[i]);
   VectorDraw(Writer, V, ARow, 3, EmptyStr, False, haCenter, vaTop);
   //Основание выдачи (пункты ЕТН)
@@ -586,6 +593,18 @@ procedure VectorDraw(const AWriter: TSheetWriter;
                        const ASameCheck: Boolean;
                        const AHorAlignment: TsHorAlignment;
                        const AVertAlignment: TsVertAlignment);
+begin
+  VectorDraw(AWriter, AVector, ARow, ACol, ACol, AMiddleStr, ASameCheck,
+             AHorAlignment, AVertAlignment);
+end;
+
+procedure VectorDraw(const AWriter: TSheetWriter;
+                       const AVector: TStrVector;
+                       const ARow, ACol1, ACol2: Integer;
+                       const AMiddleStr: String;
+                       const ASameCheck: Boolean;
+                       const AHorAlignment: TsHorAlignment;
+                       const AVertAlignment: TsVertAlignment);
 var
   i, N, R: Integer;
 begin
@@ -596,7 +615,7 @@ begin
   if ASameCheck and VSame(AVector) then
   begin
     AWriter.SetAlignment(AHorAlignment, AVertAlignment);
-    AWriter.WriteText(ARow, ACol, ARow+2*N, ACol, AVector[0], cbtNone, True, True);
+    AWriter.WriteText(ARow, ACol1, ARow+2*N, ACol2, AVector[0], cbtNone, True, True);
     Exit;
   end;
 
@@ -605,12 +624,12 @@ begin
   begin
     R:= R + 1;
     AWriter.SetAlignment(AHorAlignment, AVertAlignment);
-    AWriter.WriteText(R, ACol, AVector[i], cbtNone, True, True);
+    AWriter.WriteText(R, ACol1, R, ACol2, AVector[i], cbtNone, True, True);
     if i<N then
     begin
       R:= R + 1;
       AWriter.SetAlignment(haLeft, vaCenter);
-      AWriter.WriteText(R, ACol, AMiddleStr, cbtNone, True, True);
+      AWriter.WriteText(R, ACol1, R, ACol2, AMiddleStr, cbtNone, True, True);
     end;
   end;
 end;
@@ -653,7 +672,7 @@ var
     VDim(V, N+1);
     for j:=0 to N do
       V[j]:= AItem.SubItems[AIndex].Info.Units[j] + ', ' +
-             SIZNumInLifeStr(AItem.SubItems[AIndex].Info.Nums[j],
+             SIZNumLifeStr(AItem.SubItems[AIndex].Info.Nums[j],
                              AItem.SubItems[AIndex].Info.Lifes[j]);
     VectorDraw(Writer, V, AR, 5, EmptyStr, False, haCenter, vaTop);
     //Основание выдачи (пункты ЕТН)

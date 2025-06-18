@@ -5,12 +5,12 @@ unit USIZCardSheet;
 interface
 
 uses
-  Classes, SysUtils, Graphics, fpstypes,
+  Classes, SysUtils, Graphics, fpstypes, DateUtils,
   //DK packages utils
   DK_SheetTables, DK_SheetTypes, DK_Vector, DK_Matrix, DK_StrUtils, DK_Const,
   DK_SheetWriter,
   //Project utils
-  USIZNormTypes, USIZUtils, UConst;
+  USIZNormTypes, USIZUtils, USIZSizes, UConst, USIZNormSheet;
 
 type
 
@@ -31,6 +31,9 @@ type
       COLUMN8_WIDTH = 100;
       COLUMN9_WIDTH = 100;
     var
+      FCardNum, FFamily, FPersonName, FPatronymic, FGender, FTabNum, FPostName: String;
+      FCardBD, FCardED: TDate;
+      FPersonSizes: TSIZStaffSizeIndexes;
       FSubItems: TNormSubItems;
 
     procedure AttachmentDraw(var ARow: Integer);
@@ -38,10 +41,18 @@ type
     procedure MainInfoDraw(var ARow: Integer);
     procedure MainDataDraw(const ARow: Integer);
     procedure CaptionDraw(var ARow: Integer);
+
+    procedure ReasonDraw(var ARow: Integer; const AIndex: Integer);
+    procedure LineDraw(var ARow: Integer; const AIndex: Integer);
     procedure GridDraw(var ARow: Integer);
+
     procedure SignatureDraw(var ARow: Integer);
   public
-    procedure Draw(const ASubItems: TNormSubItems);
+    procedure Draw(const ACardNum, AFamily, APersonName, APatronymic,
+                         AGender, ATabNum, APostName: String;
+                   const ACardBD, ACardED: TDate;
+                   const APersonSizes: TSIZStaffSizeIndexes;
+                   const ASubItems: TNormSubItems);
   end;
 
   { TSIZCardBackSheet }
@@ -121,13 +132,20 @@ end;
 procedure TSIZCardFrontSheet.TitleDraw(var ARow: Integer);
 var
   i, R: Integer;
+  S: String;
 begin
   R:= ARow;
   Writer.SetBackgroundDefault;
   Writer.SetAlignment(haCenter, vaCenter);
   Writer.SetFont(Font.Name, Font.Size+1, [], clBlack);
 
-  Writer.WriteText(R, 1, R, Writer.ColCount, 'ЛИЧНАЯ КАРТОЧКА № ___', cbtNone);
+  S:= 'ЛИЧНАЯ КАРТОЧКА № ';
+  if SEmpty(FCardNum) then
+    S:= S + '___'
+  else
+    S:= S + FCardNum;
+
+  Writer.WriteText(R, 1, R, Writer.ColCount, S, cbtNone);
   R:= R + 1;
   Writer.WriteText(R, 1, R, Writer.ColCount, 'учета выдачи СИЗ', cbtNone);
 
@@ -205,8 +223,61 @@ begin
 end;
 
 procedure TSIZCardFrontSheet.MainDataDraw(const ARow: Integer);
+var
+  R: Integer;
 begin
+  R:= ARow;
+  Writer.SetBackgroundDefault;
+  Writer.SetFont(Font.Name, Font.Size, [fsBold], clBlack);
+  Writer.SetAlignment(haCenter, vaBottom);
 
+  Writer.WriteText(R, 3, R, 6, SUpper(FFamily), cbtBottom, True, True);
+  Writer.WriteText(R, 9, R, 9, SUpper(FGender), cbtBottom, True, True);
+
+  R:= R + 1;
+  Writer.WriteText(R, 2, R, 3, SUpper(FPersonName), cbtBottom, True, True);
+  Writer.WriteText(R, 6, R, 6, SUpper(FPatronymic), cbtBottom, True, True);
+  Writer.WriteText(R, 9, R, 9, PERSONHEIGHTS[FPersonSizes.Height], cbtBottom, True, True);
+
+  R:= R + 1;
+  Writer.WriteText(R, 4, R, 6, FTabNum, cbtBottom, True, True);
+
+  R:= R + 1;
+  //!!!!!!!!!!!!!!!!!!!!!!
+  //Writer.WriteText(R, 4, R, 6, SUpper(''), cbtBottom, True, True); //Структурное подразделение
+  Writer.WriteText(R, 9, R, 9, CLOTHES[FPersonSizes.Clothes], cbtBottom, True, True);
+
+  R:= R + 1;
+  Writer.WriteText(R, 4, R, 6, SUpper(FPostName), cbtBottom, True, True);
+  Writer.WriteText(R, 9, R, 9, SHOES[FPersonSizes.Shoes], cbtBottom);
+
+  R:= R + 1;
+  Writer.WriteDate(R, 4, R, 6, FCardBD, cbtBottom);
+  Writer.WriteText(R, 9, R, 9, HEADDRESS[FPersonSizes.Head], cbtBottom);
+
+  R:= R + 1;
+  if (FPersonSizes.Respirator>0) and (FPersonSizes.Gasmask>0) then
+  begin
+    Writer.WriteText(R, 9, R, 9, RESPIRATORS[FPersonSizes.Respirator] +
+                                ' (респиратор)', cbtBottom, True, True);
+    R:= R + 1;
+    Writer.WriteText(R, 9, R, 9, GASMASKS[FPersonSizes.Gasmask] +
+                                ' (противогаз)', cbtBottom, True, True);
+  end
+  else begin
+    if FPersonSizes.Respirator>0 then
+      Writer.WriteText(R, 9, R, 9, RESPIRATORS[FPersonSizes.Respirator] +
+                                ' (респиратор)', cbtBottom, True, True)
+    else if FPersonSizes.Gasmask>0 then
+      Writer.WriteText(R, 9, R, 9, GASMASKS[FPersonSizes.Gasmask] +
+                                ' (противогаз)', cbtBottom, True, True);
+    R:= R + 1;
+  end;
+
+  R:= R + 1;
+  if not SameDate(FCardED, INFDATE) then
+    Writer.WriteDate(R, 1, R, 6, FCardED, cbtBottom);
+  Writer.WriteText(R, 9, R, 9, HANDS[FPersonSizes.Hand], cbtBottom);
 end;
 
 procedure TSIZCardFrontSheet.CaptionDraw(var ARow: Integer);
@@ -229,9 +300,53 @@ begin
   ARow:= R;
 end;
 
+procedure TSIZCardFrontSheet.ReasonDraw(var ARow: Integer; const AIndex: Integer);
+begin
+  Writer.SetBackgroundDefault;
+  Writer.SetAlignment(haLeft, vaCenter);
+  Writer.SetFont(Font.Name, Font.Size, [fsItalic], clBlack);
+  Writer.WriteText(ARow, 1, ARow, 9, FSubItems[AIndex].Reason + ':', cbtOuter, True, True);
+  ARow:= ARow + 1;
+end;
+
+procedure TSIZCardFrontSheet.LineDraw(var ARow: Integer; const AIndex: Integer);
+var
+  i, N: Integer;
+  V: TStrVector;
+begin
+  Writer.SetBackgroundDefault;
+  Writer.SetFont(Font.Name, Font.Size, [], clBlack);
+
+  V:= nil;
+  N:= High(FSubItems[AIndex].Info.Names);
+
+  //Наименование СИЗ
+  V:= FSubItems[AIndex].Info.Names;
+  VectorDraw(Writer, V, ARow, 1, 4, 'или', False, haLeft, vaTop);
+  //Пункт Норм
+  V:= FSubItems[AIndex].Info.ClauseNames;
+  VectorDraw(Writer, V, ARow, 5, 7, EmptyStr, True, haCenter, vaTop);
+  //Единица измерения, периодичность выдачи
+  VDim(V, N+1);
+  for i:=0 to N do
+    V[i]:= FSubItems[AIndex].Info.Units[i] + ', ' + SYMBOL_BREAK +
+           '1 раз в ' + SIZLifePeriod(FSubItems[AIndex].Info.Lifes[i]);
+  VectorDraw(Writer, V, ARow, 8, EmptyStr, False, haCenter, vaTop);
+  //Количество на период
+  V:= VIntToStr(FSubItems[AIndex].Info.Nums);
+  VectorDraw(Writer, V, ARow, 9, EmptyStr, False, haCenter, vaTop);
+
+  //Границы ячеек
+  for i:= 1 to Writer.ColCount do
+    Writer.DrawBorders(ARow, i, ARow+2*N, i, cbtOuter);
+
+  ARow:= ARow + 2*N + 1;
+end;
+
 procedure TSIZCardFrontSheet.GridDraw(var ARow: Integer);
 var
-  R: Integer;
+  i, R: Integer;
+  S: String;
 begin
   R:= ARow;
   Writer.SetBackgroundDefault;
@@ -246,7 +361,31 @@ begin
     Exit;
   end;
 
-  ARow:= R;
+  //FFirstRows:= nil;
+  //FLastRows:= nil;
+
+  S:= MAIN_REASON;
+  for i:=0 to High(FSubItems) do
+  begin
+    if FSubItems[i].Reason<>S then
+    begin
+      ReasonDraw(R, i);
+      //VAppend(FFirstRows, R);
+      LineDraw(R, i);
+      //VAppend(FLastRows, R-1);
+      S:= FSubItems[i].Reason;
+    end
+    else begin
+      //VAppend(FFirstRows, R);
+      LineDraw(R, i);
+      //VAppend(FLastRows, R-1);
+    end;
+  end;
+
+
+  Writer.DrawBorders(R, 1, R, 9, cbtTop);
+
+  ARow:= R - 1;
 end;
 
 procedure TSIZCardFrontSheet.SignatureDraw(var ARow: Integer);
@@ -276,10 +415,32 @@ begin
   ARow:= R;
 end;
 
-procedure TSIZCardFrontSheet.Draw(const ASubItems: TNormSubItems);
+procedure TSIZCardFrontSheet.Draw(const ACardNum, AFamily, APersonName, APatronymic,
+                                        AGender, ATabNum, APostName: String;
+                                  const ACardBD, ACardED: TDate;
+                                  const APersonSizes: TSIZStaffSizeIndexes;
+                                  const ASubItems: TNormSubItems);
 var
   R, KeepRow: Integer;
 begin
+  if SEmpty(AFamily) then
+  begin
+    Writer.Clear;
+    Exit;
+  end;
+
+  FCardNum:= ACardNum;
+  FCardBD:= ACardBD;
+  FCardED:= ACardED;
+
+  FFamily:= AFamily;
+  FPersonName:= APersonName;
+  FPatronymic:= APatronymic;
+  FGender:= AGender;
+  FTabNum:= ATabNum;
+  FPostName:= APostName;
+
+  FPersonSizes:= APersonSizes;
   FSubItems:= ASubItems;
 
   Writer.BeginEdit;

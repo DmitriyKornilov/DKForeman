@@ -7,7 +7,6 @@ object SIZCardFrontForm: TSIZCardFrontForm
   ClientHeight = 400
   ClientWidth = 700
   DesignTimePPI = 120
-  LCLVersion = '4.0.0.4'
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   object ToolPanel: TPanel
@@ -31,8 +30,8 @@ object SIZCardFrontForm: TSIZCardFrontForm
     BorderSpacing.Top = 2
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 356
-    ClientWidth = 700
+    ClientHeight = 352
+    ClientWidth = 696
     Color = clWhite
     ParentBackground = False
     ParentColor = False

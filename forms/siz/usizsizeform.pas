@@ -258,7 +258,7 @@ begin
     NameTypeSelect;
     V:= VReplace(USIZSizes.CLOTHES, Clothes);
     V:= VSum(V, '/');
-    V:= VSum(V, VReplace(USIZSizes.MANHEIGHTS, Heights));
+    V:= VSum(V, VReplace(USIZSizes.PERSONHEIGHTS, Heights));
     VChangeIf(V, '/', EmptyStr);
     SizeList.SetColumn(SIZSIZE_STAFFLIST_COLUMN_NAMES[2], V);
     SizeList.SetColumn(SIZSIZE_STAFFLIST_COLUMN_NAMES[3], VReplace(USIZSizes.SHOES, Shoes));

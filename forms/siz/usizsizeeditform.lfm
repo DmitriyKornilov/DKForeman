@@ -10,6 +10,7 @@ object SIZSizeEditForm: TSIZSizeEditForm
   ClientWidth = 390
   DesignTimePPI = 120
   Position = poScreenCenter
+  LCLVersion = '4.0.0.4'
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow

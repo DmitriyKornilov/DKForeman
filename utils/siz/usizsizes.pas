@@ -8,7 +8,7 @@ uses
   Classes, SysUtils;
 
 const
-  MANHEIGHTS: array of String =
+  PERSONHEIGHTS: array of String =
     ('', '146-152', '158-164', '170-176', '182-188', '194-200');
   CLOTHES: array of String =
     ('', '40-42', '44-46', '48-50', '52-54', '56-58', '60-62', '64-66');

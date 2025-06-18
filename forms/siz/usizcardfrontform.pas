@@ -8,9 +8,9 @@ uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls,
   fpspreadsheetgrid,
   //Project utils
-  UTypes, UConst, UDataBase, USIZCardSheet,
+  UTypes, UConst, UDataBase, USIZSizes, USIZCardSheet, USIZNormTypes,
   //DK packages utils
-  DK_Zoom, DK_CtrlUtils, DK_Vector;
+  DK_Zoom, DK_CtrlUtils, DK_Vector, Types;
 
 type
 
@@ -29,12 +29,22 @@ type
     ZoomPercent: Integer;
     Sheet: TSIZCardFrontSheet;
 
+    CardNum, Family, PersonName, Patronymic, Gender, TabNum, PostName: String;
+    CardBD, CardED: TDate;
+    PersonSizes: TSIZStaffSizeIndexes;
+    SubItems: TNormSubItems;
+
     procedure DataDraw(const AZoomPercent: Integer);
 
     procedure SettingsLoad;
   public
     procedure SettingsSave;
     procedure ViewUpdate(const AModeType: TModeType);
+    procedure DataUpdate(const ACardNum, AFamily, AName, APatronymic,
+                               AGender, ATabNum, APostName: String;
+                         const ACardBD, ACardED: TDate;
+                         const APersonSizes: TSIZStaffSizeIndexes;
+                         const ASubItems: TNormSubItems);
   end;
 
 var
@@ -80,7 +90,8 @@ begin
   try
     ZoomPercent:= AZoomPercent;
     Sheet.Zoom(ZoomPercent);
-    Sheet.Draw(nil);
+    Sheet.Draw(CardNum, Family, PersonName, Patronymic, Gender, TabNum, PostName,
+               CardBD, CardED, PersonSizes, SubItems);
   finally
     ViewGrid.Visible:= True;
     Screen.Cursor:= crDefault;
@@ -107,6 +118,27 @@ procedure TSIZCardFrontForm.ViewUpdate(const AModeType: TModeType);
 begin
   ToolPanel.Visible:= AModeType=mtEditing;
   DataDraw(ZoomPercent);
+end;
+
+procedure TSIZCardFrontForm.DataUpdate(const ACardNum, AFamily, AName, APatronymic,
+                                             AGender, ATabNum, APostName: String;
+                                       const ACardBD, ACardED: TDate;
+                                       const APersonSizes: TSIZStaffSizeIndexes;
+                                       const ASubItems: TNormSubItems);
+begin
+  CardNum:= ACardNum;
+  CardBD:= ACardBD;
+  CardED:= ACardED;
+
+  Family:= AFamily;
+  PersonName:= AName;
+  Patronymic:= APatronymic;
+  Gender:= AGender;
+  TabNum:= ATabNum;
+  PostName:= APostName;
+
+  PersonSizes:= APersonSizes;
+  SubItems:= ASubItems;
 end;
 
 end.
