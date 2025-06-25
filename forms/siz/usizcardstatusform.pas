@@ -24,6 +24,7 @@ type
     ZoomBevel: TBevel;
     ZoomPanel: TPanel;
     procedure FormCreate(Sender: TObject);
+    procedure FormShow(Sender: TObject);
   private
     ZoomPercent: Integer;
 
@@ -46,6 +47,12 @@ implementation
 
 procedure TSIZCardStatusForm.FormCreate(Sender: TObject);
 begin
+  SettingsLoad; //load ZoomPercent
+  CreateZoomControls(50, 150, ZoomPercent, ZoomPanel, @DataDraw, True);
+end;
+
+procedure TSIZCardStatusForm.FormShow(Sender: TObject);
+begin
   SetToolPanels([
     ToolPanel
   ]);
@@ -57,9 +64,6 @@ begin
   //Images.ToButtons([
   //
   //]);
-
-  SettingsLoad; //load ZoomPercent
-  CreateZoomControls(50, 150, ZoomPercent, ZoomPanel, @DataDraw, True);
 end;
 
 procedure TSIZCardStatusForm.DataDraw(const AZoomPercent: Integer);

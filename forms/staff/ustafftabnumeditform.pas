@@ -51,26 +51,25 @@ procedure TStaffTabNumEditForm.FormCreate(Sender: TObject);
 begin
   StaffID:= -1;
   TabNumID:= -1;
-
-  Images.ToButtons([SaveButton, CancelButton]);
-
   RecrutDatePicker.MinDate:= NUlDATE;
   DismissDatePicker.MinDate:= NUlDATE;
+end;
+
+procedure TStaffTabNumEditForm.FormShow(Sender: TObject);
+begin
+  Images.ToButtons([SaveButton, CancelButton]);
+  SetEventButtons([SaveButton, CancelButton]);
+  FormKeepMinSize(Self);
+
+  if EditingType=etCustom then
+    DismissDatePicker.SetFocus
+  else
+    TabNumEdit.SetFocus;
 end;
 
 procedure TStaffTabNumEditForm.CancelButtonClick(Sender: TObject);
 begin
   ModalResult:= mrCancel;
-end;
-
-procedure TStaffTabNumEditForm.FormShow(Sender: TObject);
-begin
-  SetEventButtons([SaveButton, CancelButton]);
-  FormKeepMinSize(Self);
-  if EditingType=etCustom then
-    DismissDatePicker.SetFocus
-  else
-    TabNumEdit.SetFocus;
 end;
 
 procedure TStaffTabNumEditForm.SaveButtonClick(Sender: TObject);

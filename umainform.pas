@@ -134,6 +134,46 @@ implementation
 
 { TMainForm }
 
+procedure TMainForm.FormCreate(Sender: TObject);
+begin
+  HeapTraceOutputFile('trace.trc');
+  Caption:= MAIN_CAPTION;
+
+  Images:= TImages.Create(Self);
+  SetGridFont;
+  DBConnect;
+end;
+
+procedure TMainForm.FormDestroy(Sender: TObject);
+begin
+  SettingsSave;
+  FreeAndNil(DataBase);
+  FreeAndNil(GridFont);
+  FreeAndNil(Images);
+end;
+
+procedure TMainForm.FormShow(Sender: TObject);
+begin
+  SetToolPanels([
+    ToolPanel
+  ]);
+  SetToolButtons([
+    EditingButton, SettingButton, RefreshButton, AboutButton, ExitButton
+  ]);
+
+  Images.ToButtons([
+    StaffButton, TimingButton, SafetyButton, DictionaryButton,
+    EditingButton, SettingButton, RefreshButton, AboutButton, ExitButton
+  ]);
+
+  TimingMenu.Images:= ChooseImageListForScreenPPI(Images.PX24, Images.PX30,
+                                                  Images.PX36, Images.PX42);
+  SafetyMenu.Images:= TimingMenu.Images;
+  DictionaryMenu.Images:= TimingMenu.Images;
+
+  //CategorySelect(0);
+end;
+
 procedure TMainForm.DBConnect;
 var
   DBPath, DBName, DDLName: String;
@@ -281,46 +321,6 @@ begin
   end;
 
   if IsOK then ViewUpdate;
-end;
-
-procedure TMainForm.FormCreate(Sender: TObject);
-begin
-  HeapTraceOutputFile('trace.trc');
-  Caption:= MAIN_CAPTION;
-
-  Images:= TImages.Create(Self);
-
-  SetToolPanels([
-    ToolPanel
-  ]);
-  SetToolButtons([
-    EditingButton, SettingButton, RefreshButton, AboutButton, ExitButton
-  ]);
-
-  Images.ToButtons([
-    StaffButton, TimingButton, SafetyButton, DictionaryButton,
-    EditingButton, SettingButton, RefreshButton, AboutButton, ExitButton
-  ]);
-
-  TimingMenu.Images:= ChooseImageListForScreenPPI(Images.PX24, Images.PX30,
-                                                  Images.PX36, Images.PX42);
-  SafetyMenu.Images:= TimingMenu.Images;
-  DictionaryMenu.Images:= TimingMenu.Images;
-
-  SetGridFont;
-  DBConnect;
-end;
-
-procedure TMainForm.FormDestroy(Sender: TObject);
-begin
-  SettingsSave;
-  FreeAndNil(DataBase);
-  FreeAndNil(GridFont);
-end;
-
-procedure TMainForm.FormShow(Sender: TObject);
-begin
-  //CategorySelect(0);
 end;
 
 procedure TMainForm.SetGridFont;

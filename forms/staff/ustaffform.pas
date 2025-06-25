@@ -160,6 +160,54 @@ uses UMainForm;
 
 { TStaffForm }
 
+procedure TStaffForm.FormCreate(Sender: TObject);
+begin
+  ModeType:= mtView;
+
+  CanLoadStaffList:= False;
+  StaffListCreate;
+  ParamListCreate;
+  SettingsLoad;
+  TabNumListCreate;
+  PostLogCreate;
+  CreateFilterControls('Фильтр по Ф.И.О.:', FilterPanel, @StaffListFilter);
+  CanLoadStaffList:= True;
+end;
+
+procedure TStaffForm.FormDestroy(Sender: TObject);
+begin
+  FreeAndNil(StaffList);
+  FreeAndNil(ParamList);
+  FreeAndNil(TabNumList);
+  FreeAndNil(PostLog);
+end;
+
+procedure TStaffForm.FormShow(Sender: TObject);
+begin
+  SetToolPanels([
+    ToolPanel, ListToolPanel, ListOrderToolPanel, TabNumToolPanel, PostLogToolPanel
+  ]);
+  SetCaptionPanels([
+    SettingCaptionPanel, ListCaptionPanel, TabNumCaptionPanel, PostLogCaptionPanel
+  ]);
+  SetToolButtons([
+    CloseButton, AscendingButton, DescendingButton,
+    ListAddButton, ListDelButton, ListEditButton,
+    TabNumAddButton, TabNumDelButton, TabNumEditButton, TabNumDismissButton, TabNumDismissCancelButton,
+    PostLogAddButton, PostLogDelButton, PostLogEditButton
+  ]);
+
+  Images.ToButtons([
+    ExportButton,
+    CloseButton, AscendingButton, DescendingButton,
+    ListAddButton, ListDelButton, ListEditButton,
+    TabNumAddButton, TabNumDelButton, TabNumEditButton, TabNumDismissButton, TabNumDismissCancelButton,
+    PostLogAddButton, PostLogDelButton, PostLogEditButton
+  ]);
+
+  EditingPanel.Width:= Round(ClientWidth*2/3);
+end;
+
 procedure TStaffForm.CloseButtonClick(Sender: TObject);
 begin
   MainForm.CategorySelect(0);
@@ -203,43 +251,6 @@ begin
   StaffListLoad;
 end;
 
-procedure TStaffForm.FormCreate(Sender: TObject);
-begin
-  ModeType:= mtView;
-
-  //ZoomPercent:= 100;
-
-  SetToolPanels([
-    ToolPanel, ListToolPanel, ListOrderToolPanel, TabNumToolPanel, PostLogToolPanel
-  ]);
-  SetCaptionPanels([
-    SettingCaptionPanel, ListCaptionPanel, TabNumCaptionPanel, PostLogCaptionPanel
-  ]);
-  SetToolButtons([
-    CloseButton, AscendingButton, DescendingButton,
-    ListAddButton, ListDelButton, ListEditButton,
-    TabNumAddButton, TabNumDelButton, TabNumEditButton, TabNumDismissButton, TabNumDismissCancelButton,
-    PostLogAddButton, PostLogDelButton, PostLogEditButton
-  ]);
-
-  Images.ToButtons([
-    ExportButton,
-    CloseButton, AscendingButton, DescendingButton,
-    ListAddButton, ListDelButton, ListEditButton,
-    TabNumAddButton, TabNumDelButton, TabNumEditButton, TabNumDismissButton, TabNumDismissCancelButton,
-    PostLogAddButton, PostLogDelButton, PostLogEditButton
-  ]);
-
-  CanLoadStaffList:= False;
-  StaffListCreate;
-  ParamListCreate;
-  SettingsLoad;
-  TabNumListCreate;
-  PostLogCreate;
-  CreateFilterControls('Фильтр по Ф.И.О.:', FilterPanel, @StaffListFilter);
-  CanLoadStaffList:= True;
-end;
-
 procedure TStaffForm.SettingsLoad;
 begin
   ParamList.Params:= DataBase.SettingsLoad(SETTING_NAMES_STAFFORM);
@@ -248,19 +259,6 @@ end;
 procedure TStaffForm.SettingsSave;
 begin
   DataBase.SettingsUpdate(SETTING_NAMES_STAFFORM, ParamList.Params);
-end;
-
-procedure TStaffForm.FormDestroy(Sender: TObject);
-begin
-  FreeAndNil(StaffList);
-  FreeAndNil(ParamList);
-  FreeAndNil(TabNumList);
-  FreeAndNil(PostLog);
-end;
-
-procedure TStaffForm.FormShow(Sender: TObject);
-begin
-  EditingPanel.Width:= Round(ClientWidth*2/3);
 end;
 
 procedure TStaffForm.ListAddButtonClick(Sender: TObject);

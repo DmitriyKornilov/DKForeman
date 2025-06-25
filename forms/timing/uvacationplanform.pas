@@ -97,6 +97,45 @@ uses UMainForm;
 
 { TVacationPlanForm }
 
+procedure TVacationPlanForm.FormCreate(Sender: TObject);
+begin
+  ModeType:= mtView;
+
+  CanLoadStaffList:= False;
+  StaffListCreate;
+  ParamListCreate;
+  SettingsLoad;
+  YearSpinEdit.Value:= YearOf(Date);
+  CreateFilterControls('Фильтр по Ф.И.О.:', FilterPanel, @StaffListFilter);
+  CanLoadStaffList:= True;
+end;
+
+procedure TVacationPlanForm.FormDestroy(Sender: TObject);
+begin
+  FreeAndNil(StaffList);
+  FreeAndNil(ParamList);
+end;
+
+procedure TVacationPlanForm.FormShow(Sender: TObject);
+begin
+  SetToolPanels([
+    ToolPanel
+  ]);
+  SetCaptionPanels([
+    SettingCaptionPanel, ListCaptionPanel
+  ]);
+  SetToolButtons([
+    CloseButton, EditButton
+  ]);
+
+  Images.ToButtons([
+    ExportButton, PlanButton, ScheduleButton,
+    CloseButton, EditButton
+  ]);
+
+  StaffListLoad;
+end;
+
 procedure TVacationPlanForm.CloseButtonClick(Sender: TObject);
 begin
   MainForm.CategorySelect(0);
@@ -117,45 +156,6 @@ begin
                   ctString,  //отпуск 1 часть
                   ctString   //отпуск 2 часть
   ]);
-end;
-
-procedure TVacationPlanForm.FormCreate(Sender: TObject);
-begin
-  ModeType:= mtView;
-
-  SetToolPanels([
-    ToolPanel
-  ]);
-  SetCaptionPanels([
-    SettingCaptionPanel, ListCaptionPanel
-  ]);
-  SetToolButtons([
-    CloseButton, EditButton
-  ]);
-
-  Images.ToButtons([
-    ExportButton, PlanButton, ScheduleButton,
-    CloseButton, EditButton
-  ]);
-
-  CanLoadStaffList:= False;
-  StaffListCreate;
-  ParamListCreate;
-  SettingsLoad;
-  YearSpinEdit.Value:= YearOf(Date);
-  CreateFilterControls('Фильтр по Ф.И.О.:', FilterPanel, @StaffListFilter);
-  CanLoadStaffList:= True;
-end;
-
-procedure TVacationPlanForm.FormDestroy(Sender: TObject);
-begin
-  FreeAndNil(StaffList);
-  FreeAndNil(ParamList);
-end;
-
-procedure TVacationPlanForm.FormShow(Sender: TObject);
-begin
-  StaffListLoad;
 end;
 
 procedure TVacationPlanForm.VacationPlanningFormOpen;

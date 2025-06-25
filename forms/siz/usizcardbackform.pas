@@ -25,6 +25,7 @@ type
     ZoomPanel: TPanel;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
+    procedure FormShow(Sender: TObject);
   private
     ZoomPercent: Integer;
     Sheet: TSIZCardBackSheet;
@@ -50,6 +51,19 @@ uses UMainForm;
 
 procedure TSIZCardBackForm.FormCreate(Sender: TObject);
 begin
+  Sheet:= TSIZCardBackSheet.Create(ViewGrid.Worksheet, ViewGrid, MainForm.GridFont);
+
+  SettingsLoad; //load ZoomPercent
+  CreateZoomControls(50, 150, ZoomPercent, ZoomPanel, @DataDraw, True);
+end;
+
+procedure TSIZCardBackForm.FormDestroy(Sender: TObject);
+begin
+  FreeAndNil(Sheet);
+end;
+
+procedure TSIZCardBackForm.FormShow(Sender: TObject);
+begin
   SetToolPanels([
     ToolPanel
   ]);
@@ -61,16 +75,6 @@ begin
   //Images.ToButtons([
   //
   //]);
-
-  Sheet:= TSIZCardBackSheet.Create(ViewGrid.Worksheet, ViewGrid, MainForm.GridFont);
-
-  SettingsLoad; //load ZoomPercent
-  CreateZoomControls(50, 150, ZoomPercent, ZoomPanel, @DataDraw, True);
-end;
-
-procedure TSIZCardBackForm.FormDestroy(Sender: TObject);
-begin
-  FreeAndNil(Sheet);
 end;
 
 procedure TSIZCardBackForm.DataDraw(const AZoomPercent: Integer);

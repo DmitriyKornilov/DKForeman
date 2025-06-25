@@ -59,7 +59,6 @@ implementation
 procedure TSIZNormEditForm.FormCreate(Sender: TObject);
 begin
   NormID:= -1;
-  Images.ToButtons([SaveButton, CancelButton]);
   BeginDatePicker.Date:= Date;
   EndDatePicker.Date:= Date;
   EndDatePicker.MinDate:= BeginDatePicker.Date;
@@ -77,6 +76,7 @@ end;
 
 procedure TSIZNormEditForm.FormShow(Sender: TObject);
 begin
+  Images.ToButtons([SaveButton, CancelButton]);
   SetEventButtons([SaveButton, CancelButton]);
   FormKeepMinSize(Self);
   NormNameEdit.SetFocus;

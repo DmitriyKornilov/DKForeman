@@ -53,15 +53,27 @@ implementation
 
 { TCalendarEditForm }
 
-procedure TCalendarEditForm.StatusDropDownChange;
+procedure TCalendarEditForm.FormCreate(Sender: TObject);
 begin
-  if (SwapDayDropDown.ItemIndex>0) and (StatusDropDown.ItemIndex<>3) then
-    SwapDayDropDown.ItemIndex:=0;
-  SwapDayDropDown.Enabled:= StatusDropDown.ItemIndex=3;
+  SwapDayDropDown:= TVSTDropDown.Create(SwapDayBCButton);
+  SwapDayDropDown.Items:= DAY_NAME_PICKS;
+  SwapDayDropDown.ItemIndex:= 0;
+
+  StatusDropDown:= TVSTDropDown.Create(StatusBCButton);
+  StatusDropDown.OnChange:= @StatusDropDownChange;
+  StatusDropDown.Items:= VCut(DAY_STATUS_PICKS, 1);
+  StatusDropDown.ItemIndex:= 0;
+end;
+
+procedure TCalendarEditForm.FormDestroy(Sender: TObject);
+begin
+  FreeAndNil(StatusDropDown);
+  FreeAndNil(SwapDayDropDown);
 end;
 
 procedure TCalendarEditForm.FormShow(Sender: TObject);
 begin
+  Images.ToButtons([SaveButton, CancelButton]);
   SetEventButtons([SaveButton, CancelButton]);
   FormKeepMinSize(Self);
 
@@ -76,6 +88,13 @@ begin
   LastDatePicker.Date:= FirstDatePicker.Date;
   LastDatePicker.MinDate:= FirstDatePicker.Date;
   LastDatePicker.MaxDate:= FirstDatePicker.MaxDate;
+end;
+
+procedure TCalendarEditForm.StatusDropDownChange;
+begin
+  if (SwapDayDropDown.ItemIndex>0) and (StatusDropDown.ItemIndex<>3) then
+    SwapDayDropDown.ItemIndex:=0;
+  SwapDayDropDown.Enabled:= StatusDropDown.ItemIndex=3;
 end;
 
 procedure TCalendarEditForm.SaveButtonClick(Sender: TObject);
@@ -97,26 +116,6 @@ procedure TCalendarEditForm.FirstDatePickerChange(Sender: TObject);
 begin
   LastDatePicker.MinDate:= FirstDatePicker.Date;
   LastDatePicker.Date:= FirstDatePicker.Date;
-end;
-
-procedure TCalendarEditForm.FormCreate(Sender: TObject);
-begin
-  Images.ToButtons([SaveButton, CancelButton]);
-
-  SwapDayDropDown:= TVSTDropDown.Create(SwapDayBCButton);
-  SwapDayDropDown.Items:= DAY_NAME_PICKS;
-  SwapDayDropDown.ItemIndex:= 0;
-
-  StatusDropDown:= TVSTDropDown.Create(StatusBCButton);
-  StatusDropDown.OnChange:= @StatusDropDownChange;
-  StatusDropDown.Items:= VCut(DAY_STATUS_PICKS, 1);
-  StatusDropDown.ItemIndex:= 0;
-end;
-
-procedure TCalendarEditForm.FormDestroy(Sender: TObject);
-begin
-  FreeAndNil(StatusDropDown);
-  FreeAndNil(SwapDayDropDown);
 end;
 
 end.

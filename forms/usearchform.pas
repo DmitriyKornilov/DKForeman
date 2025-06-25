@@ -85,6 +85,7 @@ procedure TSearchForm.FormShow(Sender: TObject);
 begin
   SetEventButtons([SaveButton, CancelButton]);
   Images.ToButtons([SaveButton, CancelButton]);
+
   CreateFilterControls(FilterCaption, FilterPanel, @ListFilter);
   List:= TVSTStringList.Create(ListVT, EmptyStr, nil);
   ListLoad;

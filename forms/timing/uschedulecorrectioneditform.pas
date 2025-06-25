@@ -63,8 +63,6 @@ begin
   ScheduleID:= -1;
   TabNumID:= -1;
 
-  Images.ToButtons([SaveButton, CancelButton]);
-
   MarkDropDown:= TVSTDropDown.Create(MarkBCButton);
   ShiftNumSpinEdit.MaxValue:= 365;
 end;
@@ -74,18 +72,9 @@ begin
   FreeAndNil(MarkDropDown);
 end;
 
-procedure TScheduleCorrectionEditForm.CancelButtonClick(Sender: TObject);
-begin
-  ModalResult:= mrCancel;
-end;
-
-procedure TScheduleCorrectionEditForm.FirstDatePickerChange(Sender: TObject);
-begin
-  LastDatePicker.MinDate:= FirstDatePicker.Date;
-end;
-
 procedure TScheduleCorrectionEditForm.FormShow(Sender: TObject);
 begin
+  Images.ToButtons([SaveButton, CancelButton]);
   SetEventButtons([SaveButton, CancelButton]);
   FormKeepMinSize(Self);
 
@@ -97,6 +86,16 @@ begin
   LastDatePicker.MinDate:= FirstDatePicker.Date;
   LastDatePicker.MaxDate:= FirstDatePicker.MaxDate;
   DataBase.TimetableMarkDictionaryLoad(MarkDropDown, DigMarks, DigMark);
+end;
+
+procedure TScheduleCorrectionEditForm.CancelButtonClick(Sender: TObject);
+begin
+  ModalResult:= mrCancel;
+end;
+
+procedure TScheduleCorrectionEditForm.FirstDatePickerChange(Sender: TObject);
+begin
+  LastDatePicker.MinDate:= FirstDatePicker.Date;
 end;
 
 procedure TScheduleCorrectionEditForm.LastDateCheckBoxChange(Sender: TObject);

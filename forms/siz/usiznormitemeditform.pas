@@ -40,6 +40,8 @@ type
     PostNames, EditablePostNames: TStrVector;
     EditablePostChecks: TBoolVector;
 
+    OldPostItemIDs, OldPostIDs: TIntVector;
+
     NormIDs: TIntVector;
     NormNames: TStrVector;
     NormBDs, NormEDs: TDateVector;
@@ -65,7 +67,6 @@ implementation
 procedure TSIZNormItemEditForm.FormCreate(Sender: TObject);
 begin
   ItemID:= -1;
-  Images.ToButtons([SaveButton, CancelButton]);
   NormNameDropDown:= TVSTDropDown.Create(NormNameBCButton);
   NormNameDropDown.OnChange:= @NormsItemSelect;
 end;
@@ -78,6 +79,7 @@ end;
 
 procedure TSIZNormItemEditForm.FormShow(Sender: TObject);
 begin
+  Images.ToButtons([SaveButton, CancelButton]);
   SetEventButtons([SaveButton, CancelButton]);
 
   DataBase.KeyPickList('STAFFPOST', 'PostID', 'PostName',
@@ -100,7 +102,7 @@ end;
 procedure TSIZNormItemEditForm.SaveButtonClick(Sender: TObject);
 var
   IsOK: Boolean;
-  CheckedPostIDs: TIntVector;
+  CheckedPostIDs, AddPostIDs, DelItemPostIDs: TIntVector;
 
   function IsCollision: Boolean;
   var
@@ -137,6 +139,36 @@ var
     end;
   end;
 
+  function UpdateValuesLoad: Boolean;
+  var
+    i: Integer;
+    S: String;
+  begin
+    //должности добавлены в этот пункт
+    AddPostIDs:= nil;
+    for i:=0 to High(CheckedPostIDs) do
+      if VIndexOf(OldPostIDs, CheckedPostIDs[i])<0 then
+        VAppend(AddPostIDs, CheckedPostIDs[i]);
+
+    //ID записей соответствия удалены из пункта
+    DelItemPostIDs:= nil;
+    for i:=0 to High(OldPostIDs) do
+      if VIndexOf(CheckedPostIDs, OldPostIDs[i])<0 then
+        VAppend(DelItemPostIDs, OldPostItemIDs[i]);
+
+    Result:= (not VIsNil(AddPostIDs)) or (not VIsNil(DelItemPostIDs));
+    if not Result then
+      Inform('Не внесено никаких изменений!');
+
+    S:= EmptyStr;
+    if Length(DelItemPostIDs)=1 then
+      S:= 'Удаляемая должность (профессия) будет записана в отдельный пункт.'
+    else if Length(DelItemPostIDs)>1 then
+      S:= 'Удаляемые должности (профессии) будут записаны в отдельный пункт.';
+    if not SEmpty(S) then
+      Inform(S);
+  end;
+
 begin
 
   if PostList.IsAllUnchecked then
@@ -148,16 +180,16 @@ begin
   if IsCollision then Exit;
 
   CheckedPostIDs:= VCut(EditablePostIDs, PostList.Selected);
-
-  case EditingType of
-    etAdd: //новый пункт
-      IsOK:= DataBase.SIZNormItemAdd(NormID, ItemID, CheckedPostIDs);
-    etEdit: //редактирование
-      IsOK:= DataBase.SIZNormItemUpdate(ItemID, CheckedPostIDs);
-    UTypes.etCustom: //копирование в другие типовые нормы
-      IsOK:= DataBase.SIZNormItemCopy(NormIDs[NormNameDropDown.ItemIndex],
+  if EditingType=etEdit then //редактирование
+  begin
+    if not UpdateValuesLoad then Exit;
+    IsOK:= DataBase.SIZNormItemUpdate(NormID, ItemID, AddPostIDs, DelItemPostIDs);
+  end
+  else if EditingType=etAdd then //новый пункт
+    IsOK:= DataBase.SIZNormItemAdd(NormID, ItemID, CheckedPostIDs)
+  else //копирование в другие типовые нормы
+    IsOK:= DataBase.SIZNormItemCopy(NormIDs[NormNameDropDown.ItemIndex],
                                       ItemID, CheckedPostIDs);
-  end;
 
   if not IsOK then Exit;
   ModalResult:= mrOK;
@@ -195,7 +227,7 @@ end;
 
 procedure TSIZNormItemEditForm.EditablePostListLoad(const ANormID: Integer);
 var
-  BusyPostIDs, BusyItemIDs: TIntVector;
+  BusyPostIDs, BusyItemIDs, BusyPostItemIDs: TIntVector;
 
   //для редактирования: нужно отметить все должности, записанные в этом пункте,
   //а остальные занятые выкинуть
@@ -216,6 +248,16 @@ var
         VDel(EditablePostChecks, N);
         VDel(EditablePostNames, N);
       end;
+    end;
+    //заполняем вектор ID записей соответствия пункта и должности
+    OldPostItemIDs:= nil;
+    OldPostIDs:= nil;
+    for i:= 0 to High(EditablePostIDs) do
+    begin
+      if not EditablePostChecks[i] then continue;
+      N:= VIndexOf(BusyPostIDs, EditablePostIDs[i]);
+      VAppend(OldPostItemIDs, BusyPostItemIDs[N]);
+      VAppend(OldPostIDs, BusyPostIDs[N]);
     end;
   end;
 
@@ -242,7 +284,7 @@ begin
   VDim(EditablePostChecks, Length(PostIDs), False);
 
   //достаем ID должностей уже приписанных к данной норме
-  DataBase.SIZItemsAndPostsAccordanceLoad(ANormID, BusyPostIDs, BusyItemIDs);
+  DataBase.SIZItemsAndPostsAccordanceLoad(ANormID, BusyPostIDs, BusyItemIDs, BusyPostItemIDs);
 
   if EditingType=etEdit then //редактирование
     EditablePostListForEditLoad

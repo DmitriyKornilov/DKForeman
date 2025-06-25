@@ -80,18 +80,6 @@ procedure TVacationScheduleForm.FormCreate(Sender: TObject);
 begin
   Caption:= MAIN_CAPTION + OTHER_DESCRIPTION[3];
 
-  SetToolPanels([
-    ToolPanel
-  ]);
-  SetToolButtons([
-    CloseButton
-  ]);
-
-  Images.ToButtons([
-    ExportButton,
-    CloseButton
-  ]);
-
   SettingsLoad; //load ZoomPercent
   CreateZoomControls(50, 150, ZoomPercent, ZoomPanel, @ScheduleDraw, True);
 
@@ -104,6 +92,23 @@ begin
   FreeAndNil(Sheet);
 end;
 
+procedure TVacationScheduleForm.FormShow(Sender: TObject);
+begin
+  SetToolPanels([
+    ToolPanel
+  ]);
+  SetToolButtons([
+    CloseButton
+  ]);
+
+  Images.ToButtons([
+    ExportButton,
+    CloseButton
+  ]);
+
+  ScheduleChange;
+end;
+
 procedure TVacationScheduleForm.CloseButtonClick(Sender: TObject);
 begin
   Close;
@@ -113,11 +118,6 @@ procedure TVacationScheduleForm.ExportButtonClick(Sender: TObject);
 begin
   SheetFromGridSave(Sheet, ZoomPercent, @ScheduleDraw,
                     YearSpinEdit.Text, 'Выполнено!', True);
-end;
-
-procedure TVacationScheduleForm.FormShow(Sender: TObject);
-begin
-  ScheduleChange;
 end;
 
 procedure TVacationScheduleForm.YearSpinEditChange(Sender: TObject);

@@ -131,23 +131,6 @@ procedure TSIZCardForm.FormCreate(Sender: TObject);
 begin
   ModeType:= mtView;
 
-  SetToolPanels([
-    ToolPanel, StaffFilterToolPanel, StaffOrderToolPanel
-  ]);
-  SetCaptionPanels([
-    StaffCaptionPanel, SettingCaptionPanel, CardListCaptionPanel,
-    ViewCaptionPanel
-  ]);
-  SetToolButtons([
-    CloseButton, AscendingButton, DescendingButton
-  ]);
-
-  Images.ToButtons([
-    ExportButton,
-    CloseButton, AscendingButton, DescendingButton
-  ]);
-
-  ControlHeight(ViewButtonPanel, Round(TOOL_PANEL_HEIGHT_DEFAULT*0.65));
   FrontTabButton.StateActive.Color:= DefaultSelectionBGColor;
   BackTabButton.StateActive.Color:= DefaultSelectionBGColor;
   StatusTabButton.StateActive.Color:= DefaultSelectionBGColor;
@@ -172,6 +155,24 @@ end;
 
 procedure TSIZCardForm.FormShow(Sender: TObject);
 begin
+  SetToolPanels([
+    ToolPanel, StaffFilterToolPanel, StaffOrderToolPanel
+  ]);
+  SetCaptionPanels([
+    StaffCaptionPanel, SettingCaptionPanel, CardListCaptionPanel,
+    ViewCaptionPanel
+  ]);
+  SetToolButtons([
+    CloseButton, AscendingButton, DescendingButton
+  ]);
+
+  Images.ToButtons([
+    ExportButton,
+    CloseButton, AscendingButton, DescendingButton
+  ]);
+
+  ControlHeight(ViewButtonPanel, Round(TOOL_PANEL_HEIGHT_DEFAULT*0.65));
+
   FrontTabButton.Width:= BackTabButton.Width;
   StatusTabButton.Width:= BackTabButton.Width;
   CategorySelect(1);

@@ -118,6 +118,44 @@ uses UMainForm, UDataBase;
 
 { TCalendarForm }
 
+procedure TCalendarForm.FormCreate(Sender: TObject);
+begin
+  ModeType:= mtView;
+
+  ColorsLoad;
+
+  //Items:= VCreateStr([
+  //  'Нерабочий праздничный день',
+  //  'Нерабочий выходной день',
+  //  'Рабочий предпраздничный (сокращенный) день',
+  //  'Рабочий день'
+  //]);
+  //Colors:= VCreateColor([
+  //  $0097CBFF,
+  //  $00CCE3CC,
+  //  $00FFCACA,
+  //  $00FFFFFF]);
+  //ColorList:= TVSTColorList.Create(DayVT);
+
+  SettingsLoad; //load ZoomPercent
+  CreateZoomControls(50, 150, ZoomPercent, ZoomPanel, @CalendarDraw, True);
+
+  CalendarSheet:= TCalendarSheet.Create(ViewGrid.Worksheet, ViewGrid, MainForm.GridFont);
+  TablesCreate;
+  Calendar:= TCalendar.Create;
+  YearSpinEdit.Value:= YearOfDate(Date);
+  IsCopyDates:= False;
+end;
+
+procedure TCalendarForm.FormDestroy(Sender: TObject);
+begin
+  //FreeAndNil(ColorList);
+  FreeAndNil(VSTDays);
+  FreeAndNil(VSTCopy);
+  FreeAndNil(CalendarSheet);
+  FreeAndNil(Calendar);
+end;
+
 procedure TCalendarForm.CloseButtonClick(Sender: TObject);
 begin
   MainForm.CategorySelect(0);
@@ -130,6 +168,25 @@ end;
 
 procedure TCalendarForm.FormShow(Sender: TObject);
 begin
+  SetToolPanels([
+    ToolPanel, DayToolPanel, CopyToolPanel
+  ]);
+  SetCaptionPanels([
+    CaptionPanel
+  ]);
+  SetToolButtons([
+    CloseButton,
+    DayAddButton, DayDelButton, DayEditButton, DayCopyButton,
+    CopySaveButton, CopyDelButton,CopyCancelButton
+  ]);
+
+  Images.ToButtons([
+    ExportButton,
+    CloseButton,
+    DayAddButton, DayDelButton, DayEditButton, DayCopyButton,
+    CopySaveButton, CopyDelButton,CopyCancelButton
+  ]);
+
   CalendarRefresh;
 end;
 
@@ -210,63 +267,6 @@ procedure TCalendarForm.ExportButtonClick(Sender: TObject);
 begin
   SheetFromGridSave(CalendarSheet, ZoomPercent, @CalendarDraw,
                     YearSpinEdit.Text, 'Выполнено!', True);
-end;
-
-procedure TCalendarForm.FormCreate(Sender: TObject);
-begin
-  ModeType:= mtView;
-
-  SetToolPanels([
-    ToolPanel, DayToolPanel, CopyToolPanel
-  ]);
-  SetCaptionPanels([
-    CaptionPanel
-  ]);
-  SetToolButtons([
-    CloseButton,
-    DayAddButton, DayDelButton, DayEditButton, DayCopyButton,
-    CopySaveButton, CopyDelButton,CopyCancelButton
-  ]);
-
-  Images.ToButtons([
-    ExportButton,
-    CloseButton,
-    DayAddButton, DayDelButton, DayEditButton, DayCopyButton,
-    CopySaveButton, CopyDelButton,CopyCancelButton
-  ]);
-
-  ColorsLoad;
-
-  //Items:= VCreateStr([
-  //  'Нерабочий праздничный день',
-  //  'Нерабочий выходной день',
-  //  'Рабочий предпраздничный (сокращенный) день',
-  //  'Рабочий день'
-  //]);
-  //Colors:= VCreateColor([
-  //  $0097CBFF,
-  //  $00CCE3CC,
-  //  $00FFCACA,
-  //  $00FFFFFF]);
-  //ColorList:= TVSTColorList.Create(DayVT);
-
-  SettingsLoad; //load ZoomPercent
-  CreateZoomControls(50, 150, ZoomPercent, ZoomPanel, @CalendarDraw, True);
-
-  CalendarSheet:= TCalendarSheet.Create(ViewGrid.Worksheet, ViewGrid, MainForm.GridFont);
-  TablesCreate;
-  Calendar:= TCalendar.Create;
-  YearSpinEdit.Value:= YearOfDate(Date);
-  IsCopyDates:= False;
-end;
-
-procedure TCalendarForm.FormDestroy(Sender: TObject);
-begin
-  //FreeAndNil(ColorList);
-  FreeAndNil(VSTDays);
-  FreeAndNil(VSTCopy);
-  FreeAndNil(CalendarSheet);
-  FreeAndNil(Calendar);
 end;
 
 procedure TCalendarForm.YearSpinEditChange(Sender: TObject);

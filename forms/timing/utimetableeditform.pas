@@ -92,9 +92,30 @@ implementation
 
 { TTimetableEditForm }
 
+procedure TTimetableEditForm.FormCreate(Sender: TObject);
+begin
+  TabNumID:= -1;
+
+  MainMarkDropDown:= TVSTDropDown.Create(MainMarkBCButton);
+  SkipMarkDropDown:= TVSTDropDown.Create(SkipMarkBCButton);
+
+  ShiftNumSpinEdit.MaxValue:= 365;
+
+  DataBase.TimetableMarkListLoad(PresenceDigMarks, PresenceItems, True, 1);
+  DataBase.TimetableMarkListLoad(AbsenceDigMarks, AbsenceItems, True, 2);
+  DataBase.TimetableMarkListLoad(OffDayDigMarks, OffDayItems, True, 4);
+  SkipMarkDropDown.KeyPick(AbsenceItems, AbsenceDigMarks, 16 {ДО});
+end;
+
+procedure TTimetableEditForm.FormDestroy(Sender: TObject);
+begin
+  FreeAndNil(MainMarkDropDown);
+  FreeAndNil(SkipMarkDropDown);
+end;
 
 procedure TTimetableEditForm.FormShow(Sender: TObject);
 begin
+  Images.ToButtons([SaveButton, CancelButton]);
   SetEventButtons([SaveButton, CancelButton]);
   FormKeepMinSize(Self, False);
 
@@ -244,23 +265,6 @@ begin
   end;
 end;
 
-procedure TTimetableEditForm.FormCreate(Sender: TObject);
-begin
-  TabNumID:= -1;
-
-  Images.ToButtons([SaveButton, CancelButton]);
-
-  MainMarkDropDown:= TVSTDropDown.Create(MainMarkBCButton);
-  SkipMarkDropDown:= TVSTDropDown.Create(SkipMarkBCButton);
-
-  ShiftNumSpinEdit.MaxValue:= 365;
-
-  DataBase.TimetableMarkListLoad(PresenceDigMarks, PresenceItems, True, 1);
-  DataBase.TimetableMarkListLoad(AbsenceDigMarks, AbsenceItems, True, 2);
-  DataBase.TimetableMarkListLoad(OffDayDigMarks, OffDayItems, True, 4);
-  SkipMarkDropDown.KeyPick(AbsenceItems, AbsenceDigMarks, 16 {ДО});
-end;
-
 procedure TTimetableEditForm.CorrectionRadioButtonClick(Sender: TObject);
 begin
   MainSettingsPanel.Visible:= True;
@@ -314,12 +318,6 @@ end;
 procedure TTimetableEditForm.CancelButtonClick(Sender: TObject);
 begin
   ModalResult:= mrCancel;
-end;
-
-procedure TTimetableEditForm.FormDestroy(Sender: TObject);
-begin
-  FreeAndNil(MainMarkDropDown);
-  FreeAndNil(SkipMarkDropDown);
 end;
 
 end.

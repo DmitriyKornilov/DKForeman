@@ -479,7 +479,8 @@ type
                               out APostNames: TStrVector): Boolean;
     function SIZNormItemsLoad(const ANormID: Integer;
                               out AItemIDs, AOrderNums: TIntVector;
-                              out APostIDs: TIntMatrix; out APostNames: TStrMatrix): Boolean;
+                              out APostIDs: TIntMatrix;
+                              out APostNames: TStrMatrix): Boolean;
     function SIZNormItemLoad(const AItemID: Integer; out AItem: TNormItem): Boolean;
 
 
@@ -497,10 +498,14 @@ type
 
     {Загрузка списка соответствия должностей и пунктов норм с ANormID: True - ОК, False - пусто}
     function SIZItemsAndPostsAccordanceLoad(const ANormID: Integer;
-                                        out APostIDs, AItemIDs: TIntVector): Boolean;
+                                        out APostIDs, AItemIDs, AItemPostIDs: TIntVector): Boolean;
     {Запись соответствий ID должностей APostIDs пункту нормы с AItemID: True - ОК, False - ошибка}
     function SIZItemsAndPostsAccordanceAdd(const AItemID: Integer;
                                         const APostIDs: TIntVector;
+                                        const ACommit: Boolean = True): Boolean;
+    {Перенос соответствий AItemPostIDs в пункт с AItemID: True - ОК, False - ошибка}
+    function SIZItemsAndPostsAccordanceMove(const AItemID: Integer;
+                                        const AItemPostIDs: TIntVector;
                                         const ACommit: Boolean = True): Boolean;
     {Запись нового пункта нормы: True - ОК, False - ошибка}
     function SIZNormItemWrite(const ANormID: Integer; out AItemID: Integer;
@@ -510,11 +515,18 @@ type
     function SIZNormItemAdd(const ANormID: Integer; out AItemID: Integer;
                             const APostIDs: TIntVector): Boolean;
     {Обновление пункта нормы: True - ОК, False - ошибка}
-    function SIZNormItemUpdate(const AItemID: Integer;
-                            const APostIDs: TIntVector): Boolean;
+    function SIZNormItemUpdate(const ANormID, AItemID: Integer;
+                            const AAddPostIDs, ADelItemPostIDs: TIntVector): Boolean;
     {Копирование пункта в другие нормы: True - ОК, False - ошибка}
+    function SIZNormItemDataCopy(const ANormID, ASourceItemID: Integer;
+                            out ADestItemID: Integer;
+                            const ACommit: Boolean = True): Boolean;
+    function SIZNormItemPartCopy(const ANormID, ASourceItemID: Integer;
+                            const AItemPostIDs: TIntVector;
+                            const ACommit: Boolean = True): Boolean;
     function SIZNormItemCopy(const ANormID, AItemID: Integer;
                             const APostIDs: TIntVector): Boolean;
+
     {Перестановка местами пунктов: True - ОК, False - ошибка}
     function SIZNormItemSwap(const AItemID1, AOrderNum1,
                                    AItemID2, AOrderNum2: Integer): Boolean;
@@ -3678,7 +3690,8 @@ end;
 
 function TDataBase.SIZNormItemsLoad(const ANormID: Integer;
                               out AItemIDs, AOrderNums: TIntVector;
-                              out APostIDs: TIntMatrix; out APostNames: TStrMatrix): Boolean;
+                              out APostIDs: TIntMatrix;
+                              out APostNames: TStrMatrix): Boolean;
 var
   i, I1, I2, ItemID: Integer;
   ItemIDs, PostIDs, OrderNums: TIntVector;
@@ -3753,15 +3766,16 @@ begin
 end;
 
 function TDataBase.SIZItemsAndPostsAccordanceLoad(const ANormID: Integer;
-                              out APostIDs, AItemIDs: TIntVector): Boolean;
+                              out APostIDs, AItemIDs, AItemPostIDs: TIntVector): Boolean;
 begin
   Result:= False;
   APostIDs:= nil;
   AItemIDs:= nil;
+  AItemPostIDs:= nil;
 
   QSetQuery(FQuery);
   QSetSQL(
-    'SELECT t1.ItemID, t1.PostID ' +
+    'SELECT t1.ItemID, t1.PostID, t1.ItemPostID  ' +
     'FROM SIZNORMITEMPOST t1 ' +
     'INNER JOIN SIZNORMITEM t2 ON (t1.ItemID = t2.ItemID) ' +
     'WHERE t2.NormID = :NormID'
@@ -3773,6 +3787,7 @@ begin
     QFirst;
     while not QEOF do
     begin
+      VAppend(AItemPostIDs, QFieldInt('ItemPostID'));
       VAppend(APostIDs, QFieldInt('PostID'));
       VAppend(AItemIDs, QFieldInt('ItemID'));
       QNext;
@@ -3806,6 +3821,15 @@ begin
   except
     if ACommit then QRollback;
   end;
+end;
+
+function TDataBase.SIZItemsAndPostsAccordanceMove(const AItemID: Integer;
+  const AItemPostIDs: TIntVector; const ACommit: Boolean): Boolean;
+begin
+  Result:= False;
+  if VIsNil(AItemPostIDs) then Exit;
+  Result:= UpdateInt32ID('SIZNORMITEMPOST', 'ItemID', 'ItemPostID',
+                         AItemPostIDs, AItemID, ACommit);
 end;
 
 function TDataBase.SIZNormItemWrite(const ANormID: Integer; out AItemID: Integer;
@@ -3852,18 +3876,19 @@ begin
   end;
 end;
 
-function TDataBase.SIZNormItemUpdate(const AItemID: Integer;
-                                     const APostIDs: TIntVector): Boolean;
+function TDataBase.SIZNormItemUpdate(const ANormID, AItemID: Integer;
+                                     const AAddPostIDs, ADelItemPostIDs: TIntVector): Boolean;
 begin
   Result:= False;
-  QSetQuery(FQuery);
   try
-    //обновляем наименование пункта
-    //UpdateInt32ID('SIZNORMITEM', 'ItemName', 'ItemID', AItemID, AItemName, False{no commit});
-    //удаляем соответствие должностей этому пункту
-    Delete('SIZNORMITEMPOST', 'ItemID', AItemID, False{no commit});
+    //переносим удалямые записи в новый пункт
+    if not VIsNil(ADelItemPostIDs) then
+      SIZNormItemPartCopy(ANormID, AItemID, ADelItemPostIDs, False{no commit});
+
     //записываем все выбранные должности для пункта в SIZNORMITEMPOST
-    SIZItemsAndPostsAccordanceAdd(AItemID, APostIDs, False{no commit});
+    if not VIsNil(AAddPostIDs) then
+      SIZItemsAndPostsAccordanceAdd(AItemID, AAddPostIDs, False{no commit});
+
     QCommit;
     Result:= True;
   except
@@ -3871,14 +3896,15 @@ begin
   end;
 end;
 
-function TDataBase.SIZNormItemCopy(const ANormID, AItemID: Integer;
-                                   const APostIDs: TIntVector): Boolean;
+function TDataBase.SIZNormItemDataCopy(const ANormID, ASourceItemID: Integer;
+                                       out ADestItemID: Integer;
+                                       const ACommit: Boolean): Boolean;
 var
-  i, DestItemID, DestSubItemID, ItemOrderNum: Integer;
+  i, DestSubItemID, ItemOrderNum: Integer;
   SourceSubItemIDs, ReasonIDs, SubItemOrderNums, DestInfoIDs: TIntVector;
   Info: TNormSubItemInfo;
 
-  procedure SourceItemLoad(const ASourceItemID: Integer;
+  procedure SourceItemLoad(const AItemID: Integer;
                                out ASubItemIDs, AReasonIDs, AOrderNums: TIntVector);
   begin
     ASubItemIDs:= nil;
@@ -3890,7 +3916,7 @@ var
       'FROM SIZNORMSUBITEM ' +
       'WHERE ItemID = :ItemID ' +
       'ORDER BY OrderNum');
-    QParamInt('ItemID', ASourceItemID);
+    QParamInt('ItemID', AItemID);
     QOpen;
     if not QIsEmpty then
     begin
@@ -3913,10 +3939,10 @@ begin
     //Определяем свободный порядковый номер
     ItemOrderNum:= SIZNormItemOrderNumFreeLoad(ANormID);
     //записываем пункт
-    SIZNormItemWrite(ANormID, DestItemID, ItemOrderNum, False{no commit});
+    SIZNormItemWrite(ANormID, ADestItemID, ItemOrderNum, False{no commit});
 
     //достаем список строк пункта-источника
-    SourceItemLoad(AItemID, SourceSubItemIDs, ReasonIDs, SubItemOrderNums);
+    SourceItemLoad(ASourceItemID, SourceSubItemIDs, ReasonIDs, SubItemOrderNums);
 
     //пробегаем по всем строкам пункта-источника
     for i:=0 to High(SourceSubItemIDs) do
@@ -3924,7 +3950,7 @@ begin
       //достаем спиcок подстрок для строки-источника
       SIZNormSubItemInfoLoad(SourceSubItemIDs[i], Info{%H-});
       //записываем строку пункта-цели в SIZNORMSUBITEM
-      SIZNormSubItemWrite(DestItemID, DestSubItemID, ReasonIDs[i],
+      SIZNormSubItemWrite(ADestItemID, DestSubItemID, ReasonIDs[i],
                           SubItemOrderNums[i], False{no commit});
       //записываем инфо строки-цели SIZNORMSUBITEMINFO и получаем их ID
       SIZNormSubItemInfoWrite(DestSubItemID, Info, DestInfoIDs, False{no commit});
@@ -3932,10 +3958,46 @@ begin
       SIZStaffSpecSizeCopy(Info.InfoIDs, DestInfoIDs, False{no commit});
     end;
 
-    //записываем все выбранные должности для пункта в SIZNORMITEMPOST
-    SIZItemsAndPostsAccordanceAdd(DestItemID, APostIDs, False{no commit});
-    QCommit;
+    if ACommit then QCommit;
     Result:= True;
+  except
+    if ACommit then QRollback;
+  end;
+end;
+
+function TDataBase.SIZNormItemPartCopy(const ANormID, ASourceItemID: Integer;
+  const AItemPostIDs: TIntVector; const ACommit: Boolean): Boolean;
+var
+  DestItemID: Integer;
+begin
+  Result:= False;
+  try
+    if SIZNormItemDataCopy(ANormID, ASourceItemID, DestItemID, False{no commit}) then
+    begin
+      //переносим все выбранные должности для пункта в SIZNORMITEMPOST
+      SIZItemsAndPostsAccordanceMove(DestItemID, AItemPostIDs, False{no commit});
+      QCommit;
+      Result:= True;
+    end;
+  except
+    QRollback;
+  end;
+end;
+
+function TDataBase.SIZNormItemCopy(const ANormID, AItemID: Integer;
+                                   const APostIDs: TIntVector): Boolean;
+var
+  DestItemID: Integer;
+begin
+  Result:= False;
+  try
+    if SIZNormItemDataCopy(ANormID, AItemID, DestItemID, False{no commit}) then
+    begin
+      //записываем все выбранные должности для пункта в SIZNORMITEMPOST
+      SIZItemsAndPostsAccordanceAdd(DestItemID, APostIDs, False{no commit});
+      QCommit;
+      Result:= True;
+    end;
   except
     QRollback;
   end;
@@ -3977,8 +4039,8 @@ begin
            't2.SIZName, t2.SizeType, t2.SIZType, ' +
            't3.UnitStringCode ' +
     'FROM SIZNORMSUBITEMINFO t1 ' +
-    'INNER JOIN t2 SIZNAME ON (t1.NameID=t2.NameID) ' +
-    'INNER JOIN t3 SIZUNIT ON (t2.UnitID=t3.UnitID) ' +
+    'INNER JOIN SIZNAME t2 ON (t1.NameID=t2.NameID) ' +
+    'INNER JOIN SIZUNIT t3 ON (t2.UnitID=t3.UnitID) ' +
     'WHERE t1.SubItemID = :SubItemID ' +
     'ORDER BY t1.OrderNum');
   QParamInt('SubItemID', ASubItemID);

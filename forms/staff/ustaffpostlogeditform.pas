@@ -52,20 +52,14 @@ implementation
 
 { TStaffPostlogEditForm }
 
-procedure TStaffPostlogEditForm.CancelButtonClick(Sender: TObject);
-begin
-  ModalResult:= mrCancel;
-end;
-
 procedure TStaffPostlogEditForm.FormCreate(Sender: TObject);
 begin
   PrevPostLogID:= -1;
 
-  Images.ToButtons([SaveButton, CancelButton]);
-
   StatusDropDown:= TVSTDropDown.Create(StatusBCButton);
   StatusDropDown.Items:= POST_STATUS_PICKS;
   StatusDropDown.ItemIndex:= 0;
+
   PostDropDown:= TVSTDropDown.Create(PostBCButton);
 end;
 
@@ -77,9 +71,15 @@ end;
 
 procedure TStaffPostlogEditForm.FormShow(Sender: TObject);
 begin
+  Images.ToButtons([SaveButton, CancelButton]);
   SetEventButtons([SaveButton, CancelButton]);
   FormKeepMinSize(Self);
   DataBase.PostDictionaryLoad(PostDropDown, PostIDs, PostID);
+end;
+
+procedure TStaffPostlogEditForm.CancelButtonClick(Sender: TObject);
+begin
+  ModalResult:= mrCancel;
 end;
 
 procedure TStaffPostlogEditForm.SaveButtonClick(Sender: TObject);

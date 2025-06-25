@@ -121,21 +121,6 @@ procedure TScheduleShiftCalendarForm.FormCreate(Sender: TObject);
 begin
   Caption:= MAIN_CAPTION + OTHER_DESCRIPTION[1];
 
-  SetToolPanels([
-    ToolPanel, ListToolPanel
-  ]);
-  SetCaptionPanels([
-    ColorCaptionPanel
-  ]);
-  SetToolButtons([
-    CloseButton, SettingButton, AddButton, DelButton, EditButton
-  ]);
-
-  Images.ToButtons([
-    ExportButton,
-    CloseButton, SettingButton, AddButton, DelButton, EditButton
-  ]);
-
   CanDraw:= False;
 
   ColorList:= TVSTColorList.Create(ColorVT);
@@ -166,6 +151,21 @@ end;
 
 procedure TScheduleShiftCalendarForm.FormShow(Sender: TObject);
 begin
+  SetToolPanels([
+    ToolPanel, ListToolPanel
+  ]);
+  SetCaptionPanels([
+    ColorCaptionPanel
+  ]);
+  SetToolButtons([
+    CloseButton, SettingButton, AddButton, DelButton, EditButton
+  ]);
+
+  Images.ToButtons([
+    ExportButton,
+    CloseButton, SettingButton, AddButton, DelButton, EditButton
+  ]);
+
   ScheduleRefresh;
 end;
 

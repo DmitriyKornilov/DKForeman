@@ -462,6 +462,7 @@
         <Filename Value="forms\siz\usizcardstatusform.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="SIZCardStatusForm"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="USIZCardStatusForm"/>
       </Unit>

@@ -55,6 +55,17 @@ uses UMainForm;
 
 { TSchedulePersonalEditForm }
 
+procedure TSchedulePersonalEditForm.FormCreate(Sender: TObject);
+var
+  V: TIntVector;
+begin
+  PrevHistoryID:= -1;
+  Calendar:= TCalendar.Create;
+
+  DataBase.ScheduleMainListLoad(ScheduleIDs, V, V, ScheduleNames);
+  Sheet:= TShiftSimpleScheduleSheet.Create(ViewGrid, MainForm.GridFont, ScheduleNames);
+end;
+
 procedure TSchedulePersonalEditForm.FormDestroy(Sender: TObject);
 begin
   VSDel(Schedules);
@@ -64,6 +75,7 @@ end;
 
 procedure TSchedulePersonalEditForm.FormShow(Sender: TObject);
 begin
+  Images.ToButtons([SaveButton, CancelButton]);
   SetEventButtons([SaveButton, CancelButton]);
   FormKeepMinSize(Self, False);
 
@@ -104,19 +116,6 @@ end;
 procedure TSchedulePersonalEditForm.CancelButtonClick(Sender: TObject);
 begin
   ModalResult:= mrCancel;
-end;
-
-procedure TSchedulePersonalEditForm.FormCreate(Sender: TObject);
-var
-  V: TIntVector;
-begin
-  PrevHistoryID:= -1;
-  Calendar:= TCalendar.Create;
-
-  Images.ToButtons([SaveButton, CancelButton]);
-
-  DataBase.ScheduleMainListLoad(ScheduleIDs, V, V, ScheduleNames);
-  Sheet:= TShiftSimpleScheduleSheet.Create(ViewGrid, MainForm.GridFont, ScheduleNames);
 end;
 
 procedure TSchedulePersonalEditForm.SchedulesUpdate;

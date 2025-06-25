@@ -38,6 +38,7 @@ type
     procedure ExportButtonClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
+    procedure FormShow(Sender: TObject);
     procedure ListVTDblClick(Sender: TObject);
   private
     FilterString: String;
@@ -82,6 +83,22 @@ procedure TSIZSizeForm.FormCreate(Sender: TObject);
 begin
   ModeType:= mtView;
 
+  CanLoadSizeList:= False;
+  SizeListCreate;
+  ParamListCreate;
+  SettingsLoad;
+  CreateFilterControls('Фильтр по Ф.И.О.:', FilterPanel, @SizeListFilter);
+  CanLoadSizeList:= True;
+end;
+
+procedure TSIZSizeForm.FormDestroy(Sender: TObject);
+begin
+  FreeAndNil(SizeList);
+  FreeAndNil(ParamList);
+end;
+
+procedure TSIZSizeForm.FormShow(Sender: TObject);
+begin
   SetToolPanels([
     ToolPanel
   ]);
@@ -96,19 +113,6 @@ begin
     ExportButton,
     CloseButton, EditButton
   ]);
-
-  CanLoadSizeList:= False;
-  SizeListCreate;
-  ParamListCreate;
-  SettingsLoad;
-  CreateFilterControls('Фильтр по Ф.И.О.:', FilterPanel, @SizeListFilter);
-  CanLoadSizeList:= True;
-end;
-
-procedure TSIZSizeForm.FormDestroy(Sender: TObject);
-begin
-  FreeAndNil(SizeList);
-  FreeAndNil(ParamList);
 end;
 
 procedure TSIZSizeForm.EditButtonClick(Sender: TObject);

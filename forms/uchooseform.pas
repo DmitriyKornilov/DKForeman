@@ -24,7 +24,6 @@ type
     SaveButton: TSpeedButton;
     VT1: TVirtualStringTree;
     VT2: TVirtualStringTree;
-    procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure SaveButtonClick(Sender: TObject);
     procedure CancelButtonClick(Sender: TObject);
@@ -120,6 +119,10 @@ procedure TChooseForm.FormShow(Sender: TObject);
 var
   H: Integer;
 begin
+  Images.ToButtons([SaveButton, CancelButton]);
+  SetEventButtons([SaveButton, CancelButton]);
+  FormKeepMinSize(Self, False);
+
   H:= ButtonPanel.Height + VT1.Height + 50;
   if VT2.Visible then
     H:= H + VT2.Height;
@@ -127,15 +130,7 @@ begin
   if H>MIN_FORM_HEIGHT then
     ClientHeight:= H;
 
-  SetEventButtons([SaveButton, CancelButton]);
-  FormKeepMinSize(Self, False);
-
   FormToScreenCenter(Self);
-end;
-
-procedure TChooseForm.FormCreate(Sender: TObject);
-begin
-  Images.ToButtons([SaveButton, CancelButton]);
 end;
 
 procedure TChooseForm.SaveButtonClick(Sender: TObject);

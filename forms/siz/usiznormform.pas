@@ -139,27 +139,6 @@ procedure TSIZNormForm.FormCreate(Sender: TObject);
 begin
   ModeType:= mtView;
 
-  SetToolPanels([
-    ToolPanel, NormToolPanel, ItemToolPanel, SubItemToolPanel
-  ]);
-  SetCaptionPanels([
-    NormCaptionPanel, ItemCaptionPanel
-  ]);
-  SetToolButtons([
-    CloseButton,
-    NormAddButton, NormDelButton, NormEditButton,
-    ItemAddButton, ItemDelButton, ItemEditButton, ItemCopyButton,
-    SubItemAddButton, SubItemDelButton, SubItemEditButton, SubItemUpButton, SubItemDownButton
-  ]);
-
-  Images.ToButtons([
-    ExportButton,
-    CloseButton,
-    NormAddButton, NormDelButton, NormEditButton,
-    ItemAddButton, ItemDelButton, ItemEditButton, ItemCopyButton,
-    SubItemAddButton, SubItemDelButton, SubItemEditButton, SubItemUpButton, SubItemDownButton
-  ]);
-
   NormListCreate;
 
   NormItemSheet:= TSIZNormItemSheet.Create(ItemGrid.Worksheet, ItemGrid, MainForm.GridFont);
@@ -185,6 +164,27 @@ end;
 
 procedure TSIZNormForm.FormShow(Sender: TObject);
 begin
+  SetToolPanels([
+    ToolPanel, NormToolPanel, ItemToolPanel, SubItemToolPanel
+  ]);
+  SetCaptionPanels([
+    NormCaptionPanel, ItemCaptionPanel
+  ]);
+  SetToolButtons([
+    CloseButton,
+    NormAddButton, NormDelButton, NormEditButton,
+    ItemAddButton, ItemDelButton, ItemEditButton, ItemCopyButton,
+    SubItemAddButton, SubItemDelButton, SubItemEditButton, SubItemUpButton, SubItemDownButton
+  ]);
+
+  Images.ToButtons([
+    ExportButton,
+    CloseButton,
+    NormAddButton, NormDelButton, NormEditButton,
+    ItemAddButton, ItemDelButton, ItemEditButton, ItemCopyButton,
+    SubItemAddButton, SubItemDelButton, SubItemEditButton, SubItemUpButton, SubItemDownButton
+  ]);
+
   NormListLoad;
 end;
 
@@ -431,6 +431,7 @@ procedure TSIZNormForm.NormSubItemListLoad(const ASelectedID: Integer);
 var
   SelectedIndex: Integer;
 begin
+
   NormSubItemSheet.Clear;
   if not NormItemSheet.IsSelected then Exit;
 

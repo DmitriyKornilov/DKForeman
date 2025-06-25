@@ -94,8 +94,6 @@ procedure TSIZSizeEditForm.FormCreate(Sender: TObject);
   end;
 
 begin
-  Images.ToButtons([SaveButton, CancelButton]);
-
   SIZStaffSizeIndexesClear(SizeIndexes);
 
   DropDownCreate(HeightDD, HeightBCButton, PERSONHEIGHTS);
@@ -120,6 +118,7 @@ end;
 
 procedure TSIZSizeEditForm.FormShow(Sender: TObject);
 begin
+  Images.ToButtons([SaveButton, CancelButton]);
   SetEventButtons([SaveButton, CancelButton]);
   FormKeepMinSize(Self);
 

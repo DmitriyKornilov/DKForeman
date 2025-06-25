@@ -29,6 +29,7 @@ type
     ZoomPanel: TPanel;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
+    procedure FormShow(Sender: TObject);
     procedure PersonSizesButtonClick(Sender: TObject);
   private
     ZoomPercent: Integer;
@@ -68,6 +69,19 @@ uses UMainForm;
 
 procedure TSIZCardFrontForm.FormCreate(Sender: TObject);
 begin
+  Sheet:= TSIZCardFrontSheet.Create(ViewGrid.Worksheet, ViewGrid, MainForm.GridFont);
+
+  SettingsLoad; //load ZoomPercent
+  CreateZoomControls(50, 150, ZoomPercent, ZoomPanel, @DataDraw, True);
+end;
+
+procedure TSIZCardFrontForm.FormDestroy(Sender: TObject);
+begin
+  FreeAndNil(Sheet);
+end;
+
+procedure TSIZCardFrontForm.FormShow(Sender: TObject);
+begin
   SetToolPanels([
     ToolPanel
   ]);
@@ -79,16 +93,6 @@ begin
   Images.ToButtons([
     CardNumButton, PersonSizesButton
   ]);
-
-  Sheet:= TSIZCardFrontSheet.Create(ViewGrid.Worksheet, ViewGrid, MainForm.GridFont);
-
-  SettingsLoad; //load ZoomPercent
-  CreateZoomControls(50, 150, ZoomPercent, ZoomPanel, @DataDraw, True);
-end;
-
-procedure TSIZCardFrontForm.FormDestroy(Sender: TObject);
-begin
-  FreeAndNil(Sheet);
 end;
 
 procedure TSIZCardFrontForm.PersonSizesButtonClick(Sender: TObject);

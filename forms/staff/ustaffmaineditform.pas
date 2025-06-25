@@ -59,9 +59,6 @@ implementation
 procedure TStaffMainEditForm.FormCreate(Sender: TObject);
 begin
   StaffID:= -1;
-
-  Images.ToButtons([SaveButton, CancelButton]);
-
   GenderDropDown:= TVSTDropDown.Create(GenderBCButton);
   GenderDropDown.Items:= GENDER_PICKS;
   GenderDropDown.ItemIndex:= 1;
@@ -74,6 +71,7 @@ end;
 
 procedure TStaffMainEditForm.FormShow(Sender: TObject);
 begin
+  Images.ToButtons([SaveButton, CancelButton]);
   SetEventButtons([SaveButton, CancelButton]);
   FormKeepMinSize(Self);
   FamilyEdit.SetFocus;

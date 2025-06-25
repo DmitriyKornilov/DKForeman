@@ -192,26 +192,6 @@ procedure TTimetableForm.FormCreate(Sender: TObject);
 begin
   ModeType:= mtView;
 
-  SetToolPanels([
-    ToolPanel, ListFilterToolPanel, ListOrderToolPanel, DayToolPanel, CopyToolPanel
-  ]);
-  SetCaptionPanels([
-    StaffCaptionPanel, SettingCaptionPanel, ListCaptionPanel, EditingCaptionPanel,
-    ViewCaptionPanel
-  ]);
-  SetToolButtons([
-    CloseButton, AscendingButton, DescendingButton,
-    WriteButton, EraseButton, EditButton, CopyButton,
-    CopySaveButton, CopyDelButton, CopyCancelButton
-  ]);
-
-  Images.ToButtons([
-    ExportButton, MonthTimetableButton,
-    CloseButton, AscendingButton, DescendingButton,
-    WriteButton, EraseButton, EditButton, CopyButton,
-    CopySaveButton, CopyDelButton, CopyCancelButton
-  ]);
-
   ViewYear:= 0;
   ViewTabNumID:=0;
 
@@ -252,6 +232,26 @@ end;
 
 procedure TTimetableForm.FormShow(Sender: TObject);
 begin
+  SetToolPanels([
+    ToolPanel, ListFilterToolPanel, ListOrderToolPanel, DayToolPanel, CopyToolPanel
+  ]);
+  SetCaptionPanels([
+    StaffCaptionPanel, SettingCaptionPanel, ListCaptionPanel, EditingCaptionPanel,
+    ViewCaptionPanel
+  ]);
+  SetToolButtons([
+    CloseButton, AscendingButton, DescendingButton,
+    WriteButton, EraseButton, EditButton, CopyButton,
+    CopySaveButton, CopyDelButton, CopyCancelButton
+  ]);
+
+  Images.ToButtons([
+    ExportButton, MonthTimetableButton,
+    CloseButton, AscendingButton, DescendingButton,
+    WriteButton, EraseButton, EditButton, CopyButton,
+    CopySaveButton, CopyDelButton, CopyCancelButton
+  ]);
+
   MonthDropDown.AutoWidth;
   StaffListLoad;
 end;

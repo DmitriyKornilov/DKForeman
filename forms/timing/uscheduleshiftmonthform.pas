@@ -123,18 +123,6 @@ procedure TScheduleShiftMonthForm.FormCreate(Sender: TObject);
 begin
   Caption:= MAIN_CAPTION + OTHER_DESCRIPTION[2];
 
-  SetToolPanels([
-    ToolPanel
-  ]);
-  SetToolButtons([
-    CloseButton, CheckAllButton, UncheckAllButton
-  ]);
-
-  Images.ToButtons([
-    ExportButton,
-    CloseButton, CheckAllButton, UncheckAllButton
-  ]);
-
   CanDraw:= False;
 
   MonthDropDown:= TMonthDropDown.Create(MonthBCButton, @ScheduleRefresh);
@@ -163,6 +151,24 @@ begin
   VSDel(Schedules);
 end;
 
+procedure TScheduleShiftMonthForm.FormShow(Sender: TObject);
+begin
+  SetToolPanels([
+    ToolPanel
+  ]);
+  SetToolButtons([
+    CloseButton, CheckAllButton, UncheckAllButton
+  ]);
+
+  Images.ToButtons([
+    ExportButton,
+    CloseButton, CheckAllButton, UncheckAllButton
+  ]);
+
+  MonthDropDown.AutoWidth;
+  ScheduleRefresh;
+end;
+
 procedure TScheduleShiftMonthForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
   CloseAction:= caFree;
@@ -181,12 +187,6 @@ end;
 procedure TScheduleShiftMonthForm.CheckAllButtonClick(Sender: TObject);
 begin
   ScheduleList.CheckAll(True);
-end;
-
-procedure TScheduleShiftMonthForm.FormShow(Sender: TObject);
-begin
-  MonthDropDown.AutoWidth;
-  ScheduleRefresh;
 end;
 
 procedure TScheduleShiftMonthForm.UncheckAllButtonClick(Sender: TObject);

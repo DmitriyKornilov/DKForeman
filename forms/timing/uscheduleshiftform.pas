@@ -183,6 +183,74 @@ uses UMainForm;
 
 { TScheduleShiftForm }
 
+procedure TScheduleShiftForm.FormCreate(Sender: TObject);
+begin
+  ModeType:= mtView;
+
+  Calendar:= TCalendar.Create;
+  Schedule:= TShiftSchedule.Create;
+
+  CanDraw:= False;
+
+  ScheduleListCreate;
+  ParamListCreate;
+  EditingTablesCreate;
+  YearSpinEdit.Value:= YearOfDate(Date);
+  IsCopyDates:= False;
+
+  ColorsLoad;
+  LegendCreate;
+  SettingsLoad; //load ZoomPercent
+  CreateZoomControls(50, 150, ZoomPercent, ZoomPanel, @ScheduleDraw, True);
+
+  CanDraw:= True;
+end;
+
+procedure TScheduleShiftForm.FormDestroy(Sender: TObject);
+begin
+  FreeAndNil(ParamList);
+  FreeAndNil(ScheduleList);
+
+  FreeAndNil(Structure);
+  FreeAndNil(VSTDays);
+  FreeAndNil(VSTCopy);
+
+  FreeAndNil(Calendar);
+  FreeAndNil(Schedule);
+  if Assigned(Sheet) then FreeAndNil(Sheet);
+end;
+
+procedure TScheduleShiftForm.FormShow(Sender: TObject);
+var
+  H: Integer;
+begin
+  SetToolPanels([
+    ToolPanel, ListToolPanel, DayToolPanel, CopyToolPanel
+  ]);
+  SetCaptionPanels([
+    SettingCaptionPanel, ListCaptionPanel, StructureCaptionPanel, CorrectionsCaptionPanel,
+    SheetCaptionPanel
+  ]);
+  SetToolButtons([
+    CloseButton,
+    ScheduleAddButton, ScheduleDelButton, ScheduleEditButton,
+    DayAddButton, DayDelButton, DayEditButton, DayCopyButton,
+    CopySaveButton, CopyDelButton, CopyCancelButton
+  ]);
+
+  Images.ToButtons([
+    ExportButton, CalendarButton, MonthButton,
+    CloseButton,
+    ScheduleAddButton, ScheduleDelButton, ScheduleEditButton,
+    DayAddButton, DayDelButton, DayEditButton, DayCopyButton,
+    CopySaveButton, CopyDelButton, CopyCancelButton
+  ]);
+
+  H:= MainPanel.Height div 3;
+  EditingPanel.Height:= 2*H;
+  CorrectionsPanel.Height:= H;
+end;
+
 procedure TScheduleShiftForm.CloseButtonClick(Sender: TObject);
 begin
   MainForm.CategorySelect(0);
@@ -239,74 +307,6 @@ end;
 procedure TScheduleShiftForm.ExportButtonClick(Sender: TObject);
 begin
   ScheduleExport;
-end;
-
-procedure TScheduleShiftForm.FormCreate(Sender: TObject);
-begin
-  ModeType:= mtView;
-
-  SetToolPanels([
-    ToolPanel, ListToolPanel, DayToolPanel, CopyToolPanel
-  ]);
-  SetCaptionPanels([
-    SettingCaptionPanel, ListCaptionPanel, StructureCaptionPanel, CorrectionsCaptionPanel,
-    SheetCaptionPanel
-  ]);
-  SetToolButtons([
-    CloseButton,
-    ScheduleAddButton, ScheduleDelButton, ScheduleEditButton,
-    DayAddButton, DayDelButton, DayEditButton, DayCopyButton,
-    CopySaveButton, CopyDelButton, CopyCancelButton
-  ]);
-
-  Images.ToButtons([
-    ExportButton, CalendarButton, MonthButton,
-    CloseButton,
-    ScheduleAddButton, ScheduleDelButton, ScheduleEditButton,
-    DayAddButton, DayDelButton, DayEditButton, DayCopyButton,
-    CopySaveButton, CopyDelButton, CopyCancelButton
-  ]);
-
-  Calendar:= TCalendar.Create;
-  Schedule:= TShiftSchedule.Create;
-
-  CanDraw:= False;
-
-  ScheduleListCreate;
-  ParamListCreate;
-  EditingTablesCreate;
-  YearSpinEdit.Value:= YearOfDate(Date);
-  IsCopyDates:= False;
-
-  ColorsLoad;
-  LegendCreate;
-  SettingsLoad; //load ZoomPercent
-  CreateZoomControls(50, 150, ZoomPercent, ZoomPanel, @ScheduleDraw, True);
-
-  CanDraw:= True;
-end;
-
-procedure TScheduleShiftForm.FormDestroy(Sender: TObject);
-begin
-  FreeAndNil(ParamList);
-  FreeAndNil(ScheduleList);
-
-  FreeAndNil(Structure);
-  FreeAndNil(VSTDays);
-  FreeAndNil(VSTCopy);
-
-  FreeAndNil(Calendar);
-  FreeAndNil(Schedule);
-  if Assigned(Sheet) then FreeAndNil(Sheet);
-end;
-
-procedure TScheduleShiftForm.FormShow(Sender: TObject);
-var
-  H: Integer;
-begin
-  H:= MainPanel.Height div 3;
-  EditingPanel.Height:= 2*H;
-  CorrectionsPanel.Height:= H;
 end;
 
 procedure TScheduleShiftForm.MonthButtonClick(Sender: TObject);

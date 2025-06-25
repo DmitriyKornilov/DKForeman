@@ -1242,7 +1242,7 @@
       "CARDID",
       "CARDNUM",
       "TABNUMID",
-      "ITEMID"
+      "ITEMPOSTID"
     ],
     "CARDID" : {
       "FieldType" : "INTEGER",
@@ -1317,20 +1317,20 @@
         ]
       }
     },
-    "ITEMID" : {
+    "ITEMPOSTID" : {
       "FieldType" : "INTEGER",
       "PrimaryKey" : false,
       "Status" : false,
       "NotNull" : true,
       "DefaultValue" : "",
       "Description" : [
-        "ID пункта норм выдачи"
+        "ID записи соответствия пункта норм должности"
       ],
       "ExistingValues" : [
       ],
       "ReferenceTo" : {
-        "TableName" : "SIZNORMITEM",
-        "FieldName" : "ITEMID",
+        "TableName" : "SIZNORMITEMPOST",
+        "FieldName" : "ITEMPOSTID",
         "OnDelete" : 0,
         "OnUpdate" : 0
       },
@@ -2326,11 +2326,9 @@
       "ReferenceFrom" : {
         "TableNames" : [
           "SIZNORMSUBITEM",
-          "SIZNORMITEMPOST",
-          "SIZCARDPERSONAL"
+          "SIZNORMITEMPOST"
         ],
         "FieldNames" : [
-          "ITEMID",
           "ITEMID",
           "ITEMID"
         ]
@@ -2392,9 +2390,35 @@
     "Notes" : [
     ],
     "FieldsList" : [
+      "ITEMPOSTID",
       "ITEMID",
       "POSTID"
     ],
+    "ITEMPOSTID" : {
+      "FieldType" : "INTEGER",
+      "PrimaryKey" : true,
+      "Status" : true,
+      "NotNull" : true,
+      "DefaultValue" : "",
+      "Description" : [
+      ],
+      "ExistingValues" : [
+      ],
+      "ReferenceTo" : {
+        "TableName" : "",
+        "FieldName" : "",
+        "OnDelete" : 4,
+        "OnUpdate" : 4
+      },
+      "ReferenceFrom" : {
+        "TableNames" : [
+          "SIZCARDPERSONAL"
+        ],
+        "FieldNames" : [
+          "ITEMPOSTID"
+        ]
+      }
+    },
     "ITEMID" : {
       "FieldType" : "INTEGER",
       "PrimaryKey" : false,

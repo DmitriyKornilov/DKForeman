@@ -97,6 +97,26 @@ end;
 
 { TVacationPlanEditForm }
 
+procedure TVacationPlanEditForm.FormCreate(Sender: TObject);
+begin
+  TabNumID:= -1;
+end;
+
+procedure TVacationPlanEditForm.FormShow(Sender: TObject);
+var
+  BD, ED: TDate;
+begin
+  Images.ToButtons([SaveButton, CancelButton]);
+  SetEventButtons([SaveButton, CancelButton]);
+  FormKeepMinSize(Self);
+
+  FirstLastDayInYear(YearNum, BD, ED);
+  Plan1DatePicker.MinDate:= BD;
+  Plan1DatePicker.MaxDate:= ED;
+  Plan2DatePicker.MinDate:= BD;
+  Plan2DatePicker.MaxDate:= ED;
+end;
+
 procedure TVacationPlanEditForm.SaveButtonClick(Sender: TObject);
 var
   IsOK: Boolean;
@@ -147,26 +167,6 @@ end;
 procedure TVacationPlanEditForm.CancelButtonClick(Sender: TObject);
 begin
   ModalResult:= mrCancel;
-end;
-
-procedure TVacationPlanEditForm.FormCreate(Sender: TObject);
-begin
-  TabNumID:= -1;
-  Images.ToButtons([SaveButton, CancelButton]);
-end;
-
-procedure TVacationPlanEditForm.FormShow(Sender: TObject);
-var
-  BD, ED: TDate;
-begin
-  SetEventButtons([SaveButton, CancelButton]);
-  FormKeepMinSize(Self);
-
-  FirstLastDayInYear(YearNum, BD, ED);
-  Plan1DatePicker.MinDate:= BD;
-  Plan1DatePicker.MaxDate:= ED;
-  Plan2DatePicker.MinDate:= BD;
-  Plan2DatePicker.MaxDate:= ED;
 end;
 
 procedure TVacationPlanEditForm.Plan2CheckBoxChange(Sender: TObject);

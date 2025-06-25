@@ -175,23 +175,6 @@ procedure TTimetableMonthForm.FormCreate(Sender: TObject);
 begin
   Caption:= MAIN_CAPTION + OTHER_DESCRIPTION[5];
 
-  SetToolPanels([
-    ToolPanel, ListOrderToolPanel
-  ]);
-  SetCaptionPanels([
-    ListCaptionPanel, SettingCaptionPanel, TimetableCaptionPanel
-  ]);
-  SetToolButtons([
-    CloseButton, CheckAllButton, UncheckAllButton, EditingButton, SettingButton,
-    DayEditButton, RowUpButton, RowDownButton, RowMergeButton
-  ]);
-
-  Images.ToButtons([
-    ExportButton, TimetableButton, ListButton,
-    CloseButton, CheckAllButton, UncheckAllButton, EditingButton, SettingButton,
-    DayEditButton, RowUpButton, RowDownButton, RowMergeButton
-  ]);
-
   CanLoadAndDraw:= False;
 
   MonthCalendar:= TCalendar.Create;
@@ -228,6 +211,23 @@ end;
 
 procedure TTimetableMonthForm.FormShow(Sender: TObject);
 begin
+  SetToolPanels([
+    ToolPanel, ListOrderToolPanel
+  ]);
+  SetCaptionPanels([
+    ListCaptionPanel, SettingCaptionPanel, TimetableCaptionPanel
+  ]);
+  SetToolButtons([
+    CloseButton, CheckAllButton, UncheckAllButton, EditingButton, SettingButton,
+    DayEditButton, RowUpButton, RowDownButton, RowMergeButton
+  ]);
+
+  Images.ToButtons([
+    ExportButton, TimetableButton, ListButton,
+    CloseButton, CheckAllButton, UncheckAllButton, EditingButton, SettingButton,
+    DayEditButton, RowUpButton, RowDownButton, RowMergeButton
+  ]);
+
   ParamListVisibles; //ParamList.Show;
   MonthDropDown.AutoWidth;
   OrderType:= 0;

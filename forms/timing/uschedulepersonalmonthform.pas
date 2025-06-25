@@ -167,23 +167,6 @@ procedure TSchedulePersonalMonthForm.FormCreate(Sender: TObject);
 begin
   Caption:= MAIN_CAPTION + OTHER_DESCRIPTION[4];
 
-  SetToolPanels([
-    ToolPanel, ListOrderToolPanel
-  ]);
-  SetCaptionPanels([
-    ListCaptionPanel, SettingCaptionPanel, ScheduleCaptionPanel
-  ]);
-  SetToolButtons([
-    CloseButton, CheckAllButton, UncheckAllButton, EditingButton, SettingButton,
-    DayEditButton, RowUpButton, RowDownButton, RowMergeButton
-  ]);
-
-  Images.ToButtons([
-    ExportButton, ScheduleButton, ListButton,
-    CloseButton, CheckAllButton, UncheckAllButton, EditingButton, SettingButton,
-    DayEditButton, RowUpButton, RowDownButton, RowMergeButton
-  ]);
-
   CanLoadAndDraw:= False;
 
   MonthCalendar:= TCalendar.Create;
@@ -222,6 +205,23 @@ end;
 
 procedure TSchedulePersonalMonthForm.FormShow(Sender: TObject);
 begin
+  SetToolPanels([
+    ToolPanel, ListOrderToolPanel
+  ]);
+  SetCaptionPanels([
+    ListCaptionPanel, SettingCaptionPanel, ScheduleCaptionPanel
+  ]);
+  SetToolButtons([
+    CloseButton, CheckAllButton, UncheckAllButton, EditingButton, SettingButton,
+    DayEditButton, RowUpButton, RowDownButton, RowMergeButton
+  ]);
+
+  Images.ToButtons([
+    ExportButton, ScheduleButton, ListButton,
+    CloseButton, CheckAllButton, UncheckAllButton, EditingButton, SettingButton,
+    DayEditButton, RowUpButton, RowDownButton, RowMergeButton
+  ]);
+
   MonthDropDown.AutoWidth;
   OrderType:= 0;
   StaffListLoad;

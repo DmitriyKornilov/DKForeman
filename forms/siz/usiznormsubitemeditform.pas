@@ -94,6 +94,7 @@ type
     function ValuesGetAndVerify(out AClauseName: String;
                             out ATypeIndex, ANameIndex, ALife: Integer;
                             const ANameSkipIndex: Integer = -1): Boolean;
+
   public
     ItemID: Integer;
     SubItem: TNormSubItem;
@@ -113,16 +114,6 @@ uses UMainForm;
 
 procedure TSIZNormSubItemEditForm.FormCreate(Sender: TObject);
 begin
-  Images.ToButtons([SaveButton, CancelButton]);
-
-  ControlHeight(SearchButton, TOOL_PANEL_HEIGHT_DEFAULT-2);
-  ControlHeight(ToolPanel, TOOL_PANEL_HEIGHT_DEFAULT-2);
-
-  SetToolButtons([
-    SearchButton,
-    AddButton, DelButton, EditButton, UpButton, DownButton
-  ]);
-
   ReasonDropDown:= TVSTDropDown.Create(ReasonBCButton);
   ReasonDropDown.DropDownCount:= 20;
 
@@ -167,7 +158,16 @@ procedure TSIZNormSubItemEditForm.FormShow(Sender: TObject);
 var
   IsSIZExists: Boolean;
 begin
+  Images.ToButtons([SaveButton, CancelButton]);
   SetEventButtons([SaveButton, CancelButton]);
+
+  ControlHeight(SearchButton, TOOL_PANEL_HEIGHT_DEFAULT-2);
+  ControlHeight(ToolPanel, TOOL_PANEL_HEIGHT_DEFAULT-2);
+
+  SetToolButtons([
+    SearchButton,
+    AddButton, DelButton, EditButton, UpButton, DownButton
+  ]);
 
   DataBase.KeyPickList('SIZREASON', 'ReasonID', 'ReasonName',
                        ReasonIDs, ReasonNames, False {with zero ID}, 'ReasonID');

@@ -152,6 +152,31 @@ procedure TVacationPlanningForm.FormCreate(Sender: TObject);
 begin
   Caption:= MAIN_CAPTION + OTHER_DESCRIPTION[6];
 
+  LegendCreate;
+
+  CanLoadAndDraw:= False;
+  StatSheet:= TVacationStatSheet.Create(StatGrid.Worksheet, StatGrid, MainForm.GridFont);
+  StaffListCreate;
+  Calendar:= TCalendar.Create;
+  SettingsLoad; //load ZoomPercent
+  CreateZoomControls(50, 150, ZoomPercent, ZoomPanel, @PlanDraw, True);
+
+  CanLoadAndDraw:= True;
+end;
+
+procedure TVacationPlanningForm.FormDestroy(Sender: TObject);
+begin
+  SettingsSave;
+  FreeAndNil(VStaffList);
+  FreeAndNil(MStaffList);
+  FreeAndNil(Calendar);
+  if Assigned(Sheet) then FreeAndNil(Sheet);
+  FreeAndNil(StatSheet);
+  VSDel(Schedules);
+end;
+
+procedure TVacationPlanningForm.FormShow(Sender: TObject);
+begin
   SetToolPanels([
     ToolPanel, ListOrderToolPanel
   ]);
@@ -169,32 +194,6 @@ begin
     EditButton, PrevMonthButton, PrevDayButton, NextDayButton, NextMonthButton
   ]);
 
-  LegendCreate;
-
-  CanLoadAndDraw:= False;
-  StatSheet:= TVacationStatSheet.Create(StatGrid.Worksheet, StatGrid, MainForm.GridFont);
-  StaffListCreate;
-  Calendar:= TCalendar.Create;
-  SettingsLoad; //load ZoomPercent
-  CreateZoomControls(50, 150, ZoomPercent, ZoomPanel, @PlanDraw, True);
-
-  CanLoadAndDraw:= True;
-
-end;
-
-procedure TVacationPlanningForm.FormDestroy(Sender: TObject);
-begin
-  SettingsSave;
-  FreeAndNil(VStaffList);
-  FreeAndNil(MStaffList);
-  FreeAndNil(Calendar);
-  if Assigned(Sheet) then FreeAndNil(Sheet);
-  FreeAndNil(StatSheet);
-  VSDel(Schedules);
-end;
-
-procedure TVacationPlanningForm.FormShow(Sender: TObject);
-begin
   OrderType:= 0;
   StaffListLoad;
 end;

@@ -241,6 +241,87 @@ uses UMainForm;
 
 { TSchedulePersonalForm }
 
+procedure TSchedulePersonalForm.FormCreate(Sender: TObject);
+begin
+  ModeType:= mtView;
+
+  Calendar:= TCalendar.Create;
+
+  ViewYear:= 0;
+  ViewTabNumID:= 0;
+
+  CanDraw:= False;
+
+  VacationEditCreate;
+  HistoryCreate;
+  StaffListCreate;
+  ParamListCreate;
+  EditingTablesCreate;
+  YearSpinEdit.Value:= YearOfDate(Date);
+
+  IsCopyDates:= False;
+
+  ColorsLoad;
+  LegendCreate;
+  SettingsLoad; //load ZoomPercent
+  CreateZoomControls(50, 150, ZoomPercent, ZoomPanel, @ScheduleDraw, True);
+  CreateFilterControls('Фильтр по Ф.И.О.:', FilterPanel, @StaffListFilter, 300);
+
+  CanDraw:= True;
+end;
+
+procedure TSchedulePersonalForm.FormDestroy(Sender: TObject);
+begin
+  FreeAndNil(ParamList);
+
+  FreeAndNil(VacationEdit);
+  FreeAndNil(StaffList);
+  FreeAndNil(History);
+
+  FreeAndNil(VSTDays);
+  FreeAndNil(VSTCopy);
+
+  FreeAndNil(Calendar);
+  if Assigned(Schedule) then FreeAndNil(Schedule);
+  if Assigned(Sheet) then FreeAndNil(Sheet);
+end;
+
+procedure TSchedulePersonalForm.FormShow(Sender: TObject);
+var
+  H: Integer;
+begin
+  SetToolPanels([
+    ToolPanel, ListFilterToolPanel, ListOrderToolPanel, HistoryToolPanel,
+    VacationToolPanel, DayToolPanel, CopyToolPanel
+  ]);
+  SetCaptionPanels([
+    StaffCaptionPanel, SettingCaptionPanel, ListCaptionPanel, HistoryCaptionPanel,
+    VacationCaptionPanel, CorrectionsCaptionPanel, ViewCaptionPanel
+  ]);
+  SetToolButtons([
+    CloseButton, AscendingButton, DescendingButton,
+    HistoryAddButton, HistoryDelButton, HistoryEditButton,
+    VacationSaveButton, VacationDelButton, VacationEraseButton, VacationCancelButton,
+    DayAddButton, DayDelButton, DayEditButton, DayCopyButton,
+    CopySaveButton, CopyDelButton,CopyCancelButton
+  ]);
+
+  Images.ToButtons([
+    ExportButton, MonthScheduleButton, VacationScheduleButton,
+    CloseButton, AscendingButton, DescendingButton,
+    HistoryAddButton, HistoryDelButton, HistoryEditButton,
+    VacationSaveButton, VacationDelButton, VacationEraseButton, VacationCancelButton,
+    DayAddButton, DayDelButton, DayEditButton, DayCopyButton,
+    CopySaveButton, CopyDelButton, CopyCancelButton
+  ]);
+
+  H:= Round(0.6*(ClientHeight - ToolPanel.Height - StaffCaptionPanel.Height));
+  BottomEditingPanel.Height:= H;
+  H:= VacationCaptionPanel.Height + VacationToolPanel.Height + VacationEdit.TotalHeight + 10;
+  VacationPanel.Height:= H;
+  StaffListLoad;
+end;
+
 procedure TSchedulePersonalForm.CloseButtonClick(Sender: TObject);
 begin
   MainForm.CategorySelect(0);
@@ -304,88 +385,6 @@ end;
 procedure TSchedulePersonalForm.ExportButtonClick(Sender: TObject);
 begin
   ScheduleExport;
-end;
-
-procedure TSchedulePersonalForm.FormCreate(Sender: TObject);
-begin
-  ModeType:= mtView;
-
-  SetToolPanels([
-    ToolPanel, ListFilterToolPanel, ListOrderToolPanel, HistoryToolPanel,
-    VacationToolPanel, DayToolPanel, CopyToolPanel
-  ]);
-  SetCaptionPanels([
-    StaffCaptionPanel, SettingCaptionPanel, ListCaptionPanel, HistoryCaptionPanel,
-    VacationCaptionPanel, CorrectionsCaptionPanel, ViewCaptionPanel
-  ]);
-  SetToolButtons([
-    CloseButton, AscendingButton, DescendingButton,
-    HistoryAddButton, HistoryDelButton, HistoryEditButton,
-    VacationSaveButton, VacationDelButton, VacationEraseButton, VacationCancelButton,
-    DayAddButton, DayDelButton, DayEditButton, DayCopyButton,
-    CopySaveButton, CopyDelButton,CopyCancelButton
-  ]);
-
-
-  Images.ToButtons([
-    ExportButton, MonthScheduleButton, VacationScheduleButton,
-    CloseButton, AscendingButton, DescendingButton,
-    HistoryAddButton, HistoryDelButton, HistoryEditButton,
-    VacationSaveButton, VacationDelButton, VacationEraseButton, VacationCancelButton,
-    DayAddButton, DayDelButton, DayEditButton, DayCopyButton,
-    CopySaveButton, CopyDelButton, CopyCancelButton
-  ]);
-
-  Calendar:= TCalendar.Create;
-
-  ViewYear:= 0;
-  ViewTabNumID:= 0;
-
-  CanDraw:= False;
-
-  VacationEditCreate;
-  HistoryCreate;
-  StaffListCreate;
-  ParamListCreate;
-  EditingTablesCreate;
-  YearSpinEdit.Value:= YearOfDate(Date);
-
-  IsCopyDates:= False;
-
-  ColorsLoad;
-  LegendCreate;
-  SettingsLoad; //load ZoomPercent
-  CreateZoomControls(50, 150, ZoomPercent, ZoomPanel, @ScheduleDraw, True);
-  CreateFilterControls('Фильтр по Ф.И.О.:', FilterPanel, @StaffListFilter, 300);
-
-  CanDraw:= True;
-end;
-
-procedure TSchedulePersonalForm.FormDestroy(Sender: TObject);
-begin
-  FreeAndNil(ParamList);
-
-  FreeAndNil(VacationEdit);
-  FreeAndNil(StaffList);
-  FreeAndNil(History);
-
-  FreeAndNil(VSTDays);
-  FreeAndNil(VSTCopy);
-
-  FreeAndNil(Calendar);
-  if Assigned(Schedule) then FreeAndNil(Schedule);
-  if Assigned(Sheet) then FreeAndNil(Sheet);
-end;
-
-procedure TSchedulePersonalForm.FormShow(Sender: TObject);
-var
-  H: Integer;
-begin
-  H:= Round(0.6*(ClientHeight - ToolPanel.Height - StaffCaptionPanel.Height));
-  BottomEditingPanel.Height:= H;
-  H:= VacationCaptionPanel.Height + VacationToolPanel.Height + VacationEdit.TotalHeight + 10;
-  VacationPanel.Height:= H;
-  StaffListLoad;
 end;
 
 procedure TSchedulePersonalForm.FIORadioButtonClick(Sender: TObject);

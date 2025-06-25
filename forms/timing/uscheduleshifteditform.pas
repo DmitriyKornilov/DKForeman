@@ -67,8 +67,6 @@ procedure TScheduleShiftEditForm.FormCreate(Sender: TObject);
 begin
   Cycle:= EmptyScheduleCycle;
 
-  Images.ToButtons([SaveButton, CancelButton]);
-
   DataBase.TimetableMarkListLoad(KeyMarks, PickMarks, True{ DigMark>0});
 
   Structure:= TVSTEdit.Create(VT);
@@ -96,6 +94,26 @@ begin
   TypeDropDown.Items:= VCreateStr(['недельный', 'цикловой']);
 end;
 
+procedure TScheduleShiftEditForm.FormDestroy(Sender: TObject);
+begin
+  FreeAndNil(TypeDropDown);
+  FreeAndNil(Structure);
+end;
+
+procedure TScheduleShiftEditForm.FormShow(Sender: TObject);
+begin
+  Width:= Width + 5; //fix datetimepicker button size bug
+
+  Images.ToButtons([SaveButton, CancelButton]);
+  SetEventButtons([SaveButton, CancelButton]);
+  FormKeepMinSize(Self, False);
+
+  FirstDatePicker.Date:= FirstDate;
+  if not Cycle.IsWeek then
+    CycleCountSpinEdit.Value:= Cycle.Count;
+  TypeDropDown.ItemIndex:= Ord(not Cycle.IsWeek);
+end;
+
 procedure TScheduleShiftEditForm.CancelButtonClick(Sender: TObject);
 begin
   ModalResult:= mrCancel;
@@ -111,24 +129,6 @@ procedure TScheduleShiftEditForm.FirstDatePickerChange(Sender: TObject);
 begin
   ScheduleCycleToCount(Cycle, CycleCountSpinEdit.Value, FirstDatePicker.Date);
   ScheduleCycleDraw(Structure, Cycle);
-end;
-
-procedure TScheduleShiftEditForm.FormDestroy(Sender: TObject);
-begin
-  FreeAndNil(TypeDropDown);
-  FreeAndNil(Structure);
-end;
-
-procedure TScheduleShiftEditForm.FormShow(Sender: TObject);
-begin
-  Width:= Width + 5; //fix datetimepicker button size bug
-  SetEventButtons([SaveButton, CancelButton]);
-  FormKeepMinSize(Self, False);
-
-  FirstDatePicker.Date:= FirstDate;
-  if not Cycle.IsWeek then
-    CycleCountSpinEdit.Value:= Cycle.Count;
-  TypeDropDown.ItemIndex:= Ord(not Cycle.IsWeek);
 end;
 
 procedure TScheduleShiftEditForm.SaveButtonClick(Sender: TObject);
