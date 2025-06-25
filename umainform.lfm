@@ -263,7 +263,7 @@ object MainForm: TMainForm
     end
     object SIZSizesMenuItem: TMenuItem
       Caption = 'Размеры средств индивидуальной защиты сотрудников'
-      ImageIndex = 38
+      ImageIndex = 59
       OnClick = SIZSizesMenuItemClick
     end
     object SIZStaffMenuItem: TMenuItem

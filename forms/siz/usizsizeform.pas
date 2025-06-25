@@ -278,27 +278,17 @@ end;
 
 procedure TSIZSizeForm.SizeListEdit;
 var
-  SIZSizeEditForm: TSIZSizeEditForm;
+  PersonSizes: TSIZStaffSizeIndexes;
 begin
   if not SizeList.IsSelected then Exit;
 
-  SIZSizeEditForm:= TSIZSizeEditForm.Create(nil);
-  try
-    SIZSizeEditForm.StaffID:= StaffIDs[SizeList.SelectedIndex];
-    SIZSizeEditForm.SizeIndexes.Height:= Heights[SizeList.SelectedIndex];
-    SIZSizeEditForm.SizeIndexes.Clothes:= Clothes[SizeList.SelectedIndex];
-    SIZSizeEditForm.SizeIndexes.Shoes:= Shoes[SizeList.SelectedIndex];
-    SIZSizeEditForm.SizeIndexes.Head:= Heads[SizeList.SelectedIndex];
-    SIZSizeEditForm.SizeIndexes.Hand:= Hands[SizeList.SelectedIndex];
-    SIZSizeEditForm.SizeIndexes.Gasmask:= Gasmasks[SizeList.SelectedIndex];
-    SIZSizeEditForm.SizeIndexes.Respirator:= Respirators[SizeList.SelectedIndex];
+  SIZStaffSizeIndexesSet(PersonSizes, Clothes[SizeList.SelectedIndex],
+             Heights[SizeList.SelectedIndex], Shoes[SizeList.SelectedIndex],
+             Heads[SizeList.SelectedIndex], Hands[SizeList.SelectedIndex],
+             Gasmasks[SizeList.SelectedIndex], Respirators[SizeList.SelectedIndex]);
 
-    if SIZSizeEditForm.ShowModal=mrOK then
-      SizeListLoad;
-
-  finally
-    FreeAndNil(SIZSizeEditForm);
-  end;
+  if SizeEditFormShowModal(StaffIDs[SizeList.SelectedIndex], PersonSizes)=mrOK then
+    SizeListLoad;
 end;
 
 procedure TSIZSizeForm.SettingsLoad;

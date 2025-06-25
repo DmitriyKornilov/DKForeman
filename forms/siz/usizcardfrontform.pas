@@ -5,18 +5,22 @@ unit USIZCardFrontForm;
 interface
 
 uses
-  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls,
+  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, Buttons,
   fpspreadsheetgrid,
   //Project utils
-  UTypes, UConst, UDataBase, USIZSizes, USIZCardSheet, USIZNormTypes,
+  UTypes, UConst, UDataBase, USIZSizes, USIZCardSheet, USIZNormTypes, UImages,
   //DK packages utils
-  DK_Zoom, DK_CtrlUtils, DK_Vector, Types;
+  DK_Zoom, DK_CtrlUtils, DK_Vector, DK_StrUtils,
+  //Forms
+  USIZSizeEditForm;
 
 type
 
   { TSIZCardFrontForm }
 
   TSIZCardFrontForm = class(TForm)
+    CardNumButton: TSpeedButton;
+    PersonSizesButton: TSpeedButton;
     SheetBottomPanel: TPanel;
     SheetPanel: TPanel;
     ToolPanel: TPanel;
@@ -25,22 +29,26 @@ type
     ZoomPanel: TPanel;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
+    procedure PersonSizesButtonClick(Sender: TObject);
   private
     ZoomPercent: Integer;
     Sheet: TSIZCardFrontSheet;
 
+    StaffID, TabNumID, CardID, ItemID: Integer;
     CardNum, Family, PersonName, Patronymic, Gender, TabNum, PostName: String;
     CardBD, CardED: TDate;
     PersonSizes: TSIZStaffSizeIndexes;
     SubItems: TNormSubItems;
 
     procedure DataDraw(const AZoomPercent: Integer);
+    procedure DataReDraw;
 
     procedure SettingsLoad;
   public
     procedure SettingsSave;
     procedure ViewUpdate(const AModeType: TModeType);
-    procedure DataUpdate(const ACardNum, AFamily, AName, APatronymic,
+    procedure DataUpdate(const AStaffID, ATabNumID, ACardID, AItemID: Integer;
+                         const ACardNum, AFamily, AName, APatronymic,
                                AGender, ATabNum, APostName: String;
                          const ACardBD, ACardED: TDate;
                          const APersonSizes: TSIZStaffSizeIndexes;
@@ -64,13 +72,13 @@ begin
     ToolPanel
   ]);
 
-  //SetToolButtons([
-  //
-  //]);
+  SetToolButtons([
+    CardNumButton, PersonSizesButton
+  ]);
 
-  //Images.ToButtons([
-  //
-  //]);
+  Images.ToButtons([
+    CardNumButton, PersonSizesButton
+  ]);
 
   Sheet:= TSIZCardFrontSheet.Create(ViewGrid.Worksheet, ViewGrid, MainForm.GridFont);
 
@@ -81,6 +89,12 @@ end;
 procedure TSIZCardFrontForm.FormDestroy(Sender: TObject);
 begin
   FreeAndNil(Sheet);
+end;
+
+procedure TSIZCardFrontForm.PersonSizesButtonClick(Sender: TObject);
+begin
+  if SizeEditFormShowModal(StaffID, PersonSizes)=mrOK then
+    DataReDraw;
 end;
 
 procedure TSIZCardFrontForm.DataDraw(const AZoomPercent: Integer);
@@ -96,6 +110,11 @@ begin
     ViewGrid.Visible:= True;
     Screen.Cursor:= crDefault;
   end;
+end;
+
+procedure TSIZCardFrontForm.DataReDraw;
+begin
+  DataDraw(ZoomPercent);
 end;
 
 procedure TSIZCardFrontForm.SettingsLoad;
@@ -117,15 +136,21 @@ end;
 procedure TSIZCardFrontForm.ViewUpdate(const AModeType: TModeType);
 begin
   ToolPanel.Visible:= AModeType=mtEditing;
-  DataDraw(ZoomPercent);
+  DataReDraw;
 end;
 
-procedure TSIZCardFrontForm.DataUpdate(const ACardNum, AFamily, AName, APatronymic,
+procedure TSIZCardFrontForm.DataUpdate(const AStaffID, ATabNumID, ACardID, AItemID: Integer;
+                                       const ACardNum, AFamily, AName, APatronymic,
                                              AGender, ATabNum, APostName: String;
                                        const ACardBD, ACardED: TDate;
                                        const APersonSizes: TSIZStaffSizeIndexes;
                                        const ASubItems: TNormSubItems);
 begin
+  StaffID:= AStaffID;
+  TabNumID:= ATabNumID;
+  CardID:= ACardID;
+  ItemID:= AItemID;
+
   CardNum:= ACardNum;
   CardBD:= ACardBD;
   CardED:= ACardED;
@@ -139,6 +164,9 @@ begin
 
   PersonSizes:= APersonSizes;
   SubItems:= ASubItems;
+
+  CardNumButton.Enabled:= StaffID>0;
+  PersonSizesButton.Enabled:= CardNumButton.Enabled;
 end;
 
 end.

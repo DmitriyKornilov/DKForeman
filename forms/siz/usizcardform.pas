@@ -365,7 +365,7 @@ begin
   if CardList.IsSelected then
   begin
     ViewCaptionPanel.Caption:= ViewCaptionPanel.Caption +
-      CardNums[CardList.SelectedIndex] +
+      ViewCardNums[CardList.SelectedIndex] +
       ' (' +
       PeriodToStr(CardBDs[CardList.SelectedIndex], CardEDs[CardList.SelectedIndex]) +
       ')';
@@ -417,9 +417,14 @@ end;
 
 procedure TSIZCardForm.CardFrontUpdate;
 var
+  StaffID, TabNumID, CardID, ItemID: Integer;
   CardNum, Family, PersonName, Patronymic, Gender, TabNum, PostName: String;
   CardBD, CardED: TDate;
 begin
+  StaffID:= 0;
+  TabNumID:= 0;
+  CardID:= 0;
+  ItemID:= 0;
   CardNum:= EmptyStr;
   Family:= EmptyStr;
   PersonName:= EmptyStr;
@@ -432,20 +437,25 @@ begin
 
   if CardList.IsSelected then
   begin
+    CardID:= CardIDs[CardList.SelectedIndex];
+    ItemID:= CardItemIDs[CardList.SelectedIndex];
     CardNum:= CardNums[CardList.SelectedIndex];
     CardBD:= CardBDs[CardList.SelectedIndex];
     CardED:= CardEDs[CardList.SelectedIndex];
+    PostName:= CardPostNames[CardList.SelectedIndex];
 
+    StaffID:= StaffIDs[StaffList.SelectedIndex];
     Family:= Families[StaffList.SelectedIndex];
     PersonName:= Names[StaffList.SelectedIndex];
     Patronymic:= Patronymics[StaffList.SelectedIndex];
     Gender:= Genders[StaffList.SelectedIndex];
     TabNum:= TabNums[StaffList.SelectedIndex];
-    PostName:= PostNames[StaffList.SelectedIndex];
+    TabNumID:= TabNumIDs[StaffList.SelectedIndex];
   end;
 
-  (CategoryForm as TSIZCardFrontForm).DataUpdate(CardNum, Family, PersonName,
-    Patronymic, Gender, TabNum, PostName, CardBD, CardED, PersonSizes, SubItems);
+  (CategoryForm as TSIZCardFrontForm).DataUpdate(StaffID, TabNumID, CardID, ItemID, CardNum,
+                              Family, PersonName, Patronymic, Gender, TabNum, PostName,
+                              CardBD, CardED, PersonSizes, SubItems);
   (CategoryForm as TSIZCardFrontForm).ViewUpdate(ModeType);
 end;
 

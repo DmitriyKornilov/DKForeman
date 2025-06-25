@@ -37,6 +37,9 @@ type
     Respirator: Integer;
   end;
   procedure SIZStaffSizeIndexesClear(var AStaffSizes: TSIZStaffSizeIndexes);
+  procedure SIZStaffSizeIndexesSet(var AStaffSizes: TSIZStaffSizeIndexes;
+                                   const AClothes, AHeight, AShoes, AHead,
+                                         AHand, AGasmask, ARespirator: Integer);
   procedure SIZStaffSizesForSizeType(const AStaffSizes: TSIZStaffSizeIndexes;
                                      const ASizeType: Integer;
                                      out ASizeID, AHeightID: Integer);
@@ -53,6 +56,19 @@ begin
   AStaffSizes.Hand:= 0;
   AStaffSizes.Gasmask:= 0;
   AStaffSizes.Respirator:= 0;
+end;
+
+procedure SIZStaffSizeIndexesSet(var AStaffSizes: TSIZStaffSizeIndexes;
+                                   const AClothes, AHeight, AShoes, AHead,
+                                         AHand, AGasmask, ARespirator: Integer);
+begin
+  AStaffSizes.Height:= AHeight;
+  AStaffSizes.Clothes:= AClothes;
+  AStaffSizes.Shoes:= AShoes;
+  AStaffSizes.Head:= AHead;
+  AStaffSizes.Hand:= AHand;
+  AStaffSizes.Gasmask:= AGasmask;
+  AStaffSizes.Respirator:= ARespirator;
 end;
 
 procedure SIZStaffSizesForSizeType(const AStaffSizes: TSIZStaffSizeIndexes;

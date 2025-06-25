@@ -53,6 +53,7 @@ type
                    const ACardBD, ACardED: TDate;
                    const APersonSizes: TSIZStaffSizeIndexes;
                    const ASubItems: TNormSubItems);
+
   end;
 
   { TSIZCardBackSheet }
@@ -211,7 +212,8 @@ begin
   Writer.WriteText(R, 1, R, 6, 'перевода в другое структурное подразделение', cbtNone);
 
   R:= R + 1;
-  Writer.WriteText(R, 1, R, 6, '', cbtBottom);
+  Writer.WriteText(R, 1, R, 3, '', cbtBottom);
+  Writer.WriteText(R, 4, R, 6, '', cbtBottom);
   Writer.WriteText(R, 8, R, 8, 'СИЗ рук', cbtNone);
   Writer.WriteText(R, 9, R, 9, '', cbtBottom);
 
@@ -276,7 +278,7 @@ begin
 
   R:= R + 1;
   if not SameDate(FCardED, INFDATE) then
-    Writer.WriteDate(R, 1, R, 6, FCardED, cbtBottom);
+    Writer.WriteDate(R, 4, R, 6, FCardED, cbtBottom);
   Writer.WriteText(R, 9, R, 9, HANDS[FPersonSizes.Hand], cbtBottom);
 end;
 

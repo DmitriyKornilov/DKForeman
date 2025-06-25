@@ -56,7 +56,24 @@ type
 var
   SIZSizeEditForm: TSIZSizeEditForm;
 
+  function SizeEditFormShowModal(const AStaffID: Integer; var ASizes: TSIZStaffSizeIndexes): Integer;
+
 implementation
+
+function SizeEditFormShowModal(const AStaffID: Integer; var ASizes: TSIZStaffSizeIndexes): Integer;
+var
+  Form: TSIZSizeEditForm;
+begin
+  Form:= TSIZSizeEditForm.Create(nil);
+  try
+    Form.StaffID:= AStaffID;
+    Form.SizeIndexes:= ASizes;
+    Result:= Form.ShowModal;
+    ASizes:= Form.SizeIndexes;
+  finally
+    FreeAndNil(Form);
+  end;
+end;
 
 {$R *.lfm}
 

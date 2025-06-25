@@ -1495,6 +1495,28 @@ function TDataBase.StaffPostForDate(const ATabNumID: Integer;
                                const ADate: TDate;
                                out APostID: Integer;
                                out APostName, ARank: String): Boolean;
+var
+  S, SQLStr: String;
+
+  function ValuesLoad(const ASQLStr: String): Boolean;
+  begin
+    Result:= False;
+    QSetQuery(FQuery);
+    QSetSQL(ASQLStr);
+    QParamDT('DateValue', ADate);
+    QParamInt('TabNumID', ATabNumID);
+    QOpen;
+    if not QIsEmpty then
+    begin
+      QFirst;
+      APostName:= QFieldStr('PostName');
+      ARank:= QFieldStr('Rank');
+      APostID:= QFieldInt('PostID');
+      Result:= True;
+    end;
+    QClose;
+  end;
+
 begin
   Result:= False;
 
@@ -1502,29 +1524,28 @@ begin
   ARank:= EmptyStr;
   APostID:= 0;
 
-  QSetQuery(FQuery);
-  QSetSQL(
-    'SELECT t1.Rank, t1.PostID, t2.PostName ' +
-    'FROM STAFFPOSTLOG t1 ' +
-    'INNER JOIN STAFFPOST t2 ON (t1.PostID=t2.PostID) ' +
-    'WHERE (t1.TabNumID = :TabNumID) AND (t1.PostTemp = 0) AND (' +
-          '(:DateValue BETWEEN t1.FirstDate AND t1.LastDate ) OR (:DateValue<t1.FirstDate) ' +
-    ')' +
-    'ORDER BY t1.FirstDate ' +
-    'LIMIT 1'
-  );
-  QParamDT('DateValue', ADate);
-  QParamInt('TabNumID', ATabNumID);
-  QOpen;
-  if not QIsEmpty then
-  begin
-    QFirst;
-    APostName:= QFieldStr('PostName');
-    ARank:= QFieldStr('Rank');
-    APostID:= QFieldInt('PostID');
-    Result:= True;
-  end;
-  QClose;
+  S:= 'SELECT t1.Rank, t1.PostID, t2.PostName ' +
+      'FROM STAFFPOSTLOG t1 ' +
+      'INNER JOIN STAFFPOST t2 ON (t1.PostID=t2.PostID) '+
+      'WHERE (t1.TabNumID = :TabNumID) AND (t1.PostTemp = 0) ';
+
+  //постоянная должность на указанную дату
+  SQLStr:= S + 'AND (:DateValue BETWEEN t1.FirstDate AND t1.LastDate) ';
+  Result:= ValuesLoad(SQLStr);
+  if Result then Exit;
+
+  //последняя постоянная должность до указанной даты
+  SQLStr:= S + 'AND (t1.LastDate < :DateValue) ' +
+          'ORDER BY t1.LastDate DESC ' +
+          'LIMIT 1';
+  Result:= ValuesLoad(SQLStr);
+  if Result then Exit;
+
+  //постоянная должность после указанной даты
+  SQLStr:= S + 'AND (t1.FirstDate > :DateValue) ' +
+          'ORDER BY t1.FirstDate ' +
+          'LIMIT 1';
+  Result:= ValuesLoad(SQLStr);
 end;
 
 procedure TDataBase.StaffPostLast(const ATabNumID: Integer;
