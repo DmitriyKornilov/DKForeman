@@ -92,6 +92,7 @@ type
     procedure DBConnect;
 
     procedure ViewUpdate;
+    procedure DictionaryUpdate;
     procedure SettingsSave;
   public
     GridFont: TFont;
@@ -224,6 +225,26 @@ begin
 
 end;
 
+procedure TMainForm.DictionaryUpdate;
+begin
+  if not Assigned(CategoryForm) then Exit;
+
+  case Category of
+    //0: ;
+    //1: (CategoryForm as TStaffForm).ViewUpdate(ModeType);
+    //2: (CategoryForm as TCalendarForm).ViewUpdate(ModeType);
+    //3: (CategoryForm as TScheduleShiftForm).ViewUpdate(ModeType);
+    //4: (CategoryForm as TVacationPlanForm).ViewUpdate(ModeType);
+    //5: (CategoryForm as TSchedulePersonalForm).ViewUpdate(ModeType);
+    //6: (CategoryForm as TTimetableForm).ViewUpdate(ModeType);
+    7: (CategoryForm as TSIZNormForm).DictionaryUpdate;
+    8: ; //SIZStorage
+    9: ; //SIZRequest
+    //10: (CategoryForm as TSIZSizeForm).ViewUpdate(ModeType);
+    //11: (CategoryForm as TSIZCardForm).ViewUpdate(ModeType);
+  end;
+end;
+
 procedure TMainForm.SettingsSave;
 begin
   if not Assigned(CategoryForm) then Exit;
@@ -320,7 +341,7 @@ begin
                           True, 'Фильтр:');
   end;
 
-  if IsOK then ViewUpdate;
+  if IsOK then DictionaryUpdate;//ViewUpdate;
 end;
 
 procedure TMainForm.SetGridFont;

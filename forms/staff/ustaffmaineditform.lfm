@@ -2,15 +2,13 @@ object StaffMainEditForm: TStaffMainEditForm
   Left = 757
   Height = 281
   Top = 261
-  Width = 431
+  Width = 407
   BorderIcons = [biSystemMenu]
   Caption = 'Сотрудник'
   ClientHeight = 281
-  ClientWidth = 431
+  ClientWidth = 407
   DesignTimePPI = 120
-  FormStyle = fsStayOnTop
   Position = poScreenCenter
-  LCLVersion = '4.0.0.4'
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
@@ -37,7 +35,7 @@ object StaffMainEditForm: TStaffMainEditForm
     Left = 123
     Height = 28
     Top = 12
-    Width = 300
+    Width = 276
     Anchors = [akTop, akLeft, akRight]
     BorderSpacing.Left = 8
     BorderSpacing.Top = 12
@@ -71,7 +69,7 @@ object StaffMainEditForm: TStaffMainEditForm
     Left = 123
     Height = 28
     Top = 52
-    Width = 300
+    Width = 276
     Anchors = [akTop, akLeft, akRight]
     BorderSpacing.Left = 8
     BorderSpacing.Top = 12
@@ -106,7 +104,7 @@ object StaffMainEditForm: TStaffMainEditForm
     Left = 123
     Height = 28
     Top = 92
-    Width = 300
+    Width = 276
     Anchors = [akTop, akLeft, akRight]
     BorderSpacing.Left = 8
     BorderSpacing.Top = 12
@@ -192,7 +190,7 @@ object StaffMainEditForm: TStaffMainEditForm
     Left = 274
     Height = 28
     Top = 132
-    Width = 149
+    Width = 125
     Anchors = [akTop, akLeft, akRight, akBottom]
     StateClicked.Background.Gradient1.StartColor = 8404992
     StateClicked.Background.Gradient1.EndColor = 4194304
@@ -277,6 +275,7 @@ object StaffMainEditForm: TStaffMainEditForm
     BorderSpacing.Left = 8
     BorderSpacing.Right = 8
     Color = clNone
+    Constraints.MinWidth = 80
     DropDownWidth = 16
     DropDownArrowSize = 8
     GlobalOpacity = 255
@@ -296,7 +295,7 @@ object StaffMainEditForm: TStaffMainEditForm
     Left = 2
     Height = 95
     Top = 180
-    Width = 427
+    Width = 403
     Align = alBottom
     Anchors = [akTop, akLeft, akRight]
     AutoSize = True
@@ -306,7 +305,7 @@ object StaffMainEditForm: TStaffMainEditForm
     BorderSpacing.Bottom = 6
     BevelOuter = bvNone
     ClientHeight = 95
-    ClientWidth = 427
+    ClientWidth = 403
     TabOrder = 4
     object CancelButton: TSpeedButton
       AnchorSideTop.Control = ButtonPanelBevel
@@ -314,7 +313,7 @@ object StaffMainEditForm: TStaffMainEditForm
       AnchorSideRight.Control = ButtonPanel
       AnchorSideRight.Side = asrBottom
       Cursor = crHandPoint
-      Left = 300
+      Left = 276
       Height = 40
       Top = 8
       Width = 121
@@ -334,7 +333,7 @@ object StaffMainEditForm: TStaffMainEditForm
       AnchorSideTop.Side = asrCenter
       AnchorSideRight.Control = CancelButton
       Cursor = crHandPoint
-      Left = 173
+      Left = 149
       Height = 40
       Top = 8
       Width = 127
@@ -352,7 +351,7 @@ object StaffMainEditForm: TStaffMainEditForm
       Left = 0
       Height = 8
       Top = 0
-      Width = 427
+      Width = 403
       Align = alTop
       Shape = bsTopLine
     end

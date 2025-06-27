@@ -46,6 +46,7 @@ type
     procedure Draw(const AOrderNums: TIntVector;
                    const APostNames: TStrMatrix;
                    const ASelectedIndex: Integer);
+    procedure Select(const ASelectedIndex: Integer);
     procedure Swap(const AIndex1, AIndex2: Integer);
     function IndexToItemIndex(const AIndex: Integer): Integer;
     function ItemIndexToIndex(const AIndex: Integer): Integer;
@@ -91,6 +92,7 @@ type
   public
     procedure Draw(const ASubItems: TNormSubItems;
                    const ASelectedIndex: Integer);
+    procedure Select(const ASelectedIndex: Integer);
     function CanUp: Boolean;
     function CanDown: Boolean;
   end;
@@ -243,6 +245,11 @@ begin
     LineDraw(i);
   DrawingEnd;
 
+  Select(ASelectedIndex);
+end;
+
+procedure TSIZNormItemSheet.Select(const ASelectedIndex: Integer);
+begin
   SetSelection(IndexToRow(ItemIndexToIndex(ASelectedIndex)), 1);
 end;
 
@@ -514,6 +521,11 @@ begin
 
   DrawingEnd;
 
+  Select(ASelectedIndex);
+end;
+
+procedure TSIZNormSubItemsSheet.Select(const ASelectedIndex: Integer);
+begin
   SetSelection(SubItemIndexToRow(ASelectedIndex), 1);
 end;
 

@@ -9,7 +9,6 @@ object SIZNormForm: TSIZNormForm
   ClientHeight = 577
   ClientWidth = 1000
   DesignTimePPI = 120
-  LCLVersion = '4.0.0.4'
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
@@ -24,8 +23,8 @@ object SIZNormForm: TSIZNormForm
     BorderSpacing.Right = 2
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 40
-    ClientWidth = 996
+    ClientHeight = 36
+    ClientWidth = 992
     ParentFont = False
     TabOrder = 0
     object CloseButton: TSpeedButton
@@ -73,161 +72,46 @@ object SIZNormForm: TSIZNormForm
       OnClick = ExportButtonClick
     end
   end
-  object NormPanel: TPanel
-    Left = 2
-    Height = 250
-    Top = 44
-    Width = 996
-    Align = alTop
-    BorderSpacing.Left = 2
-    BorderSpacing.Top = 2
-    BorderSpacing.Right = 2
-    BevelOuter = bvNone
-    ClientHeight = 250
-    ClientWidth = 996
-    TabOrder = 1
-    object NormToolPanel: TPanel
-      Left = 0
-      Height = 40
-      Top = 32
-      Width = 996
-      Align = alTop
-      BorderSpacing.Bottom = 2
-      BevelOuter = bvNone
-      BorderStyle = bsSingle
-      ClientHeight = 40
-      ClientWidth = 996
-      ParentBackground = False
-      ParentColor = False
-      ParentFont = False
-      TabOrder = 0
-      Visible = False
-      object NormAddButton: TSpeedButton
-        Cursor = crHandPoint
-        Left = 0
-        Height = 36
-        Hint = 'Добавить'
-        Top = 0
-        Width = 40
-        Align = alLeft
-        Images = Images.PX24
-        ImageIndex = 4
-        ShowHint = True
-        ParentShowHint = False
-        OnClick = NormAddButtonClick
-      end
-      object NormDelButton: TSpeedButton
-        Cursor = crHandPoint
-        Left = 40
-        Height = 36
-        Hint = 'Удалить'
-        Top = 0
-        Width = 40
-        Align = alLeft
-        Enabled = False
-        Images = Images.PX24
-        ImageIndex = 5
-        ShowHint = True
-        ParentShowHint = False
-        OnClick = NormDelButtonClick
-      end
-      object NormEditButton: TSpeedButton
-        Cursor = crHandPoint
-        Left = 80
-        Height = 36
-        Hint = 'Редактировать'
-        Top = 0
-        Width = 40
-        Align = alLeft
-        Enabled = False
-        Images = Images.PX24
-        ImageIndex = 6
-        ShowHint = True
-        ParentShowHint = False
-        OnClick = NormEditButtonClick
-      end
-    end
-    object NormVT: TVirtualStringTree
-      Left = 0
-      Height = 176
-      Top = 74
-      Width = 996
-      Align = alClient
-      DefaultNodeHeight = 25
-      DefaultText = 'Node'
-      Header.AutoSizeIndex = 0
-      Header.Columns = <>
-      Header.MainColumn = -1
-      TabOrder = 1
-      OnDblClick = NormVTDblClick
-    end
-    object NormCaptionPanel: TPanel
-      Left = 0
-      Height = 30
-      Top = 0
-      Width = 996
-      Align = alTop
-      Alignment = taLeftJustify
-      BorderSpacing.Bottom = 2
-      BevelOuter = bvNone
-      BorderStyle = bsSingle
-      Caption = '  Нормы выдачи СИЗ'
-      Color = clBtnFace
-      Font.Style = [fsBold]
-      ParentBackground = False
-      ParentColor = False
-      ParentFont = False
-      TabOrder = 2
-    end
-  end
-  object Splitter1: TSplitter
-    Cursor = crVSplit
-    Left = 0
-    Height = 6
-    Top = 294
-    Width = 1000
-    Align = alTop
-    ResizeAnchor = akTop
-    ResizeStyle = rsLine
-  end
   object MainPanel: TPanel
-    Left = 2
-    Height = 275
-    Top = 300
-    Width = 996
+    Left = 0
+    Height = 535
+    Top = 42
+    Width = 1000
     Align = alClient
-    BorderSpacing.Left = 2
-    BorderSpacing.Right = 2
-    BorderSpacing.Bottom = 2
     BevelOuter = bvNone
-    ClientHeight = 275
-    ClientWidth = 996
-    TabOrder = 3
-    object ItemPanel: TPanel
-      Left = 0
-      Height = 241
-      Top = 32
-      Width = 500
-      Align = alLeft
-      BorderSpacing.Bottom = 2
+    ClientHeight = 535
+    ClientWidth = 1000
+    TabOrder = 1
+    object NormPanel: TPanel
+      Left = 2
+      Height = 250
+      Top = 2
+      Width = 996
+      Align = alTop
+      BorderSpacing.Left = 2
+      BorderSpacing.Top = 2
+      BorderSpacing.Right = 2
       BevelOuter = bvNone
-      ClientHeight = 241
-      ClientWidth = 500
+      ClientHeight = 250
+      ClientWidth = 996
       TabOrder = 0
-      object ItemToolPanel: TPanel
+      object NormToolPanel: TPanel
         Left = 0
         Height = 40
-        Top = 0
-        Width = 500
+        Top = 32
+        Width = 996
         Align = alTop
         BorderSpacing.Bottom = 2
         BevelOuter = bvNone
         BorderStyle = bsSingle
-        ClientHeight = 40
-        ClientWidth = 500
+        ClientHeight = 36
+        ClientWidth = 992
+        ParentBackground = False
+        ParentColor = False
         ParentFont = False
         TabOrder = 0
-        object ItemAddButton: TSpeedButton
+        Visible = False
+        object NormAddButton: TSpeedButton
           Cursor = crHandPoint
           Left = 0
           Height = 36
@@ -235,14 +119,13 @@ object SIZNormForm: TSIZNormForm
           Top = 0
           Width = 40
           Align = alLeft
-          Enabled = False
           Images = Images.PX24
           ImageIndex = 4
           ShowHint = True
           ParentShowHint = False
-          OnClick = ItemAddButtonClick
+          OnClick = NormAddButtonClick
         end
-        object ItemDelButton: TSpeedButton
+        object NormDelButton: TSpeedButton
           Cursor = crHandPoint
           Left = 40
           Height = 36
@@ -255,9 +138,9 @@ object SIZNormForm: TSIZNormForm
           ImageIndex = 5
           ShowHint = True
           ParentShowHint = False
-          OnClick = ItemDelButtonClick
+          OnClick = NormDelButtonClick
         end
-        object ItemEditButton: TSpeedButton
+        object NormEditButton: TSpeedButton
           Cursor = crHandPoint
           Left = 80
           Height = 36
@@ -270,275 +153,402 @@ object SIZNormForm: TSIZNormForm
           ImageIndex = 6
           ShowHint = True
           ParentShowHint = False
-          OnClick = ItemEditButtonClick
-        end
-        object ItemCopyButton: TSpeedButton
-          Cursor = crHandPoint
-          Left = 120
-          Height = 36
-          Hint = 'Копировать'
-          Top = 0
-          Width = 40
-          Align = alLeft
-          Enabled = False
-          Images = Images.PX24
-          ImageIndex = 9
-          ShowHint = True
-          ParentShowHint = False
-          OnClick = ItemCopyButtonClick
-        end
-        object ItemUpButton: TSpeedButton
-          Cursor = crHandPoint
-          Left = 160
-          Height = 36
-          Hint = 'Переместить строку вверх'
-          Top = 0
-          Width = 40
-          Align = alLeft
-          Enabled = False
-          Images = Images.PX24
-          ImageIndex = 46
-          ShowHint = True
-          ParentShowHint = False
-          OnClick = ItemUpButtonClick
-        end
-        object ItemDownButton: TSpeedButton
-          Cursor = crHandPoint
-          Left = 200
-          Height = 36
-          Hint = 'Переместить строку вниз'
-          Top = 0
-          Width = 40
-          Align = alLeft
-          Enabled = False
-          Images = Images.PX24
-          ImageIndex = 47
-          ShowHint = True
-          ParentShowHint = False
-          OnClick = ItemDownButtonClick
+          OnClick = NormEditButtonClick
         end
       end
-      object ItemSheetPanel: TPanel
+      object NormVT: TVirtualStringTree
         Left = 0
-        Height = 199
-        Top = 42
-        Width = 500
+        Height = 176
+        Top = 74
+        Width = 996
         Align = alClient
+        DefaultNodeHeight = 25
+        DefaultText = 'Node'
+        Header.AutoSizeIndex = 0
+        Header.Columns = <>
+        Header.MainColumn = -1
+        TabOrder = 1
+        OnDblClick = NormVTDblClick
+      end
+      object NormCaptionPanel: TPanel
+        Left = 0
+        Height = 30
+        Top = 0
+        Width = 996
+        Align = alTop
+        Alignment = taLeftJustify
+        BorderSpacing.Bottom = 2
         BevelOuter = bvNone
         BorderStyle = bsSingle
-        ClientHeight = 199
-        ClientWidth = 500
-        TabOrder = 1
-        OnChangeBounds = ItemSheetPanelChangeBounds
-        object ItemGrid: TsWorksheetGrid
-          Left = 0
-          Height = 195
-          Top = 0
-          Width = 496
-          AutoExpand = []
-          DisplayFixedColRow = False
-          FrozenBorderPen.Style = psClear
-          FrozenCols = 0
-          FrozenRows = 0
-          PageBreakPen.Color = clBlue
-          PageBreakPen.Style = psDash
-          ReadFormulas = False
-          SelectionPen.Color = clWindow
-          SelectionPen.Style = psClear
-          SelectionPen.Width = 0
-          ShowGridLines = False
-          ShowHeaders = False
-          WorkbookSource = ItemGrid.internal
-          Align = alClient
-          AutoAdvance = aaNone
-          AutoEdit = False
-          BorderStyle = bsNone
-          Color = clWhite
-          DefaultColWidth = 40
-          DefaultRowHeight = 20
-          ExtendedSelect = False
-          Flat = True
-          MouseWheelOption = mwGrid
-          Options = [goFixedVertLine, goFixedHorzLine, goSmoothScroll]
-          ParentFont = False
-          ScrollBars = ssAutoVertical
-          TabOrder = 0
-          TabStop = False
-          TitleFont.Style = [fsBold]
-          OnDblClick = ItemGridDblClick
-        end
+        Caption = '  Нормы выдачи СИЗ'
+        Color = clBtnFace
+        Font.Style = [fsBold]
+        ParentBackground = False
+        ParentColor = False
+        ParentFont = False
+        TabOrder = 2
       end
     end
-    object Splitter2: TSplitter
-      Left = 500
-      Height = 243
-      Top = 32
-      Width = 6
+    object Splitter1: TSplitter
+      Cursor = crVSplit
+      Left = 0
+      Height = 6
+      Top = 252
+      Width = 1000
+      Align = alTop
+      ResizeAnchor = akTop
       ResizeStyle = rsLine
     end
-    object SubItemPanel: TPanel
-      Left = 506
-      Height = 243
-      Top = 32
-      Width = 490
+    object ItemAndSubItemPanel: TPanel
+      Left = 2
+      Height = 275
+      Top = 258
+      Width = 996
       Align = alClient
+      BorderSpacing.Left = 2
+      BorderSpacing.Right = 2
+      BorderSpacing.Bottom = 2
       BevelOuter = bvNone
-      ClientHeight = 243
-      ClientWidth = 490
+      ClientHeight = 275
+      ClientWidth = 996
       TabOrder = 2
-      object SubItemToolPanel: TPanel
+      object ItemPanel: TPanel
         Left = 0
-        Height = 40
-        Top = 0
-        Width = 490
-        Align = alTop
+        Height = 241
+        Top = 32
+        Width = 500
+        Align = alLeft
         BorderSpacing.Bottom = 2
         BevelOuter = bvNone
-        BorderStyle = bsSingle
-        ClientHeight = 40
-        ClientWidth = 490
-        ParentFont = False
+        ClientHeight = 241
+        ClientWidth = 500
         TabOrder = 0
-        object SubItemAddButton: TSpeedButton
-          Cursor = crHandPoint
+        object ItemToolPanel: TPanel
           Left = 0
-          Height = 36
-          Hint = 'Добавить'
+          Height = 40
           Top = 0
-          Width = 40
-          Align = alLeft
-          Enabled = False
-          Images = Images.PX24
-          ImageIndex = 4
-          ShowHint = True
-          ParentShowHint = False
-          OnClick = SubItemAddButtonClick
+          Width = 500
+          Align = alTop
+          BorderSpacing.Bottom = 2
+          BevelOuter = bvNone
+          BorderStyle = bsSingle
+          ClientHeight = 36
+          ClientWidth = 496
+          ParentFont = False
+          TabOrder = 0
+          object ItemAddButton: TSpeedButton
+            Cursor = crHandPoint
+            Left = 0
+            Height = 36
+            Hint = 'Добавить'
+            Top = 0
+            Width = 40
+            Align = alLeft
+            Enabled = False
+            Images = Images.PX24
+            ImageIndex = 4
+            ShowHint = True
+            ParentShowHint = False
+            OnClick = ItemAddButtonClick
+          end
+          object ItemDelButton: TSpeedButton
+            Cursor = crHandPoint
+            Left = 40
+            Height = 36
+            Hint = 'Удалить'
+            Top = 0
+            Width = 40
+            Align = alLeft
+            Enabled = False
+            Images = Images.PX24
+            ImageIndex = 5
+            ShowHint = True
+            ParentShowHint = False
+            OnClick = ItemDelButtonClick
+          end
+          object ItemEditButton: TSpeedButton
+            Cursor = crHandPoint
+            Left = 80
+            Height = 36
+            Hint = 'Редактировать'
+            Top = 0
+            Width = 40
+            Align = alLeft
+            Enabled = False
+            Images = Images.PX24
+            ImageIndex = 6
+            ShowHint = True
+            ParentShowHint = False
+            OnClick = ItemEditButtonClick
+          end
+          object ItemCopyButton: TSpeedButton
+            Cursor = crHandPoint
+            Left = 120
+            Height = 36
+            Hint = 'Копировать'
+            Top = 0
+            Width = 40
+            Align = alLeft
+            Enabled = False
+            Images = Images.PX24
+            ImageIndex = 9
+            ShowHint = True
+            ParentShowHint = False
+            OnClick = ItemCopyButtonClick
+          end
+          object ItemUpButton: TSpeedButton
+            Cursor = crHandPoint
+            Left = 160
+            Height = 36
+            Hint = 'Переместить строку вверх'
+            Top = 0
+            Width = 40
+            Align = alLeft
+            Enabled = False
+            Images = Images.PX24
+            ImageIndex = 46
+            ShowHint = True
+            ParentShowHint = False
+            OnClick = ItemUpButtonClick
+          end
+          object ItemDownButton: TSpeedButton
+            Cursor = crHandPoint
+            Left = 200
+            Height = 36
+            Hint = 'Переместить строку вниз'
+            Top = 0
+            Width = 40
+            Align = alLeft
+            Enabled = False
+            Images = Images.PX24
+            ImageIndex = 47
+            ShowHint = True
+            ParentShowHint = False
+            OnClick = ItemDownButtonClick
+          end
         end
-        object SubItemDelButton: TSpeedButton
-          Cursor = crHandPoint
-          Left = 40
-          Height = 36
-          Hint = 'Удалить'
-          Top = 0
-          Width = 40
-          Align = alLeft
-          Enabled = False
-          Images = Images.PX24
-          ImageIndex = 5
-          ShowHint = True
-          ParentShowHint = False
-          OnClick = SubItemDelButtonClick
-        end
-        object SubItemEditButton: TSpeedButton
-          Cursor = crHandPoint
-          Left = 80
-          Height = 36
-          Hint = 'Редактировать'
-          Top = 0
-          Width = 40
-          Align = alLeft
-          Enabled = False
-          Images = Images.PX24
-          ImageIndex = 6
-          ShowHint = True
-          ParentShowHint = False
-          OnClick = SubItemEditButtonClick
-        end
-        object SubItemUpButton: TSpeedButton
-          Cursor = crHandPoint
-          Left = 120
-          Height = 36
-          Hint = 'Переместить строку вверх'
-          Top = 0
-          Width = 40
-          Align = alLeft
-          Enabled = False
-          Images = Images.PX24
-          ImageIndex = 46
-          ShowHint = True
-          ParentShowHint = False
-          OnClick = SubItemUpButtonClick
-        end
-        object SubItemDownButton: TSpeedButton
-          Cursor = crHandPoint
-          Left = 160
-          Height = 36
-          Hint = 'Переместить строку вниз'
-          Top = 0
-          Width = 40
-          Align = alLeft
-          Enabled = False
-          Images = Images.PX24
-          ImageIndex = 47
-          ShowHint = True
-          ParentShowHint = False
-          OnClick = SubItemDownButtonClick
+        object ItemSheetPanel: TPanel
+          Left = 0
+          Height = 199
+          Top = 42
+          Width = 500
+          Align = alClient
+          BevelOuter = bvNone
+          BorderStyle = bsSingle
+          ClientHeight = 195
+          ClientWidth = 496
+          TabOrder = 1
+          OnChangeBounds = ItemSheetPanelChangeBounds
+          object ItemGrid: TsWorksheetGrid
+            Left = 0
+            Height = 195
+            Top = 0
+            Width = 496
+            AutoExpand = []
+            DisplayFixedColRow = False
+            FrozenBorderPen.Style = psClear
+            FrozenCols = 0
+            FrozenRows = 0
+            PageBreakPen.Color = clBlue
+            PageBreakPen.Style = psDash
+            ReadFormulas = False
+            SelectionPen.Color = clWindow
+            SelectionPen.Style = psClear
+            SelectionPen.Width = 0
+            ShowGridLines = False
+            ShowHeaders = False
+            WorkbookSource = ItemGrid.internal
+            Align = alClient
+            AutoAdvance = aaNone
+            AutoEdit = False
+            BorderStyle = bsNone
+            Color = clWhite
+            DefaultColWidth = 40
+            DefaultRowHeight = 20
+            ExtendedSelect = False
+            Flat = True
+            MouseWheelOption = mwGrid
+            Options = [goFixedVertLine, goFixedHorzLine, goSmoothScroll]
+            ParentFont = False
+            ScrollBars = ssAutoVertical
+            TabOrder = 0
+            TabStop = False
+            TitleFont.Style = [fsBold]
+            OnDblClick = ItemGridDblClick
+          end
         end
       end
-      object SubItemSheetPanel: TPanel
-        Left = 0
-        Height = 201
-        Top = 42
+      object Splitter2: TSplitter
+        Left = 500
+        Height = 243
+        Top = 32
+        Width = 6
+        ResizeStyle = rsLine
+      end
+      object SubItemPanel: TPanel
+        Left = 506
+        Height = 243
+        Top = 32
         Width = 490
         Align = alClient
         BevelOuter = bvNone
-        BorderStyle = bsSingle
-        ClientHeight = 201
+        ClientHeight = 243
         ClientWidth = 490
-        TabOrder = 1
-        object SubItemGrid: TsWorksheetGrid
+        TabOrder = 2
+        object SubItemToolPanel: TPanel
           Left = 0
-          Height = 197
+          Height = 40
           Top = 0
-          Width = 486
-          AutoExpand = []
-          DisplayFixedColRow = False
-          FrozenBorderPen.Style = psClear
-          FrozenCols = 0
-          FrozenRows = 0
-          PageBreakPen.Color = clBlue
-          PageBreakPen.Style = psDash
-          ReadFormulas = False
-          SelectionPen.Color = clWindow
-          SelectionPen.Style = psClear
-          SelectionPen.Width = 0
-          ShowGridLines = False
-          ShowHeaders = False
-          WorkbookSource = SubItemGrid.internal
-          Align = alClient
-          AutoAdvance = aaNone
-          AutoEdit = False
-          BorderStyle = bsNone
-          Color = clWhite
-          DefaultColWidth = 40
-          DefaultRowHeight = 20
-          ExtendedSelect = False
-          Flat = True
-          MouseWheelOption = mwGrid
-          Options = [goFixedVertLine, goFixedHorzLine, goSmoothScroll]
+          Width = 490
+          Align = alTop
+          BorderSpacing.Bottom = 2
+          BevelOuter = bvNone
+          BorderStyle = bsSingle
+          ClientHeight = 36
+          ClientWidth = 486
           ParentFont = False
           TabOrder = 0
-          TabStop = False
-          TitleFont.Style = [fsBold]
-          OnDblClick = SubItemGridDblClick
+          object SubItemAddButton: TSpeedButton
+            Cursor = crHandPoint
+            Left = 0
+            Height = 36
+            Hint = 'Добавить'
+            Top = 0
+            Width = 40
+            Align = alLeft
+            Enabled = False
+            Images = Images.PX24
+            ImageIndex = 4
+            ShowHint = True
+            ParentShowHint = False
+            OnClick = SubItemAddButtonClick
+          end
+          object SubItemDelButton: TSpeedButton
+            Cursor = crHandPoint
+            Left = 40
+            Height = 36
+            Hint = 'Удалить'
+            Top = 0
+            Width = 40
+            Align = alLeft
+            Enabled = False
+            Images = Images.PX24
+            ImageIndex = 5
+            ShowHint = True
+            ParentShowHint = False
+            OnClick = SubItemDelButtonClick
+          end
+          object SubItemEditButton: TSpeedButton
+            Cursor = crHandPoint
+            Left = 80
+            Height = 36
+            Hint = 'Редактировать'
+            Top = 0
+            Width = 40
+            Align = alLeft
+            Enabled = False
+            Images = Images.PX24
+            ImageIndex = 6
+            ShowHint = True
+            ParentShowHint = False
+            OnClick = SubItemEditButtonClick
+          end
+          object SubItemUpButton: TSpeedButton
+            Cursor = crHandPoint
+            Left = 120
+            Height = 36
+            Hint = 'Переместить строку вверх'
+            Top = 0
+            Width = 40
+            Align = alLeft
+            Enabled = False
+            Images = Images.PX24
+            ImageIndex = 46
+            ShowHint = True
+            ParentShowHint = False
+            OnClick = SubItemUpButtonClick
+          end
+          object SubItemDownButton: TSpeedButton
+            Cursor = crHandPoint
+            Left = 160
+            Height = 36
+            Hint = 'Переместить строку вниз'
+            Top = 0
+            Width = 40
+            Align = alLeft
+            Enabled = False
+            Images = Images.PX24
+            ImageIndex = 47
+            ShowHint = True
+            ParentShowHint = False
+            OnClick = SubItemDownButtonClick
+          end
+        end
+        object SubItemSheetPanel: TPanel
+          Left = 0
+          Height = 201
+          Top = 42
+          Width = 490
+          Align = alClient
+          BevelOuter = bvNone
+          BorderStyle = bsSingle
+          ClientHeight = 197
+          ClientWidth = 486
+          TabOrder = 1
+          object SubItemGrid: TsWorksheetGrid
+            Left = 0
+            Height = 197
+            Top = 0
+            Width = 486
+            AutoExpand = []
+            DisplayFixedColRow = False
+            FrozenBorderPen.Style = psClear
+            FrozenCols = 0
+            FrozenRows = 0
+            PageBreakPen.Color = clBlue
+            PageBreakPen.Style = psDash
+            ReadFormulas = False
+            SelectionPen.Color = clWindow
+            SelectionPen.Style = psClear
+            SelectionPen.Width = 0
+            ShowGridLines = False
+            ShowHeaders = False
+            WorkbookSource = SubItemGrid.internal
+            Align = alClient
+            AutoAdvance = aaNone
+            AutoEdit = False
+            BorderStyle = bsNone
+            Color = clWhite
+            DefaultColWidth = 40
+            DefaultRowHeight = 20
+            ExtendedSelect = False
+            Flat = True
+            MouseWheelOption = mwGrid
+            Options = [goFixedVertLine, goFixedHorzLine, goSmoothScroll]
+            ParentFont = False
+            TabOrder = 0
+            TabStop = False
+            TitleFont.Style = [fsBold]
+            OnDblClick = SubItemGridDblClick
+          end
         end
       end
-    end
-    object ItemCaptionPanel: TPanel
-      Left = 0
-      Height = 30
-      Top = 0
-      Width = 996
-      Align = alTop
-      Alignment = taLeftJustify
-      BorderSpacing.Bottom = 2
-      BevelOuter = bvNone
-      BorderStyle = bsSingle
-      Caption = '  Пункты норм'
-      Font.Style = [fsBold]
-      ParentColor = False
-      ParentFont = False
-      TabOrder = 3
+      object ItemCaptionPanel: TPanel
+        Left = 0
+        Height = 30
+        Top = 0
+        Width = 996
+        Align = alTop
+        Alignment = taLeftJustify
+        BorderSpacing.Bottom = 2
+        BevelOuter = bvNone
+        BorderStyle = bsSingle
+        Caption = '  Пункты норм'
+        Font.Style = [fsBold]
+        ParentColor = False
+        ParentFont = False
+        TabOrder = 3
+      end
     end
   end
 end

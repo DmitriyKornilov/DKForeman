@@ -21,39 +21,40 @@ type
 
   TSIZNormForm = class(TForm)
     CloseButton: TSpeedButton;
-    ItemCaptionPanel: TPanel;
-    NormCaptionPanel: TPanel;
     ExportButton: TSpeedButton;
+    DividerBevel1: TDividerBevel;
     ItemAddButton: TSpeedButton;
-    SubItemAddButton: TSpeedButton;
+    ItemAndSubItemPanel: TPanel;
+    ItemCaptionPanel: TPanel;
     ItemCopyButton: TSpeedButton;
     ItemDelButton: TSpeedButton;
-    SubItemDelButton: TSpeedButton;
-    ItemEditButton: TSpeedButton;
     ItemDownButton: TSpeedButton;
-    SubItemEditButton: TSpeedButton;
-    SubItemGrid: TsWorksheetGrid;
-    SubItemSheetPanel: TPanel;
-    ItemToolPanel: TPanel;
-    DividerBevel1: TDividerBevel;
+    ItemEditButton: TSpeedButton;
+    ItemGrid: TsWorksheetGrid;
+    ItemPanel: TPanel;
     ItemSheetPanel: TPanel;
-    SubItemDownButton: TSpeedButton;
-    SubItemUpButton: TSpeedButton;
-    SubItemToolPanel: TPanel;
-    SubItemPanel: TPanel;
+    ItemToolPanel: TPanel;
+    ItemUpButton: TSpeedButton;
+    MainPanel: TPanel;
     NormAddButton: TSpeedButton;
+    NormCaptionPanel: TPanel;
     NormDelButton: TSpeedButton;
     NormEditButton: TSpeedButton;
-    NormToolPanel: TPanel;
     NormPanel: TPanel;
-    MainPanel: TPanel;
-    ItemPanel: TPanel;
-    Splitter1: TSplitter;
+    NormToolPanel: TPanel;
     NormVT: TVirtualStringTree;
+    Splitter1: TSplitter;
     Splitter2: TSplitter;
-    ItemUpButton: TSpeedButton;
+    SubItemAddButton: TSpeedButton;
+    SubItemDelButton: TSpeedButton;
+    SubItemDownButton: TSpeedButton;
+    SubItemEditButton: TSpeedButton;
+    SubItemGrid: TsWorksheetGrid;
+    SubItemPanel: TPanel;
+    SubItemSheetPanel: TPanel;
+    SubItemToolPanel: TPanel;
+    SubItemUpButton: TSpeedButton;
     ToolPanel: TPanel;
-    ItemGrid: TsWorksheetGrid;
     procedure CloseButtonClick(Sender: TObject);
     procedure ExportButtonClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -122,6 +123,7 @@ type
     procedure NormExport;
   public
     procedure ViewUpdate(const AModeType: TModeType);
+    procedure DictionaryUpdate;
   end;
 
 var
@@ -659,10 +661,32 @@ begin
   if ModeType=mtEditing then
   begin
     if Length(NormSubItems)>0 then
-      NormSubItemSheet.SetSelection(2, 1);
+      NormSubItemSheet.Select(0);
   end
   else
     NormSubItemSheet.DelSelection;
+end;
+
+procedure TSIZNormForm.DictionaryUpdate;
+var
+  SelectedItemIndex, SelectedSubItemIndex: Integer;
+begin
+  MainPanel.Visible:= False;
+  try
+    SelectedItemIndex:= NormItemSheet.SelectedIndex;
+    SelectedSubItemIndex:= NormSubItemSheet.SelectedIndex;
+
+    NormListLoad;
+
+    if SelectedItemIndex>=0 then
+      NormItemSheet.Select(SelectedItemIndex);
+
+    if (ModeType=mtEditing) and (SelectedSubItemIndex>0) then
+      NormSubItemSheet.Select(SelectedSubItemIndex);
+
+  finally
+    MainPanel.Visible:= True;
+  end;
 end;
 
 end.

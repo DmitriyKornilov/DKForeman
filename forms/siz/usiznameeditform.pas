@@ -21,6 +21,7 @@ type
     Splitter: TSplitter;
     TypePanel: TPanel;
     TypeVT: TVirtualStringTree;
+    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
   private
@@ -63,6 +64,12 @@ begin
   TypeList.SetColumn(0, SIZ_TYPE_PICKS, taLeftJustify);
   TypeList.Draw;
   TypeList.Select(0);
+end;
+
+procedure TSIZNameEditForm.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+begin
+  CanClose:= True;
+  ModalResult:= mrOK;
 end;
 
 procedure TSIZNameEditForm.FormDestroy(Sender: TObject);

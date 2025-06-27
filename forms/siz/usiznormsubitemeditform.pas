@@ -132,19 +132,6 @@ begin
   NormSubItemClear(OldSubItem);
 end;
 
-procedure TSIZNormSubItemEditForm.CancelButtonClick(Sender: TObject);
-begin
-  ModalResult:= mrCancel;
-end;
-
-procedure TSIZNormSubItemEditForm.AddButtonClick(Sender: TObject);
-begin
-  if InfoVT.Enabled then
-    InfoRowAdd
-  else
-    InfoRowEditEnd;
-end;
-
 procedure TSIZNormSubItemEditForm.FormDestroy(Sender: TObject);
 begin
   FreeAndNil(ReasonDropDown);
@@ -158,7 +145,11 @@ procedure TSIZNormSubItemEditForm.FormShow(Sender: TObject);
 var
   IsSIZExists: Boolean;
 begin
-  Images.ToButtons([SaveButton, CancelButton]);
+  Images.ToButtons([
+    SaveButton, CancelButton,
+    SearchButton,
+    AddButton, DelButton, EditButton, UpButton, DownButton
+  ]);
   SetEventButtons([SaveButton, CancelButton]);
 
   ControlHeight(SearchButton, TOOL_PANEL_HEIGHT_DEFAULT-2);
@@ -187,6 +178,19 @@ begin
   if EditingType=etEdit then
     NormSubItemCopy(SubItem, OldSubItem);
   InfoShow;
+end;
+
+procedure TSIZNormSubItemEditForm.CancelButtonClick(Sender: TObject);
+begin
+  ModalResult:= mrCancel;
+end;
+
+procedure TSIZNormSubItemEditForm.AddButtonClick(Sender: TObject);
+begin
+  if InfoVT.Enabled then
+    InfoRowAdd
+  else
+    InfoRowEditEnd;
 end;
 
 procedure TSIZNormSubItemEditForm.LifeSpinEditChange(Sender: TObject);
