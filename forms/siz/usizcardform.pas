@@ -178,8 +178,8 @@ begin
   FrontTabButton.Width:= BackTabButton.Width;
   StatusTabButton.Width:= BackTabButton.Width;
 
+  StaffListLoad;
   CategorySelect(1);
-  DataUpdate;
 end;
 
 procedure TSIZCardForm.FrontTabButtonClick(Sender: TObject);
@@ -401,6 +401,7 @@ begin
     begin
       CategoryForm.Show;
       CardViewUpdate;
+      CardDataUpdate;
     end;
 
   finally
