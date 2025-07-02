@@ -29,11 +29,13 @@ type
     ZoomPercent: Integer;
 
     procedure DataDraw(const AZoomPercent: Integer);
+    procedure DataReDraw;
 
     procedure SettingsLoad;
   public
     procedure SettingsSave;
     procedure ViewUpdate(const AModeType: TModeType);
+    procedure DataUpdate();
   end;
 
 var
@@ -81,6 +83,11 @@ begin
   end;
 end;
 
+procedure TSIZCardStatusForm.DataReDraw;
+begin
+  DataDraw(ZoomPercent);
+end;
+
 procedure TSIZCardStatusForm.SettingsLoad;
 var
   SettingValues: TIntVector;
@@ -100,6 +107,13 @@ end;
 procedure TSIZCardStatusForm.ViewUpdate(const AModeType: TModeType);
 begin
   ToolPanel.Visible:= AModeType=mtEditing;
+end;
+
+procedure TSIZCardStatusForm.DataUpdate();
+begin
+
+
+  DataReDraw;
 end;
 
 end.

@@ -105,6 +105,7 @@ type
   public
     procedure SettingsSave;
     procedure ViewUpdate(const AModeType: TModeType);
+    procedure DataUpdate;
   end;
 
 var
@@ -156,16 +157,6 @@ begin
   FreeAndNil(Calendar);
 end;
 
-procedure TCalendarForm.CloseButtonClick(Sender: TObject);
-begin
-  MainForm.CategorySelect(0);
-end;
-
-procedure TCalendarForm.DayVTDblClick(Sender: TObject);
-begin
-  CorrectionEdit;
-end;
-
 procedure TCalendarForm.FormShow(Sender: TObject);
 begin
   SetToolPanels([
@@ -187,7 +178,17 @@ begin
     CopySaveButton, CopyDelButton,CopyCancelButton
   ]);
 
-  CalendarRefresh;
+  DataUpdate;
+end;
+
+procedure TCalendarForm.CloseButtonClick(Sender: TObject);
+begin
+  MainForm.CategorySelect(0);
+end;
+
+procedure TCalendarForm.DayVTDblClick(Sender: TObject);
+begin
+  CorrectionEdit;
 end;
 
 procedure TCalendarForm.ViewGridDblClick(Sender: TObject);
@@ -533,6 +534,11 @@ begin
     EditingPanel.Visible:= False;
     SheetPanel.AnchorToNeighbour(akLeft, 2, Self);
   end;
+end;
+
+procedure TCalendarForm.DataUpdate;
+begin
+  CalendarRefresh;
 end;
 
 end.

@@ -92,7 +92,7 @@ type
     procedure DBConnect;
 
     procedure ViewUpdate;
-    procedure DictionaryUpdate;
+    procedure DataUpdate;
     procedure SettingsSave;
   public
     GridFont: TFont;
@@ -225,23 +225,23 @@ begin
 
 end;
 
-procedure TMainForm.DictionaryUpdate;
+procedure TMainForm.DataUpdate;
 begin
   if not Assigned(CategoryForm) then Exit;
 
   case Category of
     //0: ;
-    //1: (CategoryForm as TStaffForm).ViewUpdate(ModeType);
-    //2: (CategoryForm as TCalendarForm).ViewUpdate(ModeType);
-    //3: (CategoryForm as TScheduleShiftForm).ViewUpdate(ModeType);
-    //4: (CategoryForm as TVacationPlanForm).ViewUpdate(ModeType);
-    //5: (CategoryForm as TSchedulePersonalForm).ViewUpdate(ModeType);
-    //6: (CategoryForm as TTimetableForm).ViewUpdate(ModeType);
-    7: (CategoryForm as TSIZNormForm).DictionaryUpdate;
+    1: (CategoryForm as TStaffForm).DataUpdate;
+    2: (CategoryForm as TCalendarForm).DataUpdate;
+    3: (CategoryForm as TScheduleShiftForm).DataUpdate;
+    4: (CategoryForm as TVacationPlanForm).DataUpdate;
+    5: (CategoryForm as TSchedulePersonalForm).DataUpdate;
+    6: (CategoryForm as TTimetableForm).DataUpdate;
+    7: (CategoryForm as TSIZNormForm).DataUpdate;
     8: ; //SIZStorage
     9: ; //SIZRequest
-    //10: (CategoryForm as TSIZSizeForm).ViewUpdate(ModeType);
-    //11: (CategoryForm as TSIZCardForm).ViewUpdate(ModeType);
+    10: (CategoryForm as TSIZSizeForm).DataUpdate;
+    11: (CategoryForm as TSIZCardForm).DataUpdate;
   end;
 end;
 
@@ -270,6 +270,7 @@ begin
   if ACategory=Category then Exit;
 
   Screen.Cursor:= crHourGlass;
+  MainPanel.Visible:= False;
   try
     SettingsSave;
     Category:= ACategory;
@@ -299,6 +300,7 @@ begin
 
   finally
     Screen.Cursor:= crDefault;
+    MainPanel.Visible:= True;
   end;
 end;
 
@@ -341,7 +343,7 @@ begin
                           True, 'Фильтр:');
   end;
 
-  if IsOK then DictionaryUpdate;//ViewUpdate;
+  if IsOK then DataUpdate;//ViewUpdate;
 end;
 
 procedure TMainForm.SetGridFont;
@@ -430,7 +432,8 @@ end;
 
 procedure TMainForm.RefreshButtonClick(Sender: TObject);
 begin
-
+  DataBase.Reconnect;
+  DataUpdate;
 end;
 
 procedure TMainForm.PostListMenuItemClick(Sender: TObject);

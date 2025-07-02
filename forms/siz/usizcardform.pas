@@ -70,7 +70,7 @@ type
     procedure StatusTabButtonClick(Sender: TObject);
     procedure TabNumRadioButtonClick(Sender: TObject);
   private
-    CanDraw: Boolean;
+    CanDataUpdate: Boolean;
     FilterString: String;
     ModeType: TModeType;
 
@@ -109,11 +109,13 @@ type
 
     procedure CardFrontUpdate;
     procedure CardViewUpdate;
+    procedure CardDataUpdate;
 
     procedure SettingsLoad;
   public
     procedure SettingsSave;
     procedure ViewUpdate(const AModeType: TModeType);
+    procedure DataUpdate;
   end;
 
 var
@@ -135,7 +137,7 @@ begin
   BackTabButton.StateActive.Color:= DefaultSelectionBGColor;
   StatusTabButton.StateActive.Color:= DefaultSelectionBGColor;
 
-  CanDraw:= False;
+  CanDataUpdate:= False;
 
   StaffListCreate;
   CardListCreate;
@@ -143,7 +145,7 @@ begin
   SettingsLoad;
   CreateFilterControls('Фильтр по Ф.И.О.:', FilterPanel, @StaffListFilter, 300);
 
-  CanDraw:= True;
+  CanDataUpdate:= True;
 end;
 
 procedure TSIZCardForm.FormDestroy(Sender: TObject);
@@ -175,7 +177,9 @@ begin
 
   FrontTabButton.Width:= BackTabButton.Width;
   StatusTabButton.Width:= BackTabButton.Width;
+
   CategorySelect(1);
+  DataUpdate;
 end;
 
 procedure TSIZCardForm.FrontTabButtonClick(Sender: TObject);
@@ -270,6 +274,8 @@ var
   OrderType: Byte;
   IsDescOrder: Boolean;
 begin
+  if not CanDataUpdate then Exit;
+
   SelectedID:= GetSelectedID(StaffList, TabNumIDs, -1);
 
   if FIORadioButton.Checked then
@@ -298,8 +304,6 @@ begin
   finally
     StaffList.Visible:= True;
   end;
-
-
 end;
 
 procedure TSIZCardForm.StaffListSelect;
@@ -374,7 +378,7 @@ begin
     DataBase.SIZNormSubItemsLoad(CardItemIDs[CardList.SelectedIndex], SubItems);
   end;
 
-  CardViewUpdate;
+  CardDataUpdate;
 end;
 
 procedure TSIZCardForm.CategorySelect(const ACategory: Byte);
@@ -457,7 +461,6 @@ begin
   (CategoryForm as TSIZCardFrontForm).DataUpdate(StaffID, TabNumID, CardID, ItemID, CardNum,
                               Family, PersonName, Patronymic, Gender, TabNum, PostName,
                               CardBD, CardED, PersonSizes, SubItems);
-  (CategoryForm as TSIZCardFrontForm).ViewUpdate(ModeType);
 end;
 
 procedure TSIZCardForm.CardViewUpdate;
@@ -465,9 +468,20 @@ begin
   if not Assigned(CategoryForm) then Exit;
 
   case Category of
-    1: CardFrontUpdate;
+    1: (CategoryForm as TSIZCardFrontForm).ViewUpdate(ModeType);
     2: (CategoryForm as TSIZCardBackForm).ViewUpdate(ModeType);
     3: (CategoryForm as TSIZCardStatusForm).ViewUpdate(ModeType);
+  end;
+end;
+
+procedure TSIZCardForm.CardDataUpdate;
+begin
+  if not Assigned(CategoryForm) then Exit;
+
+  case Category of
+    1: CardFrontUpdate;
+    2: (CategoryForm as TSIZCardBackForm).DataUpdate;
+    3: (CategoryForm as TSIZCardStatusForm).DataUpdate;
   end;
 end;
 
@@ -500,13 +514,25 @@ begin
 
     MainPanel.BorderSpacing.Left:= 2*Ord(ModeType<>mtSetting);
 
-    StaffListLoad;
-
     CardViewUpdate;
 
   finally
     MainPanel.Visible:= True;
   end;
+end;
+
+procedure TSIZCardForm.DataUpdate;
+var
+  SelectedCardIndex: Integer;
+begin
+  SelectedCardIndex:= CardList.SelectedIndex;
+
+  StaffListLoad;
+
+  if SelectedCardIndex>=0 then
+    CardList.Select(SelectedCardIndex);
+
+  CardDataUpdate;
 end;
 
 end.

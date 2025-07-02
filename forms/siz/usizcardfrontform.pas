@@ -140,7 +140,6 @@ end;
 procedure TSIZCardFrontForm.ViewUpdate(const AModeType: TModeType);
 begin
   ToolPanel.Visible:= AModeType=mtEditing;
-  DataReDraw;
 end;
 
 procedure TSIZCardFrontForm.DataUpdate(const AStaffID, ATabNumID, ACardID, AItemID: Integer;
@@ -171,6 +170,8 @@ begin
 
   CardNumButton.Enabled:= StaffID>0;
   PersonSizesButton.Enabled:= CardNumButton.Enabled;
+
+  DataReDraw;
 end;
 
 end.

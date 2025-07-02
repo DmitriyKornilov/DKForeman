@@ -66,6 +66,7 @@ type
   public
     procedure SettingsSave;
     procedure ViewUpdate(const AModeType: TModeType);
+    procedure DataUpdate;
   end;
 
 var
@@ -113,6 +114,8 @@ begin
     ExportButton,
     CloseButton, EditButton
   ]);
+
+  DataUpdate;
 end;
 
 procedure TSIZSizeForm.EditButtonClick(Sender: TObject);
@@ -328,11 +331,16 @@ begin
 
     MainPanel.BorderSpacing.Left:= 2*Ord(ModeType<>mtSetting);
 
-    SizeListLoad;
+
 
   finally
     MainPanel.Visible:= True;
   end;
+end;
+
+procedure TSIZSizeForm.DataUpdate;
+begin
+  SizeListLoad;
 end;
 
 end.

@@ -170,6 +170,7 @@ type
   public
     procedure SettingsSave;
     procedure ViewUpdate(const AModeType: TModeType);
+    procedure DataUpdate;
   end;
 
 var
@@ -249,6 +250,8 @@ begin
   H:= MainPanel.Height div 3;
   EditingPanel.Height:= 2*H;
   CorrectionsPanel.Height:= H;
+
+  DataUpdate;
 end;
 
 procedure TScheduleShiftForm.CloseButtonClick(Sender: TObject);
@@ -1002,10 +1005,14 @@ begin
       ListPanel.Visible:= True;
     LeftSplitter.Align:= alLeft;
 
-    ScheduleListLoad;
   finally
     MainPanel.Visible:= True;
   end;
+end;
+
+procedure TScheduleShiftForm.DataUpdate;
+begin
+  ScheduleListLoad;
 end;
 
 end.

@@ -175,6 +175,7 @@ type
   public
     procedure SettingsSave;
     procedure ViewUpdate(const AModeType: TModeType);
+    procedure DataUpdate;
   end;
 
 var
@@ -253,7 +254,8 @@ begin
   ]);
 
   MonthDropDown.AutoWidth;
-  StaffListLoad;
+
+  DataUpdate;
 end;
 
 procedure TTimetableForm.TimetableMonthFormOpen;
@@ -1021,6 +1023,13 @@ begin
   finally
     ViewPanel.Visible:= True;
   end;
+end;
+
+procedure TTimetableForm.DataUpdate;
+begin
+  StaffListLoad;
+  ViewTabNumID:= 0;
+  TimetableChange;
 end;
 
 end.

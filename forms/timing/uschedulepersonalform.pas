@@ -227,6 +227,7 @@ type
   public
     procedure SettingsSave;
     procedure ViewUpdate(const AModeType: TModeType);
+    procedure DataUpdate;
 
   end;
 
@@ -319,7 +320,8 @@ begin
   BottomEditingPanel.Height:= H;
   H:= VacationCaptionPanel.Height + VacationToolPanel.Height + VacationEdit.TotalHeight + 10;
   VacationPanel.Height:= H;
-  StaffListLoad;
+
+  DataUpdate;
 end;
 
 procedure TSchedulePersonalForm.CloseButtonClick(Sender: TObject);
@@ -1388,6 +1390,13 @@ begin
   finally
     ViewPanel.Visible:= True;
   end;
+end;
+
+procedure TSchedulePersonalForm.DataUpdate;
+begin
+  StaffListLoad;
+  ViewTabNumID:= 0;
+  ScheduleChange;
 end;
 
 end.

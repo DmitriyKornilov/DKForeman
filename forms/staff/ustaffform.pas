@@ -127,7 +127,7 @@ type
     procedure StaffListEditItem;
 
     procedure TabNumListCreate;
-    procedure TabNumListLoad(const SelectedID: Integer = -1);
+    procedure TabNumListLoad(const ASelectedID: Integer = -1);
     procedure TabNumListSelect;
     procedure TabNumListDelItem;
     procedure TabNumListEditItem;
@@ -147,6 +147,7 @@ type
   public
     procedure SettingsSave;
     procedure ViewUpdate(const AModeType: TModeType);
+    procedure DataUpdate;
   end;
 
 var
@@ -206,6 +207,8 @@ begin
   ]);
 
   EditingPanel.Width:= Round(ClientWidth*2/3);
+
+  DataUpdate;
 end;
 
 procedure TStaffForm.CloseButtonClick(Sender: TObject);
@@ -607,16 +610,16 @@ begin
   TabNumList.Draw;
 end;
 
-procedure TStaffForm.TabNumListLoad(const SelectedID: Integer = -1);
+procedure TStaffForm.TabNumListLoad(const ASelectedID: Integer = -1);
 var
   StaffID: Integer;
   StrDismissDates: TStrVector;
-  SelectedTabNumID: Integer;
+  SelectedID: Integer;
 begin
   if not Assigned(TabNumList) then Exit;
   if ModeType<>mtEditing then Exit;
 
-  SelectedTabNumID:= GetSelectedID(TabNumList, TabNumListTabNumIDs, SelectedID);
+  SelectedID:= GetSelectedID(TabNumList, TabNumListTabNumIDs, ASelectedID);
 
   StaffID:= 0;
   if StaffList.IsSelected then
@@ -636,7 +639,7 @@ begin
     TabNumList.SetColumn(STAFF_TABNUMLIST_COLUMN_NAMES[3], TabNumListRanks);
     TabNumList.SetColumn(STAFF_TABNUMLIST_COLUMN_NAMES[4], TabNumListPostNames, taLeftJustify);
     TabNumList.Draw;
-    TabNumList.ReSelect(TabNumListTabNumIDs, SelectedTabNumID, True); //возвращаем выделение строки
+    TabNumList.ReSelect(TabNumListTabNumIDs, SelectedID, True); //возвращаем выделение строки
   finally
     TabNumList.Visible:= True;
   end;
@@ -882,10 +885,38 @@ begin
     ListToolPanel.Visible:= ModeType=mtEditing;
     ListOrderToolPanel.Visible:= ModeType=mtEditing;
 
-    StaffListUpdate;
+    if ModeType=mtEditing then
+    begin
+      if not VIsNil(StaffIDs) then
+        StaffList.Select(0);
+    end
+    else
+      StaffList.UnSelect;
 
   finally
     MainPanel.Visible:= True;
+  end;
+end;
+
+procedure TStaffForm.DataUpdate;
+var
+  SelectedTabNumIndex, SelectedPostLogIndex: Integer;
+begin
+  if ModeType=mtEditing then
+  begin
+    SelectedTabNumIndex:= TabNumList.SelectedIndex;
+    SelectedPostLogIndex:= PostLog.SelectedIndex;
+  end;
+
+  StaffListUpdate;
+
+  if ModeType=mtEditing then
+  begin
+    if SelectedTabNumIndex>=0 then
+      TabNumList.Select(SelectedTabNumIndex);
+
+    if SelectedPostLogIndex>0 then
+      PostLog.Select(SelectedPostLogIndex);
   end;
 end;
 

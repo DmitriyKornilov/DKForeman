@@ -123,7 +123,7 @@ type
     procedure NormExport;
   public
     procedure ViewUpdate(const AModeType: TModeType);
-    procedure DictionaryUpdate;
+    procedure DataUpdate;
   end;
 
 var
@@ -187,7 +187,7 @@ begin
     SubItemAddButton, SubItemDelButton, SubItemEditButton, SubItemUpButton, SubItemDownButton
   ]);
 
-  NormListLoad;
+  DataUpdate;
 end;
 
 procedure TSIZNormForm.ExportButtonClick(Sender: TObject);
@@ -667,7 +667,7 @@ begin
     NormSubItemSheet.DelSelection;
 end;
 
-procedure TSIZNormForm.DictionaryUpdate;
+procedure TSIZNormForm.DataUpdate;
 var
   SelectedItemIndex, SelectedSubItemIndex: Integer;
 begin

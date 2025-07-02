@@ -11,6 +11,7 @@ object SIZSizeForm: TSIZSizeForm
   DesignTimePPI = 120
   OnCreate = FormCreate
   OnDestroy = FormDestroy
+  OnShow = FormShow
   object ToolPanel: TPanel
     Left = 2
     Height = 40

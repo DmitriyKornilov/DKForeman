@@ -7,6 +7,7 @@ object SchedulePersonalForm: TSchedulePersonalForm
   ClientHeight = 678
   ClientWidth = 1799
   DesignTimePPI = 120
+  LCLVersion = '4.0.0.4'
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
@@ -21,8 +22,8 @@ object SchedulePersonalForm: TSchedulePersonalForm
     BorderSpacing.Right = 2
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 36
-    ClientWidth = 1791
+    ClientHeight = 40
+    ClientWidth = 1795
     ParentFont = False
     TabOrder = 0
     object YearPanel: TPanel
@@ -237,8 +238,8 @@ object SchedulePersonalForm: TSchedulePersonalForm
       BorderSpacing.Bottom = 2
       BevelOuter = bvNone
       BorderStyle = bsSingle
-      ClientHeight = 564
-      ClientWidth = 201
+      ClientHeight = 568
+      ClientWidth = 205
       Color = clWhite
       ParentBackground = False
       ParentColor = False
@@ -383,8 +384,8 @@ object SchedulePersonalForm: TSchedulePersonalForm
       BorderSpacing.Bottom = 2
       BevelOuter = bvNone
       BorderStyle = bsSingle
-      ClientHeight = 36
-      ClientWidth = 576
+      ClientHeight = 40
+      ClientWidth = 580
       ParentBackground = False
       ParentColor = False
       ParentFont = False
@@ -411,8 +412,8 @@ object SchedulePersonalForm: TSchedulePersonalForm
       BorderSpacing.Top = 2
       BevelOuter = bvNone
       BorderStyle = bsSingle
-      ClientHeight = 36
-      ClientWidth = 576
+      ClientHeight = 40
+      ClientWidth = 580
       TabOrder = 2
       object OrderLabel: TLabel
         AnchorSideLeft.Control = OrderButtonPanel
@@ -594,8 +595,8 @@ object SchedulePersonalForm: TSchedulePersonalForm
             Align = alTop
             BevelOuter = bvNone
             BorderStyle = bsSingle
-            ClientHeight = 36
-            ClientWidth = 646
+            ClientHeight = 40
+            ClientWidth = 650
             ParentFont = False
             TabOrder = 0
             object DayAddButton: TSpeedButton
@@ -694,8 +695,8 @@ object SchedulePersonalForm: TSchedulePersonalForm
             Align = alTop
             BevelOuter = bvNone
             BorderStyle = bsSingle
-            ClientHeight = 36
-            ClientWidth = 646
+            ClientHeight = 40
+            ClientWidth = 650
             ParentFont = False
             TabOrder = 0
             object CopySaveButton: TSpeedButton
@@ -806,8 +807,8 @@ object SchedulePersonalForm: TSchedulePersonalForm
           Align = alTop
           BevelOuter = bvNone
           BorderStyle = bsSingle
-          ClientHeight = 36
-          ClientWidth = 646
+          ClientHeight = 40
+          ClientWidth = 650
           ParentFont = False
           TabOrder = 0
           object VacationSaveButton: TSpeedButton
@@ -921,8 +922,8 @@ object SchedulePersonalForm: TSchedulePersonalForm
         Align = alTop
         BevelOuter = bvNone
         BorderStyle = bsSingle
-        ClientHeight = 36
-        ClientWidth = 646
+        ClientHeight = 40
+        ClientWidth = 650
         ParentFont = False
         TabOrder = 0
         object HistoryDelButton: TSpeedButton

@@ -5359,7 +5359,7 @@ begin
     'INNER JOIN SIZNORMITEMPOST t3 ON (t1.PostID=t3.PostID) ' +
     'INNER JOIN SIZNORMITEM t4 ON (t3.ItemID=t4.ItemID) '  +
     'INNER JOIN SIZNORM t5 ON (t4.NormID=t5.NormID) ' +
-    'LEFT OUTER JOIN SIZCARDPERSONAL t6 ON ((t1.TabNumID=t6.TabNumID) AND (t3.ItemID=t6.ItemID)) ' +
+    'LEFT OUTER JOIN SIZCARDPERSONAL t6 ON ((t1.TabNumID=t6.TabNumID) AND (t3.ItemPostID=t6.ItemPostID)) ' +
     'WHERE (t1.TabNumID=:TabNumID) AND (t1.PostTemp=0) AND (' +
             SqlCROSS('t1.FirstDate', 't1.LastDate', 't5.BeginDate', 't5.EndDate') + ') ' +
     'ORDER BY t1.FirstDate DESC, t5.BeginDate DESC');

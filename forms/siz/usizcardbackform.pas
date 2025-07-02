@@ -31,11 +31,13 @@ type
     Sheet: TSIZCardBackSheet;
 
     procedure DataDraw(const AZoomPercent: Integer);
+    procedure DataReDraw;
 
     procedure SettingsLoad;
   public
     procedure SettingsSave;
     procedure ViewUpdate(const AModeType: TModeType);
+    procedure DataUpdate();
   end;
 
 var
@@ -91,6 +93,11 @@ begin
   end;
 end;
 
+procedure TSIZCardBackForm.DataReDraw;
+begin
+  DataDraw(ZoomPercent);
+end;
+
 procedure TSIZCardBackForm.SettingsLoad;
 var
   SettingValues: TIntVector;
@@ -110,7 +117,13 @@ end;
 procedure TSIZCardBackForm.ViewUpdate(const AModeType: TModeType);
 begin
   ToolPanel.Visible:= AModeType=mtEditing;
-  DataDraw(ZoomPercent);
+end;
+
+procedure TSIZCardBackForm.DataUpdate;
+begin
+
+
+  DataReDraw;
 end;
 
 end.

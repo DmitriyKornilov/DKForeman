@@ -7,6 +7,7 @@ object CalendarForm: TCalendarForm
   ClientHeight = 359
   ClientWidth = 740
   DesignTimePPI = 120
+  LCLVersion = '4.0.0.4'
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
@@ -21,8 +22,8 @@ object CalendarForm: TCalendarForm
     BorderSpacing.Right = 2
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 36
-    ClientWidth = 732
+    ClientHeight = 40
+    ClientWidth = 736
     ParentFont = False
     TabOrder = 0
     object YearPanel: TPanel
@@ -145,8 +146,8 @@ object CalendarForm: TCalendarForm
         Align = alTop
         BevelOuter = bvNone
         BorderStyle = bsSingle
-        ClientHeight = 36
-        ClientWidth = 396
+        ClientHeight = 40
+        ClientWidth = 400
         ParentFont = False
         TabOrder = 0
         object DayAddButton: TSpeedButton
@@ -245,8 +246,8 @@ object CalendarForm: TCalendarForm
         Align = alTop
         BevelOuter = bvNone
         BorderStyle = bsSingle
-        ClientHeight = 36
-        ClientWidth = 396
+        ClientHeight = 40
+        ClientWidth = 400
         ParentFont = False
         TabOrder = 0
         object CopySaveButton: TSpeedButton
@@ -346,8 +347,8 @@ object CalendarForm: TCalendarForm
     BorderSpacing.Bottom = 2
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 309
-    ClientWidth = 324
+    ClientHeight = 313
+    ClientWidth = 328
     Color = clWhite
     ParentBackground = False
     ParentColor = False

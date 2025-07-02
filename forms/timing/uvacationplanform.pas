@@ -84,6 +84,7 @@ type
   public
     procedure SettingsSave;
     procedure ViewUpdate(const AModeType: TModeType);
+    procedure DataUpdate;
   end;
 
 var
@@ -133,7 +134,7 @@ begin
     CloseButton, EditButton
   ]);
 
-  StaffListLoad;
+  DataUpdate;
 end;
 
 procedure TVacationPlanForm.CloseButtonClick(Sender: TObject);
@@ -403,6 +404,11 @@ begin
   finally
     MainPanel.Visible:= True;
   end;
+end;
+
+procedure TVacationPlanForm.DataUpdate;
+begin
+  StaffListLoad;
 end;
 
 end.
