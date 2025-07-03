@@ -19,16 +19,16 @@ type
   TSIZCardBackForm = class(TForm)
     SheetBottomPanel: TPanel;
     SheetPanel: TPanel;
-    ToolPanel: TPanel;
     ViewGrid: TsWorksheetGrid;
     ZoomBevel: TBevel;
     ZoomPanel: TPanel;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
-    procedure FormShow(Sender: TObject);
   private
     ZoomPercent: Integer;
     Sheet: TSIZCardBackSheet;
+
+    NeedDraw: Boolean;
 
     procedure DataDraw(const AZoomPercent: Integer);
     procedure DataReDraw;
@@ -36,8 +36,7 @@ type
     procedure SettingsLoad;
   public
     procedure SettingsSave;
-    procedure ViewUpdate(const AModeType: TModeType);
-    procedure DataUpdate();
+    procedure DataUpdate(const ANeedDraw: Boolean);
   end;
 
 var
@@ -62,21 +61,6 @@ begin
   FreeAndNil(Sheet);
 end;
 
-procedure TSIZCardBackForm.FormShow(Sender: TObject);
-begin
-  SetToolPanels([
-    ToolPanel
-  ]);
-
-  //SetToolButtons([
-  //
-  //]);
-
-  //Images.ToButtons([
-  //
-  //]);
-end;
-
 procedure TSIZCardBackForm.DataDraw(const AZoomPercent: Integer);
 begin
   ViewGrid.Visible:= False;
@@ -84,7 +68,7 @@ begin
   try
     ZoomPercent:= AZoomPercent;
     Sheet.Zoom(ZoomPercent);
-    Sheet.Draw(nil);
+    Sheet.Draw(NeedDraw, nil);
   finally
     ViewGrid.Visible:= True;
     Screen.Cursor:= crDefault;
@@ -112,14 +96,9 @@ begin
   DataBase.SettingsUpdate(SETTING_NAMES_SIZCARDBACKFORM, SettingValues);
 end;
 
-procedure TSIZCardBackForm.ViewUpdate(const AModeType: TModeType);
+procedure TSIZCardBackForm.DataUpdate(const ANeedDraw: Boolean);
 begin
-  ToolPanel.Visible:= AModeType=mtEditing;
-end;
-
-procedure TSIZCardBackForm.DataUpdate;
-begin
-
+  NeedDraw:= ANeedDraw;
 
   DataReDraw;
 end;

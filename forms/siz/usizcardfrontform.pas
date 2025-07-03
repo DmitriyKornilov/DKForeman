@@ -51,8 +51,6 @@ var
 
 implementation
 
-uses USIZCardForm;
-
 {$R *.lfm}
 
 { TSIZCardFrontForm }
@@ -78,7 +76,7 @@ begin
     ZoomPercent:= AZoomPercent;
     Sheet.Zoom(ZoomPercent);
     Sheet.Draw(CardNum, Family, PersonName, Patronymic, Gender, TabNum, PostName,
-               CardBD, CardED, PersonSizes, SubItems);
+               Department, CardBD, CardED, PersonSizes, SubItems);
   finally
     ViewGrid.Visible:= True;
     Screen.Cursor:= crDefault;

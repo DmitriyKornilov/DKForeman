@@ -11,7 +11,6 @@ object ParamForm: TParamForm
   Constraints.MinWidth = 600
   DesignTimePPI = 120
   Position = poScreenCenter
-  LCLVersion = '4.0.0.4'
   OnShow = FormShow
   object ButtonPanel: TPanel
     AnchorSideTop.Control = DepartmentEdit
@@ -79,6 +78,28 @@ object ParamForm: TParamForm
       Align = alTop
       Shape = bsTopLine
     end
+    object Label1: TLabel
+      AnchorSideLeft.Control = ButtonPanel
+      AnchorSideTop.Control = SaveButton
+      Left = 8
+      Height = 20
+      Top = 8
+      Width = 146
+      BorderSpacing.Left = 8
+      Caption = 'вставить''«'':  Ctrl + ''<'' '
+    end
+    object Label2: TLabel
+      AnchorSideLeft.Control = ButtonPanel
+      AnchorSideTop.Control = Label1
+      AnchorSideTop.Side = asrBottom
+      Left = 8
+      Height = 20
+      Top = 28
+      Width = 146
+      BorderSpacing.Left = 8
+      BorderSpacing.Bottom = 8
+      Caption = 'вставить''»'':  Ctrl + ''>'' '
+    end
   end
   object CompanyLabel: TLabel
     AnchorSideLeft.Control = Owner
@@ -107,6 +128,7 @@ object ParamForm: TParamForm
     BorderSpacing.Top = 8
     BorderSpacing.Right = 8
     TabOrder = 1
+    OnKeyDown = CompanyEditKeyDown
   end
   object DepartmentLabel: TLabel
     AnchorSideLeft.Control = Owner
@@ -136,5 +158,6 @@ object ParamForm: TParamForm
     BorderSpacing.Top = 8
     BorderSpacing.Right = 8
     TabOrder = 2
+    OnKeyDown = DepartmentEditKeyDown
   end
 end

@@ -22,11 +22,20 @@ type
 
   TSIZCardForm = class(TForm)
     AscendingButton: TSpeedButton;
-    EditButton: TSpeedButton;
+    StatusDelButton: TSpeedButton;
+    StatusAddButton: TSpeedButton;
+    StatusButtonPanel: TPanel;
+    FrontEditButton: TSpeedButton;
     FormPanel: TPanel;
+    FrontButtonPanel: TPanel;
+    BackButtonPanel: TPanel;
+    BackDelButton: TSpeedButton;
+    StatusSizeButton: TSpeedButton;
     StatusTabButton: TColorSpeedButton;
     FrontTabButton: TColorSpeedButton;
     BackTabButton: TColorSpeedButton;
+    BackWriteoffCancelButton: TSpeedButton;
+    BackWriteoffButton: TSpeedButton;
     ViewToolPanel: TPanel;
     ViewButtonPanel: TPanel;
     ViewCaptionPanel: TPanel;
@@ -63,7 +72,7 @@ type
     procedure BackTabButtonClick(Sender: TObject);
     procedure CloseButtonClick(Sender: TObject);
     procedure DescendingButtonClick(Sender: TObject);
-    procedure EditButtonClick(Sender: TObject);
+    procedure FrontEditButtonClick(Sender: TObject);
     procedure FIORadioButtonClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -111,6 +120,7 @@ type
     procedure CardSettingsSave;
 
     procedure CardFrontUpdate;
+    procedure CardBackUpdate;
     procedure CardDataUpdate;
 
     procedure SettingsLoad;
@@ -168,13 +178,13 @@ begin
     ViewCaptionPanel
   ]);
   SetToolButtons([
-    CloseButton, AscendingButton, DescendingButton, EditButton
+    CloseButton, AscendingButton, DescendingButton, FrontEditButton
   ]);
 
   Images.ToButtons([
     ExportButton,
     CloseButton, AscendingButton, DescendingButton,
-    EditButton
+    FrontEditButton
   ]);
 
   ControlHeight(ViewButtonPanel, Round(TOOL_PANEL_HEIGHT_DEFAULT*0.65));
@@ -368,7 +378,7 @@ end;
 
 procedure TSIZCardForm.CardListSelect;
 begin
-  EditButton.Enabled:= CardList.IsSelected;
+  FrontEditButton.Enabled:= CardList.IsSelected;
 
   NormSubItemsClear(SubItems);
   if CardList.IsSelected then
@@ -394,11 +404,16 @@ begin
       2: CategoryForm:= FormOnPanelCreate(TSIZCardBackForm, FormPanel);
       3: CategoryForm:= FormOnPanelCreate(TSIZCardStatusForm, FormPanel);
     end;
+
     if Assigned(CategoryForm) then
     begin
       CategoryForm.Show;
       CardDataUpdate;
     end;
+
+    FrontButtonPanel.Visible:= Category=1;
+    BackButtonPanel.Visible:= Category=2;
+    StatusButtonPanel.Visible:= Category=3;
 
   finally
     Screen.Cursor:= crDefault;
@@ -417,7 +432,7 @@ begin
   end;
 end;
 
-procedure TSIZCardForm.EditButtonClick(Sender: TObject);
+procedure TSIZCardForm.FrontEditButtonClick(Sender: TObject);
 var
   StaffID, TabNumID, CardID, ItemPostID, CardIndex: Integer;
   CardNum: String;
@@ -482,13 +497,18 @@ begin
         CardBD, CardED, PersonSizes, SubItems);
 end;
 
+procedure TSIZCardForm.CardBackUpdate;
+begin
+  (CategoryForm as TSIZCardBackForm).DataUpdate(CardList.IsSelected);
+end;
+
 procedure TSIZCardForm.CardDataUpdate;
 begin
   if not Assigned(CategoryForm) then Exit;
 
   case Category of
     1: CardFrontUpdate;
-    2: (CategoryForm as TSIZCardBackForm).DataUpdate;
+    2: CardBackUpdate;
     3: (CategoryForm as TSIZCardStatusForm).DataUpdate;
   end;
 end;

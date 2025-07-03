@@ -19,12 +19,10 @@ type
   TSIZCardStatusForm = class(TForm)
     SheetBottomPanel: TPanel;
     SheetPanel: TPanel;
-    ToolPanel: TPanel;
     ViewGrid: TsWorksheetGrid;
     ZoomBevel: TBevel;
     ZoomPanel: TPanel;
     procedure FormCreate(Sender: TObject);
-    procedure FormShow(Sender: TObject);
   private
     ZoomPercent: Integer;
 
@@ -34,7 +32,6 @@ type
     procedure SettingsLoad;
   public
     procedure SettingsSave;
-    procedure ViewUpdate(const AModeType: TModeType);
     procedure DataUpdate();
   end;
 
@@ -51,21 +48,6 @@ procedure TSIZCardStatusForm.FormCreate(Sender: TObject);
 begin
   SettingsLoad; //load ZoomPercent
   CreateZoomControls(50, 150, ZoomPercent, ZoomPanel, @DataDraw, True);
-end;
-
-procedure TSIZCardStatusForm.FormShow(Sender: TObject);
-begin
-  SetToolPanels([
-    ToolPanel
-  ]);
-
-  //SetToolButtons([
-  //
-  //]);
-
-  //Images.ToButtons([
-  //
-  //]);
 end;
 
 procedure TSIZCardStatusForm.DataDraw(const AZoomPercent: Integer);
@@ -102,11 +84,6 @@ var
 begin
   SettingValues:= VCreateInt([ZoomPercent]);
   DataBase.SettingsUpdate(SETTING_NAMES_SIZCARDSTATUSFORM, SettingValues);
-end;
-
-procedure TSIZCardStatusForm.ViewUpdate(const AModeType: TModeType);
-begin
-  ToolPanel.Visible:= AModeType=mtEditing;
 end;
 
 procedure TSIZCardStatusForm.DataUpdate();

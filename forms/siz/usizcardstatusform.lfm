@@ -7,38 +7,25 @@ object SIZCardStatusForm: TSIZCardStatusForm
   ClientHeight = 400
   ClientWidth = 700
   DesignTimePPI = 120
-  LCLVersion = '4.0.0.4'
   OnCreate = FormCreate
-  object ToolPanel: TPanel
-    Left = 0
-    Height = 40
-    Top = 2
-    Width = 700
-    Align = alTop
-    BorderSpacing.Top = 2
-    BevelOuter = bvNone
-    BorderStyle = bsSingle
-    ParentFont = False
-    TabOrder = 0
-  end
   object SheetPanel: TPanel
     Left = 0
-    Height = 356
-    Top = 44
+    Height = 398
+    Top = 2
     Width = 700
     Align = alClient
     BorderSpacing.Top = 2
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 356
-    ClientWidth = 700
+    ClientHeight = 394
+    ClientWidth = 696
     Color = clWhite
     ParentBackground = False
     ParentColor = False
-    TabOrder = 1
+    TabOrder = 0
     object ViewGrid: TsWorksheetGrid
       Left = 0
-      Height = 328
+      Height = 370
       Top = 0
       Width = 696
       AutoExpand = []
@@ -74,7 +61,7 @@ object SIZCardStatusForm: TSIZCardStatusForm
     object SheetBottomPanel: TPanel
       Left = 0
       Height = 22
-      Top = 330
+      Top = 372
       Width = 696
       Align = alBottom
       AutoSize = True
@@ -101,7 +88,7 @@ object SIZCardStatusForm: TSIZCardStatusForm
     object ZoomBevel: TBevel
       Left = 0
       Height = 2
-      Top = 328
+      Top = 370
       Width = 696
       Align = alBottom
       Shape = bsBottomLine

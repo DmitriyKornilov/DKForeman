@@ -31,7 +31,8 @@ type
       COLUMN8_WIDTH = 100;
       COLUMN9_WIDTH = 100;
     var
-      FCardNum, FFamily, FPersonName, FPatronymic, FGender, FTabNum, FPostName: String;
+      FCardNum, FFamily, FPersonName, FPatronymic, FGender,
+      FTabNum, FPostName, FDepartment: String;
       FCardBD, FCardED: TDate;
       FPersonSizes: TSIZStaffSizeIndexes;
       FSubItems: TNormSubItems;
@@ -49,7 +50,7 @@ type
     procedure SignatureDraw(var ARow: Integer);
   public
     procedure Draw(const ACardNum, AFamily, APersonName, APatronymic,
-                         AGender, ATabNum, APostName: String;
+                         AGender, ATabNum, APostName, ADepartment: String;
                    const ACardBD, ACardED: TDate;
                    const APersonSizes: TSIZStaffSizeIndexes;
                    const ASubItems: TNormSubItems);
@@ -80,7 +81,7 @@ type
     procedure GridDraw(var ARow: Integer);
     procedure NoteDraw(var ARow: Integer);
   public
-    procedure Draw(const AItemSIZNames: TStrVector);
+    procedure Draw(const ANeedDraw: Boolean; const AItemSIZNames: TStrVector);
   end;
 
 implementation
@@ -245,8 +246,7 @@ begin
   Writer.WriteText(R, 4, R, 6, FTabNum, cbtBottom, True, True);
 
   R:= R + 1;
-  //!!!!!!!!!!!!!!!!!!!!!!
-  //Writer.WriteText(R, 4, R, 6, SUpper(''), cbtBottom, True, True); //Структурное подразделение
+  Writer.WriteText(R, 4, R, 6, SUpper(FDepartment), cbtBottom, True, True);
   Writer.WriteText(R, 9, R, 9, CLOTHES[FPersonSizes.Clothes], cbtBottom, True, True);
 
   R:= R + 1;
@@ -418,7 +418,7 @@ begin
 end;
 
 procedure TSIZCardFrontSheet.Draw(const ACardNum, AFamily, APersonName, APatronymic,
-                                        AGender, ATabNum, APostName: String;
+                                        AGender, ATabNum, APostName, ADepartment: String;
                                   const ACardBD, ACardED: TDate;
                                   const APersonSizes: TSIZStaffSizeIndexes;
                                   const ASubItems: TNormSubItems);
@@ -441,6 +441,7 @@ begin
   FGender:= AGender;
   FTabNum:= ATabNum;
   FPostName:= APostName;
+  FDepartment:= ADepartment;
 
   FPersonSizes:= APersonSizes;
   FSubItems:= ASubItems;
@@ -567,10 +568,17 @@ begin
   ARow:= R;
 end;
 
-procedure TSIZCardBackSheet.Draw(const AItemSIZNames: TStrVector);
+procedure TSIZCardBackSheet.Draw(const ANeedDraw: Boolean;
+  const AItemSIZNames: TStrVector);
 var
   R: Integer;
 begin
+  if not ANeedDraw then
+  begin
+    Writer.Clear;
+    Exit;
+  end;
+
   FItemSIZNames:= AItemSIZNames;
 
   Writer.BeginEdit;

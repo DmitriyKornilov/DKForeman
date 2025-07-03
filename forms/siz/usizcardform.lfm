@@ -548,20 +548,140 @@ object SIZCardForm: TSIZCardForm
           ClientWidth = 400
           ParentFont = False
           TabOrder = 3
-          object EditButton: TSpeedButton
-            Cursor = crHandPoint
+          object FrontButtonPanel: TPanel
             Left = 0
             Height = 36
-            Hint = 'Редактировать'
             Top = 0
             Width = 40
             Align = alLeft
-            Enabled = False
-            Images = Images.PX24
-            ImageIndex = 6
-            ShowHint = True
-            ParentShowHint = False
-            OnClick = EditButtonClick
+            AutoSize = True
+            BevelOuter = bvNone
+            ClientHeight = 36
+            ClientWidth = 40
+            TabOrder = 0
+            object FrontEditButton: TSpeedButton
+              Cursor = crHandPoint
+              Left = 0
+              Height = 36
+              Hint = 'Редактировать'
+              Top = 0
+              Width = 40
+              Align = alLeft
+              Enabled = False
+              Images = Images.PX24
+              ImageIndex = 6
+              ShowHint = True
+              ParentShowHint = False
+              OnClick = FrontEditButtonClick
+            end
+          end
+          object BackButtonPanel: TPanel
+            Left = 40
+            Height = 36
+            Top = 0
+            Width = 120
+            Align = alLeft
+            AutoSize = True
+            BevelOuter = bvNone
+            ClientHeight = 36
+            ClientWidth = 120
+            TabOrder = 1
+            object BackDelButton: TSpeedButton
+              Cursor = crHandPoint
+              Left = 0
+              Height = 36
+              Hint = 'Отменить выдачу'
+              Top = 0
+              Width = 40
+              Align = alLeft
+              Enabled = False
+              Images = Images.PX24
+              ImageIndex = 5
+              ShowHint = True
+              ParentShowHint = False
+            end
+            object BackWriteoffButton: TSpeedButton
+              Cursor = crHandPoint
+              Left = 40
+              Height = 36
+              Hint = 'Оформить возврат (списание)'
+              Top = 0
+              Width = 40
+              Align = alLeft
+              Enabled = False
+              Images = Images.PX24
+              ImageIndex = 40
+              ShowHint = True
+              ParentShowHint = False
+            end
+            object BackWriteoffCancelButton: TSpeedButton
+              Cursor = crHandPoint
+              Left = 80
+              Height = 36
+              Hint = 'Отменить возврат (списание)'
+              Top = 0
+              Width = 40
+              Align = alLeft
+              Images = Images.PX24
+              ImageIndex = 41
+              Visible = False
+              ShowHint = True
+              ParentShowHint = False
+            end
+          end
+          object StatusButtonPanel: TPanel
+            Left = 160
+            Height = 36
+            Top = 0
+            Width = 120
+            Align = alLeft
+            AutoSize = True
+            BevelOuter = bvNone
+            ClientHeight = 36
+            ClientWidth = 120
+            TabOrder = 2
+            object StatusAddButton: TSpeedButton
+              Cursor = crHandPoint
+              Left = 40
+              Height = 36
+              Hint = 'Выдать'
+              Top = 0
+              Width = 40
+              Align = alLeft
+              Enabled = False
+              Images = Images.PX24
+              ImageIndex = 4
+              ShowHint = True
+              ParentShowHint = False
+            end
+            object StatusDelButton: TSpeedButton
+              Cursor = crHandPoint
+              Left = 80
+              Height = 36
+              Hint = 'Отменить выдачу'
+              Top = 0
+              Width = 40
+              Align = alLeft
+              Enabled = False
+              Images = Images.PX24
+              ImageIndex = 5
+              ShowHint = True
+              ParentShowHint = False
+            end
+            object StatusSizeButton: TSpeedButton
+              Cursor = crHandPoint
+              Left = 0
+              Height = 36
+              Hint = 'Указать особый размер'
+              Top = 0
+              Width = 40
+              Align = alLeft
+              Enabled = False
+              Images = Images.PX24
+              ImageIndex = 38
+              ShowHint = True
+              ParentShowHint = False
+            end
           end
         end
       end

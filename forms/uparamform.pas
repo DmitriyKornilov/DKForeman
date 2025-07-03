@@ -6,9 +6,9 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, StdCtrls,
-  Buttons,
+  Buttons, LCLType,
   //DK packages utils
-  DK_CtrlUtils, DK_StrUtils, DK_Dialogs,
+  DK_CtrlUtils, DK_StrUtils, DK_Dialogs, DK_Const,
   //Project utils
   UVars;
 
@@ -24,12 +24,17 @@ type
     CompanyLabel: TLabel;
     CompanyEdit: TEdit;
     DepartmentLabel: TLabel;
+    Label1: TLabel;
+    Label2: TLabel;
     SaveButton: TSpeedButton;
     procedure CancelButtonClick(Sender: TObject);
+    procedure CompanyEditKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure DepartmentEditKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
     procedure FormShow(Sender: TObject);
     procedure SaveButtonClick(Sender: TObject);
   private
-
+    procedure QuoteInsert(const Sender: TObject; const Key: Word; const Shift: TShiftState);
   public
     Company, Department: String;
   end;
@@ -72,6 +77,7 @@ procedure TParamForm.FormShow(Sender: TObject);
 begin
   Images.ToButtons([SaveButton, CancelButton]);
   SetEventButtons([SaveButton, CancelButton]);
+  FormKeepMinSize(Self, True);
 
   CompanyEdit.Text:= Company;
   DepartmentEdit.Text:= Department;
@@ -109,9 +115,31 @@ begin
   ModalResult:= mrOK;
 end;
 
+procedure TParamForm.QuoteInsert(const Sender: TObject; const Key: Word;
+  const Shift: TShiftState);
+begin
+  if not (ssCtrl in Shift) then Exit;
+  if Key=VK_OEM_COMMA then
+    (Sender as TEdit).SelText:= SYMBOL_QUOTELEFT
+  else if Key=VK_OEM_PERIOD then
+    (Sender as TEdit).SelText:= SYMBOL_QUOTERIGHT;
+end;
+
 procedure TParamForm.CancelButtonClick(Sender: TObject);
 begin
   ModalResult:= mrCancel;
+end;
+
+procedure TParamForm.CompanyEditKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  QuoteInsert(Sender, Key, Shift);
+end;
+
+procedure TParamForm.DepartmentEditKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  QuoteInsert(Sender, Key, Shift);
 end;
 
 end.
