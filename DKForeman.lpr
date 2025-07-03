@@ -23,7 +23,8 @@ uses
   UVacationPlanningForm, USIZNormForm, USIZNormSheet, USIZSizes, USIZNormTypes,
   USIZUtils, USIZNormEditForm, USIZNormItemEditForm, USIZNormSubItemEditForm,
   USearchForm, USIZSizeForm, USIZSizeEditForm, USIZCardForm, USIZNameEditForm,
-  USIZCardFrontForm, USIZCardBackForm, USIZCardStatusForm, USIZCardSheet;
+  USIZCardFrontForm, USIZCardBackForm, USIZCardStatusForm, USIZCardSheet, 
+UParamForm, UVars;
 
 {$R *.res}
 

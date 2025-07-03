@@ -9,6 +9,7 @@ object SIZNameEditForm: TSIZNameEditForm
   ClientWidth = 1100
   DesignTimePPI = 120
   Position = poScreenCenter
+  LCLVersion = '4.0.0.4'
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   OnDestroy = FormDestroy
@@ -25,8 +26,8 @@ object SIZNameEditForm: TSIZNameEditForm
     BorderSpacing.Bottom = 2
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 456
-    ClientWidth = 346
+    ClientHeight = 460
+    ClientWidth = 350
     TabOrder = 0
     object TypeVT: TVirtualStringTree
       Left = 0

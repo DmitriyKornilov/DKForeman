@@ -8,7 +8,7 @@ uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, Buttons,
   fpspreadsheetgrid, VirtualTrees, Spin, StdCtrls, DividerBevel, DateUtils,
   //Project utils
-  UDataBase, UConst, UTypes, UTimingUtils, UImages, UWorkHours, UCalendar,
+  UVars, UConst, UTypes, UTimingUtils, UWorkHours, UCalendar,
   USchedule, UScheduleSheet,
   //DK packages utils
   DK_VSTTables, DK_VSTParamList, DK_VSTEdit, DK_Vector, DK_Const, DK_Dialogs,
@@ -714,7 +714,7 @@ begin
   VSTDays.OnSelect:= @CorrectionSelect;
   VSTDays.OnDelKeyDown:= @CorrectionDelete;
   VSTDays.OnReturnKeyDown:= @CorrectionEdit;
-  VSTDays.SetSingleFont(MainForm.GridFont);
+  VSTDays.SetSingleFont(GridFont);
   VSTDays.HeaderFont.Style:= [fsBold];
   VSTDays.CanSelect:= True;
   for i:= 0 to High(SCHEDULE_CORRECTION_COLUMN_WIDTHS) do
@@ -724,7 +724,7 @@ begin
 
   VSTCopy:= TVSTTable.Create(CopyVT);
   VSTCopy.OnSelect:= @CopySelect;
-  VSTCopy.SetSingleFont(MainForm.GridFont);
+  VSTCopy.SetSingleFont(GridFont);
   VSTCopy.HeaderFont.Style:= [fsBold];
   VSTCopy.CanSelect:= True;
   for i:= 0 to High(SCHEDULE_CORRECTION_COLUMN_WIDTHS) do
@@ -845,7 +845,7 @@ begin
   StaffList.CanSelect:= True;
   StaffList.CanUnselect:= False;
   StaffList.OnSelect:= @StaffListSelect;
-  StaffList.SetSingleFont(MainForm.GridFont);
+  StaffList.SetSingleFont(GridFont);
   StaffList.HeaderFont.Style:= [fsBold];
 
   StaffList.AddColumn('№ п/п', 50);
@@ -947,7 +947,7 @@ procedure TSchedulePersonalForm.ScheduleToSheet(var ASheet: TPersonalYearSchedul
                               const AScheduleName: String = '');
 begin
   if Assigned(ASheet) then FreeAndNil(ASheet);
-  ASheet:= TPersonalYearScheduleSheet.Create(AWorksheet, AGrid, MainForm.GridFont,
+  ASheet:= TPersonalYearScheduleSheet.Create(AWorksheet, AGrid, GridFont,
                                            ParamList.Selected['CountType']);
 
   if Assigned(AGrid) then
@@ -1081,7 +1081,7 @@ begin
   History.OnSelect:= @HistorySelect;
   History.OnDelKeyDown:= @HistoryDelItem;
   History.OnReturnKeyDown:= @HistoryEditItem;
-  History.SetSingleFont(MainForm.GridFont);
+  History.SetSingleFont(GridFont);
   History.HeaderFont.Style:= [fsBold];
 
   History.AddColumn('Дата начала', 100);
@@ -1154,7 +1154,7 @@ end;
 procedure TSchedulePersonalForm.VacationEditCreate;
 begin
   VacationEdit:= TVSTEdit.Create(VacationVT);
-  VacationEdit.SetSingleFont(MainForm.GridFont);
+  VacationEdit.SetSingleFont(GridFont);
   VacationEdit.OnEdititingBegin:= @VacationEditingBegin;
   VacationEdit.OnSelect:= @VacationEditSelect;
   VacationEdit.OnDeleteCellText:= @VacationEditDelete;

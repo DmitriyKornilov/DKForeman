@@ -24,9 +24,6 @@ type
     procedure ToButtons(const AButtons: array of TSpeedButton);
   end;
 
-var
-  Images: TImages;
-
 implementation
 
 {$R *.lfm}

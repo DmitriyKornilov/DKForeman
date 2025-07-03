@@ -8,7 +8,7 @@ uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, Buttons,
   fpspreadsheetgrid,
   //Project utils
-  UTypes, UConst, UDataBase, USIZSizes, USIZCardSheet, USIZNormTypes, UImages,
+  UTypes, UConst, UVars, USIZSizes, USIZCardSheet, USIZNormTypes,
   //DK packages utils
   DK_Zoom, DK_CtrlUtils, DK_Vector, DK_StrUtils,
   //Forms
@@ -19,8 +19,7 @@ type
   { TSIZCardFrontForm }
 
   TSIZCardFrontForm = class(TForm)
-    CardNumButton: TSpeedButton;
-    PersonSizesButton: TSpeedButton;
+    EditButton: TSpeedButton;
     SheetBottomPanel: TPanel;
     SheetPanel: TPanel;
     ToolPanel: TPanel;
@@ -30,7 +29,7 @@ type
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
-    procedure PersonSizesButtonClick(Sender: TObject);
+    procedure EditButtonClick(Sender: TObject);
   private
     ZoomPercent: Integer;
     Sheet: TSIZCardFrontSheet;
@@ -61,15 +60,13 @@ var
 
 implementation
 
-uses UMainForm;
-
 {$R *.lfm}
 
 { TSIZCardFrontForm }
 
 procedure TSIZCardFrontForm.FormCreate(Sender: TObject);
 begin
-  Sheet:= TSIZCardFrontSheet.Create(ViewGrid.Worksheet, ViewGrid, MainForm.GridFont);
+  Sheet:= TSIZCardFrontSheet.Create(ViewGrid.Worksheet, ViewGrid, GridFont);
 
   SettingsLoad; //load ZoomPercent
   CreateZoomControls(50, 150, ZoomPercent, ZoomPanel, @DataDraw, True);
@@ -87,15 +84,15 @@ begin
   ]);
 
   SetToolButtons([
-    CardNumButton, PersonSizesButton
+    EditButton
   ]);
 
   Images.ToButtons([
-    CardNumButton, PersonSizesButton
+    EditButton
   ]);
 end;
 
-procedure TSIZCardFrontForm.PersonSizesButtonClick(Sender: TObject);
+procedure TSIZCardFrontForm.EditButtonClick(Sender: TObject);
 begin
   if SizeEditFormShowModal(StaffID, PersonSizes)=mrOK then
     DataReDraw;
@@ -168,8 +165,7 @@ begin
   PersonSizes:= APersonSizes;
   SubItems:= ASubItems;
 
-  CardNumButton.Enabled:= StaffID>0;
-  PersonSizesButton.Enabled:= CardNumButton.Enabled;
+  EditButton.Enabled:= StaffID>0;
 
   DataReDraw;
 end;

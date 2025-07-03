@@ -7,7 +7,6 @@ object SIZCardFrontForm: TSIZCardFrontForm
   ClientHeight = 400
   ClientWidth = 700
   DesignTimePPI = 120
-  LCLVersion = '4.0.0.4'
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   object ToolPanel: TPanel
@@ -19,36 +18,23 @@ object SIZCardFrontForm: TSIZCardFrontForm
     BorderSpacing.Top = 2
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 40
-    ClientWidth = 700
+    ClientHeight = 36
+    ClientWidth = 696
     ParentFont = False
     TabOrder = 0
-    object CardNumButton: TSpeedButton
+    object EditButton: TSpeedButton
       Cursor = crHandPoint
       Left = 0
       Height = 36
-      Hint = 'Редактировать номер карточки'
+      Hint = 'Редактировать'
       Top = 0
       Width = 40
       Align = alLeft
       Images = Images.PX24
-      ImageIndex = 58
+      ImageIndex = 6
       ShowHint = True
       ParentShowHint = False
-    end
-    object PersonSizesButton: TSpeedButton
-      Cursor = crHandPoint
-      Left = 40
-      Height = 36
-      Hint = 'Редактировать размеры СИЗ'
-      Top = 0
-      Width = 40
-      Align = alLeft
-      Images = Images.PX24
-      ImageIndex = 59
-      ShowHint = True
-      ParentShowHint = False
-      OnClick = PersonSizesButtonClick
+      OnClick = EditButtonClick
     end
   end
   object SheetPanel: TPanel
@@ -60,8 +46,8 @@ object SIZCardFrontForm: TSIZCardFrontForm
     BorderSpacing.Top = 2
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 356
-    ClientWidth = 700
+    ClientHeight = 352
+    ClientWidth = 696
     Color = clWhite
     ParentBackground = False
     ParentColor = False

@@ -32,6 +32,7 @@
     "STAFFSCHEDULE",
     "STAFFTABNUM",
     "STAFFVACATION",
+    "TEXTPARAMS",
     "TIMETABLELOG",
     "TIMETABLEMARK"
   ],
@@ -4747,6 +4748,69 @@
         "YEARNUM"
       ]
     }
+  },
+  "TEXTPARAMS" : {
+    "Description" : "ТЕКСТОВЫЕ ПАРАМЕТРЫ",
+    "Notes" : [
+    ],
+    "FieldsList" : [
+      "NAME",
+      "VALUE"
+    ],
+    "NAME" : {
+      "FieldType" : "TEXT",
+      "PrimaryKey" : true,
+      "Status" : false,
+      "NotNull" : true,
+      "DefaultValue" : "",
+      "Description" : [
+        "Наименование параметра"
+      ],
+      "ExistingValues" : [
+        "COMPANY",
+        "DEPARTMENT"
+      ],
+      "ReferenceTo" : {
+        "TableName" : "",
+        "FieldName" : "",
+        "OnDelete" : 4,
+        "OnUpdate" : 4
+      },
+      "ReferenceFrom" : {
+        "TableNames" : [
+        ],
+        "FieldNames" : [
+        ]
+      }
+    },
+    "VALUE" : {
+      "FieldType" : "TEXT",
+      "PrimaryKey" : false,
+      "Status" : false,
+      "NotNull" : false,
+      "DefaultValue" : "",
+      "Description" : [
+        "Значение параметра"
+      ],
+      "ExistingValues" : [
+        "",
+        ""
+      ],
+      "ReferenceTo" : {
+        "TableName" : "",
+        "FieldName" : "",
+        "OnDelete" : 4,
+        "OnUpdate" : 4
+      },
+      "ReferenceFrom" : {
+        "TableNames" : [
+        ],
+        "FieldNames" : [
+        ]
+      }
+    },
+    "IndexesList" : [
+    ]
   },
   "TIMETABLELOG" : {
     "Description" : "ТАБЕЛЬ",

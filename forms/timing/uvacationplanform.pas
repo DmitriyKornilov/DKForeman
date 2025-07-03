@@ -11,7 +11,7 @@ uses
   DK_VSTTables, DK_VSTParamList, DK_VSTTypes, DK_Vector, DK_Filter, DK_StrUtils,
   DK_CtrlUtils,
   //Project utils
-  UDataBase, UTimingUtils, UImages, UTypes, UConst,
+  UVars, UTimingUtils, UTypes, UConst,
   //Forms
   UVacationScheduleForm, UVacationPlanEditForm, UVacationPlanningForm;
 
@@ -273,7 +273,7 @@ begin
   StaffList:= TVSTTable.Create(VT);
   StaffList.OnSelect:= @StaffListItemSelect;
   StaffList.OnReturnKeyDown:= @StaffListItemEdit;
-  StaffList.SetSingleFont(MainForm.GridFont);
+  StaffList.SetSingleFont(GridFont);
   StaffList.HeaderFont.Style:= [fsBold];
   for i:= 0 to High(VACATION_PLAN_STAFFLIST_COLUMN_NAMES) do
     StaffList.AddColumn(VACATION_PLAN_STAFFLIST_COLUMN_NAMES[i],

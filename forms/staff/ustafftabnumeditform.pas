@@ -10,7 +10,7 @@ uses
   //DK packages utils
   DK_StrUtils, DK_Dialogs, DK_Const, DK_CtrlUtils,
   //Project utils
-  UDataBase, UTypes, UImages;
+  UTypes, UVars;
 
 type
 

@@ -8,7 +8,7 @@ uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls,
   fpspreadsheetgrid,
   //Project utils
-  UTypes, UConst, UDataBase, USIZCardSheet,
+  UTypes, UConst, UVars, USIZCardSheet,
   //DK packages utils
   DK_Zoom, DK_CtrlUtils, DK_Vector;
 
@@ -45,15 +45,13 @@ var
 
 implementation
 
-uses UMainForm;
-
 {$R *.lfm}
 
 { TSIZCardBackForm }
 
 procedure TSIZCardBackForm.FormCreate(Sender: TObject);
 begin
-  Sheet:= TSIZCardBackSheet.Create(ViewGrid.Worksheet, ViewGrid, MainForm.GridFont);
+  Sheet:= TSIZCardBackSheet.Create(ViewGrid.Worksheet, ViewGrid, GridFont);
 
   SettingsLoad; //load ZoomPercent
   CreateZoomControls(50, 150, ZoomPercent, ZoomPanel, @DataDraw, True);

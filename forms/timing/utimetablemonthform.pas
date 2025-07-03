@@ -13,7 +13,7 @@ uses
   DK_StrUtils, DK_VSTTables, DK_VSTParamList, DK_Zoom, DK_SheetExporter,
   DK_Progress, DK_CtrlUtils,
   //Project utils
-  UDataBase, UConst, UTimingUtils, UImages, UCalendar, USchedule, UTimetable,
+  UConst, UTimingUtils, UVars, UCalendar, USchedule, UTimetable,
   UTimetableSheet, UTimingSheet, UTypes,
   //Forms
   UTimetableEditForm, UChooseForm;
@@ -164,8 +164,6 @@ var
   TimetableMonthForm: TTimetableMonthForm;
 
 implementation
-
-uses UMainForm;
 
 {$R *.lfm}
 
@@ -508,7 +506,7 @@ begin
   VStaffList:= TVSTCheckTable.Create(VStaffListVT);
   VStaffList.OnSelect:= @VStaffListSelect;
   VStaffList.StopSelectEventWhileCheckAll:= True;
-  VStaffList.SetSingleFont(MainForm.GridFont);
+  VStaffList.SetSingleFont(GridFont);
   VStaffList.SelectedBGColor:= VStaffListVT.Color;
   VStaffList.HeaderFont.Style:= [fsBold];
   for i:= 0 to High(TIMING_MONTH_STAFFLIST_COLUMN_NAMES) do
@@ -521,7 +519,7 @@ begin
   MStaffList.OnSelect:= @MStaffListSelect;
   MStaffList.TreeLinesVisible:= False;
   MStaffList.StopSelectEventWhileCheckAll:= True;
-  MStaffList.SetSingleFont(MainForm.GridFont);
+  MStaffList.SetSingleFont(GridFont);
   MStaffList.HeaderFont.Style:= [fsBold];
   for i:= 0 to High(TIMING_MONTH_STAFFLIST_COLUMN_NAMES) do
     MStaffList.AddColumn(TIMING_MONTH_STAFFLIST_COLUMN_NAMES[i],
@@ -805,7 +803,7 @@ begin
   case ParamList.Selected['TimetableType'] of
     0: //форма графика
       begin
-        Sheet:= TMonthTimetableSheet.Create(ViewGrid.Worksheet, ViewGrid, MainForm.GridFont,
+        Sheet:= TMonthTimetableSheet.Create(ViewGrid.Worksheet, ViewGrid, GridFont,
                                             ParamList.Selected['CountType'],
                                             ParamList.Selected['PeriodType'],
                                             ParamList.Checkeds['ExtraColumns']);
@@ -814,13 +812,13 @@ begin
       end;
     1: //форма T-12
       begin
-        SheetT12:= TTimetableSheetT12.Create(ViewGrid.Worksheet, ViewGrid, MainForm.GridFont);
+        SheetT12:= TTimetableSheetT12.Create(ViewGrid.Worksheet, ViewGrid, GridFont);
         SheetT12.CanSelect:= EditingButton.Down;
         SheetT12.OnSelect:= @TimetableSelect;
       end;
     2: //форма T-13
       begin
-        SheetT13:= TTimetableSheetT13.Create(ViewGrid.Worksheet, ViewGrid, MainForm.GridFont);
+        SheetT13:= TTimetableSheetT13.Create(ViewGrid.Worksheet, ViewGrid, GridFont);
         SheetT13.CanSelect:= EditingButton.Down;
         SheetT13.OnSelect:= @TimetableSelect;
       end;
@@ -898,7 +896,7 @@ var
   var
     ExpSheet: TMonthTimetableSheet;
   begin
-    ExpSheet:= TMonthTimetableSheet.Create(Worksheet, nil, MainForm.GridFont,
+    ExpSheet:= TMonthTimetableSheet.Create(Worksheet, nil, GridFont,
                                               ParamList.Selected['CountType'],
                                               ParamList.Selected['PeriodType'],
                                               ParamList.Checkeds['ExtraColumns']);
@@ -917,7 +915,7 @@ var
   var
     ExpSheetT12: TTimetableSheetT12;
   begin
-    ExpSheetT12:= TTimetableSheetT12.Create(Worksheet, nil, MainForm.GridFont);
+    ExpSheetT12:= TTimetableSheetT12.Create(Worksheet, nil, GridFont);
     try
       ExpSheetT12.Draw(MonthCalendar, Timetables, StaffNames, TabNums, PostNames,
                    ParamList.Selected['ViewType']=0,
@@ -933,7 +931,7 @@ var
   var
     ExpSheetT13: TTimetableSheetT13;
   begin
-    ExpSheetT13:= TTimetableSheetT13.Create(Worksheet, nil, MainForm.GridFont);
+    ExpSheetT13:= TTimetableSheetT13.Create(Worksheet, nil, GridFont);
     try
       ExpSheetT13.Draw(MonthCalendar, Timetables, StaffNames, TabNums, PostNames,
                    ParamList.Selected['ViewType']=0,

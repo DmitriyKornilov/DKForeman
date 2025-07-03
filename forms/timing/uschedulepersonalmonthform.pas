@@ -13,7 +13,7 @@ uses
   DK_StrUtils, DK_VSTTables, DK_VSTParamList, DK_Zoom, DK_SheetExporter,
   DK_Progress, DK_CtrlUtils,
   //Project utils
-  UDataBase, UConst, UTimingUtils, UImages, UCalendar, USchedule, UScheduleSheet,
+  UVars, UConst, UTimingUtils, UCalendar, USchedule, UScheduleSheet,
   UWorkHours, UTypes,
   //Forms
   UScheduleCorrectionEditForm, UChooseForm;
@@ -156,8 +156,6 @@ var
   SchedulePersonalMonthForm: TSchedulePersonalMonthForm;
 
 implementation
-
-uses UMainForm;
 
 {$R *.lfm}
 
@@ -450,7 +448,7 @@ begin
   VStaffList:= TVSTCheckTable.Create(VStaffListVT);
   VStaffList.OnSelect:= @VStaffListSelect;
   VStaffList.StopSelectEventWhileCheckAll:= True;
-  VStaffList.SetSingleFont(MainForm.GridFont);
+  VStaffList.SetSingleFont(GridFont);
   VStaffList.SelectedBGColor:= VStaffListVT.Color;
   VStaffList.HeaderFont.Style:= [fsBold];
   for i:= 0 to High(TIMING_MONTH_STAFFLIST_COLUMN_NAMES) do
@@ -463,7 +461,7 @@ begin
   MStaffList.OnSelect:= @MStaffListSelect;
   MStaffList.TreeLinesVisible:= False;
   MStaffList.StopSelectEventWhileCheckAll:= True;
-  MStaffList.SetSingleFont(MainForm.GridFont);
+  MStaffList.SetSingleFont(GridFont);
   MStaffList.HeaderFont.Style:= [fsBold];
   for i:= 0 to High(TIMING_MONTH_STAFFLIST_COLUMN_NAMES) do
     MStaffList.AddColumn(TIMING_MONTH_STAFFLIST_COLUMN_NAMES[i],
@@ -733,7 +731,7 @@ begin
   if not CanLoadAndDraw then Exit;
 
   if Assigned(Sheet) then FreeAndNil(Sheet);
-  Sheet:= TPersonalMonthScheduleSheet.Create(ViewGrid.Worksheet, ViewGrid, MainForm.GridFont,
+  Sheet:= TPersonalMonthScheduleSheet.Create(ViewGrid.Worksheet, ViewGrid, GridFont,
      ParamList.Selected['CountType'],
      ParamList.Selected['PeriodType'],
      ParamList.Selected['SignType'],
@@ -758,7 +756,7 @@ begin
   Exporter:= TSheetsExporter.Create;
   try
     Worksheet:= Exporter.AddWorksheet(SUpper(MonthDropDown.Text) + ' ' + YearSpinEdit.Text);
-    ExpSheet:= TPersonalMonthScheduleSheet.Create(Worksheet, nil, MainForm.GridFont,
+    ExpSheet:= TPersonalMonthScheduleSheet.Create(Worksheet, nil, GridFont,
                                ParamList.Selected['CountType'],
                                ParamList.Selected['PeriodType'],
                                ParamList.Selected['SignType'],

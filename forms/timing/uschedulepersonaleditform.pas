@@ -8,7 +8,7 @@ uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls,
   fpspreadsheetgrid, DateTimePicker, DateUtils, Buttons,
   //Project utils
-  UDataBase, UTimingUtils, UImages, UTypes, UCalendar, USchedule,  UScheduleSheet,
+  UVars, UTimingUtils, UTypes, UCalendar, USchedule,  UScheduleSheet,
   //DK packages utils
   DK_Vector, DK_Dialogs, DK_CtrlUtils;
 
@@ -49,8 +49,6 @@ var
 
 implementation
 
-uses UMainForm;
-
 {$R *.lfm}
 
 { TSchedulePersonalEditForm }
@@ -63,7 +61,7 @@ begin
   Calendar:= TCalendar.Create;
 
   DataBase.ScheduleMainListLoad(ScheduleIDs, V, V, ScheduleNames);
-  Sheet:= TShiftSimpleScheduleSheet.Create(ViewGrid, MainForm.GridFont, ScheduleNames);
+  Sheet:= TShiftSimpleScheduleSheet.Create(ViewGrid, GridFont, ScheduleNames);
 end;
 
 procedure TSchedulePersonalEditForm.FormDestroy(Sender: TObject);

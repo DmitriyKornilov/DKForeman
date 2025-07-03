@@ -11,7 +11,7 @@ uses
   DK_CtrlUtils, DK_Const, DK_Dialogs, DK_VSTTables, DK_VSTTableTools,
   DK_Vector, DK_Matrix, DK_VSTDropDown, DK_StrUtils,
   //Project utils
-  UDataBase, UTypes, UConst, UUtils, USIZUtils, USIZNormTypes, UImages,
+  {UDataBase, UImages,} UVars, UTypes, UConst, UUtils, USIZUtils, USIZNormTypes,
   //Forms
   USearchForm;
 
@@ -105,8 +105,6 @@ var
   SIZNormSubItemEditForm: TSIZNormSubItemEditForm;
 
 implementation
-
-uses UMainForm;
 
 {$R *.lfm}
 
@@ -274,7 +272,7 @@ end;
 procedure TSIZNormSubItemEditForm.InfoTableCreate;
 begin
   InfoTable:= TVSTTable.Create(InfoVT);
-  InfoTable.SetSingleFont(MainForm.GridFont);
+  InfoTable.SetSingleFont(GridFont);
   InfoTable.HeaderFont.Bold:= True;
   InfoTable.AddColumn('Наименование СИЗ', 200);
   InfoTable.AddColumn('Нормы выдачи', 150);

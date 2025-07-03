@@ -8,7 +8,7 @@ uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, Buttons,
   fpspreadsheetgrid, VirtualTrees, Spin, DividerBevel, DateUtils,
   //Project utils
-  UDataBase, UConst, UTypes, UTimingUtils, UImages, UWorkHours, UCalendar,
+  UVars, UConst, UTypes, UTimingUtils, UWorkHours, UCalendar,
   USchedule, UScheduleSheet,
   //DK packages utils
   DK_VSTTables, DK_VSTParamList, DK_Vector, DK_Const, DK_Dialogs, DK_CtrlUtils,
@@ -504,7 +504,7 @@ var
   i: Integer;
 begin
   Structure:= TVSTTable.Create(StructureVT);
-  Structure.SetSingleFont(MainForm.GridFont);
+  Structure.SetSingleFont(GridFont);
   Structure.HeaderFont.Style:= [fsBold];
   Structure.CanSelect:= False;
   for i:= 0 to High(SCHEDULE_CORRECTION_COLUMN_WIDTHS) do
@@ -516,7 +516,7 @@ begin
   VSTDays.OnSelect:= @CorrectionSelect;
   VSTDays.OnDelKeyDown:= @CorrectionDelete;
   VSTDays.OnReturnKeyDown:= @CorrectionEdit;
-  VSTDays.SetSingleFont(MainForm.GridFont);
+  VSTDays.SetSingleFont(GridFont);
   VSTDays.HeaderFont.Style:= [fsBold];
   VSTDays.CanSelect:= True;
   for i:= 0 to High(SCHEDULE_CORRECTION_COLUMN_WIDTHS) do
@@ -526,7 +526,7 @@ begin
 
   VSTCopy:= TVSTTable.Create(CopyVT);
   VSTCopy.OnSelect:= @CopySelect;
-  VSTCopy.SetSingleFont(MainForm.GridFont);
+  VSTCopy.SetSingleFont(GridFont);
   VSTCopy.HeaderFont.Style:= [fsBold];
   VSTCopy.CanSelect:= True;
   for i:= 0 to High(SCHEDULE_CORRECTION_COLUMN_WIDTHS) do
@@ -665,7 +665,7 @@ begin
   ScheduleList.OnSelect:= @ScheduleListSelect;
   ScheduleList.OnDelKeyDown:= @ScheduleListDelItem;
   ScheduleList.OnReturnKeyDown:= @ScheduleListEditItem;
-  ScheduleList.SetSingleFont(MainForm.GridFont);
+  ScheduleList.SetSingleFont(GridFont);
   ScheduleList.HeaderFont.Style:= [fsBold];
   for i:= 0 to High(SCHEDULESHIFT_LIST_COLUMN_NAMES) do
     ScheduleList.AddColumn(SCHEDULESHIFT_LIST_COLUMN_NAMES[i],
@@ -705,7 +705,7 @@ procedure TScheduleShiftForm.ScheduleToSheet(var ASheet: TShiftYearScheduleSheet
   const AScheduleName: String = '');
 begin
   if Assigned(ASheet) then FreeAndNil(ASheet);
-  ASheet:= TShiftYearScheduleSheet.Create(AWorksheet, AGrid, MainForm.GridFont,
+  ASheet:= TShiftYearScheduleSheet.Create(AWorksheet, AGrid, GridFont,
                                           ParamList.Selected['CountType']);
 
   if Assigned(AGrid) then

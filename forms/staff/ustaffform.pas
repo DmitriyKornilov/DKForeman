@@ -8,7 +8,7 @@ uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, Buttons,
   StdCtrls, DividerBevel, VirtualTrees, DateUtils,
   //Project utils
-  UDataBase, UConst, UTypes, UUtils, UImages,
+  UVars, UConst, UTypes, UUtils,
   //DK packages utils
   DK_VSTTypes, DK_VSTTables, DK_VSTParamList, DK_Vector, DK_StrUtils, DK_Const,
   DK_Dialogs, DK_DateUtils, DK_Filter, DK_CtrlUtils,
@@ -488,7 +488,7 @@ begin
   StaffList.OnSelect:= @StaffListSelect;
   StaffList.OnDelKeyDown:= @StaffListDelItem;
   StaffList.OnReturnKeyDown:= @StaffListEditItem;
-  StaffList.SetSingleFont(MainForm.GridFont);
+  StaffList.SetSingleFont(GridFont);
   StaffList.HeaderFont.Style:= [fsBold];
 end;
 
@@ -602,7 +602,7 @@ begin
   TabNumList.OnSelect:= @TabNumListSelect;
   TabNumList.OnDelKeyDown:= @TabNumListDelItem;
   TabNumList.OnReturnKeyDown:= @TabNumListEditItem;
-  TabNumList.SetSingleFont(MainForm.GridFont);
+  TabNumList.SetSingleFont(GridFont);
   TabNumList.HeaderFont.Style:= [fsBold];
   for i:= 0 to High(STAFF_TABNUMLIST_COLUMN_NAMES) do
     TabNumList.AddColumn(STAFF_TABNUMLIST_COLUMN_NAMES[i],
@@ -671,7 +671,7 @@ begin
   PostLog.OnSelect:= @PostLogSelect;
   PostLog.OnDelKeyDown:= @PostLogDelItem;
   PostLog.OnReturnKeyDown:= @PostLogEditItem;
-  PostLog.SetSingleFont(MainForm.GridFont);
+  PostLog.SetSingleFont(GridFont);
   PostLog.HeaderFont.Style:= [fsBold];
   for i:= 0 to High(STAFF_POSTLIST_COLUMN_NAMES) do
     PostLog.AddColumn(STAFF_POSTLIST_COLUMN_NAMES[i],

@@ -471,6 +471,18 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="USIZCardSheet"/>
       </Unit>
+      <Unit>
+        <Filename Value="forms\uparamform.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="ParamForm"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="UParamForm"/>
+      </Unit>
+      <Unit>
+        <Filename Value="utils\uvars.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="UVars"/>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

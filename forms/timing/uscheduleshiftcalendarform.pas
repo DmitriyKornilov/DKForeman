@@ -11,7 +11,7 @@ uses
   DK_Vector, DK_Fonts, DK_Const, DK_CtrlUtils,
   DK_VSTTypes, DK_VSTEditTools, DK_Zoom, DK_SheetExporter, DK_SheetTypes,
   //Project utils
-  UDataBase, UConst, UTimingUtils, UImages, UCalendar, USchedule, UScheduleSheet;
+  UVars, UConst, UTimingUtils, UCalendar, USchedule, UScheduleSheet;
 
 type
 
@@ -96,8 +96,6 @@ var
 
 implementation
 
-uses UMainForm;
-
 {$R *.lfm}
 
 procedure ScheduleShiftCalendarFormShow(const AYear, AScheduleID: Integer; const AScheduleName: String);
@@ -132,7 +130,7 @@ begin
 
   Calendar:= TCalendar.Create;
   Schedule:= TShiftSchedule.Create;
-  Sheet:= TShiftCalendarScheduleSheet.Create(ViewGrid.Worksheet, ViewGrid, MainForm.GridFont);
+  Sheet:= TShiftCalendarScheduleSheet.Create(ViewGrid.Worksheet, ViewGrid, GridFont);
 
   SettingsLoad; //load ZoomPercent;
   CreateZoomControls(50, 150, ZoomPercent, ZoomPanel, @ScheduleDraw, True);

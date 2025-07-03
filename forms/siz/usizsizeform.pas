@@ -8,7 +8,7 @@ uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, Buttons,
   DividerBevel, VirtualTrees,
   //Project utils
-  UDataBase, UConst, UTypes, UUtils, UImages, USIZSizes,
+  UVars, UConst, UTypes, UUtils, USIZSizes,
   //DK packages utils
   DK_VSTParamList, DK_Vector, DK_VSTTables, DK_VSTTypes, DK_Filter, DK_CtrlUtils,
   DK_StrUtils,
@@ -219,7 +219,7 @@ var
 begin
   SizeList:= TVSTTable.Create(ListVT);
   SizeList.OnReturnKeyDown:= @SizeListEdit;
-  SizeList.SetSingleFont(MainForm.GridFont);
+  SizeList.SetSingleFont(GridFont);
   SizeList.HeaderFont.Style:= [fsBold];
   for i:= 0 to High(SIZSIZE_STAFFLIST_COLUMN_NAMES) do
     SizeList.AddColumn(SIZSIZE_STAFFLIST_COLUMN_NAMES[i],

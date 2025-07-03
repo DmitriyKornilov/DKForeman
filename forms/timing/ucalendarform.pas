@@ -8,7 +8,7 @@ uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, Buttons,
   Spin, StdCtrls, DividerBevel, fpspreadsheetgrid, VirtualTrees, DateUtils,
   //Project utils
-  UConst, UTypes, UTimingUtils, UImages, UCalendar, UCalendarSheet,
+  UConst, UTypes, UVars, UTimingUtils, UCalendar, UCalendarSheet,
   //DK packages utils
   DK_DateUtils, DK_VSTTables, DK_Vector, DK_Zoom, DK_Color, DK_Const,
   DK_CtrlUtils, DK_SheetTypes,
@@ -141,7 +141,7 @@ begin
   SettingsLoad; //load ZoomPercent
   CreateZoomControls(50, 150, ZoomPercent, ZoomPanel, @CalendarDraw, True);
 
-  CalendarSheet:= TCalendarSheet.Create(ViewGrid.Worksheet, ViewGrid, MainForm.GridFont);
+  CalendarSheet:= TCalendarSheet.Create(ViewGrid.Worksheet, ViewGrid, GridFont);
   TablesCreate;
   Calendar:= TCalendar.Create;
   YearSpinEdit.Value:= YearOfDate(Date);
@@ -283,7 +283,7 @@ begin
   VSTDays.OnSelect:= @CorrectionSelect;
   VSTDays.OnDelKeyDown:= @CorrectionDelete;
   VSTDays.OnReturnKeyDown:= @CorrectionEdit;
-  VSTDays.SetSingleFont(MainForm.GridFont);
+  VSTDays.SetSingleFont(GridFont);
   VSTDays.HeaderFont.Style:= [fsBold];
   VSTDays.CanSelect:= True;
   for i:= 0 to High(CALENDAR_CORRECTION_COLUMN_WIDTHS) do
@@ -293,7 +293,7 @@ begin
 
   VSTCopy:= TVSTTable.Create(CopyVT);
   VSTCopy.OnSelect:= @CopySelect;
-  VSTCopy.SetSingleFont(MainForm.GridFont);
+  VSTCopy.SetSingleFont(GridFont);
   VSTCopy.HeaderFont.Style:= [fsBold];
   VSTCopy.CanSelect:= True;
   for i:= 0 to High(CALENDAR_CORRECTION_COLUMN_WIDTHS) do

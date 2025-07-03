@@ -8,7 +8,7 @@ uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls,
   fpspreadsheetgrid,
   //Project utils
-  UTypes, UConst, UDataBase,
+  UTypes, UConst, UVars,
   //DK packages utils
   DK_Zoom, DK_CtrlUtils, DK_Vector;
 

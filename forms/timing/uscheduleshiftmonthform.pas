@@ -11,7 +11,7 @@ uses
   DK_Vector, DK_Fonts, DK_Const, DK_StrUtils, DK_VSTTableTools, DK_Zoom,
   DK_SheetExporter, DK_ColorLegend, DK_CtrlUtils,
   //Project utils
-  UDataBase, UConst, UTypes, UTimingUtils, UImages, UCalendar, USchedule,
+  UVars, UConst, UTypes, UTimingUtils, UCalendar, USchedule,
   UScheduleSheet,
   //Forms
   UChooseForm;
@@ -92,8 +92,6 @@ var
 
 implementation
 
-uses UMainForm;
-
 {$R *.lfm}
 
 procedure ScheduleShiftMonthFormShow(const AYear, AResumeType: Integer;
@@ -132,7 +130,7 @@ begin
   LegendCreate;
 
   Calendar:= TCalendar.Create;
-  Sheet:= TShiftMonthScheduleSheet.Create(ViewGrid.Worksheet, ViewGrid, MainForm.GridFont, ResumeType);
+  Sheet:= TShiftMonthScheduleSheet.Create(ViewGrid.Worksheet, ViewGrid, GridFont, ResumeType);
 
   DataBase.ScheduleMainListLoad(ScheduleIDs, WeekHours, CycleCounts, ScheduleNames);
   ScheduleList:= TVSTCheckList.Create(VT, EmptyStr, ScheduleNames, @ScheduleReDraw);
@@ -258,7 +256,7 @@ var
   var
     ExpSheet: TShiftMonthScheduleSheet;
   begin
-    ExpSheet:= TShiftMonthScheduleSheet.Create(AWorksheet, nil, MainForm.GridFont, ResumeType);
+    ExpSheet:= TShiftMonthScheduleSheet.Create(AWorksheet, nil, GridFont, ResumeType);
     try
       ExpSheet.Draw(ACalendar, ASchedules, ScheduleNames,
              NeedNight, NeedCorrect, NeedMarks, ScheduleNotWorkColor,

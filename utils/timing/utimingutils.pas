@@ -10,8 +10,7 @@ uses
   DK_Color, DK_Vector, DK_Matrix, DK_DateUtils, DK_Const, DK_Fonts,
   DK_StrUtils, DK_VSTEdit, DK_VSTTables, DK_VSTCore,
   //Project utils
-  UDataBase, UConst, UWorkHours, UCalendar, USchedule, UTimetable;
-
+  UVars, UConst, UWorkHours, UCalendar, USchedule, UTimetable;
 
   //ID for TVSTTable.ReSelect
   function GetSelectedID(const ATable: TVSTTable; const AIDValues: TIntVector;

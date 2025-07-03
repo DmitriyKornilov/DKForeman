@@ -10,7 +10,7 @@ uses
   //DK packages utils
   DK_DateUtils, DK_Vector, DK_Const, DK_VSTDropDown, DK_CtrlUtils,
   //Project utils
-  UDataBase, UConst, UCalendar, UTimingUtils, UImages;
+  UConst, UCalendar, UTimingUtils, UVars;
 
 type
 

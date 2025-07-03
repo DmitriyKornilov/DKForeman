@@ -11,7 +11,7 @@ uses
   DK_Vector, DK_Matrix, DK_VSTTables, DK_Zoom, DK_Progress, DK_DateUtils,
   DK_ColorLegend, DK_CtrlUtils,
   //Project utils
-  UDataBase, UConst, UTimingUtils, UImages, UScheduleSheet, UCalendar, USchedule,
+  UVars, UConst, UTimingUtils, UScheduleSheet, UCalendar, USchedule,
   //Forms
   UVacationPlanEditForm;
 
@@ -142,8 +142,6 @@ var
 
 implementation
 
-uses UMainForm;
-
 {$R *.lfm}
 
 { TVacationPlanningForm }
@@ -155,7 +153,7 @@ begin
   LegendCreate;
 
   CanLoadAndDraw:= False;
-  StatSheet:= TVacationStatSheet.Create(StatGrid.Worksheet, StatGrid, MainForm.GridFont);
+  StatSheet:= TVacationStatSheet.Create(StatGrid.Worksheet, StatGrid, GridFont);
   StaffListCreate;
   Calendar:= TCalendar.Create;
   SettingsLoad; //load ZoomPercent
@@ -271,7 +269,7 @@ begin
   VStaffList:= TVSTCheckTable.Create(VStaffListVT);
   VStaffList.OnSelect:= @VStaffListSelect;
   VStaffList.StopSelectEventWhileCheckAll:= True;
-  VStaffList.SetSingleFont(MainForm.GridFont);
+  VStaffList.SetSingleFont(GridFont);
   VStaffList.SelectedBGColor:= VStaffListVT.Color;
   VStaffList.HeaderFont.Style:= [fsBold];
   for i:= 0 to High(VACATION_PLANNING_STAFFLIST_COLUMN_NAMES) do
@@ -284,7 +282,7 @@ begin
   MStaffList.OnSelect:= @MStaffListSelect;
   MStaffList.TreeLinesVisible:= False;
   MStaffList.StopSelectEventWhileCheckAll:= True;
-  MStaffList.SetSingleFont(MainForm.GridFont);
+  MStaffList.SetSingleFont(GridFont);
   MStaffList.HeaderFont.Style:= [fsBold];
   for i:= 0 to High(VACATION_PLANNING_STAFFLIST_COLUMN_NAMES) do
     MStaffList.AddColumn(VACATION_PLANNING_STAFFLIST_COLUMN_NAMES[i],
@@ -427,7 +425,7 @@ var
     Holidays:= DataBase.HolidaysLoad(YearSpinEdit.Value);
     CalendarForYear(YearSpinEdit.Value, Calendar);
 
-    Sheet:= TVacationPlanSheet.Create(Calendar, ViewGrid.Worksheet, ViewGrid, MainForm.GridFont);
+    Sheet:= TVacationPlanSheet.Create(Calendar, ViewGrid.Worksheet, ViewGrid, GridFont);
     Sheet.OnSelect:= @PlanSelect;
     Sheet.Zoom(ZoomPercent);
 

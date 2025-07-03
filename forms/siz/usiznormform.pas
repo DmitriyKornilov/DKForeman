@@ -8,7 +8,7 @@ uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, Buttons,
   fpspreadsheetgrid, VirtualTrees, DividerBevel, DateUtils,
   //Project utils
-  UDataBase, UConst, UTypes, UUtils, UImages, USIZNormSheet, USIZNormTypes,
+  UVars, UConst, UTypes, UUtils, USIZNormSheet, USIZNormTypes,
   //DK packages utils
   DK_VSTTables, DK_Vector, DK_Matrix, DK_Dialogs, DK_CtrlUtils, DK_Const,
   DK_SheetExporter,
@@ -143,13 +143,13 @@ begin
 
   NormListCreate;
 
-  NormItemSheet:= TSIZNormItemSheet.Create(ItemGrid.Worksheet, ItemGrid, MainForm.GridFont);
+  NormItemSheet:= TSIZNormItemSheet.Create(ItemGrid.Worksheet, ItemGrid, GridFont);
   NormItemSheet.OnSelect:= @NormItemSelect;
   NormItemSheet.OnDelKeyDown:= @NormItemDelete;
   NormItemSheet.OnReturnKeyDown:= @NormItemEdit;
   NormItemSheet.CanUnselect:= False;
 
-  NormSubItemSheet:= TSIZNormSubItemsSheet.Create(SubItemGrid.Worksheet, SubItemGrid, MainForm.GridFont);
+  NormSubItemSheet:= TSIZNormSubItemsSheet.Create(SubItemGrid.Worksheet, SubItemGrid, GridFont);
   NormSubItemSheet.OnSelect:= @NormSubItemSelect;
   NormSubItemSheet.OnDelKeyDown:= @NormSubItemDelete;
   NormSubItemSheet.OnReturnKeyDown:= @NormSubItemEdit;
@@ -298,7 +298,7 @@ begin
   NormList.OnSelect:= @NormListSelect;
   NormList.OnDelKeyDown:= @NormListDelItem;
   NormList.OnReturnKeyDown:= @NormListEditItem;
-  NormList.SetSingleFont(MainForm.GridFont);
+  NormList.SetSingleFont(GridFont);
   NormList.HeaderFont.Style:= [fsBold];
 
   NormList.AddColumn('Период действия', 150);
@@ -636,7 +636,7 @@ begin
   Exporter:= TSheetsExporter.Create;
   try
     Worksheet:= Exporter.AddWorksheet('Лист1');
-    Sheet:= TSIZNormSheet.Create(Worksheet, nil, MainForm.GridFont);
+    Sheet:= TSIZNormSheet.Create(Worksheet, nil, GridFont);
     try
       Sheet.Draw(Norm);
       Exporter.PageMargins(10, 20, 10, 10, 0, 0);

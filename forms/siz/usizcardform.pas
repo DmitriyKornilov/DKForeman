@@ -8,7 +8,7 @@ uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, VirtualTrees,
   Buttons, DividerBevel, StdCtrls, ComCtrls, fpspreadsheetgrid,
   //Project utils
-  UDataBase, UConst, UTypes, UTimingUtils, UImages, ColorSpeedButton, USIZSizes,
+  UVars, UConst, UTypes, UTimingUtils, ColorSpeedButton, USIZSizes,
   USIZNormTypes,
   //DK packages utils
   DK_VSTTables, DK_VSTParamList, DK_Vector, DK_Filter, DK_CtrlUtils, DK_Color,
@@ -253,7 +253,7 @@ begin
   StaffList.CanSelect:= True;
   StaffList.CanUnselect:= False;
   StaffList.OnSelect:= @StaffListSelect;
-  StaffList.SetSingleFont(MainForm.GridFont);
+  StaffList.SetSingleFont(GridFont);
   StaffList.HeaderFont.Style:= [fsBold];
 
   StaffList.AddColumn('№ п/п', 50);
@@ -323,7 +323,7 @@ begin
   CardList.CanSelect:= True;
   CardList.CanUnselect:= False;
   CardList.OnSelect:= @CardListSelect;
-  CardList.SetSingleFont(MainForm.GridFont);
+  CardList.SetSingleFont(GridFont);
   CardList.HeaderFont.Style:= [fsBold];
 
   CardList.AddColumn('Номер', 80);

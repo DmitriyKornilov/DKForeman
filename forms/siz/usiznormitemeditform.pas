@@ -11,7 +11,7 @@ uses
   DK_CtrlUtils, DK_Const, DK_StrUtils, DK_Dialogs, DK_VSTTableTools, DK_Vector,
   DK_VSTDropDown,
   //Project utils
-  UDataBase, UTypes, UImages;
+  UTypes, UVars;
 
 type
 

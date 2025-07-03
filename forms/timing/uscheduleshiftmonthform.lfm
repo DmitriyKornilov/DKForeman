@@ -8,12 +8,12 @@ object ScheduleShiftMonthForm: TScheduleShiftMonthForm
   ClientHeight = 311
   ClientWidth = 780
   DesignTimePPI = 120
+  LCLVersion = '4.0.0.4'
+  WindowState = wsMaximized
   OnClose = FormClose
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
-  LCLVersion = '3.2.0.0'
-  WindowState = wsMaximized
   object ToolPanel: TPanel
     Left = 2
     Height = 40
@@ -25,8 +25,8 @@ object ScheduleShiftMonthForm: TScheduleShiftMonthForm
     BorderSpacing.Right = 2
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 36
-    ClientWidth = 772
+    ClientHeight = 40
+    ClientWidth = 776
     ParentFont = False
     TabOrder = 0
     object YearPanel: TPanel
@@ -53,10 +53,10 @@ object ScheduleShiftMonthForm: TScheduleShiftMonthForm
         BorderSpacing.Top = 2
         BorderSpacing.Bottom = 2
         MinValue = 2010
-        OnChange = YearSpinEditChange
         TabStop = False
         TabOrder = 0
         Value = 2022
+        OnChange = YearSpinEditChange
       end
       object MonthBCButton: TBCButton
         Tag = -1
@@ -177,9 +177,9 @@ object ScheduleShiftMonthForm: TScheduleShiftMonthForm
       Align = alLeft
       Images = Images.PX24
       ImageIndex = 12
-      OnClick = CheckAllButtonClick
       ShowHint = True
       ParentShowHint = False
+      OnClick = CheckAllButtonClick
     end
     object UncheckAllButton: TSpeedButton
       Cursor = crHandPoint
@@ -191,9 +191,9 @@ object ScheduleShiftMonthForm: TScheduleShiftMonthForm
       Align = alLeft
       Images = Images.PX24
       ImageIndex = 13
-      OnClick = UncheckAllButtonClick
       ShowHint = True
       ParentShowHint = False
+      OnClick = UncheckAllButtonClick
     end
     object DividerBevel1: TDividerBevel
       Left = 712
@@ -217,9 +217,9 @@ object ScheduleShiftMonthForm: TScheduleShiftMonthForm
       Align = alRight
       Images = Images.PX24
       ImageIndex = 3
-      OnClick = CloseButtonClick
       ShowHint = True
       ParentShowHint = False
+      OnClick = CloseButtonClick
     end
     object DividerBevel2: TDividerBevel
       Left = 269
@@ -259,9 +259,9 @@ object ScheduleShiftMonthForm: TScheduleShiftMonthForm
       ImageIndex = 22
       Margin = 5
       Spacing = 5
-      OnClick = ExportButtonClick
       ShowHint = True
       ParentShowHint = False
+      OnClick = ExportButtonClick
     end
   end
   object LeftPanel: TPanel
@@ -275,8 +275,8 @@ object ScheduleShiftMonthForm: TScheduleShiftMonthForm
     BorderSpacing.Bottom = 2
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 261
-    ClientWidth = 346
+    ClientHeight = 265
+    ClientWidth = 350
     TabOrder = 1
     object VT: TVirtualStringTree
       Left = 0
@@ -310,8 +310,8 @@ object ScheduleShiftMonthForm: TScheduleShiftMonthForm
     BorderSpacing.Bottom = 2
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 261
-    ClientWidth = 416
+    ClientHeight = 265
+    ClientWidth = 420
     Color = clWhite
     ParentBackground = False
     ParentColor = False

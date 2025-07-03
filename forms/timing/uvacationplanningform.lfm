@@ -7,6 +7,7 @@ object VacationPlanningForm: TVacationPlanningForm
   ClientHeight = 502
   ClientWidth = 1015
   DesignTimePPI = 120
+  LCLVersion = '4.0.0.4'
   WindowState = wsMaximized
   OnCreate = FormCreate
   OnDestroy = FormDestroy
@@ -22,8 +23,8 @@ object VacationPlanningForm: TVacationPlanningForm
     BorderSpacing.Right = 2
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 36
-    ClientWidth = 1007
+    ClientHeight = 40
+    ClientWidth = 1011
     ParentFont = False
     TabOrder = 0
     object ListToolPanel: TPanel
@@ -339,8 +340,8 @@ object VacationPlanningForm: TVacationPlanningForm
       BorderSpacing.Bottom = 2
       BevelOuter = bvNone
       BorderStyle = bsSingle
-      ClientHeight = 94
-      ClientWidth = 1007
+      ClientHeight = 98
+      ClientWidth = 1011
       Color = clWhite
       ParentBackground = False
       ParentColor = False
@@ -449,8 +450,8 @@ object VacationPlanningForm: TVacationPlanningForm
         BorderSpacing.Around = 2
         BevelOuter = bvNone
         BorderStyle = bsSingle
-        ClientHeight = 112
-        ClientWidth = 1007
+        ClientHeight = 116
+        ClientWidth = 1011
         Color = clWindow
         ParentBackground = False
         ParentColor = False
@@ -567,8 +568,8 @@ object VacationPlanningForm: TVacationPlanningForm
       BorderSpacing.Top = 2
       BevelOuter = bvNone
       BorderStyle = bsSingle
-      ClientHeight = 36
-      ClientWidth = 1007
+      ClientHeight = 40
+      ClientWidth = 1011
       TabOrder = 0
       object OrderLabel: TLabel
         AnchorSideLeft.Control = ListOrderToolPanel

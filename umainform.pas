@@ -7,12 +7,12 @@ interface
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, Buttons,
   Menus, LCLType, DividerBevel,
-
   //DK packages utils
-  DK_HeapTrace, DK_Const, DK_LCLStrRus, DK_CtrlUtils, DK_Fonts, DK_VSTTypes,
+  DK_HeapTrace, DK_Const, DK_LCLStrRus, DK_CtrlUtils, DK_VSTTypes,
   //Project utils
-  UDataBase, UImages, UConst, UTypes,
+  UVars, UConst, UTypes,
   //Forms
+  UParamForm,
   UStaffForm,
   UCalendarForm, UScheduleShiftForm, UVacationPlanForm,
   USchedulePersonalForm, UTimetableForm,
@@ -30,6 +30,7 @@ type
     DividerBevel2: TDividerBevel;
     DividerBevel3: TDividerBevel;
     DictionaryButton: TSpeedButton;
+    DepartmentMenuItem: TMenuItem;
     SIZRequestMenuItem: TMenuItem;
     SIZStorageMenuItem: TMenuItem;
     SIZSizesMenuItem: TMenuItem;
@@ -60,6 +61,7 @@ type
     EditingButton: TSpeedButton;
     ToolPanel: TPanel;
     procedure CalendarMenuItemClick(Sender: TObject);
+    procedure DepartmentMenuItemClick(Sender: TObject);
     procedure DictionaryButtonClick(Sender: TObject);
     procedure EditingButtonClick(Sender: TObject);
     procedure ExitButtonClick(Sender: TObject);
@@ -88,14 +90,14 @@ type
     Category: Byte;
     CategoryForm: TForm;
 
-    procedure SetGridFont;
     procedure DBConnect;
 
     procedure ViewUpdate;
     procedure DataUpdate;
     procedure SettingsSave;
+
+    function ParamFormOpen: Boolean;
   public
-    GridFont: TFont;
     procedure CategorySelect(const ACategory: Byte);
     procedure DictionarySelect(const ADictionary: Byte);
   end;
@@ -139,18 +141,13 @@ procedure TMainForm.FormCreate(Sender: TObject);
 begin
   HeapTraceOutputFile('trace.trc');
   Caption:= MAIN_CAPTION;
-
-  Images:= TImages.Create(Self);
-  SetGridFont;
   DBConnect;
+  GlobalVarInit;
 end;
 
 procedure TMainForm.FormDestroy(Sender: TObject);
 begin
   SettingsSave;
-  FreeAndNil(DataBase);
-  FreeAndNil(GridFont);
-  FreeAndNil(Images);
 end;
 
 procedure TMainForm.FormShow(Sender: TObject);
@@ -185,7 +182,6 @@ begin
   DDLName:= DBPath + 'ddl.sql';
   IsDBFileExists:= FileExists(DBName);
 
-  DataBase:= TDataBase.Create;
   DataBase.Connect(DBName);
   DataBase.ExecuteScript(DDLName);
   if not IsDBFileExists then
@@ -304,6 +300,28 @@ begin
   end;
 end;
 
+function TMainForm.ParamFormOpen: Boolean;
+var
+  ParamForm: TParamForm;
+begin
+  Result:= False;
+
+  ParamForm:= TParamForm.Create(nil);
+  try
+    ParamForm.Company:= Company;
+    ParamForm.Department:= Department;
+
+    if ParamForm.ShowModal=mrOK then
+    begin
+      Company:= ParamForm.Company;
+      Department:= ParamForm.Department;
+      Result:= True;
+    end;
+  finally
+    FreeAndNil(ParamForm);
+  end;
+end;
+
 procedure TMainForm.DictionarySelect(const ADictionary: Byte);
 var
   IsOK: Boolean;
@@ -341,16 +359,10 @@ begin
                          'SIZREASON', 'ReasonID', 'ReasonName',
                           True, True, 400, GridFont,
                           True, 'Фильтр:');
+    6: IsOK:= ParamFormOpen;
   end;
 
-  if IsOK then DataUpdate;//ViewUpdate;
-end;
-
-procedure TMainForm.SetGridFont;
-begin
-  GridFont:= TFont.Create;
-  GridFont.Name:= FontLikeToName(flTimes{flArial});
-  GridFont.Size:= 9{8};
+  if IsOK then DataUpdate;
 end;
 
 procedure TMainForm.SafetyButtonClick(Sender: TObject);
@@ -413,8 +425,6 @@ begin
   CategorySelect(7);
 end;
 
-
-
 procedure TMainForm.StudyMenuItemClick(Sender: TObject);
 begin
   //CategorySelect(9);
@@ -459,6 +469,11 @@ end;
 procedure TMainForm.SIZReasonMenuItemClick(Sender: TObject);
 begin
   DictionarySelect(5);
+end;
+
+procedure TMainForm.DepartmentMenuItemClick(Sender: TObject);
+begin
+  DictionarySelect(6);
 end;
 
 procedure TMainForm.ExitButtonClick(Sender: TObject);

@@ -11,7 +11,7 @@ uses
   DK_Vector, DK_VSTDropDown, DK_VSTEdit, DK_Const, DK_StrUtils, DK_Dialogs,
   DK_CtrlUtils,
   //Project utils
-  UDataBase, UWorkHours, USchedule, UTimingUtils, UImages, UConst;
+  UVars, UWorkHours, USchedule, UTimingUtils, UConst;
 
 type
 
@@ -57,8 +57,6 @@ var
 
 implementation
 
-uses UMainForm;
-
 {$R *.lfm}
 
 { TScheduleShiftEditForm }
@@ -70,7 +68,7 @@ begin
   DataBase.TimetableMarkListLoad(KeyMarks, PickMarks, True{ DigMark>0});
 
   Structure:= TVSTEdit.Create(VT);
-  Structure.SetSingleFont(MainForm.GridFont);
+  Structure.SetSingleFont(GridFont);
   Structure.IsShowZeros:= True;
   Structure.HeaderFont.Style:= [fsBold];
   Structure.AddColumnRowTitles(SCHEDULE_CORRECTION_COLUMN_NAMES[0],

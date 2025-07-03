@@ -9,7 +9,7 @@ uses
   fpspreadsheetgrid, VirtualTrees, Spin, StdCtrls, DividerBevel, DateUtils,
   BCButton,
   //Project utils
-  UDataBase, UConst, UTypes, UTimingUtils, UImages, UCalendar, USchedule,
+  UVars, UConst, UTypes, UTimingUtils,  UCalendar, USchedule,
   UTimetable, UTimetableSheet,
   //DK packages utils
   DK_VSTTables, DK_VSTParamList, DK_Vector, DK_Const, DK_Dialogs,
@@ -203,7 +203,7 @@ begin
   EditingTablesCreate;
   Calendar:= TCalendar.Create;
   VTCreate(Timetables, 12);
-  Sheet:= TYearTimetableSheet.Create(ViewGrid.Worksheet, ViewGrid, MainForm.GridFont);
+  Sheet:= TYearTimetableSheet.Create(ViewGrid.Worksheet, ViewGrid, GridFont);
   YearSpinEdit.Value:= YearOfDate(Date);
   MonthDropDown:= TMonthDropDown.Create(MonthBCButton, @MonthTimetableLoad);
 
@@ -478,7 +478,7 @@ begin
   StaffList.CanSelect:= True;
   StaffList.CanUnselect:= False;
   StaffList.OnSelect:= @StaffListSelect;
-  StaffList.SetSingleFont(MainForm.GridFont);
+  StaffList.SetSingleFont(GridFont);
   StaffList.HeaderFont.Style:= [fsBold];
 
   StaffList.AddColumn('№ п/п', 50);
@@ -544,7 +544,7 @@ begin
   VSTDays:= TVSTTable.Create(DayVT);
   VSTDays.OnSelect:= @MonthTimetableDaySelect;
   VSTDays.OnReturnKeyDown:= @MonthTimetableDayEdit;
-  VSTDays.SetSingleFont(MainForm.GridFont);
+  VSTDays.SetSingleFont(GridFont);
   VSTDays.HeaderFont.Style:= [fsBold];
   VSTDays.CanSelect:= True;
   for i:= 0 to High(TIMETABLE_CORRECTION_COLUMN_WIDTHS) do
@@ -555,7 +555,7 @@ begin
 
   VSTCopy:= TVSTTable.Create(CopyVT);
   VSTCopy.OnSelect:= @CopySelect;
-  VSTCopy.SetSingleFont(MainForm.GridFont);
+  VSTCopy.SetSingleFont(GridFont);
   VSTCopy.HeaderFont.Style:= [fsBold];
   VSTCopy.CanSelect:= True;
   for i:= 0 to High(TIMETABLE_CORRECTION_COLUMN_WIDTHS) do
@@ -813,7 +813,7 @@ var
     Exporter:= TSheetsExporter.Create;
     try
       Worksheet:= Exporter.AddWorksheet(YearSpinEdit.Text);
-      ExpSheet:= TYearTimetableSheet.Create(Worksheet, nil, MainForm.GridFont);
+      ExpSheet:= TYearTimetableSheet.Create(Worksheet, nil, GridFont);
       TimetableToSheet(ExpSheet, Timetables, TimetableTotals,
                      RecrutDates[StaffList.SelectedIndex],
                      DismissDates[StaffList.SelectedIndex],
@@ -871,7 +871,7 @@ var
           TmpTimetableTotals:= TimetableYearTotalsLoad(TabNumIDs[i], YearSpinEdit.Value);
 
           Worksheet:= Exporter.AddWorksheet(YearSpinEdit.Text);
-          ExpSheet:= TYearTimetableSheet.Create(Worksheet, nil, MainForm.GridFont);
+          ExpSheet:= TYearTimetableSheet.Create(Worksheet, nil, GridFont);
           Progress.Go;
           TimetableToSheet(ExpSheet, TmpTimetables, TmpTimetableTotals,
                            RecrutDates[i], DismissDates[i], TimetableNames[i]);

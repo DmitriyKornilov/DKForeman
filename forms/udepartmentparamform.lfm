@@ -1,0 +1,9 @@
+object DepartmentParamForm: TDepartmentParamForm
+  Left = 377
+  Height = 240
+  Top = 250
+  Width = 320
+  Caption = 'DepartmentParamForm'
+  DesignTimePPI = 120
+  LCLVersion = '4.0.0.4'
+end

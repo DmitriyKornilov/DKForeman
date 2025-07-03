@@ -263,7 +263,7 @@ object MainForm: TMainForm
     end
     object SIZSizesMenuItem: TMenuItem
       Caption = 'Размеры средств индивидуальной защиты сотрудников'
-      ImageIndex = 59
+      ImageIndex = 38
       OnClick = SIZSizesMenuItemClick
     end
     object SIZStaffMenuItem: TMenuItem
@@ -284,6 +284,11 @@ object MainForm: TMainForm
     Images = Images.PX24
     Left = 40
     Top = 176
+    object DepartmentMenuItem: TMenuItem
+      Caption = 'Основные данные подразделения'
+      ImageIndex = 58
+      OnClick = DepartmentMenuItemClick
+    end
     object PostListMenuItem: TMenuItem
       Caption = 'Перечень должностей (профессий)'
       ImageIndex = 36

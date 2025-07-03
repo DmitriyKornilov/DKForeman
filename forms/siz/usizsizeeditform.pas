@@ -10,7 +10,7 @@ uses
   //DK packages utils
   DK_VSTDropDown, DK_CtrlUtils, DK_Vector,
   //Project utils
-  UDataBase, UConst, UImages, USIZSizes;
+  UVars, UConst, USIZSizes;
 
 type
 

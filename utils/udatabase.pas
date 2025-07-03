@@ -30,6 +30,8 @@ type
     function SettingsLoad(const ASettingNames: TStrVector): TIntVector;
     procedure SettingUpdate(const ASettingName: String; const ASettingValue: Integer);
     procedure SettingsUpdate(const ASettingNames: TStrVector; const ASettingValues: TIntVector);
+    function TextParamLoad(const AParamName: String): String;
+    procedure TextParamUpdate(const AParamName, AParamValue: String);
     (**************************************************************************
                                      СПРАВОЧНИКИ
     **************************************************************************)
@@ -641,10 +643,6 @@ type
   end;
 
 
-
-var
-  DataBase: TDataBase;
-
 implementation
 
 { TDataBase }
@@ -740,7 +738,7 @@ end;
 
 procedure TDataBase.SettingUpdate(const ASettingName: String; const ASettingValue: Integer);
 begin
-  UpdateStrID('SETTINGS', 'Value', 'Name', ASettingName, ASettingValue, True {commit});
+  UpdateStrID('SETTINGS', 'Value', 'Name', ASettingName, ASettingValue, True{commit});
 end;
 
 procedure TDataBase.SettingsUpdate(const ASettingNames: TStrVector;
@@ -750,11 +748,21 @@ var
 begin
   try
     for i:= 0 to High(ASettingNames) do
-      UpdateStrID('SETTINGS', 'Value', 'Name', ASettingNames[i], ASettingValues[i], False {no commit});
+      UpdateStrID('SETTINGS', 'Value', 'Name', ASettingNames[i], ASettingValues[i], False{no commit});
     QCommit;
   finally
     QRollback;
   end;
+end;
+
+function TDataBase.TextParamLoad(const AParamName: String): String;
+begin
+  Result:= ValueStrStrID('TEXTPARAMS', 'Value', 'Name', AParamName);
+end;
+
+procedure TDataBase.TextParamUpdate(const AParamName, AParamValue: String);
+begin
+  UpdateStrID('TEXTPARAMS', 'Value', 'Name', AParamName, AParamValue, True{commit});
 end;
 
 procedure TDataBase.PostDictionaryLoad(const ADropDown: TVSTDropDown;
@@ -2000,7 +2008,7 @@ procedure TDataBase.CalendarLoad(const ABeginDate, AEndDate: TDate; var ACalenda
 var
   Corrections: TCalendarCorrections;
 begin
-  DataBase.CalendarCorrectionsLoad(ABeginDate, AEndDate, Corrections);
+  CalendarCorrectionsLoad(ABeginDate, AEndDate, Corrections);
   ACalendar.Calc(ABeginDate, AEndDate, Corrections);
 end;
 

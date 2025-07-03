@@ -10,7 +10,7 @@ uses
   //DK packages utils
   DK_Vector, DK_Zoom, DK_CtrlUtils, DK_SheetTypes,
   //Project utils
-  UDataBase, UConst, UImages, UScheduleSheet;
+  UVars, UConst, UScheduleSheet;
 
 type
 
@@ -57,8 +57,6 @@ var
 
 implementation
 
-uses UMainForm;
-
 {$R *.lfm}
 
 procedure VacationScheduleFormShow(const AYear: Word);
@@ -83,7 +81,7 @@ begin
   SettingsLoad; //load ZoomPercent
   CreateZoomControls(50, 150, ZoomPercent, ZoomPanel, @ScheduleDraw, True);
 
-  Sheet:= TVacationScheduleSheet.Create(ViewGrid.Worksheet, ViewGrid, MainForm.GridFont);
+  Sheet:= TVacationScheduleSheet.Create(ViewGrid.Worksheet, ViewGrid, GridFont);
 end;
 
 procedure TVacationScheduleForm.FormDestroy(Sender: TObject);

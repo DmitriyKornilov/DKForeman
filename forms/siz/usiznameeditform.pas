@@ -10,7 +10,7 @@ uses
   //DK packages utils
   DK_VSTTables, DK_VSTTypes, DK_DBTable, DK_Vector,
   //Project utils
-  UDataBase, UConst;
+  UVars, UConst;
 
 type
 
@@ -44,8 +44,6 @@ var
 
 implementation
 
-uses UMainForm;
-
 {$R *.lfm}
 
 { TSIZNameEditForm }
@@ -55,7 +53,7 @@ begin
   DataBase.KeyPickList('SIZUNIT', 'UnitID', 'UnitName', UnitIDs, UnitNames);
 
   TypeList:= TVSTTable.Create(TypeVT);
-  TypeList.SetSingleFont(MainForm.GridFont);
+  TypeList.SetSingleFont(GridFont);
   TypeList.CanSelect:= True;
   TypeList.CanUnselect:= True;
   TypeList.OnSelect:= @TypeSelect;
@@ -164,7 +162,7 @@ begin
   NamePanel.Visible:= False;
   try
     if Assigned(NameTable) then FreeAndNil(NameTable);
-    NameTable:= TDBTable.Create(MainForm.GridFont, NamePanel, DataBase, True, 'Фильтр:');
+    NameTable:= TDBTable.Create(GridFont, NamePanel, DataBase, True, 'Фильтр:');
     NameTable.Edit.HeaderFont.Style:= [fsBold];
     NameTable.Settings('SIZNAME', 'NameID',
       ['SIZName',      'UnitID',            'SizeType' ],

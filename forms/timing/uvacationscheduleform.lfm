@@ -7,6 +7,7 @@ object VacationScheduleForm: TVacationScheduleForm
   ClientHeight = 240
   ClientWidth = 769
   DesignTimePPI = 120
+  LCLVersion = '4.0.0.4'
   WindowState = wsMaximized
   OnCreate = FormCreate
   OnDestroy = FormDestroy
@@ -22,8 +23,8 @@ object VacationScheduleForm: TVacationScheduleForm
     BorderSpacing.Right = 2
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 36
-    ClientWidth = 761
+    ClientHeight = 40
+    ClientWidth = 765
     ParentFont = False
     TabOrder = 0
     object YearPanel: TPanel
@@ -125,8 +126,8 @@ object VacationScheduleForm: TVacationScheduleForm
     BorderSpacing.Bottom = 2
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 190
-    ClientWidth = 761
+    ClientHeight = 194
+    ClientWidth = 765
     Color = clWhite
     ParentBackground = False
     ParentColor = False
