@@ -13,7 +13,7 @@ uses
   DK_VSTParamList, DK_Vector, DK_VSTTables, DK_VSTTypes, DK_Filter, DK_CtrlUtils,
   DK_StrUtils,
   //Forms
-  USIZSizeEditForm;
+  USIZCardEditForm;
 
 type
 
@@ -286,6 +286,8 @@ end;
 procedure TSIZSizeForm.SizeListEdit;
 var
   PersonSizes: TSIZStaffSizeIndexes;
+  i: Integer;
+  S: String;
 begin
   if not SizeList.IsSelected then Exit;
 
@@ -294,7 +296,9 @@ begin
              Heads[SizeList.SelectedIndex], Hands[SizeList.SelectedIndex],
              Gasmasks[SizeList.SelectedIndex], Respirators[SizeList.SelectedIndex]);
 
-  if SizeEditFormShowModal(StaffIDs[SizeList.SelectedIndex], PersonSizes)=mrOK then
+  i:= 0;
+  S:= EmptyStr;
+  if SIZCardEditFormOpen(StaffIDs[SizeList.SelectedIndex], PersonSizes, True, i, S) then
     SizeListLoad;
 end;
 

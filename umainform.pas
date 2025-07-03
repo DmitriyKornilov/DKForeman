@@ -96,7 +96,6 @@ type
     procedure DataUpdate;
     procedure SettingsSave;
 
-    function ParamFormOpen: Boolean;
   public
     procedure CategorySelect(const ACategory: Byte);
     procedure DictionarySelect(const ADictionary: Byte);
@@ -300,28 +299,6 @@ begin
   end;
 end;
 
-function TMainForm.ParamFormOpen: Boolean;
-var
-  ParamForm: TParamForm;
-begin
-  Result:= False;
-
-  ParamForm:= TParamForm.Create(nil);
-  try
-    ParamForm.Company:= Company;
-    ParamForm.Department:= Department;
-
-    if ParamForm.ShowModal=mrOK then
-    begin
-      Company:= ParamForm.Company;
-      Department:= ParamForm.Department;
-      Result:= True;
-    end;
-  finally
-    FreeAndNil(ParamForm);
-  end;
-end;
-
 procedure TMainForm.DictionarySelect(const ADictionary: Byte);
 var
   IsOK: Boolean;
@@ -359,7 +336,7 @@ begin
                          'SIZREASON', 'ReasonID', 'ReasonName',
                           True, True, 400, GridFont,
                           True, 'Фильтр:');
-    6: IsOK:= ParamFormOpen;
+    6: IsOK:= ParamFormOpen(Company, Department);
   end;
 
   if IsOK then DataUpdate;

@@ -10,31 +10,24 @@ uses
   //Project utils
   UTypes, UConst, UVars, USIZSizes, USIZCardSheet, USIZNormTypes,
   //DK packages utils
-  DK_Zoom, DK_CtrlUtils, DK_Vector, DK_StrUtils,
-  //Forms
-  USIZSizeEditForm;
+  DK_Zoom, DK_CtrlUtils, DK_Vector, DK_StrUtils;
 
 type
 
   { TSIZCardFrontForm }
 
   TSIZCardFrontForm = class(TForm)
-    EditButton: TSpeedButton;
     SheetBottomPanel: TPanel;
     SheetPanel: TPanel;
-    ToolPanel: TPanel;
     ViewGrid: TsWorksheetGrid;
     ZoomBevel: TBevel;
     ZoomPanel: TPanel;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
-    procedure FormShow(Sender: TObject);
-    procedure EditButtonClick(Sender: TObject);
   private
     ZoomPercent: Integer;
     Sheet: TSIZCardFrontSheet;
 
-    StaffID, TabNumID, CardID, ItemID: Integer;
     CardNum, Family, PersonName, Patronymic, Gender, TabNum, PostName: String;
     CardBD, CardED: TDate;
     PersonSizes: TSIZStaffSizeIndexes;
@@ -46,9 +39,7 @@ type
     procedure SettingsLoad;
   public
     procedure SettingsSave;
-    procedure ViewUpdate(const AModeType: TModeType);
-    procedure DataUpdate(const AStaffID, ATabNumID, ACardID, AItemID: Integer;
-                         const ACardNum, AFamily, AName, APatronymic,
+    procedure DataUpdate(const ACardNum, AFamily, AName, APatronymic,
                                AGender, ATabNum, APostName: String;
                          const ACardBD, ACardED: TDate;
                          const APersonSizes: TSIZStaffSizeIndexes;
@@ -59,6 +50,8 @@ var
   SIZCardFrontForm: TSIZCardFrontForm;
 
 implementation
+
+uses USIZCardForm;
 
 {$R *.lfm}
 
@@ -75,27 +68,6 @@ end;
 procedure TSIZCardFrontForm.FormDestroy(Sender: TObject);
 begin
   FreeAndNil(Sheet);
-end;
-
-procedure TSIZCardFrontForm.FormShow(Sender: TObject);
-begin
-  SetToolPanels([
-    ToolPanel
-  ]);
-
-  SetToolButtons([
-    EditButton
-  ]);
-
-  Images.ToButtons([
-    EditButton
-  ]);
-end;
-
-procedure TSIZCardFrontForm.EditButtonClick(Sender: TObject);
-begin
-  if SizeEditFormShowModal(StaffID, PersonSizes)=mrOK then
-    DataReDraw;
 end;
 
 procedure TSIZCardFrontForm.DataDraw(const AZoomPercent: Integer);
@@ -134,23 +106,12 @@ begin
   DataBase.SettingsUpdate(SETTING_NAMES_SIZCARDFRONTFORM, SettingValues);
 end;
 
-procedure TSIZCardFrontForm.ViewUpdate(const AModeType: TModeType);
+procedure TSIZCardFrontForm.DataUpdate(const ACardNum, AFamily, AName, APatronymic,
+                           AGender, ATabNum, APostName: String;
+                     const ACardBD, ACardED: TDate;
+                     const APersonSizes: TSIZStaffSizeIndexes;
+                     const ASubItems: TNormSubItems);
 begin
-  ToolPanel.Visible:= AModeType=mtEditing;
-end;
-
-procedure TSIZCardFrontForm.DataUpdate(const AStaffID, ATabNumID, ACardID, AItemID: Integer;
-                                       const ACardNum, AFamily, AName, APatronymic,
-                                             AGender, ATabNum, APostName: String;
-                                       const ACardBD, ACardED: TDate;
-                                       const APersonSizes: TSIZStaffSizeIndexes;
-                                       const ASubItems: TNormSubItems);
-begin
-  StaffID:= AStaffID;
-  TabNumID:= ATabNumID;
-  CardID:= ACardID;
-  ItemID:= AItemID;
-
   CardNum:= ACardNum;
   CardBD:= ACardBD;
   CardED:= ACardED;
@@ -164,8 +125,6 @@ begin
 
   PersonSizes:= APersonSizes;
   SubItems:= ASubItems;
-
-  EditButton.Enabled:= StaffID>0;
 
   DataReDraw;
 end;

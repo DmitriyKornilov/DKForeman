@@ -14,7 +14,7 @@ uses
   DK_VSTTables, DK_VSTParamList, DK_Vector, DK_Filter, DK_CtrlUtils, DK_Color,
   DK_StrUtils,
   //Forms
-  USIZCardFrontForm, USIZCardBackForm, USIZCardStatusForm;
+  USIZCardFrontForm, USIZCardBackForm, USIZCardStatusForm, USIZCardEditForm;
 
 type
 
@@ -22,10 +22,12 @@ type
 
   TSIZCardForm = class(TForm)
     AscendingButton: TSpeedButton;
+    EditButton: TSpeedButton;
     FormPanel: TPanel;
     StatusTabButton: TColorSpeedButton;
     FrontTabButton: TColorSpeedButton;
     BackTabButton: TColorSpeedButton;
+    ViewToolPanel: TPanel;
     ViewButtonPanel: TPanel;
     ViewCaptionPanel: TPanel;
     CloseButton: TSpeedButton;
@@ -61,6 +63,7 @@ type
     procedure BackTabButtonClick(Sender: TObject);
     procedure CloseButtonClick(Sender: TObject);
     procedure DescendingButtonClick(Sender: TObject);
+    procedure EditButtonClick(Sender: TObject);
     procedure FIORadioButtonClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -87,7 +90,7 @@ type
     Families, Names, Patronymics, Genders, TabNums, PostNames: TStrVector;
     PersonSizes: TSIZStaffSizeIndexes;
 
-    CardIDs, CardItemIDs: TIntVector;
+    CardIDs, CardItemIDs, CardItemPostIDs: TIntVector;
     CardPostNames, CardNums, ViewCardNums, CardNormNames: TStrVector;
     CardBDs, CardEDs: TDateVector;
 
@@ -108,7 +111,6 @@ type
     procedure CardSettingsSave;
 
     procedure CardFrontUpdate;
-    procedure CardViewUpdate;
     procedure CardDataUpdate;
 
     procedure SettingsLoad;
@@ -116,6 +118,7 @@ type
     procedure SettingsSave;
     procedure ViewUpdate(const AModeType: TModeType);
     procedure DataUpdate;
+    procedure CardCaptionUpdate;
   end;
 
 var
@@ -158,19 +161,20 @@ end;
 procedure TSIZCardForm.FormShow(Sender: TObject);
 begin
   SetToolPanels([
-    ToolPanel, StaffFilterToolPanel, StaffOrderToolPanel
+    ToolPanel, StaffFilterToolPanel, StaffOrderToolPanel, ViewToolPanel
   ]);
   SetCaptionPanels([
     StaffCaptionPanel, SettingCaptionPanel, CardListCaptionPanel,
     ViewCaptionPanel
   ]);
   SetToolButtons([
-    CloseButton, AscendingButton, DescendingButton
+    CloseButton, AscendingButton, DescendingButton, EditButton
   ]);
 
   Images.ToButtons([
     ExportButton,
-    CloseButton, AscendingButton, DescendingButton
+    CloseButton, AscendingButton, DescendingButton,
+    EditButton
   ]);
 
   ControlHeight(ViewButtonPanel, Round(TOOL_PANEL_HEIGHT_DEFAULT*0.65));
@@ -311,6 +315,10 @@ begin
   CardListCaptionPanel.Caption:= '  Личные карточки учета выдачи СИЗ';
   if not StaffList.IsSelected then Exit;
 
+  SIZStaffSizeIndexesClear(PersonSizes);
+  if StaffList.IsSelected then
+    DataBase.SIZStaffSizeLoad(StaffIDs[StaffList.SelectedIndex], PersonSizes);
+
   CardListCaptionPanel.Caption:= CardListCaptionPanel.Caption + ': ' +
                                 StaffLongNames[StaffList.SelectedIndex];
 
@@ -339,7 +347,7 @@ begin
   if not StaffList.IsSelected then Exit;
 
   DataBase.SIZPersonalCardListLoad(TabNumIDs[StaffList.SelectedIndex], CardIDs,
-                                   CardItemIDs, CardNums, CardPostNames,
+                                   CardItemIDs, CardItemPostIDs, CardNums, CardPostNames,
                                    CardNormNames,CardBDs, CardEDs);
   ViewCardNums:= VCut(CardNums);
   VChangeIf(ViewCardNums, EmptyStr, 'б/н');
@@ -360,24 +368,13 @@ end;
 
 procedure TSIZCardForm.CardListSelect;
 begin
-  SIZStaffSizeIndexesClear(PersonSizes);
-  if StaffList.IsSelected then
-    DataBase.SIZStaffSizeLoad(StaffIDs[StaffList.SelectedIndex], PersonSizes);
+  EditButton.Enabled:= CardList.IsSelected;
 
-  ViewCaptionPanel.Caption:= '  Личная карточка: ';
   NormSubItemsClear(SubItems);
-
   if CardList.IsSelected then
-  begin
-    ViewCaptionPanel.Caption:= ViewCaptionPanel.Caption +
-      ViewCardNums[CardList.SelectedIndex] +
-      ' (' +
-      PeriodToStr(CardBDs[CardList.SelectedIndex], CardEDs[CardList.SelectedIndex]) +
-      ')';
-
     DataBase.SIZNormSubItemsLoad(CardItemIDs[CardList.SelectedIndex], SubItems);
-  end;
 
+  CardCaptionUpdate;
   CardDataUpdate;
 end;
 
@@ -400,7 +397,6 @@ begin
     if Assigned(CategoryForm) then
     begin
       CategoryForm.Show;
-      CardViewUpdate;
       CardDataUpdate;
     end;
 
@@ -421,58 +417,69 @@ begin
   end;
 end;
 
+procedure TSIZCardForm.EditButtonClick(Sender: TObject);
+var
+  StaffID, TabNumID, CardID, ItemPostID, CardIndex: Integer;
+  CardNum: String;
+begin
+  if not CardList.IsSelected then Exit;
+
+  StaffID:= StaffIDs[StaffList.SelectedIndex];
+  TabNumID:= TabNumIDs[StaffList.SelectedIndex];
+
+  CardIndex:= CardList.SelectedIndex;
+  CardID:= CardIDs[CardIndex];
+  ItemPostID:= CardItemPostIDs[CardIndex];
+  CardNum:= CardNums[CardIndex];
+
+  if not SIZCardEditFormOpen(StaffID, PersonSizes, False, CardID, CardNum,
+                         TabNumID, ItemPostID) then Exit;
+
+  CardNums[CardIndex]:= CardNum;
+  if SEmpty(CardNum) then
+    ViewCardNums[CardIndex]:= 'б/н'
+  else
+    ViewCardNums[CardIndex]:= CardNum;
+
+  CardList.SetColumn('Номер', ViewCardNums);
+  CardList.Draw;
+  CardList.Select(CardIndex);
+end;
+
 procedure TSIZCardForm.CardFrontUpdate;
 var
-  StaffID, TabNumID, CardID, ItemID: Integer;
   CardNum, Family, PersonName, Patronymic, Gender, TabNum, PostName: String;
   CardBD, CardED: TDate;
 begin
-  StaffID:= 0;
-  TabNumID:= 0;
-  CardID:= 0;
-  ItemID:= 0;
-  CardNum:= EmptyStr;
-  Family:= EmptyStr;
-  PersonName:= EmptyStr;
-  Patronymic:= EmptyStr;
-  Gender:= EmptyStr;
-  TabNum:= EmptyStr;
-  PostName:= EmptyStr;
-  CardBD:= 0;
-  CardED:= 0;
-
   if CardList.IsSelected then
   begin
-    CardID:= CardIDs[CardList.SelectedIndex];
-    ItemID:= CardItemIDs[CardList.SelectedIndex];
     CardNum:= CardNums[CardList.SelectedIndex];
     CardBD:= CardBDs[CardList.SelectedIndex];
     CardED:= CardEDs[CardList.SelectedIndex];
     PostName:= CardPostNames[CardList.SelectedIndex];
 
-    StaffID:= StaffIDs[StaffList.SelectedIndex];
     Family:= Families[StaffList.SelectedIndex];
     PersonName:= Names[StaffList.SelectedIndex];
     Patronymic:= Patronymics[StaffList.SelectedIndex];
     Gender:= Genders[StaffList.SelectedIndex];
     TabNum:= TabNums[StaffList.SelectedIndex];
-    TabNumID:= TabNumIDs[StaffList.SelectedIndex];
+  end
+  else begin
+    CardNum:= EmptyStr;
+    CardBD:= 0;
+    CardED:= 0;
+    PostName:= EmptyStr;
+
+    Family:= EmptyStr;
+    PersonName:= EmptyStr;
+    Patronymic:= EmptyStr;
+    Gender:= EmptyStr;
+    TabNum:= EmptyStr;
   end;
 
-  (CategoryForm as TSIZCardFrontForm).DataUpdate(StaffID, TabNumID, CardID, ItemID, CardNum,
-                              Family, PersonName, Patronymic, Gender, TabNum, PostName,
-                              CardBD, CardED, PersonSizes, SubItems);
-end;
-
-procedure TSIZCardForm.CardViewUpdate;
-begin
-  if not Assigned(CategoryForm) then Exit;
-
-  case Category of
-    1: (CategoryForm as TSIZCardFrontForm).ViewUpdate(ModeType);
-    2: (CategoryForm as TSIZCardBackForm).ViewUpdate(ModeType);
-    3: (CategoryForm as TSIZCardStatusForm).ViewUpdate(ModeType);
-  end;
+  (CategoryForm as TSIZCardFrontForm).DataUpdate(CardNum,
+        Family, PersonName, Patronymic, Gender, TabNum, PostName,
+        CardBD, CardED, PersonSizes, SubItems);
 end;
 
 procedure TSIZCardForm.CardDataUpdate;
@@ -514,8 +521,9 @@ begin
     end;
 
     MainPanel.BorderSpacing.Left:= 2*Ord(ModeType<>mtSetting);
+    ViewToolPanel.Visible:= AModeType=mtEditing;
 
-    CardViewUpdate;
+    //CardViewUpdate;
 
   finally
     MainPanel.Visible:= True;
@@ -534,6 +542,18 @@ begin
     CardList.Select(SelectedCardIndex);
 
   CardDataUpdate;
+end;
+
+procedure TSIZCardForm.CardCaptionUpdate;
+begin
+  ViewCaptionPanel.Caption:= '  Личная карточка: ';
+  if not CardList.IsSelected then Exit;
+
+  ViewCaptionPanel.Caption:= ViewCaptionPanel.Caption +
+      ViewCardNums[CardList.SelectedIndex] +
+      ' (' +
+      PeriodToStr(CardBDs[CardList.SelectedIndex], CardEDs[CardList.SelectedIndex]) +
+      ')';
 end;
 
 end.

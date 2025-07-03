@@ -9,52 +9,24 @@ object SIZCardFrontForm: TSIZCardFrontForm
   DesignTimePPI = 120
   OnCreate = FormCreate
   OnDestroy = FormDestroy
-  object ToolPanel: TPanel
-    Left = 0
-    Height = 40
-    Top = 2
-    Width = 700
-    Align = alTop
-    BorderSpacing.Top = 2
-    BevelOuter = bvNone
-    BorderStyle = bsSingle
-    ClientHeight = 36
-    ClientWidth = 696
-    ParentFont = False
-    TabOrder = 0
-    object EditButton: TSpeedButton
-      Cursor = crHandPoint
-      Left = 0
-      Height = 36
-      Hint = 'Редактировать'
-      Top = 0
-      Width = 40
-      Align = alLeft
-      Images = Images.PX24
-      ImageIndex = 6
-      ShowHint = True
-      ParentShowHint = False
-      OnClick = EditButtonClick
-    end
-  end
   object SheetPanel: TPanel
     Left = 0
-    Height = 356
-    Top = 44
+    Height = 398
+    Top = 2
     Width = 700
     Align = alClient
     BorderSpacing.Top = 2
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 352
+    ClientHeight = 394
     ClientWidth = 696
     Color = clWhite
     ParentBackground = False
     ParentColor = False
-    TabOrder = 1
+    TabOrder = 0
     object ViewGrid: TsWorksheetGrid
       Left = 0
-      Height = 328
+      Height = 370
       Top = 0
       Width = 696
       AutoExpand = []
@@ -90,7 +62,7 @@ object SIZCardFrontForm: TSIZCardFrontForm
     object SheetBottomPanel: TPanel
       Left = 0
       Height = 22
-      Top = 330
+      Top = 372
       Width = 696
       Align = alBottom
       AutoSize = True
@@ -117,7 +89,7 @@ object SIZCardFrontForm: TSIZCardFrontForm
     object ZoomBevel: TBevel
       Left = 0
       Height = 2
-      Top = 328
+      Top = 370
       Width = 696
       Align = alBottom
       Shape = bsBottomLine

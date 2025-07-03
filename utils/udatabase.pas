@@ -632,14 +632,20 @@ type
                              out AFs, ANs, APs, AGenders, ATabNums, APostNames: TStrVector): Boolean;
 
     function SIZPersonalCardDataLoad(const ATabNumID: Integer;
-                 out ACardIDs, AItemIDs: TIntVector;
+                 out ACardIDs, AItemIDs, AItemPostIDs: TIntVector;
                  out ACardNums, APostNames, ANormNames, ANormNotes: TStrVector;
                  out ATabNumBDs, ATabNumEDs, ANormBDs, ANormEDs: TDateVector): Boolean;
 
     function SIZPersonalCardListLoad(const ATabNumID: Integer;
-                 out ACardIDs, AItemIDs: TIntVector;
+                 out ACardIDs, AItemIDs, AItemPostIDs: TIntVector;
                  out ACardNums, APostNames, ANormNames: TStrVector;
                  out ACardBDs, ACardEDs: TDateVector): Boolean;
+
+    function SIZPersonalCardAdd(out ACardID: Integer;
+                                const ACardNum: String;
+                                const ATabNumID, AItemPostID: Integer): Boolean;
+    function SIZPersonalCardUpdate(const ACardID: Integer;
+                                const ACardNum: String): Boolean;
   end;
 
 
@@ -5338,7 +5344,7 @@ begin
 end;
 
 function TDataBase.SIZPersonalCardDataLoad(const ATabNumID: Integer;
-                 out ACardIDs, AItemIDs: TIntVector;
+                 out ACardIDs, AItemIDs, AItemPostIDs: TIntVector;
                  out ACardNums, APostNames, ANormNames, ANormNotes: TStrVector;
                  out ATabNumBDs, ATabNumEDs, ANormBDs, ANormEDs: TDateVector): Boolean;
 begin
@@ -5346,6 +5352,7 @@ begin
 
   ACardIDs:= nil;
   AItemIDs:= nil;
+  AItemPostIDs:= nil;
 
   ACardNums:= nil;
   APostNames:= nil;
@@ -5359,7 +5366,7 @@ begin
 
   QSetQuery(FQuery);
   QSetSQL(
-    'SELECT t1.FirstDate, t1.LastDate, t2.PostName, t3.ItemID, ' +
+    'SELECT t1.FirstDate, t1.LastDate, t2.PostName, t3.ItemID, t3.ItemPostID, ' +
            't5.NormName, t5.Note, t5.BeginDate, t5.EndDate, ' +
            't6.CardID, t6.CardNum ' +
     'FROM STAFFPOSTLOG t1 ' +
@@ -5380,6 +5387,7 @@ begin
     begin
       VAppend(ACardIDs, QFieldInt('CardID'));
       VAppend(AItemIDs, QFieldInt('ItemID'));
+      VAppend(AItemPostIDs, QFieldInt('ItemPostID'));
 
       VAppend(ACardNums, QFieldStr('CardNum'));
       VAppend(APostNames, QFieldStr('PostName'));
@@ -5398,11 +5406,11 @@ begin
 end;
 
 function TDataBase.SIZPersonalCardListLoad(const ATabNumID: Integer;
-                 out ACardIDs, AItemIDs: TIntVector;
+                 out ACardIDs, AItemIDs, AItemPostIDs: TIntVector;
                  out ACardNums, APostNames, ANormNames: TStrVector;
                  out ACardBDs, ACardEDs: TDateVector): Boolean;
 var
-  CardIDs, ItemIDs: TIntVector;
+  CardIDs, ItemIDs, ItemPostIDs: TIntVector;
   CardNums, PostNames, NormNames, NormNotes: TStrVector;
   TabNumBDs, TabNumEDs, NormBDs, NormEDs: TDateVector;
   i: Integer;
@@ -5411,6 +5419,7 @@ begin
 
   ACardIDs:= nil;
   AItemIDs:= nil;
+  AItemPostIDs:= nil;
 
   ACardNums:= nil;
   APostNames:= nil;
@@ -5421,7 +5430,7 @@ begin
 
   if ATabNumID<=0 then Exit; //еще не назначен таб номер
 
-  Result:= SIZPersonalCardDataLoad(ATabNumID, CardIDs, ItemIDs,
+  Result:= SIZPersonalCardDataLoad(ATabNumID, CardIDs, ItemIDs, ItemPostIDs,
                                   CardNums, PostNames, NormNames, NormNotes,
                                   TabNumBDs, TabNumEDs, NormBDs, NormEDs);
   if not Result then Exit;
@@ -5430,6 +5439,7 @@ begin
   begin
     VIns(ACardIDs, 0, CardIDs[i]);
     VIns(AItemIDs, 0, ItemIDs[i]);
+    VIns(AItemPostIDs, 0, ItemPostIDs[i]);
 
     VIns(ACardNums, 0, CardNums[i]);
     VIns(APostNames, 0, PostNames[i]);
@@ -5451,6 +5461,7 @@ begin
 
       VDel(ACardIDs, i);
       VDel(AItemIDs, i);
+      VDel(AItemPostIDs, i);
 
       VDel(ACardNums, i);
       VDel(APostNames, i);
@@ -5461,6 +5472,38 @@ begin
     end;
     i:= i-1;
   end;
+end;
+
+function TDataBase.SIZPersonalCardAdd(out ACardID: Integer;
+                                const ACardNum: String;
+                                const ATabNumID, AItemPostID: Integer): Boolean;
+begin
+  Result:= False;
+  QSetQuery(FQuery);
+  try
+    QSetSQL(
+      sqlINSERT('SIZCARDPERSONAL', ['CardNum', 'TabNumID', 'ItemPostID'])
+    );
+
+    QParamStr('CardNum', ACardNum);
+    QParamInt('TabNumID', ATabNumID);
+    QParamInt('ItemPostID', AItemPostID);
+    QExec;
+
+    //получение ID сделанной записи
+    ACardID:= LastWritedInt32ID('SIZCARDPERSONAL');
+
+    QCommit;
+    Result:= True;
+  except
+    QRollback;
+  end;
+end;
+
+function TDataBase.SIZPersonalCardUpdate(const ACardID: Integer;
+                                         const ACardNum: String): Boolean;
+begin
+  Result:= UpdateInt32ID('SIZCARDPERSONAL', 'CardNum', 'CardID', ACardID, ACardNum);
 end;
 
 end.

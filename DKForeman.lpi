@@ -419,12 +419,12 @@
         <UnitName Value="USIZSizeForm"/>
       </Unit>
       <Unit>
-        <Filename Value="forms\siz\usizsizeeditform.pas"/>
+        <Filename Value="forms\siz\usizcardeditform.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="SIZSizeEditForm"/>
+        <ComponentName Value="SIZCardEditForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <UnitName Value="USIZSizeEditForm"/>
+        <UnitName Value="USIZCardEditForm"/>
       </Unit>
       <Unit>
         <Filename Value="forms\siz\usizcardform.pas"/>
@@ -475,6 +475,7 @@
         <Filename Value="forms\uparamform.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="ParamForm"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UParamForm"/>
       </Unit>

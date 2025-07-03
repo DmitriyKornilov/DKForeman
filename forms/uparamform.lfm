@@ -11,6 +11,7 @@ object ParamForm: TParamForm
   Constraints.MinWidth = 600
   DesignTimePPI = 120
   Position = poScreenCenter
+  LCLVersion = '4.0.0.4'
   OnShow = FormShow
   object ButtonPanel: TPanel
     AnchorSideTop.Control = DepartmentEdit

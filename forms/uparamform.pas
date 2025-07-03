@@ -37,7 +37,32 @@ type
 var
   ParamForm: TParamForm;
 
+  function ParamFormOpen(var ACompany, ADepartment: String): Boolean;
+
 implementation
+
+function ParamFormOpen(var ACompany, ADepartment: String): Boolean;
+var
+  Form: TParamForm;
+begin
+  Result:= False;
+
+  Form:= TParamForm.Create(nil);
+  try
+    Form.Company:= ACompany;
+    Form.Department:= ADepartment;
+
+    if Form.ShowModal=mrOK then
+    begin
+      ACompany:= Form.Company;
+      ADepartment:= Form.Department;
+      Result:= True;
+    end;
+
+  finally
+    FreeAndNil(Form);
+  end;
+end;
 
 {$R *.lfm}
 
