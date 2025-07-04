@@ -139,12 +139,12 @@
         <UnitName Value="UTimetableForm"/>
       </Unit>
       <Unit>
-        <Filename Value="forms\siz\usizstorageform.pas"/>
+        <Filename Value="forms\siz\usizstoreform.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="SIZStorageForm"/>
+        <ComponentName Value="SIZStoreForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <UnitName Value="USIZStorageForm"/>
+        <UnitName Value="USIZStoreForm"/>
       </Unit>
       <Unit>
         <Filename Value="forms\study\ustudyform.pas"/>

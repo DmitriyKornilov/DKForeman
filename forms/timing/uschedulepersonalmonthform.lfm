@@ -2,10 +2,10 @@ object SchedulePersonalMonthForm: TSchedulePersonalMonthForm
   Left = 403
   Height = 561
   Top = 170
-  Width = 1249
+  Width = 1350
   Caption = 'SchedulePersonalMonthForm'
   ClientHeight = 561
-  ClientWidth = 1249
+  ClientWidth = 1350
   DesignTimePPI = 120
   LCLVersion = '4.0.0.4'
   WindowState = wsMaximized
@@ -16,7 +16,7 @@ object SchedulePersonalMonthForm: TSchedulePersonalMonthForm
     Left = 2
     Height = 40
     Top = 2
-    Width = 1245
+    Width = 1346
     Align = alTop
     BorderSpacing.Left = 2
     BorderSpacing.Top = 2
@@ -24,19 +24,19 @@ object SchedulePersonalMonthForm: TSchedulePersonalMonthForm
     BevelOuter = bvNone
     BorderStyle = bsSingle
     ClientHeight = 40
-    ClientWidth = 1245
+    ClientWidth = 1346
     ParentFont = False
     TabOrder = 0
     object ListToolPanel: TPanel
       Left = 0
       Height = 36
       Top = 0
-      Width = 602
+      Width = 682
       Align = alLeft
       AutoSize = True
       BevelOuter = bvNone
       ClientHeight = 36
-      ClientWidth = 602
+      ClientWidth = 682
       TabOrder = 0
       object YearPanel: TPanel
         Left = 0
@@ -178,7 +178,7 @@ object SchedulePersonalMonthForm: TSchedulePersonalMonthForm
       end
       object CheckAllButton: TSpeedButton
         Cursor = crHandPoint
-        Left = 290
+        Left = 370
         Height = 36
         Hint = 'Выбрать всех сотрудников'
         Top = 0
@@ -192,7 +192,7 @@ object SchedulePersonalMonthForm: TSchedulePersonalMonthForm
       end
       object UncheckAllButton: TSpeedButton
         Cursor = crHandPoint
-        Left = 330
+        Left = 410
         Height = 36
         Hint = 'Снять выбор со всех сотрудников'
         Top = 0
@@ -205,7 +205,7 @@ object SchedulePersonalMonthForm: TSchedulePersonalMonthForm
         OnClick = UncheckAllButtonClick
       end
       object DividerBevel2: TDividerBevel
-        Left = 370
+        Left = 450
         Height = 36
         Top = 0
         Width = 21
@@ -230,7 +230,7 @@ object SchedulePersonalMonthForm: TSchedulePersonalMonthForm
       end
       object ScheduleButton: TSpeedButton
         Cursor = crHandPoint
-        Left = 391
+        Left = 471
         Height = 36
         Hint = 'Сформировать график на месяц'
         Top = 0
@@ -246,9 +246,37 @@ object SchedulePersonalMonthForm: TSchedulePersonalMonthForm
         ParentShowHint = False
         OnClick = ScheduleButtonClick
       end
+      object CollapseAllButton: TSpeedButton
+        Cursor = crHandPoint
+        Left = 330
+        Height = 36
+        Hint = 'Свернуть всё'
+        Top = 0
+        Width = 40
+        Align = alLeft
+        Images = Images.PX24
+        ImageIndex = 61
+        ShowHint = True
+        ParentShowHint = False
+        OnClick = CollapseAllButtonClick
+      end
+      object ExpandAllButton: TSpeedButton
+        Cursor = crHandPoint
+        Left = 290
+        Height = 36
+        Hint = 'Развернуть всё'
+        Top = 0
+        Width = 40
+        Align = alLeft
+        Images = Images.PX24
+        ImageIndex = 60
+        ShowHint = True
+        ParentShowHint = False
+        OnClick = ExpandAllButtonClick
+      end
     end
     object ScheduleToolPanel: TPanel
-      Left = 602
+      Left = 682
       Height = 36
       Top = 0
       Width = 464
@@ -379,7 +407,7 @@ object SchedulePersonalMonthForm: TSchedulePersonalMonthForm
     end
     object EditingButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 1100
+      Left = 1201
       Height = 36
       Hint = 'Редактирование'
       Top = 0
@@ -396,7 +424,7 @@ object SchedulePersonalMonthForm: TSchedulePersonalMonthForm
     end
     object SettingButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 1140
+      Left = 1241
       Height = 36
       Hint = 'Параметры'
       Top = 0
@@ -412,7 +440,7 @@ object SchedulePersonalMonthForm: TSchedulePersonalMonthForm
       OnClick = SettingButtonClick
     end
     object DividerBevel1: TDividerBevel
-      Left = 1180
+      Left = 1281
       Height = 36
       Top = 0
       Width = 21
@@ -425,7 +453,7 @@ object SchedulePersonalMonthForm: TSchedulePersonalMonthForm
     end
     object CloseButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 1201
+      Left = 1302
       Height = 36
       Hint = 'Закрыть'
       Top = 0
@@ -442,7 +470,7 @@ object SchedulePersonalMonthForm: TSchedulePersonalMonthForm
     Left = 2
     Height = 89
     Top = 44
-    Width = 1245
+    Width = 1346
     Align = alClient
     BorderSpacing.Left = 2
     BorderSpacing.Top = 2
@@ -450,19 +478,19 @@ object SchedulePersonalMonthForm: TSchedulePersonalMonthForm
     BorderSpacing.Bottom = 2
     BevelOuter = bvNone
     ClientHeight = 89
-    ClientWidth = 1245
+    ClientWidth = 1346
     TabOrder = 1
     object ListOrderToolPanel: TPanel
       Left = 0
       Height = 40
       Top = 49
-      Width = 1245
+      Width = 1346
       Align = alBottom
       BorderSpacing.Top = 2
       BevelOuter = bvNone
       BorderStyle = bsSingle
       ClientHeight = 40
-      ClientWidth = 1245
+      ClientWidth = 1346
       TabOrder = 0
       object OrderLabel: TLabel
         AnchorSideLeft.Control = ListOrderToolPanel
@@ -540,7 +568,7 @@ object SchedulePersonalMonthForm: TSchedulePersonalMonthForm
       Left = 0
       Height = 48
       Top = -1
-      Width = 1245
+      Width = 1346
       Align = alBottom
       DefaultText = 'Node'
       Header.AutoSizeIndex = 0
@@ -552,7 +580,7 @@ object SchedulePersonalMonthForm: TSchedulePersonalMonthForm
       Left = 0
       Height = 0
       Top = 32
-      Width = 1245
+      Width = 1346
       Align = alClient
       DefaultText = 'Node'
       Header.AutoSizeIndex = 0
@@ -564,7 +592,7 @@ object SchedulePersonalMonthForm: TSchedulePersonalMonthForm
       Left = 0
       Height = 30
       Top = 0
-      Width = 1245
+      Width = 1346
       Align = alTop
       Alignment = taLeftJustify
       BorderSpacing.Bottom = 2
@@ -580,29 +608,29 @@ object SchedulePersonalMonthForm: TSchedulePersonalMonthForm
     Left = 0
     Height = 426
     Top = 135
-    Width = 1249
+    Width = 1350
     Align = alBottom
     BorderSpacing.Top = 2
     BevelOuter = bvNone
     ClientHeight = 426
-    ClientWidth = 1249
+    ClientWidth = 1350
     TabOrder = 2
     Visible = False
     object RightPanel: TPanel
       Left = 358
       Height = 426
       Top = 0
-      Width = 891
+      Width = 992
       Align = alClient
       BevelOuter = bvNone
       ClientHeight = 426
-      ClientWidth = 891
+      ClientWidth = 992
       TabOrder = 0
       object SheetPanel: TPanel
         Left = 0
         Height = 392
         Top = 32
-        Width = 889
+        Width = 990
         Align = alClient
         BorderSpacing.Top = 2
         BorderSpacing.Right = 2
@@ -610,7 +638,7 @@ object SchedulePersonalMonthForm: TSchedulePersonalMonthForm
         BevelOuter = bvNone
         BorderStyle = bsSingle
         ClientHeight = 392
-        ClientWidth = 889
+        ClientWidth = 990
         Color = clWhite
         ParentBackground = False
         ParentColor = False
@@ -619,7 +647,7 @@ object SchedulePersonalMonthForm: TSchedulePersonalMonthForm
           Left = 0
           Height = 364
           Top = 0
-          Width = 885
+          Width = 986
           AutoExpand = []
           DisplayFixedColRow = False
           FrozenBorderPen.Style = psClear
@@ -655,7 +683,7 @@ object SchedulePersonalMonthForm: TSchedulePersonalMonthForm
           Left = 0
           Height = 22
           Top = 366
-          Width = 885
+          Width = 986
           Align = alBottom
           BevelOuter = bvNone
           Color = clWhite
@@ -667,7 +695,7 @@ object SchedulePersonalMonthForm: TSchedulePersonalMonthForm
           Left = 0
           Height = 2
           Top = 364
-          Width = 885
+          Width = 986
           Align = alBottom
           Shape = bsBottomLine
           Style = bsRaised
@@ -677,7 +705,7 @@ object SchedulePersonalMonthForm: TSchedulePersonalMonthForm
         Left = 0
         Height = 30
         Top = 0
-        Width = 889
+        Width = 990
         Align = alTop
         Alignment = taLeftJustify
         BorderSpacing.Right = 2

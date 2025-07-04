@@ -24,7 +24,9 @@ type
 
   TSchedulePersonalMonthForm = class(TForm)
     CheckAllButton: TSpeedButton;
+    CollapseAllButton: TSpeedButton;
     CloseButton: TSpeedButton;
+    ExpandAllButton: TSpeedButton;
     DayEditButton: TSpeedButton;
     DividerBevel1: TDividerBevel;
     DividerBevel2: TDividerBevel;
@@ -69,8 +71,10 @@ type
     ZoomPanel: TPanel;
     procedure CheckAllButtonClick(Sender: TObject);
     procedure CloseButtonClick(Sender: TObject);
+    procedure CollapseAllButtonClick(Sender: TObject);
     procedure DayEditButtonClick(Sender: TObject);
     procedure EditingButtonClick(Sender: TObject);
+    procedure ExpandAllButtonClick(Sender: TObject);
     procedure ExportButtonClick(Sender: TObject);
     procedure FIORadioButtonClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -210,19 +214,33 @@ begin
     ListCaptionPanel, SettingCaptionPanel, ScheduleCaptionPanel
   ]);
   SetToolButtons([
-    CloseButton, CheckAllButton, UncheckAllButton, EditingButton, SettingButton,
+    CloseButton,
+    ExpandAllButton, CollapseAllButton, CheckAllButton, UncheckAllButton,
+    EditingButton, SettingButton,
     DayEditButton, RowUpButton, RowDownButton, RowMergeButton
   ]);
 
   Images.ToButtons([
     ExportButton, ScheduleButton, ListButton,
-    CloseButton, CheckAllButton, UncheckAllButton, EditingButton, SettingButton,
+    CloseButton,
+    ExpandAllButton, CollapseAllButton, CheckAllButton, UncheckAllButton,
+    EditingButton, SettingButton,
     DayEditButton, RowUpButton, RowDownButton, RowMergeButton
   ]);
 
   MonthDropDown.AutoWidth;
   OrderType:= 0;
   StaffListLoad;
+end;
+
+procedure TSchedulePersonalMonthForm.ExpandAllButtonClick(Sender: TObject);
+begin
+  MStaffList.ExpandAll(True);
+end;
+
+procedure TSchedulePersonalMonthForm.CollapseAllButtonClick(Sender: TObject);
+begin
+  MStaffList.ExpandAll(False);
 end;
 
 procedure TSchedulePersonalMonthForm.CheckAllButtonClick(Sender: TObject);
@@ -487,6 +505,10 @@ begin
   if OrderType=NewOrderType then Exit;
 
   OrderType:= NewOrderType;
+
+  CollapseAllButton.Enabled:= OrderType in [0, 1];
+  ExpandAllButton.Enabled:= CollapseAllButton.Enabled;
+
   Result:= True;
 end;
 

@@ -256,6 +256,7 @@ object MainForm: TMainForm
     object SIZStorageMenuItem: TMenuItem
       Caption = 'Склад средств индивидуальной защиты'
       ImageIndex = 55
+      OnClick = SIZStorageMenuItemClick
     end
     object SIZRequestMenuItem: TMenuItem
       Caption = 'Заявка на поступление средств индивидуальной защиты'

@@ -25,6 +25,7 @@ type
   TTimetableMonthForm = class(TForm)
     CheckAllButton: TSpeedButton;
     CloseButton: TSpeedButton;
+    CollapseAllButton: TSpeedButton;
     DayEditButton: TSpeedButton;
     DividerBevel1: TDividerBevel;
     DividerBevel2: TDividerBevel;
@@ -32,6 +33,7 @@ type
     DividerBevel4: TDividerBevel;
     EditingButton: TSpeedButton;
     EditPanel: TPanel;
+    ExpandAllButton: TSpeedButton;
     ExportButton: TSpeedButton;
     ListButton: TSpeedButton;
     ListCaptionPanel: TPanel;
@@ -69,8 +71,10 @@ type
     ZoomPanel: TPanel;
     procedure CheckAllButtonClick(Sender: TObject);
     procedure CloseButtonClick(Sender: TObject);
+    procedure CollapseAllButtonClick(Sender: TObject);
     procedure DayEditButtonClick(Sender: TObject);
     procedure EditingButtonClick(Sender: TObject);
+    procedure ExpandAllButtonClick(Sender: TObject);
     procedure ExportButtonClick(Sender: TObject);
     procedure FIORadioButtonClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -216,13 +220,17 @@ begin
     ListCaptionPanel, SettingCaptionPanel, TimetableCaptionPanel
   ]);
   SetToolButtons([
-    CloseButton, CheckAllButton, UncheckAllButton, EditingButton, SettingButton,
+    CloseButton,
+    ExpandAllButton, CollapseAllButton, CheckAllButton, UncheckAllButton,
+    EditingButton, SettingButton,
     DayEditButton, RowUpButton, RowDownButton, RowMergeButton
   ]);
 
   Images.ToButtons([
     ExportButton, TimetableButton, ListButton,
-    CloseButton, CheckAllButton, UncheckAllButton, EditingButton, SettingButton,
+    CloseButton,
+    ExpandAllButton, CollapseAllButton, CheckAllButton, UncheckAllButton,
+    EditingButton, SettingButton,
     DayEditButton, RowUpButton, RowDownButton, RowMergeButton
   ]);
 
@@ -230,6 +238,16 @@ begin
   MonthDropDown.AutoWidth;
   OrderType:= 0;
   StaffListLoad;
+end;
+
+procedure TTimetableMonthForm.ExpandAllButtonClick(Sender: TObject);
+begin
+  MStaffList.ExpandAll(True);
+end;
+
+procedure TTimetableMonthForm.CollapseAllButtonClick(Sender: TObject);
+begin
+  MStaffList.ExpandAll(False);
 end;
 
 procedure TTimetableMonthForm.CheckAllButtonClick(Sender: TObject);
@@ -545,6 +563,10 @@ begin
   if OrderType=NewOrderType then Exit;
 
   OrderType:= NewOrderType;
+
+  CollapseAllButton.Enabled:= OrderType in [0, 1];
+  ExpandAllButton.Enabled:= CollapseAllButton.Enabled;
+
   Result:= True;
 end;
 

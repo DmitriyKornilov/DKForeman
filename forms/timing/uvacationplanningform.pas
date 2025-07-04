@@ -22,6 +22,7 @@ type
   TVacationPlanningForm = class(TForm)
     CheckAllButton: TSpeedButton;
     CloseButton: TSpeedButton;
+    CollapseAllButton: TSpeedButton;
     DividerBevel5: TDividerBevel;
     EditButton: TSpeedButton;
     DividerBevel1: TDividerBevel;
@@ -29,6 +30,7 @@ type
     DividerBevel3: TDividerBevel;
     DividerBevel4: TDividerBevel;
     EditPanel: TPanel;
+    ExpandAllButton: TSpeedButton;
     ExportButton: TSpeedButton;
     FIORadioButton: TRadioButton;
     ListButton: TSpeedButton;
@@ -67,7 +69,9 @@ type
     SheetBottomPanel: TPanel;
     procedure CheckAllButtonClick(Sender: TObject);
     procedure CloseButtonClick(Sender: TObject);
+    procedure CollapseAllButtonClick(Sender: TObject);
     procedure EditButtonClick(Sender: TObject);
+    procedure ExpandAllButtonClick(Sender: TObject);
     procedure ExportButtonClick(Sender: TObject);
     procedure FIORadioButtonClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -183,13 +187,15 @@ begin
     ListCaptionPanel, PlanCaptionPanel, StatCaptionPanel
   ]);
   SetToolButtons([
-    CloseButton, CheckAllButton, UncheckAllButton,
+    CloseButton,
+    ExpandAllButton, CollapseAllButton, CheckAllButton, UncheckAllButton,
     EditButton, PrevMonthButton, PrevDayButton, NextDayButton, NextMonthButton
   ]);
 
   Images.ToButtons([
     PlanButton, ListButton, ExportButton,
-    CloseButton, CheckAllButton, UncheckAllButton,
+    CloseButton,
+    ExpandAllButton, CollapseAllButton, CheckAllButton, UncheckAllButton,
     EditButton, PrevMonthButton, PrevDayButton, NextDayButton, NextMonthButton
   ]);
 
@@ -376,6 +382,10 @@ begin
   if OrderType=NewOrderType then Exit;
 
   OrderType:= NewOrderType;
+
+  CollapseAllButton.Enabled:= OrderType in [0, 1];
+  ExpandAllButton.Enabled:= CollapseAllButton.Enabled;
+
   Result:= True;
 end;
 
@@ -721,6 +731,16 @@ end;
 procedure TVacationPlanningForm.ExportButtonClick(Sender: TObject);
 begin
   PlanExport;
+end;
+
+procedure TVacationPlanningForm.ExpandAllButtonClick(Sender: TObject);
+begin
+  MStaffList.ExpandAll(True);
+end;
+
+procedure TVacationPlanningForm.CollapseAllButtonClick(Sender: TObject);
+begin
+  MStaffList.ExpandAll(False);
 end;
 
 procedure TVacationPlanningForm.CheckAllButtonClick(Sender: TObject);
