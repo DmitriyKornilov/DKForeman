@@ -22,6 +22,7 @@ type
   TVacationPlanningForm = class(TForm)
     CheckAllButton: TSpeedButton;
     CloseButton: TSpeedButton;
+    DividerBevel5: TDividerBevel;
     EditButton: TSpeedButton;
     DividerBevel1: TDividerBevel;
     DividerBevel2: TDividerBevel;

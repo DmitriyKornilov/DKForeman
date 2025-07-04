@@ -8,7 +8,7 @@ uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls,
   fpspreadsheetgrid,
   //Project utils
-  UTypes, UConst, UVars,
+  UTypes, UConst, UVars, USIZCardSheet, USIZNormTypes,
   //DK packages utils
   DK_Zoom, DK_CtrlUtils, DK_Vector;
 
@@ -23,8 +23,13 @@ type
     ZoomBevel: TBevel;
     ZoomPanel: TPanel;
     procedure FormCreate(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
   private
     ZoomPercent: Integer;
+
+    Sheet: TSIZCardStatusSheet;
+
+    SubItems: TNormSubItems;
 
     procedure DataDraw(const AZoomPercent: Integer);
     procedure DataReDraw;
@@ -32,7 +37,7 @@ type
     procedure SettingsLoad;
   public
     procedure SettingsSave;
-    procedure DataUpdate();
+    procedure DataUpdate(const ASubItems: TNormSubItems);
   end;
 
 var
@@ -46,8 +51,15 @@ implementation
 
 procedure TSIZCardStatusForm.FormCreate(Sender: TObject);
 begin
+  Sheet:= TSIZCardStatusSheet.Create(ViewGrid.Worksheet, ViewGrid, GridFont);
+
   SettingsLoad; //load ZoomPercent
   CreateZoomControls(50, 150, ZoomPercent, ZoomPanel, @DataDraw, True);
+end;
+
+procedure TSIZCardStatusForm.FormDestroy(Sender: TObject);
+begin
+  FreeAndNil(Sheet);
 end;
 
 procedure TSIZCardStatusForm.DataDraw(const AZoomPercent: Integer);
@@ -56,9 +68,9 @@ begin
   Screen.Cursor:= crHourGlass;
   try
     ZoomPercent:= AZoomPercent;
-    //CardStatusSheet.Zoom(ZoomPercent);
-    //CardStatusSheet.Draw(Calendar);
-    //CardStatusSheet.ColorsUpdate(Colors);
+    Sheet.Zoom(ZoomPercent);
+    Sheet.Draw(SubItems);
+
   finally
     ViewGrid.Visible:= True;
     Screen.Cursor:= crDefault;
@@ -86,9 +98,9 @@ begin
   DataBase.SettingsUpdate(SETTING_NAMES_SIZCARDSTATUSFORM, SettingValues);
 end;
 
-procedure TSIZCardStatusForm.DataUpdate();
+procedure TSIZCardStatusForm.DataUpdate(const ASubItems: TNormSubItems);
 begin
-
+  SubItems:= ASubItems;
 
   DataReDraw;
 end;

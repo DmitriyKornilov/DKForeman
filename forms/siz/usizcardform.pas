@@ -22,6 +22,8 @@ type
 
   TSIZCardForm = class(TForm)
     AscendingButton: TSpeedButton;
+    DividerBevel2: TDividerBevel;
+    HistoryButton: TSpeedButton;
     StatusDelButton: TSpeedButton;
     StatusAddButton: TSpeedButton;
     StatusButtonPanel: TPanel;
@@ -121,6 +123,7 @@ type
 
     procedure CardFrontUpdate;
     procedure CardBackUpdate;
+    procedure CardStatusUpdate;
     procedure CardDataUpdate;
 
     procedure SettingsLoad;
@@ -178,13 +181,18 @@ begin
     ViewCaptionPanel
   ]);
   SetToolButtons([
-    CloseButton, AscendingButton, DescendingButton, FrontEditButton
+    CloseButton, AscendingButton, DescendingButton,
+    FrontEditButton,
+    BackDelButton, BackWriteoffButton, BackWriteoffCancelButton,
+    StatusSizeButton, StatusAddButton, StatusDelButton
   ]);
 
   Images.ToButtons([
-    ExportButton,
+    ExportButton, HistoryButton,
     CloseButton, AscendingButton, DescendingButton,
-    FrontEditButton
+    FrontEditButton,
+    BackDelButton, BackWriteoffButton, BackWriteoffCancelButton,
+    StatusSizeButton, StatusAddButton, StatusDelButton
   ]);
 
   ControlHeight(ViewButtonPanel, Round(TOOL_PANEL_HEIGHT_DEFAULT*0.65));
@@ -502,6 +510,11 @@ begin
   (CategoryForm as TSIZCardBackForm).DataUpdate(CardList.IsSelected);
 end;
 
+procedure TSIZCardForm.CardStatusUpdate;
+begin
+  (CategoryForm as TSIZCardStatusForm).DataUpdate(SubItems);
+end;
+
 procedure TSIZCardForm.CardDataUpdate;
 begin
   if not Assigned(CategoryForm) then Exit;
@@ -509,7 +522,7 @@ begin
   case Category of
     1: CardFrontUpdate;
     2: CardBackUpdate;
-    3: (CategoryForm as TSIZCardStatusForm).DataUpdate;
+    3: CardStatusUpdate;
   end;
 end;
 

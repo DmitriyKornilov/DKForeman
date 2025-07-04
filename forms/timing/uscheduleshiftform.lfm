@@ -94,7 +94,7 @@ object ScheduleShiftForm: TScheduleShiftForm
       ParentFont = False
     end
     object DividerBevel3: TDividerBevel
-      Left = 195
+      Left = 437
       Height = 36
       Top = 0
       Width = 21
@@ -107,7 +107,7 @@ object ScheduleShiftForm: TScheduleShiftForm
     end
     object ExportButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 86
+      Left = 458
       Height = 36
       Hint = 'Экспорт в формат электронной таблицы XLSX или ODS'
       Top = 0
@@ -125,7 +125,7 @@ object ScheduleShiftForm: TScheduleShiftForm
     end
     object CalendarButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 216
+      Left = 86
       Height = 36
       Hint = 'Годовой график сменности в виде календаря'
       Top = 0
@@ -143,7 +143,7 @@ object ScheduleShiftForm: TScheduleShiftForm
     end
     object MonthButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 398
+      Left = 268
       Height = 36
       Hint = 'Сводный график сменности на месяц'
       Top = 0

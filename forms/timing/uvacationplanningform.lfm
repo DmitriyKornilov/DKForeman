@@ -7,7 +7,6 @@ object VacationPlanningForm: TVacationPlanningForm
   ClientHeight = 502
   ClientWidth = 1015
   DesignTimePPI = 120
-  LCLVersion = '4.0.0.4'
   WindowState = wsMaximized
   OnCreate = FormCreate
   OnDestroy = FormDestroy
@@ -23,8 +22,8 @@ object VacationPlanningForm: TVacationPlanningForm
     BorderSpacing.Right = 2
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 40
-    ClientWidth = 1011
+    ClientHeight = 36
+    ClientWidth = 1007
     ParentFont = False
     TabOrder = 0
     object ListToolPanel: TPanel
@@ -143,24 +142,24 @@ object VacationPlanningForm: TVacationPlanningForm
       Left = 360
       Height = 36
       Top = 0
-      Width = 541
+      Width = 562
       Align = alLeft
       AutoSize = True
       BevelOuter = bvNone
       ClientHeight = 36
-      ClientWidth = 541
+      ClientWidth = 562
       TabOrder = 1
       Visible = False
       object EditPanel: TPanel
-        Left = 320
+        Left = 211
         Height = 36
         Top = 0
-        Width = 221
+        Width = 351
         Align = alLeft
         AutoSize = True
         BevelOuter = bvNone
         ClientHeight = 36
-        ClientWidth = 221
+        ClientWidth = 351
         TabOrder = 0
         object EditButton: TSpeedButton
           Cursor = crHandPoint
@@ -251,24 +250,36 @@ object VacationPlanningForm: TVacationPlanningForm
           ParentShowHint = False
           OnClick = NextMonthButtonClick
         end
-      end
-      object ExportButton: TSpeedButton
-        Cursor = crHandPoint
-        Left = 211
-        Height = 36
-        Hint = 'Экспорт в формат электронной таблицы XLSX или ODS'
-        Top = 0
-        Width = 109
-        Align = alLeft
-        AutoSize = True
-        Caption = ' Экспорт '
-        Images = Images.PX24
-        ImageIndex = 22
-        Margin = 5
-        Spacing = 5
-        ShowHint = True
-        ParentShowHint = False
-        OnClick = ExportButtonClick
+        object DividerBevel5: TDividerBevel
+          Left = 221
+          Height = 36
+          Top = 0
+          Width = 21
+          Caption = 'DividerBevel5'
+          Align = alLeft
+          BevelWidth = 2
+          Font.Style = [fsBold]
+          Orientation = trVertical
+          ParentFont = False
+        end
+        object ExportButton: TSpeedButton
+          Cursor = crHandPoint
+          Left = 242
+          Height = 36
+          Hint = 'Экспорт в формат электронной таблицы XLSX или ODS'
+          Top = 0
+          Width = 109
+          Align = alLeft
+          AutoSize = True
+          Caption = ' Экспорт '
+          Images = Images.PX24
+          ImageIndex = 22
+          Margin = 5
+          Spacing = 5
+          ShowHint = True
+          ParentShowHint = False
+          OnClick = ExportButtonClick
+        end
       end
       object ListButton: TSpeedButton
         Cursor = crHandPoint
@@ -340,8 +351,8 @@ object VacationPlanningForm: TVacationPlanningForm
       BorderSpacing.Bottom = 2
       BevelOuter = bvNone
       BorderStyle = bsSingle
-      ClientHeight = 98
-      ClientWidth = 1011
+      ClientHeight = 94
+      ClientWidth = 1007
       Color = clWhite
       ParentBackground = False
       ParentColor = False
@@ -450,8 +461,8 @@ object VacationPlanningForm: TVacationPlanningForm
         BorderSpacing.Around = 2
         BevelOuter = bvNone
         BorderStyle = bsSingle
-        ClientHeight = 116
-        ClientWidth = 1011
+        ClientHeight = 112
+        ClientWidth = 1007
         Color = clWindow
         ParentBackground = False
         ParentColor = False
@@ -568,8 +579,8 @@ object VacationPlanningForm: TVacationPlanningForm
       BorderSpacing.Top = 2
       BevelOuter = bvNone
       BorderStyle = bsSingle
-      ClientHeight = 40
-      ClientWidth = 1011
+      ClientHeight = 36
+      ClientWidth = 1007
       TabOrder = 0
       object OrderLabel: TLabel
         AnchorSideLeft.Control = ListOrderToolPanel

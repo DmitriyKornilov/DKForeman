@@ -20,7 +20,7 @@ type
   protected
     function SetWidths: TIntVector; override;
   private
-    const
+    const //700
       COLUMN1_WIDTH = 40;
       COLUMN2_WIDTH = 25;
       COLUMN3_WIDTH = 100;
@@ -63,7 +63,7 @@ type
   protected
     function SetWidths: TIntVector; override;
   private
-    const
+    const //980
       COLUMN1_WIDTH = 200;
       COLUMN2_WIDTH = 200;
       COLUMN3_WIDTH = 60;
@@ -82,6 +82,35 @@ type
     procedure NoteDraw(var ARow: Integer);
   public
     procedure Draw(const ANeedDraw: Boolean; const AItemSIZNames: TStrVector);
+  end;
+
+  { TSIZCardStatusSheet }
+
+  TSIZCardStatusSheet = class(TCustomSheet)
+  protected
+    function SetWidths: TIntVector; override;
+  private
+    const //980
+      COLUMN1_WIDTH = 230; //перечень СИЗ по нормам
+      COLUMN2_WIDTH = 80;  //единица измерения
+      COLUMN3_WIDTH = 100; //количество на период
+      COLUMN4_WIDTH = 100; //размер
+      COLUMN5_WIDTH = 230; //перечень выданных СИЗ
+      COLUMN6_WIDTH = 80;  //количество
+      COLUMN7_WIDTH = 80;  //дата выдачи
+      COLUMN8_WIDTH = 80;  //дата следующей выдачи
+    var
+      FSubItems: TNormSubItems;
+
+    procedure CaptionDraw(var ARow: Integer);
+
+    procedure ReasonDraw(var ARow: Integer; const AIndex: Integer);
+    procedure NormLineDraw(var ARow: Integer; const AIndex: Integer);
+    procedure GettingLineDraw(var ARow: Integer; const AIndex: Integer);
+    procedure NormDraw(var ARow: Integer);
+
+  public
+    procedure Draw(const ASubItems: TNormSubItems);
   end;
 
 implementation
@@ -323,10 +352,10 @@ begin
   N:= High(FSubItems[AIndex].Info.Names);
 
   //Наименование СИЗ
-  V:= FSubItems[AIndex].Info.Names;
+  V:= VCut(FSubItems[AIndex].Info.Names);
   VectorDraw(Writer, V, ARow, 1, 4, 'или', False, haLeft, vaTop);
   //Пункт Норм
-  V:= FSubItems[AIndex].Info.ClauseNames;
+  V:= VCut(FSubItems[AIndex].Info.ClauseNames);
   VectorDraw(Writer, V, ARow, 5, 7, EmptyStr, True, haCenter, vaTop);
   //Единица измерения, периодичность выдачи
   VDim(V, N+1);
@@ -590,6 +619,155 @@ begin
   R:= R + 1;
   NoteDraw(R);
 
+  Writer.EndEdit;
+end;
+
+{ TSIZCardStatusSheet }
+
+function TSIZCardStatusSheet.SetWidths: TIntVector;
+begin
+  Result:= VCreateInt([
+    COLUMN1_WIDTH,
+    COLUMN2_WIDTH,
+    COLUMN3_WIDTH,
+    COLUMN4_WIDTH,
+    COLUMN5_WIDTH,
+    COLUMN6_WIDTH,
+    COLUMN7_WIDTH,
+    COLUMN8_WIDTH
+  ]);
+end;
+
+procedure TSIZCardStatusSheet.CaptionDraw(var ARow: Integer);
+var
+  R: Integer;
+begin
+  R:= ARow;
+  Writer.SetBackgroundDefault;
+  Writer.SetFont(Font.Name, Font.Size, [fsBold], clBlack);
+  Writer.SetAlignment(haCenter, vaCenter);
+
+  Writer.WriteText(R, 1, 'Перечень СИЗ по нормам', cbtOuter, True, True);
+  Writer.WriteText(R, 2, 'Единица' + SYMBOL_BREAK + 'измерения', cbtOuter, True, True);
+  Writer.WriteText(R, 3, 'Количество' + SYMBOL_BREAK + 'на период', cbtOuter, True, True);
+  Writer.WriteText(R, 4, 'Размер', cbtOuter, True, True);
+  Writer.WriteText(R, 5, 'Перечень выданных СИЗ', cbtOuter, True, True);
+  Writer.WriteText(R, 6, 'Количество', cbtOuter, True, True);
+  Writer.WriteText(R, 7, 'Дата' + SYMBOL_BREAK + 'выдачи', cbtOuter, True, True);
+  Writer.WriteText(R, 8, 'Дата' + SYMBOL_BREAK + 'следующей' + SYMBOL_BREAK + 'выдачи', cbtOuter, True, True);
+
+  ARow:= R;
+end;
+
+procedure TSIZCardStatusSheet.ReasonDraw(var ARow: Integer;
+  const AIndex: Integer);
+begin
+  Writer.SetBackgroundDefault;
+  Writer.SetAlignment(haLeft, vaCenter);
+  Writer.SetFont(Font.Name, Font.Size, [fsBold, fsItalic], clBlack);
+  Writer.WriteText(ARow, 1, ARow, Writer.ColCount, FSubItems[AIndex].Reason + ':', cbtOuter, True, True);
+  ARow:= ARow + 1;
+end;
+
+procedure TSIZCardStatusSheet.NormLineDraw(var ARow: Integer;
+  const AIndex: Integer);
+var
+  i, N: Integer;
+  V: TStrVector;
+begin
+  Writer.SetBackgroundDefault;
+  Writer.SetFont(Font.Name, Font.Size, [], clBlack);
+
+  V:= nil;
+  N:= High(FSubItems[AIndex].Info.Names);
+
+  //Наименование СИЗ по нормам
+  V:= VCut(FSubItems[AIndex].Info.Names);
+  VectorDraw(Writer, V, ARow, 1, 'или', False, haLeft, vaTop);
+
+  //Единица измерения
+  V:= VCut(FSubItems[AIndex].Info.Units);
+  VectorDraw(Writer, V, ARow, 2, EmptyStr, False, haCenter, vaTop);
+
+  //Количество на период
+  VDim(V, N+1);
+  for i:=0 to N do
+    V[i]:= SIZNumLifeStr(FSubItems[AIndex].Info.Nums[i],
+                         FSubItems[AIndex].Info.Lifes[i]);
+  VectorDraw(Writer, V, ARow, 3, EmptyStr, False, haCenter, vaTop);
+
+  //Размер
+  VDim(V, N+1); //!!!!!
+  VectorDraw(Writer, V, ARow, 4, EmptyStr, False, haCenter, vaTop);
+
+  //Границы ячеек
+  for i:= 1 to Writer.ColCount do
+    Writer.DrawBorders(ARow, i, ARow+2*N, i, cbtOuter);
+
+  ARow:= ARow + 2*N + 1;
+end;
+
+procedure TSIZCardStatusSheet.GettingLineDraw(var ARow: Integer;
+  const AIndex: Integer);
+begin
+
+end;
+
+procedure TSIZCardStatusSheet.NormDraw(var ARow: Integer);
+var
+  i, R: Integer;
+  S: String;
+begin
+  R:= ARow;
+  Writer.SetBackgroundDefault;
+  Writer.SetFont(Font.Name, Font.Size, [], clBlack);
+
+  //FFirstRows:= nil;
+  //FLastRows:= nil;
+
+  S:= MAIN_REASON;
+  for i:=0 to High(FSubItems) do
+  begin
+    if FSubItems[i].Reason<>S then
+    begin
+      ReasonDraw(R, i);
+      //VAppend(FFirstRows, R);
+      NormLineDraw(R, i);
+      //VAppend(FLastRows, R-1);
+      S:= FSubItems[i].Reason;
+    end
+    else begin
+      //VAppend(FFirstRows, R);
+      NormLineDraw(R, i);
+      //VAppend(FLastRows, R-1);
+    end;
+  end;
+
+
+  Writer.DrawBorders(R, 1, R, Writer.ColCount, cbtTop);
+
+  ARow:= R - 1;
+
+end;
+
+procedure TSIZCardStatusSheet.Draw(const ASubItems: TNormSubItems);
+var
+  R: Integer;
+begin
+  if Length(ASubItems)=0 then
+  begin
+    Writer.Clear;
+    Exit;
+  end;
+
+  FSubItems:= ASubItems;
+
+  Writer.BeginEdit;
+
+  R:= 1;
+  CaptionDraw(R);
+  R:= R + 1;
+  NormDraw(R);
 
   Writer.EndEdit;
 end;

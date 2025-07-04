@@ -12,7 +12,6 @@
     "SIZCARDPERSONALLOG",
     "SIZCARDPERSONALLOGINFO",
     "SIZDOC",
-    "SIZENTRY",
     "SIZNAME",
     "SIZNORM",
     "SIZNORMITEM",
@@ -20,10 +19,11 @@
     "SIZNORMSUBITEM",
     "SIZNORMSUBITEMINFO",
     "SIZREASON",
-    "SIZSTAFFBACK",
     "SIZSTAFFSIZE",
     "SIZSTAFFSPECSIZE",
-    "SIZSTORE",
+    "SIZSTAFFWRITEOFF",
+    "SIZSTOREENTRY",
+    "SIZSTORELOG",
     "SIZSTOREWRITEOFF",
     "SIZUNIT",
     "STAFFMAIN",
@@ -1623,7 +1623,8 @@
       "DOCNAME",
       "DOCDATE",
       "DOCNUM",
-      "DOCTYPE"
+      "DOCTYPE",
+      "DOCFORM"
     ],
     "DOCID" : {
       "FieldType" : "INTEGER",
@@ -1644,13 +1645,11 @@
       },
       "ReferenceFrom" : {
         "TableNames" : [
-          "SIZENTRY",
-          "SIZSTAFFBACK",
-          "SIZSTOREWRITEOFF"
+          "SIZSTOREWRITEOFF",
+          "SIZSTAFFWRITEOFF"
         ],
         "FieldNames" : [
           "DOCID",
-          "BACKDOCID",
           "DOCID"
         ]
       }
@@ -1735,12 +1734,36 @@
       "DefaultValue" : "0",
       "Description" : [
         "Тип документа:",
-        "-3 - списание со склада участка,",
-        "-2 - досрочное списание с работника,",
-        "-1 - возврат СИЗ работником,",
-        "0 - приход на склад участка,",
-        "1 - выдача СИЗ работнику (МБ-7),",
-        "2 - выдача СИЗ работнику (ФМУ-85),"
+        "0 - приход на склад подразделения новых СИЗ,",
+        "1 - возврат работником на склад подразделения б/у СИЗ до окончания срока службы,",
+        "2 - списание СИЗ со склада подразделения (возврат годных или списание негодных), ",
+        "3 - списание СИЗ с работника (по окончанию срока службы или при приходе в негодность),",
+        "4 - выдача СИЗ работнику "
+      ],
+      "ExistingValues" : [
+      ],
+      "ReferenceTo" : {
+        "TableName" : "",
+        "FieldName" : "",
+        "OnDelete" : 4,
+        "OnUpdate" : 4
+      },
+      "ReferenceFrom" : {
+        "TableNames" : [
+        ],
+        "FieldNames" : [
+        ]
+      }
+    },
+    "DOCFORM" : {
+      "FieldType" : "INTEGER",
+      "PrimaryKey" : false,
+      "Status" : false,
+      "NotNull" : true,
+      "DefaultValue" : "0",
+      "Description" : [
+        "Форма документа:",
+        "0 - не указана"
       ],
       "ExistingValues" : [
       ],
@@ -1769,242 +1792,6 @@
         "DOCNUM"
       ]
     }
-  },
-  "SIZENTRY" : {
-    "Description" : "СПИСОК ПОСТУПЛЕНИЯ СИЗ НА СКЛАД",
-    "Notes" : [
-    ],
-    "FieldsList" : [
-      "ENTRYID",
-      "NOMNUM",
-      "NAMEID",
-      "SIZEID",
-      "HEIGHTID",
-      "WEARPERCENT",
-      "ENTRYCOUNT",
-      "CERTIFICATE",
-      "DOCID"
-    ],
-    "ENTRYID" : {
-      "FieldType" : "INTEGER",
-      "PrimaryKey" : true,
-      "Status" : true,
-      "NotNull" : true,
-      "DefaultValue" : "",
-      "Description" : [
-        "ID строки поступления"
-      ],
-      "ExistingValues" : [
-      ],
-      "ReferenceTo" : {
-        "TableName" : "",
-        "FieldName" : "",
-        "OnDelete" : 4,
-        "OnUpdate" : 4
-      },
-      "ReferenceFrom" : {
-        "TableNames" : [
-          "SIZSTORE"
-        ],
-        "FieldNames" : [
-          "ENTRYID"
-        ]
-      }
-    },
-    "NOMNUM" : {
-      "FieldType" : "TEXT",
-      "PrimaryKey" : false,
-      "Status" : false,
-      "NotNull" : true,
-      "DefaultValue" : "",
-      "Description" : [
-        "Номенклатурный номер"
-      ],
-      "ExistingValues" : [
-      ],
-      "ReferenceTo" : {
-        "TableName" : "",
-        "FieldName" : "",
-        "OnDelete" : 4,
-        "OnUpdate" : 4
-      },
-      "ReferenceFrom" : {
-        "TableNames" : [
-        ],
-        "FieldNames" : [
-        ]
-      }
-    },
-    "NAMEID" : {
-      "FieldType" : "INTEGER",
-      "PrimaryKey" : false,
-      "Status" : false,
-      "NotNull" : true,
-      "DefaultValue" : "",
-      "Description" : [
-        "ID наименования СИЗ"
-      ],
-      "ExistingValues" : [
-      ],
-      "ReferenceTo" : {
-        "TableName" : "SIZNAME",
-        "FieldName" : "NAMEID",
-        "OnDelete" : 0,
-        "OnUpdate" : 0
-      },
-      "ReferenceFrom" : {
-        "TableNames" : [
-        ],
-        "FieldNames" : [
-        ]
-      }
-    },
-    "SIZEID" : {
-      "FieldType" : "INTEGER",
-      "PrimaryKey" : false,
-      "Status" : false,
-      "NotNull" : true,
-      "DefaultValue" : "0",
-      "Description" : [
-        "ID размера (индекс в массиве значений)"
-      ],
-      "ExistingValues" : [
-      ],
-      "ReferenceTo" : {
-        "TableName" : "",
-        "FieldName" : "",
-        "OnDelete" : 4,
-        "OnUpdate" : 4
-      },
-      "ReferenceFrom" : {
-        "TableNames" : [
-        ],
-        "FieldNames" : [
-        ]
-      }
-    },
-    "HEIGHTID" : {
-      "FieldType" : "INTEGER",
-      "PrimaryKey" : false,
-      "Status" : false,
-      "NotNull" : true,
-      "DefaultValue" : "0",
-      "Description" : [
-        "ID роста (индекс в массиве значений)"
-      ],
-      "ExistingValues" : [
-      ],
-      "ReferenceTo" : {
-        "TableName" : "",
-        "FieldName" : "",
-        "OnDelete" : 4,
-        "OnUpdate" : 4
-      },
-      "ReferenceFrom" : {
-        "TableNames" : [
-        ],
-        "FieldNames" : [
-        ]
-      }
-    },
-    "WEARPERCENT" : {
-      "FieldType" : "INTEGER",
-      "PrimaryKey" : false,
-      "Status" : false,
-      "NotNull" : true,
-      "DefaultValue" : "0",
-      "Description" : [
-        "Процент износа"
-      ],
-      "ExistingValues" : [
-      ],
-      "ReferenceTo" : {
-        "TableName" : "",
-        "FieldName" : "",
-        "OnDelete" : 4,
-        "OnUpdate" : 4
-      },
-      "ReferenceFrom" : {
-        "TableNames" : [
-        ],
-        "FieldNames" : [
-        ]
-      }
-    },
-    "ENTRYCOUNT" : {
-      "FieldType" : "INTEGER",
-      "PrimaryKey" : false,
-      "Status" : false,
-      "NotNull" : true,
-      "DefaultValue" : "1",
-      "Description" : [
-        "Количество поступивших СИЗ данной номенклатуры"
-      ],
-      "ExistingValues" : [
-      ],
-      "ReferenceTo" : {
-        "TableName" : "",
-        "FieldName" : "",
-        "OnDelete" : 4,
-        "OnUpdate" : 4
-      },
-      "ReferenceFrom" : {
-        "TableNames" : [
-        ],
-        "FieldNames" : [
-        ]
-      }
-    },
-    "CERTIFICATE" : {
-      "FieldType" : "TEXT",
-      "PrimaryKey" : false,
-      "Status" : false,
-      "NotNull" : false,
-      "DefaultValue" : "",
-      "Description" : [
-        "Инфо о сертификате на СИЗ"
-      ],
-      "ExistingValues" : [
-      ],
-      "ReferenceTo" : {
-        "TableName" : "",
-        "FieldName" : "",
-        "OnDelete" : 4,
-        "OnUpdate" : 4
-      },
-      "ReferenceFrom" : {
-        "TableNames" : [
-        ],
-        "FieldNames" : [
-        ]
-      }
-    },
-    "DOCID" : {
-      "FieldType" : "INTEGER",
-      "PrimaryKey" : false,
-      "Status" : false,
-      "NotNull" : true,
-      "DefaultValue" : "",
-      "Description" : [
-        "ID документа поступления СИЗ"
-      ],
-      "ExistingValues" : [
-      ],
-      "ReferenceTo" : {
-        "TableName" : "SIZDOC",
-        "FieldName" : "DOCID",
-        "OnDelete" : 0,
-        "OnUpdate" : 0
-      },
-      "ReferenceFrom" : {
-        "TableNames" : [
-        ],
-        "FieldNames" : [
-        ]
-      }
-    },
-    "IndexesList" : [
-    ]
   },
   "SIZNAME" : {
     "Description" : "НАИМЕНОВАНИЯ СИЗ",
@@ -2036,11 +1823,9 @@
       },
       "ReferenceFrom" : {
         "TableNames" : [
-          "SIZENTRY",
           "SIZNORMSUBITEMINFO"
         ],
         "FieldNames" : [
-          "NAMEID",
           "NAMEID"
         ]
       }
@@ -2826,140 +2611,6 @@
     "IndexesList" : [
     ]
   },
-  "SIZSTAFFBACK" : {
-    "Description" : "ИНФОРМАЦИЯ О ВОЗВРАТЕ/ДОСРОЧНОМ СПИСАНИИ СИЗ РАБОТНИКОВ",
-    "Notes" : [
-    ],
-    "FieldsList" : [
-      "BACKID",
-      "BACKDOCID",
-      "BACKDATE",
-      "STOREID",
-      "ENTRYID"
-    ],
-    "BACKID" : {
-      "FieldType" : "INTEGER",
-      "PrimaryKey" : true,
-      "Status" : true,
-      "NotNull" : true,
-      "DefaultValue" : "",
-      "Description" : [
-      ],
-      "ExistingValues" : [
-      ],
-      "ReferenceTo" : {
-        "TableName" : "",
-        "FieldName" : "",
-        "OnDelete" : 4,
-        "OnUpdate" : 4
-      },
-      "ReferenceFrom" : {
-        "TableNames" : [
-        ],
-        "FieldNames" : [
-        ]
-      }
-    },
-    "BACKDOCID" : {
-      "FieldType" : "INTEGER",
-      "PrimaryKey" : false,
-      "Status" : false,
-      "NotNull" : true,
-      "DefaultValue" : "",
-      "Description" : [
-        "ID документа возврата/списания"
-      ],
-      "ExistingValues" : [
-      ],
-      "ReferenceTo" : {
-        "TableName" : "SIZDOC",
-        "FieldName" : "DOCID",
-        "OnDelete" : 0,
-        "OnUpdate" : 0
-      },
-      "ReferenceFrom" : {
-        "TableNames" : [
-        ],
-        "FieldNames" : [
-        ]
-      }
-    },
-    "BACKDATE" : {
-      "FieldType" : "DATETIME",
-      "PrimaryKey" : false,
-      "Status" : false,
-      "NotNull" : true,
-      "DefaultValue" : "",
-      "Description" : [
-        "Дата возврата/списания"
-      ],
-      "ExistingValues" : [
-      ],
-      "ReferenceTo" : {
-        "TableName" : "",
-        "FieldName" : "",
-        "OnDelete" : 4,
-        "OnUpdate" : 4
-      },
-      "ReferenceFrom" : {
-        "TableNames" : [
-        ],
-        "FieldNames" : [
-        ]
-      }
-    },
-    "STOREID" : {
-      "FieldType" : "INTEGER",
-      "PrimaryKey" : false,
-      "Status" : false,
-      "NotNull" : true,
-      "DefaultValue" : "",
-      "Description" : [
-        "ID записи СИЗ на складе"
-      ],
-      "ExistingValues" : [
-      ],
-      "ReferenceTo" : {
-        "TableName" : "SIZSTORE",
-        "FieldName" : "STOREID",
-        "OnDelete" : 0,
-        "OnUpdate" : 0
-      },
-      "ReferenceFrom" : {
-        "TableNames" : [
-        ],
-        "FieldNames" : [
-        ]
-      }
-    },
-    "ENTRYID" : {
-      "FieldType" : "INTEGER",
-      "PrimaryKey" : false,
-      "Status" : false,
-      "NotNull" : true,
-      "DefaultValue" : "0",
-      "Description" : [
-        "ID записи поступления на склад при возврате СИЗ,",
-        "0 - при списании СИЗ с работника (без возврата на склад)"
-      ],
-      "ExistingValues" : [
-      ],
-      "ReferenceTo" : {
-        "TableName" : "",
-        "FieldName" : "",
-        "OnDelete" : 4,
-        "OnUpdate" : 4
-      },
-      "ReferenceFrom" : {
-        "TableNames" : [
-        ],
-        "FieldNames" : [
-        ]
-      }
-    },
-    "IndexesList" : [
-    ]
-  },
   "SIZSTAFFSIZE" : {
     "Description" : "РАЗМЕРЫ СИЗ В ЛИЧНЫХ КАРТОЧКАХ РАБОТНИКОВ",
     "Notes" : [
@@ -3287,7 +2938,325 @@
       ]
     }
   },
-  "SIZSTORE" : {
+  "SIZSTAFFWRITEOFF" : {
+    "Description" : "ИНФОРМАЦИЯ О ВОЗВРАТЕ/ДОСРОЧНОМ СПИСАНИИ СИЗ РАБОТНИКОВ",
+    "Notes" : [
+    ],
+    "FieldsList" : [
+      "WRITEOFFID",
+      "DOCID",
+      "STOREID",
+      "ENTRYID",
+      "NOTE"
+    ],
+    "WRITEOFFID" : {
+      "FieldType" : "INTEGER",
+      "PrimaryKey" : true,
+      "Status" : true,
+      "NotNull" : true,
+      "DefaultValue" : "",
+      "Description" : [
+      ],
+      "ExistingValues" : [
+      ],
+      "ReferenceTo" : {
+        "TableName" : "",
+        "FieldName" : "",
+        "OnDelete" : 4,
+        "OnUpdate" : 4
+      },
+      "ReferenceFrom" : {
+        "TableNames" : [
+        ],
+        "FieldNames" : [
+        ]
+      }
+    },
+    "DOCID" : {
+      "FieldType" : "INTEGER",
+      "PrimaryKey" : false,
+      "Status" : false,
+      "NotNull" : true,
+      "DefaultValue" : "",
+      "Description" : [
+        "ID документа возврата/списания"
+      ],
+      "ExistingValues" : [
+      ],
+      "ReferenceTo" : {
+        "TableName" : "SIZDOC",
+        "FieldName" : "DOCID",
+        "OnDelete" : 0,
+        "OnUpdate" : 0
+      },
+      "ReferenceFrom" : {
+        "TableNames" : [
+        ],
+        "FieldNames" : [
+        ]
+      }
+    },
+    "STOREID" : {
+      "FieldType" : "INTEGER",
+      "PrimaryKey" : false,
+      "Status" : false,
+      "NotNull" : true,
+      "DefaultValue" : "",
+      "Description" : [
+        "ID записи СИЗ на складе"
+      ],
+      "ExistingValues" : [
+      ],
+      "ReferenceTo" : {
+        "TableName" : "SIZSTORELOG",
+        "FieldName" : "STOREID",
+        "OnDelete" : 0,
+        "OnUpdate" : 0
+      },
+      "ReferenceFrom" : {
+        "TableNames" : [
+        ],
+        "FieldNames" : [
+        ]
+      }
+    },
+    "ENTRYID" : {
+      "FieldType" : "INTEGER",
+      "PrimaryKey" : false,
+      "Status" : false,
+      "NotNull" : true,
+      "DefaultValue" : "0",
+      "Description" : [
+        "ID записи поступления на склад при возврате СИЗ,",
+        "0 - при списании СИЗ с работника (без возврата на склад)"
+      ],
+      "ExistingValues" : [
+      ],
+      "ReferenceTo" : {
+        "TableName" : "",
+        "FieldName" : "",
+        "OnDelete" : 4,
+        "OnUpdate" : 4
+      },
+      "ReferenceFrom" : {
+        "TableNames" : [
+        ],
+        "FieldNames" : [
+        ]
+      }
+    },
+    "NOTE" : {
+      "FieldType" : "TEXT",
+      "PrimaryKey" : false,
+      "Status" : false,
+      "NotNull" : false,
+      "DefaultValue" : "",
+      "Description" : [
+        "Примечание"
+      ],
+      "ExistingValues" : [
+      ],
+      "ReferenceTo" : {
+        "TableName" : "",
+        "FieldName" : "",
+        "OnDelete" : 4,
+        "OnUpdate" : 4
+      },
+      "ReferenceFrom" : {
+        "TableNames" : [
+        ],
+        "FieldNames" : [
+        ]
+      }
+    },
+    "IndexesList" : [
+    ]
+  },
+  "SIZSTOREENTRY" : {
+    "Description" : "СПИСОК ПОСТУПЛЕНИЯ СИЗ НА СКЛАД",
+    "Notes" : [
+    ],
+    "FieldsList" : [
+      "ENTRYID",
+      "NOMNUM",
+      "NAMEID",
+      "SIZEID",
+      "HEIGHTID",
+      "ENTRYCOUNT",
+      "DOCID"
+    ],
+    "ENTRYID" : {
+      "FieldType" : "INTEGER",
+      "PrimaryKey" : true,
+      "Status" : true,
+      "NotNull" : true,
+      "DefaultValue" : "",
+      "Description" : [
+        "ID строки поступления"
+      ],
+      "ExistingValues" : [
+      ],
+      "ReferenceTo" : {
+        "TableName" : "",
+        "FieldName" : "",
+        "OnDelete" : 4,
+        "OnUpdate" : 4
+      },
+      "ReferenceFrom" : {
+        "TableNames" : [
+        ],
+        "FieldNames" : [
+        ]
+      }
+    },
+    "NOMNUM" : {
+      "FieldType" : "TEXT",
+      "PrimaryKey" : false,
+      "Status" : false,
+      "NotNull" : true,
+      "DefaultValue" : "",
+      "Description" : [
+        "Номенклатурный номер"
+      ],
+      "ExistingValues" : [
+      ],
+      "ReferenceTo" : {
+        "TableName" : "",
+        "FieldName" : "",
+        "OnDelete" : 4,
+        "OnUpdate" : 4
+      },
+      "ReferenceFrom" : {
+        "TableNames" : [
+        ],
+        "FieldNames" : [
+        ]
+      }
+    },
+    "NAMEID" : {
+      "FieldType" : "INTEGER",
+      "PrimaryKey" : false,
+      "Status" : false,
+      "NotNull" : true,
+      "DefaultValue" : "",
+      "Description" : [
+        "ID наименования СИЗ"
+      ],
+      "ExistingValues" : [
+      ],
+      "ReferenceTo" : {
+        "TableName" : "SIZNAME",
+        "FieldName" : "NAMEID",
+        "OnDelete" : 0,
+        "OnUpdate" : 0
+      },
+      "ReferenceFrom" : {
+        "TableNames" : [
+        ],
+        "FieldNames" : [
+        ]
+      }
+    },
+    "SIZEID" : {
+      "FieldType" : "INTEGER",
+      "PrimaryKey" : false,
+      "Status" : false,
+      "NotNull" : true,
+      "DefaultValue" : "0",
+      "Description" : [
+        "ID размера (индекс в массиве значений)"
+      ],
+      "ExistingValues" : [
+      ],
+      "ReferenceTo" : {
+        "TableName" : "",
+        "FieldName" : "",
+        "OnDelete" : 4,
+        "OnUpdate" : 4
+      },
+      "ReferenceFrom" : {
+        "TableNames" : [
+        ],
+        "FieldNames" : [
+        ]
+      }
+    },
+    "HEIGHTID" : {
+      "FieldType" : "INTEGER",
+      "PrimaryKey" : false,
+      "Status" : false,
+      "NotNull" : true,
+      "DefaultValue" : "0",
+      "Description" : [
+        "ID роста (индекс в массиве значений)"
+      ],
+      "ExistingValues" : [
+      ],
+      "ReferenceTo" : {
+        "TableName" : "",
+        "FieldName" : "",
+        "OnDelete" : 4,
+        "OnUpdate" : 4
+      },
+      "ReferenceFrom" : {
+        "TableNames" : [
+        ],
+        "FieldNames" : [
+        ]
+      }
+    },
+    "ENTRYCOUNT" : {
+      "FieldType" : "INTEGER",
+      "PrimaryKey" : false,
+      "Status" : false,
+      "NotNull" : true,
+      "DefaultValue" : "1",
+      "Description" : [
+        "Количество поступивших СИЗ данной номенклатуры"
+      ],
+      "ExistingValues" : [
+      ],
+      "ReferenceTo" : {
+        "TableName" : "",
+        "FieldName" : "",
+        "OnDelete" : 4,
+        "OnUpdate" : 4
+      },
+      "ReferenceFrom" : {
+        "TableNames" : [
+        ],
+        "FieldNames" : [
+        ]
+      }
+    },
+    "DOCID" : {
+      "FieldType" : "INTEGER",
+      "PrimaryKey" : false,
+      "Status" : false,
+      "NotNull" : true,
+      "DefaultValue" : "",
+      "Description" : [
+        "ID документа поступления СИЗ"
+      ],
+      "ExistingValues" : [
+      ],
+      "ReferenceTo" : {
+        "TableName" : "SIZDOC",
+        "FieldName" : "DOCID",
+        "OnDelete" : 0,
+        "OnUpdate" : 0
+      },
+      "ReferenceFrom" : {
+        "TableNames" : [
+        ],
+        "FieldNames" : [
+        ]
+      }
+    },
+    "IndexesList" : [
+    ]
+  },
+  "SIZSTORELOG" : {
     "Description" : "СПИСОК СИЗ НА СКЛАДЕ (каждой единице СИЗ из списка поступления соответствует одна запись)",
     "Notes" : [
     ],
@@ -3315,11 +3284,9 @@
       },
       "ReferenceFrom" : {
         "TableNames" : [
-          "SIZSTAFFBACK",
           "SIZSTOREWRITEOFF"
         ],
         "FieldNames" : [
-          "STOREID",
           "STOREID"
         ]
       }
@@ -3336,7 +3303,7 @@
       "ExistingValues" : [
       ],
       "ReferenceTo" : {
-        "TableName" : "SIZENTRY",
+        "TableName" : "SIZSTOREENTRY",
         "FieldName" : "ENTRYID",
         "OnDelete" : 0,
         "OnUpdate" : 0
@@ -3445,7 +3412,7 @@
       "ExistingValues" : [
       ],
       "ReferenceTo" : {
-        "TableName" : "SIZSTORE",
+        "TableName" : "SIZSTORELOG",
         "FieldName" : "STOREID",
         "OnDelete" : 0,
         "OnUpdate" : 0

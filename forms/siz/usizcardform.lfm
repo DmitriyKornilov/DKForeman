@@ -55,7 +55,7 @@ object SIZCardForm: TSIZCardForm
     end
     object ExportButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 0
+      Left = 185
       Height = 36
       Hint = 'Экспорт в формат электронной таблицы XLSX или ODS'
       Top = 0
@@ -65,6 +65,35 @@ object SIZCardForm: TSIZCardForm
       Caption = ' Экспорт '
       Images = Images.PX24
       ImageIndex = 22
+      Margin = 5
+      Spacing = 5
+      ShowHint = True
+      ParentShowHint = False
+    end
+    object DividerBevel2: TDividerBevel
+      Left = 164
+      Height = 36
+      Top = 0
+      Width = 21
+      Caption = 'DividerBevel2'
+      Align = alLeft
+      BevelWidth = 2
+      Font.Style = [fsBold]
+      Orientation = trVertical
+      ParentFont = False
+    end
+    object HistoryButton: TSpeedButton
+      Cursor = crHandPoint
+      Left = 0
+      Height = 36
+      Hint = 'Полная истоия выдачи СИЗ за всё время'
+      Top = 0
+      Width = 164
+      Align = alLeft
+      AutoSize = True
+      Caption = 'История выдачи '
+      Images = Images.PX24
+      ImageIndex = 59
       Margin = 5
       Spacing = 5
       ShowHint = True
@@ -642,7 +671,7 @@ object SIZCardForm: TSIZCardForm
             TabOrder = 2
             object StatusAddButton: TSpeedButton
               Cursor = crHandPoint
-              Left = 40
+              Left = 0
               Height = 36
               Hint = 'Выдать'
               Top = 0
@@ -656,7 +685,7 @@ object SIZCardForm: TSIZCardForm
             end
             object StatusDelButton: TSpeedButton
               Cursor = crHandPoint
-              Left = 80
+              Left = 40
               Height = 36
               Hint = 'Отменить выдачу'
               Top = 0
@@ -670,7 +699,7 @@ object SIZCardForm: TSIZCardForm
             end
             object StatusSizeButton: TSpeedButton
               Cursor = crHandPoint
-              Left = 0
+              Left = 80
               Height = 36
               Hint = 'Указать особый размер'
               Top = 0

@@ -94,7 +94,7 @@ object SchedulePersonalForm: TSchedulePersonalForm
       ParentFont = False
     end
     object DividerBevel3: TDividerBevel
-      Left = 195
+      Left = 515
       Height = 36
       Top = 0
       Width = 21
@@ -107,7 +107,7 @@ object SchedulePersonalForm: TSchedulePersonalForm
     end
     object ExportButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 86
+      Left = 536
       Height = 36
       Hint = 'Экспорт в формат электронной таблицы XLSX или ODS'
       Top = 0
@@ -125,7 +125,7 @@ object SchedulePersonalForm: TSchedulePersonalForm
     end
     object MonthScheduleButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 216
+      Left = 86
       Height = 36
       Hint = 'Общий график работы на месяц'
       Top = 0
@@ -143,7 +143,7 @@ object SchedulePersonalForm: TSchedulePersonalForm
     end
     object VacationScheduleButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 440
+      Left = 310
       Height = 36
       Hint = 'График отпусков по форме Т-7'
       Top = 0
