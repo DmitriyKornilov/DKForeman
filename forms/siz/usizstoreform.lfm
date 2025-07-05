@@ -2,10 +2,10 @@ object SIZStoreForm: TSIZStoreForm
   Left = 408
   Height = 240
   Top = 250
-  Width = 550
+  Width = 800
   Caption = 'SIZStoreForm'
   ClientHeight = 240
-  ClientWidth = 550
+  ClientWidth = 800
   DesignTimePPI = 120
   OnCreate = FormCreate
   OnDestroy = FormDestroy
@@ -14,7 +14,7 @@ object SIZStoreForm: TSIZStoreForm
     Left = 2
     Height = 40
     Top = 2
-    Width = 546
+    Width = 796
     Align = alTop
     BorderSpacing.Left = 2
     BorderSpacing.Top = 2
@@ -22,12 +22,12 @@ object SIZStoreForm: TSIZStoreForm
     BevelOuter = bvNone
     BorderStyle = bsSingle
     ClientHeight = 36
-    ClientWidth = 542
+    ClientWidth = 792
     ParentFont = False
     TabOrder = 0
     object CloseButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 502
+      Left = 752
       Height = 36
       Hint = 'Закрыть'
       Top = 0
@@ -40,7 +40,7 @@ object SIZStoreForm: TSIZStoreForm
       OnClick = CloseButtonClick
     end
     object DividerBevel1: TDividerBevel
-      Left = 481
+      Left = 731
       Height = 36
       Top = 0
       Width = 21
@@ -51,12 +51,113 @@ object SIZStoreForm: TSIZStoreForm
       Orientation = trVertical
       ParentFont = False
     end
+    object ExportButton: TSpeedButton
+      Cursor = crHandPoint
+      Left = 487
+      Height = 36
+      Hint = 'Экспорт в формат электронной таблицы XLSX или ODS'
+      Top = 0
+      Width = 109
+      Align = alLeft
+      AutoSize = True
+      Caption = ' Экспорт '
+      Images = Images.PX24
+      ImageIndex = 22
+      Margin = 5
+      Spacing = 5
+      ShowHint = True
+      ParentShowHint = False
+    end
+    object EntryButton: TSpeedButton
+      Cursor = crHandPoint
+      Left = 0
+      Height = 36
+      Hint = 'Поступление СИЗ на склад'
+      Top = 0
+      Width = 140
+      Align = alLeft
+      AutoSize = True
+      Caption = 'Поступление '
+      Images = Images.PX24
+      ImageIndex = 64
+      Margin = 5
+      Spacing = 5
+      ShowHint = True
+      ParentShowHint = False
+      OnClick = EntryButtonClick
+    end
+    object DividerBevel2: TDividerBevel
+      Left = 466
+      Height = 36
+      Top = 0
+      Width = 21
+      Caption = 'DividerBevel2'
+      Align = alLeft
+      BevelWidth = 2
+      Font.Style = [fsBold]
+      Orientation = trVertical
+      ParentFont = False
+    end
+    object OutButton: TSpeedButton
+      Cursor = crHandPoint
+      Left = 140
+      Height = 36
+      Hint = 'Выдача СИЗ сотрудникам'
+      Top = 0
+      Width = 101
+      Align = alLeft
+      AutoSize = True
+      Caption = 'Выдача '
+      Images = Images.PX24
+      ImageIndex = 63
+      Margin = 5
+      Spacing = 5
+      ShowHint = True
+      ParentShowHint = False
+      OnClick = OutButtonClick
+    end
+    object WriteoffButton: TSpeedButton
+      Cursor = crHandPoint
+      Left = 241
+      Height = 36
+      Hint = 'Списание СИЗ со клада'
+      Top = 0
+      Width = 117
+      Align = alLeft
+      AutoSize = True
+      Caption = 'Списание '
+      Images = Images.PX24
+      ImageIndex = 62
+      Margin = 5
+      Spacing = 5
+      ShowHint = True
+      ParentShowHint = False
+      OnClick = WriteoffButtonClick
+    end
+    object HistoryButton: TSpeedButton
+      Cursor = crHandPoint
+      Left = 358
+      Height = 36
+      Hint = 'История движения СИЗ по складу'
+      Top = 0
+      Width = 108
+      Align = alLeft
+      AutoSize = True
+      Caption = 'История '
+      Images = Images.PX24
+      ImageIndex = 59
+      Margin = 5
+      Spacing = 5
+      ShowHint = True
+      ParentShowHint = False
+      OnClick = HistoryButtonClick
+    end
   end
   object CaptionPanel: TPanel
     Left = 2
     Height = 30
     Top = 44
-    Width = 546
+    Width = 796
     Align = alTop
     Alignment = taLeftJustify
     BorderSpacing.Around = 2
@@ -70,12 +171,12 @@ object SIZStoreForm: TSIZStoreForm
     ParentFont = False
     TabOrder = 1
   end
-  object VT: TVirtualStringTree
+  object EditVT: TVirtualStringTree
     Left = 2
-    Height = 162
-    Top = 76
-    Width = 546
-    Align = alClient
+    Height = 80
+    Top = 158
+    Width = 796
+    Align = alBottom
     BorderSpacing.Around = 2
     DefaultNodeHeight = 25
     DefaultText = 'Node'
@@ -83,5 +184,19 @@ object SIZStoreForm: TSIZStoreForm
     Header.Columns = <>
     Header.MainColumn = -1
     TabOrder = 2
+  end
+  object ViewVT: TVirtualStringTree
+    Left = 2
+    Height = 80
+    Top = 76
+    Width = 796
+    Align = alClient
+    BorderSpacing.Around = 2
+    DefaultNodeHeight = 25
+    DefaultText = 'Node'
+    Header.AutoSizeIndex = 0
+    Header.Columns = <>
+    Header.MainColumn = -1
+    TabOrder = 3
   end
 end

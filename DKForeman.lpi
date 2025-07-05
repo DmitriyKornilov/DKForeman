@@ -484,6 +484,20 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="UVars"/>
       </Unit>
+      <Unit>
+        <Filename Value="forms\siz\usizdocform.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="SIZDocForm"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="USIZDocForm"/>
+      </Unit>
+      <Unit>
+        <Filename Value="forms\siz\usizstorehistoryform.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="SIZStoreHistoryForm"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="USIZStoreHistoryForm"/>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

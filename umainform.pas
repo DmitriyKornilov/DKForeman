@@ -271,7 +271,7 @@ begin
     SettingsSave;
     Category:= ACategory;
     Caption:= MAIN_CAPTION + MAIN_DESCRIPTION[ACategory];
-    SettingButton.Enabled:= not (Category in [2, 7]);
+    SettingButton.Enabled:= not (Category in [2, 7, 8]);
 
     if Assigned(CategoryForm) then FreeAndNil(CategoryForm);
     case Category of

@@ -1,0 +1,167 @@
+object SIZStoreHistoryForm: TSIZStoreHistoryForm
+  Left = 377
+  Height = 300
+  Top = 250
+  Width = 600
+  BorderIcons = [biSystemMenu, biMaximize]
+  Caption = 'SIZStoreHistoryForm'
+  ClientHeight = 300
+  ClientWidth = 600
+  DesignTimePPI = 120
+  WindowState = wsMaximized
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  OnShow = FormShow
+  object ToolPanel: TPanel
+    Left = 2
+    Height = 40
+    Top = 2
+    Width = 596
+    Align = alTop
+    BorderSpacing.Left = 2
+    BorderSpacing.Top = 2
+    BorderSpacing.Right = 2
+    BevelOuter = bvNone
+    BorderStyle = bsSingle
+    ClientHeight = 36
+    ClientWidth = 592
+    ParentFont = False
+    TabOrder = 0
+    object CloseButton: TSpeedButton
+      Cursor = crHandPoint
+      Left = 552
+      Height = 36
+      Hint = 'Закрыть'
+      Top = 0
+      Width = 40
+      Align = alRight
+      Images = Images.PX24
+      ImageIndex = 3
+      ShowHint = True
+      ParentShowHint = False
+      OnClick = CloseButtonClick
+    end
+    object DividerBevel1: TDividerBevel
+      Left = 531
+      Height = 36
+      Top = 0
+      Width = 21
+      Caption = 'DividerBevel1'
+      Align = alRight
+      BevelWidth = 2
+      Font.Style = [fsBold]
+      Orientation = trVertical
+      ParentFont = False
+    end
+    object ExportButton: TSpeedButton
+      Cursor = crHandPoint
+      Left = 181
+      Height = 36
+      Hint = 'Экспорт в формат электронной таблицы XLSX или ODS'
+      Top = 0
+      Width = 109
+      Align = alLeft
+      AutoSize = True
+      Caption = ' Экспорт '
+      Images = Images.PX24
+      ImageIndex = 22
+      Margin = 5
+      Spacing = 5
+      ShowHint = True
+      ParentShowHint = False
+    end
+    object DocViewButtonPanel: TPanel
+      Left = 0
+      Height = 36
+      Top = 0
+      Width = 160
+      Align = alLeft
+      AutoSize = True
+      BevelOuter = bvNone
+      ClientHeight = 36
+      ClientWidth = 160
+      TabOrder = 0
+      object CheckAllButton: TSpeedButton
+        Cursor = crHandPoint
+        Left = 80
+        Height = 36
+        Hint = 'Выбрать все строки'
+        Top = 0
+        Width = 40
+        Align = alLeft
+        Images = Images.PX24
+        ImageIndex = 12
+        ShowHint = True
+        ParentShowHint = False
+      end
+      object UncheckAllButton: TSpeedButton
+        Cursor = crHandPoint
+        Left = 120
+        Height = 36
+        Hint = 'Снять выбор со всех строк'
+        Top = 0
+        Width = 40
+        Align = alLeft
+        Images = Images.PX24
+        ImageIndex = 13
+        ShowHint = True
+        ParentShowHint = False
+      end
+      object CollapseAllButton: TSpeedButton
+        Cursor = crHandPoint
+        Left = 40
+        Height = 36
+        Hint = 'Свернуть всё'
+        Top = 0
+        Width = 40
+        Align = alLeft
+        Images = Images.PX24
+        ImageIndex = 61
+        ShowHint = True
+        ParentShowHint = False
+      end
+      object ExpandAllButton: TSpeedButton
+        Cursor = crHandPoint
+        Left = 0
+        Height = 36
+        Hint = 'Развернуть всё'
+        Top = 0
+        Width = 40
+        Align = alLeft
+        Images = Images.PX24
+        ImageIndex = 60
+        ShowHint = True
+        ParentShowHint = False
+      end
+    end
+    object DividerBevel2: TDividerBevel
+      Left = 160
+      Height = 36
+      Top = 0
+      Width = 21
+      Caption = 'DividerBevel2'
+      Align = alLeft
+      BevelWidth = 2
+      Font.Style = [fsBold]
+      Orientation = trVertical
+      ParentFont = False
+    end
+  end
+  object VT: TVirtualStringTree
+    Left = 2
+    Height = 254
+    Top = 44
+    Width = 596
+    Align = alClient
+    BorderSpacing.Left = 2
+    BorderSpacing.Top = 2
+    BorderSpacing.Right = 2
+    BorderSpacing.Bottom = 2
+    DefaultNodeHeight = 25
+    DefaultText = 'Node'
+    Header.AutoSizeIndex = 0
+    Header.Columns = <>
+    Header.MainColumn = -1
+    TabOrder = 1
+  end
+end

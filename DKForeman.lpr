@@ -24,7 +24,7 @@ uses
   USIZUtils, USIZNormEditForm, USIZNormItemEditForm, USIZNormSubItemEditForm,
   USearchForm, USIZSizeForm, USIZCardEditForm, USIZCardForm, USIZNameEditForm,
   USIZCardFrontForm, USIZCardBackForm, USIZCardStatusForm, USIZCardSheet, 
-UParamForm, UVars;
+UParamForm, UVars, USIZDocForm, USIZStoreHistoryForm;
 
 {$R *.res}
 
