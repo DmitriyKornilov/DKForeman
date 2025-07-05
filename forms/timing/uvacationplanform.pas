@@ -11,7 +11,7 @@ uses
   DK_VSTTables, DK_VSTParamList, DK_VSTTypes, DK_Vector, DK_Filter, DK_StrUtils,
   DK_CtrlUtils,
   //Project utils
-  UVars, UTimingUtils, UTypes, UConst,
+  UVars, UTimingUtils, UTypes, UConst, UUtils,
   //Forms
   UVacationScheduleForm, UVacationPlanEditForm, UVacationPlanningForm;
 

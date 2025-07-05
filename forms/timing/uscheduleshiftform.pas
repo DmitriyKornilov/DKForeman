@@ -8,7 +8,7 @@ uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, Buttons,
   fpspreadsheetgrid, VirtualTrees, Spin, DividerBevel, DateUtils,
   //Project utils
-  UVars, UConst, UTypes, UTimingUtils, UWorkHours, UCalendar,
+  UVars, UConst, UTypes, UUtils, UTimingUtils, UWorkHours, UCalendar,
   USchedule, UScheduleSheet,
   //DK packages utils
   DK_VSTTables, DK_VSTParamList, DK_Vector, DK_Const, DK_Dialogs, DK_CtrlUtils,

@@ -7,6 +7,7 @@ object TimetableForm: TTimetableForm
   ClientHeight = 678
   ClientWidth = 1814
   DesignTimePPI = 120
+  LCLVersion = '4.0.0.4'
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
@@ -21,8 +22,8 @@ object TimetableForm: TTimetableForm
     BorderSpacing.Right = 2
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 36
-    ClientWidth = 1806
+    ClientHeight = 40
+    ClientWidth = 1810
     ParentFont = False
     TabOrder = 0
     object YearPanel: TPanel
@@ -177,8 +178,8 @@ object TimetableForm: TTimetableForm
       BorderSpacing.Bottom = 2
       BevelOuter = bvNone
       BorderStyle = bsSingle
-      ClientHeight = 36
-      ClientWidth = 576
+      ClientHeight = 40
+      ClientWidth = 580
       ParentBackground = False
       ParentColor = False
       ParentFont = False
@@ -206,8 +207,8 @@ object TimetableForm: TTimetableForm
       BorderSpacing.Top = 2
       BevelOuter = bvNone
       BorderStyle = bsSingle
-      ClientHeight = 36
-      ClientWidth = 576
+      ClientHeight = 40
+      ClientWidth = 580
       TabOrder = 2
       object OrderLabel: TLabel
         AnchorSideLeft.Control = OrderButtonPanel
@@ -413,8 +414,8 @@ object TimetableForm: TTimetableForm
         Align = alTop
         BevelOuter = bvNone
         BorderStyle = bsSingle
-        ClientHeight = 36
-        ClientWidth = 596
+        ClientHeight = 40
+        ClientWidth = 600
         ParentFont = False
         TabOrder = 0
         object MonthPanel: TPanel
@@ -638,8 +639,8 @@ object TimetableForm: TTimetableForm
         Align = alTop
         BevelOuter = bvNone
         BorderStyle = bsSingle
-        ClientHeight = 36
-        ClientWidth = 596
+        ClientHeight = 40
+        ClientWidth = 600
         ParentFont = False
         TabOrder = 0
         object CopySaveButton: TSpeedButton
@@ -752,8 +753,8 @@ object TimetableForm: TTimetableForm
       BorderSpacing.Bottom = 2
       BevelOuter = bvNone
       BorderStyle = bsSingle
-      ClientHeight = 564
-      ClientWidth = 266
+      ClientHeight = 568
+      ClientWidth = 270
       Color = clWhite
       ParentBackground = False
       ParentColor = False

@@ -97,6 +97,11 @@ const
   SSO_SIZETYPE_PICKS: array of String  =
     ('лично', 'дозатор');
 
+  SIZ_DOCFORM_KEYS: array of Integer =
+    (0      );
+  SIZ_DOCFORM_PICKS: array of String =
+    ('<нет>');
+
 
 
   (**************************************************************************

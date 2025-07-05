@@ -8,7 +8,7 @@ uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, VirtualTrees,
   Buttons, DividerBevel, StdCtrls, ComCtrls, fpspreadsheetgrid,
   //Project utils
-  UVars, UConst, UTypes, UTimingUtils, ColorSpeedButton, USIZSizes,
+  UVars, UConst, UTypes, UUtils, UTimingUtils, ColorSpeedButton, USIZSizes,
   USIZNormTypes,
   //DK packages utils
   DK_VSTTables, DK_VSTParamList, DK_Vector, DK_Filter, DK_CtrlUtils, DK_Color,

@@ -1,42 +1,162 @@
-object SIZNormItemEditForm: TSIZNormItemEditForm
+object SIZDocEditForm: TSIZDocEditForm
   Left = 377
-  Height = 500
+  Height = 311
   Top = 250
-  Width = 600
+  Width = 500
+  AutoSize = True
   BorderIcons = [biSystemMenu]
-  Caption = 'Пункт типовых норм'
-  ClientHeight = 500
-  ClientWidth = 600
-  Constraints.MinHeight = 500
-  Constraints.MinWidth = 600
+  Caption = 'Документ'
+  ClientHeight = 311
+  ClientWidth = 500
+  Constraints.MinWidth = 500
   DesignTimePPI = 120
   Position = poScreenCenter
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
+  object DocNameLabel: TLabel
+    AnchorSideLeft.Control = Owner
+    AnchorSideTop.Control = Owner
+    Left = 8
+    Height = 20
+    Top = 12
+    Width = 107
+    BorderSpacing.Left = 8
+    BorderSpacing.Top = 12
+    Caption = 'Наименование'
+    ParentColor = False
+  end
+  object DocNameEdit: TEdit
+    AnchorSideLeft.Control = Owner
+    AnchorSideTop.Control = DocNameLabel
+    AnchorSideTop.Side = asrBottom
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
+    Left = 8
+    Height = 28
+    Top = 40
+    Width = 484
+    Anchors = [akTop, akLeft, akRight]
+    BorderSpacing.Left = 8
+    BorderSpacing.Top = 8
+    BorderSpacing.Right = 8
+    MaxLength = 500
+    TabOrder = 0
+  end
+  object DocNumLabel: TLabel
+    AnchorSideLeft.Control = Owner
+    AnchorSideTop.Control = DocNameEdit
+    AnchorSideTop.Side = asrBottom
+    Left = 8
+    Height = 20
+    Top = 80
+    Width = 48
+    BorderSpacing.Left = 8
+    BorderSpacing.Top = 12
+    Caption = 'Номер'
+    ParentColor = False
+  end
+  object DocNumEdit: TEdit
+    AnchorSideLeft.Control = Owner
+    AnchorSideTop.Control = DocNumLabel
+    AnchorSideTop.Side = asrBottom
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
+    Left = 8
+    Height = 28
+    Top = 108
+    Width = 484
+    Anchors = [akTop, akLeft, akRight]
+    BorderSpacing.Left = 8
+    BorderSpacing.Top = 8
+    BorderSpacing.Right = 8
+    MaxLength = 500
+    TabOrder = 1
+  end
+  object DocDateLabel: TLabel
+    AnchorSideLeft.Control = Owner
+    AnchorSideTop.Control = DocDatePicker
+    AnchorSideTop.Side = asrCenter
+    Left = 8
+    Height = 20
+    Top = 160
+    Width = 32
+    BorderSpacing.Left = 8
+    BorderSpacing.Top = 8
+    Caption = 'Дата'
+    ParentColor = False
+  end
+  object DocDatePicker: TDateTimePicker
+    AnchorSideLeft.Control = DocDateLabel
+    AnchorSideLeft.Side = asrBottom
+    AnchorSideTop.Control = DocNumEdit
+    AnchorSideTop.Side = asrBottom
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
+    Left = 48
+    Height = 28
+    Top = 156
+    Width = 99
+    CenturyFrom = 1941
+    MaxDate = 401768
+    MinDate = -53780
+    TabOrder = 2
+    BorderSpacing.Left = 8
+    BorderSpacing.Top = 20
+    BorderSpacing.Right = 8
+    BorderSpacing.Bottom = 8
+    TrailingSeparator = False
+    TextForNullDate = 'NULL'
+    LeadingZeros = True
+    Kind = dtkDate
+    TimeFormat = tf24
+    TimeDisplay = tdHMS
+    DateMode = dmComboBox
+    Date = 42334
+    Time = 0.476538217590132
+    UseDefaultSeparators = True
+    HideDateTimeParts = []
+    MonthNames = 'Long'
+  end
+  object DocFormLabel: TLabel
+    AnchorSideLeft.Control = DocDatePicker
+    AnchorSideLeft.Side = asrBottom
+    AnchorSideTop.Control = DocDatePicker
+    AnchorSideTop.Side = asrCenter
+    Left = 167
+    Height = 20
+    Top = 160
+    Width = 48
+    BorderSpacing.Left = 20
+    BorderSpacing.Top = 8
+    Caption = 'Форма'
+    ParentColor = False
+  end
   object ButtonPanel: TPanel
+    AnchorSideTop.Control = DocDatePicker
     AnchorSideTop.Side = asrBottom
     Left = 2
-    Height = 48
-    Top = 446
-    Width = 596
+    Height = 101
+    Top = 204
+    Width = 496
     Align = alBottom
+    Anchors = [akTop, akLeft, akRight]
     AutoSize = True
     BorderSpacing.Left = 2
     BorderSpacing.Top = 20
     BorderSpacing.Right = 2
     BorderSpacing.Bottom = 6
     BevelOuter = bvNone
-    ClientHeight = 48
-    ClientWidth = 596
-    TabOrder = 0
+    ClientHeight = 101
+    ClientWidth = 496
+    TabOrder = 3
     object CancelButton: TSpeedButton
       AnchorSideTop.Control = ButtonPanelBevel
       AnchorSideTop.Side = asrBottom
       AnchorSideRight.Control = ButtonPanel
       AnchorSideRight.Side = asrBottom
       Cursor = crHandPoint
-      Left = 469
+      Left = 369
       Height = 40
       Top = 8
       Width = 121
@@ -56,7 +176,7 @@ object SIZNormItemEditForm: TSIZNormItemEditForm
       AnchorSideTop.Side = asrCenter
       AnchorSideRight.Control = CancelButton
       Cursor = crHandPoint
-      Left = 342
+      Left = 242
       Height = 40
       Top = 8
       Width = 127
@@ -74,84 +194,23 @@ object SIZNormItemEditForm: TSIZNormItemEditForm
       Left = 0
       Height = 8
       Top = 0
-      Width = 596
+      Width = 496
       Align = alTop
       Shape = bsTopLine
     end
   end
-  object NormNameLabel: TLabel
-    AnchorSideLeft.Control = Owner
-    AnchorSideTop.Control = Owner
-    Left = 8
-    Height = 20
-    Top = 12
-    Width = 115
-    BorderSpacing.Left = 8
-    BorderSpacing.Top = 12
-    Caption = 'Типовые нормы'
-    ParentColor = False
-  end
-  object PostLabel: TLabel
-    AnchorSideLeft.Control = Owner
-    AnchorSideTop.Control = NormNameBCButton
-    AnchorSideTop.Side = asrBottom
-    AnchorSideRight.Side = asrBottom
-    Left = 8
-    Height = 20
-    Top = 81
-    Width = 370
-    BorderSpacing.Left = 8
-    BorderSpacing.Top = 12
-    Caption = 'Должности, на которые распространяется этот пункт'
-    ParentColor = False
-  end
-  object PostPanel: TPanel
-    AnchorSideLeft.Control = Owner
-    AnchorSideTop.Control = PostLabel
-    AnchorSideTop.Side = asrBottom
-    AnchorSideRight.Control = Owner
-    AnchorSideRight.Side = asrBottom
-    AnchorSideBottom.Control = ButtonPanel
-    Left = 8
-    Height = 317
-    Top = 109
-    Width = 584
-    Anchors = [akTop, akLeft, akRight, akBottom]
-    BorderSpacing.Left = 8
-    BorderSpacing.Top = 8
-    BorderSpacing.Right = 8
-    BevelOuter = bvNone
-    BorderStyle = bsSingle
-    ClientHeight = 313
-    ClientWidth = 580
-    TabOrder = 1
-    object PostVT: TVirtualStringTree
-      Left = 0
-      Height = 313
-      Top = 0
-      Width = 580
-      Align = alClient
-      Anchors = [akBottom]
-      BorderStyle = bsNone
-      DefaultNodeHeight = 25
-      DefaultText = 'Node'
-      Header.AutoSizeIndex = 0
-      Header.Columns = <>
-      Header.MainColumn = -1
-      TabOrder = 0
-    end
-  end
-  object NormNameBCButton: TBCButton
+  object DocFormBCButton: TBCButton
     Tag = -1
-    AnchorSideLeft.Control = Owner
-    AnchorSideTop.Control = NormNameLabel
-    AnchorSideTop.Side = asrBottom
+    AnchorSideLeft.Control = DocFormLabel
+    AnchorSideLeft.Side = asrBottom
+    AnchorSideTop.Control = DocDatePicker
+    AnchorSideTop.Side = asrCenter
     AnchorSideRight.Control = Owner
     AnchorSideRight.Side = asrBottom
-    Left = 8
+    Left = 223
     Height = 29
-    Top = 40
-    Width = 584
+    Top = 156
+    Width = 269
     Anchors = [akTop, akLeft, akRight]
     StateClicked.Background.Gradient1.StartColor = 8404992
     StateClicked.Background.Gradient1.EndColor = 4194304

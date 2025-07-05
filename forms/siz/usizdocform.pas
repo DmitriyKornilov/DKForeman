@@ -10,7 +10,9 @@ uses
   //Project utils
   UVars, UConst, UTypes,
   //DK packages utils
-  DK_VSTTables, DK_Vector, DK_CtrlUtils;
+  DK_VSTTables, DK_Vector, DK_CtrlUtils,
+  //Forms
+  USIZDocEditForm;
 
 type
 
@@ -54,6 +56,7 @@ type
     DocUncheckAllButton: TSpeedButton;
     SIZUncheckAllButton: TSpeedButton;
     procedure CloseButtonClick(Sender: TObject);
+    procedure DocAddButtonClick(Sender: TObject);
     procedure EditingButtonClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -62,17 +65,17 @@ type
 
     procedure ViewUpdate;
   public
-    DocType: Byte;
+    DocType: Integer;
   end;
 
 var
   SIZDocForm: TSIZDocForm;
 
-  procedure SIZDocFormOpen(const ADocType: Byte);
+  procedure SIZDocFormOpen(const ADocType: Integer);
 
 implementation
 
-procedure SIZDocFormOpen(const ADocType: Byte);
+procedure SIZDocFormOpen(const ADocType: Integer);
 var
   Form: TSIZDocForm;
 begin
@@ -136,6 +139,13 @@ end;
 procedure TSIZDocForm.CloseButtonClick(Sender: TObject);
 begin
   Close;
+end;
+
+procedure TSIZDocForm.DocAddButtonClick(Sender: TObject);
+var
+  DocID: Integer;
+begin
+  if not SIZDocEditFormOpen(etAdd, DocType, DocID) then Exit;
 end;
 
 procedure TSIZDocForm.ViewUpdate;

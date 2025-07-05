@@ -13,7 +13,7 @@ uses
   DK_StrUtils, DK_VSTTables, DK_VSTParamList, DK_Zoom, DK_SheetExporter,
   DK_Progress, DK_CtrlUtils,
   //Project utils
-  UVars, UConst, UTimingUtils, UCalendar, USchedule, UScheduleSheet,
+  UVars, UConst, UUtils, UTimingUtils, UCalendar, USchedule, UScheduleSheet,
   UWorkHours, UTypes,
   //Forms
   UScheduleCorrectionEditForm, UChooseForm;

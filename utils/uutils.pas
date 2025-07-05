@@ -19,6 +19,7 @@ uses
   function SettingByName(const AName: String; const ANames: TStrVector;
                          const AValues: TIntVector): Integer;
 
+  //Periods
   function PeriodToStr(const ABeginDate, AEndDate: TDate): String;
   function VPeriodToStr(const ABeginDates, AEndDates: TDateVector): TStrVector;
   function MPeriodToStr(const ABeginDates, AEndDates: TDateMatrix): TStrMatrix;

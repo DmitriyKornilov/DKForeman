@@ -20,6 +20,7 @@ function SIZLifePeriod(const ALife: Integer): String;
 function SIZLifeInMonthsFromDates(const AGivingDate, AWritingDate: TDate): Extended;
 function SIZLifeInMonths(const AGettingCount, ANormCount, ANormLife, AWearPercent: Integer;
                             const AUseWearPercent: Boolean = True): Extended;
+
 function SIZWriteoffDate(const AGettingDate: TDate;
                             const AGettingCount, ANormCount, ANormLife, AWearPercent: Integer;
                             const AUseWearPercent: Boolean = True): TDate;
@@ -27,13 +28,20 @@ function SIZWriteoffDateStr(const AGettingDate: TDate;
                             const AGettingCount, ANormCount, ANormLife, AWearPercent: Integer;
                             const AUseWearPercent: Boolean = True): String;
 function SIZWriteoffDateStr(const AWiteoffDate: TDate): String;
+
 function SIZFullSize(const ASizeType, ASizeID: Integer;
                         const AHeightID: Integer = 0;
                         const ANotDefineValue: String = ''): String;
+
 function SIZNormFullName(const ANormName, ANormNote: String): String;
+
 procedure SIZChooseFromStaffAndSpecSizes(const ASpecSizeID, ASpecHeightID,
                                       AStaffSizeID, AStaffHeightID: Integer;
                                       out ASizeID, AHeightID: Integer);
+
+function SIZDocFullName(const ADocName, ADocNum: String;
+                        const ADocDate: TDate;
+                        const ANeedEmptyNumMark: Boolean = False): String;
 
 implementation
 
@@ -369,6 +377,21 @@ begin
     ASizeID:= AStaffSizeID;
     AHeightID:= AStaffHeightID;
   end;
+end;
+
+function SIZDocFullName(const ADocName, ADocNum: String;
+                        const ADocDate: TDate;
+                        const ANeedEmptyNumMark: Boolean = False): String;
+var
+  S: String;
+begin
+  Result:= ADocName;
+  S:= ADocNum;
+  if SEmpty(S) and ANeedEmptyNumMark then
+    S:= 'б/н';
+  if not SEmpty(S) then
+    Result:= Result + ' № ' + S;
+  Result:= Result + ' от ' + FormatDateTime('dd.mm.yyyy', ADocDate);
 end;
 
 end.

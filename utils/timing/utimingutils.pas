@@ -12,18 +12,9 @@ uses
   //Project utils
   UVars, UConst, UWorkHours, UCalendar, USchedule, UTimetable;
 
-  //ID for TVSTTable.ReSelect
-  function GetSelectedID(const ATable: TVSTTable; const AIDValues: TIntVector;
-                         const ASelectedID: Integer = -1): Integer;
-  //Settings
-  function SettingByName(const AName: String; const ANames: TStrVector;
-                         const AValues: TIntVector): Integer;
 
-  function PeriodToStr(const ABeginDate, AEndDate: TDate): String;
-  function VPeriodToStr(const ABeginDates, AEndDates: TDateVector): TStrVector;
-  function MPeriodToStr(const ABeginDates, AEndDates: TDateMatrix): TStrMatrix;
+  {----Staff list--------------------------------------------------------------}
 
-  //Staff list
   function GetStaffListForCommonTiming(const AYear, AMonth, AOrderType: Word;
                          out ATabNumIDs: TIntVector;
                          out AStaffNames, ATabNums, APostNames, AScheduleNames: TStrVector;
@@ -36,11 +27,11 @@ uses
                          out ARecrutDates, ADismissDates, APostBDs, APostEDs, AScheduleBDs, AScheduleEDs: TDateMatrix;
                          const ANeedLongName: Boolean = False): Boolean;
 
-   function StaffListForVacationPlanningLoad(const AYear: Integer;
+  function StaffListForVacationPlanningLoad(const AYear: Integer;
                    const AOrderType: Byte;
                    out ATabNumIDs: TIntVector;
                    out AStaffNames, ATabNums, APostNames, AScheduleNames: TStrVector): Boolean;
-   function StaffListForVacationPlanningLoad(const AYear: Integer;
+  function StaffListForVacationPlanningLoad(const AYear: Integer;
                    const AOrderType: Byte;
                    out ACategoryNames: TStrVector;
                    out ATabNumIDs: TIntMatrix;
@@ -59,7 +50,8 @@ uses
   function StaffNamesForScheduleNames(const AFs, ANs, APs, ATabNums: TStrVector;
                               const ANeedLongName: Boolean = True): TStrVector;
 
-  //Calendar
+  {----Calendar----------------------------------------------------------------}
+
   procedure CalendarForPeriod(const ABeginDate, AEndDate: TDate; var ACalendar: TCalendar);
   procedure CalendarForYear(const AYear: Word; var ACalendar: TCalendar);
   procedure CalendarForMonth(const AMonth, AYear: Word; var ACalendar: TCalendar);
@@ -75,7 +67,9 @@ uses
   function GetScheduleCorrections(const ABeginDate, AEndDate: TDate;
                          const AHoursTotal, AHoursNight, ADigMark, AShiftNum: Integer;
                          const AStrMark: String = ''): TScheduleCorrections;
-  //ScheduleShift
+
+  {----ScheduleShift-----------------------------------------------------------}
+
   procedure ScheduleCycleToWeek(var ACycle: TScheduleCycle);
   procedure ScheduleCycleToCount(var ACycle: TScheduleCycle; const ACount: Integer; const AFirstDate: TDate);
   procedure ScheduleCycleDateColumnSet(const ATable: TVSTCustomSimpleTable; const ACycle: TScheduleCycle; out AStrDates: TStrVector);
@@ -92,7 +86,8 @@ uses
   procedure ScheduleShiftForMonth(const AScheduleID: Integer;
                          const AMonth, AYear: Word; var ASchedule: TShiftSchedule);
 
-  //Vacations
+  {----Vacations---------------------------------------------------------------}
+
   function VacationPart(const AFirstDate: TDate; const ACount, AAddCount: Integer): String;
   function VVacationPart(const AFirstDates: TDateVector; const ACounts, AAddCounts: TIntVector): TStrVector;
 
@@ -103,9 +98,7 @@ uses
   function VacationForPeriod(const ATabNumID: Integer; const ABeginDate, AEndDate: TDate;
                           const AHolidayDates: TDateVector;const AIsPlane: Boolean = False): TIntVector;
 
-
-
-  //SchedulePersonal
+  {----SchedulePersonal--------------------------------------------------------}
 
   { расчет нормы часов ANormHours и кол-ва рабочих дней AWorkDaysCount
     для таб номера c ATabNumID за период  ABeginDate, AEndDate
@@ -145,7 +138,8 @@ uses
                             const AccountingType: Byte; //0-год, 1-квартал, 2 - месяц
                             out ABeginDate, AEndDate: TDate): Boolean;
 
-  //Timetable
+  {----Timetable---------------------------------------------------------------}
+
   {Актуализация записей табеля за период}
   function TimetableForPeriodUpdate(const ATabNumID: Integer;
                                    const ARecrutDate, ADismissDate: TDate;
@@ -174,49 +168,6 @@ uses
   function TimetableYearTotalsLoad(const ATabNumID, AYear: Integer): TTimetableTotals;
 
 implementation
-
-function GetSelectedID(const ATable: TVSTTable; const AIDValues: TIntVector;
-                       const ASelectedID: Integer = -1): Integer;
-begin
-  Result:= -1;
-  if ASelectedID>0 then
-    Result:= ASelectedID
-  else if Assigned(ATable) and ATable.IsSelected then
-    Result:= AIDValues[ATable.SelectedIndex];
-end;
-
-function SettingByName(const AName: String; const ANames: TStrVector;
-  const AValues: TIntVector): Integer;
-begin
-  VSameIndexValue(AName, ANames, AValues, Result);
-end;
-
-function PeriodToStr(const ABeginDate, AEndDate: TDate): String;
-begin
-  Result:= FormatDateTime('dd.mm.yyyy - ', ABeginDate);
-  if SameDate(AEndDate, INFDATE) then
-    Result:= Result + 'наст. время'
-  else
-    Result:= Result + FormatDateTime('dd.mm.yyyy', AEndDate);
-end;
-
-function VPeriodToStr(const ABeginDates, AEndDates: TDateVector): TStrVector;
-var
-  i: Integer;
-begin
-  Result:= nil;
-  for i:= 0 to High(ABeginDates) do
-    VAppend(Result, PeriodToStr(ABeginDates[i], AEndDates[i]));
-end;
-
-function MPeriodToStr(const ABeginDates, AEndDates: TDateMatrix): TStrMatrix;
-var
-  i: Integer;
-begin
-  Result:= nil;
-  for i:= 0 to High(ABeginDates) do
-    MAppend(Result, VPeriodToStr(ABeginDates[i], AEndDates[i]));
-end;
 
 function GetStaffListForCommonTiming(const AYear, AMonth, AOrderType: Word;
            out ATabNumIDs: TIntVector;

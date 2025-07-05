@@ -614,6 +614,24 @@ type
     function SIZStaffSpecSizeCopy(const ASourceInfoIDs, ADestInfoIDs: TIntVector;
                                   const ACommit: Boolean = True): Boolean;
 
+    (**************************************************************************
+                                ДОКУМЕНТЫ СИЗ
+    **************************************************************************)
+    {Проверка наличия документа: True - есть, False - нет}
+    function SIZDocExists(const ADocID: Integer;
+                          const ADocName, ADocNum: String;
+                          const ADocDate: TDate): Boolean;
+    {Запись нового документа: True - ОК, False - ошибка}
+    function SIZDocWrite(out ADocID: Integer;
+                         const ADocName, ADocNum: String;
+                         const ADocDate: TDate;
+                         const ADocType, ADocForm: Integer): Boolean;
+    {Обновление документа: True - ОК, False - ошибка}
+    function SIZDocUpdate(const ADocID: Integer;
+                         const ADocName, ADocNum: String;
+                         const ADocDate: TDate;
+                         const ADocType, ADocForm: Integer): Boolean;
+
 
     (**************************************************************************
                                 ЛИЧНЫЕ КАРТОЧКИ СИЗ
@@ -5241,6 +5259,77 @@ begin
     Result:= True;
   except
     if ACommit then QRollback;
+  end;
+end;
+
+function TDataBase.SIZDocExists(const ADocID: Integer;
+                          const ADocName, ADocNum: String;
+                          const ADocDate: TDate): Boolean;
+begin
+  QSetQuery(FQuery);
+  QSetSQL(
+    'SELECT DocID FROM SIZDOC ' +
+    'WHERE (DocID <> :DocID) AND (UPPER(DocName) = :DocName) AND ' +
+          '(DocDate = :DocDate) AND (UPPER(DocNum) = :DocNum)'
+  );
+  QParamInt('DocID', ADocID);
+  QParamStr('DocName', SUpper(ADocName));
+  QParamStr('DocNum', SUpper(ADocNum));
+  QParamDT('DocDate', ADocDate);
+  QOpen;
+  Result:= not QIsEmpty;
+  QClose;
+end;
+
+function TDataBase.SIZDocWrite(out ADocID: Integer;
+                         const ADocName, ADocNum: String;
+                         const ADocDate: TDate;
+                         const ADocType, ADocForm: Integer): Boolean;
+begin
+  Result:= False;
+  QSetQuery(FQuery);
+  try
+    QSetSQL(
+      sqlINSERT('SIZDOC', ['DocName', 'DocNum', 'DocDate', 'DocType', 'DocForm'])
+    );
+    QParamStr('DocName', ADocName);
+    QParamStr('DocNum', ADocNum);
+    QParamDT('DocDate', ADocDate);
+    QParamInt('DocType', ADocType);
+    QParamInt('DocForm', ADocForm);
+    QExec;
+    //определяем ID записанного документа
+    ADocID:= LastWritedInt32ID('SIZDOC');
+    QCommit;
+    Result:= True;
+  except
+    QRollback;
+  end;
+end;
+
+function TDataBase.SIZDocUpdate(const ADocID: Integer;
+                         const ADocName, ADocNum: String;
+                         const ADocDate: TDate;
+                         const ADocType, ADocForm: Integer): Boolean;
+begin
+  Result:= False;
+  QSetQuery(FQuery);
+  try
+    QSetSQL(
+      sqlUPDATE('SIZDOC', ['DocName', 'DocNum', 'DocDate', 'DocType', 'DocForm']) +
+      'WHERE DocID = :DocID'
+    );
+    QParamInt('DocID', ADocID);
+    QParamStr('DocName', ADocName);
+    QParamStr('DocNum', ADocNum);
+    QParamDT('DocDate', ADocDate);
+    QParamInt('DocType', ADocType);
+    QParamInt('DocForm', ADocForm);
+    QExec;
+    QCommit;
+    Result:= True;
+  except
+    QRollback;
   end;
 end;
 

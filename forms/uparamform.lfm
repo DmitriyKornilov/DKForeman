@@ -107,10 +107,10 @@ object ParamForm: TParamForm
     Left = 8
     Height = 20
     Top = 12
-    Width = 206
+    Width = 203
     BorderSpacing.Left = 8
     BorderSpacing.Top = 12
-    Caption = 'Наименование организации:'
+    Caption = 'Наименование организации'
     ParentColor = False
   end
   object CompanyEdit: TEdit
@@ -137,10 +137,10 @@ object ParamForm: TParamForm
     Left = 8
     Height = 20
     Top = 80
-    Width = 201
+    Width = 198
     BorderSpacing.Left = 8
     BorderSpacing.Top = 12
-    Caption = 'Структурное подразделение:'
+    Caption = 'Структурное подразделение'
     ParentColor = False
   end
   object DepartmentEdit: TEdit

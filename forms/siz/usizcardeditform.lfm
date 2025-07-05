@@ -97,10 +97,10 @@ object SIZCardEditForm: TSIZCardEditForm
       Left = 8
       Height = 20
       Top = 12
-      Width = 174
+      Width = 171
       BorderSpacing.Left = 8
       BorderSpacing.Top = 12
-      Caption = 'Номер личной карточки:'
+      Caption = 'Номер личной карточки'
     end
     object CardNumEdit: TEdit
       AnchorSideLeft.Control = CardNumPanel

@@ -10,7 +10,6 @@ object SIZNormSubItemEditForm: TSIZNormSubItemEditForm
   ClientWidth = 800
   DesignTimePPI = 120
   Position = poScreenCenter
-  LCLVersion = '4.0.0.4'
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
@@ -87,12 +86,12 @@ object SIZNormSubItemEditForm: TSIZNormSubItemEditForm
     Left = 8
     Height = 20
     Top = 99
-    Width = 61
+    Width = 58
     Anchors = [akLeft, akBottom]
     BorderSpacing.Left = 8
     BorderSpacing.Top = 12
     BorderSpacing.Bottom = 8
-    Caption = 'Тип СИЗ:'
+    Caption = 'Тип СИЗ'
     ParentColor = False
   end
   object NameLabel: TLabel
@@ -103,11 +102,11 @@ object SIZNormSubItemEditForm: TSIZNormSubItemEditForm
     Left = 8
     Height = 20
     Top = 168
-    Width = 142
+    Width = 139
     BorderSpacing.Left = 8
     BorderSpacing.Top = 12
     BorderSpacing.Bottom = 8
-    Caption = 'Наименование СИЗ:'
+    Caption = 'Наименование СИЗ'
     ParentColor = False
   end
   object NamePanel: TPanel
@@ -127,8 +126,8 @@ object SIZNormSubItemEditForm: TSIZNormSubItemEditForm
     BorderSpacing.Bottom = 12
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 183
-    ClientWidth = 784
+    ClientHeight = 179
+    ClientWidth = 780
     TabOrder = 1
     object NameVT: TVirtualStringTree
       Left = 0
@@ -152,10 +151,10 @@ object SIZNormSubItemEditForm: TSIZNormSubItemEditForm
     Left = 8
     Height = 20
     Top = 12
-    Width = 238
+    Width = 235
     BorderSpacing.Left = 8
     BorderSpacing.Top = 12
-    Caption = 'Дополнительное условие выдачи:'
+    Caption = 'Дополнительное условие выдачи'
     ParentColor = False
   end
   object NumLabel: TLabel
@@ -166,10 +165,10 @@ object SIZNormSubItemEditForm: TSIZNormSubItemEditForm
     Left = 8
     Height = 20
     Top = 395
-    Width = 84
+    Width = 81
     BorderSpacing.Left = 8
     BorderSpacing.Bottom = 8
-    Caption = 'Количество:'
+    Caption = 'Количество'
     ParentColor = False
   end
   object NumSpinEdit: TSpinEdit
@@ -180,7 +179,7 @@ object SIZNormSubItemEditForm: TSIZNormSubItemEditForm
     AnchorSideRight.Control = NumLabel
     AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Control = ToolPanel
-    Left = 103
+    Left = 100
     Height = 28
     Top = 391
     Width = 70
@@ -197,13 +196,13 @@ object SIZNormSubItemEditForm: TSIZNormSubItemEditForm
     AnchorSideTop.Control = LifeBCButton
     AnchorSideTop.Side = asrCenter
     AnchorSideBottom.Control = NumSpinEdit
-    Left = 193
+    Left = 190
     Height = 20
     Top = 395
-    Width = 94
+    Width = 91
     BorderSpacing.Left = 20
     BorderSpacing.Bottom = 8
-    Caption = 'Срок службы:'
+    Caption = 'Срок службы'
     ParentColor = False
   end
   object LifeSpinEdit: TSpinEdit
@@ -212,7 +211,7 @@ object SIZNormSubItemEditForm: TSIZNormSubItemEditForm
     AnchorSideTop.Control = LifeBCButton
     AnchorSideTop.Side = asrCenter
     AnchorSideRight.Side = asrBottom
-    Left = 503
+    Left = 497
     Height = 28
     Top = 391
     Width = 70
@@ -230,7 +229,7 @@ object SIZNormSubItemEditForm: TSIZNormSubItemEditForm
     AnchorSideTop.Control = LifeBCButton
     AnchorSideTop.Side = asrCenter
     AnchorSideBottom.Control = NumSpinEdit
-    Left = 581
+    Left = 575
     Height = 20
     Top = 395
     Width = 45
@@ -354,8 +353,8 @@ object SIZNormSubItemEditForm: TSIZNormSubItemEditForm
     BorderSpacing.Right = 8
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 200
-    ClientWidth = 784
+    ClientHeight = 196
+    ClientWidth = 780
     TabOrder = 5
     object InfoVT: TVirtualStringTree
       Left = 0
@@ -600,7 +599,7 @@ object SIZNormSubItemEditForm: TSIZNormSubItemEditForm
     AnchorSideRight.Control = Owner
     AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Control = ClauseNameEdit
-    Left = 295
+    Left = 289
     Height = 29
     Top = 391
     Width = 200
@@ -730,10 +729,10 @@ object SIZNormSubItemEditForm: TSIZNormSubItemEditForm
     AnchorSideRight.Control = Owner
     AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Control = ToolPanel
-    Left = 103
+    Left = 100
     Height = 28
     Top = 432
-    Width = 689
+    Width = 692
     Anchors = [akLeft, akRight, akBottom]
     BorderSpacing.Left = 8
     BorderSpacing.Right = 8
@@ -748,10 +747,10 @@ object SIZNormSubItemEditForm: TSIZNormSubItemEditForm
     Left = 8
     Height = 20
     Top = 436
-    Width = 87
+    Width = 84
     BorderSpacing.Left = 8
     BorderSpacing.Bottom = 8
-    Caption = 'Пункт Норм:'
+    Caption = 'Пункт Норм'
     ParentColor = False
   end
 end
