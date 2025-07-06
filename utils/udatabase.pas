@@ -639,6 +639,17 @@ type
                          const ADocDate: TDate;
                          const ADocType, ADocForm: Integer): Boolean;
 
+    {Загрузка документа поступления СИЗ на склад: True - ОК, False - пусто}
+    function SIZDocEntryLoad(const ADocID: Integer;
+                         out AEntryIDs: TInt64Vector;
+                         out ANomNums, ASizNames, ASizUnits, ANotes: TStrVector;
+                         out ASizCounts, ANameIDs, ASizeIDs,
+                             AHeightIDs, ASizeTypes: TIntVector): Boolean;
+    function SIZDocEntryLoad(const ADocID: Integer;
+                         out AEntryIDs: TInt64Matrix;
+                         out ANomNums, ASizNames, ASizUnits, ANotes: TStrMatrix;
+                         out ASizCounts, ANameIDs, ASizeIDs,
+                             AHeightIDs, ASizeTypes: TIntMatrix): Boolean;
 
     (**************************************************************************
                                 ЛИЧНЫЕ КАРТОЧКИ СИЗ
@@ -5293,8 +5304,7 @@ function TDataBase.SIZDocListLoad(const AYear, ADocType: Integer;
                           out ADocNames, ADocNums: TStrVector;
                           out ADocDates: TDateVector): Boolean;
 var
-  SQLStr, S: String;
-  BD, ED: TDate;
+  SQLStr: String;
 begin
   Result:= False;
 
@@ -5394,6 +5404,123 @@ begin
   except
     QRollback;
   end;
+end;
+
+function TDataBase.SIZDocEntryLoad(const ADocID: Integer;
+                         out AEntryIDs: TInt64Vector;
+                         out ANomNums, ASizNames, ASizUnits, ANotes: TStrVector;
+                         out ASizCounts, ANameIDs, ASizeIDs, AHeightIDs, ASizeTypes: TIntVector): Boolean;
+begin
+  Result:= False;
+
+  AEntryIDs:= nil;
+  ANomNums:= nil;
+  ASizNames:= nil;
+  ASizUnits:= nil;
+  ANotes:= nil;
+  ASizCounts:= nil;
+  ANameIDs:= nil;
+  ASizeIDs:= nil;
+  AHeightIDs:= nil;
+  ASizeTypes:= nil;
+
+  QSetQuery(FQuery);
+  QSetSQL(
+    'SELECT t1.EntryID, t1.NomNum, t1.NameID, t1.SizeID, t1.HeightID, ' +
+           't1.EntryCount, t1.EntryNote, ' +
+           't2.SizName, t2.SizeType, t3.UnitStringCode AS SizUnit ' +
+    'FROM SIZSTOREENTRY t1 ' +
+    'INNER JOIN SIZNAME t2 ON (t1.NameID=t2.NameID) ' +
+    'INNER JOIN SIZUNIT t3 ON (t2.UnitID=t3.UnitID) ' +
+    'WHERE DocID = :DocID ' +
+    'ORDER BY t2.SizName, t1.NomNum, t1.SizeID, t1.HeightID');
+  QParamInt('DocID', ADocID);
+  QOpen;
+  if not QIsEmpty then
+  begin
+    QFirst;
+    while not QEOF do
+    begin
+      VAppend(AEntryIDs, QFieldInt64('EntryID'));
+
+      VAppend(ANomNums, QFieldStr('NomNum'));
+      VAppend(ASizNames, QFieldStr('SizName'));
+      VAppend(ASizUnits, QFieldStr('SizUnit'));
+      VAppend(ANotes, QFieldStr('EntryNote'));
+
+      //VAppend(ASizSizes, GetSizFullSize(QFieldInt('SizeType'), QFieldInt('SizeID'), QFieldInt('HeightID')));
+
+      VAppend(ASizCounts, QFieldInt('EntryCount'));
+      VAppend(ANameIDs, QFieldInt('NameID'));
+      VAppend(ASizeIDs, QFieldInt('SizeID'));
+      VAppend(AHeightIDs, QFieldInt('HeightID'));
+      VAppend(ASizeTypes, QFieldInt('SizeType'));
+
+      QNext;
+    end;
+    Result:= True;
+  end;
+  QClose;
+end;
+
+function TDataBase.SIZDocEntryLoad(const ADocID: Integer;
+                         out AEntryIDs: TInt64Matrix;
+                         out ANomNums, ASizNames, ASizUnits, ANotes: TStrMatrix;
+                         out ASizCounts, ANameIDs, ASizeIDs,
+                             AHeightIDs, ASizeTypes: TIntMatrix): Boolean;
+var
+  EntryIDs: TInt64Vector;
+  NomNums, SizNames, SizUnits, Notes: TStrVector;
+  SizCounts, NameIDs, SizeIDs, HeightIDs, SizeTypes: TIntVector;
+  i, N1, N2, NameID: Integer;
+  NomNum: String;
+
+  procedure AddToMatrix(const AInd1, AInd2: Integer);
+  begin
+    MAppend(AEntryIDs, VCut(EntryIDs, AInd1, AInd2));
+    MAppend(ANomNums, VCut(NomNums, AInd1, AInd2));
+    MAppend(ASizNames, VCut(SizNames, AInd1, AInd2));
+    MAppend(ASizUnits, VCut(SizUnits, AInd1, AInd2));
+    MAppend(ANotes, VCut(Notes, AInd1, AInd2));
+    MAppend(ASizCounts, VCut(SizCounts, AInd1, AInd2));
+    MAppend(ANameIDs, VCut(NameIDs, AInd1, AInd2));
+    MAppend(ASizeIDs, VCut(SizeIDs, AInd1, AInd2));
+    MAppend(AHeightIDs, VCut(HeightIDs, AInd1, AInd2));
+    MAppend(ASizeTypes, VCut(SizeTypes, AInd1, AInd2));
+  end;
+
+begin
+  AEntryIDs:= nil;
+  ANomNums:= nil;
+  ASizNames:= nil;
+  ASizUnits:= nil;
+  ANotes:= nil;
+  ASizCounts:= nil;
+  ANameIDs:= nil;
+  ASizeIDs:= nil;
+  AHeightIDs:= nil;
+  ASizeTypes:= nil;
+
+  Result:= SIZDocEntryLoad(ADocID, EntryIDs, NomNums, SizNames, SizUnits, Notes,
+                           SizCounts, NameIDs, SizeIDs, HeightIDs, SizeTypes);
+  if not Result then Exit;
+
+  NameID:= NameIDs[0];
+  NomNum:= NomNums[0];
+  N1:= 0;
+  for i:= 1 to High(NomNums) do
+  begin
+    if not (SSame(NomNums[i], NomNum) and (NameIDs[i]=NameID)) then
+    begin
+      N2:= i - 1;
+      AddToMatrix(N1, N2);
+      N1:= i;
+      NameID:= NameIDs[i];
+      NomNum:= NomNums[i];
+    end;
+  end;
+  N2:= High(NomNums);
+  AddToMatrix(N1, N2);
 end;
 
 function TDataBase.SIZStaffListForPersonalCardsLoad(const AFilterValue: String;

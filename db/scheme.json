@@ -3083,7 +3083,8 @@
       "SIZEID",
       "HEIGHTID",
       "ENTRYCOUNT",
-      "DOCID"
+      "DOCID",
+      "ENTRYNOTE"
     ],
     "ENTRYID" : {
       "FieldType" : "INTEGER",
@@ -3245,6 +3246,30 @@
         "FieldName" : "DOCID",
         "OnDelete" : 0,
         "OnUpdate" : 0
+      },
+      "ReferenceFrom" : {
+        "TableNames" : [
+        ],
+        "FieldNames" : [
+        ]
+      }
+    },
+    "ENTRYNOTE" : {
+      "FieldType" : "TEXT",
+      "PrimaryKey" : false,
+      "Status" : false,
+      "NotNull" : false,
+      "DefaultValue" : "",
+      "Description" : [
+        "Примечание"
+      ],
+      "ExistingValues" : [
+      ],
+      "ReferenceTo" : {
+        "TableName" : "",
+        "FieldName" : "",
+        "OnDelete" : 4,
+        "OnUpdate" : 4
       },
       "ReferenceFrom" : {
         "TableNames" : [

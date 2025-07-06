@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, DateUtils,
   //DK packages utils
-  DK_DateUtils, DK_StrUtils, DK_Const, DK_Vector,
+  DK_DateUtils, DK_StrUtils, DK_Const, DK_Vector, DK_Matrix,
   //Project utils
   UConst, USIZSizes;
 
@@ -30,8 +30,12 @@ function SIZWriteoffDateStr(const AGettingDate: TDate;
 function SIZWriteoffDateStr(const AWiteoffDate: TDate): String;
 
 function SIZFullSize(const ASizeType, ASizeID: Integer;
-                        const AHeightID: Integer = 0;
-                        const ANotDefineValue: String = ''): String;
+                      const AHeightID: Integer = 0;
+                      const ANotDefineValue: String = ''): String;
+function SIZFullSize(const ASizeTypes, ASizeIDs, AHeightIDs: TIntVector;
+                      const ANotDefineValue: String = ''): TStrVector;
+function SIZFullSize(const ASizeTypes, ASizeIDs, AHeightIDs: TIntMatrix;
+                      const ANotDefineValue: String = ''): TStrMatrix;
 
 function SIZNormFullName(const ANormName, ANormNote: String): String;
 
@@ -349,10 +353,37 @@ begin
      end;
   2: Result:= SHOES[ASizeID];
   3: Result:= HEADDRESS[ASizeID];
-  4,5: Result:= HANDS[ASizeID];
-  6: Result:= GASMASKS[ASizeID];
-  7: Result:= RESPIRATORS[ASizeID];
+  4: Result:= HANDS[ASizeID];
+  5: Result:= GASMASKS[ASizeID];
+  6: Result:= RESPIRATORS[ASizeID];
+  7,8: Result:= IntToStr(ASizeID);
   end;
+end;
+
+function SIZFullSize(const ASizeTypes, ASizeIDs, AHeightIDs: TIntVector;
+                     const ANotDefineValue: String = ''): TStrVector;
+var
+  i: Integer;
+begin
+  Result:= nil;
+  if VIsNil(ASizeTypes) then Exit;
+
+  VDim(Result, Length(ASizeTypes));
+  for i:= 0 to High(ASizeTypes) do
+    Result[i]:= SIZFullSize(ASizeTypes[i], ASizeIDs[i], AHeightIDs[i], ANotDefineValue);
+end;
+
+function SIZFullSize(const ASizeTypes, ASizeIDs, AHeightIDs: TIntMatrix;
+                     const ANotDefineValue: String): TStrMatrix;
+var
+  i: Integer;
+begin
+  Result:= nil;
+  if MIsNil(ASizeTypes) then Exit;
+
+  MDim(Result, Length(ASizeTypes));
+  for i:= 0 to High(ASizeTypes) do
+    Result[i]:= SIZFullSize(ASizeTypes[i], ASizeIDs[i], AHeightIDs[i], ANotDefineValue);
 end;
 
 function SIZNormFullName(const ANormName, ANormNote: String): String;

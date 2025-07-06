@@ -10,7 +10,7 @@ uses
   //Project utils
   UVars, UConst, UTypes, UUtils, USIZUtils,
   //DK packages utils
-  DK_VSTTables, DK_Vector, DK_CtrlUtils, DK_DateUtils,
+  DK_VSTTables, DK_Vector, DK_Matrix, DK_CtrlUtils, DK_DateUtils,
   //Forms
   USIZDocEditForm;
 
@@ -60,6 +60,8 @@ type
     YearSpinEdit: TSpinEdit;
     procedure CloseButtonClick(Sender: TObject);
     procedure DocAddButtonClick(Sender: TObject);
+    procedure DocEditButtonClick(Sender: TObject);
+    procedure DocVTDblClick(Sender: TObject);
     procedure EditingButtonClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -67,14 +69,25 @@ type
     procedure YearSpinEditChange(Sender: TObject);
   private
     DocList: TVSTTable;
+    SIZList: TVSTCustomCategoryTable;
 
     DocIDs, DocForms: TIntVector;
     DocNames, DocNums: TStrVector;
     DocDates: TDateVector;
 
+    CategoryNames: TStrVector;
+    EntryIDs: TInt64Matrix;
+    NomNums, SizNames, SizUnits, Notes: TStrMatrix;
+    SizCounts, NameIDs, SizeIDs, HeightIDs, SizeTypes: TIntMatrix;
+
     procedure DocListCreate;
     procedure DocListSelect;
     procedure DocListLoad(const ASelectedID: Integer = -1);
+
+    procedure SIZListCreate;
+    procedure SIZListLoad;
+
+    procedure DocEdit(const AEditingType: TEditingType);
 
     procedure ViewUpdate;
   public
@@ -109,14 +122,15 @@ procedure TSIZDocForm.FormCreate(Sender: TObject);
 begin
   Caption:= MAIN_CAPTION;
   DocType:= 0;
+
+  SIZListCreate;
   DocListCreate;
 end;
 
 procedure TSIZDocForm.FormDestroy(Sender: TObject);
 begin
   FreeAndNil(DocList);
-
-
+  FreeAndNil(SIZList);
 end;
 
 procedure TSIZDocForm.FormShow(Sender: TObject);
@@ -174,7 +188,10 @@ end;
 
 procedure TSIZDocForm.DocListSelect;
 begin
+  DocDelButton.Enabled:= DocList.IsSelected;
+  DocEditButton.Enabled:= DocDelButton.Enabled;
 
+  SIZListLoad;
 end;
 
 procedure TSIZDocForm.DocListLoad(const ASelectedID: Integer);
@@ -202,20 +219,101 @@ begin
   ExportButton.Enabled:= not VIsNil(DocIDs);
 end;
 
+procedure TSIZDocForm.SIZListCreate;
+begin
+  SIZList:= TVSTCustomCategoryTable.Create(SIZVT);
+  SIZList.TreeLinesVisible:= False;
+  SIZList.SetSingleFont(GridFont);
+  SIZList.HeaderFont.Style:= [fsBold];
+  SIZList.AddColumn('Номенклатурный номер', 200);
+  SIZList.AddColumn('Наименование', 300);
+  SIZList.AddColumn('Единица измерения', 150);
+  SIZList.AddColumn('Количество', 100);
+  SIZList.AddColumn('Размер/объём/вес', 130);
+  SIZList.AddColumn('Примечание', 300);
+  SIZList.Draw;
+end;
+
+procedure TSIZDocForm.SIZListLoad;
+var
+  i: Integer;
+  M: TStrMatrix;
+begin
+  if not DocList.IsSelected then Exit;
+
+  DataBase.SIZDocEntryLoad(DocIDs[DocList.SelectedIndex],
+                         EntryIDs, NomNums, SizNames, SizUnits, Notes,
+                         SizCounts, NameIDs, SizeIDs, HeightIDs, SizeTypes);
+
+  VDim(CategoryNames, Length(EntryIDs));
+  for i:= 0 to High(EntryIDs) do
+  begin
+    CategoryNames[i]:= NomNums[i, 0] + ' - ' + SizNames[i, 0] +
+                    ' (' + SizUnits[i, 0] + ') - ' +
+                    IntToStr(VSum(SizCounts[i]));
+  end;
+
+  SIZList.SetCategories(CategoryNames);
+  SIZList.SetColumn('Номенклатурный номер', NomNums);
+  SIZList.SetColumn('Наименование', SizNames, taLeftJustify);
+  SIZList.SetColumn('Единица измерения', SizUnits);
+  SIZList.SetColumn('Количество', MIntToStr(SizCounts));
+  M:= SIZFullSize(SizeTypes, SizeIDs, HeightIDs);
+  SIZList.SetColumn('Размер/объём/вес', M);
+  SIZList.SetColumn('Примечание', Notes, taLeftJustify);
+  SIZList.Draw;
+  SIZList.ExpandAll(True);
+  //SIZList.CheckAll(True);
+  SIZList.ShowFirst;
+end;
+
 procedure TSIZDocForm.CloseButtonClick(Sender: TObject);
 begin
   Close;
 end;
 
-procedure TSIZDocForm.DocAddButtonClick(Sender: TObject);
+procedure TSIZDocForm.DocEdit(const AEditingType: TEditingType);
 var
-  DocID: Integer;
+  DocID, DocForm: Integer;
+  DocName, DocNum: String;
+  DocDate: TDate;
 begin
-  DocID:= 0; //!!!!!!!!!!!!
-  if DocList.IsSelected then
-    DocID:= DocIDs[DocList.SelectedIndex];
+  if (AEditingType=etEdit) and (not DocList.IsSelected) then Exit;
 
-  if not SIZDocEditFormOpen(etAdd, DocType, DocID{, ...!!!!}) then Exit;
+  if DocList.IsSelected then
+  begin
+    DocID:= DocIDs[DocList.SelectedIndex];
+    DocForm:= DocForms[DocList.SelectedIndex];
+    DocName:= DocNames[DocList.SelectedIndex];
+    DocNum:= DocNums[DocList.SelectedIndex];
+    DocDate:= DocDates[DocList.SelectedIndex];
+  end
+  else begin
+    DocID:= 0;
+    DocForm:= 0;
+    DocName:= EmptyStr;
+    DocNum:= EmptyStr;
+    DocDate:= 0;
+  end;
+
+  if not SIZDocEditFormOpen(AEditingType, DocType, DocID, DocName, DocNum,
+                            DocDate, DocForm) then Exit;
+  DocListLoad(DocID);
+end;
+
+procedure TSIZDocForm.DocAddButtonClick(Sender: TObject);
+begin
+  DocEdit(etAdd);
+end;
+
+procedure TSIZDocForm.DocEditButtonClick(Sender: TObject);
+begin
+  DocEdit(etEdit);
+end;
+
+procedure TSIZDocForm.DocVTDblClick(Sender: TObject);
+begin
+  DocEdit(etEdit);
 end;
 
 procedure TSIZDocForm.ViewUpdate;
