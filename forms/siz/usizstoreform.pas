@@ -31,6 +31,8 @@ type
     WriteoffButton: TSpeedButton;
     ToolPanel: TPanel;
     ViewVT: TVirtualStringTree;
+    BackButton: TSpeedButton;
+    procedure BackButtonClick(Sender: TObject);
     procedure CloseButtonClick(Sender: TObject);
     procedure EntryButtonClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -94,7 +96,7 @@ begin
   ]);
 
   Images.ToButtons([
-    ExportButton, EntryButton, OutButton, WriteoffButton, HistoryButton,
+    ExportButton, EntryButton, OutButton, BackButton, WriteoffButton, HistoryButton,
     CloseButton
   ]);
 
@@ -167,6 +169,11 @@ end;
 procedure TSIZStoreForm.WriteoffButtonClick(Sender: TObject);
 begin
   SIZDocFormOpen(3);
+end;
+
+procedure TSIZStoreForm.BackButtonClick(Sender: TObject);
+begin
+  SIZDocFormOpen(4);
 end;
 
 end.

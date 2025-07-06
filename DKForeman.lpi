@@ -488,6 +488,7 @@
         <Filename Value="forms\siz\usizdocform.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="SIZDocForm"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="USIZDocForm"/>
       </Unit>
@@ -495,6 +496,7 @@
         <Filename Value="forms\siz\usizstorehistoryform.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="SIZStoreHistoryForm"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="USIZStoreHistoryForm"/>
       </Unit>
@@ -502,6 +504,7 @@
         <Filename Value="forms\siz\usizdoceditform.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="SIZDocEditForm"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="USIZDocEditForm"/>
       </Unit>

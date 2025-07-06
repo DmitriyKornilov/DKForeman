@@ -142,7 +142,7 @@ type
 
     procedure ScheduleListCreate;
     procedure ScheduleListSelect;
-    procedure ScheduleListLoad(const SelectedID: Integer = -1);
+    procedure ScheduleListLoad(const ASelectedID: Integer = -1);
     procedure ScheduleListDelItem;
     procedure ScheduleListEditItem;
 
@@ -912,11 +912,11 @@ begin
   ColorLegendCreate(LegendPanel, C, S);
 end;
 
-procedure TScheduleShiftForm.ScheduleListLoad(const SelectedID: Integer = -1);
+procedure TScheduleShiftForm.ScheduleListLoad(const ASelectedID: Integer = -1);
 var
-  SelectedScheduleID: Integer;
+  SelectedID: Integer;
 begin
-  SelectedScheduleID:= GetSelectedID(ScheduleList, ScheduleIDs, SelectedID);
+  SelectedID:= GetSelectedID(ScheduleList, ScheduleIDs, ASelectedID);
 
   DataBase.ScheduleMainListLoad(ScheduleIDs, WeekHours, CycleCounts, ScheduleNames);
 
@@ -932,7 +932,7 @@ begin
     ScheduleList.SetColumn(SCHEDULESHIFT_LIST_COLUMN_NAMES[1], ScheduleNames, taLeftJustify);
     ScheduleList.SetColumn(SCHEDULESHIFT_LIST_COLUMN_NAMES[2], VIntToStr(WeekHours));
     ScheduleList.Draw;
-    ScheduleList.ReSelect(ScheduleIDs, SelectedScheduleID, True);  //возвращаем выделение строки
+    ScheduleList.ReSelect(ScheduleIDs, SelectedID, True);  //возвращаем выделение строки
   finally
     ScheduleList.Visible:= True;
   end;

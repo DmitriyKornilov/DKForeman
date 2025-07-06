@@ -55,7 +55,7 @@ object SIZDocForm: TSIZDocForm
     end
     object ExportButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 0
+      Left = 86
       Height = 36
       Hint = 'Экспорт в формат электронной таблицы XLSX или ODS'
       Top = 0
@@ -85,6 +85,48 @@ object SIZDocForm: TSIZDocForm
       ShowHint = True
       ParentShowHint = False
       OnClick = EditingButtonClick
+    end
+    object YearPanel: TPanel
+      Left = 0
+      Height = 36
+      Top = 0
+      Width = 65
+      Align = alLeft
+      AutoSize = True
+      BevelOuter = bvNone
+      ClientHeight = 36
+      ClientWidth = 65
+      TabOrder = 0
+      object YearSpinEdit: TSpinEdit
+        AnchorSideTop.Control = YearPanel
+        AnchorSideTop.Side = asrCenter
+        Left = 2
+        Height = 28
+        Top = 4
+        Width = 63
+        Align = alCustom
+        Alignment = taCenter
+        BorderSpacing.Left = 2
+        BorderSpacing.Top = 2
+        BorderSpacing.Bottom = 2
+        MinValue = 2010
+        TabStop = False
+        TabOrder = 0
+        Value = 2022
+        OnChange = YearSpinEditChange
+      end
+    end
+    object DividerBevel4: TDividerBevel
+      Left = 65
+      Height = 36
+      Top = 0
+      Width = 21
+      Caption = 'DividerBevel4'
+      Align = alLeft
+      BevelWidth = 2
+      Font.Style = [fsBold]
+      Orientation = trVertical
+      ParentFont = False
     end
   end
   object DocPanel: TPanel

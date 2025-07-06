@@ -621,6 +621,13 @@ type
     function SIZDocExists(const ADocID: Integer;
                           const ADocName, ADocNum: String;
                           const ADocDate: TDate): Boolean;
+    {Загрузка списка документов: True - ОК, False - пусто,
+     при AYear=0 - документы за все время,
+     при ADocType=0 - документы всех типов}
+    function SIZDocListLoad(const AYear, ADocType: Integer;
+                          out ADocIDs, ADocForms: TIntVector;
+                          out ADocNames, ADocNums: TStrVector;
+                          out ADocDates: TDateVector): Boolean;
     {Запись нового документа: True - ОК, False - ошибка}
     function SIZDocWrite(out ADocID: Integer;
                          const ADocName, ADocNum: String;
@@ -5278,6 +5285,62 @@ begin
   QParamDT('DocDate', ADocDate);
   QOpen;
   Result:= not QIsEmpty;
+  QClose;
+end;
+
+function TDataBase.SIZDocListLoad(const AYear, ADocType: Integer;
+                          out ADocIDs, ADocForms: TIntVector;
+                          out ADocNames, ADocNums: TStrVector;
+                          out ADocDates: TDateVector): Boolean;
+var
+  SQLStr, S: String;
+  BD, ED: TDate;
+begin
+  Result:= False;
+
+  ADocIDs:= nil;
+  ADocForms:= nil;
+  ADocNames:= nil;
+  ADocNums:= nil;
+  ADocDates:= nil;
+
+  SQLStr:=
+    'SELECT DocID, DocName, DocNum, DocDate, DocForm ' +
+    'FROM SIZDOC ' +
+    'WHERE (DocID>0) ';
+
+  if AYear>0 then
+    SQLStr:= SQLStr + 'AND (DocDate BETWEEN :BD AND :ED) ';
+
+  if ADocType>0 then
+    SQLStr:= SQLStr + 'AND (DocType = :DocType) ';
+
+  SQLStr:= SQLStr + 'ORDER BY DocDate DESC, DocName DESC, DocNum DESC';
+
+  QSetQuery(FQuery);
+  QSetSQL(SQLStr);
+  if AYear>0 then
+  begin
+    QParamDT('BD', FirstDayInYear(AYear));
+    QParamDT('ED', LastDayInYear(AYear));
+  end;
+  if ADocType>0 then
+    QParamInt('DocType', ADocType);
+  QOpen;
+  if not QIsEmpty then
+  begin
+    QFirst;
+    while not QEOF do
+    begin
+      VAppend(ADocIDs, QFieldInt('DocID'));
+      VAppend(ADocForms, QFieldInt('DocForm'));
+      VAppend(ADocNames, QFieldStr('DocName'));
+      VAppend(ADocNums, QFieldStr('DocNum'));
+      VAppend(ADocDates, QFieldDT('DocDate'));
+      QNext;
+    end;
+    Result:= True;
+  end;
   QClose;
 end;
 

@@ -49,7 +49,7 @@ implementation
 
 procedure TSIZStoreHistoryForm.FormCreate(Sender: TObject);
 begin
-  Caption:= MAIN_CAPTION + OTHER_DESCRIPTION[10];
+  Caption:= MAIN_CAPTION + OTHER_DESCRIPTION[11];
 end;
 
 procedure TSIZStoreHistoryForm.FormDestroy(Sender: TObject);

@@ -53,7 +53,7 @@ object SIZStoreForm: TSIZStoreForm
     end
     object ExportButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 487
+      Left = 592
       Height = 36
       Hint = 'Экспорт в формат электронной таблицы XLSX или ODS'
       Top = 0
@@ -72,7 +72,7 @@ object SIZStoreForm: TSIZStoreForm
       Cursor = crHandPoint
       Left = 0
       Height = 36
-      Hint = 'Поступление СИЗ на склад'
+      Hint = 'Поступление новых СИЗ на склад'
       Top = 0
       Width = 140
       Align = alLeft
@@ -87,7 +87,7 @@ object SIZStoreForm: TSIZStoreForm
       OnClick = EntryButtonClick
     end
     object DividerBevel2: TDividerBevel
-      Left = 466
+      Left = 571
       Height = 36
       Top = 0
       Width = 21
@@ -118,7 +118,7 @@ object SIZStoreForm: TSIZStoreForm
     end
     object WriteoffButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 241
+      Left = 346
       Height = 36
       Hint = 'Списание СИЗ со клада'
       Top = 0
@@ -136,7 +136,7 @@ object SIZStoreForm: TSIZStoreForm
     end
     object HistoryButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 358
+      Left = 463
       Height = 36
       Hint = 'История движения СИЗ по складу'
       Top = 0
@@ -151,6 +151,24 @@ object SIZStoreForm: TSIZStoreForm
       ShowHint = True
       ParentShowHint = False
       OnClick = HistoryButtonClick
+    end
+    object BackButton: TSpeedButton
+      Cursor = crHandPoint
+      Left = 241
+      Height = 36
+      Hint = 'Возврат сотрудниками СИЗ на склад'
+      Top = 0
+      Width = 105
+      Align = alLeft
+      AutoSize = True
+      Caption = 'Возврат '
+      Images = Images.PX24
+      ImageIndex = 65
+      Margin = 5
+      Spacing = 5
+      ShowHint = True
+      ParentShowHint = False
+      OnClick = BackButtonClick
     end
   end
   object CaptionPanel: TPanel

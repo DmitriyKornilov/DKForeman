@@ -49,7 +49,6 @@ type
     ListOrderToolPanel: TPanel;
     FIORadioButton: TRadioButton;
     PostRadioButton: TRadioButton;
-    SelectDirectoryDialog1: TSelectDirectoryDialog;
     TabNumRadioButton: TRadioButton;
     VacationEraseButton: TSpeedButton;
     VacationCancelButton: TSpeedButton;

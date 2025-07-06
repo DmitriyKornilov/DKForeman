@@ -6,11 +6,11 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, Buttons,
-  VirtualTrees, DividerBevel,
+  VirtualTrees, DividerBevel, Spin,
   //Project utils
-  UVars, UConst, UTypes,
+  UVars, UConst, UTypes, UUtils, USIZUtils,
   //DK packages utils
-  DK_VSTTables, DK_Vector, DK_CtrlUtils,
+  DK_VSTTables, DK_Vector, DK_CtrlUtils, DK_DateUtils,
   //Forms
   USIZDocEditForm;
 
@@ -19,6 +19,7 @@ type
   { TSIZDocForm }
 
   TSIZDocForm = class(TForm)
+    DividerBevel4: TDividerBevel;
     DocCheckAllButton: TSpeedButton;
     SIZCheckAllButton: TSpeedButton;
     DocCollapseAllButton: TSpeedButton;
@@ -55,13 +56,25 @@ type
     DocVT: TVirtualStringTree;
     DocUncheckAllButton: TSpeedButton;
     SIZUncheckAllButton: TSpeedButton;
+    YearPanel: TPanel;
+    YearSpinEdit: TSpinEdit;
     procedure CloseButtonClick(Sender: TObject);
     procedure DocAddButtonClick(Sender: TObject);
     procedure EditingButtonClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure YearSpinEditChange(Sender: TObject);
   private
+    DocList: TVSTTable;
+
+    DocIDs, DocForms: TIntVector;
+    DocNames, DocNums: TStrVector;
+    DocDates: TDateVector;
+
+    procedure DocListCreate;
+    procedure DocListSelect;
+    procedure DocListLoad(const ASelectedID: Integer = -1);
 
     procedure ViewUpdate;
   public
@@ -96,11 +109,12 @@ procedure TSIZDocForm.FormCreate(Sender: TObject);
 begin
   Caption:= MAIN_CAPTION;
   DocType:= 0;
+  DocListCreate;
 end;
 
 procedure TSIZDocForm.FormDestroy(Sender: TObject);
 begin
-
+  FreeAndNil(DocList);
 
 
 end;
@@ -134,6 +148,58 @@ begin
 
   if DocType>0 then
     Caption:= MAIN_CAPTION + OTHER_DESCRIPTION[DocType+6];
+
+  YearSpinEdit.Value:= YearOfDate(Date);
+end;
+
+procedure TSIZDocForm.YearSpinEditChange(Sender: TObject);
+begin
+  DocListLoad;
+end;
+
+procedure TSIZDocForm.DocListCreate;
+begin
+  DocList:= TVSTTable.Create(DocVT);
+  DocList.CanSelect:= True;
+  DocList.CanUnselect:= False;
+  DocList.OnSelect:= @DocListSelect;
+  DocList.SetSingleFont(GridFont);
+  DocList.HeaderFont.Style:= [fsBold];
+
+  DocList.AddColumn('№ п/п', 50);
+  DocList.AddColumn('Документ', 300);
+  DocList.AutosizeColumnEnable('Документ');
+  DocList.Draw;
+end;
+
+procedure TSIZDocForm.DocListSelect;
+begin
+
+end;
+
+procedure TSIZDocForm.DocListLoad(const ASelectedID: Integer);
+var
+  SelectedID: Integer;
+  V: TStrVector;
+begin
+  SelectedID:= GetSelectedID(DocList, DocIDs, ASelectedID);
+
+  DataBase.SIZDocListLoad(YearSpinEdit.Value, DocType, DocIDs, DocForms,
+                          DocNames, DocNums, DocDates);
+
+  DocList.Visible:= False;
+  try
+    DocList.ValuesClear;
+    DocList.SetColumn('№ п/п', VIntToStr(VOrder(Length(DocIDs))));
+    V:= SIZDocFullName(DocNames, DocNums, DocDates);
+    DocList.SetColumn('Документ', V, taLeftJustify);
+    DocList.Draw;
+    DocList.ReSelect(DocIDs, SelectedID, True);  //возвращаем выделение строки
+  finally
+    DocList.Visible:= True;
+  end;
+
+  ExportButton.Enabled:= not VIsNil(DocIDs);
 end;
 
 procedure TSIZDocForm.CloseButtonClick(Sender: TObject);
@@ -145,7 +211,11 @@ procedure TSIZDocForm.DocAddButtonClick(Sender: TObject);
 var
   DocID: Integer;
 begin
-  if not SIZDocEditFormOpen(etAdd, DocType, DocID) then Exit;
+  DocID:= 0; //!!!!!!!!!!!!
+  if DocList.IsSelected then
+    DocID:= DocIDs[DocList.SelectedIndex];
+
+  if not SIZDocEditFormOpen(etAdd, DocType, DocID{, ...!!!!}) then Exit;
 end;
 
 procedure TSIZDocForm.ViewUpdate;

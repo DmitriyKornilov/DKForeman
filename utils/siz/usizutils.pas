@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, DateUtils,
   //DK packages utils
-  DK_DateUtils, DK_StrUtils, DK_Const,
+  DK_DateUtils, DK_StrUtils, DK_Const, DK_Vector,
   //Project utils
   UConst, USIZSizes;
 
@@ -42,6 +42,9 @@ procedure SIZChooseFromStaffAndSpecSizes(const ASpecSizeID, ASpecHeightID,
 function SIZDocFullName(const ADocName, ADocNum: String;
                         const ADocDate: TDate;
                         const ANeedEmptyNumMark: Boolean = False): String;
+function SIZDocFullName(const ADocNames, ADocNums: TStrVector;
+                        const ADocDates: TDateVector;
+                        const ANeedEmptyNumMark: Boolean = False): TStrVector;
 
 implementation
 
@@ -392,6 +395,20 @@ begin
   if not SEmpty(S) then
     Result:= Result + ' № ' + S;
   Result:= Result + ' от ' + FormatDateTime('dd.mm.yyyy', ADocDate);
+end;
+
+function SIZDocFullName(const ADocNames, ADocNums: TStrVector;
+                        const ADocDates: TDateVector;
+                        const ANeedEmptyNumMark: Boolean = False): TStrVector;
+var
+  i: Integer;
+begin
+  Result:= nil;
+  if VIsNil(ADocNames) then Exit;
+
+  VDim(Result, Length(ADocNames));
+  for i:= 0 to High(ADocNames) do
+    Result[i]:= SIZDocFullName(ADocNames[i], ADocNums[i], ADocDates[i], ANeedEmptyNumMark);
 end;
 
 end.
