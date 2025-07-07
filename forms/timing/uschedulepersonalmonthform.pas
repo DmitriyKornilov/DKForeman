@@ -477,6 +477,7 @@ begin
 
   MStaffList:= TVSTCategoryCheckTable.Create(MStaffListVT);
   MStaffList.OnSelect:= @MStaffListSelect;
+  MStaffList.Span:= True;
   MStaffList.TreeLinesVisible:= False;
   MStaffList.StopSelectEventWhileCheckAll:= True;
   MStaffList.SetSingleFont(GridFont);
