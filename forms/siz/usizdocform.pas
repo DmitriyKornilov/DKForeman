@@ -10,7 +10,7 @@ uses
   //Project utils
   UVars, UConst, UTypes, UUtils, USIZUtils,
   //DK packages utils
-  DK_VSTTables, DK_Vector, DK_Matrix, DK_CtrlUtils, DK_DateUtils,
+  DK_VSTTables, DK_Vector, DK_Matrix, DK_CtrlUtils, DK_DateUtils, DK_Dialogs,
   //Forms
   USIZDocEditForm, USIZStoreEntryEditForm;
 
@@ -52,6 +52,7 @@ type
     procedure CloseButtonClick(Sender: TObject);
     procedure DocAddButtonClick(Sender: TObject);
     procedure DocEditButtonClick(Sender: TObject);
+    procedure DocEraseButtonClick(Sender: TObject);
     procedure DocVTDblClick(Sender: TObject);
     procedure EditingButtonClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -68,7 +69,7 @@ type
     SIZList: TVSTCategoryRadioTable;
 
     DocIDs, DocForms: TIntVector;
-    DocNames, DocNums: TStrVector;
+    DocNames, DocNums, DocFullNames: TStrVector;
     DocDates: TDateVector;
 
     CategoryNames: TStrMatrix;
@@ -167,17 +168,32 @@ end;
 
 procedure TSIZDocForm.SIZAddButtonClick(Sender: TObject);
 begin
-  SIZStoreEntryEditFormOpen(etAdd);
+  case DocType of
+    1: SIZStoreEntryEditFormOpen(etAdd);
+    2: ; //!!!!
+    3: ; //!!!!
+    4: ; //!!!!
+  end;
 end;
 
 procedure TSIZDocForm.SIZEditButtonClick(Sender: TObject);
 begin
-  SIZStoreEntryEditFormOpen(etEdit);
+  case DocType of
+    1: SIZStoreEntryEditFormOpen(etEdit);
+    2: ; //!!!!
+    3: ; //!!!!
+    4: ; //!!!!
+  end;
 end;
 
 procedure TSIZDocForm.SIZCopyButtonClick(Sender: TObject);
 begin
-  SIZStoreEntryEditFormOpen(etCustom);
+  case DocType of
+    1: SIZStoreEntryEditFormOpen(etCustom);
+    2: ; //!!!!
+    3: ; //!!!!
+    4: ; //!!!!
+  end;
 end;
 
 procedure TSIZDocForm.SIZCollapseAllButtonClick(Sender: TObject);
@@ -215,13 +231,18 @@ begin
   DocDelButton.Enabled:= DocList.IsSelected;
   DocEditButton.Enabled:= DocDelButton.Enabled;
   SIZAddButton.Enabled:= DocDelButton.Enabled;
+
+  SIZCaptionPanel.Caption:= '  Документ: ';
+  if DocList.IsSelected then
+    SIZCaptionPanel.Caption:= SIZCaptionPanel.Caption +
+                              DocFullNames[DocList.SelectedIndex];
+
   SIZListLoad;
 end;
 
 procedure TSIZDocForm.DocListLoad(const ASelectedID: Integer);
 var
   SelectedID: Integer;
-  V: TStrVector;
 begin
   SelectedID:= GetSelectedID(DocList, DocIDs, ASelectedID);
 
@@ -232,8 +253,8 @@ begin
   try
     DocList.ValuesClear;
     DocList.SetColumn('№ п/п', VIntToStr(VOrder(Length(DocIDs))));
-    V:= SIZDocFullName(DocNames, DocNums, DocDates);
-    DocList.SetColumn('Документ', V, taLeftJustify);
+    DocFullNames:= SIZDocFullName(DocNames, DocNums, DocDates);
+    DocList.SetColumn('Документ', DocFullNames, taLeftJustify);
     DocList.Draw;
     DocList.ReSelect(DocIDs, SelectedID, True);  //возвращаем выделение строки
   finally
@@ -393,6 +414,21 @@ end;
 procedure TSIZDocForm.DocEditButtonClick(Sender: TObject);
 begin
   DocEdit(etEdit);
+end;
+
+procedure TSIZDocForm.DocEraseButtonClick(Sender: TObject);
+var
+  NeedReload: Boolean;
+begin
+  if not Confirm('Удалить все пустые документы?') then Exit;
+  case DocType of
+    1: NeedReload:= DataBase.SIZEmptyDocStoreEntryDelete(YearSpinEdit.Value);
+    2: ; //!!!!
+    3: ; //!!!!
+    4: ; //!!!!
+  end;
+
+  if NeedReload then DocListLoad;
 end;
 
 procedure TSIZDocForm.DocVTDblClick(Sender: TObject);

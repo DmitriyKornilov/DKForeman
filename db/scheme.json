@@ -1599,7 +1599,7 @@
       "ExistingValues" : [
       ],
       "ReferenceTo" : {
-        "TableName" : "SIZSTORE",
+        "TableName" : "SIZSTORELOG",
         "FieldName" : "STOREID",
         "OnDelete" : 0,
         "OnUpdate" : 0
@@ -3309,9 +3309,11 @@
       },
       "ReferenceFrom" : {
         "TableNames" : [
-          "SIZSTOREWRITEOFF"
+          "SIZSTOREWRITEOFF",
+          "SIZCARDPERSONALLOGINFO"
         ],
         "FieldNames" : [
+          "STOREID",
           "STOREID"
         ]
       }

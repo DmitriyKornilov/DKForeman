@@ -639,6 +639,9 @@ type
                          const ADocDate: TDate;
                          const ADocType, ADocForm: Integer): Boolean;
 
+    {Удаление пустых документов прихода СИЗ на склад за год: True - ОК, False - ошибка}
+    function SIZEmptyDocStoreEntryDelete(const AYear: Integer): Boolean;
+
     (**************************************************************************
                                 СКЛАД СИЗ
     **************************************************************************)
@@ -5430,6 +5433,49 @@ begin
   except
     QRollback;
   end;
+end;
+
+function TDataBase.SIZEmptyDocStoreEntryDelete(const AYear: Integer): Boolean;
+var
+  DocIDs: TIntVector;
+begin
+  Result:= False;
+
+  //определяем ID пустых документов
+  DocIDs:= nil;
+  QSetQuery(FQuery);
+  QSetSQL(
+    'SELECT t1.DocID, t2.RowCount ' +
+    'FROM SIZDOC t1 ' +
+    'LEFT OUTER JOIN ( ' +
+      'SELECT DocID, COUNT(DocID) as RowCount ' +
+      'FROM SIZSTOREENTRY '  +
+      ') t2 ON (t1.DocID=t2.DocID) ' +
+    'WHERE (t1.DocType=1) AND (DocDate BETWEEN :BD AND :ED)'
+  );
+  QParamDT('BD', FirstDayInYear(AYear));
+  QParamDT('ED', LastDayInYear(AYear));
+  QOpen;
+  if not QIsEmpty then
+  begin
+    QFirst;
+    while not QEOF do
+    begin
+      if QFieldInt('RowCount')=0 then
+        VAppend(DocIDs, QFieldInt('DocID'));
+      QNext;
+    end;
+  end;
+  QClose;
+
+  if VIsNil(DocIDs) then
+  begin
+    Inform('Пустых документов нет!');
+    Exit;
+  end;
+
+  //удаляем пустые документы
+  Result:= Delete('SIZDOC', 'DocID', DocIDs);
 end;
 
 function TDataBase.SIZStoreEntryLoad(const ADocID: Integer;
