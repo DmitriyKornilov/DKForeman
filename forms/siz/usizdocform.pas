@@ -20,21 +20,14 @@ type
 
   TSIZDocForm = class(TForm)
     DividerBevel4: TDividerBevel;
-    DocCheckAllButton: TSpeedButton;
-    SIZCheckAllButton: TSpeedButton;
-    DocCollapseAllButton: TSpeedButton;
-    SIZCollapseAllButton: TSpeedButton;
-    DividerBevel2: TDividerBevel;
-    DividerBevel3: TDividerBevel;
     DocAddButton: TSpeedButton;
     DocDelButton: TSpeedButton;
     DocEditButton: TSpeedButton;
     DocEraseButton: TSpeedButton;
-    DocExpandAllButton: TSpeedButton;
+    SIZCollapseAllButton: TSpeedButton;
+    DividerBevel3: TDividerBevel;
     SIZExpandAllButton: TSpeedButton;
-    DocViewButtonPanel: TPanel;
     SIZViewButtonPanel: TPanel;
-    DocEditButtonPanel: TPanel;
     SIZEditButtonPanel: TPanel;
     SIZAddButton: TSpeedButton;
     SIZCopyButton: TSpeedButton;
@@ -54,8 +47,6 @@ type
     SIZPanel: TPanel;
     ToolPanel: TPanel;
     DocVT: TVirtualStringTree;
-    DocUncheckAllButton: TSpeedButton;
-    SIZUncheckAllButton: TSpeedButton;
     YearPanel: TPanel;
     YearSpinEdit: TSpinEdit;
     procedure CloseButtonClick(Sender: TObject);
@@ -67,10 +58,14 @@ type
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure SIZAddButtonClick(Sender: TObject);
+    procedure SIZCollapseAllButtonClick(Sender: TObject);
+    procedure SIZCopyButtonClick(Sender: TObject);
+    procedure SIZEditButtonClick(Sender: TObject);
+    procedure SIZExpandAllButtonClick(Sender: TObject);
     procedure YearSpinEditChange(Sender: TObject);
   private
     DocList: TVSTTable;
-    SIZList: TVSTCustomCategoryTable;
+    SIZList: TVSTCategoryRadioTable;
 
     DocIDs, DocForms: TIntVector;
     DocNames, DocNums: TStrVector;
@@ -86,6 +81,7 @@ type
     procedure DocListLoad(const ASelectedID: Integer = -1);
 
     procedure SIZListCreate;
+    procedure SIZListSelect;
     procedure SIZListLoad;
 
     procedure DocEdit(const AEditingType: TEditingType);
@@ -147,9 +143,8 @@ begin
   SetToolButtons([
     CloseButton,
     EditingButton,
-    DocExpandAllButton, DocCollapseAllButton, DocCheckAllButton, DocUncheckAllButton,
     DocAddButton, DocDelButton, DocEditButton, DocEraseButton,
-    SIZExpandAllButton, SIZCollapseAllButton, SIZCheckAllButton, SIZUncheckAllButton,
+    SIZExpandAllButton, SIZCollapseAllButton,
     SIZAddButton, SIZDelButton, SIZEditButton, SIZCopyButton
   ]);
 
@@ -157,9 +152,8 @@ begin
     ExportButton,
     CloseButton,
     EditingButton,
-    DocExpandAllButton, DocCollapseAllButton, DocCheckAllButton, DocUncheckAllButton,
     DocAddButton, DocDelButton, DocEditButton, DocEraseButton,
-    SIZExpandAllButton, SIZCollapseAllButton, SIZCheckAllButton, SIZUncheckAllButton,
+    SIZExpandAllButton, SIZCollapseAllButton,
     SIZAddButton, SIZDelButton, SIZEditButton, SIZCopyButton
   ]);
 
@@ -167,11 +161,33 @@ begin
     Caption:= MAIN_CAPTION + OTHER_DESCRIPTION[DocType+6];
 
   YearSpinEdit.Value:= YearOfDate(Date);
+
+
 end;
 
 procedure TSIZDocForm.SIZAddButtonClick(Sender: TObject);
 begin
   SIZStoreEntryEditFormOpen(etAdd);
+end;
+
+procedure TSIZDocForm.SIZEditButtonClick(Sender: TObject);
+begin
+  SIZStoreEntryEditFormOpen(etEdit);
+end;
+
+procedure TSIZDocForm.SIZCopyButtonClick(Sender: TObject);
+begin
+  SIZStoreEntryEditFormOpen(etCustom);
+end;
+
+procedure TSIZDocForm.SIZCollapseAllButtonClick(Sender: TObject);
+begin
+  SIZList.ExpandAll(False);
+end;
+
+procedure TSIZDocForm.SIZExpandAllButtonClick(Sender: TObject);
+begin
+  SIZList.ExpandAll(True);
 end;
 
 procedure TSIZDocForm.YearSpinEditChange(Sender: TObject);
@@ -198,7 +214,7 @@ procedure TSIZDocForm.DocListSelect;
 begin
   DocDelButton.Enabled:= DocList.IsSelected;
   DocEditButton.Enabled:= DocDelButton.Enabled;
-
+  SIZAddButton.Enabled:= DocDelButton.Enabled;
   SIZListLoad;
 end;
 
@@ -229,11 +245,14 @@ end;
 
 procedure TSIZDocForm.SIZListCreate;
 begin
-  SIZList:= TVSTCustomCategoryTable.Create(SIZVT);
+  SIZList:= TVSTCategoryRadioTable.Create(SIZVT);
+  SIZList.OnSelect:= @SIZListSelect;
   SIZList.TreeLinesVisible:= False;
+  SIZList.RadioVisible:= False;
+  SIZList.RadioEnable:= False;
   SIZList.SetSingleFont(GridFont);
   SIZList.HeaderFont.Style:= [fsBold];
-  //SIZList.CategoryFont.Style:= [fsItalic];
+  SIZList.CategoryFont.Style:= [fsBold];
   SIZList.AddColumn('Номенклатурный номер', 200);
   SIZList.AddColumn('Наименование', 300);
   SIZList.AddColumn('Единица измерения', 150);
@@ -241,6 +260,13 @@ begin
   SIZList.AddColumn('Размер/объём/вес', 130);
   SIZList.AddColumn('Примечание', 300);
   SIZList.Draw;
+end;
+
+procedure TSIZDocForm.SIZListSelect;
+begin
+  SIZDelButton.Enabled:= SIZList.IsSelected;
+  SIZEditButton.Enabled:= SIZDelButton.Enabled;
+  SIZCopyButton.Enabled:= SIZDelButton.Enabled;
 end;
 
 procedure TSIZDocForm.SIZListLoad;
@@ -314,19 +340,43 @@ end;
 procedure TSIZDocForm.SIZStoreEntryEditFormOpen(const AEditingType: TEditingType);
 var
   SIZStoreEntryEditForm: TSIZStoreEntryEditForm;
+  i, j: Integer;
 begin
   if not DocList.IsSelected then Exit;
+  if (AEditingType<>etAdd) and (not SIZList.IsSelected) then Exit;
 
   SIZStoreEntryEditForm:= TSIZStoreEntryEditForm.Create(nil);
   try
     SIZStoreEntryEditForm.DocID:= DocIDs[DocList.SelectedIndex];
-    SIZStoreEntryEditForm.EditingType:= AEditingType;
+
+    if AEditingType=etCustom then
+      SIZStoreEntryEditForm.EditingType:= etAdd
+    else
+      SIZStoreEntryEditForm.EditingType:= AEditingType;
+
+    if AEditingType<>etAdd then
+    begin
+      i:= SIZList.SelectedIndex1;
+      j:= SIZList.SelectedIndex2;
+      SIZStoreEntryEditForm.NomNumEdit.Text:= NomNums[i,j];
+      SIZStoreEntryEditForm.NoteEdit.Text:= Notes[i,j];
+      SIZStoreEntryEditForm.CountSpinEdit.Value:= SizCounts[i,j];
+      if AEditingType=etEdit then
+        SIZStoreEntryEditForm.EntryID:= EntryIDs[i,j];
+      SIZStoreEntryEditForm.NameID:= NameIDs[i,j];
+      SIZStoreEntryEditForm.SizeID:= SizeIDs[i,j];
+      SIZStoreEntryEditForm.HeightID:= HeightIDs[i,j];
+    end;
 
     if SIZStoreEntryEditForm.ShowModal=mrOK then
       SIZListLoad;
   finally
     FreeAndNil(SIZStoreEntryEditForm);
   end;
+
+  {EntryIDs: TInt64Matrix;
+    NomNums, SizNames, SizUnits, Notes: TStrMatrix;
+    SizCounts, SizTypes, NameIDs, SizeIDs, HeightIDs, SizeTypes: TIntMatrix;}
 end;
 
 procedure TSIZDocForm.DocAddButtonClick(Sender: TObject);
@@ -346,10 +396,9 @@ end;
 
 procedure TSIZDocForm.ViewUpdate;
 begin
-  DocEditButtonPanel.Visible:= EditingButton.Down;
+  DocToolPanel.Visible:= EditingButton.Down;
   SIZEditButtonPanel.Visible:= EditingButton.Down;
-
-
+  SIZList.RadioEnable:= EditingButton.Down;
 end;
 
 procedure TSIZDocForm.EditingButtonClick(Sender: TObject);

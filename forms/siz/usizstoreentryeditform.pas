@@ -35,8 +35,8 @@ type
     NoteEdit: TEdit;
     NomNumLabel: TLabel;
     NoteLabel: TLabel;
-    NumLabel: TLabel;
-    NumSpinEdit: TSpinEdit;
+    CountLabel: TLabel;
+    CountSpinEdit: TSpinEdit;
     SaveButton: TSpeedButton;
     SearchButton: TSpeedButton;
     HeightLabel: TLabel;
@@ -82,6 +82,9 @@ var
 begin
   EntryID:= 0;
   DocID:= 0;
+  NameID:= 0;
+  SizeID:= 0;
+  HeightID:= 0;
 
   TypeDropDown:= TVSTDropDown.Create(TypeBCButton);
   TypeDropDown.DropDownCount:= 20;
@@ -104,8 +107,28 @@ begin
 end;
 
 procedure TSIZStoreEntryEditForm.FormShow(Sender: TObject);
-//var
-//  IsSIZExists: Boolean;
+
+
+  procedure SIZNameAndSizeShow;
+  var
+    i, j, SizeType: Integer;
+  begin
+    if NameID=0 then Exit;
+    if not MIndexOf(NameIDs, NameID, i, j) then Exit;
+
+    TypeDropDown.ItemIndex:= i;
+    NameList.Select(j);
+    SizeType:= SizeTypes[i, j];
+
+    if SizeType=0 then Exit;
+    if SizeType>6 then
+      VolumeSpinEdit.Value:= SizeID
+    else
+      SizeDropDown.ItemIndex:= SizeID;
+    if SizeType=1 then
+      HeightDropDown.ItemIndex:= HeightID;
+  end;
+
 begin
   Images.ToButtons([SaveButton, CancelButton, SearchButton]);
   SetEventButtons([SaveButton, CancelButton]);
@@ -113,10 +136,7 @@ begin
   SetToolButtons([SearchButton]);
   FormKeepMinSize(Self, False);
 
-  //IsSIZExists:= DataBase.SIZAssortmentLoad(SIZTypes, Names, Units, NameIDs, SizeTypes);
-  //TypeDropDown.Items:= VPickFromKey(SIZTypes, SIZ_TYPE_KEYS, SIZ_TYPE_PICKS);
-  //if IsSIZExists then
-  //  TypeDropDown.ItemIndex:= 0;
+  SIZNameAndSizeShow;
 
   NomNumEdit.SetFocus;
 end;
@@ -183,8 +203,6 @@ begin
     end;
     SizeDropDown.ItemIndex:= 0;
   end;
-
-
 end;
 
 procedure TSIZStoreEntryEditForm.CancelButtonClick(Sender: TObject);
@@ -232,7 +250,7 @@ begin
   NameID:= NameIDs[TypeDropDown.ItemIndex, NameList.SelectedIndex];
   SizeAndHeight;
 
-  if DataBase.SIZStoreEntryExists(EntryID, NomNum, NameID, SizeID, HeightID, DocID) then
+  if DataBase.SIZStoreEntryExists(DocID, EntryID, NameID, SizeID, HeightID, NomNum) then
   begin
     Inform('СИЗ уже есть в этом документе!');
     Exit;
@@ -240,8 +258,8 @@ begin
 
   case EditingType of
     etAdd:
-      IsOK:= DataBase.SIZStoreEntryWrite(EntryID, NomNum, STrim(NoteEdit.Text),
-                         NameID, SizeID, HeightID, NumSpinEdit.Value, DocID);
+      IsOK:= DataBase.SIZStoreEntryWrite(DocID, EntryID, NomNum, STrim(NoteEdit.Text),
+                         NameID, SizeID, HeightID, CountSpinEdit.Value);
     etEdit: ;
       //IsOK:= DataBase.SIZNormSubItemUpdate(ItemID, SubItem, OldSubItem);
   end;
@@ -255,7 +273,7 @@ var
   ID, i, j: Integer;
 begin
   if not Search('Фильтр по наименованию СИЗ:',
-                'SIZNAME', 'ID', 'SizName', ID) then Exit;
+                'SIZNAME', 'NameID', 'SizName', ID) then Exit;
   if not MIndexOf(NameIDs, ID, i, j) then Exit;
   TypeDropDown.ItemIndex:= i;
   NameList.ItemIndex:= j;
