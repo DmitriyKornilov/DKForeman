@@ -289,18 +289,23 @@ begin
     CategoryNames[i, 3]:= IntToStr(VSum(SizCounts[i]));
   end;
 
-  SIZList.SetCategories(CategoryNames);
-  SIZList.SetColumn('Номенклатурный номер', NomNums, taLeftJustify);
-  SIZList.SetColumn('Наименование', SizNames, taLeftJustify);
-  SIZList.SetColumn('Единица измерения', SizUnits);
-  SIZList.SetColumn('Количество', MIntToStr(SizCounts));
-  M:= SIZFullSize(SizeTypes, SizeIDs, HeightIDs);
-  SIZList.SetColumn('Размер/объём/вес', M);
-  SIZList.SetColumn('Примечание', Notes, taLeftJustify);
-  SIZList.Draw;
-  SIZList.ExpandAll(True);
-  //SIZList.CheckAll(True);
-  SIZList.ShowFirst;
+  SIZList.Visible:= False;
+  try
+    SIZList.ValuesClear;
+    SIZList.SetCategories(CategoryNames);
+    SIZList.SetColumn('Номенклатурный номер', NomNums, taLeftJustify);
+    SIZList.SetColumn('Наименование', SizNames, taLeftJustify);
+    SIZList.SetColumn('Единица измерения', SizUnits);
+    SIZList.SetColumn('Количество', MIntToStr(SizCounts));
+    M:= SIZFullSize(SizeTypes, SizeIDs, HeightIDs);
+    SIZList.SetColumn('Размер/объём/вес', M);
+    SIZList.SetColumn('Примечание', Notes, taLeftJustify);
+    SIZList.Draw;
+    SIZList.ExpandAll(True);
+    SIZList.ShowFirst;
+  finally
+    SIZList.Visible:= True;
+  end;
 end;
 
 procedure TSIZDocForm.CloseButtonClick(Sender: TObject);
@@ -360,7 +365,8 @@ begin
       j:= SIZList.SelectedIndex2;
       SIZStoreEntryEditForm.NomNumEdit.Text:= NomNums[i,j];
       SIZStoreEntryEditForm.NoteEdit.Text:= Notes[i,j];
-      SIZStoreEntryEditForm.CountSpinEdit.Value:= SizCounts[i,j];
+      SIZStoreEntryEditForm.SizCount:= SizCounts[i,j];
+      //SIZStoreEntryEditForm.CountSpinEdit.Value:= SizCounts[i,j];
       if AEditingType=etEdit then
         SIZStoreEntryEditForm.EntryID:= EntryIDs[i,j];
       SIZStoreEntryEditForm.NameID:= NameIDs[i,j];

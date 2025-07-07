@@ -11,7 +11,7 @@ uses
   USIZNormTypes, USIZSizes, USIZUtils,
   //DK packages utils
   DK_SQLite3, DK_SQLUtils, DK_Vector, DK_Matrix, DK_StrUtils, DK_Const,
-  DK_DateUtils, DK_VSTDropDown;
+  DK_DateUtils, DK_VSTDropDown, DK_Dialogs;
 
 type
 
@@ -663,7 +663,9 @@ type
     {Запись СИЗ в лог склада: True - ОК, False - ошибка}
     procedure SIZStoreLogWrite(const AEntryID: Int64; const ACount: Integer);
     {Определение свободных СИЗ в логах склада: : True - ОК, False - ошибка}
-    function SIZStoreLogFreeIDs(const AEntryID: Int64; const ACount: Integer): Boolean;
+    function SIZStoreLogFreeIDs(const AEntryID: Int64;
+                                const ACount: Integer;
+                                out AStoreIDs: TInt64Vector): Boolean;
 
     {Запись СИЗ в документ прихода на склад: True - ОК, False - ошибка}
     function SIZStoreEntryWrite(const ADocID: Integer;
@@ -672,7 +674,7 @@ type
                          const ANameID, ASizeID, AHeightID, ACount: Integer): Boolean;
     {Обновление СИЗ в документе прихода на склад: True - ОК, False - ошибка}
     function SIZStoreEntryUpdate(const ADocID: Integer;
-                         out AEntryID: Int64;
+                         const AEntryID: Int64;
                          const ANomNum, ANote: String;
                          const ANameID, ASizeID, AHeightID, ACount, AOldCount: Integer): Boolean;
     (**************************************************************************
@@ -5586,78 +5588,80 @@ begin
     QExec;
 end;
 
-function TDataBase.SIZStoreLogFreeIDs(const AEntryID: Int64; const ACount: Integer): Boolean;
+function TDataBase.SIZStoreLogFreeIDs(const AEntryID: Int64;
+                                      const ACount: Integer;
+                                      out AStoreIDs: TInt64Vector): Boolean;
 var
   Delta: Integer;
 
-  function GetNotBusyStoreIDs(var N: Integer): Boolean;
+  function FreeStoreIDs(const ANeedCount: Integer): Boolean;
   begin
     Result:= False;
-    SetQuery(DBUtilsQuery);
-    SetSQL(
-      'SELECT StoreID FROM SIZSTORE ' +
+    QSetQuery(FQuery);
+    QSetSQL(
+      'SELECT StoreID ' +
+      'FROM SIZSTORELOG ' +
       'WHERE (EntryID=:EntryID) AND (IsBusy=0) ' +
       'ORDER BY StoreID DESC');
-    ParamInt64('EntryID', AEntryID);
-    OpenSQL;
-    if not IsEmptySQL then
+    QParamInt64('EntryID', AEntryID);
+    QOpen;
+    if not QIsEmpty then
     begin
-      FirstSQL;
-      while not EOFSQL do
+      QFirst;
+      while not QEOF do
       begin
-        VAppend(AStoreIDs, FieldInt64('StoreID'));
-        if Length(AStoreIDs)=N then  //достаточно строк для удаления
+        VAppend(AStoreIDs, QFieldInt64('StoreID'));
+        if Length(AStoreIDs)=ANeedCount then  //достаточно строк для удаления
         begin
           Result:= True;
           break;
         end;
-        NextSQL;
+        QNext;
       end;
     end;
-    CloseSQL;
+    QClose;
   end;
 
-  procedure GetBusyStoreIDs(var N: Integer);
+  procedure BusyStoreIDs(const ANeedCount: Integer);
   begin
-    SetQuery(DBUtilsQuery);
-    SetSQL(
-      'SELECT StoreID FROM SIZSTORE ' +
+    QSetQuery(FQuery);
+    QSetSQL(
+      'SELECT StoreID ' +
+      'FROM SIZSTORE ' +
       'WHERE (EntryID=:EntryID) AND (IsBusy=1) ' +
       'ORDER BY StoreID DESC ' +
       'LIMIT :Delta');
-    ParamInt64('EntryID', AEntryID);
-    ParamInt('Delta', N);
-    OpenSQL;
-    if not IsEmptySQL then
+    QParamInt64('EntryID', AEntryID);
+    QParamInt('Delta', ANeedCount);
+    QOpen;
+    if not QIsEmpty then
     begin
-      FirstSQL;
-      while not EOFSQL do
+      QFirst;
+      while not QEOF do
       begin
-        VAppend(AStoreIDs, FieldInt64('StoreID'));
-        NextSQL;
+        VAppend(AStoreIDs, QFieldInt64('StoreID'));
+        QNext;
       end;
     end;
-    CloseSQL;
+    QClose;
   end;
 
 begin
   Result:= False;
   AStoreIDs:= nil;
+
   //определяем StoreID невыданных СИЗ
   Delta:= ACount;  //сколько сиз удалить
-  Result:= GetNotBusyStoreIDs(Delta);
+  Result:= FreeStoreIDs(Delta);
   //свободных СИЗ достаточно
   if Result then Exit;
   //запрос на удаление занятых СИЗ
-  Result:= Confirm('Уменьшение количества приведет к удалению информации ' +
-                         'о выданных СИЗ работникам! Все равно сохранить?');
-  //подтверждено сохранение - добираем StoreID в занятых сиз
-  if Result then
-  begin
-    Delta:= Delta - Length(AStoreIDs); //столько нужно добрать
-    GetBusyStoreIDs(Delta);
-    Result:= Length(AStoreIDs)=ACount;
-  end;
+  if not Confirm('Уменьшение количества приведет к удалению информации ' +
+                 'о выданных сотрудникам СИЗ! Все равно сохранить?') then Exit;
+  //подтверждено сохранение - добираем StoreID в занятых СИЗ
+  Delta:= Delta - Length(AStoreIDs); //столько нужно добрать
+  BusyStoreIDs(Delta);
+  Result:= Length(AStoreIDs)=ACount;
 end;
 
 function TDataBase.SIZStoreEntryWrite(const ADocID: Integer;
@@ -5697,7 +5701,7 @@ begin
 end;
 
 function TDataBase.SIZStoreEntryUpdate(const ADocID: Integer;
-         out AEntryID: Int64;
+         const AEntryID: Int64;
          const ANomNum, ANote: String;
          const ANameID, ASizeID, AHeightID, ACount, AOldCount: Integer): Boolean;
 var
@@ -5723,7 +5727,7 @@ var
 
 begin
   Result:= False;
-  //procedure SIZStoreLogFreeIDs(const AEntryID: Int64; const ACount: Integer);
+
   QSetQuery(FQuery);
   try
     if ACount<>AOldCount then  //изменилось количество СИЗ

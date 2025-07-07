@@ -11,7 +11,7 @@ uses
   DK_CtrlUtils, DK_Const, DK_Dialogs, DK_VSTTables, DK_VSTTableTools,
   DK_Vector, DK_Matrix, DK_VSTDropDown, DK_StrUtils,
   //Project utils
-  UVars, UTypes, UConst, UUtils, USIZUtils, USIZSizes,
+  UVars, UTypes, UConst, USIZSizes,
   //Forms
   USearchForm;
 
@@ -62,7 +62,7 @@ type
 
     procedure NameListSelect;
   public
-    DocID, NameID, SizeID, HeightID: Integer;
+    DocID, NameID, SizeID, HeightID, SizCount: Integer;
     EntryID: Int64;
     EditingType: TEditingType;
   end;
@@ -85,6 +85,7 @@ begin
   NameID:= 0;
   SizeID:= 0;
   HeightID:= 0;
+  SizCount:= 1;
 
   TypeDropDown:= TVSTDropDown.Create(TypeBCButton);
   TypeDropDown.DropDownCount:= 20;
@@ -118,8 +119,9 @@ procedure TSIZStoreEntryEditForm.FormShow(Sender: TObject);
 
     TypeDropDown.ItemIndex:= i;
     NameList.Select(j);
-    SizeType:= SizeTypes[i, j];
+    CountSpinEdit.Value:= SizCount;
 
+    SizeType:= SizeTypes[i, j];
     if SizeType=0 then Exit;
     if SizeType>6 then
       VolumeSpinEdit.Value:= SizeID
@@ -260,8 +262,9 @@ begin
     etAdd:
       IsOK:= DataBase.SIZStoreEntryWrite(DocID, EntryID, NomNum, STrim(NoteEdit.Text),
                          NameID, SizeID, HeightID, CountSpinEdit.Value);
-    etEdit: ;
-      //IsOK:= DataBase.SIZNormSubItemUpdate(ItemID, SubItem, OldSubItem);
+    etEdit:
+      IsOK:= DataBase.SIZStoreEntryUpdate(DocID, EntryID, NomNum, STrim(NoteEdit.Text),
+                         NameID, SizeID, HeightID, CountSpinEdit.Value, SizCount);
   end;
 
   if not IsOK then Exit;
