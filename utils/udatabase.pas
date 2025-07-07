@@ -639,18 +639,29 @@ type
                          const ADocDate: TDate;
                          const ADocType, ADocForm: Integer): Boolean;
 
+    (**************************************************************************
+                                СКЛАД СИЗ
+    **************************************************************************)
     {Загрузка документа поступления СИЗ на склад: True - ОК, False - пусто}
-    function SIZDocEntryLoad(const ADocID: Integer;
+    function SIZStoreEntryLoad(const ADocID: Integer;
                          out AEntryIDs: TInt64Vector;
                          out ANomNums, ASizNames, ASizUnits, ANotes: TStrVector;
-                         out ASizCounts, ANameIDs, ASizeIDs,
+                         out ASizCounts, ASizTypes, ANameIDs, ASizeIDs,
                              AHeightIDs, ASizeTypes: TIntVector): Boolean;
-    function SIZDocEntryLoad(const ADocID: Integer;
+    function SIZStoreEntryLoad(const ADocID: Integer;
                          out AEntryIDs: TInt64Matrix;
                          out ANomNums, ASizNames, ASizUnits, ANotes: TStrMatrix;
-                         out ASizCounts, ANameIDs, ASizeIDs,
+                         out ASizCounts, ASizTypes, ANameIDs, ASizeIDs,
                              AHeightIDs, ASizeTypes: TIntMatrix): Boolean;
+    {Проверка наличия в документе прихода с ADocID записи, с другим AEntryID и
+     указанными параметрами СИЗ: True - есть, False - нет  }
+    function SIZStoreEntryExists(const AEntryID: Int64;
+                                 const ANomNum: String;
+                                 const ANameID, ASizeID, AHeightID, ADocID: Integer): Boolean;
 
+    function SIZStoreEntryWrite(out AEntryID: Int64;
+                         const ANomNum, ANote: String;
+                         const ANameID, ASizeID, AHeightID, ACount, ADocID: Integer): Boolean;
     (**************************************************************************
                                 ЛИЧНЫЕ КАРТОЧКИ СИЗ
     **************************************************************************)
@@ -5406,10 +5417,11 @@ begin
   end;
 end;
 
-function TDataBase.SIZDocEntryLoad(const ADocID: Integer;
+function TDataBase.SIZStoreEntryLoad(const ADocID: Integer;
                          out AEntryIDs: TInt64Vector;
                          out ANomNums, ASizNames, ASizUnits, ANotes: TStrVector;
-                         out ASizCounts, ANameIDs, ASizeIDs, AHeightIDs, ASizeTypes: TIntVector): Boolean;
+                         out ASizCounts, ASizTypes, ANameIDs, ASizeIDs,
+                             AHeightIDs, ASizeTypes: TIntVector): Boolean;
 begin
   Result:= False;
 
@@ -5419,6 +5431,7 @@ begin
   ASizUnits:= nil;
   ANotes:= nil;
   ASizCounts:= nil;
+  ASizTypes:= nil;
   ANameIDs:= nil;
   ASizeIDs:= nil;
   AHeightIDs:= nil;
@@ -5428,7 +5441,8 @@ begin
   QSetSQL(
     'SELECT t1.EntryID, t1.NomNum, t1.NameID, t1.SizeID, t1.HeightID, ' +
            't1.EntryCount, t1.EntryNote, ' +
-           't2.SizName, t2.SizeType, t3.UnitStringCode AS SizUnit ' +
+           't2.SizName, t2.SizType, t2.SizeType, ' +
+           't3.UnitStringCode AS SizUnit ' +
     'FROM SIZSTOREENTRY t1 ' +
     'INNER JOIN SIZNAME t2 ON (t1.NameID=t2.NameID) ' +
     'INNER JOIN SIZUNIT t3 ON (t2.UnitID=t3.UnitID) ' +
@@ -5448,9 +5462,8 @@ begin
       VAppend(ASizUnits, QFieldStr('SizUnit'));
       VAppend(ANotes, QFieldStr('EntryNote'));
 
-      //VAppend(ASizSizes, GetSizFullSize(QFieldInt('SizeType'), QFieldInt('SizeID'), QFieldInt('HeightID')));
-
       VAppend(ASizCounts, QFieldInt('EntryCount'));
+      VAppend(ASizTypes, QFieldInt('SizeType'));
       VAppend(ANameIDs, QFieldInt('NameID'));
       VAppend(ASizeIDs, QFieldInt('SizeID'));
       VAppend(AHeightIDs, QFieldInt('HeightID'));
@@ -5463,15 +5476,15 @@ begin
   QClose;
 end;
 
-function TDataBase.SIZDocEntryLoad(const ADocID: Integer;
+function TDataBase.SIZStoreEntryLoad(const ADocID: Integer;
                          out AEntryIDs: TInt64Matrix;
                          out ANomNums, ASizNames, ASizUnits, ANotes: TStrMatrix;
-                         out ASizCounts, ANameIDs, ASizeIDs,
+                         out ASizCounts, ASizTypes, ANameIDs, ASizeIDs,
                              AHeightIDs, ASizeTypes: TIntMatrix): Boolean;
 var
   EntryIDs: TInt64Vector;
   NomNums, SizNames, SizUnits, Notes: TStrVector;
-  SizCounts, NameIDs, SizeIDs, HeightIDs, SizeTypes: TIntVector;
+  SizNums, SizTypes, NameIDs, SizeIDs, HeightIDs, SizeTypes: TIntVector;
   i, N1, N2, NameID: Integer;
   NomNum: String;
 
@@ -5482,7 +5495,7 @@ var
     MAppend(ASizNames, VCut(SizNames, AInd1, AInd2));
     MAppend(ASizUnits, VCut(SizUnits, AInd1, AInd2));
     MAppend(ANotes, VCut(Notes, AInd1, AInd2));
-    MAppend(ASizCounts, VCut(SizCounts, AInd1, AInd2));
+    MAppend(ASizCounts, VCut(SizNums, AInd1, AInd2));
     MAppend(ANameIDs, VCut(NameIDs, AInd1, AInd2));
     MAppend(ASizeIDs, VCut(SizeIDs, AInd1, AInd2));
     MAppend(AHeightIDs, VCut(HeightIDs, AInd1, AInd2));
@@ -5496,13 +5509,14 @@ begin
   ASizUnits:= nil;
   ANotes:= nil;
   ASizCounts:= nil;
+  ASizTypes:= nil;
   ANameIDs:= nil;
   ASizeIDs:= nil;
   AHeightIDs:= nil;
   ASizeTypes:= nil;
 
-  Result:= SIZDocEntryLoad(ADocID, EntryIDs, NomNums, SizNames, SizUnits, Notes,
-                           SizCounts, NameIDs, SizeIDs, HeightIDs, SizeTypes);
+  Result:= SIZStoreEntryLoad(ADocID, EntryIDs, NomNums, SizNames, SizUnits, Notes,
+                           SizNums, SizTypes, NameIDs, SizeIDs, HeightIDs, SizeTypes);
   if not Result then Exit;
 
   NameID:= NameIDs[0];
@@ -5521,6 +5535,75 @@ begin
   end;
   N2:= High(NomNums);
   AddToMatrix(N1, N2);
+end;
+
+function TDataBase.SIZStoreEntryExists(const AEntryID: Int64;
+                   const ANomNum: String;
+                   const ANameID, ASizeID, AHeightID, ADocID: Integer): Boolean;
+begin
+  QSetQuery(FQuery);
+  QSetSQL(
+    'SELECT EntryID FROM SIZSTOREENTRY ' +
+    'WHERE (EntryID <> :EntryID) AND (NomNum = :NomNum) AND ' +
+          '(NameID = :NameID) AND (SizeID = :SizeID)  AND ' +
+          '(HeightID = :HeightID) AND (DocID = :DocID)'
+  );
+  QParamInt64('EntryID', AEntryID);
+  QParamStr('NomNum', ANomNum);
+  QParamInt('NameID', ANameID);
+  QParamInt('SizeID', ASizeID);
+  QParamInt('HeightID', AHeightID);
+  QParamInt('DocID', ADocID);
+  QOpen;
+  Result:= not QIsEmpty;
+  QClose;
+end;
+
+function TDataBase.SIZStoreEntryWrite(out AEntryID: Int64;
+           const ANomNum, ANote: String;
+           const ANameID, ASizeID, AHeightID, ACount, ADocID: Integer): Boolean;
+
+  procedure StoreEntryWrite;
+  begin
+    QSetSQL(
+      sqlINSERT('SIZSTOREENTRY', ['NomNum', 'NameID', 'SizeID', 'HeightID',
+                                  'EntryCount', 'DocID', 'EntryNote'])
+    );
+    QParamStr('NomNum', ANomNum);
+    QParamInt('NameID', ANameID);
+    QParamInt('SizeID', ASizeID);
+    QParamInt('HeightID', AHeightID);
+    QParamInt('EntryCount', ACount);
+    QParamInt('DocID', ADocID);
+    QParamStr('EntryNote', ANote);
+    QExec;
+  end;
+
+  procedure StoreLogWrite;
+  var
+    i: Integer;
+  begin
+    QSetSQL(
+      sqlINSERT('SIZSTORELOG', ['EntryID'])
+    );
+    QParamInt64('EntryID', AEntryID);
+    for i:= 1 to ACount do
+      QExec;
+  end;
+
+begin
+  Result:= False;
+  QSetQuery(FQuery);
+  try
+    StoreEntryWrite;
+    //определяем ID
+    AEntryID:= LastWritedInt64ID('SIZSTOREENTRY');
+    StoreLogWrite;
+    QCommit;
+    Result:= True;
+  except
+    QRollback;
+  end;
 end;
 
 function TDataBase.SIZStaffListForPersonalCardsLoad(const AFilterValue: String;

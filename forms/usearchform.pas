@@ -27,6 +27,7 @@ type
     procedure CancelButtonClick(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure ListVTDblClick(Sender: TObject);
     procedure SaveButtonClick(Sender: TObject);
   private
     List: TVSTStringList;
@@ -38,6 +39,7 @@ type
 
     procedure ListFilter(const AFilterString: String);
     procedure ListLoad;
+    procedure Choose;
   public
     FilterCaption, TableName, IDField, NameField: String;
     FoundID: Integer
@@ -109,6 +111,12 @@ begin
   List.Update(ListNames);
 end;
 
+procedure TSearchForm.Choose;
+begin
+  FoundID:= ListIDs[List.SelectedIndex];
+  ModalResult:= mrOK;
+end;
+
 procedure TSearchForm.SaveButtonClick(Sender: TObject);
 begin
   if not List.IsSelected then
@@ -116,10 +124,13 @@ begin
     Inform('Ничего не выбрано!');
     Exit;
   end;
+  Choose;
+end;
 
-  FoundID:= ListIDs[List.SelectedIndex];
-
-  ModalResult:= mrOK;
+procedure TSearchForm.ListVTDblClick(Sender: TObject);
+begin
+  if not List.IsSelected then Exit;
+  Choose;
 end;
 
 procedure TSearchForm.CancelButtonClick(Sender: TObject);

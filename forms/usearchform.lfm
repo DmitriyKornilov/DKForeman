@@ -9,7 +9,6 @@ object SearchForm: TSearchForm
   ClientWidth = 600
   DesignTimePPI = 120
   Position = poScreenCenter
-  LCLVersion = '4.0.0.4'
   OnDestroy = FormDestroy
   OnShow = FormShow
   object ButtonPanel: TPanel
@@ -108,8 +107,8 @@ object SearchForm: TSearchForm
     BorderSpacing.Bottom = 12
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 386
-    ClientWidth = 584
+    ClientHeight = 382
+    ClientWidth = 580
     TabOrder = 2
     object ListVT: TVirtualStringTree
       Left = 0
@@ -125,6 +124,7 @@ object SearchForm: TSearchForm
       Header.Columns = <>
       Header.MainColumn = -1
       TabOrder = 0
+      OnDblClick = ListVTDblClick
     end
   end
 end

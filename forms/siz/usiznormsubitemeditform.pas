@@ -158,6 +158,8 @@ begin
     AddButton, DelButton, EditButton, UpButton, DownButton
   ]);
 
+  FormKeepMinSize(Self, False);
+
   DataBase.KeyPickList('SIZREASON', 'ReasonID', 'ReasonName',
                        ReasonIDs, ReasonNames, False {with zero ID}, 'ReasonID');
   ReasonNames[0]:= 'НЕТ';

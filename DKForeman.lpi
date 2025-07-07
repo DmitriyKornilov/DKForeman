@@ -508,6 +508,13 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="USIZDocEditForm"/>
       </Unit>
+      <Unit>
+        <Filename Value="forms\siz\usizstoreentryeditform.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="SIZStoreEntryEditForm"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="USIZStoreEntryEditForm"/>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

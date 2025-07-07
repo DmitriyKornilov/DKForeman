@@ -12,7 +12,7 @@ uses
   //DK packages utils
   DK_VSTTables, DK_Vector, DK_Matrix, DK_CtrlUtils, DK_DateUtils,
   //Forms
-  USIZDocEditForm;
+  USIZDocEditForm, USIZStoreEntryEditForm;
 
 type
 
@@ -66,6 +66,7 @@ type
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure SIZAddButtonClick(Sender: TObject);
     procedure YearSpinEditChange(Sender: TObject);
   private
     DocList: TVSTTable;
@@ -75,10 +76,10 @@ type
     DocNames, DocNums: TStrVector;
     DocDates: TDateVector;
 
-    CategoryNames: TStrVector;
+    CategoryNames: TStrMatrix;
     EntryIDs: TInt64Matrix;
     NomNums, SizNames, SizUnits, Notes: TStrMatrix;
-    SizCounts, NameIDs, SizeIDs, HeightIDs, SizeTypes: TIntMatrix;
+    SizCounts, SizTypes, NameIDs, SizeIDs, HeightIDs, SizeTypes: TIntMatrix;
 
     procedure DocListCreate;
     procedure DocListSelect;
@@ -88,6 +89,8 @@ type
     procedure SIZListLoad;
 
     procedure DocEdit(const AEditingType: TEditingType);
+
+    procedure SIZStoreEntryEditFormOpen(const AEditingType: TEditingType);
 
     procedure ViewUpdate;
   public
@@ -166,6 +169,11 @@ begin
   YearSpinEdit.Value:= YearOfDate(Date);
 end;
 
+procedure TSIZDocForm.SIZAddButtonClick(Sender: TObject);
+begin
+  SIZStoreEntryEditFormOpen(etAdd);
+end;
+
 procedure TSIZDocForm.YearSpinEditChange(Sender: TObject);
 begin
   DocListLoad;
@@ -225,6 +233,7 @@ begin
   SIZList.TreeLinesVisible:= False;
   SIZList.SetSingleFont(GridFont);
   SIZList.HeaderFont.Style:= [fsBold];
+  //SIZList.CategoryFont.Style:= [fsItalic];
   SIZList.AddColumn('Номенклатурный номер', 200);
   SIZList.AddColumn('Наименование', 300);
   SIZList.AddColumn('Единица измерения', 150);
@@ -241,20 +250,21 @@ var
 begin
   if not DocList.IsSelected then Exit;
 
-  DataBase.SIZDocEntryLoad(DocIDs[DocList.SelectedIndex],
+  DataBase.SIZStoreEntryLoad(DocIDs[DocList.SelectedIndex],
                          EntryIDs, NomNums, SizNames, SizUnits, Notes,
-                         SizCounts, NameIDs, SizeIDs, HeightIDs, SizeTypes);
+                         SizCounts, SizTypes, NameIDs, SizeIDs, HeightIDs, SizeTypes);
 
-  VDim(CategoryNames, Length(EntryIDs));
+  MDim(CategoryNames, Length(EntryIDs), 6);
   for i:= 0 to High(EntryIDs) do
   begin
-    CategoryNames[i]:= NomNums[i, 0] + ' - ' + SizNames[i, 0] +
-                    ' (' + SizUnits[i, 0] + ') - ' +
-                    IntToStr(VSum(SizCounts[i]));
+    CategoryNames[i, 0]:= NomNums[i, 0];
+    CategoryNames[i, 1]:= SizNames[i, 0];
+    CategoryNames[i, 2]:= SizUnits[i, 0];
+    CategoryNames[i, 3]:= IntToStr(VSum(SizCounts[i]));
   end;
 
   SIZList.SetCategories(CategoryNames);
-  SIZList.SetColumn('Номенклатурный номер', NomNums);
+  SIZList.SetColumn('Номенклатурный номер', NomNums, taLeftJustify);
   SIZList.SetColumn('Наименование', SizNames, taLeftJustify);
   SIZList.SetColumn('Единица измерения', SizUnits);
   SIZList.SetColumn('Количество', MIntToStr(SizCounts));
@@ -299,6 +309,24 @@ begin
   if not SIZDocEditFormOpen(AEditingType, DocType, DocID, DocName, DocNum,
                             DocDate, DocForm) then Exit;
   DocListLoad(DocID);
+end;
+
+procedure TSIZDocForm.SIZStoreEntryEditFormOpen(const AEditingType: TEditingType);
+var
+  SIZStoreEntryEditForm: TSIZStoreEntryEditForm;
+begin
+  if not DocList.IsSelected then Exit;
+
+  SIZStoreEntryEditForm:= TSIZStoreEntryEditForm.Create(nil);
+  try
+    SIZStoreEntryEditForm.DocID:= DocIDs[DocList.SelectedIndex];
+    SIZStoreEntryEditForm.EditingType:= AEditingType;
+
+    if SIZStoreEntryEditForm.ShowModal=mrOK then
+      SIZListLoad;
+  finally
+    FreeAndNil(SIZStoreEntryEditForm);
+  end;
 end;
 
 procedure TSIZDocForm.DocAddButtonClick(Sender: TObject);

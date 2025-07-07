@@ -491,6 +491,7 @@ object SIZDocForm: TSIZDocForm
           ImageIndex = 4
           ShowHint = True
           ParentShowHint = False
+          OnClick = SIZAddButtonClick
         end
         object SIZDelButton: TSpeedButton
           Cursor = crHandPoint
