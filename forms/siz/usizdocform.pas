@@ -81,9 +81,13 @@ type
     procedure DocListSelect;
     procedure DocListLoad(const ASelectedID: Integer = -1);
 
+    procedure SIZListStoreCreate;
     procedure SIZListCreate;
-    procedure SIZListSelect;
+
+    procedure SIZListStoreLoad;
     procedure SIZListLoad;
+
+    procedure SIZListSelect;
 
     procedure DocEdit(const AEditingType: TEditingType);
 
@@ -122,8 +126,6 @@ procedure TSIZDocForm.FormCreate(Sender: TObject);
 begin
   Caption:= MAIN_CAPTION;
   DocType:= 0;
-
-  SIZListCreate;
   DocListCreate;
 end;
 
@@ -158,12 +160,12 @@ begin
     SIZAddButton, SIZDelButton, SIZEditButton, SIZCopyButton
   ]);
 
-  if DocType>0 then
-    Caption:= MAIN_CAPTION + OTHER_DESCRIPTION[DocType+6];
+
+  Caption:= MAIN_CAPTION + OTHER_DESCRIPTION[DocType+6];
+
+  SIZListCreate;
 
   YearSpinEdit.Value:= YearOfDate(Date);
-
-
 end;
 
 procedure TSIZDocForm.SIZAddButtonClick(Sender: TObject);
@@ -264,7 +266,7 @@ begin
   ExportButton.Enabled:= not VIsNil(DocIDs);
 end;
 
-procedure TSIZDocForm.SIZListCreate;
+procedure TSIZDocForm.SIZListStoreCreate;
 begin
   SIZList:= TVSTCategoryRadioTable.Create(SIZVT);
   SIZList.OnSelect:= @SIZListSelect;
@@ -283,23 +285,25 @@ begin
   SIZList.Draw;
 end;
 
-procedure TSIZDocForm.SIZListSelect;
+procedure TSIZDocForm.SIZListCreate;
 begin
-  SIZDelButton.Enabled:= SIZList.IsSelected;
-  SIZEditButton.Enabled:= SIZDelButton.Enabled;
-  SIZCopyButton.Enabled:= SIZDelButton.Enabled;
+  case DocType of
+    1, 3: SIZListStoreCreate;
+    2, 4: ; //!!!!
+  end;
 end;
 
-procedure TSIZDocForm.SIZListLoad;
+procedure TSIZDocForm.SIZListStoreLoad;
 var
   i: Integer;
   M: TStrMatrix;
 begin
-  if not DocList.IsSelected then Exit;
-
-  DataBase.SIZStoreEntryLoad(DocIDs[DocList.SelectedIndex],
+  if DocType=1 then
+    DataBase.SIZStoreEntryLoad(DocIDs[DocList.SelectedIndex],
                          EntryIDs, NomNums, SizNames, SizUnits, Notes,
-                         SizCounts, SizTypes, NameIDs, SizeIDs, HeightIDs, SizeTypes);
+                         SizCounts, SizTypes, NameIDs, SizeIDs, HeightIDs, SizeTypes)
+  else
+    ;//
 
   MDim(CategoryNames, Length(EntryIDs), 6);
   for i:= 0 to High(EntryIDs) do
@@ -327,6 +331,22 @@ begin
   finally
     SIZList.Visible:= True;
   end;
+end;
+
+procedure TSIZDocForm.SIZListLoad;
+begin
+  if not DocList.IsSelected then Exit;
+  case DocType of
+    1, 3: SIZListStoreLoad;
+    2, 4: ; //!!!!
+  end;
+end;
+
+procedure TSIZDocForm.SIZListSelect;
+begin
+  SIZDelButton.Enabled:= SIZList.IsSelected;
+  SIZEditButton.Enabled:= SIZDelButton.Enabled;
+  SIZCopyButton.Enabled:= SIZDelButton.Enabled;
 end;
 
 procedure TSIZDocForm.CloseButtonClick(Sender: TObject);
@@ -387,7 +407,6 @@ begin
       SIZStoreEntryEditForm.NomNumEdit.Text:= NomNums[i,j];
       SIZStoreEntryEditForm.NoteEdit.Text:= Notes[i,j];
       SIZStoreEntryEditForm.SizCount:= SizCounts[i,j];
-      //SIZStoreEntryEditForm.CountSpinEdit.Value:= SizCounts[i,j];
       if AEditingType=etEdit then
         SIZStoreEntryEditForm.EntryID:= EntryIDs[i,j];
       SIZStoreEntryEditForm.NameID:= NameIDs[i,j];
@@ -400,10 +419,6 @@ begin
   finally
     FreeAndNil(SIZStoreEntryEditForm);
   end;
-
-  {EntryIDs: TInt64Matrix;
-    NomNums, SizNames, SizUnits, Notes: TStrMatrix;
-    SizCounts, SizTypes, NameIDs, SizeIDs, HeightIDs, SizeTypes: TIntMatrix;}
 end;
 
 procedure TSIZDocForm.DocAddButtonClick(Sender: TObject);

@@ -189,24 +189,10 @@ object SIZStoreForm: TSIZStoreForm
     ParentFont = False
     TabOrder = 1
   end
-  object EditVT: TVirtualStringTree
+  object VT: TVirtualStringTree
     Left = 2
-    Height = 80
-    Top = 158
-    Width = 796
-    Align = alBottom
-    BorderSpacing.Around = 2
-    DefaultNodeHeight = 25
-    DefaultText = 'Node'
-    Header.AutoSizeIndex = 0
-    Header.Columns = <>
-    Header.MainColumn = -1
-    TabOrder = 2
-  end
-  object ViewVT: TVirtualStringTree
-    Left = 2
-    Height = 80
-    Top = 76
+    Height = 120
+    Top = 118
     Width = 796
     Align = alClient
     BorderSpacing.Around = 2
@@ -215,6 +201,130 @@ object SIZStoreForm: TSIZStoreForm
     Header.AutoSizeIndex = 0
     Header.Columns = <>
     Header.MainColumn = -1
+    TabOrder = 2
+  end
+  object SIZToolPanel: TPanel
+    Left = 0
+    Height = 40
+    Top = 76
+    Width = 798
+    Align = alTop
+    BorderSpacing.Top = 2
+    BorderSpacing.Right = 2
+    BevelOuter = bvNone
+    BorderStyle = bsSingle
+    ClientHeight = 36
+    ClientWidth = 794
+    ParentBackground = False
+    ParentColor = False
+    ParentFont = False
     TabOrder = 3
+    object SIZViewButtonPanel: TPanel
+      Left = 0
+      Height = 36
+      Top = 0
+      Width = 80
+      Align = alLeft
+      AutoSize = True
+      BevelOuter = bvNone
+      ClientHeight = 36
+      ClientWidth = 80
+      TabOrder = 0
+      object SIZCollapseAllButton: TSpeedButton
+        Cursor = crHandPoint
+        Left = 40
+        Height = 36
+        Hint = 'Свернуть всё'
+        Top = 0
+        Width = 40
+        Align = alLeft
+        Images = Images.PX24
+        ImageIndex = 61
+        ShowHint = True
+        ParentShowHint = False
+        OnClick = SIZCollapseAllButtonClick
+      end
+      object SIZExpandAllButton: TSpeedButton
+        Cursor = crHandPoint
+        Left = 0
+        Height = 36
+        Hint = 'Развернуть всё'
+        Top = 0
+        Width = 40
+        Align = alLeft
+        Images = Images.PX24
+        ImageIndex = 60
+        ShowHint = True
+        ParentShowHint = False
+        OnClick = SIZExpandAllButtonClick
+      end
+    end
+    object SIZEditButtonPanel: TPanel
+      Left = 80
+      Height = 36
+      Top = 0
+      Width = 141
+      Align = alLeft
+      AutoSize = True
+      BevelOuter = bvNone
+      ClientHeight = 36
+      ClientWidth = 141
+      TabOrder = 1
+      Visible = False
+      object DividerBevel3: TDividerBevel
+        Left = 80
+        Height = 36
+        Top = 0
+        Width = 21
+        Caption = 'DividerBevel2'
+        Align = alLeft
+        BevelWidth = 2
+        Font.Style = [fsBold]
+        Orientation = trVertical
+        ParentFont = False
+      end
+      object SIZWriteoffButton: TSpeedButton
+        Cursor = crHandPoint
+        Left = 101
+        Height = 36
+        Hint = 'Списать или передать СИЗ со склада'
+        Top = 0
+        Width = 40
+        Align = alLeft
+        Enabled = False
+        Images = Images.PX24
+        ImageIndex = 40
+        ShowHint = True
+        ParentShowHint = False
+      end
+      object SIZCheckAllButton: TSpeedButton
+        Cursor = crHandPoint
+        Left = 0
+        Height = 36
+        Hint = 'Выбрать все СИЗ'
+        Top = 0
+        Width = 40
+        Align = alLeft
+        Images = Images.PX24
+        ImageIndex = 12
+        ShowHint = True
+        ParentShowHint = False
+        OnClick = SIZCheckAllButtonClick
+      end
+      object SIZUncheckAllButton: TSpeedButton
+        Cursor = crHandPoint
+        Left = 40
+        Height = 36
+        Hint = 'Снять выбор со всех СИЗ'
+        Top = 0
+        Width = 40
+        Align = alLeft
+        Images = Images.PX24
+        ImageIndex = 13
+        ShowHint = True
+        ParentShowHint = False
+        OnClick = SIZUncheckAllButtonClick
+      end
+    end
   end
 end

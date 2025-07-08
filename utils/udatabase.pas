@@ -680,6 +680,18 @@ type
                          const AEntryID: Int64;
                          const ANomNum, ANote: String;
                          const ANameID, ASizeID, AHeightID, ACount, AOldCount: Integer): Boolean;
+
+    {Загрузка списка СИЗ на складе: True - ОК, False - пусто}
+    function SIZStoreLoad(out AStoreIDs: TInt64Vector;
+                         out ANomNums, ASizNames, ASizUnits, ADocNames, ADocNums: TStrVector;
+                         out ASizeIDs, AHeightIDs, ASizeTypes, ANameIDs: TIntVector;
+                         out ADocDates: TDateVector): Boolean;
+    function SIZStoreLoad(out ACategoryNames: TStrMatrix;
+                         out AStoreIDs: TInt64Matrix;
+                         out ASizCounts: TIntMatrix;
+                         out ANomNums, ASizNames, ASizUnits,
+                             ASizSizes, ADocNames: TStrMatrix): Boolean;
+
     (**************************************************************************
                                 ЛИЧНЫЕ КАРТОЧКИ СИЗ
     **************************************************************************)
@@ -5507,8 +5519,9 @@ begin
     'FROM SIZSTOREENTRY t1 ' +
     'INNER JOIN SIZNAME t2 ON (t1.NameID=t2.NameID) ' +
     'INNER JOIN SIZUNIT t3 ON (t2.UnitID=t3.UnitID) ' +
-    'WHERE DocID = :DocID ' +
-    'ORDER BY t2.SizName, t1.NomNum, t1.SizeID, t1.HeightID');
+    'WHERE t1.DocID = :DocID ' +
+    'ORDER BY t2.SizName, t1.NomNum, t1.SizeID, t1.HeightID'
+  );
   QParamInt('DocID', ADocID);
   QOpen;
   if not QIsEmpty then
@@ -5792,6 +5805,145 @@ begin
   except
     QRollback;
   end;
+end;
+
+function TDataBase.SIZStoreLoad(out AStoreIDs: TInt64Vector;
+                         out ANomNums, ASizNames, ASizUnits, ADocNames, ADocNums: TStrVector;
+                         out ASizeIDs, AHeightIDs, ASizeTypes, ANameIDs: TIntVector;
+                         out ADocDates: TDateVector): Boolean;
+begin
+  Result:= False;
+
+  AStoreIDs:= nil;
+  ANomNums:= nil;
+  ASizNames:= nil;
+  ASizUnits:= nil;
+  ADocNames:= nil;
+  ADocNums:= nil;
+  ASizeIDs:= nil;
+  AHeightIDs:= nil;
+  ASizeTypes:= nil;
+  ANameIDs:= nil;
+  ADocDates:= nil;
+
+  QSetQuery(FQuery);
+  QSetSQL(
+    'SELECT t1.StoreID, ' +
+           't2.NomNum, t2.NameID, t2.SizeID, t2.HeightID, ' +
+           't3.SizName, t3.SizeType, ' +
+           't4.UnitStringCode AS SizUnit, ' +
+           't5.DocName, t5.DocNum, t5.DocDate ' +
+    'FROM SIZSTORELOG t1 ' +
+    'INNER JOIN SIZSTOREENTRY t2 ON (t1.EntryID=t2.EntryID) ' +
+    'INNER JOIN SIZNAME t3 ON (t2.NameID=t3.NameID) ' +
+    'INNER JOIN SIZUNIT t4 ON (t3.UnitID=t4.UnitID) ' +
+    'INNER JOIN SIZDOC t5 ON (t2.DocID=t5.DocID) ' +
+    'WHERE (t1.IsBusy=0) '  +
+    'ORDER BY t3.SizName, t2.SizeID, t2.HeightID, t2.NomNum, ' +
+             't5.DocDate, t5.DocName, t5.DocNum'
+  );
+  QOpen;
+  if not QIsEmpty then
+  begin
+    QFirst;
+    while not QEOF do
+    begin
+      VAppend(AStoreIDs, QFieldInt64('StoreID'));
+
+      VAppend(ANomNums, QFieldStr('NomNum'));
+      VAppend(ASizNames, QFieldStr('SizName'));
+      VAppend(ASizUnits, QFieldStr('SizUnit'));
+      VAppend(ADocNames, QFieldStr('DocName'));
+      VAppend(ADocNums, QFieldStr('DocNum'));
+
+      VAppend(ASizeIDs, QFieldInt('SizeID'));
+      VAppend(AHeightIDs, QFieldInt('HeightID'));
+      VAppend(ASizeTypes, QFieldInt('SizeType'));
+      VAppend(ANameIDs, QFieldInt('NameID'));
+
+      VAppend(ADocDates, QFieldDT('DocDate'));
+
+      QNext;
+    end;
+    Result:= True;
+  end;
+  QClose;
+end;
+
+function TDataBase.SIZStoreLoad(out ACategoryNames: TStrMatrix;
+                         out AStoreIDs: TInt64Matrix;
+                         out ASizCounts: TIntMatrix;
+                         out ANomNums, ASizNames, ASizUnits,
+                             ASizSizes, ADocNames: TStrMatrix): Boolean;
+var
+  i, N1, N2, NameID: Integer;
+  NomNum: String;
+  StoreIDs: TInt64Vector;
+  NomNums, SizNames, SizUnits, DocNames, DocNums: TStrVector;
+  SizeIDs, HeightIDs, SizeTypes, NameIDs: TIntVector;
+  DocDates: TDateVector;
+  SizSizes, DocFullNames: TStrVector;
+
+  procedure AddToMatrix(const AInd1, AInd2: Integer);
+  var
+    V: TIntVector;
+  begin
+    MAppend(AStoreIDs, VCut(StoreIDs, AInd1, AInd2));
+    MAppend(ANomNums, VCut(NomNums, AInd1, AInd2));
+    MAppend(ASizNames, VCut(SizNames, AInd1, AInd2));
+    MAppend(ASizUnits, VCut(SizUnits, AInd1, AInd2));
+    MAppend(ASizSizes, VCut(SizSizes, AInd1, AInd2));
+    MAppend(ADocNames, VCut(DocFullNames, AInd1, AInd2));
+
+    VDim(V{%H-}, AInd2-AInd1+1, 1);
+    MAppend(ASizCounts, V);
+  end;
+
+begin
+  Result:= False;
+
+  ACategoryNames:= nil;
+  AStoreIDs:= nil;
+  ANomNums:= nil;
+  ASizNames:= nil;
+  ASizUnits:= nil;
+  ASizCounts:= nil;
+  ASizSizes:= nil;
+  ADocNames:= nil;
+
+  if not SIZStoreLoad(StoreIDs, NomNums, SizNames, SizUnits,
+                           DocNames, DocNums, SizeIDs, HeightIDs,
+                           SizeTypes, NameIDs, DocDates) then Exit;
+
+  SizSizes:= SIZFullSize(SizeTypes, SizeIDs, HeightIDs);
+  DocFullNames:= SIZDocFullName(DocNames, DocNums, DocDates);
+
+  NameID:= NameIDs[0];
+  NomNum:= NomNums[0];
+  N1:= 0;
+  for i:= 1 to High(NomNums) do
+  begin
+    if not (SSame(NomNums[i], NomNum) and (NameIDs[i]=NameID)) then
+    begin
+      N2:= i - 1;
+      AddToMatrix(N1, N2);
+      N1:= i;
+      NameID:= NameIDs[i];
+      NomNum:= NomNums[i];
+    end;
+  end;
+  N2:= High(NomNums);
+  AddToMatrix(N1, N2);
+
+  MDim(ACategoryNames, Length(AStoreIDs), 6);
+  for i:= 0 to High(AStoreIDs) do
+  begin
+    ACategoryNames[i, 0]:= ANomNums[i, 0];
+    ACategoryNames[i, 1]:= ASizNames[i, 0];
+    ACategoryNames[i, 2]:= ASizUnits[i, 0];
+    ACategoryNames[i, 3]:= IntToStr(VSum(ASizCounts[i]));
+  end;
+
 end;
 
 function TDataBase.SIZStaffListForPersonalCardsLoad(const AFilterValue: String;

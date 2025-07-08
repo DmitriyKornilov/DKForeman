@@ -133,18 +133,18 @@ object SIZDocForm: TSIZDocForm
     Left = 0
     Height = 384
     Top = 42
-    Width = 500
+    Width = 350
     Align = alLeft
     BevelOuter = bvNone
     ClientHeight = 384
-    ClientWidth = 500
-    Constraints.MinWidth = 450
+    ClientWidth = 350
+    Constraints.MinWidth = 300
     TabOrder = 1
     object DocCaptionPanel: TPanel
       Left = 2
       Height = 30
       Top = 2
-      Width = 498
+      Width = 348
       Align = alTop
       Alignment = taLeftJustify
       BorderSpacing.Left = 2
@@ -163,7 +163,7 @@ object SIZDocForm: TSIZDocForm
       Left = 2
       Height = 306
       Top = 76
-      Width = 498
+      Width = 348
       Align = alClient
       BorderSpacing.Left = 2
       BorderSpacing.Top = 2
@@ -180,14 +180,14 @@ object SIZDocForm: TSIZDocForm
       Left = 2
       Height = 40
       Top = 34
-      Width = 498
+      Width = 348
       Align = alTop
       BorderSpacing.Left = 2
       BorderSpacing.Top = 2
       BevelOuter = bvNone
       BorderStyle = bsSingle
       ClientHeight = 36
-      ClientWidth = 494
+      ClientWidth = 344
       ParentBackground = False
       ParentColor = False
       ParentFont = False
@@ -253,27 +253,27 @@ object SIZDocForm: TSIZDocForm
     end
   end
   object Splitter: TSplitter
-    Left = 500
+    Left = 350
     Height = 384
     Top = 42
     Width = 6
     ResizeStyle = rsLine
   end
   object SIZPanel: TPanel
-    Left = 506
+    Left = 356
     Height = 384
     Top = 42
-    Width = 465
+    Width = 615
     Align = alClient
     BevelOuter = bvNone
     ClientHeight = 384
-    ClientWidth = 465
+    ClientWidth = 615
     TabOrder = 3
     object SIZCaptionPanel: TPanel
       Left = 0
       Height = 30
       Top = 2
-      Width = 463
+      Width = 613
       Align = alTop
       Alignment = taLeftJustify
       BorderSpacing.Top = 2
@@ -292,14 +292,14 @@ object SIZDocForm: TSIZDocForm
       Left = 0
       Height = 40
       Top = 34
-      Width = 463
+      Width = 613
       Align = alTop
       BorderSpacing.Top = 2
       BorderSpacing.Right = 2
       BevelOuter = bvNone
       BorderStyle = bsSingle
       ClientHeight = 36
-      ClientWidth = 459
+      ClientWidth = 609
       ParentBackground = False
       ParentColor = False
       ParentFont = False
@@ -432,7 +432,7 @@ object SIZDocForm: TSIZDocForm
       Left = 0
       Height = 306
       Top = 76
-      Width = 463
+      Width = 613
       Align = alClient
       BorderSpacing.Top = 2
       BorderSpacing.Right = 2
