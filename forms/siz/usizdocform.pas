@@ -63,6 +63,7 @@ type
     procedure SIZCopyButtonClick(Sender: TObject);
     procedure SIZEditButtonClick(Sender: TObject);
     procedure SIZExpandAllButtonClick(Sender: TObject);
+    procedure SIZVTDblClick(Sender: TObject);
     procedure YearSpinEditChange(Sender: TObject);
   private
     DocList: TVSTTable;
@@ -88,6 +89,8 @@ type
     procedure SIZListLoad;
 
     procedure SIZListSelect;
+
+    procedure SIZListEdit;
 
     procedure DocEdit(const AEditingType: TEditingType);
 
@@ -160,7 +163,6 @@ begin
     SIZAddButton, SIZDelButton, SIZEditButton, SIZCopyButton
   ]);
 
-
   Caption:= MAIN_CAPTION + OTHER_DESCRIPTION[DocType+6];
 
   SIZListCreate;
@@ -180,12 +182,7 @@ end;
 
 procedure TSIZDocForm.SIZEditButtonClick(Sender: TObject);
 begin
-  case DocType of
-    1: SIZStoreEntryEditFormOpen(etEdit);
-    2: ; //!!!!
-    3: ; //!!!!
-    4: ; //!!!!
-  end;
+  SIZListEdit;
 end;
 
 procedure TSIZDocForm.SIZCopyButtonClick(Sender: TObject);
@@ -196,6 +193,23 @@ begin
     3: ; //!!!!
     4: ; //!!!!
   end;
+end;
+
+procedure TSIZDocForm.SIZListEdit;
+begin
+  if not SIZList.IsSelected then Exit;
+
+  case DocType of
+    1: SIZStoreEntryEditFormOpen(etCustom);
+    2: ; //!!!!
+    3: ; //!!!!
+    4: ; //!!!!
+  end;
+end;
+
+procedure TSIZDocForm.SIZVTDblClick(Sender: TObject);
+begin
+  SIZListEdit;
 end;
 
 procedure TSIZDocForm.SIZCollapseAllButtonClick(Sender: TObject);

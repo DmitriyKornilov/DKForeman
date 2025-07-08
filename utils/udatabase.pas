@@ -671,7 +671,7 @@ type
                                 out AStoreIDs: TInt64Vector): Boolean;
 
     {Запись СИЗ в документ прихода на склад: True - ОК, False - ошибка}
-    function SIZStoreEntryWrite(const ADocID: Integer;
+    function SIZStoreEntryAdd(const ADocID: Integer;
                          out AEntryID: Int64;
                          const ANomNum, ANote: String;
                          const ANameID, ASizeID, AHeightID, ACount: Integer): Boolean;
@@ -680,6 +680,13 @@ type
                          const AEntryID: Int64;
                          const ANomNum, ANote: String;
                          const ANameID, ASizeID, AHeightID, ACount, AOldCount: Integer): Boolean;
+
+    {Запись СИЗ в документ списания (передачи) со склада: True - ОК, False - ошибка}
+    function SIZStoreWriteoffAdd(const ADocID: Integer;
+                                 const AStoreIDs: TInt64Vector;
+                                 const ANote: String): Boolean;
+    {Отмена записи СИЗ в документ списания (передачи) со склада: True - ОК, False - ошибка}
+    function SIZStoreWriteoffCancel(const AStoreIDs: TInt64Vector): Boolean;
 
     {Загрузка списка СИЗ на складе: True - ОК, False - пусто}
     function SIZStoreLoad(out AStoreIDs: TInt64Vector;
@@ -5723,7 +5730,7 @@ begin
   Result:= Length(AStoreIDs)=ACount;
 end;
 
-function TDataBase.SIZStoreEntryWrite(const ADocID: Integer;
+function TDataBase.SIZStoreEntryAdd(const ADocID: Integer;
                    out AEntryID: Int64;
                    const ANomNum, ANote: String;
                    const ANameID, ASizeID, AHeightID, ACount: Integer): Boolean;
@@ -5805,6 +5812,42 @@ begin
   except
     QRollback;
   end;
+end;
+
+function TDataBase.SIZStoreWriteoffAdd(const ADocID: Integer;
+                                 const AStoreIDs: TInt64Vector;
+                                 const ANote: String): Boolean;
+var
+  i: Integer;
+begin
+  Result:= False;
+  QSetQuery(FQuery);
+  try
+    //записываем данные в таблицу списания
+    QSetSQL(
+      sqlINSERT('SIZSTOREWRITEOFF', ['DocID', 'StoreID', 'Note'])
+    );
+    QParamInt('DocID', ADocID);
+    QParamStr('Note', ANote);
+    for i:= 0 to High(AStoreIDs) do
+    begin
+      QParamInt64('StoreID', AStoreIDs[i]);
+      QExec;
+    end;
+
+    //отмечаем СИЗ на складе, как занятые
+    UpdateInt64ID('SIZSTORELOG', 'IsBusy', 'StoreID', AStoreIDs, 1{занято}, False{no commit});
+
+    QCommit;
+    Result:= True;
+  except
+    QRollback;
+  end;
+end;
+
+function TDataBase.SIZStoreWriteoffCancel(const AStoreIDs: TInt64Vector): Boolean;
+begin
+
 end;
 
 function TDataBase.SIZStoreLoad(out AStoreIDs: TInt64Vector;

@@ -77,8 +77,6 @@ implementation
 { TSIZStoreEntryEditForm }
 
 procedure TSIZStoreEntryEditForm.FormCreate(Sender: TObject);
-var
-  IsSIZExists: Boolean;
 begin
   EntryID:= 0;
   DocID:= 0;
@@ -93,10 +91,9 @@ begin
 
   NameList:= TVSTStringList.Create(NameVT, EmptyStr, @NameListSelect);
 
-  IsSIZExists:= DataBase.SIZAssortmentLoad(SIZTypes, Names, Units, NameIDs, SizeTypes);
+  if not DataBase.SIZAssortmentLoad(SIZTypes, Names, Units, NameIDs, SizeTypes) then Exit;
   TypeDropDown.Items:= VPickFromKey(SIZTypes, SIZ_TYPE_KEYS, SIZ_TYPE_PICKS);
-  if IsSIZExists then
-    TypeDropDown.ItemIndex:= 0;
+  TypeDropDown.ItemIndex:= 0;
 end;
 
 procedure TSIZStoreEntryEditForm.FormDestroy(Sender: TObject);
@@ -260,7 +257,7 @@ begin
 
   case EditingType of
     etAdd:
-      IsOK:= DataBase.SIZStoreEntryWrite(DocID, EntryID, NomNum, STrim(NoteEdit.Text),
+      IsOK:= DataBase.SIZStoreEntryAdd(DocID, EntryID, NomNum, STrim(NoteEdit.Text),
                          NameID, SizeID, HeightID, CountSpinEdit.Value);
     etEdit:
       IsOK:= DataBase.SIZStoreEntryUpdate(DocID, EntryID, NomNum, STrim(NoteEdit.Text),
