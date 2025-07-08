@@ -520,6 +520,7 @@
         <Filename Value="forms\siz\usizstorewriteoffform.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="SIZStoreWriteoffForm"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="USIZStoreWriteoffForm"/>
       </Unit>

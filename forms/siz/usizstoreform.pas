@@ -70,6 +70,7 @@ type
     NomNums, SizNames, SizUnits, SizSizes, DocNames: TStrMatrix;
 
     ShowCategoryNames: TStrMatrix;
+    ShowStoreIDs: TInt64Matrix;
     ShowNomNums, ShowSizNames, ShowSizUnits, ShowSizSizes, ShowDocNames: TStrMatrix;
     ShowSizCounts: TIntMatrix;
 
@@ -202,166 +203,125 @@ end;
 
 procedure TSIZStoreForm.SIZListCalc;
 var
-  i, j, k, N, N1, N2: Integer;
-  SizSize, DocName: String;
-  Indexes: TIntVector;
-
   TmpNomNums, TmpSizNames, TmpSizUnits, TmpSizSizes, TmpDocNames: TStrMatrix;
   TmpSizCounts: TIntMatrix;
 
+  procedure FilterVectorsLoad;
+  var
+    i, j, N: Integer;
+    Indexes: TIntVector;
+  begin
+    if FilterDocDropDown.ItemIndex=0 then
+    begin //все документы - нет фильтра - исходные вектора
+      ShowStoreIDs:= StoreIDs;
+      ShowCategoryNames:= CategoryNames;
+      TmpNomNums:= NomNums;
+      TmpSizNames:= SizNames;
+      TmpSizUnits:= SizUnits;
+      TmpSizSizes:= SizSizes;
+      TmpDocNames:= DocNames;
+      TmpSizCounts:= SizCounts;
+    end
+    else begin  //есть фильтр по документу
+      //отбираем категории, где встречается этот документ и запоминаем индексы
+      ShowCategoryNames:= nil;
+      Indexes:= nil;
+      for i:= 0 to High(CategoryNames) do
+      begin
+        if VIndexOf(DocNames[i], FilterDocNames[FilterDocDropDown.ItemIndex])>=0 then
+        begin
+          MAppend(ShowCategoryNames, CategoryNames[i]);
+          VAppend(Indexes, i);
+        end;
+      end;
+      //отбираем данные
+      N:= Length(ShowCategoryNames);
+      MDim(ShowStoreIDs, N);
+      MDim(TmpNomNums, N);
+      MDim(TmpSizNames, N);
+      MDim(TmpSizUnits, N);
+      MDim(TmpSizSizes, N);
+      MDim(TmpDocNames, N);
+      MDim(TmpSizCounts, N);
+      for i:= 0 to High(Indexes) do
+      begin
+        for j:= 0 to High(NomNums[Indexes[i]]) do
+        begin
+          if DocNames[Indexes[i], j]<>FilterDocNames[FilterDocDropDown.ItemIndex] then continue;
+          VAppend(ShowStoreIDs[i], StoreIDs[Indexes[i], j]);
+          VAppend(TmpNomNums[i], NomNums[Indexes[i], j]);
+          VAppend(TmpSizNames[i], SizNames[Indexes[i], j]);
+          VAppend(TmpSizUnits[i], SizUnits[Indexes[i], j]);
+          VAppend(TmpSizSizes[i], SizSizes[Indexes[i], j]);
+          VAppend(TmpDocNames[i], DocNames[Indexes[i], j]);
+          VAppend(TmpSizCounts[i], SizCounts[Indexes[i], j]);
+        end;
+        //кол-во отфильтрованных СИЗ в категории
+        ShowCategoryNames[i, 3]:= IntToStr(VSum(TmpSizCounts[i]));
+      end;
+    end;
+  end;
+
   procedure AddToVector(const AInd, AInd1, AInd2: Integer);
   begin
-    VAppend(ShowNomNums[AInd], NomNums[AInd, 0]);
-    VAppend(ShowSizNames[AInd], SizNames[AInd, 0]);
-    VAppend(ShowSizUnits[AInd], SizUnits[AInd, 0]);
-    VAppend(ShowSizSizes[AInd], SizSizes[AInd, AInd1]);
-    VAppend(ShowDocNames[AInd], DocNames[AInd, AInd1]);
-    VAppend(ShowSizCounts[AInd], VSum(SizCounts[AInd], AInd1, AInd2));
+    VAppend(ShowNomNums[AInd], TmpNomNums[AInd, 0]);
+    VAppend(ShowSizNames[AInd], TmpSizNames[AInd, 0]);
+    VAppend(ShowSizUnits[AInd], TmpSizUnits[AInd, 0]);
+    VAppend(ShowSizSizes[AInd], TmpSizSizes[AInd, AInd1]);
+    VAppend(ShowDocNames[AInd], TmpDocNames[AInd, AInd1]);
+    VAppend(ShowSizCounts[AInd], VSum(TmpSizCounts[AInd], AInd1, AInd2));
+  end;
+
+  procedure ShowVectorsLoad;
+  var
+    i, j, N, N1, N2: Integer;
+    SizSize, DocName: String;
+  begin
+    //если рекдактирование - оставляем записи СИЗ по 1 экземпляру
+    if ModeType=mtEditing then
+    begin
+      ShowNomNums:= TmpNomNums;
+      ShowSizNames:= TmpSizNames;
+      ShowSizUnits:= TmpSizUnits;
+      ShowSizSizes:= TmpSizSizes;
+      ShowDocNames:= TmpDocNames;
+      ShowSizCounts:= TmpSizCounts;
+      Exit;
+    end;
+    //для простого отображения - группируем внутри категории СИЗ по размеру
+    //и документу прихода
+    N:= Length(ShowCategoryNames);
+    MDim(ShowNomNums, N);
+    MDim(ShowSizNames, N);
+    MDim(ShowSizUnits, N);
+    MDim(ShowSizSizes, N);
+    MDim(ShowDocNames, N);
+    MDim(ShowSizCounts, N);
+    for i:= 0 to N-1 do
+    begin
+      SizSize:= TmpSizSizes[i, 0];
+      DocName:= TmpDocNames[i, 0];
+      N1:= 0;
+      for j:= 1 to High(TmpDocNames[i]) do
+      begin
+        if not (SSame(TmpDocNames[i, j], DocName) and SSame(TmpSizSizes[i, j], SizSize)) then
+        begin
+          N2:= j - 1;
+          AddToVector(i, N1, N2);
+          N1:= j;
+          SizSize:= TmpSizSizes[i, j];
+          DocName:= TmpDocNames[i, j];
+        end;
+      end;
+      N2:= High(TmpDocNames[i]);
+      AddToVector(i, N1, N2);
+    end;
   end;
 
 begin
-  if FilterDocDropDown.ItemIndex=0 then
-  begin
-    ShowCategoryNames:= CategoryNames;
-    TmpNomNums:= NomNums;
-    TmpSizNames:= SizNames;
-    TmpSizUnits:= SizUnits;
-    TmpSizSizes:= SizSizes;
-    TmpDocNames:= DocNames;
-    TmpSizCounts:= SizCounts;
-  end
-  else begin
-    ShowCategoryNames:= nil;
-    Indexes:= nil;
-    for i:= 0 to High(CategoryNames) do
-    begin
-      if VIndexOf(DocNames[i], FilterDocNames[FilterDocDropDown.ItemIndex])>=0 then
-      begin
-        MAppend(ShowCategoryNames, CategoryNames[i]);
-        VAppend(Indexes, i);
-      end;
-    end;
-
-    N:= Length(ShowCategoryNames);
-    MDim(TmpNomNums, N);
-    MDim(TmpSizNames, N);
-    MDim(TmpSizUnits, N);
-    MDim(TmpSizSizes, N);
-    MDim(TmpDocNames, N);
-    MDim(TmpSizCounts, N);
-
-    for i:= 0 to High(Indexes) do
-    begin
-      for j:= 0 to High(NomNums[Indexes[i]]) do
-      begin
-        if DocNames[i, j]<>FilterDocNames[FilterDocDropDown.ItemIndex] then continue;
-        VAppend(TmpNomNums[i], NomNums[i, j]);
-        VAppend(TmpSizNames[i], SizNames[i, j]);
-        VAppend(TmpSizUnits[i], SizUnits[i, j]);
-        VAppend(TmpSizSizes[i], SizSizes[i, j]);
-        VAppend(TmpDocNames[i], DocNames[i, j]);
-        VAppend(TmpSizCounts[i], SizCounts[i, j]);
-      end;
-    end;
-  end;
-
-  if ModeType=mtEditing then
-  begin
-    ShowNomNums:= TmpNomNums;
-    ShowSizNames:= TmpSizNames;
-    ShowSizUnits:= TmpSizUnits;
-    ShowSizSizes:= TmpSizSizes;
-    ShowDocNames:= TmpDocNames;
-    ShowSizCounts:= TmpSizCounts;
-    Exit;
-  end;
-
-  N:= Length(ShowCategoryNames);
-  MDim(ShowNomNums, N);
-  MDim(ShowSizNames, N);
-  MDim(ShowSizUnits, N);
-  MDim(ShowSizSizes, N);
-  MDim(ShowDocNames, N);
-  MDim(ShowSizCounts, N);
-
-  for i:= 0 to N-1 do
-  begin
-    SizSize:= SizSizes[i, 0];
-    DocName:= DocNames[i, 0];
-    N1:= 0;
-    for j:= 1 to High(DocNames[i]) do
-    begin
-      if not (SSame(DocNames[i, j], DocName) and SSame(SizSizes[i, j], SizSize)) then
-      begin
-        N2:= j - 1;
-        AddToVector(i, N1, N2);
-        N1:= j;
-        SizSize:= SizSizes[i, j];
-        DocName:= DocNames[i, j];
-      end;
-    end;
-    N2:= High(DocNames[i]);
-    AddToVector(i, N1, N2);
-  end;
+  FilterVectorsLoad;
+  ShowVectorsLoad;
 end;
-
-//procedure TSIZStoreForm.SIZListCalc;
-//var
-//  i, j, N, N1, N2: Integer;
-//  SizSize, DocName: String;
-//
-//  procedure AddToVector(const AInd, AInd1, AInd2: Integer);
-//  begin
-//    VAppend(ShowNomNums[AInd], NomNums[AInd, 0]);
-//    VAppend(ShowSizNames[AInd], SizNames[AInd, 0]);
-//    VAppend(ShowSizUnits[AInd], SizUnits[AInd, 0]);
-//    VAppend(ShowSizSizes[AInd], SizSizes[AInd, AInd1]);
-//    VAppend(ShowDocNames[AInd], DocNames[AInd, AInd1]);
-//    VAppend(ShowSizCounts[AInd], VSum(SizCounts[AInd], AInd1, AInd2));
-//  end;
-//
-//begin
-//  ShowCategoryNames:= CategoryNames;
-//
-//  if ModeType=mtEditing then
-//  begin
-//    ShowNomNums:= NomNums;
-//    ShowSizNames:= SizNames;
-//    ShowSizUnits:= SizUnits;
-//    ShowSizSizes:= SizSizes;
-//    ShowDocNames:= DocNames;
-//    ShowSizCounts:= SizCounts;
-//    Exit;
-//  end;
-//
-//  N:= Length(CategoryNames);
-//  MDim(ShowNomNums, N);
-//  MDim(ShowSizNames, N);
-//  MDim(ShowSizUnits, N);
-//  MDim(ShowSizSizes, N);
-//  MDim(ShowDocNames, N);
-//  MDim(ShowSizCounts, N);
-//
-//  for i:= 0 to N-1 do
-//  begin
-//    SizSize:= SizSizes[i, 0];
-//    DocName:= DocNames[i, 0];
-//    N1:= 0;
-//    for j:= 1 to High(DocNames[i]) do
-//    begin
-//      if not (SSame(DocNames[i, j], DocName) and SSame(SizSizes[i, j], SizSize)) then
-//      begin
-//        N2:= j - 1;
-//        AddToVector(i, N1, N2);
-//        N1:= j;
-//        SizSize:= SizSizes[i, j];
-//        DocName:= DocNames[i, j];
-//      end;
-//    end;
-//    N2:= High(DocNames[i]);
-//    AddToVector(i, N1, N2);
-//  end;
-//end;
 
 procedure TSIZStoreForm.SIZListSelect;
 begin
@@ -431,12 +391,12 @@ begin
 
   SIZStoreWriteoffForm:= TSIZStoreWriteoffForm.Create(nil);
   try
-    SIZStoreWriteoffForm.StoreIDs:= MToVector(StoreIDs, MUsed);
-    SIZStoreWriteoffForm.NomNums:= MToVector(NomNums, MUsed);
-    SIZStoreWriteoffForm.SizNames:= MToVector(SizNames, MUsed);
-    SIZStoreWriteoffForm.SizUnits:= MToVector(SizUnits, MUsed);
-    SIZStoreWriteoffForm.SizSizes:= MToVector(SizSizes, MUsed);
-    SIZStoreWriteoffForm.EntryDocNames:= MToVector(DocNames, MUsed);
+    SIZStoreWriteoffForm.StoreIDs:= MToVector(ShowStoreIDs, MUsed);
+    SIZStoreWriteoffForm.NomNums:= MToVector(ShowNomNums, MUsed);
+    SIZStoreWriteoffForm.SizNames:= MToVector(ShowSizNames, MUsed);
+    SIZStoreWriteoffForm.SizUnits:= MToVector(ShowSizUnits, MUsed);
+    SIZStoreWriteoffForm.SizSizes:= MToVector(ShowSizSizes, MUsed);
+    SIZStoreWriteoffForm.EntryDocNames:= MToVector(ShowDocNames, MUsed);
 
     if SIZStoreWriteoffForm.ShowModal=mrOK then
       SIZListLoad;
