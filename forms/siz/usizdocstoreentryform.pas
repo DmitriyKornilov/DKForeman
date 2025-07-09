@@ -122,7 +122,11 @@ var
   i: Integer;
   M: TStrMatrix;
 begin
-  if DocID<=0 then Exit;
+  if DocID<=0 then
+  begin
+    SIZList.ValuesClear;
+    Exit;
+  end;
 
   DataBase.SIZStoreEntryLoad(DocID, EntryIDs, NomNums, SizNames, SizUnits,
                              Notes, SizCounts, SizTypes, NameIDs, SizeIDs,

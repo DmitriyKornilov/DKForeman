@@ -528,6 +528,7 @@
         <Filename Value="forms\siz\usizdocstoreentryform.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="SIZDocStoreEntryForm"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="USIZDocStoreEntryForm"/>
       </Unit>
@@ -535,6 +536,7 @@
         <Filename Value="forms\siz\usizdocstorewriteoffform.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="SIZDocStoreWriteoffForm"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="USIZDocStoreWriteoffForm"/>
       </Unit>

@@ -10,7 +10,7 @@ uses
   //Project utils
   UVars, UConst, UTypes, UUtils, USIZUtils,
   //DK packages utils
-  DK_VSTTables, DK_Vector, DK_Matrix, DK_CtrlUtils, DK_DateUtils, DK_Dialogs;
+  DK_VSTTables, DK_Vector, DK_Matrix, DK_CtrlUtils, DK_Dialogs, DK_StrUtils;
 
 type
 
@@ -26,22 +26,29 @@ type
     ViewButtonPanel: TPanel;
     VT: TVirtualStringTree;
     procedure CollapseAllButtonClick(Sender: TObject);
+    procedure DelButtonClick(Sender: TObject);
     procedure ExpandAllButtonClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
   private
     DocID: Integer;
-
+    IsEditing: Boolean;
     SIZList: TVSTCategoryCheckTable;
 
     CategoryNames: TStrMatrix;
-    EntryIDs: TInt64Matrix;
-    NomNums, SizNames, SizUnits, EntryDocNames, Notes: TStrMatrix;
-    SizCounts, SizTypes, NameIDs, SizeIDs, HeightIDs, SizeTypes: TIntMatrix;
+    StoreIDs: TInt64Matrix;
+    SizCounts: TIntMatrix;
+    NomNums, SizNames, SizUnits, SizSizes, EntryDocNames, Notes: TStrMatrix;
+
+    ShowSizCounts: TIntMatrix;
+    ShowNomNums, ShowSizNames, ShowSizUnits,
+    ShowSizSizes, ShowEntryDocNames, ShowNotes: TStrMatrix;
 
     procedure SIZListCreate;
     procedure SIZListLoad;
+    procedure SIZListShow;
+    procedure SIZListCalc;
     procedure SIZListSelect;
   public
     procedure ViewUpdate(const AIsEditing: Boolean);
@@ -60,6 +67,7 @@ implementation
 procedure TSIZDocStoreWriteoffForm.FormCreate(Sender: TObject);
 begin
   DocID:= 0;
+  IsEditing:= False;
   SIZListCreate;
 end;
 
@@ -104,7 +112,98 @@ end;
 
 procedure TSIZDocStoreWriteoffForm.SIZListLoad;
 begin
+  if DocID<=0 then
+  begin
+    SIZList.ValuesClear;
+    Exit;
+  end;
+  DataBase.SIZStoreWriteOffLoad(DocID, CategoryNames, StoreIDs, SizCounts,
+                                NomNums, SizNames, SizUnits, SizSizes,
+                                EntryDocNames, Notes);
+  SIZListShow;
+end;
 
+procedure TSIZDocStoreWriteoffForm.SIZListShow;
+begin
+  SIZListCalc;
+
+  SIZList.Visible:= False;
+  try
+    SIZList.ValuesClear;
+    SIZList.SetCategories(CategoryNames);
+    SIZList.SetColumn('Номенклатурный номер', ShowNomNums, taLeftJustify);
+    SIZList.SetColumn('Наименование', ShowSizNames, taLeftJustify);
+    SIZList.SetColumn('Единица измерения', ShowSizUnits);
+    SIZList.SetColumn('Количество', MIntToStr(ShowSizCounts));
+    SIZList.SetColumn('Размер/объём/вес', ShowSizSizes);
+    SIZList.SetColumn('Документ поступления', ShowEntryDocNames, taLeftJustify);
+    SIZList.SetColumn('Документ', ShowNotes, taLeftJustify);
+    SIZList.Draw;
+    SIZList.ExpandAll(True);
+    SIZList.ShowFirst;
+  finally
+    SIZList.Visible:= True;
+  end;
+end;
+
+procedure TSIZDocStoreWriteoffForm.SIZListCalc;
+var
+  i, j, N, N1, N2: Integer;
+  SizSize, EntryDocName: String;
+
+  procedure AddToVector(const AInd, AInd1, AInd2: Integer);
+  begin
+    VAppend(ShowNomNums[AInd], NomNums[AInd, 0]);
+    VAppend(ShowSizNames[AInd], SizNames[AInd, 0]);
+    VAppend(ShowSizUnits[AInd], SizUnits[AInd, 0]);
+    VAppend(ShowSizSizes[AInd], SizSizes[AInd, AInd1]);
+    VAppend(ShowEntryDocNames[AInd], EntryDocNames[AInd, AInd1]);
+    VAppend(ShowSizCounts[AInd], VSum(SizCounts[AInd], AInd1, AInd2));
+    VAppend(ShowNotes[AInd], Notes[AInd, AInd1]);
+  end;
+
+begin
+  //если рекдактирование - оставляем записи СИЗ по 1 экземпляру
+  if IsEditing then
+  begin
+    ShowNomNums:= NomNums;
+    ShowSizNames:= SizNames;
+    ShowSizUnits:= SizUnits;
+    ShowSizSizes:= SizSizes;
+    ShowEntryDocNames:= EntryDocNames;
+    ShowSizCounts:= SizCounts;
+    ShowNotes:= Notes;
+    Exit;
+  end;
+  //для простого отображения - группируем внутри категории СИЗ по размеру
+  //и документу прихода
+  N:= Length(CategoryNames);
+  MDim(ShowNomNums, N);
+  MDim(ShowSizNames, N);
+  MDim(ShowSizUnits, N);
+  MDim(ShowSizSizes, N);
+  MDim(ShowEntryDocNames, N);
+  MDim(ShowSizCounts, N);
+  MDim(ShowNotes, N);
+  for i:= 0 to N-1 do
+  begin
+    SizSize:= SizSizes[i, 0];
+    EntryDocName:= EntryDocNames[i, 0];
+    N1:= 0;
+    for j:= 1 to High(EntryDocNames[i]) do
+    begin
+      if not (SSame(EntryDocNames[i, j], EntryDocName) and SSame(SizSizes[i, j], SizSize)) then
+      begin
+        N2:= j - 1;
+        AddToVector(i, N1, N2);
+        N1:= j;
+        SizSize:= SizSizes[i, j];
+        EntryDocName:= EntryDocNames[i, j];
+      end;
+    end;
+    N2:= High(EntryDocNames[i]);
+    AddToVector(i, N1, N2);
+  end;
 end;
 
 procedure TSIZDocStoreWriteoffForm.SIZListSelect;
@@ -114,8 +213,10 @@ end;
 
 procedure TSIZDocStoreWriteoffForm.ViewUpdate(const AIsEditing: Boolean);
 begin
+  IsEditing:= AIsEditing;
   EditButtonPanel.Visible:= AIsEditing;
   SIZList.CheckEnable:= AIsEditing;
+  SIZListShow;
 end;
 
 procedure TSIZDocStoreWriteoffForm.DocChange(const ADocID: Integer);
@@ -132,6 +233,16 @@ end;
 procedure TSIZDocStoreWriteoffForm.CollapseAllButtonClick(Sender: TObject);
 begin
   SIZList.ExpandAll(False);
+end;
+
+procedure TSIZDocStoreWriteoffForm.DelButtonClick(Sender: TObject);
+var
+  DelStoreIDs: TInt64Vector;
+begin
+  if not Confirm('Отменить списание (передачу) выбранных СИЗ?') then Exit;
+  DelStoreIDs:= MToVector(StoreIDs, SIZList.Selected);
+  if DataBase.SIZStoreWriteoffCancel(DelStoreIDs) then
+    SIZListLoad;
 end;
 
 end.

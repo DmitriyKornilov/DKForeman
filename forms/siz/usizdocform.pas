@@ -41,6 +41,7 @@ type
     YearSpinEdit: TSpinEdit;
     procedure CloseButtonClick(Sender: TObject);
     procedure DocAddButtonClick(Sender: TObject);
+    procedure DocDelButtonClick(Sender: TObject);
     procedure DocEditButtonClick(Sender: TObject);
     procedure DocEraseButtonClick(Sender: TObject);
     procedure DocVTDblClick(Sender: TObject);
@@ -235,6 +236,21 @@ end;
 procedure TSIZDocForm.DocEditButtonClick(Sender: TObject);
 begin
   DocEdit(etEdit);
+end;
+
+procedure TSIZDocForm.DocDelButtonClick(Sender: TObject);
+var
+  NeedReload: Boolean;
+begin
+  if not Confirm('Удалить документ?') then Exit;
+  case DocType of
+    1: ; //!!!!
+    2: ; //!!!!
+    3: NeedReload:= DataBase.SIZDocStoreWriteoffDelete(DocIDs[DocList.SelectedIndex]);
+    4: ; //!!!!
+  end;
+
+  if NeedReload then DocListLoad;
 end;
 
 procedure TSIZDocForm.DocEraseButtonClick(Sender: TObject);

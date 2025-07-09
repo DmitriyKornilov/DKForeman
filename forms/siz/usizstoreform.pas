@@ -175,8 +175,6 @@ begin
   FilterDocNames:= VAdd(['ВСЕ ДОКУМЕНТЫ'], VUnique(MToVector(DocNames)));
   FilterDocDropDown.Items:= FilterDocNames;
   FilterDocDropDown.ItemIndex:= 0;
-
-  //SIZListShow;
 end;
 
 procedure TSIZStoreForm.SIZListShow;
@@ -344,21 +342,25 @@ end;
 procedure TSIZStoreForm.EntryButtonClick(Sender: TObject);
 begin
   SIZDocFormOpen(1);
+  SIZListLoad;
 end;
 
 procedure TSIZStoreForm.OutButtonClick(Sender: TObject);
 begin
   SIZDocFormOpen(2);
+  SIZListLoad;
 end;
 
 procedure TSIZStoreForm.WriteoffButtonClick(Sender: TObject);
 begin
   SIZDocFormOpen(3);
+  SIZListLoad;
 end;
 
 procedure TSIZStoreForm.BackButtonClick(Sender: TObject);
 begin
   SIZDocFormOpen(4);
+  SIZListLoad;
 end;
 
 procedure TSIZStoreForm.SIZExpandAllButtonClick(Sender: TObject);
