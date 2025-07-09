@@ -12,18 +12,18 @@ uses
   //DK packages utils
   DK_VSTTables, DK_Vector, DK_Matrix, DK_CtrlUtils, DK_DateUtils, DK_Dialogs,
   //Forms
-  usizstoreentryeditform;
+  USIZStoreEntryEditForm;
 
 type
 
   { TSIZDocStoreEntryForm }
 
   TSIZDocStoreEntryForm = class(TForm)
-    DividerBevel3: TDividerBevel;
     AddButton: TSpeedButton;
     CollapseAllButton: TSpeedButton;
     CopyButton: TSpeedButton;
     DelButton: TSpeedButton;
+    DividerBevel3: TDividerBevel;
     EditButton: TSpeedButton;
     EditButtonPanel: TPanel;
     ExpandAllButton: TSpeedButton;
@@ -33,6 +33,7 @@ type
     procedure AddButtonClick(Sender: TObject);
     procedure CollapseAllButtonClick(Sender: TObject);
     procedure CopyButtonClick(Sender: TObject);
+    procedure DelButtonClick(Sender: TObject);
     procedure EditButtonClick(Sender: TObject);
     procedure ExpandAllButtonClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -40,9 +41,9 @@ type
     procedure FormShow(Sender: TObject);
     procedure VTDblClick(Sender: TObject);
   private
-    SIZList: TVSTCategoryRadioTable;
-
     DocID: Integer;
+
+    SIZList: TVSTCategoryRadioTable;
 
     CategoryNames: TStrMatrix;
     EntryIDs: TInt64Matrix;
@@ -248,7 +249,10 @@ begin
   SIZStoreEntryEditFormOpen(etCustom);
 end;
 
-
+procedure TSIZDocStoreEntryForm.DelButtonClick(Sender: TObject);
+begin
+  //!!!!!
+end;
 
 end.
 

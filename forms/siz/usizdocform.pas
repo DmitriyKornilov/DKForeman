@@ -12,7 +12,7 @@ uses
   //DK packages utils
   DK_VSTTables, DK_Vector, DK_CtrlUtils, DK_DateUtils, DK_Dialogs,
   //Forms
-  USIZDocEditForm, USIZDocStoreEntryForm;
+  USIZDocEditForm, USIZDocStoreEntryForm, USIZDocStoreWriteoffForm;
 
 type
 
@@ -257,7 +257,7 @@ begin
   case DocType of
     1: SIZForm:= FormOnPanelCreate(TSIZDocStoreEntryForm, SIZFormPanel);
     2: ; //!!!!
-    3: ; //!!!!
+    3: SIZForm:= FormOnPanelCreate(TSIZDocStoreWriteoffForm, SIZFormPanel);
     4: ; //!!!!
   end;
 
@@ -273,7 +273,7 @@ begin
   case DocType of
     1: (SIZForm as TSIZDocStoreEntryForm).ViewUpdate(EditingButton.Down);
     2: ; //!!!!
-    3: ; //!!!!
+    3: (SIZForm as TSIZDocStoreWriteoffForm).ViewUpdate(EditingButton.Down);
     4: ; //!!!!
   end;
 end;
@@ -288,7 +288,7 @@ begin
   case DocType of
     1: (SIZForm as TSIZDocStoreEntryForm).DocChange(DocID);
     2: ; //!!!!
-    3: ; //!!!!
+    3: (SIZForm as TSIZDocStoreWriteoffForm).DocChange(DocID);
     4: ; //!!!!
   end;
 end;

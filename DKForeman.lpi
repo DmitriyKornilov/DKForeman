@@ -531,6 +531,13 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="USIZDocStoreEntryForm"/>
       </Unit>
+      <Unit>
+        <Filename Value="forms\siz\usizdocstorewriteoffform.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="SIZDocStoreWriteoffForm"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="USIZDocStoreWriteoffForm"/>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

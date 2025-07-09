@@ -1,9 +1,9 @@
-object SIZDocStoreEntryForm: TSIZDocStoreEntryForm
+object SIZDocStoreWriteoffForm: TSIZDocStoreWriteoffForm
   Left = 377
   Height = 200
   Top = 250
   Width = 500
-  Caption = 'SIZDocStoreEntryForm'
+  Caption = 'SIZDocStoreWriteoffForm'
   ClientHeight = 200
   ClientWidth = 500
   DesignTimePPI = 120
@@ -70,12 +70,12 @@ object SIZDocStoreEntryForm: TSIZDocStoreEntryForm
       Left = 80
       Height = 36
       Top = 0
-      Width = 181
+      Width = 61
       Align = alLeft
       AutoSize = True
       BevelOuter = bvNone
       ClientHeight = 36
-      ClientWidth = 181
+      ClientWidth = 61
       TabOrder = 1
       Visible = False
       object DividerBevel3: TDividerBevel
@@ -90,25 +90,11 @@ object SIZDocStoreEntryForm: TSIZDocStoreEntryForm
         Orientation = trVertical
         ParentFont = False
       end
-      object AddButton: TSpeedButton
+      object DelButton: TSpeedButton
         Cursor = crHandPoint
         Left = 21
         Height = 36
-        Hint = 'Добавить'
-        Top = 0
-        Width = 40
-        Align = alLeft
-        Images = Images.PX24
-        ImageIndex = 4
-        ShowHint = True
-        ParentShowHint = False
-        OnClick = AddButtonClick
-      end
-      object DelButton: TSpeedButton
-        Cursor = crHandPoint
-        Left = 61
-        Height = 36
-        Hint = 'Удалить'
+        Hint = 'Отменить списание (передачу) СИЗ'
         Top = 0
         Width = 40
         Align = alLeft
@@ -117,37 +103,6 @@ object SIZDocStoreEntryForm: TSIZDocStoreEntryForm
         ImageIndex = 5
         ShowHint = True
         ParentShowHint = False
-        OnClick = DelButtonClick
-      end
-      object EditButton: TSpeedButton
-        Cursor = crHandPoint
-        Left = 101
-        Height = 36
-        Hint = 'Редактировать'
-        Top = 0
-        Width = 40
-        Align = alLeft
-        Enabled = False
-        Images = Images.PX24
-        ImageIndex = 6
-        ShowHint = True
-        ParentShowHint = False
-        OnClick = EditButtonClick
-      end
-      object CopyButton: TSpeedButton
-        Cursor = crHandPoint
-        Left = 141
-        Height = 36
-        Hint = 'Копировать'
-        Top = 0
-        Width = 40
-        Align = alLeft
-        Enabled = False
-        Images = Images.PX24
-        ImageIndex = 9
-        ShowHint = True
-        ParentShowHint = False
-        OnClick = CopyButtonClick
       end
     end
   end
@@ -166,6 +121,5 @@ object SIZDocStoreEntryForm: TSIZDocStoreEntryForm
     Header.Columns = <>
     Header.MainColumn = -1
     TabOrder = 1
-    OnDblClick = VTDblClick
   end
 end
