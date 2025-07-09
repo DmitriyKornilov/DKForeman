@@ -30,7 +30,7 @@ type
     DividerBevel2: TDividerBevel;
     DividerBevel3: TDividerBevel;
     HistoryButton: TSpeedButton;
-    OutButton: TSpeedButton;
+    ReceivingButton: TSpeedButton;
     ExportButton: TSpeedButton;
     EntryButton: TSpeedButton;
     SIZWriteoffButton: TSpeedButton;
@@ -51,7 +51,7 @@ type
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure HistoryButtonClick(Sender: TObject);
-    procedure OutButtonClick(Sender: TObject);
+    procedure ReceivingButtonClick(Sender: TObject);
     procedure SIZCheckAllButtonClick(Sender: TObject);
     procedure SIZCollapseAllButtonClick(Sender: TObject);
     procedure SIZExpandAllButtonClick(Sender: TObject);
@@ -134,7 +134,7 @@ begin
   ]);
 
   Images.ToButtons([
-    ExportButton, EntryButton, OutButton, BackButton, WriteoffButton, HistoryButton,
+    ExportButton, EntryButton, ReceivingButton, BackButton, WriteoffButton, HistoryButton,
     CloseButton,
     SIZExpandAllButton, SIZCollapseAllButton,
     SIZCheckAllButton, SIZUncheckAllButton, SIZWriteoffButton
@@ -345,7 +345,7 @@ begin
   SIZListLoad;
 end;
 
-procedure TSIZStoreForm.OutButtonClick(Sender: TObject);
+procedure TSIZStoreForm.ReceivingButtonClick(Sender: TObject);
 begin
   SIZDocFormOpen(2);
   SIZListLoad;
