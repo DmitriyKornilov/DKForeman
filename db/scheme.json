@@ -1352,9 +1352,9 @@
     "FieldsList" : [
       "LOGID",
       "CARDID",
-      "RECEIVINGDATE",
-      "RECEIVINGDOCID",
-      "RECEIVINGINFOID",
+      "GETTINGDATE",
+      "GETTINGDOCID",
+      "GETTINGINFOID",
       "NOWINFOID",
       "SINGLECOMPLECT"
     ],
@@ -1406,7 +1406,7 @@
         ]
       }
     },
-    "RECEIVINGDATE" : {
+    "GETTINGDATE" : {
       "FieldType" : "DATETIME",
       "PrimaryKey" : false,
       "Status" : false,
@@ -1430,7 +1430,7 @@
         ]
       }
     },
-    "RECEIVINGDOCID" : {
+    "GETTINGDOCID" : {
       "FieldType" : "INTEGER",
       "PrimaryKey" : false,
       "Status" : false,
@@ -1454,7 +1454,7 @@
         ]
       }
     },
-    "RECEIVINGINFOID" : {
+    "GETTINGINFOID" : {
       "FieldType" : "INTEGER",
       "PrimaryKey" : false,
       "Status" : false,
@@ -1646,13 +1646,11 @@
       "ReferenceFrom" : {
         "TableNames" : [
           "SIZSTOREWRITEOFF",
-          "SIZSTAFFWRITEOFF",
-          "SIZCARDPERSONALLOG"
+          "SIZSTAFFWRITEOFF"
         ],
         "FieldNames" : [
           "DOCID",
-          "DOCID",
-          "RECEIVINGDOCID"
+          "DOCID"
         ]
       }
     },
@@ -2398,12 +2396,10 @@
       },
       "ReferenceFrom" : {
         "TableNames" : [
-          "SIZSTAFFSPECSIZE",
-          "SIZCARDPERSONALLOG"
+          "SIZSTAFFSPECSIZE"
         ],
         "FieldNames" : [
-          "INFOID",
-          "RECEIVINGINFOID"
+          "INFOID"
         ]
       }
     },
