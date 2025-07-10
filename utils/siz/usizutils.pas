@@ -18,15 +18,12 @@ function SIZLifeInMonthAndYears(const AMonths: Extended): String;
 function SIZNumLifeStr(const ANum, ALife: Integer): String;
 function SIZLifePeriod(const ALife: Integer): String;
 function SIZLifeInMonthsFromDates(const AGivingDate, AWritingDate: TDate): Extended;
-function SIZLifeInMonths(const AGettingCount, ANormCount, ANormLife, AWearPercent: Integer;
-                            const AUseWearPercent: Boolean = True): Extended;
+function SIZLifeInMonths(const AReceivingCount, ANormCount, ANormLife: Integer): Extended;
 
-function SIZWriteoffDate(const AGettingDate: TDate;
-                            const AGettingCount, ANormCount, ANormLife, AWearPercent: Integer;
-                            const AUseWearPercent: Boolean = True): TDate;
-function SIZWriteoffDateStr(const AGettingDate: TDate;
-                            const AGettingCount, ANormCount, ANormLife, AWearPercent: Integer;
-                            const AUseWearPercent: Boolean = True): String;
+function SIZWriteoffDate(const AReceivingDate: TDate;
+                         const AReceivingCount, ANormCount, ANormLife: Integer): TDate;
+function SIZWriteoffDateStr(const AReceivingDate: TDate;
+                            const AReceivingCount, ANormCount, ANormLife: Integer): String;
 function SIZWriteoffDateStr(const AWiteoffDate: TDate): String;
 
 function SIZFullSize(const ASizeType, ASizeID: Integer;
@@ -39,16 +36,21 @@ function SIZFullSize(const ASizeTypes, ASizeIDs, AHeightIDs: TIntMatrix;
 
 function SIZNormFullName(const ANormName, ANormNote: String): String;
 
-procedure SIZChooseFromStaffAndSpecSizes(const ASpecSizeID, ASpecHeightID,
-                                      AStaffSizeID, AStaffHeightID: Integer;
-                                      out ASizeID, AHeightID: Integer);
-
 function SIZDocFullName(const ADocName, ADocNum: String;
                         const ADocDate: TDate;
                         const ANeedEmptyNumMark: Boolean = False): String;
 function SIZDocFullName(const ADocNames, ADocNums: TStrVector;
                         const ADocDates: TDateVector;
                         const ANeedEmptyNumMark: Boolean = False): TStrVector;
+
+procedure SIZStatusInfoVerifyDates(const ALogIDs: TInt64Vector;
+                                const ASizNames:TStrVector;
+                                const ASizCounts: TIntVector;
+                                const AReceivingDates, AWriteoffDates: TDateVector;
+                                out AOutLogIDs: TInt64Vector;
+                                out AOutSizNames: TStrVector;
+                                out AOutSizCounts: TIntVector;
+                                out AOutReceivingDates, AOutWriteoffDates: TDateVector);
 
 implementation
 
@@ -288,42 +290,34 @@ begin
   end;
 end;
 
-function SIZLifeInMonths(const AGettingCount, ANormCount, ANormLife, AWearPercent: Integer;
-                            const AUseWearPercent: Boolean = True): Extended;
+function SIZLifeInMonths(const AReceivingCount, ANormCount, ANormLife: Integer): Extended;
 begin
-  if AUseWearPercent and (AWearPercent>0) then
-    Result:= ((100-AWearPercent)/100)*AGettingCount*ANormLife/ANormCount
-  else
-    Result:= AGettingCount*ANormLife/ANormCount;
+  Result:= AReceivingCount*ANormLife/ANormCount;
 end;
 
-function SIZWriteoffDate(const AGettingDate: TDate;
-                            const AGettingCount, ANormCount, ANormLife, AWearPercent: Integer;
-                            const AUseWearPercent: Boolean = True): TDate;
+function SIZWriteoffDate(const AReceivingDate: TDate;
+                         const AReceivingCount, ANormCount, ANormLife: Integer): TDate;
 var
   DeltaMonth: Extended;
 begin
   if ANormLife>0 then
   begin
-    DeltaMonth:= SIZLifeInMonths(AGettingCount, ANormCount, ANormLife,
-                                   AWearPercent, AUseWearPercent);
-    Result:= IncMonthExt(AGettingDate, DeltaMonth);
+    DeltaMonth:= SIZLifeInMonths(AReceivingCount, ANormCount, ANormLife);
+    Result:= IncMonthExt(AReceivingDate, DeltaMonth);
   end
   else
     Result:= INFDATE;
 end;
 
-function SIZWriteoffDateStr(const AGettingDate: TDate;
-                            const AGettingCount, ANormCount, ANormLife, AWearPercent: Integer;
-                            const AUseWearPercent: Boolean = True): String;
+function SIZWriteoffDateStr(const AReceivingDate: TDate;
+                            const AReceivingCount, ANormCount, ANormLife: Integer): String;
 var
   D: TDate;
 begin
   if ANormLife=0 then
     Result:= '-'
   else begin
-    D:= SIZWriteoffDate(AGettingDate, AGettingCount, ANormCount, ANormLife,
-                         AWearPercent, AUseWearPercent);
+    D:= SIZWriteoffDate(AReceivingDate, AReceivingCount, ANormCount, ANormLife);
     Result:= FormatDateTime('dd.mm.yyyy', D);
   end;
 end;
@@ -398,21 +392,6 @@ begin
     Result:= ANormNote;
 end;
 
-procedure SIZChooseFromStaffAndSpecSizes(const ASpecSizeID, ASpecHeightID,
-                                      AStaffSizeID, AStaffHeightID: Integer;
-                                      out ASizeID, AHeightID: Integer);
-begin
-  if (ASpecSizeID>0) then
-  begin
-    ASizeID:= ASpecSizeID;
-    AHeightID:= ASpecHeightID;
-  end
-  else begin
-    ASizeID:= AStaffSizeID;
-    AHeightID:= AStaffHeightID;
-  end;
-end;
-
 function SIZDocFullName(const ADocName, ADocNum: String;
                         const ADocDate: TDate;
                         const ANeedEmptyNumMark: Boolean = False): String;
@@ -440,6 +419,53 @@ begin
   VDim(Result, Length(ADocNames));
   for i:= 0 to High(ADocNames) do
     Result[i]:= SIZDocFullName(ADocNames[i], ADocNums[i], ADocDates[i], ANeedEmptyNumMark);
+end;
+
+procedure SIZStatusInfoVerifyDates(const ALogIDs: TInt64Vector;
+                                const ASizNames:TStrVector;
+                                const ASizCounts: TIntVector;
+                                const AReceivingDates, AWriteoffDates: TDateVector;
+                                out AOutLogIDs: TInt64Vector;
+                                out AOutSizNames: TStrVector;
+                                out AOutSizCounts: TIntVector;
+                                out AOutReceivingDates, AOutWriteoffDates: TDateVector);
+var
+  i: Integer;
+  MaxWD: TDate;
+begin
+  AOutLogIDs:= nil;
+  AOutSizNames:= nil;
+  AOutSizCounts:= nil;
+  AOutReceivingDates:= nil;
+  AOutWriteoffDates:= nil;
+  //выбираем непросроченные сиз
+  for i:= 0 to High(ASizNames) do
+  begin
+    if CompareDate(AWriteoffDates[i], Date)>=0 then
+    begin
+      VAppend(AOutLogIDs, ALogIDs[i]);
+      VAppend(AOutSizNames, ASizNames[i]);
+      VAppend(AOutSizCounts, ASizCounts[i]);
+      VAppend(AOutReceivingDates, AReceivingDates[i]);
+      VAppend(AOutWriteoffDates, AWriteoffDates[i]);
+    end;
+  end;
+  //если есть непросроченные, выходим
+  if Length(AOutSizNames)>0 then Exit;
+  //последняя дата списания
+  MaxWD:= VMaxDate(AWriteoffDates);
+  //выбираем самые последние просроченые СИЗ
+  for i:= 0 to High(ASizNames) do
+  begin
+    if SameDate(AWriteoffDates[i], MaxWD) then
+    begin
+      VAppend(AOutLogIDs, ALogIDs[i]);
+      VAppend(AOutSizNames, ASizNames[i]);
+      VAppend(AOutSizCounts, ASizCounts[i]);
+      VAppend(AOutReceivingDates, AReceivingDates[i]);
+      VAppend(AOutWriteoffDates, AWriteoffDates[i]);
+    end;
+  end;
 end;
 
 end.

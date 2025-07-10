@@ -8,7 +8,7 @@ uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls,
   fpspreadsheetgrid,
   //Project utils
-  UTypes, UConst, UVars, USIZCardSheet, USIZNormTypes,
+  UTypes, UConst, UVars, USIZCardSheet, USIZNormTypes, USIZCardTypes,
   //DK packages utils
   DK_Zoom, DK_CtrlUtils, DK_Vector;
 
@@ -30,6 +30,7 @@ type
     Sheet: TSIZCardStatusSheet;
 
     SubItems: TNormSubItems;
+    StatusItems: TStatusItems;
 
     procedure DataDraw(const AZoomPercent: Integer);
     procedure DataReDraw;
@@ -37,7 +38,8 @@ type
     procedure SettingsLoad;
   public
     procedure SettingsSave;
-    procedure DataUpdate(const ASubItems: TNormSubItems);
+    procedure DataUpdate(const ASubItems: TNormSubItems;
+                         const AStatusItems: TStatusItems);
   end;
 
 var
@@ -69,7 +71,7 @@ begin
   try
     ZoomPercent:= AZoomPercent;
     Sheet.Zoom(ZoomPercent);
-    Sheet.Draw(SubItems);
+    Sheet.Draw(SubItems, StatusItems);
 
   finally
     ViewGrid.Visible:= True;
@@ -98,9 +100,11 @@ begin
   DataBase.SettingsUpdate(SETTING_NAMES_SIZCARDSTATUSFORM, SettingValues);
 end;
 
-procedure TSIZCardStatusForm.DataUpdate(const ASubItems: TNormSubItems);
+procedure TSIZCardStatusForm.DataUpdate(const ASubItems: TNormSubItems;
+                                        const AStatusItems: TStatusItems);
 begin
   SubItems:= ASubItems;
+  StatusItems:= AStatusItems;
 
   DataReDraw;
 end;

@@ -26,7 +26,7 @@ uses
   USIZCardFrontForm, USIZCardBackForm, USIZCardStatusForm, USIZCardSheet, 
 UParamForm, UVars, USIZDocForm, USIZStoreHistoryForm, USIZDocEditForm, 
 usizstoreentryeditform, USIZStoreWriteoffForm, USIZDocStoreEntryForm, 
-USIZDocStoreWriteoffForm;
+USIZDocStoreWriteoffForm, USIZCardTypes;
 
 {$R *.res}
 

@@ -1352,11 +1352,10 @@
     "FieldsList" : [
       "LOGID",
       "CARDID",
-      "GETTINGDATE",
-      "GETTINGDOCID",
-      "GETTINGINFOID",
-      "NOWINFOID",
-      "SINGLECOMPLECT"
+      "RECEIVINGDATE",
+      "RECEIVINGDOCID",
+      "RECEIVINGINFOID",
+      "NOWINFOID"
     ],
     "LOGID" : {
       "FieldType" : "INTEGER",
@@ -1406,7 +1405,7 @@
         ]
       }
     },
-    "GETTINGDATE" : {
+    "RECEIVINGDATE" : {
       "FieldType" : "DATETIME",
       "PrimaryKey" : false,
       "Status" : false,
@@ -1430,7 +1429,7 @@
         ]
       }
     },
-    "GETTINGDOCID" : {
+    "RECEIVINGDOCID" : {
       "FieldType" : "INTEGER",
       "PrimaryKey" : false,
       "Status" : false,
@@ -1454,7 +1453,7 @@
         ]
       }
     },
-    "GETTINGINFOID" : {
+    "RECEIVINGINFOID" : {
       "FieldType" : "INTEGER",
       "PrimaryKey" : false,
       "Status" : false,
@@ -1494,32 +1493,6 @@
         "FieldName" : "INFOID",
         "OnDelete" : 0,
         "OnUpdate" : 0
-      },
-      "ReferenceFrom" : {
-        "TableNames" : [
-        ],
-        "FieldNames" : [
-        ]
-      }
-    },
-    "SINGLECOMPLECT" : {
-      "FieldType" : "INTEGER",
-      "PrimaryKey" : false,
-      "Status" : false,
-      "NotNull" : true,
-      "DefaultValue" : "0",
-      "Description" : [
-        "Флаг принадлежности всех СИЗ в SIZCARDPERSONALLOGINFO для этого LogID одному комплекту:",
-        "1 - да, при этом срок службы не суммируется,",
-        "0 - нет, срок службы суммируется"
-      ],
-      "ExistingValues" : [
-      ],
-      "ReferenceTo" : {
-        "TableName" : "",
-        "FieldName" : "",
-        "OnDelete" : 4,
-        "OnUpdate" : 4
       },
       "ReferenceFrom" : {
         "TableNames" : [
@@ -1646,11 +1619,13 @@
       "ReferenceFrom" : {
         "TableNames" : [
           "SIZSTOREWRITEOFF",
-          "SIZSTAFFWRITEOFF"
+          "SIZSTAFFWRITEOFF",
+          "SIZCARDPERSONALLOG"
         ],
         "FieldNames" : [
           "DOCID",
-          "DOCID"
+          "DOCID",
+          "RECEIVINGDOCID"
         ]
       }
     },
@@ -2396,10 +2371,12 @@
       },
       "ReferenceFrom" : {
         "TableNames" : [
-          "SIZSTAFFSPECSIZE"
+          "SIZSTAFFSPECSIZE",
+          "SIZCARDPERSONALLOG"
         ],
         "FieldNames" : [
-          "INFOID"
+          "INFOID",
+          "RECEIVINGINFOID"
         ]
       }
     },

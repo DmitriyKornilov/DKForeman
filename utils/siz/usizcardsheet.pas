@@ -7,10 +7,10 @@ interface
 uses
   Classes, SysUtils, Graphics, fpstypes, DateUtils,
   //DK packages utils
-  DK_SheetTables, DK_SheetTypes, DK_Vector, DK_Matrix, DK_StrUtils, DK_Const,
+  DK_SheetTypes, DK_Vector, DK_Matrix, DK_StrUtils, DK_Const,
   DK_SheetWriter,
   //Project utils
-  USIZNormTypes, USIZUtils, USIZSizes, UConst, USIZNormSheet;
+  USIZNormTypes, USIZUtils, USIZSizes, UConst, USIZNormSheet, USIZCardTypes;
 
 type
 
@@ -101,16 +101,18 @@ type
       COLUMN8_WIDTH = 80;  //дата следующей выдачи
     var
       FSubItems: TNormSubItems;
+      FStatusItems: TStatusItems;
 
     procedure CaptionDraw(var ARow: Integer);
 
     procedure ReasonDraw(var ARow: Integer; const AIndex: Integer);
     procedure NormLineDraw(var ARow: Integer; const AIndex: Integer);
-    procedure GettingLineDraw(var ARow: Integer; const AIndex: Integer);
+    procedure ReceivingLineDraw(var ARow: Integer; const AIndex: Integer);
     procedure NormDraw(var ARow: Integer);
 
   public
-    procedure Draw(const ASubItems: TNormSubItems);
+    procedure Draw(const ASubItems: TNormSubItems;
+                   const AStatusItems: TStatusItems);
   end;
 
 implementation
@@ -168,7 +170,7 @@ begin
   R:= ARow;
   Writer.SetBackgroundDefault;
   Writer.SetAlignment(haCenter, vaCenter);
-  Writer.SetFont(Font.Name, Font.Size+1, [], clBlack);
+  Writer.SetFont(Font.Name, Font.Size+1, [fsBold], clBlack);
 
   S:= 'ЛИЧНАЯ КАРТОЧКА № ';
   if SEmpty(FCardNum) then
@@ -317,7 +319,7 @@ var
 begin
   R:= ARow;
   Writer.SetBackgroundDefault;
-  Writer.SetFont(Font.Name, Font.Size, [], clBlack);
+  Writer.SetFont(Font.Name, Font.Size, [fsBold], clBlack);
   Writer.SetAlignment(haCenter, vaCenter);
 
   Writer.WriteText(R, 1, R, 4, 'Наименование СИЗ', cbtOuter, True, True);
@@ -335,7 +337,7 @@ procedure TSIZCardFrontSheet.ReasonDraw(var ARow: Integer; const AIndex: Integer
 begin
   Writer.SetBackgroundDefault;
   Writer.SetAlignment(haLeft, vaCenter);
-  Writer.SetFont(Font.Name, Font.Size, [fsItalic], clBlack);
+  Writer.SetFont(Font.Name, Font.Size, [fsBold, fsItalic], clBlack);
   Writer.WriteText(ARow, 1, ARow, 9, FSubItems[AIndex].Reason + ':', cbtOuter, True, True);
   ARow:= ARow + 1;
 end;
@@ -697,7 +699,8 @@ begin
   VectorDraw(Writer, V, ARow, 3, EmptyStr, False, haCenter, vaTop);
 
   //Размер
-  VDim(V, N+1); //!!!!!
+  V:= SIZFullSize(FSubItems[AIndex].Info.SizeTypes,
+                  FStatusItems[AIndex].SizeIDs, FStatusItems[AIndex].HeightIDs);
   VectorDraw(Writer, V, ARow, 4, EmptyStr, False, haCenter, vaTop);
 
   //Границы ячеек
@@ -707,7 +710,7 @@ begin
   ARow:= ARow + 2*N + 1;
 end;
 
-procedure TSIZCardStatusSheet.GettingLineDraw(var ARow: Integer;
+procedure TSIZCardStatusSheet.ReceivingLineDraw(var ARow: Integer;
   const AIndex: Integer);
 begin
 
@@ -750,7 +753,8 @@ begin
 
 end;
 
-procedure TSIZCardStatusSheet.Draw(const ASubItems: TNormSubItems);
+procedure TSIZCardStatusSheet.Draw(const ASubItems: TNormSubItems;
+                                   const AStatusItems: TStatusItems);
 var
   R: Integer;
 begin
@@ -761,6 +765,7 @@ begin
   end;
 
   FSubItems:= ASubItems;
+  FStatusItems:= AStatusItems;
 
   Writer.BeginEdit;
 

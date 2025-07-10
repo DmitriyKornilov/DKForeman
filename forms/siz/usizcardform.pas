@@ -9,7 +9,7 @@ uses
   Buttons, DividerBevel, StdCtrls, ComCtrls, fpspreadsheetgrid,
   //Project utils
   UVars, UConst, UTypes, UUtils, UTimingUtils, ColorSpeedButton, USIZSizes,
-  USIZNormTypes,
+  USIZNormTypes, USIZCardTypes,
   //DK packages utils
   DK_VSTTables, DK_VSTParamList, DK_Vector, DK_Filter, DK_CtrlUtils, DK_Color,
   DK_StrUtils,
@@ -106,6 +106,7 @@ type
     CardBDs, CardEDs: TDateVector;
 
     SubItems: TNormSubItems;
+    StatusItems: TStatusItems;
 
     procedure ParamListCreate;
 
@@ -385,12 +386,23 @@ begin
 end;
 
 procedure TSIZCardForm.CardListSelect;
+const
+  //WRITEOFF_TYPE - расчет даты следующей выдачи:
+  // 0 - по нормам на момент выдачи,
+  // 1 - по текущим нормам}
+  WRITEOFF_TYPE = 0; //!!!!!!!!!!!!!!!
 begin
   FrontEditButton.Enabled:= CardList.IsSelected;
 
   NormSubItemsClear(SubItems);
   if CardList.IsSelected then
     DataBase.SIZNormSubItemsLoad(CardItemIDs[CardList.SelectedIndex], SubItems);
+
+  StatusItemsClear(StatusItems);
+  if Length(SubItems)>0 then
+    DataBase.SIZStatusLoad(TabNumIDs[StaffList.SelectedIndex], WRITEOFF_TYPE,
+                           Date, SubItems, StatusItems);
+
 
   CardCaptionUpdate;
   CardDataUpdate;
@@ -512,7 +524,7 @@ end;
 
 procedure TSIZCardForm.CardStatusUpdate;
 begin
-  (CategoryForm as TSIZCardStatusForm).DataUpdate(SubItems);
+  (CategoryForm as TSIZCardStatusForm).DataUpdate(SubItems, StatusItems);
 end;
 
 procedure TSIZCardForm.CardDataUpdate;

@@ -8,7 +8,7 @@ uses
   Classes, SysUtils, DateUtils,
   //Project utils
   UCalendar, UConst, USchedule, UTimetable, UWorkHours,
-  USIZNormTypes, USIZSizes, USIZUtils,
+  USIZNormTypes, USIZSizes, USIZUtils, USIZCardTypes,
   //DK packages utils
   DK_SQLite3, DK_SQLUtils, DK_Vector, DK_Matrix, DK_StrUtils, DK_Const,
   DK_DateUtils, DK_VSTDropDown, DK_Dialogs;
@@ -143,6 +143,8 @@ type
     {Получение периода работы по ID табельного номера: True - ОК, False - нет ID}
     function StaffTabNumWorkPeriodLoad(const ATabNumID: Integer;
                           out ARecrutDate, ADismissDate: TDate): Boolean;
+    {Получение StaffID по TabNumID: True - ОК, False - нет ID}
+    function StaffIDByTabNumID(const ATabNumID: Integer; out AStaffID: Integer): Boolean;
 
     {Список уникальных ID с матрицей периодов их действия за общий период по ID таб. номера: True - ОК, False - список пуст}
     function StaffParamIDsForPeriodLoad(const ATabNumID: Integer;
@@ -603,16 +605,25 @@ type
     function SIZStaffSizeUpdate(const AStaffID: Integer;
                           const ASizeIndexes: TSIZStaffSizeIndexes): Boolean;
 
+    function SIZSpecSizeLoad(const ATabNumID, AInfoID: Integer;
+                             out ASizeID, AHeightID: Integer): Boolean;
+    function SIZSpecSizeLoad(const AInfoID: Integer;
+                             out ATabNumIDs, ASizeIDs, AHeightIDs: TIntVector): Boolean;
+    function SIZSpecSizeWrite(const AInfoID, ATabNumID, ASizeID, AHeightID: Integer;
+                             const ACommit: Boolean = True): Boolean;
+    function SIZSpecSizeWrite(const AInfoID: Integer;
+                             const ATabNumIDs, ASizeIDs, AHeightIDs: TIntVector;
+                             const ACommit: Boolean = True): Boolean;
+    function SIZSpecSizeCopy(const ASourceInfoIDs, ADestInfoIDs: TIntVector;
+                             const ACommit: Boolean = True): Boolean;
 
-    function SIZStaffSpecSizeLoad(const AInfoID: Integer;
-                               out ATabNumIDs, ASizeIDs, AHeightIDs: TIntVector): Boolean;
-    function SIZStaffSpecSizeWrite(const AInfoID, ATabNumID, ASizeID, AHeightID: Integer;
-                               const ACommit: Boolean = True): Boolean;
-    function SIZStaffSpecSizeWrite(const AInfoID: Integer;
-                               const ATabNumIDs, ASizeIDs, AHeightIDs: TIntVector;
-                               const ACommit: Boolean = True): Boolean;
-    function SIZStaffSpecSizeCopy(const ASourceInfoIDs, ADestInfoIDs: TIntVector;
-                                  const ACommit: Boolean = True): Boolean;
+    procedure SizStatusSizeLoad(const ATabNumID, AInfoID, ASizeType: Integer;
+                             const AStaffSizes: TSizStaffSizeIndexes;
+                             out ASizeID, AHeightID: Integer);
+    procedure SIZStatusSizeLoad(const ATabNumID: Integer;
+                               const AInfoIDs, ASizeTypes: TIntVector;
+                               const AStaffSizes: TSizStaffSizeIndexes;
+                               out ASizeIDs, AHeightIDs: TIntVector);
 
     (**************************************************************************
                                 ДОКУМЕНТЫ СИЗ
@@ -722,7 +733,7 @@ type
                                 ЛИЧНЫЕ КАРТОЧКИ СИЗ
     **************************************************************************)
 
-    {Cписок сотрудников
+    {Cписок сотрудников для вывода личных карточек
      AListType - включать в список 0-всех, 1-работающих на текущую дату, 2-уволенных
      AOrderType - сортировка: 0-ФИО, 1-табельный номер, 2-должность
      AIsDescOrder=True - сортировка по убыванию, False - по возрастанию
@@ -733,23 +744,59 @@ type
                              const AIsDescOrder: Boolean;
                              out AStaffIDs, ATabNumIDs: TIntVector;
                              out AFs, ANs, APs, AGenders, ATabNums, APostNames: TStrVector): Boolean;
-
+    {Получение данных для формирования списка личных карточек
+     для табельного номера ATabNumID: True - ОК, False - пусто}
     function SIZPersonalCardDataLoad(const ATabNumID: Integer;
                  out ACardIDs, AItemIDs, AItemPostIDs: TIntVector;
                  out ACardNums, APostNames, ANormNames, ANormNotes: TStrVector;
                  out ATabNumBDs, ATabNumEDs, ANormBDs, ANormEDs: TDateVector): Boolean;
-
+    {Получение списка личных карточек для табельного номера ATabNumID:
+     True - ОК, False - пусто}
     function SIZPersonalCardListLoad(const ATabNumID: Integer;
                  out ACardIDs, AItemIDs, AItemPostIDs: TIntVector;
                  out ACardNums, APostNames, ANormNames: TStrVector;
                  out ACardBDs, ACardEDs: TDateVector): Boolean;
 
+    {Запись личной карточки: True - ОК, False - ошибка}
     function SIZPersonalCardAdd(out ACardID: Integer;
                                 const ACardNum: String;
                                 const ATabNumID, AItemPostID: Integer): Boolean;
+    {Обновление номера личной карточки: True - ОК, False - ошибка}
     function SIZPersonalCardUpdate(const ACardID: Integer;
                                 const ACardNum: String): Boolean;
+
+
+    {Получение подстроки статуса СИЗ для таб номера ATabNumID и соответствующей AInfoID}
+    procedure SIZStatusInfoDataLoad(const ATabNumID, AWriteoffType, AInfoID: Integer;
+                                out ALogIDs: TInt64Vector;
+                                out ASizNames: TStrVector;
+                                out ALifes: TDblVector;
+                                out AReceivingDates, AWriteoffDatesIfReturn: TDateVector);
+    procedure SIZStatusInfoDataLoad(const ATabNumID, AWriteoffType, AInfoID: Integer;
+                                out ALogIDs: TInt64Vector;
+                                out ASizNames:TStrVector;
+                                out ASizCounts: TIntVector;
+                                out AReceivingDates, AWriteoffDates: TDateVector);
+    procedure SIZStatusInfoLoad(const ATabNumID, AWriteoffType, AInfoID: Integer;
+                            out ALogIDs: TInt64Vector;
+                            out ASizNames: TStrVector;
+                            out ASizCounts: TIntVector;
+                            out AReceivingDates, AWriteoffDates: TDateVector);
+    {Получение строки статуса СИЗ для таб номера ATabNumID и соответствующих AInfoIDs}
+    procedure SIZStatusItemLoad(const ATabNumID, AWriteoffType: Integer;
+                                const AReportDate: TDate;
+                                const AInfoIDs: TIntVector;
+                                var AStatusItem: TStatusItem);
+    {Получение статуса СИЗ для таб номера ATabNumID и соответствующих норм ANormSubItems}
+    //AWriteoffType - расчет даты следующей выдачи:
+    // 0 - по нормам на момент выдачи,
+    // 1 - по текущим нормам}
+    function SIZStatusLoad(const ATabNumID, AWriteoffType: Integer;
+                           const AReportDate: TDate;
+                           const ANormSubItems: TNormSubItems;
+                           var AStatusItems: TStatusItems): Boolean;
   end;
+
 
 
 implementation
@@ -1618,6 +1665,13 @@ begin
     Result:= True;
   end;
   QClose;
+end;
+
+function TDataBase.StaffIDByTabNumID(const ATabNumID: Integer;
+                                     out AStaffID: Integer): Boolean;
+begin
+  AStaffID:= ValueInt32Int32ID('STAFFTABNUM', 'StaffID', 'TabNumID', ATabNumID);
+  Result:= AStaffID>0;
 end;
 
 function TDataBase.StaffPostForDate(const ATabNumID: Integer;
@@ -4072,7 +4126,7 @@ begin
       //записываем инфо строки-цели SIZNORMSUBITEMINFO и получаем их ID
       SIZNormSubItemInfoWrite(DestSubItemID, Info, DestInfoIDs, False{no commit});
       //копируем спец размеры СИЗ
-      SIZStaffSpecSizeCopy(Info.InfoIDs, DestInfoIDs, False{no commit});
+      SIZSpecSizeCopy(Info.InfoIDs, DestInfoIDs, False{no commit});
     end;
 
     if ACommit then QCommit;
@@ -5242,7 +5296,30 @@ begin
   end;
 end;
 
-function TDataBase.SIZStaffSpecSizeLoad(const AInfoID: Integer;
+function TDataBase.SIZSpecSizeLoad(const ATabNumID, AInfoID: Integer;
+                         out ASizeID, AHeightID: Integer): Boolean;
+begin
+  Result:= False;
+  ASizeID:= 0;
+  AHeightID:= 0;
+  QSetQuery(FQuery);
+  QSetSQL(
+    'SELECT SizeID, HeightID ' +
+    'FROM SIZSTAFFSPECSIZE ' +
+    'WHERE (TabNumID = :TabNumID) AND (InfoID = :InfoID)');
+  QParamInt('TabNumID', ATabNumID);
+  QParamInt('InfoID', AInfoID);
+  QOpen;
+  if not QIsEmpty then
+  begin
+    ASizeID:= QFieldInt('SizeID');
+    AHeightID:= QFieldInt('HeightID');
+    Result:= True;
+  end;
+  QClose;
+end;
+
+function TDataBase.SIZSpecSizeLoad(const AInfoID: Integer;
    out ATabNumIDs, ASizeIDs, AHeightIDs: TIntVector): Boolean;
 begin
   Result:= False;
@@ -5271,7 +5348,7 @@ begin
   QClose;
 end;
 
-function TDataBase.SIZStaffSpecSizeWrite(const AInfoID, ATabNumID, ASizeID,
+function TDataBase.SIZSpecSizeWrite(const AInfoID, ATabNumID, ASizeID,
   AHeightID: Integer; const ACommit: Boolean): Boolean;
 begin
   Result:= False;
@@ -5294,7 +5371,7 @@ begin
   end;
 end;
 
-function TDataBase.SIZStaffSpecSizeWrite(const AInfoID: Integer;
+function TDataBase.SIZSpecSizeWrite(const AInfoID: Integer;
                               const ATabNumIDs, ASizeIDs, AHeightIDs: TIntVector;
                               const ACommit: Boolean): Boolean;
 var
@@ -5322,7 +5399,7 @@ begin
   end;
 end;
 
-function TDataBase.SIZStaffSpecSizeCopy(const ASourceInfoIDs, ADestInfoIDs: TIntVector;
+function TDataBase.SIZSpecSizeCopy(const ASourceInfoIDs, ADestInfoIDs: TIntVector;
                                   const ACommit: Boolean = True): Boolean;
 var
   i: Integer;
@@ -5335,15 +5412,54 @@ begin
     for i:= 0 to High(ASourceInfoIDs) do
     begin
       //получаем данные по особым размерам СИЗ для пункта-источника
-      SIZStaffSpecSizeLoad(ASourceInfoIDs[i], TabNumIDs, SizeIDs, HeightIDs);
+      SIZSpecSizeLoad(ASourceInfoIDs[i], TabNumIDs, SizeIDs, HeightIDs);
       //пробегаем по всем полученным спецразмерам и записываем в инфо цели
-      SIZStaffSpecSizeWrite(ADestInfoIDs[i], TabNumIDs, SizeIDs, HeightIDs, False{no commit});
+      SIZSpecSizeWrite(ADestInfoIDs[i], TabNumIDs, SizeIDs, HeightIDs, False{no commit});
     end;
 
     if ACommit then QCommit;
     Result:= True;
   except
     if ACommit then QRollback;
+  end;
+end;
+
+procedure TDataBase.SizStatusSizeLoad(const ATabNumID, AInfoID, ASizeType: Integer;
+                             const AStaffSizes: TSizStaffSizeIndexes;
+                             out ASizeID, AHeightID: Integer);
+var
+  SpecSizeID, SpecHeightID, StaffSizeID, StaffHeightID: Integer;
+begin
+  //определяем размеры из личной карточки
+  SIZStaffSizesForSizeType(AStaffSizes, ASizeType, StaffSizeID, StaffHeightID);
+  //загружаем особые размеры
+  SIZSpecSizeLoad(ATabNumID, AInfoID, SpecSizeID, SpecHeightID);
+  //выбираем spec size, если он есть, иначе простой размер
+  if ({%H-}SpecSizeID>0) then
+  begin
+    ASizeID:= SpecSizeID;
+    AHeightID:= {%H-}SpecHeightID;
+  end
+  else begin
+    ASizeID:= StaffSizeID;
+    AHeightID:= StaffHeightID;
+  end;
+end;
+
+procedure TDataBase.SIZStatusSizeLoad(const ATabNumID: Integer;
+                               const AInfoIDs, ASizeTypes: TIntVector;
+                               const AStaffSizes: TSizStaffSizeIndexes;
+                               out ASizeIDs, AHeightIDs: TIntVector);
+var
+  i, SizeID, HeightID: Integer;
+begin
+  ASizeIDs:= nil;
+  AHeightIDs:= nil;
+  for i:= 0 to High(AInfoIDs) do
+  begin
+    SIZStatusSizeLoad(ATabNumID, AInfoIDs[i], ASizeTypes[i], AStaffSizes, SizeID, HeightID);
+    VAppend(ASizeIDs, SizeID);
+    VAppend(AHeightIDs, HeightID);
   end;
 end;
 
@@ -6466,6 +6582,297 @@ function TDataBase.SIZPersonalCardUpdate(const ACardID: Integer;
                                          const ACardNum: String): Boolean;
 begin
   Result:= UpdateInt32ID('SIZCARDPERSONAL', 'CardNum', 'CardID', ACardID, ACardNum);
+end;
+
+procedure TDataBase.SIZStatusInfoDataLoad(const ATabNumID, AWriteoffType, AInfoID: Integer;
+                                out ALogIDs: TInt64Vector;
+                                out ASizNames: TStrVector;
+                                out ALifes: TDblVector;
+                                out AReceivingDates, AWriteoffDatesIfReturn: TDateVector);
+var
+  S: String;
+  M: Double;
+begin
+  ALogIDs:= nil;
+  ASizNames:= nil;
+  ALifes:= nil;
+  AReceivingDates:= nil;
+  AWriteOffDatesIfReturn:= nil;
+
+  if AWriteoffType=0 then
+    S:= 'ReceivingInfoID'
+  else
+    S:= 'NowInfoID';
+
+  QSetQuery(FQuery);
+  QSetSQL(
+    'SELECT t1.LogID, t2.ReceivingDate,  ' +
+           't3.Num, t3.Life, t6.SizName, t8.DocDate as WriteoffDate ' +
+    'FROM SIZCARDPERSONALLOGINFO t1 ' +
+    'INNER JOIN SIZCARDPERSONALLOG t2 ON (t1.LogID=t2.LogID) ' +
+    'INNER JOIN SIZCARDPERSONAL tt ON (t2.CardID=tt.CardID) ' +
+    'INNER JOIN SIZNORMSUBITEMINFO t3 ON (t2.' + S + '=t3.InfoID) ' +
+    'INNER JOIN SIZSTORELOG t4 ON (t1.StoreID=t4.StoreID) ' +
+    'INNER JOIN SIZSTOREENTRY t5 ON (t4.EntryID=t5.EntryID) ' +
+    'INNER JOIN SIZNAME t6 ON (t5.NameID=t6.NameID) ' +
+    'LEFT OUTER JOIN SIZSTAFFWRITEOFF t7 ON (t1.StoreID=t7.StoreID) ' +
+    'LEFT OUTER JOIN SIZDOC t8 ON (t7.DocID=t8.DocID) ' +
+    'WHERE (tt.TabNumID = :TabNumID) AND (t2.NowInfoID = :InfoID) ' +
+    'ORDER BY t2.ReceivingDate DESC, t1.LogID, t5.NameID '
+   );
+  QParamInt('TabNumID', ATabNumID);
+  QParamInt('InfoID', AInfoID);
+  QOpen;
+  if not QIsEmpty then
+  begin
+    QFirst;
+    while not QEOF do
+    begin
+      VAppend(ALogIDs, QFieldInt64('LogID'));
+      VAppend(ASizNames, QFieldStr('SizName'));
+      VAppend(AReceivingDates, QFieldDT('GettingDate'));
+      if QIsNull('WriteoffDate') then
+      begin
+        VAppend(AWriteOffDatesIfReturn, NULDATE);
+        M:= SIZLifeInMonths(1, QFieldInt('Num'), QFieldInt('Life'));
+      end
+      else begin
+        VAppend(AWriteOffDatesIfReturn, QFieldDT('WriteoffDate'));
+        M:= 0;
+      end;
+      VAppend(ALifes, M);
+      QNext;
+    end;
+  end;
+  QClose;
+end;
+
+procedure TDataBase.SIZStatusInfoDataLoad(const ATabNumID, AWriteoffType, AInfoID: Integer;
+                                out ALogIDs: TInt64Vector;
+                                out ASizNames:TStrVector;
+                                out ASizCounts: TIntVector;
+                                out AReceivingDates, AWriteoffDates: TDateVector);
+var
+  i, n1, n2, j: Integer;
+  Months: TDblVector;
+  M: Double;
+  D: TDate;
+  SizNames: TStrVector;
+  BDs: TDateVector;
+  Lifes: TDblVector;
+  LogIDs: TInt64Vector;
+  EDsData, EDs: TDateVector;
+
+  procedure AddValuesToVectors(const AInd: Integer);
+  begin
+    VAppend(ALogIDs, LogIDs[AInd]);
+    VAppend(ASizNames, SizNames[AInd]);
+    VAppend(AReceivingDates, BDs[AInd]);
+    VAppend(Months, Lifes[AInd]);
+    if SameDate(EDsData[AInd], NULDATE) then
+      VAppend(EDs, NULDATE)
+    else
+      VAppend(EDs, EDsData[AInd]);
+    VAppend(ASizCounts, 1);
+  end;
+
+begin
+  ALogIDs:= nil;
+  ASizNames:= nil;
+  ASizCounts:= nil;
+  AReceivingDates:= nil;
+  AWriteoffDates:= nil;
+
+  //получаем список всех выданных для этого InfoID СИЗ
+  SizStatusInfoDataLoad(ATabNumID, AWriteoffType, AInfoID, LogIDs, SizNames,
+                        Lifes, BDs, EDsData);
+  //если ничего не выдавалось
+  if Length(SizNames)=0 then Exit;
+  //проверяем дубли (если выдавалось несколько сиз) и определяем кол-во и срок службы
+  Months:= nil;
+  //добавляем первое СИЗ в список
+  AddValuesToVectors(0);
+  for i:= 1 to High(SizNames) do
+  begin
+    if (LogIDs[i-1]=LogIDs[i]) and (SizNames[i]=SizNames[i-1]) then
+    begin
+      ASizCounts[High(ASizCounts)]:= ASizCounts[High(ASizCounts)] + 1;
+      Months[High(Months)]:= Months[High(Months)] + Lifes[i];
+    end
+    else begin  //другое СИЗ - добавляем в список
+      AddValuesToVectors(i);
+    end;
+  end;
+  //определяем даты списания
+  for i:= 0 to High(ALogIDs) do
+  begin
+    if SameDate(EDs[i], NULDATE) then
+    begin
+      if Months[i]=0 then
+        VAppend(AWriteoffDates, INFDATE)
+      else
+        VAppend(AWriteoffDates, NULDATE);
+    end
+    else VAppend(AWriteoffDates, EDs[i]);
+  end;
+  n1:= 0;
+  for i:= 1 to High(ALogIDs) do
+  begin
+    if i=n1 then continue;
+    if ALogIDs[i-1]<>ALogIDs[i] then
+    begin
+      n2:= i-1;
+      if SameDate(AWriteoffDates[i-1], NULDATE) then
+      begin
+        M:= VSum(Months, n1, n2);
+        D:= IncMonthExt(AReceivingDates[i-1], M);
+        for j:= n1 to n2 do AWriteoffDates[j]:= D;
+      end;
+      n1:= i+1;
+    end;
+  end;
+  //оставшиеся
+  n1:= n1-1;
+  n2:= High(ALogIDs);
+  if SameDate(AWriteoffDates[n2], NULDATE) then
+  begin
+    M:= VSum(Months, n1, n2);
+    D:= IncMonthExt(AReceivingDates[n2], M);
+    for j:= n1 to n2 do AWriteoffDates[j]:= D;
+  end;
+end;
+
+procedure TDataBase.SIZStatusInfoLoad(const ATabNumID, AWriteoffType, AInfoID: Integer;
+                            out ALogIDs: TInt64Vector;
+                            out ASizNames: TStrVector;
+                            out ASizCounts: TIntVector;
+                            out AReceivingDates, AWriteoffDates: TDateVector);
+var
+  LogIDs: TInt64Vector;
+  SizNames: TStrVector;
+  SizCounts: TIntVector;
+  BDs, EDs: TDateVector;
+begin
+  ALogIDs:= nil;
+  ASizNames:= nil;
+  ASizCounts:= nil;
+  AReceivingDates:= nil;
+  AWriteoffDates:= nil;
+  //получаем список всех выданных СИЗ для InfoID
+  SIZStatusInfoDataLoad(ATabNumID, AWriteoffType, AInfoID,
+                        LogIDs, SizNames, SizCounts, BDs, EDs);
+  if Length(SizNames) = 0 then Exit;
+  //данные по датам списания
+  SIZStatusInfoVerifyDates(LogIDs, SizNames, SizCounts, BDs, EDs,
+                           ALogIDs, ASizNames, ASizCounts, AReceivingDates, AWriteoffDates);
+end;
+
+procedure TDataBase.SIZStatusItemLoad(const ATabNumID, AWriteoffType: Integer;
+                                const AReportDate: TDate;
+                                const AInfoIDs: TIntVector;
+                                var AStatusItem: TStatusItem);
+var
+  i, j: Integer;
+  MaxWD: TDate;
+
+  VLogIDs: TInt64Vector;
+  VSizNames: TStrVector;
+  VSizCounts: TIntVector;
+  VBDs, VEDs: TDateVector;
+
+  MLogIDs: TInt64Matrix;
+  MSizNames: TStrMatrix;
+  MSizCounts: TIntMatrix;
+  MBDs, MEDs: TDateMatrix;
+
+  function IsFreshExists(const ADates: TDateMatrix): Boolean;
+  var
+    x, y: Integer;
+  begin
+    Result:= False;
+    for x:= 0 to High(ADates) do
+      for y:=0 to High(ADates[x]) do
+        if CompareDate(ADates[x, y], AReportDate)>=0 then
+    begin
+       Result:= True;
+       Exit;
+    end;
+  end;
+
+begin
+  MLogIDs:= nil;
+  MSizNames:= nil;
+  MSizCounts:= nil;
+  MBDs:= nil;
+  MEDs:= nil;
+
+  //получаем инфо статуса для каждого инфо строки пункта нормы
+  for i:=0 to High(AInfoIDs) do
+  begin
+    SIZStatusInfoLoad(ATabNumID, AWriteoffType, AInfoIDs[i],
+                      VLogIDs, VSizNames, VSizCounts, VBDs, VEDs);
+    if Length(VLogIDs)>0 then
+    begin
+      MAppend(MLogIDs, VLogIDs);
+      MAppend(MSizNames, VSizNames);
+      MAppend(MSizCounts, VSizCounts);
+      MAppend(MBDs, VBDs);
+      MAppend(MEDs, VEDs);
+    end;
+  end;
+  if Length(MLogIDs)>0 then
+  begin
+    //если есть хотя бы одно непросроченное сиз на AReportDate, выбираем все непросроченные СИЗ
+    if IsFreshExists(MEDs) then
+    begin
+      AStatusItem.Info.IsFreshExists:= True;
+      for i:= 0 to High(MEDs) do for j:=0 to High(MEDs[i]) do
+        if CompareDate(MEDs[i,j], AReportDate)>=0 then
+           StatusItemInfoAdd(AStatusItem.Info, i, MLogIDs[i,j], MSizNames[i,j],
+                             MSizCounts[i,j], MBDs[i,j], MEDs[i,j]);
+    end
+    else begin //все просроченные -> выбираем самые свежие
+      MaxWD:= MMaxDate(MEDs);
+      for i:= 0 to High(MEDs) do for j:=0 to High(MEDs[i]) do
+        if SameDate(MEDs[i,j], MaxWD) then
+           StatusItemInfoAdd(AStatusItem.Info, i, MLogIDs[i,j], MSizNames[i,j],
+                             MSizCounts[i,j], MBDs[i,j], MEDs[i,j]);
+    end;
+  end;
+end;
+
+function TDataBase.SIZStatusLoad(const ATabNumID, AWriteoffType: Integer;
+                           const AReportDate: TDate;
+                           const ANormSubItems: TNormSubItems;
+                           var AStatusItems: TStatusItems): Boolean;
+var
+  i, StaffID: Integer;
+  StaffSizes: TSIZStaffSizeIndexes;
+  SizeIDs, HeightIDs: TIntVector;
+  StatusItem: TStatusItem;
+begin
+  Result:= False;
+  //очищаем
+  StatusItemsClear(AStatusItems{%H-});
+  //загружаем ID размеров сотрудника
+  if not StaffIDByTabNumID(ATabNumID, StaffID) then Exit;
+  SIZStaffSizeLoad(StaffID, StaffSizes{%H-});
+  //пробегаем по всем строкам пункта типовой нормы
+  for i:=0 to High(ANormSubItems) do
+  begin
+    //определяем размеры
+    SIZStatusSizeLoad(ATabNumID, ANormSubItems[i].Info.InfoIDs,
+                      ANormSubItems[i].Info.SizeTypes, StaffSizes, SizeIDs, HeightIDs);
+    //заполняем размеры для этой строки StatusItem
+    StatusItemNew(StatusItem{%H-}, SizeIDs, HeightIDs);
+    //заполняем данные статуса
+    SIZStatusItemLoad(ATabNumID, AWriteoffType, AReportDate,
+                      ANormSubItems[i].Info.InfoIDs, StatusItem);
+    //добавляем StatusItem в вектор
+    StatusItemsAdd(AStatusItems, StatusItem);
+  end;
+
+  Result:= True;
 end;
 
 end.

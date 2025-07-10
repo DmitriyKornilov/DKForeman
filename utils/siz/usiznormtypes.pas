@@ -71,11 +71,11 @@ type
 
 type
   TNormItem = record
-    ItemID: Integer;
-    OrderNum: Integer;
-    PostIDs: TIntVector;
+    ItemID   : Integer;
+    OrderNum : Integer;
+    PostIDs  : TIntVector;
     PostNames: TStrVector;
-    SubItems: TNormSubItems;
+    SubItems : TNormSubItems;
   end;
 
   procedure NormItemClear(var AItem: TNormItem);
@@ -86,7 +86,6 @@ type
 
   procedure NormItemsClear(var AItems: TNormItems);
   procedure NormItemsAdd(var AItems: TNormItems; const AItem: TNormItem);
-  //procedure NormItemsSwap(var AItems: TNormItems; const AIndex1, AIndex2: Integer);
 
 type
   TNorm = record
@@ -323,22 +322,6 @@ begin
   SetLength(AItems, N+1);
   NormItemCopy(AItem, AItems[N]);
 end;
-
-//procedure NormItemsSwap(var AItems: TNormItems; const AIndex1, AIndex2: Integer);
-//var
-//  TmpValue: TNormItem;
-//  OrderNum1, OrderNum2: Integer;
-//begin
-//  OrderNum1:= AItems[AIndex1].OrderNum;
-//  OrderNum2:= AItems[AIndex2].OrderNum;
-//  //все значения меняем
-//  TmpValue:= AItems[AIndex1];
-//  AItems[AIndex1]:= AItems[AIndex2];
-//  AItems[AIndex2]:= TmpValue;
-//  //кроме №п/п
-//  AItems[AIndex1].OrderNum:= OrderNum1;
-//  AItems[AIndex2].OrderNum:= OrderNum2;
-//end;
 
 procedure NormClear(var ANorm: TNorm);
 begin

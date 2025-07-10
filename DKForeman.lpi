@@ -540,6 +540,11 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="USIZDocStoreWriteoffForm"/>
       </Unit>
+      <Unit>
+        <Filename Value="utils\siz\usizcardtypes.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="USIZCardTypes"/>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
