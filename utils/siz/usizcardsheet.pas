@@ -103,13 +103,16 @@ type
       FSubItems: TNormSubItems;
       FStatusItems: TStatusItems;
 
+      FInfoFirstRows: TIntVector; //первая строка начала NormSubItem.Info.InfoID
+      FInfoLastRows: TIntVector;  //последняя строка NormSubItem.Info.InfoID
+      FSubItemIndexes: TIntVector;
+      FInfoIndexes: TIntVector;
+
     procedure CaptionDraw(var ARow: Integer);
-
-    procedure ReasonDraw(var ARow: Integer; const AIndex: Integer);
-    procedure NormLineDraw(var ARow: Integer; const AIndex: Integer);
-    procedure ReceivingLineDraw(var ARow: Integer; const AIndex: Integer);
-    procedure NormDraw(var ARow: Integer);
-
+    procedure OrDraw(const ARow: Integer);
+    procedure InfoDraw(var ARow: Integer; const ASubItemIndex, AInfoIndex: Integer);
+    procedure ReasonDraw(const ARow: Integer; const ASubItemIndex: Integer);
+    procedure SubItemDraw(var ARow: Integer; const ASubItemIndex: Integer);
   public
     procedure Draw(const ASubItems: TNormSubItems;
                    const AStatusItems: TStatusItems);
@@ -661,102 +664,109 @@ begin
   ARow:= R;
 end;
 
-procedure TSIZCardStatusSheet.ReasonDraw(var ARow: Integer;
-  const AIndex: Integer);
+procedure TSIZCardStatusSheet.OrDraw(const ARow: Integer);
+begin
+  Writer.SetBackgroundDefault;
+  Writer.SetFont(Font.Name, Font.Size, [], clBlack);
+  Writer.SetAlignment(haLeft, vaTop);
+  Writer.WriteText(ARow, 1, ARow, 1, 'или', cbtNone);
+end;
+
+procedure TSIZCardStatusSheet.InfoDraw(var ARow: Integer;
+                                       const ASubItemIndex, AInfoIndex: Integer);
+var
+  i, n, k, R1, R2: Integer;
+  S: String;
+  D: TDate;
+begin
+  R1:= ARow;
+  R2:= R1;
+  n:= Length(FStatusItems[ASubItemIndex].Info.LogIDs[AInfoIndex]);
+  if n>0 then
+    R2:= ARow + n - 1;
+  VAppend(FInfoFirstRows, R1);
+  VAppend(FInfoLastRows, R2);
+  VAppend(FSubItemIndexes, ASubItemIndex);
+  VAppend(FInfoIndexes, AInfoIndex);
+  ARow:= R2;
+
+  Writer.SetBackgroundDefault;
+  Writer.SetFont(Font.Name, Font.Size, [], clBlack);
+
+  Writer.SetAlignment(haLeft, vaTop);
+  S:= FSubItems[ASubItemIndex].Info.Names[AInfoIndex];
+  Writer.WriteText(R1, 1, R2, 1, S, cbtNone, True, True);
+
+  Writer.SetAlignment(haCenter, vaTop);
+  S:= FSubItems[ASubItemIndex].Info.Units[AInfoIndex];
+  Writer.WriteText(R1, 2, R2, 2, S, cbtNone);
+
+  S:= SIZNumLifeStr(FSubItems[ASubItemIndex].Info.Nums[AInfoIndex],
+                    FSubItems[ASubItemIndex].Info.Lifes[AInfoIndex]);
+  Writer.WriteText(R1, 3, R2, 3, S, cbtNone);
+
+  S:= SIZFullSize(FSubItems[ASubItemIndex].Info.SizeTypes[AInfoIndex],
+                  FStatusItems[ASubItemIndex].SizeIDs[AInfoIndex],
+                  FStatusItems[ASubItemIndex].HeightIDs[AInfoIndex]);
+  Writer.WriteText(R1, 4, R2, 4, S, cbtNone);
+
+  if n=0 then Exit;
+
+  for i:=0 to n-1 do
+  begin
+    Writer.SetAlignment(haLeft, vaTop);
+    S:= FStatusItems[ASubItemIndex].Info.SizNames[AInfoIndex, i];
+    Writer.WriteText(R1+i, 5, S, cbtNone, True, True);
+
+    Writer.SetAlignment(haCenter, vaTop);
+    k:= FStatusItems[ASubItemIndex].Info.SizCounts[AInfoIndex, i];
+    Writer.WriteNumber(R1+i, 6, k, cbtNone);
+
+    D:= FStatusItems[ASubItemIndex].Info.ReceivingDates[AInfoIndex, i];
+    Writer.WriteDate(R1+i, 7, D, cbtNone);
+
+    D:= FStatusItems[ASubItemIndex].Info.WriteoffDates[AInfoIndex, i];
+    Writer.WriteDate(R1+i, 8, D, cbtNone);
+  end;
+
+end;
+
+procedure TSIZCardStatusSheet.ReasonDraw(const ARow: Integer; const ASubItemIndex: Integer);
 begin
   Writer.SetBackgroundDefault;
   Writer.SetAlignment(haLeft, vaCenter);
   Writer.SetFont(Font.Name, Font.Size, [fsBold, fsItalic], clBlack);
-  Writer.WriteText(ARow, 1, ARow, Writer.ColCount, FSubItems[AIndex].Reason + ':', cbtOuter, True, True);
-  ARow:= ARow + 1;
+  Writer.WriteText(ARow, 1, ARow, Writer.ColCount,
+                   FSubItems[ASubItemIndex].Reason + ':', cbtOuter, True, True);
 end;
 
-procedure TSIZCardStatusSheet.NormLineDraw(var ARow: Integer;
-  const AIndex: Integer);
-var
-  i, N: Integer;
-  V: TStrVector;
-begin
-  Writer.SetBackgroundDefault;
-  Writer.SetFont(Font.Name, Font.Size, [], clBlack);
-
-  V:= nil;
-  N:= High(FSubItems[AIndex].Info.Names);
-
-  //Наименование СИЗ по нормам
-  V:= VCut(FSubItems[AIndex].Info.Names);
-  VectorDraw(Writer, V, ARow, 1, 'или', False, haLeft, vaTop);
-
-  //Единица измерения
-  V:= VCut(FSubItems[AIndex].Info.Units);
-  VectorDraw(Writer, V, ARow, 2, EmptyStr, False, haCenter, vaTop);
-
-  //Количество на период
-  VDim(V, N+1);
-  for i:=0 to N do
-    V[i]:= SIZNumLifeStr(FSubItems[AIndex].Info.Nums[i],
-                         FSubItems[AIndex].Info.Lifes[i]);
-  VectorDraw(Writer, V, ARow, 3, EmptyStr, False, haCenter, vaTop);
-
-  //Размер
-  V:= SIZFullSize(FSubItems[AIndex].Info.SizeTypes,
-                  FStatusItems[AIndex].SizeIDs, FStatusItems[AIndex].HeightIDs);
-  VectorDraw(Writer, V, ARow, 4, EmptyStr, False, haCenter, vaTop);
-
-  //Границы ячеек
-  for i:= 1 to Writer.ColCount do
-    Writer.DrawBorders(ARow, i, ARow+2*N, i, cbtOuter);
-
-  ARow:= ARow + 2*N + 1;
-end;
-
-procedure TSIZCardStatusSheet.ReceivingLineDraw(var ARow: Integer;
-  const AIndex: Integer);
-begin
-
-end;
-
-procedure TSIZCardStatusSheet.NormDraw(var ARow: Integer);
+procedure TSIZCardStatusSheet.SubItemDraw(var ARow: Integer; const ASubItemIndex: Integer);
 var
   i, R: Integer;
-  S: String;
 begin
-  R:= ARow;
-  Writer.SetBackgroundDefault;
-  Writer.SetFont(Font.Name, Font.Size, [], clBlack);
-
-  //FFirstRows:= nil;
-  //FLastRows:= nil;
-
-  S:= MAIN_REASON;
-  for i:=0 to High(FSubItems) do
+  R:= ARow - 1;
+  for i:=0 to High(FSubItems[ASubItemIndex].Info.InfoIDs) do
   begin
-    if FSubItems[i].Reason<>S then
+    R:= R + 1;
+    if i>0 then
     begin
-      ReasonDraw(R, i);
-      //VAppend(FFirstRows, R);
-      NormLineDraw(R, i);
-      //VAppend(FLastRows, R-1);
-      S:= FSubItems[i].Reason;
-    end
-    else begin
-      //VAppend(FFirstRows, R);
-      NormLineDraw(R, i);
-      //VAppend(FLastRows, R-1);
+      OrDraw(R);
+      R:= R + 1;
     end;
+    InfoDraw(R, ASubItemIndex, i);
   end;
 
+  for i:= 1 to  Writer.ColCount do
+    Writer.DrawBorders(ARow, i, R, i, cbtOuter);
 
-  Writer.DrawBorders(R, 1, R, Writer.ColCount, cbtTop);
-
-  ARow:= R - 1;
-
+  ARow:= R;
 end;
 
 procedure TSIZCardStatusSheet.Draw(const ASubItems: TNormSubItems;
                                    const AStatusItems: TStatusItems);
 var
-  R: Integer;
+  i, R: Integer;
+  S: String;
 begin
   if Length(ASubItems)=0 then
   begin
@@ -767,12 +777,31 @@ begin
   FSubItems:= ASubItems;
   FStatusItems:= AStatusItems;
 
+  FInfoFirstRows:= nil;
+  FInfoLastRows:= nil;
+  FSubItemIndexes:= nil;
+  FInfoIndexes:= nil;
+
   Writer.BeginEdit;
 
   R:= 1;
   CaptionDraw(R);
+
+  S:= MAIN_REASON;
+  for i:=0 to High(FSubItems) do
+  begin
+    R:= R + 1;
+    if FSubItems[i].Reason<>S then
+    begin
+      ReasonDraw(R, i);
+      S:= FSubItems[i].Reason;
+      R:= R + 1;
+    end;
+    SubItemDraw(R, i);
+  end;
+
   R:= R + 1;
-  NormDraw(R);
+  Writer.DrawBorders(R, 1, R, Writer.ColCount, cbtTop);
 
   Writer.EndEdit;
 end;
