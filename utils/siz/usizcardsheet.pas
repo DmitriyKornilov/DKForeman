@@ -5,10 +5,10 @@ unit USIZCardSheet;
 interface
 
 uses
-  Classes, SysUtils, Graphics, fpstypes, DateUtils,
+  Classes, SysUtils, Graphics, fpstypes, DateUtils, Controls,
+  fpspreadsheet, fpspreadsheetgrid,
   //DK packages utils
-  DK_SheetTypes, DK_Vector, DK_Matrix, DK_StrUtils, DK_Const,
-  DK_SheetWriter,
+  DK_SheetTypes, DK_Vector, DK_StrUtils, DK_Const, DK_SheetWriter, DK_SheetConst,
   //Project utils
   USIZNormTypes, USIZUtils, USIZSizes, UConst, USIZNormSheet, USIZCardTypes;
 
@@ -100,6 +100,12 @@ type
       COLUMN7_WIDTH = 80;  //дата выдачи
       COLUMN8_WIDTH = 80;  //дата следующей выдачи
     var
+      FOnSelect: TSheetEvent;
+      FCanSelect: Boolean;
+      FSelectedSubItemIndex: Integer;
+      FSelectedInfoIndex: Integer;
+      FSelectedStatusInfoIndex: Integer;
+
       FSubItems: TNormSubItems;
       FStatusItems: TStatusItems;
 
@@ -107,15 +113,42 @@ type
       FInfoLastRows: TIntVector;  //последняя строка NormSubItem.Info.InfoID
       FSubItemIndexes: TIntVector;
       FInfoIndexes: TIntVector;
+      FIsReceivingExists: TBoolVector;
 
     procedure CaptionDraw(var ARow: Integer);
     procedure OrDraw(const ARow: Integer);
     procedure InfoDraw(var ARow: Integer; const ASubItemIndex, AInfoIndex: Integer);
     procedure ReasonDraw(const ARow: Integer; const ASubItemIndex: Integer);
     procedure SubItemDraw(var ARow: Integer; const ASubItemIndex: Integer);
+
+    procedure MouseDown(Sender: TObject; Button: TMouseButton; {%H-}Shift: TShiftState; X, Y: Integer);
+
+    function IsCellSelectable(const ARow, ACol: Integer): Boolean;
+    procedure SetSelection(const ARow, ACol: Integer; const ADoEvent: Boolean = True);
+    procedure DelSelection(const ADoEvent: Boolean = True);
+    procedure Select(const ARow, ACol: Integer);
+    procedure Unselect;
+
+    procedure SetCanSelect(const AValue: Boolean);
+    function GetIsSelected: Boolean;
+    function GetIsNormInfoSelected: Boolean;
+    function GetIsStatusInfoSelected: Boolean;
   public
+    constructor Create(const AWorksheet: TsWorksheet;
+                       const AGrid: TsWorksheetGrid;
+                       const AFont: TFont;
+                       const ARowHeightDefault: Integer = ROW_HEIGHT_DEFAULT);
     procedure Draw(const ASubItems: TNormSubItems;
                    const AStatusItems: TStatusItems);
+
+    property CanSelect: Boolean read FCanSelect write SetCanSelect;
+    property IsSelected: Boolean read GetIsSelected;
+    property IsNormInfoSelected: Boolean read GetIsNormInfoSelected;
+    property IsStatusInfoSelected: Boolean read GetIsStatusInfoSelected;
+    property SelectedSubItemIndex: Integer read FSelectedSubItemIndex;
+    property SelectedInfoIndex: Integer read FSelectedInfoIndex;
+    property SelectedStatusInfoIndex: Integer read FSelectedStatusInfoIndex;
+    property OnSelect: TSheetEvent read FOnSelect write FOnSelect;
   end;
 
 implementation
@@ -664,6 +697,21 @@ begin
   ARow:= R;
 end;
 
+function TSIZCardStatusSheet.GetIsSelected: Boolean;
+begin
+  Result:= IsNormInfoSelected;
+end;
+
+function TSIZCardStatusSheet.GetIsStatusInfoSelected: Boolean;
+begin
+  Result:= IsNormInfoSelected and (FSelectedStatusInfoIndex>=0);
+end;
+
+function TSIZCardStatusSheet.GetIsNormInfoSelected: Boolean;
+begin
+  Result:= (FSelectedSubItemIndex>=0) and (FSelectedInfoIndex>=0);
+end;
+
 procedure TSIZCardStatusSheet.OrDraw(const ARow: Integer);
 begin
   Writer.SetBackgroundDefault;
@@ -688,6 +736,7 @@ begin
   VAppend(FInfoLastRows, R2);
   VAppend(FSubItemIndexes, ASubItemIndex);
   VAppend(FInfoIndexes, AInfoIndex);
+  VAppend(FIsReceivingExists, n>0);
   ARow:= R2;
 
   Writer.SetBackgroundDefault;
@@ -740,6 +789,13 @@ begin
                    FSubItems[ASubItemIndex].Reason + ':', cbtOuter, True, True);
 end;
 
+procedure TSIZCardStatusSheet.SetCanSelect(const AValue: Boolean);
+begin
+  if FCanSelect=AValue then Exit;
+  if not AValue then Unselect;
+  FCanSelect:=AValue;
+end;
+
 procedure TSIZCardStatusSheet.SubItemDraw(var ARow: Integer; const ASubItemIndex: Integer);
 var
   i, R: Integer;
@@ -762,6 +818,86 @@ begin
   ARow:= R;
 end;
 
+procedure TSIZCardStatusSheet.MouseDown(Sender: TObject; Button: TMouseButton;
+  Shift: TShiftState; X, Y: Integer);
+var
+  R, C: Integer;
+begin
+  if Button=mbLeft then
+  begin
+    (Sender as TsWorksheetGrid).MouseToCell(X, Y, C, R);
+    SetSelection(R, C);
+  end
+  else if Button=mbRight then
+  begin
+    DelSelection;
+  end;
+end;
+
+function TSIZCardStatusSheet.IsCellSelectable(const ARow, ACol: Integer): Boolean;
+begin
+  Result:= ((ACol>=1) and (ACol<=Writer.ColCount)) and
+           (VIndexOf(FInfoFirstRows, FInfoLastRows, ARow)>=0);
+end;
+
+procedure TSIZCardStatusSheet.SetSelection(const ARow, ACol: Integer;
+  const ADoEvent: Boolean);
+begin
+  if not CanSelect then Exit;
+  if not IsCellSelectable(ARow, ACol) then Exit;
+
+  if IsSelected then Unselect;
+  Select(ARow, ACol);
+  if ADoEvent and Assigned(FOnSelect) then FOnSelect;
+end;
+
+procedure TSIZCardStatusSheet.DelSelection(const ADoEvent: Boolean);
+begin
+  if not IsSelected then Exit;
+  Unselect;
+  if ADoEvent and Assigned(FOnSelect) then FOnSelect;
+end;
+
+procedure TSIZCardStatusSheet.Select(const ARow, ACol: Integer);
+var
+  i, j, k: Integer;
+begin
+  k:= VIndexOf(FInfoFirstRows, FInfoLastRows, ARow);
+  FSelectedSubItemIndex:= FSubItemIndexes[k];
+  FSelectedInfoIndex:= FInfoIndexes[k];
+  for i:= FInfoFirstRows[k] to FInfoLastRows[k] do
+    for j:= 1 to Writer.ColCount-1 do //кроме подсвеченной даты следующей выдачи
+      SelectionAddCell(i, j);
+
+  if FIsReceivingExists[k] and (ACol>=5) then
+  begin
+    FSelectedStatusInfoIndex:= ARow - FInfoFirstRows[k];
+    for i:= FInfoFirstRows[k] to FInfoLastRows[k] do
+      for j:= 5 to Writer.ColCount-1 do //кроме подсвеченной даты следующей выдачи
+        SelectionExtraAddCell(i, j);
+  end;
+end;
+
+procedure TSIZCardStatusSheet.Unselect;
+begin
+  FSelectedSubItemIndex:= -1;
+  FSelectedInfoIndex:= -1;
+  FSelectedStatusInfoIndex:= -1;
+  SelectionExtraClear;
+  SelectionClear;
+end;
+
+constructor TSIZCardStatusSheet.Create(const AWorksheet: TsWorksheet;
+                       const AGrid: TsWorksheetGrid;
+                       const AFont: TFont;
+                       const ARowHeightDefault: Integer = ROW_HEIGHT_DEFAULT);
+begin
+  inherited Create(AWorksheet, AGrid, AFont, ARowHeightDefault);
+  if Assigned(AGrid) then
+    Writer.Grid.OnMouseDown:= @MouseDown;
+  FCanSelect:= False;
+end;
+
 procedure TSIZCardStatusSheet.Draw(const ASubItems: TNormSubItems;
                                    const AStatusItems: TStatusItems);
 var
@@ -781,6 +917,7 @@ begin
   FInfoLastRows:= nil;
   FSubItemIndexes:= nil;
   FInfoIndexes:= nil;
+  FIsReceivingExists:= nil;
 
   Writer.BeginEdit;
 

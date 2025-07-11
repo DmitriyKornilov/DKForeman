@@ -23,21 +23,12 @@ type
   TSIZCardForm = class(TForm)
     AscendingButton: TSpeedButton;
     DividerBevel2: TDividerBevel;
-    HistoryButton: TSpeedButton;
-    StatusDelButton: TSpeedButton;
-    StatusAddButton: TSpeedButton;
-    StatusButtonPanel: TPanel;
     FrontEditButton: TSpeedButton;
+    HistoryButton: TSpeedButton;
     FormPanel: TPanel;
-    FrontButtonPanel: TPanel;
-    BackButtonPanel: TPanel;
-    BackDelButton: TSpeedButton;
-    StatusSizeButton: TSpeedButton;
     StatusTabButton: TColorSpeedButton;
     FrontTabButton: TColorSpeedButton;
     BackTabButton: TColorSpeedButton;
-    BackWriteoffCancelButton: TSpeedButton;
-    BackWriteoffButton: TSpeedButton;
     ViewToolPanel: TPanel;
     ViewButtonPanel: TPanel;
     ViewCaptionPanel: TPanel;
@@ -127,6 +118,8 @@ type
     procedure CardStatusUpdate;
     procedure CardDataUpdate;
 
+    procedure CardViewUpdate;
+
     procedure SettingsLoad;
   public
     procedure SettingsSave;
@@ -183,17 +176,13 @@ begin
   ]);
   SetToolButtons([
     CloseButton, AscendingButton, DescendingButton,
-    FrontEditButton,
-    BackDelButton, BackWriteoffButton, BackWriteoffCancelButton,
-    StatusSizeButton, StatusAddButton, StatusDelButton
+    FrontEditButton
   ]);
 
   Images.ToButtons([
     ExportButton, HistoryButton,
     CloseButton, AscendingButton, DescendingButton,
-    FrontEditButton,
-    BackDelButton, BackWriteoffButton, BackWriteoffCancelButton,
-    StatusSizeButton, StatusAddButton, StatusDelButton
+    FrontEditButton
   ]);
 
   ControlHeight(ViewButtonPanel, Round(TOOL_PANEL_HEIGHT_DEFAULT*0.65));
@@ -431,9 +420,7 @@ begin
       CardDataUpdate;
     end;
 
-    FrontButtonPanel.Visible:= Category=1;
-    BackButtonPanel.Visible:= Category=2;
-    StatusButtonPanel.Visible:= Category=3;
+    CardViewUpdate;
 
   finally
     Screen.Cursor:= crDefault;
@@ -566,13 +553,20 @@ begin
     end;
 
     MainPanel.BorderSpacing.Left:= 2*Ord(ModeType<>mtSetting);
-    ViewToolPanel.Visible:= AModeType=mtEditing;
-
-    //CardViewUpdate;
+    CardViewUpdate;
 
   finally
     MainPanel.Visible:= True;
   end;
+end;
+
+procedure TSIZCardForm.CardViewUpdate;
+begin
+  ViewToolPanel.Visible:= (ModeType=mtEditing) and (Category=1);
+  if Category=2 then
+    (CategoryForm as TSIZCardBackForm).ViewUpdate(ModeType)
+  else if Category=3 then
+    (CategoryForm as TSIZCardStatusForm).ViewUpdate(ModeType);
 end;
 
 procedure TSIZCardForm.DataUpdate;

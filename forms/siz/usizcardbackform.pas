@@ -5,7 +5,7 @@ unit USIZCardBackForm;
 interface
 
 uses
-  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls,
+  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, Buttons,
   fpspreadsheetgrid,
   //Project utils
   UTypes, UConst, UVars, USIZCardSheet,
@@ -17,13 +17,18 @@ type
   { TSIZCardBackForm }
 
   TSIZCardBackForm = class(TForm)
+    DelButton: TSpeedButton;
+    WriteoffButton: TSpeedButton;
+    CancelButton: TSpeedButton;
     SheetBottomPanel: TPanel;
     SheetPanel: TPanel;
     ViewGrid: TsWorksheetGrid;
+    ToolPanel: TPanel;
     ZoomBevel: TBevel;
     ZoomPanel: TPanel;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
+    procedure FormShow(Sender: TObject);
   private
     ZoomPercent: Integer;
     Sheet: TSIZCardBackSheet;
@@ -37,6 +42,7 @@ type
   public
     procedure SettingsSave;
     procedure DataUpdate(const ANeedDraw: Boolean);
+    procedure ViewUpdate(const AModeType: TModeType);
   end;
 
 var
@@ -59,6 +65,19 @@ end;
 procedure TSIZCardBackForm.FormDestroy(Sender: TObject);
 begin
   FreeAndNil(Sheet);
+end;
+
+procedure TSIZCardBackForm.FormShow(Sender: TObject);
+begin
+  SetToolPanels([
+    ToolPanel
+  ]);
+  SetToolButtons([
+    DelButton, WriteoffButton, CancelButton
+  ]);
+  Images.ToButtons([
+    DelButton, WriteoffButton, CancelButton
+  ]);
 end;
 
 procedure TSIZCardBackForm.DataDraw(const AZoomPercent: Integer);
@@ -101,6 +120,12 @@ begin
   NeedDraw:= ANeedDraw;
 
   DataReDraw;
+end;
+
+procedure TSIZCardBackForm.ViewUpdate(const AModeType: TModeType);
+begin
+  ToolPanel.Visible:= AModeType=mtEditing;
+  //Sheet.CanSelect:= AModeType=mtEditing;
 end;
 
 end.
