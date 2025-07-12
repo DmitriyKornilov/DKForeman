@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, Buttons,
-  fpspreadsheetgrid,
+  StdCtrls, Spin, DividerBevel, fpspreadsheetgrid,
   //Project utils
   UTypes, UConst, UVars, USIZCardSheet, USIZNormTypes, USIZCardTypes,
   //DK packages utils
@@ -17,11 +17,15 @@ type
   { TSIZCardStatusForm }
 
   TSIZCardStatusForm = class(TForm)
+    DividerBevel1: TDividerBevel;
+    Label1: TLabel;
+    Label2: TLabel;
     SheetBottomPanel: TPanel;
     SheetPanel: TPanel;
     AddButton: TSpeedButton;
     DelButton: TSpeedButton;
     SizeButton: TSpeedButton;
+    DaysCountSpinEdit: TSpinEdit;
     ViewGrid: TsWorksheetGrid;
     ToolPanel: TPanel;
     ZoomBevel: TBevel;
@@ -40,7 +44,7 @@ type
     procedure DataDraw(const AZoomPercent: Integer);
     procedure DataReDraw;
 
-    procedure OnStatusSelect;
+    procedure StatusSelect;
 
     procedure SettingsLoad;
   public
@@ -62,7 +66,7 @@ implementation
 procedure TSIZCardStatusForm.FormCreate(Sender: TObject);
 begin
   Sheet:= TSIZCardStatusSheet.Create(ViewGrid.Worksheet, ViewGrid, GridFont);
-  Sheet.OnSelect:= @OnStatusSelect;
+  Sheet.OnSelect:= @StatusSelect;
 
   SettingsLoad; //load ZoomPercent
   CreateZoomControls(50, 150, ZoomPercent, ZoomPanel, @DataDraw, True);
@@ -93,7 +97,7 @@ begin
   try
     ZoomPercent:= AZoomPercent;
     Sheet.Zoom(ZoomPercent);
-    Sheet.Draw(SubItems, StatusItems);
+    Sheet.Draw(SubItems, StatusItems, DaysCountSpinEdit.Value);
 
   finally
     ViewGrid.Visible:= True;
@@ -106,11 +110,18 @@ begin
   DataDraw(ZoomPercent);
 end;
 
-procedure TSIZCardStatusForm.OnStatusSelect;
+procedure TSIZCardStatusForm.StatusSelect;
+var
+  i, j: Integer;
 begin
   AddButton.Enabled:= Sheet.IsNormInfoSelected;
-  SizeButton.Enabled:= AddButton.Enabled;
   DelButton.Enabled:= Sheet.IsStatusInfoSelected;
+
+  i:= Sheet.SelectedSubItemIndex;
+  j:= Sheet.SelectedInfoIndex;
+  SizeButton.Enabled:= AddButton.Enabled and
+                       (SubItems[i].Info.SIZTypes[j]<>SIZ_TYPE_KEYS[0]) and
+                       (SubItems[i].Info.SizeTypes[j]<>SIZ_SIZETYPE_KEYS[0]);
 end;
 
 procedure TSIZCardStatusForm.SettingsLoad;
@@ -119,13 +130,14 @@ var
 begin
   SettingValues:= DataBase.SettingsLoad(SETTING_NAMES_SIZCARDSTATUSFORM);
   ZoomPercent:= SettingValues[0];
+  DaysCountSpinEdit.Value:= SettingValues[1];
 end;
 
 procedure TSIZCardStatusForm.SettingsSave;
 var
   SettingValues: TIntVector;
 begin
-  SettingValues:= VCreateInt([ZoomPercent]);
+  SettingValues:= VCreateInt([ZoomPercent, DaysCountSpinEdit.Value]);
   DataBase.SettingsUpdate(SETTING_NAMES_SIZCARDSTATUSFORM, SettingValues);
 end;
 

@@ -43,7 +43,8 @@ function SIZDocFullName(const ADocNames, ADocNums: TStrVector;
                         const ADocDates: TDateVector;
                         const ANeedEmptyNumMark: Boolean = False): TStrVector;
 
-procedure SIZStatusInfoVerifyDates(const ALogIDs: TInt64Vector;
+procedure SIZStatusInfoVerifyDates(const AReportDate: TDate;
+                                const ALogIDs: TInt64Vector;
                                 const ASizNames:TStrVector;
                                 const ASizCounts: TIntVector;
                                 const AReceivingDates, AWriteoffDates: TDateVector;
@@ -421,7 +422,8 @@ begin
     Result[i]:= SIZDocFullName(ADocNames[i], ADocNums[i], ADocDates[i], ANeedEmptyNumMark);
 end;
 
-procedure SIZStatusInfoVerifyDates(const ALogIDs: TInt64Vector;
+procedure SIZStatusInfoVerifyDates(const AReportDate: TDate;
+                                const ALogIDs: TInt64Vector;
                                 const ASizNames:TStrVector;
                                 const ASizCounts: TIntVector;
                                 const AReceivingDates, AWriteoffDates: TDateVector;
@@ -441,7 +443,7 @@ begin
   //выбираем непросроченные сиз
   for i:= 0 to High(ASizNames) do
   begin
-    if CompareDate(AWriteoffDates[i], Date)>=0 then
+    if CompareDate(AWriteoffDates[i], AReportDate)>=0 then
     begin
       VAppend(AOutLogIDs, ALogIDs[i]);
       VAppend(AOutSizNames, ASizNames[i]);

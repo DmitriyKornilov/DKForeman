@@ -778,6 +778,7 @@ type
                                 out ASizCounts: TIntVector;
                                 out AReceivingDates, AWriteoffDates: TDateVector);
     procedure SIZStatusInfoLoad(const ATabNumID, AWriteoffType, AInfoID: Integer;
+                            const AReportDate: TDate;
                             out ALogIDs: TInt64Vector;
                             out ASizNames: TStrVector;
                             out ASizCounts: TIntVector;
@@ -6726,7 +6727,8 @@ begin
       begin
         M:= VSum(Months, n1, n2);
         D:= IncMonthExt(AReceivingDates[i-1], M);
-        for j:= n1 to n2 do AWriteoffDates[j]:= D;
+        for j:= n1 to n2 do
+          AWriteoffDates[j]:= D;
       end;
       n1:= i+1;
     end;
@@ -6738,11 +6740,13 @@ begin
   begin
     M:= VSum(Months, n1, n2);
     D:= IncMonthExt(AReceivingDates[n2], M);
-    for j:= n1 to n2 do AWriteoffDates[j]:= D;
+    for j:= n1 to n2 do
+      AWriteoffDates[j]:= D;
   end;
 end;
 
 procedure TDataBase.SIZStatusInfoLoad(const ATabNumID, AWriteoffType, AInfoID: Integer;
+                            const AReportDate: TDate;
                             out ALogIDs: TInt64Vector;
                             out ASizNames: TStrVector;
                             out ASizCounts: TIntVector;
@@ -6763,7 +6767,7 @@ begin
                         LogIDs, SizNames, SizCounts, BDs, EDs);
   if Length(SizNames) = 0 then Exit;
   //данные по датам списания
-  SIZStatusInfoVerifyDates(LogIDs, SizNames, SizCounts, BDs, EDs,
+  SIZStatusInfoVerifyDates(AReportDate, LogIDs, SizNames, SizCounts, BDs, EDs,
                            ALogIDs, ASizNames, ASizCounts, AReceivingDates, AWriteoffDates);
 end;
 
@@ -6809,7 +6813,7 @@ begin
   //получаем инфо статуса для каждого инфо строки пункта нормы
   for i:=0 to High(AInfoIDs) do
   begin
-    SIZStatusInfoLoad(ATabNumID, AWriteoffType, AInfoIDs[i],
+    SIZStatusInfoLoad(ATabNumID, AWriteoffType, AInfoIDs[i], AReportDate,
                       VLogIDs, VSizNames, VSizCounts, VBDs, VEDs);
     if Length(VLogIDs)>0 then
     begin
@@ -6826,17 +6830,19 @@ begin
     if IsFreshExists(MEDs) then
     begin
       AStatusItem.Info.IsFreshExists:= True;
-      for i:= 0 to High(MEDs) do for j:=0 to High(MEDs[i]) do
-        if CompareDate(MEDs[i,j], AReportDate)>=0 then
-           StatusItemInfoAdd(AStatusItem.Info, i, MLogIDs[i,j], MSizNames[i,j],
-                             MSizCounts[i,j], MBDs[i,j], MEDs[i,j]);
+      for i:= 0 to High(MEDs) do
+        for j:=0 to High(MEDs[i]) do
+          if CompareDate(MEDs[i,j], AReportDate)>=0 then
+             StatusItemInfoAdd(AStatusItem.Info, i, MLogIDs[i,j], MSizNames[i,j],
+                               MSizCounts[i,j], MBDs[i,j], MEDs[i,j]);
     end
     else begin //все просроченные -> выбираем самые свежие
       MaxWD:= MMaxDate(MEDs);
-      for i:= 0 to High(MEDs) do for j:=0 to High(MEDs[i]) do
-        if SameDate(MEDs[i,j], MaxWD) then
-           StatusItemInfoAdd(AStatusItem.Info, i, MLogIDs[i,j], MSizNames[i,j],
-                             MSizCounts[i,j], MBDs[i,j], MEDs[i,j]);
+      for i:= 0 to High(MEDs) do
+        for j:=0 to High(MEDs[i]) do
+          if SameDate(MEDs[i,j], MaxWD) then
+             StatusItemInfoAdd(AStatusItem.Info, i, MLogIDs[i,j], MSizNames[i,j],
+                               MSizCounts[i,j], MBDs[i,j], MEDs[i,j]);
     end;
   end;
 end;

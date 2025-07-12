@@ -100,6 +100,7 @@ type
     StatusItems: TStatusItems;
 
     procedure ParamListCreate;
+    procedure WriteoffTypeChange;
 
     procedure StaffListCreate;
     procedure StaffListFilter(const AFilterString: String);
@@ -109,6 +110,9 @@ type
     procedure CardListCreate;
     procedure CardListLoad;
     procedure CardListSelect;
+
+    procedure CardLoad;
+    procedure StatusLoad;
 
     procedure CategorySelect(const ACategory: Byte);
     procedure CardSettingsSave;
@@ -257,6 +261,20 @@ begin
     'уволенных на текущую дату'
   ]);
   ParamList.AddStringList('ListType', S, V, @StaffListLoad, 1);
+
+  S:= 'Рассчитывать даты списания:';
+  V:= VCreateStr([
+    'по нормам на момент выдачи',
+    'по текущим нормам'
+  ]);
+  ParamList.AddStringList('WriteoffType', S, V, @WriteoffTypeChange, 1);
+end;
+
+procedure TSIZCardForm.WriteoffTypeChange;
+begin
+  StatusLoad;
+  if Category=3 then
+    CardStatusUpdate;
 end;
 
 procedure TSIZCardForm.StaffListCreate;
@@ -374,25 +392,27 @@ begin
   end;
 end;
 
-procedure TSIZCardForm.CardListSelect;
-const
-  //WRITEOFF_TYPE - расчет даты следующей выдачи:
-  // 0 - по нормам на момент выдачи,
-  // 1 - по текущим нормам}
-  WRITEOFF_TYPE = 0; //!!!!!!!!!!!!!!!
+procedure TSIZCardForm.CardLoad;
 begin
-  FrontEditButton.Enabled:= CardList.IsSelected;
-
   NormSubItemsClear(SubItems);
   if CardList.IsSelected then
     DataBase.SIZNormSubItemsLoad(CardItemIDs[CardList.SelectedIndex], SubItems);
+end;
 
+procedure TSIZCardForm.StatusLoad;
+begin
   StatusItemsClear(StatusItems);
   if Length(SubItems)>0 then
-    DataBase.SIZStatusLoad(TabNumIDs[StaffList.SelectedIndex], WRITEOFF_TYPE,
+    DataBase.SIZStatusLoad(TabNumIDs[StaffList.SelectedIndex],
+                           ParamList.Selected['WriteoffType'],
                            Date, SubItems, StatusItems);
+end;
 
-
+procedure TSIZCardForm.CardListSelect;
+begin
+  FrontEditButton.Enabled:= CardList.IsSelected;
+  CardLoad;
+  StatusLoad;
   CardCaptionUpdate;
   CardDataUpdate;
 end;
@@ -527,12 +547,12 @@ end;
 
 procedure TSIZCardForm.SettingsLoad;
 begin
-  ParamList.Params:= DataBase.SettingsLoad(SETTING_NAMES_SIZSTAFFORM);
+  ParamList.Params:= DataBase.SettingsLoad(SETTING_NAMES_SIZCARDFORM);
 end;
 
 procedure TSIZCardForm.SettingsSave;
 begin
-  DataBase.SettingsUpdate(SETTING_NAMES_SIZSTAFFORM, ParamList.Params);
+  DataBase.SettingsUpdate(SETTING_NAMES_SIZCARDFORM, ParamList.Params);
   CardSettingsSave;
 end;
 

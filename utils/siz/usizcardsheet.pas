@@ -8,7 +8,8 @@ uses
   Classes, SysUtils, Graphics, fpstypes, DateUtils, Controls,
   fpspreadsheet, fpspreadsheetgrid,
   //DK packages utils
-  DK_SheetTypes, DK_Vector, DK_StrUtils, DK_Const, DK_SheetWriter, DK_SheetConst,
+  DK_SheetTypes, DK_Vector, DK_StrUtils, DK_Const, DK_SheetWriter,
+  DK_SheetConst, DK_DateUtils,
   //Project utils
   USIZNormTypes, USIZUtils, USIZSizes, UConst, USIZNormSheet, USIZCardTypes;
 
@@ -108,6 +109,7 @@ type
 
       FSubItems: TNormSubItems;
       FStatusItems: TStatusItems;
+      FWarnDaysCount: Integer;
 
       FInfoFirstRows: TIntVector; //первая строка начала NormSubItem.Info.InfoID
       FInfoLastRows: TIntVector;  //последняя строка NormSubItem.Info.InfoID
@@ -116,7 +118,7 @@ type
       FIsReceivingExists: TBoolVector;
 
     procedure CaptionDraw(var ARow: Integer);
-    procedure OrDraw(const ARow: Integer);
+    procedure OrDraw(const ARow: Integer;const ASubItemIndex: Integer);
     procedure InfoDraw(var ARow: Integer; const ASubItemIndex, AInfoIndex: Integer);
     procedure ReasonDraw(const ARow: Integer; const ASubItemIndex: Integer);
     procedure SubItemDraw(var ARow: Integer; const ASubItemIndex: Integer);
@@ -139,7 +141,8 @@ type
                        const AFont: TFont;
                        const ARowHeightDefault: Integer = ROW_HEIGHT_DEFAULT);
     procedure Draw(const ASubItems: TNormSubItems;
-                   const AStatusItems: TStatusItems);
+                   const AStatusItems: TStatusItems;
+                   const AWarnDaysCount: Integer);
 
     property CanSelect: Boolean read FCanSelect write SetCanSelect;
     property IsSelected: Boolean read GetIsSelected;
@@ -712,12 +715,15 @@ begin
   Result:= (FSelectedSubItemIndex>=0) and (FSelectedInfoIndex>=0);
 end;
 
-procedure TSIZCardStatusSheet.OrDraw(const ARow: Integer);
+procedure TSIZCardStatusSheet.OrDraw(const ARow: Integer; const ASubItemIndex: Integer);
 begin
   Writer.SetBackgroundDefault;
   Writer.SetFont(Font.Name, Font.Size, [], clBlack);
   Writer.SetAlignment(haLeft, vaTop);
   Writer.WriteText(ARow, 1, ARow, 1, 'или', cbtNone);
+
+  if not FStatusItems[ASubItemIndex].Info.IsFreshExists then
+    Writer.AddCellBGColorIndex(ARow, 8, COLOR_INDEX_SIZSTATUS_ERROR);
 end;
 
 procedure TSIZCardStatusSheet.InfoDraw(var ARow: Integer;
@@ -754,12 +760,20 @@ begin
                     FSubItems[ASubItemIndex].Info.Lifes[AInfoIndex]);
   Writer.WriteText(R1, 3, R2, 3, S, cbtNone);
 
-  S:= SIZFullSize(FSubItems[ASubItemIndex].Info.SizeTypes[AInfoIndex],
-                  FStatusItems[ASubItemIndex].SizeIDs[AInfoIndex],
-                  FStatusItems[ASubItemIndex].HeightIDs[AInfoIndex]);
+  if (FSubItems[ASubItemIndex].Info.SIZTypes[AInfoIndex]=SIZ_TYPE_KEYS[0]) or
+     (FSubItems[ASubItemIndex].Info.SizeTypes[AInfoIndex]=SIZ_SIZETYPE_KEYS[0]) then
+    S:= EMPTY_MARK
+  else
+    S:= SIZFullSize(FSubItems[ASubItemIndex].Info.SizeTypes[AInfoIndex],
+                    FStatusItems[ASubItemIndex].SizeIDs[AInfoIndex],
+                    FStatusItems[ASubItemIndex].HeightIDs[AInfoIndex]);
   Writer.WriteText(R1, 4, R2, 4, S, cbtNone);
 
-  if n=0 then Exit;
+  if n=0 then
+  begin
+    Writer.AddCellBGColorIndex(R1, 8, COLOR_INDEX_SIZSTATUS_ERROR);
+    Exit;
+  end;
 
   for i:=0 to n-1 do
   begin
@@ -775,7 +789,16 @@ begin
     Writer.WriteDate(R1+i, 7, D, cbtNone);
 
     D:= FStatusItems[ASubItemIndex].Info.WriteoffDates[AInfoIndex, i];
-    Writer.WriteDate(R1+i, 8, D, cbtNone);
+    if SameDate(D, INFDATE) then
+      Writer.WriteText(R1+i, 8, EMPTY_MARK, cbtNone)
+    else begin
+      Writer.WriteDate(R1+i, 8, D, cbtNone);
+
+      if not FStatusItems[ASubItemIndex].Info.IsFreshExists then
+        Writer.AddCellBGColorIndex(R1+i, 8, COLOR_INDEX_SIZSTATUS_ERROR)
+      else if DaysBetweenDates(Date, D)<=FWarnDaysCount then
+        Writer.AddCellBGColorIndex(R1+i, 8, COLOR_INDEX_SIZSTATUS_WARN);
+    end;
   end;
 
 end;
@@ -806,7 +829,7 @@ begin
     R:= R + 1;
     if i>0 then
     begin
-      OrDraw(R);
+      OrDraw(R, ASubItemIndex);
       R:= R + 1;
     end;
     InfoDraw(R, ASubItemIndex, i);
@@ -866,14 +889,14 @@ begin
   FSelectedSubItemIndex:= FSubItemIndexes[k];
   FSelectedInfoIndex:= FInfoIndexes[k];
   for i:= FInfoFirstRows[k] to FInfoLastRows[k] do
-    for j:= 1 to Writer.ColCount-1 do //кроме подсвеченной даты следующей выдачи
+    for j:= 1 to Writer.ColCount do
       SelectionAddCell(i, j);
 
   if FIsReceivingExists[k] and (ACol>=5) then
   begin
     FSelectedStatusInfoIndex:= ARow - FInfoFirstRows[k];
     for i:= FInfoFirstRows[k] to FInfoLastRows[k] do
-      for j:= 5 to Writer.ColCount-1 do //кроме подсвеченной даты следующей выдачи
+      for j:= 5 to Writer.ColCount do
         SelectionExtraAddCell(i, j);
   end;
 end;
@@ -899,7 +922,8 @@ begin
 end;
 
 procedure TSIZCardStatusSheet.Draw(const ASubItems: TNormSubItems;
-                                   const AStatusItems: TStatusItems);
+                                   const AStatusItems: TStatusItems;
+                                   const AWarnDaysCount: Integer);
 var
   i, R: Integer;
   S: String;
@@ -912,6 +936,7 @@ begin
 
   FSubItems:= ASubItems;
   FStatusItems:= AStatusItems;
+  FWarnDaysCount:= AWarnDaysCount;
 
   FInfoFirstRows:= nil;
   FInfoLastRows:= nil;
@@ -941,6 +966,8 @@ begin
   Writer.DrawBorders(R, 1, R, Writer.ColCount, cbtTop);
 
   Writer.EndEdit;
+
+  ColorsUpdate(COLORS_SIZSTATUS);
 end;
 
 end.

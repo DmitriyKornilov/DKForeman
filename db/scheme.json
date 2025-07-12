@@ -1033,10 +1033,12 @@
         "SIZSIZEFORM.GASMASK",
         "SIZSIZEFORM.RESPIRATOR",
         "SIZSIZEFORM.NAMETYPE",
-        "SIZSTAFFORM.LISTTYPE",
         "SIZCARDFRONTFORM.ZOOM",
         "SIZCARDBACKFORM.ZOOM",
-        "SIZCARDSTATUSFORM.ZOOM"
+        "SIZCARDSTATUSFORM.ZOOM",
+        "SIZCARDSTATUSFORM.WARNDAYSCOUNT",
+        "SIZCARDFORM.LISTTYPE",
+        "SIZCARDFORM.WRITEOFFTYPE"
       ],
       "ReferenceTo" : {
         "TableName" : "",
@@ -1156,10 +1158,12 @@
         "1",
         "1",
         "0",
+        "100",
+        "100",
+        "100",
+        "50",
         "1",
-        "100",
-        "100",
-        "100"
+        "1"
       ],
       "ReferenceTo" : {
         "TableName" : "",

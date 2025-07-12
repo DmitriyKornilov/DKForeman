@@ -222,6 +222,16 @@ const
   COLOR_SHIFT_UNDEFINED_VALUE = $007D7D00;
   COLOR_SHIFT_UNDEFINED_NAME  = 'Остальные смены';
 
+  COLOR_SIZSTATUS_WARN  = COLOR_YELLOW;
+  COLOR_SIZSTATUS_ERROR = COLOR_RED;
+  COLORS_SIZSTATUS: array of Integer = (
+    COLOR_SIZSTATUS_WARN,
+    COLOR_SIZSTATUS_ERROR
+  );
+  COLOR_INDEX_SIZSTATUS_WARN  = 0;
+  COLOR_INDEX_SIZSTATUS_ERROR = 1;
+
+
   (**************************************************************************
                  НАИМЕНОВАНИЯ ПАРАМЕТРОВ ДЛЯ СОХРАНЕНИЯ
   **************************************************************************)
@@ -367,8 +377,9 @@ const
     'SIZSIZEFORM.NAMETYPE'
   );
 
-  SETTING_NAMES_SIZSTAFFORM: array of String  =  (
-    'SIZSTAFFORM.LISTTYPE'
+  SETTING_NAMES_SIZCARDFORM: array of String  =  (
+    'SIZCARDFORM.LISTTYPE',
+    'SIZCARDFORM.WRITEOFFTYPE'
   );
 
   SETTING_NAMES_SIZCARDFRONTFORM: array of String  =  (
@@ -380,7 +391,8 @@ const
   );
 
   SETTING_NAMES_SIZCARDSTATUSFORM: array of String  =  (
-    'SIZCARDSTATUSFORM.ZOOM'
+    'SIZCARDSTATUSFORM.ZOOM',
+    'SIZCARDSTATUSFORM.WARNDAYSCOUNT'
   );
 
 implementation
