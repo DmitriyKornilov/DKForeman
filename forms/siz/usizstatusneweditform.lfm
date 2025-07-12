@@ -1,0 +1,10 @@
+object SIZStatusNewEditForm: TSIZStatusNewEditForm
+  Left = 377
+  Height = 240
+  Top = 250
+  Width = 565
+  BorderIcons = [biSystemMenu, biMaximize]
+  Caption = 'Выдача новых СИЗ'
+  DesignTimePPI = 120
+  Position = poScreenCenter
+end

@@ -108,7 +108,6 @@ type
     procedure StaffListSelect;
 
     procedure CardListCreate;
-    procedure CardListLoad;
     procedure CardListSelect;
 
     procedure CardLoad;
@@ -130,6 +129,7 @@ type
     procedure ViewUpdate(const AModeType: TModeType);
     procedure DataUpdate;
     procedure CardCaptionUpdate;
+    procedure CardListLoad(const ASaveSelection: Boolean = False);
   end;
 
 var
@@ -368,9 +368,15 @@ begin
   CardList.Draw;
 end;
 
-procedure TSIZCardForm.CardListLoad;
+procedure TSIZCardForm.CardListLoad(const ASaveSelection: Boolean = False);
+var
+  SelectedIndex: Integer;
 begin
   if not StaffList.IsSelected then Exit;
+
+  SelectedIndex:= -1;
+  if ASaveSelection and CardList.IsSelected then
+    SelectedIndex:= CardList.SelectedIndex;
 
   DataBase.SIZPersonalCardListLoad(TabNumIDs[StaffList.SelectedIndex], CardIDs,
                                    CardItemIDs, CardItemPostIDs, CardNums, CardPostNames,
@@ -386,7 +392,10 @@ begin
     CardList.SetColumn('Должность (профессия)', CardPostNames, taLeftJustify);
     CardList.SetColumn('Нормы выдачи СИЗ', CardNormNames, taLeftJustify);
     CardList.Draw;
-    CardList.Select(0);
+    if ASaveSelection and (SelectedIndex>=0) then
+      CardList.Select(SelectedIndex)
+    else
+      CardList.Select(0);
   finally
     CardList.Visible:= True;
   end;

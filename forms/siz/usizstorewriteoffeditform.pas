@@ -1,4 +1,4 @@
-unit USIZStoreWriteoffForm;
+unit USIZStoreWriteoffEditForm;
 
 {$mode ObjFPC}{$H+}
 
@@ -17,9 +17,9 @@ uses
 
 type
 
-  { TSIZStoreWriteoffForm }
+  { TSIZStoreWriteoffEditForm }
 
-  TSIZStoreWriteoffForm = class(TForm)
+  TSIZStoreWriteoffEditForm = class(TForm)
     ButtonPanel: TPanel;
     ButtonPanelBevel: TBevel;
     CancelButton: TSpeedButton;
@@ -56,15 +56,15 @@ type
   end;
 
 var
-  SIZStoreWriteoffForm: TSIZStoreWriteoffForm;
+  SIZStoreWriteoffEditForm: TSIZStoreWriteoffEditForm;
 
 implementation
 
 {$R *.lfm}
 
-{ TSIZStoreWriteoffForm }
+{ TSIZStoreWriteoffEditForm }
 
-procedure TSIZStoreWriteoffForm.FormCreate(Sender: TObject);
+procedure TSIZStoreWriteoffEditForm.FormCreate(Sender: TObject);
 begin
   DocDropDown:= TVSTDropDown.Create(DocBCButton);
   DocDropDown.DropDownCount:= 20;
@@ -72,13 +72,13 @@ begin
   SIZListCreate;
 end;
 
-procedure TSIZStoreWriteoffForm.FormDestroy(Sender: TObject);
+procedure TSIZStoreWriteoffEditForm.FormDestroy(Sender: TObject);
 begin
   FreeAndNil(DocDropDown);
   FreeAndNil(SIZList);
 end;
 
-procedure TSIZStoreWriteoffForm.FormShow(Sender: TObject);
+procedure TSIZStoreWriteoffEditForm.FormShow(Sender: TObject);
 begin
   Images.ToButtons([SaveButton, CancelButton, NewDocButton]);
   SetEventButtons([SaveButton, CancelButton]);
@@ -90,7 +90,7 @@ begin
   SIZListLoad;
 end;
 
-procedure TSIZStoreWriteoffForm.NewDocButtonClick(Sender: TObject);
+procedure TSIZStoreWriteoffEditForm.NewDocButtonClick(Sender: TObject);
 var
   DocID: Integer;
 begin
@@ -99,7 +99,7 @@ begin
   DocLoad(DocID);
 end;
 
-procedure TSIZStoreWriteoffForm.SIZListCreate;
+procedure TSIZStoreWriteoffEditForm.SIZListCreate;
 begin
   SIZList:= TVSTTable.Create(VT);
   SIZList.CanSelect:= False;
@@ -115,7 +115,7 @@ begin
   SIZList.Draw;
 end;
 
-procedure TSIZStoreWriteoffForm.SIZListLoad;
+procedure TSIZStoreWriteoffEditForm.SIZListLoad;
 
 var
   i, N1, N2: Integer;
@@ -173,7 +173,7 @@ begin
   SIZList.Draw;
 end;
 
-procedure TSIZStoreWriteoffForm.DocLoad(const ASelectedID: Integer);
+procedure TSIZStoreWriteoffEditForm.DocLoad(const ASelectedID: Integer);
 var
   SelectedIndex: Integer;
   V: TIntVector;
@@ -191,12 +191,12 @@ begin
     DocDropDown.ItemIndex:= SelectedIndex;
 end;
 
-procedure TSIZStoreWriteoffForm.CancelButtonClick(Sender: TObject);
+procedure TSIZStoreWriteoffEditForm.CancelButtonClick(Sender: TObject);
 begin
   ModalResult:= mrCancel;
 end;
 
-procedure TSIZStoreWriteoffForm.SaveButtonClick(Sender: TObject);
+procedure TSIZStoreWriteoffEditForm.SaveButtonClick(Sender: TObject);
 var
   IsOK: Boolean;
 begin

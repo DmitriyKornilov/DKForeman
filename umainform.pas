@@ -89,7 +89,6 @@ type
     procedure VacationPlaneMenuItemClick(Sender: TObject);
   private
     Category: Byte;
-    CategoryForm: TForm;
 
     procedure DBConnect;
 
@@ -98,6 +97,7 @@ type
     procedure SettingsSave;
 
   public
+    CategoryForm: TForm;
     procedure CategorySelect(const ACategory: Byte);
     procedure DictionarySelect(const ADictionary: Byte);
   end;

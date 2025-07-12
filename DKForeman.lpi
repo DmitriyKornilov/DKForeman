@@ -517,12 +517,12 @@
         <UnitName Value="USIZStoreEntryEditForm"/>
       </Unit>
       <Unit>
-        <Filename Value="forms\siz\usizstorewriteoffform.pas"/>
+        <Filename Value="forms\siz\usizstorewriteoffeditform.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="SIZStoreWriteoffForm"/>
+        <ComponentName Value="SIZStoreWriteoffEditForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <UnitName Value="USIZStoreWriteoffForm"/>
+        <UnitName Value="USIZStoreWriteoffEditForm"/>
       </Unit>
       <Unit>
         <Filename Value="forms\siz\usizdocstoreentryform.pas"/>
@@ -551,6 +551,20 @@
         <ComponentName Value="SIZSizeSpecEditForm"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="USIZSizeSpecEditForm"/>
+      </Unit>
+      <Unit>
+        <Filename Value="forms\siz\usizstatusneweditform.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="SIZStatusNewEditForm"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="USIZStatusNewEditForm"/>
+      </Unit>
+      <Unit>
+        <Filename Value="forms\siz\usizstatuscopyeditform.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="SIZStatusCopyEditForm"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="USIZStatusCopyEditForm"/>
       </Unit>
     </Units>
   </ProjectOptions>

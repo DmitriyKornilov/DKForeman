@@ -163,7 +163,7 @@ begin
   SIZList.AddColumn('Единица измерения', 150);
   SIZList.AddColumn('Количество', 100);
   SIZList.AddColumn('Размер/объём/вес', 130);
-  SIZList.AddColumn('Документ', 300);
+  SIZList.AddColumn('Документ поступления', 300);
   SIZList.Draw;
 end;
 
@@ -190,7 +190,7 @@ begin
     SIZList.SetColumn('Единица измерения', ShowSizUnits);
     SIZList.SetColumn('Количество', MIntToStr(ShowSizCounts));
     SIZList.SetColumn('Размер/объём/вес', ShowSizSizes);
-    SIZList.SetColumn('Документ', ShowDocNames, taLeftJustify);
+    SIZList.SetColumn('Документ поступления', ShowDocNames, taLeftJustify);
     SIZList.Draw;
     SIZList.ExpandAll(True);
     SIZList.ShowFirst;

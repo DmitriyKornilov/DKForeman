@@ -1,4 +1,4 @@
-object SIZStoreWriteoffForm: TSIZStoreWriteoffForm
+object SIZStoreWriteoffEditForm: TSIZStoreWriteoffEditForm
   Left = 350
   Height = 600
   Top = 250

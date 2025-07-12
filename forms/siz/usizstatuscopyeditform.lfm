@@ -1,0 +1,10 @@
+object SIZStatusCopyEditForm: TSIZStatusCopyEditForm
+  Left = 377
+  Height = 240
+  Top = 250
+  Width = 561
+  BorderIcons = [biSystemMenu, biMaximize]
+  Caption = 'Копирование ранее выданных СИЗ'
+  DesignTimePPI = 120
+  Position = poScreenCenter
+end

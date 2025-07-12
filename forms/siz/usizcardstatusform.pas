@@ -12,13 +12,14 @@ uses
   //DK packages utils
   DK_Zoom, DK_CtrlUtils, DK_Vector,
   //Forms
-  USIZSizeSpecEditForm;
+  USIZSizeSpecEditForm, USIZStatusNewEditForm, USIZStatusCopyEditForm;
 
 type
 
   { TSIZCardStatusForm }
 
   TSIZCardStatusForm = class(TForm)
+    CopyButton: TSpeedButton;
     DividerBevel1: TDividerBevel;
     Label1: TLabel;
     Label2: TLabel;
@@ -32,6 +33,9 @@ type
     ToolPanel: TPanel;
     ZoomBevel: TBevel;
     ZoomPanel: TPanel;
+    procedure AddButtonClick(Sender: TObject);
+    procedure CopyButtonClick(Sender: TObject);
+    procedure DelButtonClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -64,6 +68,8 @@ var
 
 implementation
 
+uses UMainForm, USIZCardForm;
+
 {$R *.lfm}
 
 { TSIZCardStatusForm }
@@ -88,11 +94,47 @@ begin
     ToolPanel
   ]);
   SetToolButtons([
-    SizeButton, AddButton, DelButton
+    SizeButton, AddButton, CopyButton, DelButton
   ]);
   Images.ToButtons([
-    SizeButton, AddButton, DelButton
+    SizeButton, AddButton, CopyButton, DelButton
   ]);
+end;
+
+procedure TSIZCardStatusForm.AddButtonClick(Sender: TObject);
+var
+  SIZStatusNewEditForm: TSIZStatusNewEditForm;
+begin
+  SIZStatusNewEditForm:= TSIZStatusNewEditForm.Create(nil);
+  try
+
+
+    if SIZStatusNewEditForm.ShowModal=mrOK then
+      (MainForm.CategoryForm as TSIZCardForm).CardListLoad(True);
+  finally
+    FreeAndNil(SIZStatusNewEditForm);
+  end;
+end;
+
+procedure TSIZCardStatusForm.CopyButtonClick(Sender: TObject);
+var
+  SIZStatusCopyEditForm: TSIZStatusCopyEditForm;
+begin
+  SIZStatusCopyEditForm:= TSIZStatusCopyEditForm.Create(nil);
+  try
+
+
+    if SIZStatusCopyEditForm.ShowModal=mrOK then
+      (MainForm.CategoryForm as TSIZCardForm).CardListLoad(True);
+  finally
+    FreeAndNil(SIZStatusCopyEditForm);
+  end;
+end;
+
+procedure TSIZCardStatusForm.DelButtonClick(Sender: TObject);
+begin
+
+  (MainForm.CategoryForm as TSIZCardForm).CardListLoad(True);
 end;
 
 procedure TSIZCardStatusForm.SizeButtonClick(Sender: TObject);
@@ -140,6 +182,7 @@ var
   i, j: Integer;
 begin
   AddButton.Enabled:= Sheet.IsNormInfoSelected;
+  CopyButton.Enabled:= AddButton.Enabled;
   DelButton.Enabled:= Sheet.IsStatusInfoSelected;
 
   i:= Sheet.SelectedSubItemIndex;

@@ -25,8 +25,9 @@ uses
   USearchForm, USIZSizeForm, USIZCardEditForm, USIZCardForm, USIZNameEditForm,
   USIZCardFrontForm, USIZCardBackForm, USIZCardStatusForm, USIZCardSheet, 
 UParamForm, UVars, USIZDocForm, USIZStoreHistoryForm, USIZDocEditForm, 
-usizstoreentryeditform, USIZStoreWriteoffForm, USIZDocStoreEntryForm, 
-USIZDocStoreWriteoffForm, USIZCardTypes, USIZSizeSpecEditForm;
+usizstoreentryeditform, USIZStoreWriteoffEditForm, USIZDocStoreEntryForm, 
+USIZDocStoreWriteoffForm, USIZCardTypes, USIZSizeSpecEditForm, 
+USIZStatusNewEditForm, USIZStatusCopyEditForm;
 
 {$R *.res}
 
