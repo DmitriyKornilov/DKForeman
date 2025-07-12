@@ -10,7 +10,9 @@ uses
   //Project utils
   UTypes, UConst, UVars, USIZCardSheet, USIZNormTypes, USIZCardTypes,
   //DK packages utils
-  DK_Zoom, DK_CtrlUtils, DK_Vector;
+  DK_Zoom, DK_CtrlUtils, DK_Vector,
+  //Forms
+  USIZSizeSpecEditForm;
 
 type
 
@@ -33,11 +35,13 @@ type
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure SizeButtonClick(Sender: TObject);
   private
     ZoomPercent: Integer;
 
     Sheet: TSIZCardStatusSheet;
 
+    TabNumID: Integer;
     SubItems: TNormSubItems;
     StatusItems: TStatusItems;
 
@@ -49,7 +53,8 @@ type
     procedure SettingsLoad;
   public
     procedure SettingsSave;
-    procedure DataUpdate(const ASubItems: TNormSubItems;
+    procedure DataUpdate(const ATabNumID: Integer;
+                         const ASubItems: TNormSubItems;
                          const AStatusItems: TStatusItems);
     procedure ViewUpdate(const AModeType: TModeType);
   end;
@@ -88,6 +93,26 @@ begin
   Images.ToButtons([
     SizeButton, AddButton, DelButton
   ]);
+end;
+
+procedure TSIZCardStatusForm.SizeButtonClick(Sender: TObject);
+var
+  i, j, InfoID, SizeID, HeightID, SizeType: Integer;
+begin
+  i:= Sheet.SelectedSubItemIndex;
+  j:= Sheet.SelectedInfoIndex;
+  InfoID:= SubItems[i].Info.InfoIDs[j];
+  SizeID:= StatusItems[i].SizeIDs[j];
+  HeightID:= StatusItems[i].HeightIDs[j];
+  SizeType:= SubItems[i].Info.SizeTypes[j];
+  if not SIZSizeSpecEditFormOpen(TabNumID, InfoID, SizeType,
+                                 SizeID, HeightID) then Exit;
+
+  StatusItems[i].SizeIDs[j]:= SizeID;
+  StatusItems[i].HeightIDs[j]:= HeightID;
+
+  DataReDraw;
+
 end;
 
 procedure TSIZCardStatusForm.DataDraw(const AZoomPercent: Integer);
@@ -141,9 +166,11 @@ begin
   DataBase.SettingsUpdate(SETTING_NAMES_SIZCARDSTATUSFORM, SettingValues);
 end;
 
-procedure TSIZCardStatusForm.DataUpdate(const ASubItems: TNormSubItems;
+procedure TSIZCardStatusForm.DataUpdate(const ATabNumID: Integer;
+                                        const ASubItems: TNormSubItems;
                                         const AStatusItems: TStatusItems);
 begin
+  TabNumID:= ATabNumID;
   SubItems:= ASubItems;
   StatusItems:= AStatusItems;
 

@@ -614,6 +614,9 @@ type
     function SIZSpecSizeWrite(const AInfoID: Integer;
                              const ATabNumIDs, ASizeIDs, AHeightIDs: TIntVector;
                              const ACommit: Boolean = True): Boolean;
+    function SIZSpecSizeExists(const AInfoID, ATabNumID: Integer): Boolean;
+    function SIZSpecSizeUpdate(const AInfoID, ATabNumID,
+                                     ASizeID, AHeightID: Integer): Boolean;
     function SIZSpecSizeCopy(const ASourceInfoIDs, ADestInfoIDs: TIntVector;
                              const ACommit: Boolean = True): Boolean;
 
@@ -5397,6 +5400,51 @@ begin
     Result:= True;
   except
     if ACommit then QRollback;
+  end;
+end;
+
+function TDataBase.SIZSpecSizeExists(const AInfoID, ATabNumID: Integer): Boolean;
+begin
+  QSetQuery(FQuery);
+  QSetSQL(
+    'SELECT InfoID ' +
+    'FROM SIZSTAFFSPECSIZE ' +
+    'WHERE (InfoID = :InfoID) AND (TabNumID = :TabNumID)'
+  );
+  QParamInt('InfoID', AInfoID);
+  QParamInt('TabNumID', ATabNumID);
+  QOpen;
+  Result:= not QIsEmpty;
+  QClose;
+end;
+
+function TDataBase.SIZSpecSizeUpdate(const AInfoID, ATabNumID, ASizeID,
+  AHeightID: Integer): Boolean;
+begin
+  if not SIZSpecSizeExists(AInfoID, ATabNumID) then
+  begin
+    Result:= SIZSpecSizeWrite(AInfoID, ATabNumID, ASizeID, AHeightID, True{commit});
+    Exit;
+  end;
+
+  Result:= False;
+  QSetQuery(FQuery);
+  try
+    QSetSQL(
+      sqlUPDATE('SIZSTAFFSPECSIZE', ['SizeID', 'HeightID']) +
+      'WHERE (InfoID = :InfoID) AND (TabNumID = :TabNumID)'
+    );
+
+    QParamInt('InfoID', AInfoID);
+    QParamInt('TabNumID', ATabNumID);
+    QParamInt('SizeID', ASizeID);
+    QParamInt('HeightID', AHeightID);
+    QExec;
+
+    QCommit;
+    Result:= True;
+  except
+    QRollback;
   end;
 end;
 

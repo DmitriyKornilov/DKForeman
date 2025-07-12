@@ -531,7 +531,8 @@ end;
 
 procedure TSIZCardForm.CardStatusUpdate;
 begin
-  (CategoryForm as TSIZCardStatusForm).DataUpdate(SubItems, StatusItems);
+  (CategoryForm as TSIZCardStatusForm).DataUpdate(TabNumIDs[StaffList.SelectedIndex],
+                                                  SubItems, StatusItems);
 end;
 
 procedure TSIZCardForm.CardDataUpdate;

@@ -9,7 +9,7 @@ uses
   fpspreadsheet, fpspreadsheetgrid,
   //DK packages utils
   DK_SheetTypes, DK_Vector, DK_StrUtils, DK_Const, DK_SheetWriter,
-  DK_SheetConst, DK_DateUtils,
+  DK_SheetConst, DK_DateUtils, DK_Color,
   //Project utils
   USIZNormTypes, USIZUtils, USIZSizes, UConst, USIZNormSheet, USIZCardTypes;
 
@@ -800,7 +800,6 @@ begin
         Writer.AddCellBGColorIndex(R1+i, 8, COLOR_INDEX_SIZSTATUS_WARN);
     end;
   end;
-
 end;
 
 procedure TSIZCardStatusSheet.ReasonDraw(const ARow: Integer; const ASubItemIndex: Integer);
@@ -928,6 +927,8 @@ var
   i, R: Integer;
   S: String;
 begin
+  DelSelection;
+
   if Length(ASubItems)=0 then
   begin
     Writer.Clear;

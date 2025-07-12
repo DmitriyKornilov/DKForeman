@@ -152,6 +152,7 @@ object SIZCardStatusForm: TSIZCardStatusForm
       ImageIndex = 38
       ShowHint = True
       ParentShowHint = False
+      OnClick = SizeButtonClick
     end
     object DividerBevel1: TDividerBevel
       Left = 120
