@@ -12,7 +12,7 @@ uses
   //DK packages utils
   DK_CtrlUtils, DK_VSTTables, DK_Vector, DK_Matrix, DK_StrUtils, DK_VSTDropDown,
   //Forms
-  USIZDocForm, USIZStoreHistoryForm, USIZStoreWriteoffForm;
+  USIZDocForm, USIZStoreHistoryForm, USIZStoreWriteoffEditForm;
 
 type
 
@@ -386,24 +386,24 @@ end;
 
 procedure TSIZStoreForm.SIZWriteoffButtonClick(Sender: TObject);
 var
-  SIZStoreWriteoffForm: TSIZStoreWriteoffForm;
+  SIZStoreWriteoffEditForm: TSIZStoreWriteoffEditForm;
   MUsed: TBoolMatrix;
 begin
   MUsed:= SIZList.Selected;
 
-  SIZStoreWriteoffForm:= TSIZStoreWriteoffForm.Create(nil);
+  SIZStoreWriteoffEditForm:= TSIZStoreWriteoffEditForm.Create(nil);
   try
-    SIZStoreWriteoffForm.StoreIDs:= MToVector(ShowStoreIDs, MUsed);
-    SIZStoreWriteoffForm.NomNums:= MToVector(ShowNomNums, MUsed);
-    SIZStoreWriteoffForm.SizNames:= MToVector(ShowSizNames, MUsed);
-    SIZStoreWriteoffForm.SizUnits:= MToVector(ShowSizUnits, MUsed);
-    SIZStoreWriteoffForm.SizSizes:= MToVector(ShowSizSizes, MUsed);
-    SIZStoreWriteoffForm.EntryDocNames:= MToVector(ShowDocNames, MUsed);
+    SIZStoreWriteoffEditForm.StoreIDs:= MToVector(ShowStoreIDs, MUsed);
+    SIZStoreWriteoffEditForm.NomNums:= MToVector(ShowNomNums, MUsed);
+    SIZStoreWriteoffEditForm.SizNames:= MToVector(ShowSizNames, MUsed);
+    SIZStoreWriteoffEditForm.SizUnits:= MToVector(ShowSizUnits, MUsed);
+    SIZStoreWriteoffEditForm.SizSizes:= MToVector(ShowSizSizes, MUsed);
+    SIZStoreWriteoffEditForm.EntryDocNames:= MToVector(ShowDocNames, MUsed);
 
-    if SIZStoreWriteoffForm.ShowModal=mrOK then
+    if SIZStoreWriteoffEditForm.ShowModal=mrOK then
       SIZListLoad;
   finally
-    FreeAndNil(SIZStoreWriteoffForm);
+    FreeAndNil(SIZStoreWriteoffEditForm);
   end;
 end;
 
