@@ -24,10 +24,6 @@ type
     ButtonPanelBevel: TBevel;
     CancelButton: TSpeedButton;
     ResumeLabel: TLabel;
-    SizLifeNameLabel: TLabel;
-    ReceivingDatePicker: TDateTimePicker;
-    SizCountLabel: TLabel;
-    SizLifeLabel: TLabel;
     SIZNeedSizeLabel: TLabel;
     SIZNeedNameLabel: TLabel;
     SIZNeedLabel: TLabel;
@@ -38,18 +34,14 @@ type
     VT: TVirtualStringTree;
     DocBCButton: TBCButton;
     DocLabel: TLabel;
-    ReceivingDateLabel: TLabel;
-    WriteoffDateNameLabel: TLabel;
     SIZListLabel: TLabel;
     NewDocButton: TSpeedButton;
     SaveButton: TSpeedButton;
-    WriteoffDateLabel: TLabel;
     procedure CancelButtonClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure NewDocButtonClick(Sender: TObject);
-    procedure ReceivingDatePickerChange(Sender: TObject);
     procedure SaveButtonClick(Sender: TObject);
   private
     SIZList: TVSTCategoryCheckTable;
@@ -63,6 +55,8 @@ type
     StoreIDs: TInt64Matrix;
     SizCounts: TIntMatrix;
     NomNums, SizNames, SizUnits, SizSizes, EntryDocNames: TStrMatrix;
+
+    ReceivingDate: TDate;
 
     procedure DocLoad(const ASelectedID: Integer = -1);
     procedure DocChange;
@@ -97,9 +91,6 @@ begin
   DocDropDown.OnChange:= @DocChange;
 
   SIZListCreate;
-
-  ReceivingDatePicker.Date:= Date;
-  //WriteoffDateLabel.Caption:= FormatDateTime('dd.mm.yyyy', Date);
 end;
 
 procedure TSIZStatusNewEditForm.FormDestroy(Sender: TObject);
@@ -149,11 +140,7 @@ end;
 
 procedure TSIZStatusNewEditForm.DocChange;
 begin
-  if DocDropDown.ItemIndex>=0 then
-  begin
-    ReceivingDatePicker.Date:= DocDates[DocDropDown.ItemIndex];
-    NumAndLifeCalc;
-  end;
+  NumAndLifeCalc;
 end;
 
 procedure TSIZStatusNewEditForm.SIZListCreate;
@@ -203,11 +190,6 @@ begin
   NumAndLifeCalc;
 end;
 
-procedure TSIZStatusNewEditForm.ReceivingDatePickerChange(Sender: TObject);
-begin
-  NumAndLifeCalc;
-end;
-
 procedure TSIZStatusNewEditForm.NumAndLifeCalc;
 var
   Count: Integer;
@@ -215,13 +197,17 @@ var
   WriteoffDate: TDate;
 begin
   Count:= VSum(MToVector(SizCounts, SIZList.Selected));
-  SizCountLabel.Caption:= IntToStr(Count);
-
   Months:= SIZLifeInMonths(Count, Num, Life);
-  SizLifeLabel.Caption:= SIZLifeInMonthAndYears(Months) + ',';
+  if DocDropDown.ItemIndex>=0 then
+    ReceivingDate:= DocDates[DocDropDown.ItemIndex]
+  else
+    ReceivingDate:= Date;
+  WriteoffDate:= IncMonthExt(ReceivingDate, Months);
 
-  WriteoffDate:= IncMonthExt(ReceivingDatePicker.Date, Months);
-  WriteoffDateLabel.Caption:= FormatDateTime('dd.mm.yyyy', WriteoffDate);
+  ResumeLabel.Caption:= 'ИТОГО:  ' +
+               IntToStr(Count) + ' на ' + SIZLifeInMonthAndYears(Months) +
+               ', дата выдачи ' + FormatDateTime('dd.mm.yyyy', ReceivingDate) +
+               ', дата списания ' + FormatDateTime('dd.mm.yyyy', WriteoffDate);
 end;
 
 procedure TSIZStatusNewEditForm.SaveButtonClick(Sender: TObject);
@@ -243,7 +229,7 @@ begin
   SelectedStoreIDs:= MToVector(StoreIDs, SIZList.Selected);
   if not DataBase.SIZReceivingWrite(CardID, TabNumID, ItemPostID, InfoID, InfoID,
                                     DocIDs[DocDropDown.ItemIndex], SelectedStoreIDs,
-                                    ReceivingDatePicker.Date) then Exit;
+                                    ReceivingDate) then Exit;
 
   ModalResult:= mrOK;
 end;

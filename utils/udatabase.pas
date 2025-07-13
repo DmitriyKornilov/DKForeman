@@ -591,6 +591,7 @@ type
                               out ASIZNames, AUnits: TStrMatrix;
                               out ANameIDs, ASizeTypes: TIntMatrix): Boolean;
 
+
     (**************************************************************************
                                 РАЗМЕРЫ СИЗ
     **************************************************************************)
@@ -772,29 +773,19 @@ type
     function SIZPersonalCardUpdate(const ACardID: Integer;
                                 const ACardNum: String): Boolean;
 
-
     {Получение подстроки статуса СИЗ для таб номера ATabNumID и соответствующей AInfoID}
-    procedure SIZStatusInfoDataLoad(const ATabNumID, AWriteoffType, AInfoID: Integer;
+    procedure SIZStatusInfoLoad(const AReportDate: TDate;
+                                const ATabNumID, AWriteoffType, AInfoID: Integer;
+                                out AIsInfoFreshExists: Boolean;
                                 out ALogIDs: TInt64Vector;
-                                out ASizNames: TStrVector;
-                                out ALifes: TDblVector;
-                                out AReceivingDates, AWriteoffDatesIfReturn: TDateVector);
-    procedure SIZStatusInfoDataLoad(const ATabNumID, AWriteoffType, AInfoID: Integer;
-                                out ALogIDs: TInt64Vector;
-                                out ASizNames:TStrVector;
-                                out ASizCounts: TIntVector;
-                                out AReceivingDates, AWriteoffDates: TDateVector);
-    procedure SIZStatusInfoLoad(const ATabNumID, AWriteoffType, AInfoID: Integer;
-                            const AReportDate: TDate;
-                            out ALogIDs: TInt64Vector;
-                            out ASizNames: TStrVector;
-                            out ASizCounts: TIntVector;
-                            out AReceivingDates, AWriteoffDates: TDateVector);
+                                out AReceivingDates, AWriteoffDates: TDateVector;
+                                out ASizNames: TStrMatrix;
+                                out ASizCounts: TIntMatrix);
     {Получение строки статуса СИЗ для таб номера ATabNumID и соответствующих AInfoIDs}
-    procedure SIZStatusItemLoad(const ATabNumID, AWriteoffType: Integer;
-                                const AReportDate: TDate;
+    procedure SIZStatusSubItemLoad(const AReportDate: TDate;
+                                const ATabNumID, AWriteoffType: Integer;
                                 const AInfoIDs: TIntVector;
-                                var AStatusItem: TStatusItem);
+                                var AStatusSubItem: TStatusSubItem);
     {Получение статуса СИЗ для таб номера ATabNumID и соответствующих норм ANormSubItems}
     //AWriteoffType - расчет даты следующей выдачи:
     // 0 - по нормам на момент выдачи,
@@ -802,7 +793,7 @@ type
     function SIZStatusLoad(const ATabNumID, AWriteoffType: Integer;
                            const AReportDate: TDate;
                            const ANormSubItems: TNormSubItems;
-                           var AStatusItems: TStatusItems): Boolean;
+                           var AStatusSubItems: TStatusSubItems): Boolean;
 
 
     {Запись информации о выдаче СИЗ: True - ОК, False - ошибка}
@@ -6656,297 +6647,329 @@ begin
   Result:= UpdateInt32ID('SIZCARDPERSONAL', 'CardNum', 'CardID', ACardID, ACardNum);
 end;
 
-procedure TDataBase.SIZStatusInfoDataLoad(const ATabNumID, AWriteoffType, AInfoID: Integer;
-                                out ALogIDs: TInt64Vector;
-                                out ASizNames: TStrVector;
-                                out ALifes: TDblVector;
-                                out AReceivingDates, AWriteoffDatesIfReturn: TDateVector);
-var
-  S: String;
-  M: Double;
-begin
-  ALogIDs:= nil;
-  ASizNames:= nil;
-  ALifes:= nil;
-  AReceivingDates:= nil;
-  AWriteOffDatesIfReturn:= nil;
 
-  if AWriteoffType=0 then
-    S:= 'ReceivingInfoID'
-  else
-    S:= 'NowInfoID';
-
-  QSetQuery(FQuery);
-  QSetSQL(
-    'SELECT t1.LogID, t2.ReceivingDate,  ' +
-           't3.Num, t3.Life, t6.SizName, t8.DocDate as WriteoffDate ' +
-    'FROM SIZCARDPERSONALLOGINFO t1 ' +
-    'INNER JOIN SIZCARDPERSONALLOG t2 ON (t1.LogID=t2.LogID) ' +
-    'INNER JOIN SIZCARDPERSONAL tt ON (t2.CardID=tt.CardID) ' +
-    'INNER JOIN SIZNORMSUBITEMINFO t3 ON (t2.' + S + '=t3.InfoID) ' +
-    'INNER JOIN SIZSTORELOG t4 ON (t1.StoreID=t4.StoreID) ' +
-    'INNER JOIN SIZSTOREENTRY t5 ON (t4.EntryID=t5.EntryID) ' +
-    'INNER JOIN SIZNAME t6 ON (t5.NameID=t6.NameID) ' +
-    'LEFT OUTER JOIN SIZSTAFFWRITEOFF t7 ON (t1.StoreID=t7.StoreID) ' +
-    'LEFT OUTER JOIN SIZDOC t8 ON (t7.DocID=t8.DocID) ' +
-    'WHERE (tt.TabNumID = :TabNumID) AND (t2.NowInfoID = :InfoID) ' +
-    'ORDER BY t2.ReceivingDate DESC, t1.LogID, t5.NameID '
-   );
-  QParamInt('TabNumID', ATabNumID);
-  QParamInt('InfoID', AInfoID);
-  QOpen;
-  if not QIsEmpty then
-  begin
-    QFirst;
-    while not QEOF do
-    begin
-      VAppend(ALogIDs, QFieldInt64('LogID'));
-      VAppend(ASizNames, QFieldStr('SizName'));
-      VAppend(AReceivingDates, QFieldDT('ReceivingDate'));
-      if QIsNull('WriteoffDate') then
-      begin
-        VAppend(AWriteOffDatesIfReturn, NULDATE);
-        M:= SIZLifeInMonths(1, QFieldInt('Num'), QFieldInt('Life'));
-      end
-      else begin
-        VAppend(AWriteOffDatesIfReturn, QFieldDT('WriteoffDate'));
-        M:= 0;
-      end;
-      VAppend(ALifes, M);
-      QNext;
-    end;
-  end;
-  QClose;
-end;
-
-procedure TDataBase.SIZStatusInfoDataLoad(const ATabNumID, AWriteoffType, AInfoID: Integer;
-                                out ALogIDs: TInt64Vector;
-                                out ASizNames:TStrVector;
-                                out ASizCounts: TIntVector;
-                                out AReceivingDates, AWriteoffDates: TDateVector);
-var
-  i, n1, n2, j: Integer;
-  Months: TDblVector;
-  M: Double;
-  D: TDate;
-  SizNames: TStrVector;
-  BDs: TDateVector;
-  Lifes: TDblVector;
-  LogIDs: TInt64Vector;
-  EDsData, EDs: TDateVector;
-
-  procedure AddValuesToVectors(const AInd: Integer);
-  begin
-    VAppend(ALogIDs, LogIDs[AInd]);
-    VAppend(ASizNames, SizNames[AInd]);
-    VAppend(AReceivingDates, BDs[AInd]);
-    VAppend(Months, Lifes[AInd]);
-    if SameDate(EDsData[AInd], NULDATE) then
-      VAppend(EDs, NULDATE)
-    else
-      VAppend(EDs, EDsData[AInd]);
-    VAppend(ASizCounts, 1);
-  end;
-
-begin
-  ALogIDs:= nil;
-  ASizNames:= nil;
-  ASizCounts:= nil;
-  AReceivingDates:= nil;
-  AWriteoffDates:= nil;
-
-  //получаем список всех выданных для этого InfoID СИЗ
-  SizStatusInfoDataLoad(ATabNumID, AWriteoffType, AInfoID, LogIDs, SizNames,
-                        Lifes, BDs, EDsData);
-  //если ничего не выдавалось
-  if Length(SizNames)=0 then Exit;
-  //проверяем дубли (если выдавалось несколько сиз) и определяем кол-во и срок службы
-  Months:= nil;
-  //добавляем первое СИЗ в список
-  AddValuesToVectors(0);
-  for i:= 1 to High(SizNames) do
-  begin
-    if (LogIDs[i-1]=LogIDs[i]) and (SizNames[i]=SizNames[i-1]) then
-    begin
-      ASizCounts[High(ASizCounts)]:= ASizCounts[High(ASizCounts)] + 1;
-      Months[High(Months)]:= Months[High(Months)] + Lifes[i];
-    end
-    else begin  //другое СИЗ - добавляем в список
-      AddValuesToVectors(i);
-    end;
-  end;
-  //определяем даты списания
-  for i:= 0 to High(ALogIDs) do
-  begin
-    if SameDate(EDs[i], NULDATE) then
-    begin
-      if Months[i]=0 then
-        VAppend(AWriteoffDates, INFDATE)
-      else
-        VAppend(AWriteoffDates, NULDATE);
-    end
-    else VAppend(AWriteoffDates, EDs[i]);
-  end;
-  n1:= 0;
-  for i:= 1 to High(ALogIDs) do
-  begin
-    if i=n1 then continue;
-    if ALogIDs[i-1]<>ALogIDs[i] then
-    begin
-      n2:= i-1;
-      if SameDate(AWriteoffDates[i-1], NULDATE) then
-      begin
-        M:= VSum(Months, n1, n2);
-        D:= IncMonthExt(AReceivingDates[i-1], M);
-        for j:= n1 to n2 do
-          AWriteoffDates[j]:= D;
-      end;
-      n1:= i+1;
-    end;
-  end;
-  //оставшиеся
-  n1:= n1-1;
-  n2:= High(ALogIDs);
-  if SameDate(AWriteoffDates[n2], NULDATE) then
-  begin
-    M:= VSum(Months, n1, n2);
-    D:= IncMonthExt(AReceivingDates[n2], M);
-    for j:= n1 to n2 do
-      AWriteoffDates[j]:= D;
-  end;
-end;
-
-procedure TDataBase.SIZStatusInfoLoad(const ATabNumID, AWriteoffType, AInfoID: Integer;
-                            const AReportDate: TDate;
-                            out ALogIDs: TInt64Vector;
-                            out ASizNames: TStrVector;
-                            out ASizCounts: TIntVector;
-                            out AReceivingDates, AWriteoffDates: TDateVector);
-var
-  LogIDs: TInt64Vector;
-  SizNames: TStrVector;
-  SizCounts: TIntVector;
-  BDs, EDs: TDateVector;
-begin
-  ALogIDs:= nil;
-  ASizNames:= nil;
-  ASizCounts:= nil;
-  AReceivingDates:= nil;
-  AWriteoffDates:= nil;
-  //получаем список всех выданных СИЗ для InfoID
-  SIZStatusInfoDataLoad(ATabNumID, AWriteoffType, AInfoID,
-                        LogIDs, SizNames, SizCounts, BDs, EDs);
-  if Length(SizNames) = 0 then Exit;
-  //данные по датам списания
-  SIZStatusInfoVerifyDates(AReportDate, LogIDs, SizNames, SizCounts, BDs, EDs,
-                           ALogIDs, ASizNames, ASizCounts, AReceivingDates, AWriteoffDates);
-end;
-
-procedure TDataBase.SIZStatusItemLoad(const ATabNumID, AWriteoffType: Integer;
-                                const AReportDate: TDate;
+procedure TDataBase.SIZStatusSubItemLoad(const AReportDate: TDate;
+                                const ATabNumID, AWriteoffType: Integer;
                                 const AInfoIDs: TIntVector;
-                                var AStatusItem: TStatusItem);
+                                var AStatusSubItem: TStatusSubItem);
 var
-  i, j: Integer;
-  MaxWD: TDate;
+  i, N: Integer;
 
-  VLogIDs: TInt64Vector;
-  VSizNames: TStrVector;
-  VSizCounts: TIntVector;
-  VBDs, VEDs: TDateVector;
+  LogIDs: TInt64Vector;
+  ReceivingDates, WriteoffDates: TDateVector;
+  SizNames: TStrMatrix;
+  SizCounts: TIntMatrix;
+  IsFreshExists: Boolean;
 
-  MLogIDs: TInt64Matrix;
-  MSizNames: TStrMatrix;
-  MSizCounts: TIntMatrix;
-  MBDs, MEDs: TDateMatrix;
+  OutLogIDs: TInt64Matrix;
+  OutReceivingDates, OutWriteoffDates: TDateMatrix;
+  OutSizNames: TStrMatrix3D;
+  OutSizCounts: TIntMatrix3D;
+  OutIsFreshExists: TBoolVector;
 
-  function IsFreshExists(const ADates: TDateMatrix): Boolean;
-  var
-    x, y: Integer;
+  procedure DataInclude(const AIndex1, AIndex2: Integer);
   begin
-    Result:= False;
-    for x:= 0 to High(ADates) do
-      for y:=0 to High(ADates[x]) do
-        if CompareDate(ADates[x, y], AReportDate)>=0 then
+    VAppend(AStatusSubItem.Info.LogIDs[AIndex1], OutLogIDs[AIndex1, AIndex2]);
+    VAppend(AStatusSubItem.Info.ReceivingDates[AIndex1], OutReceivingDates[AIndex1, AIndex2]);
+    VAppend(AStatusSubItem.Info.WriteoffDates[AIndex1], OutWriteoffDates[AIndex1, AIndex2]);
+    MAppend(AStatusSubItem.Info.SizNames[AIndex1], OutSizNames[AIndex1, AIndex2]);
+    MAppend(AStatusSubItem.Info.SizCounts[AIndex1], OutSizCounts[AIndex1, AIndex2]);
+  end;
+
+  procedure FreshLoad; //отбираем только непросроченное
+  var
+    i, j: Integer;
+  begin
+    for i:= 0 to High(OutLogIDs) do
     begin
-       Result:= True;
-       Exit;
+      if not OutIsFreshExists[i] then continue;
+
+      for j:= 0 to High(OutLogIDs[i]) do
+        if CompareDate(OutWriteoffDates[i, j], AReportDate)>=0 then
+          DataInclude(i, j);
     end;
+  end;
+
+  procedure LastWriteoffLoad; //отбираем только списанное последним
+  var
+    i, j: Integer;
+    D: TDate;
+  begin
+    D:= MMaxDate(OutWriteoffDates);
+    for i:= 0 to High(OutLogIDs) do
+      for j:= 0 to High(OutLogIDs[i]) do
+        if SameDate(OutWriteoffDates[i, j], D) then
+          DataInclude(i, j);
   end;
 
 begin
-  MLogIDs:= nil;
-  MSizNames:= nil;
-  MSizCounts:= nil;
-  MBDs:= nil;
-  MEDs:= nil;
+  N:= Length(AInfoIDs);
 
-  //получаем инфо статуса для каждого инфо строки пункта нормы
-  for i:=0 to High(AInfoIDs) do
+  VDim(OutIsFreshExists{%H-}, N);
+  MDim(OutLogIDs{%H-}, N);
+  MDim(OutReceivingDates{%H-}, N);
+  MDim(OutWriteoffDates{%H-}, N);
+  MDim(OutSizNames{%H-}, N);
+  MDim(OutSizCounts{%H-}, N);
+
+  for i:= 0 to N-1 do
   begin
-    SIZStatusInfoLoad(ATabNumID, AWriteoffType, AInfoIDs[i], AReportDate,
-                      VLogIDs, VSizNames, VSizCounts, VBDs, VEDs);
-    if Length(VLogIDs)>0 then
-    begin
-      MAppend(MLogIDs, VLogIDs);
-      MAppend(MSizNames, VSizNames);
-      MAppend(MSizCounts, VSizCounts);
-      MAppend(MBDs, VBDs);
-      MAppend(MEDs, VEDs);
-    end;
+    SIZStatusInfoLoad(AReportDate, ATabNumID, AWriteoffType, AInfoIDs[i],
+                         IsFreshExists, LogIDs, ReceivingDates, WriteoffDates,
+                         SizNames, SizCounts);
+
+    OutIsFreshExists[i]:= IsFreshExists;
+    OutLogIDs[i]:= VCut(LogIDs);
+    OutReceivingDates[i]:= VCut(ReceivingDates);
+    OutWriteoffDates[i]:= VCut(WriteoffDates);
+    OutSizNames[i]:= MCut(SizNames);
+    OutSizCounts[i]:= MCut(SizCounts);
   end;
-  if Length(MLogIDs)>0 then
+
+  IsFreshExists:= VIsTrue(OutIsFreshExists);
+  AStatusSubItem.IsFreshExists:= IsFreshExists;
+  if IsFreshExists then
+    FreshLoad
+  else
+    LastWriteoffLoad;
+end;
+
+procedure TDataBase.SIZStatusInfoLoad(const AReportDate: TDate;
+                                const ATabNumID, AWriteoffType, AInfoID: Integer;
+                                out AIsInfoFreshExists: Boolean;
+                                out ALogIDs: TInt64Vector;
+                                out AReceivingDates, AWriteoffDates: TDateVector;
+                                out ASizNames: TStrMatrix;
+                                out ASizCounts: TIntMatrix);
+var
+  LogIDs: TInt64Vector;
+  ReceivingDates, ReturnDates: TDateVector;
+  NameIDs, Nums, Lifes: TIntVector;
+  SizNames: TStrVector;
+
+  OutLogIDs: TInt64Vector;
+  OutReceivingDates, OutWriteoffDates: TDateVector;
+  OutSizNames: TStrMatrix;
+  OutSizCounts: TIntMatrix;
+
+  procedure DataLoad;
+  var
+    S: String;
   begin
-    //если есть хотя бы одно непросроченное сиз на AReportDate, выбираем все непросроченные СИЗ
-    if IsFreshExists(MEDs) then
+    LogIDs:= nil;
+    ReceivingDates:= nil;
+    ReturnDates:= nil;
+    NameIDs:= nil;
+    Nums:= nil;
+    Lifes:= nil;
+    SizNames:= nil;
+
+    if AWriteoffType=0 then
+      S:= 'ReceivingInfoID'
+    else
+      S:= 'NowInfoID';
+
+    QSetQuery(FQuery);
+    QSetSQL(
+      'SELECT t1.LogID, t2.ReceivingDate,  ' +
+             't3.Num, t3.Life, t6.NameID, t6.SizName, t8.DocDate as ReturnDate ' +
+      'FROM SIZCARDPERSONALLOGINFO t1 ' +
+      'INNER JOIN SIZCARDPERSONALLOG t2 ON (t1.LogID=t2.LogID) ' +
+      'INNER JOIN SIZCARDPERSONAL tt ON (t2.CardID=tt.CardID) ' +
+      'INNER JOIN SIZNORMSUBITEMINFO t3 ON (t2.' + S + '=t3.InfoID) ' +
+      'INNER JOIN SIZSTORELOG t4 ON (t1.StoreID=t4.StoreID) ' +
+      'INNER JOIN SIZSTOREENTRY t5 ON (t4.EntryID=t5.EntryID) ' +
+      'INNER JOIN SIZNAME t6 ON (t5.NameID=t6.NameID) ' +
+      'LEFT OUTER JOIN SIZSTAFFWRITEOFF t7 ON (t1.StoreID=t7.StoreID) ' +
+      'LEFT OUTER JOIN SIZDOC t8 ON (t7.DocID=t8.DocID) ' +
+      'WHERE (tt.TabNumID = :TabNumID) AND (t2.NowInfoID = :InfoID) ' +
+      'ORDER BY t2.ReceivingDate DESC, t1.LogID, t5.NameID '
+     );
+    QParamInt('TabNumID', ATabNumID);
+    QParamInt('InfoID', AInfoID);
+    QOpen;
+    if not QIsEmpty then
     begin
-      AStatusItem.Info.IsFreshExists:= True;
-      for i:= 0 to High(MEDs) do
-        for j:=0 to High(MEDs[i]) do
-          if CompareDate(MEDs[i,j], AReportDate)>=0 then
-             StatusItemInfoAdd(AStatusItem.Info, i, MLogIDs[i,j], MSizNames[i,j],
-                               MSizCounts[i,j], MBDs[i,j], MEDs[i,j]);
-    end
-    else begin //все просроченные -> выбираем самые свежие
-      MaxWD:= MMaxDate(MEDs);
-      for i:= 0 to High(MEDs) do
-        for j:=0 to High(MEDs[i]) do
-          if SameDate(MEDs[i,j], MaxWD) then
-             StatusItemInfoAdd(AStatusItem.Info, i, MLogIDs[i,j], MSizNames[i,j],
-                               MSizCounts[i,j], MBDs[i,j], MEDs[i,j]);
+      QFirst;
+      while not QEOF do
+      begin
+        VAppend(LogIDs, QFieldInt64('LogID'));
+        VAppend(SizNames, QFieldStr('SizName'));
+        VAppend(ReceivingDates, QFieldDT('ReceivingDate'));
+        VAppend(ReturnDates, QFieldDT('ReturnDate'));
+        VAppend(NameIDs, QFieldInt('NameID'));
+        VAppend(Nums, QFieldInt('Num'));
+        VAppend(Lifes, QFieldInt('Life'));
+        QNext;
+      end;
     end;
+    QClose;
   end;
+
+  procedure GroupByNameID(const ALogN1, ALogN2: Integer);
+  var
+    i, N1, N2, NameID: Integer;
+    VNames: TStrVector;
+    VCounts: TIntVector;
+  begin
+    VNames:= nil;
+    VCounts:= nil;
+
+    NameID:= NameIDs[ALogN1];
+    N1:= 0;
+    for i:= ALogN1+1 to ALogN2 do
+    begin
+      if NameIDs[i]<>NameID then
+      begin
+        N2:= i - 1;
+        VAppend(VNames, SizNames[N1]);
+        VAppend(VCounts, N2-N1+1);
+        N1:= i;
+        NameID:= NameIDs[i];
+      end;
+    end;
+    N2:= ALogN2;
+    VAppend(VNames, SizNames[N1]);
+    VAppend(VCounts, N2-N1+1);
+
+    MAppend(OutSizNames, VNames);
+    MAppend(OutSizCounts, VCounts);
+  end;
+
+  procedure AddLogData(const AInd1, AInd2: Integer);
+  var
+    Count: Integer;
+    WriteoffDate: TDate;
+    Months: Extended;
+  begin
+    VAppend(OutLogIDs, LogIDs[AInd1]);
+    VAppend(OutReceivingDates, ReceivingDates[AInd1]);
+    //группировка по наименованию СИЗ и заполнение количества
+    GroupByNameID(AInd1, AInd2);
+    //определение даты списания
+    if ReturnDates[AInd1]>0 then
+      WriteoffDate:= ReturnDates[AInd1]
+    else begin
+      Count:= VSum(OutSizCounts[High(OutSizCounts)]);
+      Months:= SIZLifeInMonths(Count, Nums[AInd1], Lifes[AInd1]);
+      WriteoffDate:= IncMonthExt(ReceivingDates[AInd1], Months);
+    end;
+    VAppend(OutWriteoffDates, WriteoffDate);
+
+    if CompareDate(WriteoffDate, AReportDate)>=0 then
+      AIsInfoFreshExists:= True;
+  end;
+
+  procedure GroupByLogID;
+  var
+    i, N1, N2: Integer;
+    LogID: Int64;
+  begin
+    OutLogIDs:= nil;
+    OutReceivingDates:= nil;
+    OutWriteoffDates:= nil;
+    OutSizNames:= nil;
+    OutSizCounts:= nil;
+
+    LogID:= LogIDs[0];
+    N1:= 0;
+    for i:= 1 to High(LogIDs) do
+    begin
+      if LogIDs[i]<>LogID then
+      begin
+        N2:= i - 1;
+        AddLogData(N1, N2);
+        N1:= i;
+        LogID:= LogIDs[i];
+      end;
+    end;
+    N2:= High(LogIDs);
+    AddLogData(N1, N2);
+  end;
+
+  procedure DataInclude(const AIndex: Integer);
+  begin
+    VAppend(ALogIDs, OutLogIDs[AIndex]);
+    VAppend(AReceivingDates, OutReceivingDates[AIndex]);
+    VAppend(AWriteoffDates, OutWriteoffDates[AIndex]);
+    MAppend(ASizNames, OutSizNames[AIndex]);
+    MAppend(ASizCounts, OutSizCounts[AIndex]);
+  end;
+
+  procedure FreshLoad; //отбираем только непросроченное
+  var
+    i: Integer;
+  begin
+    for i:= 0 to High(OutLogIDs) do
+      if CompareDate(OutWriteoffDates[i], AReportDate)>=0 then
+        DataInclude(i);
+  end;
+
+  procedure LastWriteoffLoad; //отбираем только списанное последним
+  var
+    i: Integer;
+    D: TDate;
+  begin
+    D:= VMaxDate(OutWriteoffDates);
+    for i:= 0 to High(OutLogIDs) do
+      if SameDate(OutWriteoffDates[i], D) then
+        DataInclude(i);
+  end;
+
+begin
+  AIsInfoFreshExists:= False;
+
+  ALogIDs:= nil;
+  AReceivingDates:= nil;
+  AWriteoffDates:= nil;
+  ASizNames:= nil;
+  ASizCounts:= nil;
+
+  DataLoad;
+
+  if VIsNil(LogIDs) then Exit;
+
+  GroupByLogID;
+
+  if AIsInfoFreshExists then
+    FreshLoad
+  else
+    LastWriteoffLoad;
 end;
 
 function TDataBase.SIZStatusLoad(const ATabNumID, AWriteoffType: Integer;
                            const AReportDate: TDate;
                            const ANormSubItems: TNormSubItems;
-                           var AStatusItems: TStatusItems): Boolean;
+                           var AStatusSubItems: TStatusSubItems): Boolean;
 var
   i, StaffID: Integer;
   StaffSizes: TSIZStaffSizeIndexes;
   SizeIDs, HeightIDs: TIntVector;
-  StatusItem: TStatusItem;
+  StatusSubItem: TStatusSubItem;
 begin
   Result:= False;
   //очищаем
-  StatusItemsClear(AStatusItems{%H-});
+  StatusSubItemsClear(AStatusSubItems{%H-});
+
   //загружаем ID размеров сотрудника
-  if not StaffIDByTabNumID(ATabNumID, StaffID) then Exit;
-  SIZStaffSizeLoad(StaffID, StaffSizes{%H-});
+  SIZStaffSizeIndexesClear(StaffSizes);
+  if StaffIDByTabNumID(ATabNumID, StaffID) then
+    SIZStaffSizeLoad(StaffID, StaffSizes);
+
   //пробегаем по всем строкам пункта типовой нормы
   for i:=0 to High(ANormSubItems) do
   begin
     //определяем размеры
     SIZStatusSizeLoad(ATabNumID, ANormSubItems[i].Info.InfoIDs,
                       ANormSubItems[i].Info.SizeTypes, StaffSizes, SizeIDs, HeightIDs);
-    //заполняем размеры для этой строки StatusItem
-    StatusItemNew(StatusItem{%H-}, SizeIDs, HeightIDs);
+
+    //заполняем размеры для этой строки StatusSubItem
+    StatusSubItemNew(StatusSubItem{%H-}, SizeIDs, HeightIDs);
     //заполняем данные статуса
-    SIZStatusItemLoad(ATabNumID, AWriteoffType, AReportDate,
-                      ANormSubItems[i].Info.InfoIDs, StatusItem);
-    //добавляем StatusItem в вектор
-    StatusItemsAdd(AStatusItems, StatusItem);
+    SIZStatusSubItemLoad(AReportDate, ATabNumID, AWriteoffType,
+                      ANormSubItems[i].Info.InfoIDs, StatusSubItem);
+    //добавляем StatusSubItem в вектор
+    StatusSubItemsAdd(AStatusSubItems, StatusSubItem);
   end;
 
   Result:= True;

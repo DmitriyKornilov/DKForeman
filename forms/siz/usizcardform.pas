@@ -97,7 +97,7 @@ type
     CardBDs, CardEDs: TDateVector;
 
     SubItems: TNormSubItems;
-    StatusItems: TStatusItems;
+    StatusItems: TStatusSubItems;
 
     procedure ParamListCreate;
     procedure WriteoffTypeChange;
@@ -410,7 +410,7 @@ end;
 
 procedure TSIZCardForm.StatusLoad;
 begin
-  StatusItemsClear(StatusItems);
+  StatusSubItemsClear(StatusItems);
   if Length(SubItems)>0 then
     DataBase.SIZStatusLoad(TabNumIDs[StaffList.SelectedIndex],
                            ParamList.Selected['WriteoffType'],

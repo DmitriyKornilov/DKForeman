@@ -10,162 +10,117 @@ uses
   DK_Vector, DK_Matrix;
 
 type
-  TStatusItemInfo = record
-    IsFreshExists : Boolean;
+  //соотв TNormSubItemInfo
+  //Index1 - соотв индексу InfoIDs
+  //Index2 - группировка в один комплект по одному LogID
+  //Index3 - индекс СИЗ в комплекте
+  TStatusSubItemInfo = record
     LogIDs        : TInt64Matrix;
-    SizNames      : TStrMatrix;
-    SizCounts     : TIntMatrix;
     ReceivingDates: TDateMatrix;
     WriteoffDates : TDateMatrix;
+    SizNames      : TStrMatrix3D;
+    SizCounts     : TIntMatrix3D;
   end;
-  procedure StatusItemInfoClear(var AStatusItemInfo: TStatusItemInfo);
-  procedure StatusItemInfoSetLength(var AStatusItemInfo: TStatusItemInfo;
-                                 const ALength: Integer);
-  procedure StatusItemInfoAdd(var AStatusItemInfo: TStatusItemInfo;
-                           const ALogIDs: TInt64Vector;
-                           const ASizNames: TStrVector;
-                           const ASizCounts: TIntVector;
-                           const AReceivingDates, AWriteoffDates: TDateVector);
-  procedure StatusItemInfoAdd(var AStatusItemInfo: TStatusItemInfo;
-                           const AIndex: Integer;
-                           const ALogID: Int64;
-                           const ASizName: String;
-                           const ASizCount: Integer;
-                           const AReceivingDate, AWriteoffDate: TDate);
-  procedure StatusItemInfoCopy(const ASourceStatusItemInfo: TStatusItemInfo;
-                           var ADestStatusItemInfo: TStatusItemInfo);
+  procedure StatusSubItemInfoClear(var AInfo: TStatusSubItemInfo);
+  procedure StatusSubItemInfoSetLength(var AInfo: TStatusSubItemInfo;
+                              const ALength: Integer);
+  procedure StatusSubItemInfoCopy(const ASourceInfo: TStatusSubItemInfo;
+                           var ADestInfo: TStatusSubItemInfo);
 
 type
-  TStatusItem = record
-    SizeIDs  : TIntVector;
-    HeightIDs: TIntVector;
-    Info     : TStatusItemInfo;
+  //соотв TNormSubItem
+  TStatusSubItem = record
+    IsFreshExists : Boolean;
+    SizeIDs       : TIntVector;
+    HeightIDs     : TIntVector;
+    Info          : TStatusSubItemInfo;
   end;
-  procedure StatusItemClear(var AStatusItem: TStatusItem);
-  procedure StatusItemNew(var AStatusItem: TStatusItem;
-                          const ASizeIDs, AHeightIDs: TIntVector);
-  procedure StatusItemAdd(var AStatusItem: TStatusItem;
-                        const ALogIDs: TInt64Vector;
-                        const ASizNames: TStrVector;
-                        const ASizCounts: TIntVector;
-                        const AReceivingDates, AWriteoffDates: TDateVector);
-  procedure StatusItemCopy(const ASourceStatusItem: TStatusItem;
-                        var ADestStatusItem: TStatusItem);
+  procedure StatusSubItemClear(var ASubItem: TStatusSubItem);
+  procedure StatusSubItemNew(var ASubItem: TStatusSubItem;
+                           const ASizeIDs, AHeightIDs: TIntVector);
+  procedure StatusSubItemCopy(const ASourceSubItem: TStatusSubItem;
+                              var ADestSubItem: TStatusSubItem);
 
 type
-  TStatusItems = array of TStatusItem;
-  procedure StatusItemsClear(var AStatusItems: TStatusItems);
-  procedure StatusItemsAdd(var AStatusItems: TStatusItems; const AStatusItem: TStatusItem);
+  //соотв TNormSubItems
+  TStatusSubItems = array of TStatusSubItem;
+  procedure StatusSubItemsClear(var ASubItems: TStatusSubItems);
+  procedure StatusSubItemsAdd(var ASubItems: TStatusSubItems;
+                          const ASubItem: TStatusSubItem);
 
 implementation
 
-procedure StatusItemInfoClear(var AStatusItemInfo: TStatusItemInfo);
+procedure StatusSubItemInfoClear(var AInfo: TStatusSubItemInfo);
 begin
-  AStatusItemInfo.LogIDs:= nil;
-  AStatusItemInfo.SizNames:= nil;
-  AStatusItemInfo.SizCounts:= nil;
-  AStatusItemInfo.ReceivingDates:= nil;
-  AStatusItemInfo.WriteoffDates:= nil;
-  AStatusItemInfo.IsFreshExists:= False;
+  AInfo.LogIDs:= nil;
+  AInfo.SizNames:= nil;
+  AInfo.SizCounts:= nil;
+  AInfo.ReceivingDates:= nil;
+  AInfo.WriteoffDates:= nil;
 end;
 
-procedure StatusItemInfoSetLength(var AStatusItemInfo: TStatusItemInfo;
-                                 const ALength: Integer);
+procedure StatusSubItemInfoSetLength(var AInfo: TStatusSubItemInfo;
+  const ALength: Integer);
 begin
-  SetLength(AStatusItemInfo.LogIDs, ALength);
-  SetLength(AStatusItemInfo.SizNames, ALength);
-  SetLength(AStatusItemInfo.SizCounts, ALength);
-  SetLength(AStatusItemInfo.ReceivingDates, ALength);
-  SetLength(AStatusItemInfo.WriteoffDates, ALength);
+  SetLength(AInfo.LogIDs, ALength);
+  SetLength(AInfo.SizNames, ALength);
+  SetLength(AInfo.SizCounts, ALength);
+  SetLength(AInfo.ReceivingDates, ALength);
+  SetLength(AInfo.WriteoffDates, ALength);
 end;
 
-procedure StatusItemInfoAdd(var AStatusItemInfo: TStatusItemInfo;
-                           const ALogIDs: TInt64Vector;
-                           const ASizNames: TStrVector; const ASizCounts: TIntVector;
-                           const AReceivingDates, AWriteoffDates: TDateVector);
+procedure StatusSubItemInfoCopy(const ASourceInfo: TStatusSubItemInfo;
+                           var ADestInfo: TStatusSubItemInfo);
 begin
-  MAppend(AStatusItemInfo.LogIDs, ALogIDs);
-  MAppend(AStatusItemInfo.SizNames, ASizNames);
-  MAppend(AStatusItemInfo.SizCounts, ASizCounts);
-  MAppend(AStatusItemInfo.ReceivingDates, AReceivingDates);
-  MAppend(AStatusItemInfo.WriteoffDates, AWriteoffDates);
+  ADestInfo.LogIDs:= MCut(ASourceInfo.LogIDs);
+  ADestInfo.SizNames:= MCut(ASourceInfo.SizNames);
+  ADestInfo.SizCounts:= MCut(ASourceInfo.SizCounts);
+  ADestInfo.ReceivingDates:= MCut(ASourceInfo.ReceivingDates);
+  ADestInfo.WriteoffDates:= MCut(ASourceInfo.WriteoffDates);
 end;
 
-procedure StatusItemInfoAdd(var AStatusItemInfo: TStatusItemInfo;
-                          const AIndex: Integer;
-                          const ALogID: Int64;
-                          const ASizName: String;
-                          const ASizCount: Integer;
-                          const AReceivingDate, AWriteoffDate: TDate);
+procedure StatusSubItemClear(var ASubItem: TStatusSubItem);
 begin
-  VAppend(AStatusItemInfo.LogIDs[AIndex], ALogID);
-  VAppend(AStatusItemInfo.SizNames[AIndex], ASizName);
-  VAppend(AStatusItemInfo.SizCounts[AIndex], ASizCount);
-  VAppend(AStatusItemInfo.ReceivingDates[AIndex], AReceivingDate);
-  VAppend(AStatusItemInfo.WriteoffDates[AIndex], AWriteoffDate);
+  ASubItem.IsFreshExists:= False;
+  ASubItem.SizeIDs:= nil;
+  ASubItem.HeightIDs:= nil;
+  StatusSubItemInfoClear(ASubItem.Info);
 end;
 
-procedure StatusItemInfoCopy(const ASourceStatusItemInfo: TStatusItemInfo;
-                           var ADestStatusItemInfo: TStatusItemInfo);
+procedure StatusSubItemNew(var ASubItem: TStatusSubItem;
+                           const ASizeIDs, AHeightIDs: TIntVector);
 begin
-  ADestStatusItemInfo.IsFreshExists:= ASourceStatusItemInfo.IsFreshExists;
-  ADestStatusItemInfo.LogIDs:= MCut(ASourceStatusItemInfo.LogIDs);
-  ADestStatusItemInfo.SizNames:= MCut(ASourceStatusItemInfo.SizNames);
-  ADestStatusItemInfo.SizCounts:= MCut(ASourceStatusItemInfo.SizCounts);
-  ADestStatusItemInfo.ReceivingDates:= MCut(ASourceStatusItemInfo.ReceivingDates);
-  ADestStatusItemInfo.WriteoffDates:= MCut(ASourceStatusItemInfo.WriteoffDates);
+  StatusSubItemInfoClear(ASubItem.Info);
+  StatusSubItemInfoSetLength(ASubItem.Info, Length(ASizeIDs));
+  ASubItem.SizeIDs:= VCut(ASizeIDs);
+  ASubItem.HeightIDs:= VCut(AHeightIDs);
 end;
 
-procedure StatusItemClear(var AStatusItem: TStatusItem);
+procedure StatusSubItemCopy(const ASourceSubItem: TStatusSubItem;
+                            var ADestSubItem: TStatusSubItem);
 begin
-  AStatusItem.SizeIDs:= nil;
-  AStatusItem.HeightIDs:= nil;
-  StatusItemInfoClear(AStatusItem.Info);
+  ADestSubItem.IsFreshExists:= ASourceSubItem.IsFreshExists;
+  ADestSubItem.SizeIDs:= VCut(ASourceSubItem.SizeIDs);
+  ADestSubItem.HeightIDs:= VCut(ASourceSubItem.HeightIDs);
+  StatusSubItemInfoCopy(ASourceSubItem.Info, ADestSubItem.Info);
 end;
 
-procedure StatusItemNew(var AStatusItem: TStatusItem;
-                        const ASizeIDs, AHeightIDs: TIntVector);
-begin
-  StatusItemClear(AStatusItem);
-  AStatusItem.SizeIDs:= VCut(ASizeIDs);
-  AStatusItem.HeightIDs:= VCut(AHeightIDs);
-  StatusItemInfoSetLength(AStatusItem.Info, Length(ASizeIDs));
-end;
-
-procedure StatusItemAdd(var AStatusItem: TStatusItem;
-                        const ALogIDs: TInt64Vector;
-                        const ASizNames: TStrVector;
-                        const ASizCounts: TIntVector;
-                        const AReceivingDates, AWriteoffDates: TDateVector);
-begin
-  if Length(ALogIDs)>0 then
-    StatusItemInfoAdd(AStatusItem.Info, ALogIDs, ASizNames, ASizCounts,
-                      AReceivingDates, AWriteoffDates);
-end;
-
-procedure StatusItemCopy(const ASourceStatusItem: TStatusItem; var ADestStatusItem: TStatusItem);
-begin
-  ADestStatusItem.SizeIDs:= VCut(ASourceStatusItem.SizeIDs);
-  ADestStatusItem.HeightIDs:= VCut(ASourceStatusItem.HeightIDs);
-  StatusItemInfoCopy(ASourceStatusItem.Info, ADestStatusItem.Info);
-end;
-
-procedure StatusItemsClear(var AStatusItems: TStatusItems);
+procedure StatusSubItemsClear(var ASubItems: TStatusSubItems);
 var
   i: Integer;
 begin
-  for i:= 0 to High(AStatusItems) do
-    StatusItemClear(AStatusItems[i]);
-  AStatusItems:= nil;
+  for i:= 0 to High(ASubItems) do
+    StatusSubItemClear(ASubItems[i]);
+  ASubItems:= nil;
 end;
 
-procedure StatusItemsAdd(var AStatusItems: TStatusItems; const AStatusItem: TStatusItem);
+procedure StatusSubItemsAdd(var ASubItems: TStatusSubItems; const ASubItem: TStatusSubItem);
 var
   N: Integer;
 begin
-  N:= Length(AStatusItems);
-  SetLength(AStatusItems, N+1);
-  StatusItemCopy(AStatusItem, AStatusItems[N]);
+  N:= Length(ASubItems);
+  SetLength(ASubItems, N+1);
+  StatusSubItemCopy(ASubItem, ASubItems[N]);
 end;
 
 end.

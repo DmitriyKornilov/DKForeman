@@ -235,70 +235,8 @@ object SIZStatusNewEditForm: TSIZStatusNewEditForm
     Caption = 'Список СИЗ к выдаче'
     ParentColor = False
   end
-  object ReceivingDateLabel: TLabel
-    AnchorSideLeft.Control = SizLifeLabel
-    AnchorSideLeft.Side = asrBottom
-    AnchorSideTop.Control = ReceivingDatePicker
-    AnchorSideTop.Side = asrCenter
-    AnchorSideBottom.Side = asrBottom
-    Left = 190
-    Height = 20
-    Top = 452
-    Width = 86
-    BorderSpacing.Left = 8
-    BorderSpacing.Top = 15
-    BorderSpacing.Bottom = 15
-    Caption = 'дата выдачи'
-    ParentColor = False
-  end
-  object ReceivingDatePicker: TDateTimePicker
-    AnchorSideLeft.Control = ReceivingDateLabel
-    AnchorSideLeft.Side = asrBottom
-    AnchorSideTop.Control = ReceivingDateLabel
-    AnchorSideTop.Side = asrCenter
-    AnchorSideBottom.Control = ButtonPanel
-    Left = 284
-    Height = 28
-    Top = 448
-    Width = 99
-    CenturyFrom = 1941
-    MaxDate = 2958465
-    MinDate = -53780
-    ParentFont = False
-    TabOrder = 1
-    TabStop = False
-    BorderSpacing.Left = 8
-    TrailingSeparator = False
-    TextForNullDate = 'NULL'
-    LeadingZeros = True
-    Anchors = [akLeft, akBottom]
-    Kind = dtkDate
-    TimeFormat = tf24
-    TimeDisplay = tdHMS
-    DateMode = dmComboBox
-    Date = 42759
-    Time = 0.317117627317202
-    UseDefaultSeparators = True
-    HideDateTimeParts = []
-    MonthNames = 'Long'
-    OnChange = ReceivingDatePickerChange
-  end
-  object WriteoffDateNameLabel: TLabel
-    AnchorSideLeft.Control = ReceivingDatePicker
-    AnchorSideLeft.Side = asrBottom
-    AnchorSideTop.Control = ResumeLabel
-    AnchorSideTop.Side = asrCenter
-    Left = 387
-    Height = 20
-    Top = 452
-    Width = 111
-    BorderSpacing.Left = 4
-    Caption = ',  дата списания'
-    ParentColor = False
-  end
   object ResumeLabel: TLabel
     AnchorSideLeft.Control = Owner
-    AnchorSideTop.Control = ReceivingDatePicker
     AnchorSideTop.Side = asrCenter
     Left = 8
     Height = 20
@@ -310,56 +248,14 @@ object SIZStatusNewEditForm: TSIZStatusNewEditForm
     ParentColor = False
     ParentFont = False
   end
-  object SizCountLabel: TLabel
-    AnchorSideLeft.Control = ResumeLabel
-    AnchorSideLeft.Side = asrBottom
-    AnchorSideTop.Control = ResumeLabel
-    AnchorSideTop.Side = asrCenter
-    Left = 67
-    Height = 20
-    Top = 452
-    Width = 8
-    BorderSpacing.Left = 8
-    Caption = '0'
-    ParentColor = False
-    ParentFont = False
-  end
-  object SizLifeNameLabel: TLabel
-    AnchorSideLeft.Control = SizCountLabel
-    AnchorSideLeft.Side = asrBottom
-    AnchorSideTop.Control = ResumeLabel
-    AnchorSideTop.Side = asrCenter
-    Left = 83
-    Height = 20
-    Top = 452
-    Width = 17
-    BorderSpacing.Left = 8
-    Caption = 'на'
-    ParentColor = False
-  end
-  object SizLifeLabel: TLabel
-    AnchorSideLeft.Control = SizLifeNameLabel
-    AnchorSideLeft.Side = asrBottom
-    AnchorSideTop.Control = ResumeLabel
-    AnchorSideTop.Side = asrCenter
-    Left = 108
-    Height = 20
-    Top = 452
-    Width = 74
-    BorderSpacing.Left = 8
-    Caption = '0 месяцев,'
-    ParentColor = False
-    ParentFont = False
-  end
   object SIZPanel: TPanel
     AnchorSideLeft.Control = Owner
     AnchorSideTop.Control = SIZListLabel
     AnchorSideTop.Side = asrBottom
     AnchorSideRight.Control = Owner
     AnchorSideRight.Side = asrBottom
-    AnchorSideBottom.Control = ReceivingDatePicker
     Left = 8
-    Height = 209
+    Height = 213
     Top = 227
     Width = 1184
     Anchors = [akTop, akLeft, akRight, akBottom]
@@ -369,12 +265,12 @@ object SIZStatusNewEditForm: TSIZStatusNewEditForm
     BorderSpacing.Bottom = 12
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 205
+    ClientHeight = 209
     ClientWidth = 1180
-    TabOrder = 2
+    TabOrder = 1
     object VT: TVirtualStringTree
       Left = 0
-      Height = 205
+      Height = 209
       Top = 0
       Width = 1180
       Align = alClient
@@ -387,19 +283,6 @@ object SIZStatusNewEditForm: TSIZStatusNewEditForm
       Header.MainColumn = -1
       TabOrder = 0
     end
-  end
-  object WriteoffDateLabel: TLabel
-    AnchorSideLeft.Control = WriteoffDateNameLabel
-    AnchorSideLeft.Side = asrBottom
-    AnchorSideTop.Control = ResumeLabel
-    AnchorSideTop.Side = asrCenter
-    Left = 506
-    Height = 20
-    Top = 452
-    Width = 70
-    BorderSpacing.Left = 8
-    Caption = '24.01.2017'
-    ParentColor = False
   end
   object SIZNeedNameLabel: TLabel
     AnchorSideLeft.Control = Owner

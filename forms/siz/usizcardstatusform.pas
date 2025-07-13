@@ -49,7 +49,7 @@ type
     CardID: Integer;
     ItemPostID: Integer;
     SubItems: TNormSubItems;
-    StatusItems: TStatusItems;
+    StatusItems: TStatusSubItems;
 
     procedure DataDraw(const AZoomPercent: Integer);
     procedure DataReDraw;
@@ -61,7 +61,7 @@ type
     procedure SettingsSave;
     procedure DataUpdate(const ATabNumID, ACardID, AItemPostID: Integer;
                          const ASubItems: TNormSubItems;
-                         const AStatusItems: TStatusItems);
+                         const AStatusItems: TStatusSubItems);
     procedure ViewUpdate(const AModeType: TModeType);
   end;
 
@@ -205,7 +205,7 @@ var
 begin
   AddButton.Enabled:= Sheet.IsNormInfoSelected;
   CopyButton.Enabled:= AddButton.Enabled;
-  DelButton.Enabled:= Sheet.IsStatusInfoSelected;
+  DelButton.Enabled:= Sheet.IsStatusSubInfoSelected;
 
   i:= Sheet.SelectedSubItemIndex;
   j:= Sheet.SelectedInfoIndex;
@@ -233,7 +233,7 @@ end;
 
 procedure TSIZCardStatusForm.DataUpdate(const ATabNumID, ACardID, AItemPostID: Integer;
                                         const ASubItems: TNormSubItems;
-                                        const AStatusItems: TStatusItems);
+                                        const AStatusItems: TStatusSubItems);
 begin
   TabNumID:= ATabNumID;
   CardID:= ACardID;
