@@ -205,6 +205,8 @@ procedure TSIZNormSubItemEditForm.SaveButtonClick(Sender: TObject);
 var
   IsOK: Boolean;
 begin
+  IsOK:= False;
+
   if VIsNil(SubItem.Info.InfoIDs) then
   begin
     Inform('Не указано ни одного наименования!');

@@ -539,9 +539,21 @@ begin
 end;
 
 procedure TSIZCardForm.CardStatusUpdate;
+var
+  CardID, CardItemPostID: Integer;
 begin
+  if CardList.IsSelected then
+  begin
+    CardID:= CardIDs[CardList.SelectedIndex];
+    CardItemPostID:= CardItemPostIDs[CardList.SelectedIndex];
+  end
+  else begin
+    CardID:= 0;
+    CardItemPostID:= 0;
+  end;
+
   (CategoryForm as TSIZCardStatusForm).DataUpdate(TabNumIDs[StaffList.SelectedIndex],
-                                                  SubItems, StatusItems);
+                                     CardID, CardItemPostID, SubItems, StatusItems);
 end;
 
 procedure TSIZCardForm.CardDataUpdate;

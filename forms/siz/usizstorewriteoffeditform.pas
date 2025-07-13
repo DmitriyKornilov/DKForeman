@@ -197,21 +197,16 @@ begin
 end;
 
 procedure TSIZStoreWriteoffEditForm.SaveButtonClick(Sender: TObject);
-var
-  IsOK: Boolean;
 begin
-  IsOK:= False;
-
   if DocDropDown.ItemIndex<0 then
   begin
     Inform('Не указан документ списания (передачи) СИЗ!');
     Exit;
   end;
 
-  IsOK:= DataBase.SIZStoreWriteoffAdd(DocIDs[DocDropDown.ItemIndex],
-                                      StoreIDs, STrim(NoteEdit.Text));
+  if not DataBase.SIZStoreWriteoffAdd(DocIDs[DocDropDown.ItemIndex],
+                                      StoreIDs, STrim(NoteEdit.Text)) then Exit;
 
-  if not IsOK then Exit;
   ModalResult:= mrOK;
 end;
 

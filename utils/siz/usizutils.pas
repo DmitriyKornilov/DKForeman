@@ -293,7 +293,10 @@ end;
 
 function SIZLifeInMonths(const AReceivingCount, ANormCount, ANormLife: Integer): Extended;
 begin
-  Result:= AReceivingCount*ANormLife/ANormCount;
+  if ANormCount>0 then
+    Result:= AReceivingCount*ANormLife/ANormCount
+  else
+    Result:= 0;
 end;
 
 function SIZWriteoffDate(const AReceivingDate: TDate;

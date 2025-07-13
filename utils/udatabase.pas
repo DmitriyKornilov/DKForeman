@@ -722,15 +722,18 @@ type
                                  const ACommit: Boolean = True): Boolean;
 
     {Загрузка списка СИЗ на складе: True - ОК, False - пусто}
-    function SIZStoreLoad(out AStoreIDs: TInt64Vector;
+    function SIZStoreLoad(const ASIZType: Integer; //-1 = все типы
+                         out AStoreIDs: TInt64Vector;
                          out ANomNums, ASizNames, ASizUnits, ADocNames, ADocNums: TStrVector;
                          out ASizeIDs, AHeightIDs, ASizeTypes, ANameIDs: TIntVector;
                          out ADocDates: TDateVector): Boolean;
-    function SIZStoreLoad(out ACategoryNames: TStrMatrix;
+    function SIZStoreLoad(const ASIZType: Integer; //-1 = все типы
+                         out ACategoryNames: TStrMatrix;
                          out AStoreIDs: TInt64Matrix;
                          out ASizCounts: TIntMatrix;
                          out ANomNums, ASizNames, ASizUnits,
-                             ASizSizes, ADocNames: TStrMatrix): Boolean;
+                             ASizSizes, ADocNames: TStrMatrix;
+                         const ANeedCountInCategory: Boolean = True): Boolean;
 
     (**************************************************************************
                                 ЛИЧНЫЕ КАРТОЧКИ СИЗ
@@ -763,7 +766,8 @@ type
     {Запись личной карточки: True - ОК, False - ошибка}
     function SIZPersonalCardAdd(out ACardID: Integer;
                                 const ACardNum: String;
-                                const ATabNumID, AItemPostID: Integer): Boolean;
+                                const ATabNumID, AItemPostID: Integer;
+                                const ACommit: Boolean = True): Boolean;
     {Обновление номера личной карточки: True - ОК, False - ошибка}
     function SIZPersonalCardUpdate(const ACardID: Integer;
                                 const ACardNum: String): Boolean;
@@ -799,6 +803,13 @@ type
                            const AReportDate: TDate;
                            const ANormSubItems: TNormSubItems;
                            var AStatusItems: TStatusItems): Boolean;
+
+
+    {Запись информации о выдаче СИЗ: True - ОК, False - ошибка}
+    function SIZReceivingWrite(const ACardID, ATabNumID, AItemPostID,
+                                     AReceivingInfoID, ANowInfoID, ADocID: Integer;
+                            const AStoreIDs: TInt64Vector;
+                            const AReceivingDate: TDate): Boolean;
   end;
 
 
@@ -6232,10 +6243,13 @@ begin
   end;
 end;
 
-function TDataBase.SIZStoreLoad(out AStoreIDs: TInt64Vector;
+function TDataBase.SIZStoreLoad(const ASIZType: Integer;
+                         out AStoreIDs: TInt64Vector;
                          out ANomNums, ASizNames, ASizUnits, ADocNames, ADocNums: TStrVector;
                          out ASizeIDs, AHeightIDs, ASizeTypes, ANameIDs: TIntVector;
                          out ADocDates: TDateVector): Boolean;
+var
+  WhereStr: String;
 begin
   Result:= False;
 
@@ -6251,6 +6265,10 @@ begin
   ANameIDs:= nil;
   ADocDates:= nil;
 
+  WhereStr:= 'WHERE (t1.IsBusy=0) ';
+  if ASIZType>=0 then
+    WhereStr:= WhereStr + 'AND (t3.SIZType = :SIZType) ';
+
   QSetQuery(FQuery);
   QSetSQL(
     'SELECT t1.StoreID, ' +
@@ -6263,10 +6281,11 @@ begin
     'INNER JOIN SIZNAME t3 ON (t2.NameID=t3.NameID) ' +
     'INNER JOIN SIZUNIT t4 ON (t3.UnitID=t4.UnitID) ' +
     'INNER JOIN SIZDOC t5 ON (t2.DocID=t5.DocID) ' +
-    'WHERE (t1.IsBusy=0) '  +
+    WhereStr  +
     'ORDER BY t3.SizName, t2.SizeID, t2.HeightID, t2.NomNum, ' +
              't5.DocDate, t5.DocName, t5.DocNum'
   );
+  QParamInt('SIZType', ASIZType);
   QOpen;
   if not QIsEmpty then
   begin
@@ -6295,11 +6314,13 @@ begin
   QClose;
 end;
 
-function TDataBase.SIZStoreLoad(out ACategoryNames: TStrMatrix;
+function TDataBase.SIZStoreLoad(const ASIZType: Integer;
+                         out ACategoryNames: TStrMatrix;
                          out AStoreIDs: TInt64Matrix;
                          out ASizCounts: TIntMatrix;
                          out ANomNums, ASizNames, ASizUnits,
-                             ASizSizes, ADocNames: TStrMatrix): Boolean;
+                             ASizSizes, ADocNames: TStrMatrix;
+                         const ANeedCountInCategory: Boolean = True): Boolean;
 var
   i, N1, N2, NameID: Integer;
   NomNum: String;
@@ -6336,7 +6357,7 @@ begin
   ASizSizes:= nil;
   ADocNames:= nil;
 
-  if not SIZStoreLoad(StoreIDs, NomNums, SizNames, SizUnits,
+  if not SIZStoreLoad(ASIZType, StoreIDs, NomNums, SizNames, SizUnits,
                            DocNames, DocNums, SizeIDs, HeightIDs,
                            SizeTypes, NameIDs, DocDates) then Exit;
 
@@ -6366,7 +6387,8 @@ begin
     ACategoryNames[i, 0]:= ANomNums[i, 0];
     ACategoryNames[i, 1]:= ASizNames[i, 0];
     ACategoryNames[i, 2]:= ASizUnits[i, 0];
-    ACategoryNames[i, 3]:= IntToStr(VSum(ASizCounts[i]));
+    if ANeedCountInCategory then
+      ACategoryNames[i, 3]:= IntToStr(VSum(ASizCounts[i]));
   end;
 
 end;
@@ -6603,7 +6625,8 @@ end;
 
 function TDataBase.SIZPersonalCardAdd(out ACardID: Integer;
                                 const ACardNum: String;
-                                const ATabNumID, AItemPostID: Integer): Boolean;
+                                const ATabNumID, AItemPostID: Integer;
+                                const ACommit: Boolean = True): Boolean;
 begin
   Result:= False;
   QSetQuery(FQuery);
@@ -6620,10 +6643,10 @@ begin
     //получение ID сделанной записи
     ACardID:= LastWritedInt32ID('SIZCARDPERSONAL');
 
-    QCommit;
+    if ACommit then QCommit;
     Result:= True;
   except
-    QRollback;
+    if ACommit then QRollback;
   end;
 end;
 
@@ -6679,7 +6702,7 @@ begin
     begin
       VAppend(ALogIDs, QFieldInt64('LogID'));
       VAppend(ASizNames, QFieldStr('SizName'));
-      VAppend(AReceivingDates, QFieldDT('GettingDate'));
+      VAppend(AReceivingDates, QFieldDT('ReceivingDate'));
       if QIsNull('WriteoffDate') then
       begin
         VAppend(AWriteOffDatesIfReturn, NULDATE);
@@ -6927,6 +6950,71 @@ begin
   end;
 
   Result:= True;
+end;
+
+function TDataBase.SIZReceivingWrite(const ACardID, ATabNumID, AItemPostID,
+                                     AReceivingInfoID, ANowInfoID, ADocID: Integer;
+                            const AStoreIDs: TInt64Vector;
+                            const AReceivingDate: TDate): Boolean;
+var
+  CardID: Integer;
+  LogID: Int64;
+
+  procedure LogWrite;
+  begin
+    QSetSQL(
+      sqlINSERT('SIZCARDPERSONALLOG', ['CardID', 'ReceivingDate', 'ReceivingDocID',
+                                       'ReceivingInfoID', 'NowInfoID'])
+    );
+    QParamInt('CardID', CardID);
+    QParamDT('ReceivingDate', AReceivingDate);
+    QParamInt('ReceivingDocID', ADocID);
+    QParamInt('ReceivingInfoID', AReceivingInfoID);
+    QParamInt('NowInfoID', ANowInfoID);
+    QExec;
+
+    //получение ID сделанной записи
+    LogID:= LastWritedInt64ID('SIZCARDPERSONALLOG');
+  end;
+
+  procedure LogInfoWrite;
+  var
+    i: Integer;
+  begin
+    QSetSQL(
+      sqlINSERT('SIZCARDPERSONALLOGINFO', ['LogID', 'StoreID'])
+    );
+    QParamInt64('LogID', LogID);
+    for i:= 0 to High(AStoreIDs) do
+    begin
+      QParamInt64('StoreID', AStoreIDs[i]);
+      QExec;
+    end;
+  end;
+
+begin
+  Result:= False;
+
+  QSetQuery(FQuery);
+  try
+    //если карточки еще нет, то записываем
+    CardID:= ACardID;
+    if CardID=0 then
+      if not SIZPersonalCardAdd(CardID, EmptyStr, ATabNumID,
+                                AItemPostID, False{no commit}) then Exit;
+
+    //записываем выдачу в таблицы логов личной карточки
+    LogWrite;
+    LogInfoWrite;
+
+    //меняем статус СИЗ на складе на "занято"
+    UpdateInt64ID('SIZSTORELOG', 'IsBusy', 'StoreID', AStoreIDs, 1{занято}, False{no commit});
+
+    QCommit;
+    Result:= True;
+  except
+    QRollback;
+  end;
 end;
 
 end.

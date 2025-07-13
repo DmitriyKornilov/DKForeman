@@ -7,7 +7,6 @@ object SIZStoreForm: TSIZStoreForm
   ClientHeight = 240
   ClientWidth = 1062
   DesignTimePPI = 120
-  LCLVersion = '4.0.0.4'
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
@@ -22,8 +21,8 @@ object SIZStoreForm: TSIZStoreForm
     BorderSpacing.Right = 2
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 40
-    ClientWidth = 1058
+    ClientHeight = 36
+    ClientWidth = 1054
     ParentFont = False
     TabOrder = 0
     object CloseButton: TSpeedButton
@@ -214,8 +213,8 @@ object SIZStoreForm: TSIZStoreForm
     BorderSpacing.Right = 2
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 40
-    ClientWidth = 1060
+    ClientHeight = 36
+    ClientWidth = 1056
     ParentBackground = False
     ParentColor = False
     ParentFont = False

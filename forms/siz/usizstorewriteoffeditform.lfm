@@ -9,6 +9,7 @@ object SIZStoreWriteoffEditForm: TSIZStoreWriteoffEditForm
   ClientWidth = 1200
   DesignTimePPI = 120
   Position = poScreenCenter
+  LCLVersion = '4.0.0.4'
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
@@ -285,8 +286,8 @@ object SIZStoreWriteoffEditForm: TSIZStoreWriteoffEditForm
     BorderSpacing.Bottom = 12
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 359
-    ClientWidth = 1180
+    ClientHeight = 363
+    ClientWidth = 1184
     TabOrder = 2
     object VT: TVirtualStringTree
       Left = 0

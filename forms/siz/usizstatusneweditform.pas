@@ -10,7 +10,8 @@ uses
   //Project utils
   UVars, UConst, UTypes, USIZUtils,
   //DK packages utils
-  DK_CtrlUtils, DK_VSTTables, DK_Vector, DK_Matrix, DK_StrUtils, DK_VSTDropDown,
+  DK_CtrlUtils, DK_VSTTables, DK_Vector, DK_Matrix, DK_VSTDropDown, DK_DateUtils,
+  DK_Dialogs,
   //Forms
   USIZDocEditForm;
 
@@ -27,42 +28,53 @@ type
     ReceivingDatePicker: TDateTimePicker;
     SizCountLabel: TLabel;
     SizLifeLabel: TLabel;
+    SIZNeedSizeLabel: TLabel;
+    SIZNeedNameLabel: TLabel;
+    SIZNeedLabel: TLabel;
+    SIZNeedCountLabel: TLabel;
+    SIZNeedSizeNameLabel: TLabel;
+    SIZNeedCountNameLabel: TLabel;
     SIZPanel: TPanel;
     VT: TVirtualStringTree;
-    WriteoffDatePicker: TDateTimePicker;
     DocBCButton: TBCButton;
     DocLabel: TLabel;
     ReceivingDateLabel: TLabel;
-    WriteoffDateLabel: TLabel;
+    WriteoffDateNameLabel: TLabel;
     SIZListLabel: TLabel;
     NewDocButton: TSpeedButton;
     SaveButton: TSpeedButton;
-    SearchButton: TSpeedButton;
-    TypeBCButton: TBCButton;
-    TypeLabel: TLabel;
+    WriteoffDateLabel: TLabel;
+    procedure CancelButtonClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure NewDocButtonClick(Sender: TObject);
+    procedure ReceivingDatePickerChange(Sender: TObject);
+    procedure SaveButtonClick(Sender: TObject);
   private
     SIZList: TVSTCategoryCheckTable;
     DocDropDown: TVSTDropDown;
-    TypeDropDown: TVSTDropDown;
 
     DocIDs: TIntVector;
     DocNames, DocNums: TStrVector;
     DocDates: TDateVector;
 
+    CategoryNames: TStrMatrix;
+    StoreIDs: TInt64Matrix;
+    SizCounts: TIntMatrix;
+    NomNums, SizNames, SizUnits, SizSizes, EntryDocNames: TStrMatrix;
+
     procedure DocLoad(const ASelectedID: Integer = -1);
     procedure DocChange;
-
-    procedure TypeChange;
 
     procedure SIZListCreate;
     procedure SIZListLoad;
     procedure SIZListSelect;
-  public
 
+    procedure NumAndLifeCalc;
+  public
+    TabNumID, CardID, InfoID, ItemPostID: Integer;
+    SIZType, Num, Life: Integer;
   end;
 
 var
@@ -76,33 +88,32 @@ implementation
 
 procedure TSIZStatusNewEditForm.FormCreate(Sender: TObject);
 begin
+  SIZType:= -1;
+  Num:= 0;
+  Life:= 0;
+
   DocDropDown:= TVSTDropDown.Create(DocBCButton);
   DocDropDown.DropDownCount:= 20;
   DocDropDown.OnChange:= @DocChange;
 
-  TypeDropDown:= TVSTDropDown.Create(TypeBCButton);
-  TypeDropDown.DropDownCount:= 20;
-  TypeDropDown.OnChange:= @TypeChange;
+  SIZListCreate;
 
   ReceivingDatePicker.Date:= Date;
-
-  SIZListCreate;
+  //WriteoffDateLabel.Caption:= FormatDateTime('dd.mm.yyyy', Date);
 end;
 
 procedure TSIZStatusNewEditForm.FormDestroy(Sender: TObject);
 begin
   FreeAndNil(DocDropDown);
-  FreeAndNil(TypeDropDown);
   FreeAndNil(SIZList);
 end;
 
 procedure TSIZStatusNewEditForm.FormShow(Sender: TObject);
 begin
-  Images.ToButtons([SaveButton, CancelButton, NewDocButton, SearchButton]);
+  Images.ToButtons([SaveButton, CancelButton, NewDocButton]);
   SetEventButtons([SaveButton, CancelButton]);
   ControlHeight(NewDocButton, TOOL_PANEL_HEIGHT_DEFAULT-2);
-  ControlHeight(SearchButton, TOOL_PANEL_HEIGHT_DEFAULT-2);
-  SetToolButtons([NewDocButton, SearchButton]);
+  SetToolButtons([NewDocButton]);
   FormKeepMinSize(Self, False);
 
   DocLoad;
@@ -139,14 +150,10 @@ end;
 procedure TSIZStatusNewEditForm.DocChange;
 begin
   if DocDropDown.ItemIndex>=0 then
+  begin
     ReceivingDatePicker.Date:= DocDates[DocDropDown.ItemIndex];
-
-
-end;
-
-procedure TSIZStatusNewEditForm.TypeChange;
-begin
-
+    NumAndLifeCalc;
+  end;
 end;
 
 procedure TSIZStatusNewEditForm.SIZListCreate;
@@ -169,12 +176,81 @@ end;
 
 procedure TSIZStatusNewEditForm.SIZListLoad;
 begin
+  DataBase.SIZStoreLoad(SIZType, CategoryNames, StoreIDs, SizCounts, NomNums,
+                        SizNames, SizUnits, SizSizes, EntryDocNames,
+                        False{no counts in category});
 
+  SIZList.Visible:= False;
+  try
+    SIZList.ValuesClear;
+    SIZList.SetCategories(CategoryNames);
+    SIZList.SetColumn('Номенклатурный номер', NomNums, taLeftJustify);
+    SIZList.SetColumn('Наименование', SizNames, taLeftJustify);
+    SIZList.SetColumn('Единица измерения', SizUnits);
+    SIZList.SetColumn('Размер/объём/вес', SizSizes);
+    SIZList.SetColumn('Документ поступления', EntryDocNames, taLeftJustify);
+    SIZList.Draw;
+    SIZList.ExpandAll(True);
+    SIZList.ShowFirst;
+  finally
+    SIZList.Visible:= True;
+  end;
 end;
 
 procedure TSIZStatusNewEditForm.SIZListSelect;
 begin
 
+  NumAndLifeCalc;
+end;
+
+procedure TSIZStatusNewEditForm.ReceivingDatePickerChange(Sender: TObject);
+begin
+  NumAndLifeCalc;
+end;
+
+procedure TSIZStatusNewEditForm.NumAndLifeCalc;
+var
+  Count: Integer;
+  Months: Extended;
+  WriteoffDate: TDate;
+begin
+  Count:= VSum(MToVector(SizCounts, SIZList.Selected));
+  SizCountLabel.Caption:= IntToStr(Count);
+
+  Months:= SIZLifeInMonths(Count, Num, Life);
+  SizLifeLabel.Caption:= SIZLifeInMonthAndYears(Months) + ',';
+
+  WriteoffDate:= IncMonthExt(ReceivingDatePicker.Date, Months);
+  WriteoffDateLabel.Caption:= FormatDateTime('dd.mm.yyyy', WriteoffDate);
+end;
+
+procedure TSIZStatusNewEditForm.SaveButtonClick(Sender: TObject);
+var
+  SelectedStoreIDs: TInt64Vector;
+begin
+  if DocDropDown.ItemIndex<0 then
+  begin
+    Inform('Не указан документ выдачи СИЗ!');
+    Exit;
+  end;
+
+  if not SIZList.IsSelected then
+  begin
+    Inform('Не указано ни одного наименования СИЗ!');
+    Exit;
+  end;
+
+  SelectedStoreIDs:= MToVector(StoreIDs, SIZList.Selected);
+  if not DataBase.SIZReceivingWrite(CardID, TabNumID, ItemPostID, InfoID, InfoID,
+                                    DocIDs[DocDropDown.ItemIndex], SelectedStoreIDs,
+                                    ReceivingDatePicker.Date) then Exit;
+
+  ModalResult:= mrOK;
+end;
+
+procedure TSIZStatusNewEditForm.CancelButtonClick(Sender: TObject);
+begin
+  ModalResult:= mrCancel;
 end;
 
 end.

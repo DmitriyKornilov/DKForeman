@@ -169,7 +169,7 @@ end;
 
 procedure TSIZStoreForm.SIZListLoad;
 begin
-  DataBase.SIZStoreLoad(CategoryNames, StoreIDs, SizCounts, NomNums,
+  DataBase.SIZStoreLoad(-1{все типы}, CategoryNames, StoreIDs, SizCounts, NomNums,
                         SizNames, SizUnits, SizSizes, DocNames);
 
   FilterDocNames:= VAdd(['ВСЕ ДОКУМЕНТЫ'], VUnique(MToVector(DocNames)));

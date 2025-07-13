@@ -233,6 +233,8 @@ var
   end;
 
 begin
+  IsOK:= False;
+
   NomNum:= STrim(NomNumEdit.Text);
   if SEmpty(NomNum) then
   begin

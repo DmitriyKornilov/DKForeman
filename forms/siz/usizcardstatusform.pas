@@ -8,7 +8,7 @@ uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, Buttons,
   StdCtrls, Spin, DividerBevel, fpspreadsheetgrid,
   //Project utils
-  UTypes, UConst, UVars, USIZCardSheet, USIZNormTypes, USIZCardTypes,
+  UTypes, UConst, UVars, USIZCardSheet, USIZNormTypes, USIZCardTypes, USIZUtils,
   //DK packages utils
   DK_Zoom, DK_CtrlUtils, DK_Vector,
   //Forms
@@ -46,6 +46,8 @@ type
     Sheet: TSIZCardStatusSheet;
 
     TabNumID: Integer;
+    CardID: Integer;
+    ItemPostID: Integer;
     SubItems: TNormSubItems;
     StatusItems: TStatusItems;
 
@@ -57,7 +59,7 @@ type
     procedure SettingsLoad;
   public
     procedure SettingsSave;
-    procedure DataUpdate(const ATabNumID: Integer;
+    procedure DataUpdate(const ATabNumID, ACardID, AItemPostID: Integer;
                          const ASubItems: TNormSubItems;
                          const AStatusItems: TStatusItems);
     procedure ViewUpdate(const AModeType: TModeType);
@@ -103,31 +105,51 @@ end;
 
 procedure TSIZCardStatusForm.AddButtonClick(Sender: TObject);
 var
-  SIZStatusNewEditForm: TSIZStatusNewEditForm;
+  Form: TSIZStatusNewEditForm;
+  i, j: Integer;
 begin
-  SIZStatusNewEditForm:= TSIZStatusNewEditForm.Create(nil);
+  i:= Sheet.SelectedSubItemIndex;
+  j:= Sheet.SelectedInfoIndex;
+
+  Form:= TSIZStatusNewEditForm.Create(nil);
   try
+    Form.TabNumID:= TabNumID;
+    Form.CardID:= CardID;
+    Form.ItemPostID:= ItemPostID;
+    Form.InfoID:= SubItems[i].Info.InfoIDs[j];
 
+    Form.SIZType:= SubItems[i].Info.SIZTypes[j];
+    Form.Num:= SubItems[i].Info.Nums[j];
+    Form.Life:= SubItems[i].Info.Lifes[j];
 
-    if SIZStatusNewEditForm.ShowModal=mrOK then
+    Form.SIZNeedLabel.Caption:= SubItems[i].Info.Names[j];
+    Form.SIZNeedSizeLabel.Caption:= SIZFullSize(SubItems[i].Info.SizeTypes[j],
+                                                StatusItems[i].SizeIDs[j],
+                                                StatusItems[i].HeightIDs[j],
+                                                EMPTY_MARK);
+    Form.SIZNeedCountLabel.Caption:= SubItems[i].Info.Units[j] + ', ' +
+                                     SIZNumLifeStr(SubItems[i].Info.Nums[j],
+                                                   SubItems[i].Info.Lifes[j]);
+
+    if Form.ShowModal=mrOK then
       (MainForm.CategoryForm as TSIZCardForm).CardListLoad(True);
   finally
-    FreeAndNil(SIZStatusNewEditForm);
+    FreeAndNil(Form);
   end;
 end;
 
 procedure TSIZCardStatusForm.CopyButtonClick(Sender: TObject);
 var
-  SIZStatusCopyEditForm: TSIZStatusCopyEditForm;
+  Form: TSIZStatusCopyEditForm;
 begin
-  SIZStatusCopyEditForm:= TSIZStatusCopyEditForm.Create(nil);
+  Form:= TSIZStatusCopyEditForm.Create(nil);
   try
 
 
-    if SIZStatusCopyEditForm.ShowModal=mrOK then
+    if Form.ShowModal=mrOK then
       (MainForm.CategoryForm as TSIZCardForm).CardListLoad(True);
   finally
-    FreeAndNil(SIZStatusCopyEditForm);
+    FreeAndNil(Form);
   end;
 end;
 
@@ -209,11 +231,13 @@ begin
   DataBase.SettingsUpdate(SETTING_NAMES_SIZCARDSTATUSFORM, SettingValues);
 end;
 
-procedure TSIZCardStatusForm.DataUpdate(const ATabNumID: Integer;
+procedure TSIZCardStatusForm.DataUpdate(const ATabNumID, ACardID, AItemPostID: Integer;
                                         const ASubItems: TNormSubItems;
                                         const AStatusItems: TStatusItems);
 begin
   TabNumID:= ATabNumID;
+  CardID:= ACardID;
+  ItemPostID:= AItemPostID;
   SubItems:= ASubItems;
   StatusItems:= AStatusItems;
 

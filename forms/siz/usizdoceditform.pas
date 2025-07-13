@@ -129,6 +129,8 @@ var
   DocForm: Integer;
   DocDate: TDate;
 begin
+  IsOK:= False;
+
   DocName:= STrim(DocNameEdit.Text);
   if SEmpty(DocName) then
   begin

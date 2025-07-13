@@ -119,7 +119,6 @@ end;
 
 procedure TVacationPlanEditForm.SaveButtonClick(Sender: TObject);
 var
-  IsOK: Boolean;
   Plan1FirstDate, Plan2FirstDate, ED1, ED2: TDate;
   Plan1Count, Plan1AddCount, Plan2Count, Plan2AddCount: Integer;
 
@@ -134,8 +133,6 @@ var
   end;
 
 begin
-  IsOK:= False;
-
   Plan1FirstDate:= Plan1DatePicker.Date;
   Plan1Count:= Plan1CountSpinEdit.Value;
   Plan1AddCount:= Plan1CountAddSpinEdit.Value;
@@ -157,10 +154,9 @@ begin
     end;
   end;
 
-  IsOK:= DataBase.VacationPlanEdit(YearNum, TabNumID, Plan1FirstDate, Plan2FirstDate,
-                            Plan1Count, Plan1AddCount, Plan2Count, Plan2AddCount);
+  if not DataBase.VacationPlanEdit(YearNum, TabNumID, Plan1FirstDate, Plan2FirstDate,
+                            Plan1Count, Plan1AddCount, Plan2Count, Plan2AddCount) then Exit;
 
-  if not IsOK then Exit;
   ModalResult:= mrOK;
 end;
 
