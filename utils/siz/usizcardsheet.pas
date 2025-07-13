@@ -124,7 +124,8 @@ type
 
     procedure CaptionDraw(var ARow: Integer);
     procedure OrDraw(const ARow: Integer;const ASubItemIndex: Integer);
-    procedure InfoDraw(var ARow: Integer; const ASubItemIndex, AInfoIndex: Integer);
+    procedure InfoDraw(var ARow: Integer; const ASubItemIndex, AInfoIndex: Integer;
+                       out ASubInfoRows1, ASubInfoRows2: TIntVector);
     procedure ReasonDraw(const ARow: Integer; const ASubItemIndex: Integer);
     procedure SubItemDraw(var ARow: Integer; const ASubItemIndex: Integer);
 
@@ -734,12 +735,36 @@ begin
 end;
 
 procedure TSIZCardStatusSheet.InfoDraw(var ARow: Integer;
-                                       const ASubItemIndex, AInfoIndex: Integer);
+                                       const ASubItemIndex, AInfoIndex: Integer;
+                                       out ASubInfoRows1, ASubInfoRows2: TIntVector);
 var
-  i, j, n, m, k, R1, R2, RR1, RR2: Integer;
+  i, j, n, k, m: Integer;
+  R1, R2: Integer;   // Info first and last rows
+  RR1, RR2: Integer; // SubInfo first and last rows
   S: String;
   D: TDate;
+
+  procedure RowsAndIndexesSave(const AInfoFirstRow, AInfoLastRow: Integer;
+                               const ASubInfoFirstRow, ASubInfoLastRow: Integer;
+                               const ASubItemInd, AInfoInd, ASubInfoInd: Integer;
+                               const AIsReceivingExists: Boolean);
+  begin
+    VAppend(FInfoFirstRows, AInfoFirstRow);
+    VAppend(FInfoLastRows, AInfoLastRow);
+
+    VAppend(FSubInfoFirstRows, ASubInfoFirstRow);
+    VAppend(FSubInfoLastRows, ASubInfoLastRow);
+
+    VAppend(FSubItemIndexes, ASubItemInd);
+    VAppend(FInfoIndexes, AInfoInd);
+    VAppend(FSubInfoIndexes, ASubInfoInd);
+    VAppend(FIsReceivingExists, AIsReceivingExists);
+  end;
+
 begin
+  ASubInfoRows1:= nil;
+  ASubInfoRows2:= nil;
+
   R1:= ARow;
   R2:= R1;
   n:= VSum(MLengths(FStatusSubItems[ASubItemIndex].Info.SizNames[AInfoIndex]));
@@ -774,6 +799,7 @@ begin
   if n=0 then
   begin
     Writer.AddCellBGColorIndex(R1, 8, COLOR_INDEX_SIZSTATUS_ERROR);
+    RowsAndIndexesSave(R1, R2, R1, R2, ASubItemIndex, AInfoIndex, -1, False);
     Exit;
   end;
 
@@ -786,15 +812,9 @@ begin
 
     for j:= 0 to k-1 do
     begin
-      VAppend(FSubInfoFirstRows, RR1);
-      VAppend(FSubInfoLastRows, RR2);
-      VAppend(FInfoFirstRows, R1);
-      VAppend(FInfoLastRows, R2);
-
-      VAppend(FSubItemIndexes, ASubItemIndex);
-      VAppend(FInfoIndexes, AInfoIndex);
-      VAppend(FSubInfoIndexes, j);
-      VAppend(FIsReceivingExists, n>0); //k????
+      RowsAndIndexesSave(R1, R2, RR1, RR2, ASubItemIndex, AInfoIndex, j, True);
+      VAppend(ASubInfoRows1, RR1);
+      VAppend(ASubInfoRows2, RR2);
 
       Writer.SetAlignment(haLeft, vaTop);
       S:= FStatusSubItems[ASubItemIndex].Info.SizNames[AInfoIndex, i, j];
@@ -821,74 +841,6 @@ begin
 
     RR1:= RR2 + 1;
   end;
-
-  //R1:= ARow;
-  //R2:= R1;
-  //n:= Length(FStatusSubItems[ASubItemIndex].Info.LogIDs[AInfoIndex]);
-  //if n>0 then
-  //  R2:= ARow + n - 1;
-  //VAppend(FInfoFirstRows, R1);
-  //VAppend(FInfoLastRows, R2);
-  //VAppend(FSubItemIndexes, ASubItemIndex);
-  //VAppend(FInfoIndexes, AInfoIndex);
-  //VAppend(FIsReceivingExists, n>0);
-  //ARow:= R2;
-  //
-  //Writer.SetBackgroundDefault;
-  //Writer.SetFont(Font.Name, Font.Size, [], clBlack);
-  //
-  //Writer.SetAlignment(haLeft, vaTop);
-  //S:= FSubItems[ASubItemIndex].Info.Names[AInfoIndex];
-  //Writer.WriteText(R1, 1, R2, 1, S, cbtNone, True, True);
-  //
-  //Writer.SetAlignment(haCenter, vaTop);
-  //S:= FSubItems[ASubItemIndex].Info.Units[AInfoIndex];
-  //Writer.WriteText(R1, 2, R2, 2, S, cbtNone);
-  //
-  //S:= SIZNumLifeStr(FSubItems[ASubItemIndex].Info.Nums[AInfoIndex],
-  //                  FSubItems[ASubItemIndex].Info.Lifes[AInfoIndex]);
-  //Writer.WriteText(R1, 3, R2, 3, S, cbtNone);
-  //
-  //if (FSubItems[ASubItemIndex].Info.SIZTypes[AInfoIndex]=SIZ_TYPE_KEYS[0]) or
-  //   (FSubItems[ASubItemIndex].Info.SizeTypes[AInfoIndex]=SIZ_SIZETYPE_KEYS[0]) then
-  //  S:= EMPTY_MARK
-  //else
-  //  S:= SIZFullSize(FSubItems[ASubItemIndex].Info.SizeTypes[AInfoIndex],
-  //                  FStatusSubItems[ASubItemIndex].SizeIDs[AInfoIndex],
-  //                  FStatusSubItems[ASubItemIndex].HeightIDs[AInfoIndex]);
-  //Writer.WriteText(R1, 4, R2, 4, S, cbtNone);
-  //
-  //if n=0 then
-  //begin
-  //  Writer.AddCellBGColorIndex(R1, 8, COLOR_INDEX_SIZSTATUS_ERROR);
-  //  Exit;
-  //end;
-  //
-  //for i:=0 to n-1 do
-  //begin
-  //  Writer.SetAlignment(haLeft, vaTop);
-  //  S:= FStatusSubItems[ASubItemIndex].Info.SizNames[AInfoIndex, i];
-  //  Writer.WriteText(R1+i, 5, S, cbtNone, True, True);
-  //
-  //  Writer.SetAlignment(haCenter, vaTop);
-  //  k:= FStatusSubItems[ASubItemIndex].Info.SizCounts[AInfoIndex, i];
-  //  Writer.WriteNumber(R1+i, 6, k, cbtNone);
-  //
-  //  D:= FStatusSubItems[ASubItemIndex].Info.ReceivingDates[AInfoIndex, i];
-  //  Writer.WriteDate(R1+i, 7, D, cbtNone);
-  //
-  //  D:= FStatusSubItems[ASubItemIndex].Info.WriteoffDates[AInfoIndex, i];
-  //  if SameDate(D, INFDATE) then
-  //    Writer.WriteText(R1+i, 8, EMPTY_MARK, cbtNone)
-  //  else begin
-  //    Writer.WriteDate(R1+i, 8, D, cbtNone);
-  //
-  //    if not FStatusSubItems[ASubItemIndex].Info.IsFreshExists then
-  //      Writer.AddCellBGColorIndex(R1+i, 8, COLOR_INDEX_SIZSTATUS_ERROR)
-  //    else if DaysBetweenDates(Date, D)<=FWarnDaysCount then
-  //      Writer.AddCellBGColorIndex(R1+i, 8, COLOR_INDEX_SIZSTATUS_WARN);
-  //  end;
-  //end;
 end;
 
 procedure TSIZCardStatusSheet.ReasonDraw(const ARow: Integer; const ASubItemIndex: Integer);
@@ -902,7 +854,8 @@ end;
 
 procedure TSIZCardStatusSheet.SubItemDraw(var ARow: Integer; const ASubItemIndex: Integer);
 var
-  i, R: Integer;
+  i, j, R: Integer;
+  SubInfoRows1, SubInfoRows2: TIntVector;
 begin
   R:= ARow - 1;
   for i:=0 to High(FSubItems[ASubItemIndex].Info.InfoIDs) do
@@ -913,11 +866,20 @@ begin
       OrDraw(R, ASubItemIndex);
       R:= R + 1;
     end;
-    InfoDraw(R, ASubItemIndex, i);
+    InfoDraw(R, ASubItemIndex, i, SubInfoRows1, SubInfoRows2);
   end;
 
-  for i:= 1 to  Writer.ColCount do
+  for i:= 1 to Writer.ColCount do
     Writer.DrawBorders(ARow, i, R, i, cbtOuter);
+
+  Writer.SetBorders(lsThin, clBlack, lsHair, clBlack);
+  for i:= 0 to High(SubInfoRows2) do
+    for j:= 5 to 6 do
+      Writer.DrawBorders(SubInfoRows1[i], j, SubInfoRows2[i], j, cbtAll);
+  Writer.SetBordersDefault;
+  for i:= 0 to High(SubInfoRows2) do
+    for j:= 7 to Writer.ColCount do
+      Writer.DrawBorders(SubInfoRows1[i], j, SubInfoRows2[i], j, cbtOuter);
 
   ARow:= R;
 end;
@@ -982,7 +944,6 @@ begin
 
   if FIsReceivingExists[k] and (ACol>=5) then
   begin
-    //FSelectedSubInfoIndex:= ARow - FSubInfoFirstRows[k];
     FSelectedSubInfoIndex:= FSubInfoIndexes[k];
     for i:= FSubInfoFirstRows[k] to FSubInfoLastRows[k] do
       for j:= 5 to Writer.ColCount do

@@ -238,10 +238,12 @@ object SIZStatusNewEditForm: TSIZStatusNewEditForm
   object ResumeLabel: TLabel
     AnchorSideLeft.Control = Owner
     AnchorSideTop.Side = asrCenter
+    AnchorSideBottom.Control = ButtonPanel
     Left = 8
     Height = 20
-    Top = 452
+    Top = 456
     Width = 51
+    Anchors = [akLeft, akBottom]
     BorderSpacing.Left = 8
     BorderSpacing.Bottom = 8
     Caption = 'ИТОГО:'
@@ -254,8 +256,9 @@ object SIZStatusNewEditForm: TSIZStatusNewEditForm
     AnchorSideTop.Side = asrBottom
     AnchorSideRight.Control = Owner
     AnchorSideRight.Side = asrBottom
+    AnchorSideBottom.Control = ResumeLabel
     Left = 8
-    Height = 213
+    Height = 217
     Top = 227
     Width = 1184
     Anchors = [akTop, akLeft, akRight, akBottom]
@@ -265,12 +268,12 @@ object SIZStatusNewEditForm: TSIZStatusNewEditForm
     BorderSpacing.Bottom = 12
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 209
+    ClientHeight = 213
     ClientWidth = 1180
     TabOrder = 1
     object VT: TVirtualStringTree
       Left = 0
-      Height = 209
+      Height = 213
       Top = 0
       Width = 1180
       Align = alClient
