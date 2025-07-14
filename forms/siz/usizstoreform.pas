@@ -175,6 +175,11 @@ begin
   FilterDocNames:= VAdd(['ВСЕ ДОКУМЕНТЫ'], VUnique(MToVector(DocNames)));
   FilterDocDropDown.Items:= FilterDocNames;
   FilterDocDropDown.ItemIndex:= 0;
+
+  SIZExpandAllButton.Enabled:= not MIsNil(StoreIDs);
+  SIZCollapseAllButton.Enabled:= SIZExpandAllButton.Enabled;
+  SIZCheckAllButton.Enabled:= SIZExpandAllButton.Enabled;
+  SIZUncheckAllButton.Enabled:= SIZExpandAllButton.Enabled;
 end;
 
 procedure TSIZStoreForm.SIZListShow;

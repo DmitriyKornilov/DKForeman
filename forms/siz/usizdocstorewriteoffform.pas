@@ -120,7 +120,11 @@ begin
   DataBase.SIZStoreWriteOffLoad(DocID, CategoryNames, StoreIDs, SizCounts,
                                 NomNums, SizNames, SizUnits, SizSizes,
                                 EntryDocNames, Notes);
+
   SIZListShow;
+
+  ExpandAllButton.Enabled:= not MIsNil(StoreIDs);
+  CollapseAllButton.Enabled:= ExpandAllButton.Enabled;
 end;
 
 procedure TSIZDocStoreWriteoffForm.SIZListShow;

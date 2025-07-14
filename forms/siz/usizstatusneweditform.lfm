@@ -18,7 +18,7 @@ object SIZStatusNewEditForm: TSIZStatusNewEditForm
     AnchorSideRight.Side = asrBottom
     Cursor = crHandPoint
     Left = 1152
-    Height = 38
+    Height = 36
     Hint = 'Создать новый документ'
     Top = 8
     Width = 40
@@ -38,7 +38,7 @@ object SIZStatusNewEditForm: TSIZStatusNewEditForm
     AnchorSideBottom.Control = DocBCButton
     Left = 8
     Height = 20
-    Top = 26
+    Top = 24
     Width = 67
     Anchors = [akLeft, akBottom]
     BorderSpacing.Left = 8
@@ -56,7 +56,7 @@ object SIZStatusNewEditForm: TSIZStatusNewEditForm
     AnchorSideRight.Side = asrBottom
     Left = 8
     Height = 29
-    Top = 54
+    Top = 52
     Width = 1184
     Anchors = [akTop, akLeft, akRight]
     StateClicked.Background.Gradient1.StartColor = 8404992
@@ -225,10 +225,12 @@ object SIZStatusNewEditForm: TSIZStatusNewEditForm
     AnchorSideLeft.Control = Owner
     AnchorSideTop.Control = SIZNeedCountLabel
     AnchorSideTop.Side = asrBottom
+    AnchorSideBottom.Control = SIZPanel
     Left = 8
     Height = 20
-    Top = 199
+    Top = 201
     Width = 148
+    Anchors = [akLeft, akBottom]
     BorderSpacing.Left = 8
     BorderSpacing.Top = 20
     BorderSpacing.Bottom = 8
@@ -252,14 +254,14 @@ object SIZStatusNewEditForm: TSIZStatusNewEditForm
   end
   object SIZPanel: TPanel
     AnchorSideLeft.Control = Owner
-    AnchorSideTop.Control = SIZListLabel
+    AnchorSideTop.Control = UncheckAllButton
     AnchorSideTop.Side = asrBottom
     AnchorSideRight.Control = Owner
     AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Control = ResumeLabel
     Left = 8
-    Height = 217
-    Top = 227
+    Height = 215
+    Top = 229
     Width = 1184
     Anchors = [akTop, akLeft, akRight, akBottom]
     BorderSpacing.Left = 8
@@ -268,12 +270,12 @@ object SIZStatusNewEditForm: TSIZStatusNewEditForm
     BorderSpacing.Bottom = 12
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 213
+    ClientHeight = 211
     ClientWidth = 1180
     TabOrder = 1
     object VT: TVirtualStringTree
       Left = 0
-      Height = 213
+      Height = 211
       Top = 0
       Width = 1180
       Align = alClient
@@ -293,7 +295,7 @@ object SIZStatusNewEditForm: TSIZStatusNewEditForm
     AnchorSideTop.Side = asrBottom
     Left = 8
     Height = 20
-    Top = 103
+    Top = 101
     Width = 102
     BorderSpacing.Left = 8
     BorderSpacing.Top = 20
@@ -310,7 +312,7 @@ object SIZStatusNewEditForm: TSIZStatusNewEditForm
     AnchorSideRight.Side = asrBottom
     Left = 130
     Height = 20
-    Top = 103
+    Top = 101
     Width = 1062
     Anchors = [akTop, akLeft, akRight]
     BorderSpacing.Left = 20
@@ -331,7 +333,7 @@ object SIZStatusNewEditForm: TSIZStatusNewEditForm
     AnchorSideRight.Side = asrBottom
     Left = 58
     Height = 20
-    Top = 131
+    Top = 129
     Width = 52
     Anchors = [akTop, akRight]
     BorderSpacing.Left = 8
@@ -349,7 +351,7 @@ object SIZStatusNewEditForm: TSIZStatusNewEditForm
     AnchorSideRight.Side = asrBottom
     Left = 130
     Height = 20
-    Top = 131
+    Top = 129
     Width = 1062
     Anchors = [akTop, akLeft, akRight]
     BorderSpacing.Left = 20
@@ -370,7 +372,7 @@ object SIZStatusNewEditForm: TSIZStatusNewEditForm
     AnchorSideRight.Side = asrBottom
     Left = 31
     Height = 20
-    Top = 159
+    Top = 157
     Width = 79
     Anchors = [akTop, akRight]
     BorderSpacing.Left = 8
@@ -388,7 +390,7 @@ object SIZStatusNewEditForm: TSIZStatusNewEditForm
     AnchorSideRight.Side = asrBottom
     Left = 130
     Height = 20
-    Top = 159
+    Top = 157
     Width = 1062
     Anchors = [akTop, akLeft, akRight]
     BorderSpacing.Left = 20
@@ -400,5 +402,75 @@ object SIZStatusNewEditForm: TSIZStatusNewEditForm
     ParentColor = False
     ParentFont = False
     WordWrap = True
+  end
+  object UncheckAllButton: TSpeedButton
+    AnchorSideTop.Control = SIZNeedCountLabel
+    AnchorSideTop.Side = asrBottom
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
+    AnchorSideBottom.Control = SIZPanel
+    Cursor = crHandPoint
+    Left = 1152
+    Height = 36
+    Hint = 'Снять выбор со всех СИЗ'
+    Top = 185
+    Width = 40
+    Anchors = [akTop, akRight]
+    BorderSpacing.Top = 8
+    BorderSpacing.Right = 8
+    BorderSpacing.Bottom = 8
+    Images = Images.PX24
+    ImageIndex = 13
+    ShowHint = True
+    ParentShowHint = False
+    OnClick = UncheckAllButtonClick
+  end
+  object CheckAllButton: TSpeedButton
+    AnchorSideTop.Control = UncheckAllButton
+    AnchorSideRight.Control = UncheckAllButton
+    Cursor = crHandPoint
+    Left = 1112
+    Height = 36
+    Hint = 'Выбрать все СИЗ'
+    Top = 185
+    Width = 40
+    Anchors = [akTop, akRight]
+    Images = Images.PX24
+    ImageIndex = 12
+    ShowHint = True
+    ParentShowHint = False
+    OnClick = CheckAllButtonClick
+  end
+  object CollapseAllButton: TSpeedButton
+    AnchorSideTop.Control = CheckAllButton
+    AnchorSideRight.Control = CheckAllButton
+    Cursor = crHandPoint
+    Left = 1072
+    Height = 36
+    Hint = 'Свернуть всё'
+    Top = 185
+    Width = 40
+    Anchors = [akTop, akRight]
+    Images = Images.PX24
+    ImageIndex = 61
+    ShowHint = True
+    ParentShowHint = False
+    OnClick = CollapseAllButtonClick
+  end
+  object ExpandAllButton: TSpeedButton
+    AnchorSideTop.Control = CollapseAllButton
+    AnchorSideRight.Control = CollapseAllButton
+    Cursor = crHandPoint
+    Left = 1032
+    Height = 36
+    Hint = 'Развернуть всё'
+    Top = 185
+    Width = 40
+    Anchors = [akTop, akRight]
+    Images = Images.PX24
+    ImageIndex = 60
+    ShowHint = True
+    ParentShowHint = False
+    OnClick = ExpandAllButtonClick
   end
 end

@@ -8,9 +8,9 @@ uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, VirtualTrees,
   DividerBevel, Buttons,
   //Project utils
-  UVars, UConst, UTypes, UUtils, USIZUtils,
+  UVars, UConst, UTypes, USIZUtils,
   //DK packages utils
-  DK_VSTTables, DK_Vector, DK_Matrix, DK_CtrlUtils, DK_DateUtils, DK_Dialogs,
+  DK_VSTTables, DK_Vector, DK_Matrix, DK_CtrlUtils, DK_Dialogs,
   //Forms
   USIZStoreEntryEditForm;
 
@@ -158,6 +158,9 @@ begin
   finally
     SIZList.Visible:= True;
   end;
+
+  ExpandAllButton.Enabled:= not MIsNil(EntryIDs);
+  CollapseAllButton.Enabled:= ExpandAllButton.Enabled;
 end;
 
 procedure TSIZDocStoreEntryForm.SIZListSelect;
@@ -255,6 +258,7 @@ end;
 
 procedure TSIZDocStoreEntryForm.DelButtonClick(Sender: TObject);
 begin
+  if not Confirm('Удалить СИЗ документа?') then Exit;
   //!!!!!
 end;
 

@@ -10,7 +10,7 @@ uses
   //Project utils
   UTypes, UConst, UVars, USIZCardSheet, USIZNormTypes, USIZCardTypes, USIZUtils,
   //DK packages utils
-  DK_Zoom, DK_CtrlUtils, DK_Vector,
+  DK_Zoom, DK_CtrlUtils, DK_Vector, DK_Dialogs,
   //Forms
   USIZSizeSpecEditForm, USIZStatusNewEditForm, USIZStatusCopyEditForm;
 
@@ -48,8 +48,8 @@ type
     TabNumID: Integer;
     CardID: Integer;
     ItemPostID: Integer;
-    SubItems: TNormSubItems;
-    StatusItems: TStatusSubItems;
+    NormSubItems: TNormSubItems;
+    StatusSubItems: TStatusSubItems;
 
     procedure DataDraw(const AZoomPercent: Integer);
     procedure DataReDraw;
@@ -60,8 +60,8 @@ type
   public
     procedure SettingsSave;
     procedure DataUpdate(const ATabNumID, ACardID, AItemPostID: Integer;
-                         const ASubItems: TNormSubItems;
-                         const AStatusItems: TStatusSubItems);
+                         const ANormSubItems: TNormSubItems;
+                         const AStatusSubItems: TStatusSubItems);
     procedure ViewUpdate(const AModeType: TModeType);
   end;
 
@@ -116,20 +116,20 @@ begin
     Form.TabNumID:= TabNumID;
     Form.CardID:= CardID;
     Form.ItemPostID:= ItemPostID;
-    Form.InfoID:= SubItems[i].Info.InfoIDs[j];
+    Form.InfoID:= NormSubItems[i].Info.InfoIDs[j];
 
-    Form.SIZType:= SubItems[i].Info.SIZTypes[j];
-    Form.Num:= SubItems[i].Info.Nums[j];
-    Form.Life:= SubItems[i].Info.Lifes[j];
+    Form.SIZType:= NormSubItems[i].Info.SIZTypes[j];
+    Form.Num:= NormSubItems[i].Info.Nums[j];
+    Form.Life:= NormSubItems[i].Info.Lifes[j];
 
-    Form.SIZNeedLabel.Caption:= SubItems[i].Info.Names[j];
-    Form.SIZNeedSizeLabel.Caption:= SIZFullSize(SubItems[i].Info.SizeTypes[j],
-                                                StatusItems[i].SizeIDs[j],
-                                                StatusItems[i].HeightIDs[j],
+    Form.SIZNeedLabel.Caption:= NormSubItems[i].Info.Names[j];
+    Form.SIZNeedSizeLabel.Caption:= SIZFullSize(NormSubItems[i].Info.SizeTypes[j],
+                                                StatusSubItems[i].SizeIDs[j],
+                                                StatusSubItems[i].HeightIDs[j],
                                                 EMPTY_MARK);
-    Form.SIZNeedCountLabel.Caption:= SubItems[i].Info.Units[j] + ', ' +
-                                     SIZNumLifeStr(SubItems[i].Info.Nums[j],
-                                                   SubItems[i].Info.Lifes[j]);
+    Form.SIZNeedCountLabel.Caption:= NormSubItems[i].Info.Units[j] + ', ' +
+                                     SIZNumLifeStr(NormSubItems[i].Info.Nums[j],
+                                                   NormSubItems[i].Info.Lifes[j]);
 
     if Form.ShowModal=mrOK then
       (MainForm.CategoryForm as TSIZCardForm).CardListLoad(True);
@@ -154,9 +154,17 @@ begin
 end;
 
 procedure TSIZCardStatusForm.DelButtonClick(Sender: TObject);
+var
+  i, j, k: Integer;
 begin
+  if not Confirm('Отменить выдачу?') then Exit;
 
-  (MainForm.CategoryForm as TSIZCardForm).CardListLoad(True);
+  i:= Sheet.SelectedSubItemIndex;
+  j:= Sheet.SelectedInfoIndex;
+  k:= Sheet.SelectedSubInfoIndex;
+
+  if DataBase.SIZReceivingCancel(StatusSubItems[i].Info.LogIDs[j, k]) then
+    (MainForm.CategoryForm as TSIZCardForm).CardListLoad(True);
 end;
 
 procedure TSIZCardStatusForm.SizeButtonClick(Sender: TObject);
@@ -165,15 +173,15 @@ var
 begin
   i:= Sheet.SelectedSubItemIndex;
   j:= Sheet.SelectedInfoIndex;
-  InfoID:= SubItems[i].Info.InfoIDs[j];
-  SizeID:= StatusItems[i].SizeIDs[j];
-  HeightID:= StatusItems[i].HeightIDs[j];
-  SizeType:= SubItems[i].Info.SizeTypes[j];
+  InfoID:= NormSubItems[i].Info.InfoIDs[j];
+  SizeID:= StatusSubItems[i].SizeIDs[j];
+  HeightID:= StatusSubItems[i].HeightIDs[j];
+  SizeType:= NormSubItems[i].Info.SizeTypes[j];
   if not SIZSizeSpecEditFormOpen(TabNumID, InfoID, SizeType,
                                  SizeID, HeightID) then Exit;
 
-  StatusItems[i].SizeIDs[j]:= SizeID;
-  StatusItems[i].HeightIDs[j]:= HeightID;
+  StatusSubItems[i].SizeIDs[j]:= SizeID;
+  StatusSubItems[i].HeightIDs[j]:= HeightID;
 
   DataReDraw;
 
@@ -186,7 +194,7 @@ begin
   try
     ZoomPercent:= AZoomPercent;
     Sheet.Zoom(ZoomPercent);
-    Sheet.Draw(SubItems, StatusItems, DaysCountSpinEdit.Value);
+    Sheet.Draw(NormSubItems, StatusSubItems, DaysCountSpinEdit.Value);
 
   finally
     ViewGrid.Visible:= True;
@@ -210,8 +218,8 @@ begin
   i:= Sheet.SelectedSubItemIndex;
   j:= Sheet.SelectedInfoIndex;
   SizeButton.Enabled:= AddButton.Enabled and
-                       (SubItems[i].Info.SIZTypes[j]<>SIZ_TYPE_KEYS[0]) and
-                       (SubItems[i].Info.SizeTypes[j]<>SIZ_SIZETYPE_KEYS[0]);
+                       (NormSubItems[i].Info.SIZTypes[j]<>SIZ_TYPE_KEYS[0]) and
+                       (NormSubItems[i].Info.SizeTypes[j]<>SIZ_SIZETYPE_KEYS[0]);
 end;
 
 procedure TSIZCardStatusForm.SettingsLoad;
@@ -232,14 +240,14 @@ begin
 end;
 
 procedure TSIZCardStatusForm.DataUpdate(const ATabNumID, ACardID, AItemPostID: Integer;
-                                        const ASubItems: TNormSubItems;
-                                        const AStatusItems: TStatusSubItems);
+                                        const ANormSubItems: TNormSubItems;
+                                        const AStatusSubItems: TStatusSubItems);
 begin
   TabNumID:= ATabNumID;
   CardID:= ACardID;
   ItemPostID:= AItemPostID;
-  SubItems:= ASubItems;
-  StatusItems:= AStatusItems;
+  NormSubItems:= ANormSubItems;
+  StatusSubItems:= AStatusSubItems;
 
   DataReDraw;
 end;

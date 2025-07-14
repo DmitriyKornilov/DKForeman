@@ -801,6 +801,8 @@ type
                                      AReceivingInfoID, ANowInfoID, ADocID: Integer;
                             const AStoreIDs: TInt64Vector;
                             const AReceivingDate: TDate): Boolean;
+    {Удаление информации о выдаче СИЗ (отмена выдачи): True - ОК, False - ошибка}
+    function SIZReceivingCancel(const ALogID: Int64): Boolean;
   end;
 
 
@@ -811,7 +813,7 @@ implementation
 
 function TDataBase.ColorShiftUpdate(const AColorValue, AColorIndex: Integer): Boolean;
 begin
-  Result:= UpdateInt32ID('SHIFTCOLORS', 'ColorValue', 'ColorIndex', AColorIndex, AColorValue);
+  Result:= UpdateByInt32ID('SHIFTCOLORS', 'ColorValue', 'ColorIndex', AColorIndex, AColorValue);
 end;
 
 function TDataBase.ColorsShiftUpdate(const AColorValues: TIntVector = nil;
@@ -886,7 +888,7 @@ end;
 
 function TDataBase.SettingLoad(const ASettingName: String): Integer;
 begin
-  Result:= ValueIntStrID('SETTINGS', 'Value', 'Name', ASettingName);
+  Result:= ValueIntByStrID('SETTINGS', 'Value', 'Name', ASettingName);
 end;
 
 function TDataBase.SettingsLoad(const ASettingNames: TStrVector): TIntVector;
@@ -900,7 +902,7 @@ end;
 
 procedure TDataBase.SettingUpdate(const ASettingName: String; const ASettingValue: Integer);
 begin
-  UpdateStrID('SETTINGS', 'Value', 'Name', ASettingName, ASettingValue, True{commit});
+  UpdateByStrID('SETTINGS', 'Value', 'Name', ASettingName, ASettingValue, True{commit});
 end;
 
 procedure TDataBase.SettingsUpdate(const ASettingNames: TStrVector;
@@ -910,7 +912,7 @@ var
 begin
   try
     for i:= 0 to High(ASettingNames) do
-      UpdateStrID('SETTINGS', 'Value', 'Name', ASettingNames[i], ASettingValues[i], False{no commit});
+      UpdateByStrID('SETTINGS', 'Value', 'Name', ASettingNames[i], ASettingValues[i], False{no commit});
     QCommit;
   finally
     QRollback;
@@ -919,12 +921,12 @@ end;
 
 function TDataBase.TextParamLoad(const AParamName: String): String;
 begin
-  Result:= ValueStrStrID('TEXTPARAMS', 'Value', 'Name', AParamName);
+  Result:= ValueStrByStrID('TEXTPARAMS', 'Value', 'Name', AParamName);
 end;
 
 procedure TDataBase.TextParamUpdate(const AParamName, AParamValue: String);
 begin
-  UpdateStrID('TEXTPARAMS', 'Value', 'Name', AParamName, AParamValue, True{commit});
+  UpdateByStrID('TEXTPARAMS', 'Value', 'Name', AParamName, AParamValue, True{commit});
 end;
 
 procedure TDataBase.PostDictionaryLoad(const ADropDown: TVSTDropDown;
@@ -1633,7 +1635,7 @@ end;
 
 function TDataBase.StaffTabNumDismiss(const ATabNumID: Integer; const ADismissDate: TDate): Boolean;
 begin
-  Result:= UpdateInt32ID('STAFFTABNUM', 'DismissDate', 'TabNumID', ATabNumID, ADismissDate);
+  Result:= UpdateByInt32ID('STAFFTABNUM', 'DismissDate', 'TabNumID', ATabNumID, ADismissDate);
 end;
 
 function TDataBase.StaffTabNumDismissCancel(const ATabNumID: Integer): Boolean;
@@ -1676,7 +1678,7 @@ end;
 function TDataBase.StaffIDByTabNumID(const ATabNumID: Integer;
                                      out AStaffID: Integer): Boolean;
 begin
-  AStaffID:= ValueInt32Int32ID('STAFFTABNUM', 'StaffID', 'TabNumID', ATabNumID);
+  AStaffID:= ValueInt32ByInt32ID('STAFFTABNUM', 'StaffID', 'TabNumID', ATabNumID);
   Result:= AStaffID>0;
 end;
 
@@ -1893,7 +1895,7 @@ begin
   QSetQuery(FQuery);
   try
     //меняем конечную дату текущего периода
-    UpdateInt32ID('STAFFPOSTLOG', 'LastDate', 'ID', APostLogID, IncDay(AFirstDate, -1), False{no commit});
+    UpdateByInt32ID('STAFFPOSTLOG', 'LastDate', 'ID', APostLogID, IncDay(AFirstDate, -1), False{no commit});
     //записываем новые данные
     QSetSQL(
       sqlINSERT('STAFFPOSTLOG', ['TabNumID', 'PostID', 'FirstDate', 'LastDate', 'PostTemp', 'Rank'])
@@ -1921,7 +1923,7 @@ begin
   try
     //меняем конечную дату предыдущего периода
     if APrevPostLogID>0 then
-      UpdateInt32ID('STAFFPOSTLOG', 'LastDate', 'ID', APrevPostLogID, IncDay(AFirstDate, -1), False{no commit});
+      UpdateByInt32ID('STAFFPOSTLOG', 'LastDate', 'ID', APrevPostLogID, IncDay(AFirstDate, -1), False{no commit});
     //изменяем начальную дату и должность текущего периода
     QSetSQL(
       sqlUPDATE('STAFFPOSTLOG', [ 'PostID', 'FirstDate', 'PostTemp', 'Rank']) +
@@ -1948,7 +1950,7 @@ begin
     //удаление записи
     Delete('STAFFPOSTLOG', 'ID', APostLogID, False {no commit});
     //замена конечной даты предыдущего периода на конечную дату этого периода
-    UpdateInt32ID('STAFFPOSTLOG', 'LastDate', 'ID', APrevPostLogID, ALastDate, False{no commit});
+    UpdateByInt32ID('STAFFPOSTLOG', 'LastDate', 'ID', APrevPostLogID, ALastDate, False{no commit});
 
     QCommit;
     Result:= True;
@@ -2114,7 +2116,7 @@ begin
   QSetQuery(FQuery);
   try
     //меняем конечную дату текущего периода
-    UpdateInt32ID('STAFFSCHEDULE', 'EndDate', 'ID', AHistoryID, IncDay(ABeginDate, -1), False{no commit});
+    UpdateByInt32ID('STAFFSCHEDULE', 'EndDate', 'ID', AHistoryID, IncDay(ABeginDate, -1), False{no commit});
     //записываем новые данные
     QSetSQL(
       sqlINSERT('STAFFSCHEDULE', ['TabNumID', 'ScheduleID', 'BeginDate', 'EndDate'])
@@ -2139,7 +2141,7 @@ begin
   try
     //меняем конечную дату предыдущего периода
     if APrevHistoryID>0 then
-      UpdateInt32ID('STAFFSCHEDULE', 'EndDate', 'ID', APrevHistoryID, IncDay(ABeginDate, -1), False{no commit});
+      UpdateByInt32ID('STAFFSCHEDULE', 'EndDate', 'ID', APrevHistoryID, IncDay(ABeginDate, -1), False{no commit});
     //изменяем начальную дату и график текущего периода
     QSetSQL(
       sqlUPDATE('STAFFSCHEDULE', [ 'ScheduleID', 'BeginDate']) +
@@ -2164,7 +2166,7 @@ begin
     //удаление записи
     Delete('STAFFSCHEDULE', 'ID', AHistoryID, False {no commit});
     //замена конечной даты предыдущего периода на конечную дату этого периода
-    UpdateInt32ID('STAFFSCHEDULE', 'EndDate', 'ID', APrevHistoryID, AEndDate, False{no commit});
+    UpdateByInt32ID('STAFFSCHEDULE', 'EndDate', 'ID', APrevHistoryID, AEndDate, False{no commit});
 
     QCommit;
     Result:= True;
@@ -2389,7 +2391,7 @@ function TDataBase.ScheduleCycleLoad(const AScheduleID: Integer;
 begin
   ACycle:= EmptyScheduleCycle;
   ACycle.ScheduleID:= AScheduleID;
-  ACycle.Count:= ValueInt32Int32ID('SCHEDULEMAIN', 'CycleCount', 'ScheduleID', AScheduleID);
+  ACycle.Count:= ValueInt32ByInt32ID('SCHEDULEMAIN', 'CycleCount', 'ScheduleID', AScheduleID);
   ACycle.IsWeek:= ACycle.Count=0;
   Result:= ScheduleParamsLoad('SCHEDULECYCLE', 'ScheduleID', 'CycleID', AScheduleID,
     ACycleIDs, ACycle.Dates, ACycle.HoursTotal, ACycle.HoursNight, ACycle.ShiftNums,
@@ -3113,7 +3115,7 @@ end;
 
 function TDataBase.TimetableStrMarkLoad(const ADigMark: Integer): String;
 begin
-  Result:= ValueStrInt32ID('TIMETABLEMARK', 'StrMark', 'DigMark',  ADigMark);
+  Result:= ValueStrByInt32ID('TIMETABLEMARK', 'StrMark', 'DigMark',  ADigMark);
 end;
 
 function TDataBase.TimetableFirstWritedDateLoad(const ATabNumID: Integer;
@@ -4005,7 +4007,7 @@ function TDataBase.SIZItemsAndPostsAccordanceMove(const AItemID: Integer;
 begin
   Result:= False;
   if VIsNil(AItemPostIDs) then Exit;
-  Result:= UpdateInt32ID('SIZNORMITEMPOST', 'ItemID', 'ItemPostID',
+  Result:= UpdateByInt32ID('SIZNORMITEMPOST', 'ItemID', 'ItemPostID',
                          AItemPostIDs, AItemID, ACommit);
 end;
 
@@ -4995,7 +4997,7 @@ begin
   //
   //  //отмечаем эти StoreID на складе, как свободные
   //  i:= 0;
-  //  UpdateInt64ID('SIZSTORE', 'IsBusy', 'StoreID', StoreIDs, i, False{no commit});
+  //  UpdateByInt64ID('SIZSTORE', 'IsBusy', 'StoreID', StoreIDs, i, False{no commit});
   //
   //  //удаляем сами InfoID
   //  Delete('SIZNORMSUBITEMINFO', 'InfoID', AInfoIDs, False{no commit});
@@ -6206,7 +6208,7 @@ begin
     end;
 
     //отмечаем СИЗ на складе, как занятые
-    UpdateInt64ID('SIZSTORELOG', 'IsBusy', 'StoreID', AStoreIDs, 1{занято}, False{no commit});
+    UpdateByInt64ID('SIZSTORELOG', 'IsBusy', 'StoreID', AStoreIDs, 1{занято}, False{no commit});
 
     QCommit;
     Result:= True;
@@ -6222,7 +6224,7 @@ begin
   try
     QSetQuery(FQuery);
     //отмечаем СИЗ на складе, как свободные
-    UpdateInt64ID('SIZSTORELOG', 'IsBusy', 'StoreID', AStoreIDs, 0{свободно}, False{no commit});
+    UpdateByInt64ID('SIZSTORELOG', 'IsBusy', 'StoreID', AStoreIDs, 0{свободно}, False{no commit});
 
     //удаляем строки из документа
     Delete('SIZSTOREWRITEOFF', 'StoreID', AStoreIDs, False{no commit});
@@ -6644,7 +6646,7 @@ end;
 function TDataBase.SIZPersonalCardUpdate(const ACardID: Integer;
                                          const ACardNum: String): Boolean;
 begin
-  Result:= UpdateInt32ID('SIZCARDPERSONAL', 'CardNum', 'CardID', ACardID, ACardNum);
+  Result:= UpdateByInt32ID('SIZCARDPERSONAL', 'CardNum', 'CardID', ACardID, ACardNum);
 end;
 
 
@@ -7031,7 +7033,55 @@ begin
     LogInfoWrite;
 
     //меняем статус СИЗ на складе на "занято"
-    UpdateInt64ID('SIZSTORELOG', 'IsBusy', 'StoreID', AStoreIDs, 1{занято}, False{no commit});
+    UpdateByInt64ID('SIZSTORELOG', 'IsBusy', 'StoreID', AStoreIDs, 1{занято}, False{no commit});
+
+    QCommit;
+    Result:= True;
+  except
+    QRollback;
+  end;
+end;
+
+function TDataBase.SIZReceivingCancel(const ALogID: Int64): Boolean;
+var
+  StoreIDs, LogIDs: TInt64Vector;
+
+  function ItWasFreeSIZ: Boolean;
+  begin
+    QSetSQL(
+      'SELECT ReceivingInfoID, NowInfoID ' +
+      'FROM SIZCARDPERSONALLOG ' +
+      'WHERE LogID=:LogID'
+    );
+    QParamInt64('LogID', ALogID);
+    QOpen;
+    Result:= QFieldInt('ReceivingInfoID')=QFieldInt('NowInfoID');
+    QClose;
+  end;
+
+begin
+  Result:= False;
+
+  QSetQuery(FQuery);
+  try
+    if ItWasFreeSIZ then  //если была выдача сиз со склада
+    begin
+      //получаем список StoreID для этого LogID
+      StoreIDs:= ValuesInt64ByInt64ID('SIZCARDPERSONALLOGINFO', 'StoreID', 'LogID', ALogID);
+
+      //получаем список всех LogID с этими StoreID (возможно, СИЗ было учтено в последующих личных картах)
+      LogIDs:= ValuesInt64ByInt64ID('SIZCARDPERSONALLOGINFO', 'LogID', 'StoreID', StoreIDs);
+
+      //удаляем строки из лога
+      Delete('SIZCARDPERSONALLOG', 'LogID', LogIDs, False{no commit});
+
+      //меняем статус на "свободно" на складе
+      UpdateByInt64ID('SIZSTORELOG', 'IsBusy', 'StoreID', StoreIDs, 0{свободно}, False{no commit});
+    end
+    else begin  //был учет ранее выданных сиз
+      //просто удаляем строку из лога
+      Delete('SIZCARDPERSONALLOG', 'LogID', ALogID, False{no commit});
+    end;
 
     QCommit;
     Result:= True;

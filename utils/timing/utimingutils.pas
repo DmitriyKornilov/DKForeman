@@ -757,7 +757,7 @@ var
 begin
   if not Assigned(ASchedule) then
     ASchedule:= TShiftSchedule.Create;
-  WeekHours:= DataBase.ValueInt32Int32ID('SCHEDULEMAIN', 'WeekHours', 'ScheduleID', AScheduleID);
+  WeekHours:= DataBase.ValueInt32ByInt32ID('SCHEDULEMAIN', 'WeekHours', 'ScheduleID', AScheduleID);
   DataBase.ScheduleCycleLoad(AScheduleID, V, Cycle);
   DataBase.ScheduleShiftCorrectionsLoad(AScheduleID, V, Correct, ACalendar.BeginDate, ACalendar.EndDate);
   ASchedule.Calc(ACalendar, WeekHours, Cycle, Correct);

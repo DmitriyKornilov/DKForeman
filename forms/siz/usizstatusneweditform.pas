@@ -24,6 +24,9 @@ type
     ButtonPanelBevel: TBevel;
     CancelButton: TSpeedButton;
     ResumeLabel: TLabel;
+    CheckAllButton: TSpeedButton;
+    CollapseAllButton: TSpeedButton;
+    ExpandAllButton: TSpeedButton;
     SIZNeedSizeLabel: TLabel;
     SIZNeedNameLabel: TLabel;
     SIZNeedLabel: TLabel;
@@ -31,6 +34,7 @@ type
     SIZNeedSizeNameLabel: TLabel;
     SIZNeedCountNameLabel: TLabel;
     SIZPanel: TPanel;
+    UncheckAllButton: TSpeedButton;
     VT: TVirtualStringTree;
     DocBCButton: TBCButton;
     DocLabel: TLabel;
@@ -38,11 +42,15 @@ type
     NewDocButton: TSpeedButton;
     SaveButton: TSpeedButton;
     procedure CancelButtonClick(Sender: TObject);
+    procedure CheckAllButtonClick(Sender: TObject);
+    procedure CollapseAllButtonClick(Sender: TObject);
+    procedure ExpandAllButtonClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure NewDocButtonClick(Sender: TObject);
     procedure SaveButtonClick(Sender: TObject);
+    procedure UncheckAllButtonClick(Sender: TObject);
   private
     SIZList: TVSTCategoryCheckTable;
     DocDropDown: TVSTDropDown;
@@ -101,10 +109,16 @@ end;
 
 procedure TSIZStatusNewEditForm.FormShow(Sender: TObject);
 begin
-  Images.ToButtons([SaveButton, CancelButton, NewDocButton]);
+  Images.ToButtons([
+    SaveButton, CancelButton, NewDocButton,
+    ExpandAllButton, CollapseAllButton, CheckAllButton, UncheckAllButton
+  ]);
   SetEventButtons([SaveButton, CancelButton]);
-  ControlHeight(NewDocButton, TOOL_PANEL_HEIGHT_DEFAULT-2);
-  SetToolButtons([NewDocButton]);
+  SetSimpleButtons([
+    NewDocButton,
+    ExpandAllButton, CollapseAllButton, CheckAllButton, UncheckAllButton
+  ]);
+
   FormKeepMinSize(Self, False);
 
   DocLoad;
@@ -182,6 +196,11 @@ begin
   finally
     SIZList.Visible:= True;
   end;
+
+  ExpandAllButton.Enabled:= not MIsNil(StoreIDs);
+  CollapseAllButton.Enabled:= ExpandAllButton.Enabled;
+  CheckAllButton.Enabled:= ExpandAllButton.Enabled;
+  UncheckAllButton.Enabled:= ExpandAllButton.Enabled;
 end;
 
 procedure TSIZStatusNewEditForm.SIZListSelect;
@@ -237,6 +256,26 @@ end;
 procedure TSIZStatusNewEditForm.CancelButtonClick(Sender: TObject);
 begin
   ModalResult:= mrCancel;
+end;
+
+procedure TSIZStatusNewEditForm.UncheckAllButtonClick(Sender: TObject);
+begin
+  SIZList.CheckAll(False);
+end;
+
+procedure TSIZStatusNewEditForm.CheckAllButtonClick(Sender: TObject);
+begin
+  SIZList.CheckAll(True);
+end;
+
+procedure TSIZStatusNewEditForm.CollapseAllButtonClick(Sender: TObject);
+begin
+  SIZList.ExpandAll(False);
+end;
+
+procedure TSIZStatusNewEditForm.ExpandAllButtonClick(Sender: TObject);
+begin
+  SIZList.ExpandAll(True);
 end;
 
 end.
