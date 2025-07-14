@@ -35,6 +35,7 @@ type
     ZoomPanel: TPanel;
     procedure AddButtonClick(Sender: TObject);
     procedure CopyButtonClick(Sender: TObject);
+    procedure DaysCountSpinEditChange(Sender: TObject);
     procedure DelButtonClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -206,6 +207,11 @@ end;
 procedure TSIZCardStatusForm.DataReDraw;
 begin
   DataDraw(ZoomPercent);
+end;
+
+procedure TSIZCardStatusForm.DaysCountSpinEditChange(Sender: TObject);
+begin
+  DataReDraw;
 end;
 
 procedure TSIZCardStatusForm.StatusSelect;

@@ -225,11 +225,12 @@ const
   COLOR_SIZSTATUS_WARN  = COLOR_YELLOW;
   COLOR_SIZSTATUS_ERROR = COLOR_RED;
   COLORS_SIZSTATUS: array of Integer = (
+    0, //transparent
     COLOR_SIZSTATUS_WARN,
     COLOR_SIZSTATUS_ERROR
   );
-  COLOR_INDEX_SIZSTATUS_WARN  = 0;
-  COLOR_INDEX_SIZSTATUS_ERROR = 1;
+  COLOR_INDEX_SIZSTATUS_WARN  = 1;
+  COLOR_INDEX_SIZSTATUS_ERROR = 2;
 
 
   (**************************************************************************

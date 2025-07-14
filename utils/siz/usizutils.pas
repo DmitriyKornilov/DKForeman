@@ -194,7 +194,7 @@ function SIZNumForPeriod(const ANum, ALife: Integer): String;
 begin
   Result:= IntToStr(ANum);
   if ALife>0 then
-    Result:= Result + ' на ';
+    Result:= Result + ' на';
   Result:= Result + SYMBOL_SPACE + SIZPeriod(ALife);
 end;
 
