@@ -143,10 +143,25 @@ end;
 procedure TSIZCardStatusForm.CopyButtonClick(Sender: TObject);
 var
   Form: TSIZStatusCopyEditForm;
+  i, j: Integer;
 begin
+  i:= Sheet.SelectedSubItemIndex;
+  j:= Sheet.SelectedInfoIndex;
+
   Form:= TSIZStatusCopyEditForm.Create(nil);
   try
+    Form.TabNumID:= TabNumID;
+    Form.CardID:= CardID;
 
+    Form.SIZNeedLabel.Caption:= NormSubItems[i].Info.Names[j];
+    Form.SIZNeedSizeLabel.Caption:= SIZFullSize(NormSubItems[i].Info.SizeTypes[j],
+                                                StatusSubItems[i].SizeIDs[j],
+                                                StatusSubItems[i].HeightIDs[j],
+                                                EMPTY_MARK);
+    Form.SIZNeedCountLabel.Caption:= SIZUnitCommaNumForPeriod(
+                                         NormSubItems[i].Info.Units[j],
+                                         NormSubItems[i].Info.Nums[j],
+                                         NormSubItems[i].Info.Lifes[j]);
 
     if Form.ShowModal=mrOK then
       (MainForm.CategoryForm as TSIZCardForm).CardListLoad(True);

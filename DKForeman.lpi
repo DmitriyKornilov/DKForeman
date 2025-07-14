@@ -565,6 +565,7 @@
         <Filename Value="forms\siz\usizstatuscopyeditform.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="SIZStatusCopyEditForm"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="USIZStatusCopyEditForm"/>
       </Unit>
