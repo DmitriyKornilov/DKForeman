@@ -464,9 +464,9 @@ begin
   //Нормы выдачи
   VDim(V, N+1);
   for i:=0 to N do
-    V[i]:= FSubItems[AIndex].Info.Units[i] + ', ' +
-           SIZNumLifeStr(FSubItems[AIndex].Info.Nums[i],
-                           FSubItems[AIndex].Info.Lifes[i]);
+    V[i]:= SIZUnitCommaNumForPeriod(FSubItems[AIndex].Info.Units[i],
+                                    FSubItems[AIndex].Info.Nums[i],
+                                    FSubItems[AIndex].Info.Lifes[i]);
   VectorDraw(Writer, V, ARow, 3, EmptyStr, False, haCenter, vaTop);
   //Основание выдачи (пункты ЕТН)
   V:= FSubItems[AIndex].Info.ClauseNames;
@@ -683,9 +683,9 @@ var
     //Нормы выдачи
     VDim(V, N+1);
     for j:=0 to N do
-      V[j]:= AItem.SubItems[AIndex].Info.Units[j] + ', ' +
-             SIZNumLifeStr(AItem.SubItems[AIndex].Info.Nums[j],
-                             AItem.SubItems[AIndex].Info.Lifes[j]);
+      V[j]:= SIZUnitCommaNumForPeriod(AItem.SubItems[AIndex].Info.Units[j],
+                                      AItem.SubItems[AIndex].Info.Nums[j],
+                                      AItem.SubItems[AIndex].Info.Lifes[j]);
     VectorDraw(Writer, V, AR, 5, EmptyStr, False, haCenter, vaTop);
     //Основание выдачи (пункты ЕТН)
     V:= AItem.SubItems[AIndex].Info.ClauseNames;

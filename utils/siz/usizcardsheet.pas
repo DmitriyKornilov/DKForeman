@@ -409,8 +409,8 @@ begin
   //Единица измерения, периодичность выдачи
   VDim(V, N+1);
   for i:=0 to N do
-    V[i]:= FSubItems[AIndex].Info.Units[i] + ', ' + SYMBOL_BREAK +
-           '1 раз в ' + SIZLifePeriod(FSubItems[AIndex].Info.Lifes[i]);
+    V[i]:= SIZUnitCycle(FSubItems[AIndex].Info.Units[i],
+                        FSubItems[AIndex].Info.Lifes[i], True{need break});
   VectorDraw(Writer, V, ARow, 8, EmptyStr, False, haCenter, vaTop);
   //Количество на период
   V:= VIntToStr(FSubItems[AIndex].Info.Nums);
@@ -783,7 +783,7 @@ begin
   S:= FSubItems[ASubItemIndex].Info.Units[AInfoIndex];
   Writer.WriteText(R1, 2, R2, 2, S, cbtNone);
 
-  S:= SIZNumLifeStr(FSubItems[ASubItemIndex].Info.Nums[AInfoIndex],
+  S:= SIZNumForPeriod(FSubItems[ASubItemIndex].Info.Nums[AInfoIndex],
                     FSubItems[ASubItemIndex].Info.Lifes[AInfoIndex]);
   Writer.WriteText(R1, 3, R2, 3, S, cbtNone);
 

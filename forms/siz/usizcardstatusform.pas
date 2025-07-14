@@ -127,9 +127,10 @@ begin
                                                 StatusSubItems[i].SizeIDs[j],
                                                 StatusSubItems[i].HeightIDs[j],
                                                 EMPTY_MARK);
-    Form.SIZNeedCountLabel.Caption:= NormSubItems[i].Info.Units[j] + ', ' +
-                                     SIZNumLifeStr(NormSubItems[i].Info.Nums[j],
-                                                   NormSubItems[i].Info.Lifes[j]);
+    Form.SIZNeedCountLabel.Caption:= SIZUnitCommaNumForPeriod(
+                                         NormSubItems[i].Info.Units[j],
+                                         NormSubItems[i].Info.Nums[j],
+                                         NormSubItems[i].Info.Lifes[j]);
 
     if Form.ShowModal=mrOK then
       (MainForm.CategoryForm as TSIZCardForm).CardListLoad(True);

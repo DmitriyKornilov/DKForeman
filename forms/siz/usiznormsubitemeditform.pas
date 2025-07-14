@@ -299,8 +299,9 @@ begin
 
   VDim(V{%H-}, Length(SubItem.Info.Lifes));
   for i:= 0 to High(SubItem.Info.Lifes) do
-   V[i]:= SubItem.Info.Units[i] + ', ' +
-          SIZNumLifeStr(SubItem.Info.Nums[i], SubItem.Info.Lifes[i]);
+   V[i]:= SIZUnitCommaNumForPeriod(SubItem.Info.Units[i],
+                                   SubItem.Info.Nums[i],
+                                   SubItem.Info.Lifes[i]);
 
   InfoTable.ValuesClear;
   InfoTable.SetColumn('Наименование СИЗ', SubItem.Info.Names, taLeftJustify);

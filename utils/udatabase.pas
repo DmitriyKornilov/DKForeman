@@ -6851,11 +6851,14 @@ var
     //определение даты списания
     if ReturnDates[AInd1]>0 then
       WriteoffDate:= ReturnDates[AInd1]
+    else if Lifes[AInd1]<=0 then
+      WriteoffDate:= INFDATE
     else begin
       Count:= VSum(OutSizCounts[High(OutSizCounts)]);
       Months:= SIZLifeInMonths(Count, Nums[AInd1], Lifes[AInd1]);
       WriteoffDate:= IncMonthExt(ReceivingDates[AInd1], Months);
     end;
+
     VAppend(OutWriteoffDates, WriteoffDate);
 
     if CompareDate(WriteoffDate, AReportDate)>=0 then

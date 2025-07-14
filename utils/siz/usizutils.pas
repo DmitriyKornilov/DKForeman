@@ -14,10 +14,15 @@ uses
 function SIZLifeInYearsStr(const AMonths: Extended): String;
 function SIZLifeInMonthsStr(const AMonths: Extended): String;
 function SIZLifeInMonthAndYears(const AMonths: Extended): String;
-//function SIZLifeStr(const ALife: Integer): String;
-function SIZNumLifeStr(const ANum, ALife: Integer): String;
-function SIZLifePeriod(const ALife: Integer): String;
-function SIZLifeInMonthsFromDates(const AGivingDate, AWritingDate: TDate): Extended;
+
+function SIZPeriod(const ALife: Integer;
+                   //выводить 1 перед месяц/год, когда Life=1/12
+                   const ANeedLifeCountIfSingle: Boolean = True): String;
+function SIZNumForPeriod(const ANum, ALife: Integer): String;
+function SIZUnitCommaNumForPeriod(const AUnit: String; const ANum, ALife: Integer): String;
+function SIZUnitCycle(const AUnit: String; const ALife: Integer; const ANeedBreak: Boolean): String;
+
+function SIZLifeInMonthsFromDates(const AReceivingDate, AWritingDate: TDate): Extended;
 function SIZLifeInMonths(const AReceivingCount, ANormCount, ANormLife: Integer): Extended;
 
 function SIZWriteoffDate(const AReceivingDate: TDate;
@@ -134,98 +139,7 @@ begin
     Result:= MonthStr + ' (' + YearStr + ')';
 end;
 
-{function SIZLifeStr(const ALife: Integer): String;
-//var
-//  X: Integer;
-begin
-  if ALife=1 then
-    Result:= '1 месяц'
-  else if ALife=12 then
-    Result:= '1 год'
-  else
-    Result:= SIZLifePeriod(ALife);
-
-  //if ALife<=0 then
-  //begin
-  //  Result:= SIZ_LIFE_PICKS[ALife];
-  //  Exit;
-  //end;
-  //
-  //if ALife=12 then
-  //begin
-  //  Result:= '1 год';
-  //  Exit;
-  //end;
-  //if ALife<12 then //меньше года
-  //begin
-  //  Result:= IntToStr(ALife) + ' месяц';
-  //  if (ALife>=2) and (ALife<=4) then
-  //    Result:= Result + 'а'
-  //  else
-  //    Result:= Result + 'ев';
-  //end
-  //else begin //больше года
-  //  if (ALife mod 12) = 0 then //целое кол-во лет
-  //  begin
-  //    X:= ALife div 12;
-  //    Result:= IntToStr(X);
-  //    if (X>=2) and (X<=4) then
-  //      Result:= Result + ' года'
-  //    else
-  //      Result:= Result + ' лет';
-  //  end
-  //  else begin
-  //    if ((2*ALife) mod 12) = 0 then //кол-во лет кратное половине года
-  //      Result:= Format('%.1f года', [ALife/12])
-  //    else
-  //      Result:= Format('%.2f года', [ALife/12]);
-  //  end;
-  //end;
-end;   }
-
-function SIZNumLifeStr(const ANum, ALife: Integer): String;
-var
-  NumStr, PeriodStr: String;
-  X: Integer;
-begin
-  NumStr:= IntToStr(ANum);
-  if ALife<=0 then //особый срок службы
-    Result:= NumStr + ' ' + SIZ_LIFE_PICKS[ALife]
-  else if ALife=1 then //ровно 1 месяц
-    Result:= NumStr + ' на 1 месяц'
-  else if ALife=12 then //ровно 1 год
-      Result:= NumStr + ' на 1 год'
-  else begin
-    PeriodStr:= IntToStr(ALife);
-    if ALife<12 then //меньше года
-    begin
-      Result:= NumStr + ' на ' + PeriodStr + ' месяц';
-      if (ALife>=2) and (ALife<=4) then
-        Result:= Result + 'а'
-      else
-        Result:= Result + 'ев';
-    end
-    else begin //больше года
-      if (ALife mod 12) = 0 then //целое кол-во лет
-      begin
-        X:= ALife div 12;
-        Result:= NumStr + ' на ' + IntToStr(X);
-        if (X>=2) and (X<=4) then
-          Result:= Result + ' года'
-        else
-          Result:= Result + ' лет';
-      end
-      else begin
-        if ((2*ALife) mod 12) = 0 then //кол-во лет кратное половине года
-          Result:= NumStr + Format(' на %.1f года', [ALife/12])
-        else
-          Result:= NumStr + Format(' на %.2f года', [ALife/12]);
-      end;
-    end;
-  end;
-end;
-
-function SIZLifePeriod(const ALife: Integer): String;
+function SIZPeriod(const ALife: Integer; const ANeedLifeCountIfSingle: Boolean = True): String;
 var
   PeriodStr: String;
   X: Integer;
@@ -233,9 +147,19 @@ begin
   if ALife<=0 then //особый срок службы
     Result:= SIZ_LIFE_PICKS[ALife]
   else if ALife=1 then //ровно 1 месяц
-    Result:= 'месяц'
+  begin
+    if ANeedLifeCountIfSingle then
+      Result:= '1 месяц'
+    else
+      Result:= 'месяц';
+  end
   else if ALife=12 then //ровно 1 год
-      Result:= 'год'
+  begin
+    if ANeedLifeCountIfSingle then
+      Result:= '1 год'
+    else
+      Result:= 'год';
+  end
   else begin
     PeriodStr:= IntToStr(ALife);
     if ALife<12 then //меньше года
@@ -266,18 +190,49 @@ begin
   end;
 end;
 
-function SIZLifeInMonthsFromDates(const AGivingDate, AWritingDate: TDate): Extended;
+function SIZNumForPeriod(const ANum, ALife: Integer): String;
+begin
+  Result:= IntToStr(ANum);
+  if ALife>0 then
+    Result:= Result + ' на ';
+  Result:= Result + SYMBOL_SPACE + SIZPeriod(ALife);
+end;
+
+function SIZUnitCommaNumForPeriod(const AUnit: String; const ANum, ALife: Integer): String;
+begin
+  Result:= SIZNumForPeriod(ANum, ALife);
+  if not SEmpty(STrim(AUnit)) then
+    Result:= AUnit + ', ' + Result;
+end;
+
+function SIZUnitCycle(const AUnit: String; const ALife: Integer;
+                      const ANeedBreak: Boolean): String;
+begin
+  if ALife<=0 then //особый срок службы
+    Result:= SIZ_LIFE_PICKS[ALife]
+  else begin
+    Result:= '1 раз в ' + SIZPeriod(ALife, False{не выводить 1 перед месяц/год, когда Life=1/12});
+  end;
+  if not SEmpty(STrim(AUnit)) then
+  begin
+    if ANeedBreak then
+      Result:= SYMBOL_BREAK + Result;
+    Result:= AUnit + ', ' + Result;
+  end;
+end;
+
+function SIZLifeInMonthsFromDates(const AReceivingDate, AWritingDate: TDate): Extended;
 var
   D: TDate;
   IntMonths: Integer;
   FracMonths: Extended;
 begin
-  D:= AGivingDate;
+  D:= AReceivingDate;
   IntMonths:= 0;
   while CompareDate(D, AWritingDate)<=0 do
   begin
     IntMonths:= IntMonths + 1;
-    D:= IncMonth(AGivingDate, IntMonths);
+    D:= IncMonth(AReceivingDate, IntMonths);
   end;
   if SameDate(D, AWritingDate) then
   begin
@@ -285,7 +240,7 @@ begin
   end
   else begin
     IntMonths:= IntMonths - 1;
-    D:= IncMonth(AGivingDate, IntMonths);
+    D:= IncMonth(AReceivingDate, IntMonths);
     FracMonths:= DaysBetweenDates(D, AWritingDate)/30;
     Result:= IntMonths + FracMonths;
   end;
