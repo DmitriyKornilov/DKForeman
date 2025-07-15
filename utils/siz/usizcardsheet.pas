@@ -727,7 +727,7 @@ procedure TSIZCardStatusSheet.OrDraw(const ARow: Integer; const ASubItemIndex: I
 begin
   Writer.SetBackgroundDefault;
   Writer.SetFont(Font.Name, Font.Size, [], clBlack);
-  Writer.SetAlignment(haLeft, vaTop);
+  Writer.SetAlignment(haLeft, vaCenter);
   Writer.WriteText(ARow, 1, ARow, 1, 'или', cbtNone);
 
   if not FStatusSubItems[ASubItemIndex].IsFreshExists then
