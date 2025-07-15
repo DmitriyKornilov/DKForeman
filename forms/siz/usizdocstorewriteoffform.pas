@@ -96,7 +96,7 @@ begin
   SIZList:= TVSTCategoryCheckTable.Create(VT);
   SIZList.OnSelect:= @SIZListSelect;
   SIZList.TreeLinesVisible:= False;
-  SIZList.CheckEnable:= False;
+  SIZList.CheckKind:= chkNone;
   SIZList.SetSingleFont(GridFont);
   SIZList.HeaderFont.Style:= [fsBold];
   SIZList.CategoryFont.Style:= [fsBold];
@@ -219,7 +219,10 @@ procedure TSIZDocStoreWriteoffForm.ViewUpdate(const AIsEditing: Boolean);
 begin
   IsEditing:= AIsEditing;
   EditButtonPanel.Visible:= AIsEditing;
-  SIZList.CheckEnable:= AIsEditing;
+  if AIsEditing then
+    SIZList.CheckKind:= chkAll
+  else
+    SIZList.CheckKind:= chkNone;
   SIZListShow;
 end;
 

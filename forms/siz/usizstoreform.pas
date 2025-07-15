@@ -153,8 +153,7 @@ begin
   SIZList:= TVSTCategoryCheckTable.Create(VT);
   SIZList.OnSelect:= @SIZListSelect;
   SIZList.TreeLinesVisible:= False;
-  SIZList.CheckVisible:= True;
-  SIZList.CheckEnable:= False;
+  SIZList.CheckKind:= chkNone;
   SIZList.SetSingleFont(GridFont);
   SIZList.HeaderFont.Style:= [fsBold];
   SIZList.CategoryFont.Style:= [fsBold];
@@ -335,7 +334,10 @@ procedure TSIZStoreForm.ViewUpdate(const AModeType: TModeType);
 begin
   ModeType:= AModeType;
   SIZEditButtonPanel.Visible:= ModeType=mtEditing;
-  SIZList.CheckEnable:= ModeType=mtEditing;
+  if ModeType=mtEditing then
+    SIZList.CheckKind:= chkAll
+  else
+    SIZList.CheckKind:= chkNone;
   SIZListShow;
 end;
 

@@ -162,8 +162,6 @@ begin
   SIZList:= TVSTCategoryCheckTable.Create(VT);
   SIZList.OnSelect:= @SIZListSelect;
   SIZList.TreeLinesVisible:= False;
-  SIZList.CheckVisible:= True;
-  SIZList.CheckEnable:= True;
   SIZList.SetSingleFont(GridFont);
   SIZList.HeaderFont.Style:= [fsBold];
   SIZList.CategoryFont.Style:= [fsBold];
