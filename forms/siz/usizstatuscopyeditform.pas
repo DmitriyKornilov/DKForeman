@@ -134,7 +134,7 @@ end;
 
 procedure TSIZStatusCopyEditForm.SIZListLoad;
 begin
-
+  //(t2.ReceivingInfoID=t2.NowInfoID)!!!!!!!!!!
 end;
 
 procedure TSIZStatusCopyEditForm.CancelButtonClick(Sender: TObject);

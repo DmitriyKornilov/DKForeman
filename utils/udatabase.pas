@@ -6564,6 +6564,7 @@ var
   CardNums, PostNames, NormNames, NormNotes: TStrVector;
   TabNumBDs, TabNumEDs, NormBDs, NormEDs: TDateVector;
   i: Integer;
+
 begin
   Result:= False;
 
@@ -6585,18 +6586,18 @@ begin
                                   TabNumBDs, TabNumEDs, NormBDs, NormEDs);
   if not Result then Exit;
 
-  for i:= High(ItemIDs) downto 0 do
+  for i:= 0 to High(ItemIDs) do
   begin
-    VIns(ACardIDs, 0, CardIDs[i]);
-    VIns(AItemIDs, 0, ItemIDs[i]);
-    VIns(AItemPostIDs, 0, ItemPostIDs[i]);
+    VAppend(ACardIDs, CardIDs[i]);
+    VAppend(AItemIDs, ItemIDs[i]);
+    VAppend(AItemPostIDs, ItemPostIDs[i]);
 
-    VIns(ACardNums, 0, CardNums[i]);
-    VIns(APostNames, 0, PostNames[i]);
-    VIns(ANormNames, 0, SIZNormFullName(NormNames[i], NormNotes[i]));
+    VAppend(ACardNums, CardNums[i]);
+    VAppend(APostNames, PostNames[i]);
+    VAppend(ANormNames, SIZNormFullName(NormNames[i], NormNotes[i]));
 
-    VIns(ACardBDs, 0, MaxDate(TabNumBDs[i], NormBDs[i]));
-    VIns(ACardEDs, 0, MinDate(TabNumEDs[i], NormEDs[i]));
+    VAppend(ACardBDs, MaxDate(TabNumBDs[i], NormBDs[i]));
+    VAppend(ACardEDs, MinDate(TabNumEDs[i], NormEDs[i]));
   end;
 
   for i:= 1 to High(ItemIDs) do
@@ -6630,7 +6631,11 @@ function TDataBase.SIZPrevCardListLoad(const ATabNumID, ACardID: Integer;
                  out ACardNums, APostNames, ANormNames: TStrVector;
                  out ACardBDs, ACardEDs: TDateVector): Boolean;
 var
-  CardBD: TDate;
+  i: Integer;
+  CardIDs, ItemIDs, ItemPostIDs: TIntVector;
+  CardNums, PostNames, NormNames: TStrVector;
+  CardBDs, CardEDs: TDateVector;
+
 begin
   Result:= False;
 
@@ -6641,43 +6646,21 @@ begin
   ACardBDs:= nil;
   ACardEDs:= nil;
 
-  QSetQuery(FQuery);
-  QSetSQL(
-    'SELECT DISTINCT t1.CardID, t1.CardNum, t3.PostName, t4.FirstDate, t4.LastDate,  ' +
-           't6.NormName, t6.Note, t6.BeginDate, t6.EndDate ' +
-    'FROM SIZCARDPERSONAL t1 ' +
-    'INNER JOIN SIZNORMITEMPOST t2 ON (t1.ItemPostID=t2.ItemPostID) ' +
-    'INNER JOIN STAFFPOST t3 ON (t2.PostID=t3.PostID) ' +
-    'INNER JOIN STAFFPOSTLOG t4 ON (t2.PostID=t4.PostID) ' +
-    'INNER JOIN SIZNORMITEM t5 ON (t2.ItemID=t5.ItemID) '  +
-    'INNER JOIN SIZNORM t6 ON (t5.NormID=t6.NormID) ' +
-    'WHERE (t1.TabNumID=:TabNumID) ' +
-    'ORDER BY t4.FirstDate DESC'
-  );
-  QParamInt('TabNumID', ATabNumID);
-  QParamInt('CardID', ACardID);
-  QParamDT('CardBD', ACardBD);
-  QOpen;
-  if not QIsEmpty then
+  Result:= SIZPersonalCardListLoad(ATabNumID, CardIDs, ItemIDs, ItemPostIDs,
+                                   CardNums, PostNames, NormNames, CardBDs, CardEDs);
+
+  if not Result then Exit;
+
+  for i:= 0 to High(CardIDs) do
   begin
-    QFirst;
-    while not QEOF do
-    begin
-      CardBD:= MaxDate(QFieldDT('FirstDate'), QFieldDT('BeginDate'));
-      if CompareDate(CardBD, ACardBD)<0 then
-      begin
-        VAppend(ACardIDs, QFieldInt('CardID'));
-        VAppend(ACardNums, QFieldStr('CardNum'));
-        VAppend(APostNames, QFieldStr('PostName'));
-        VAppend(ANormNames, SIZNormFullName(QFieldStr('NormName'), QFieldStr('Note')));
-        VAppend(ACardBDs, CardBD);
-        VAppend(ACardEDs, MinDate(QFieldDT('LastDate'), QFieldDT('EndDate')));
-      end;
-      QNext;
-    end;
-    Result:= True;
+    if (CardIDs[i]=0) or (CompareDate(CardBDs[i], ACardBD)>=0) then continue;
+    VAppend(ACardIDs, CardIDs[i]);
+    VAppend(ACardNums, CardNums[i]);
+    VAppend(APostNames, PostNames[i]);
+    VAppend(ANormNames, NormNames[i]);
+    VAppend(ACardBDs, CardBDs[i]);
+    VAppend(ACardEDs, CardEDs[i]);
   end;
-  QClose;
 end;
 
 function TDataBase.SIZPersonalCardAdd(out ACardID: Integer;
