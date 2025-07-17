@@ -103,6 +103,7 @@ object SIZDocStoreWriteoffForm: TSIZDocStoreWriteoffForm
         ImageIndex = 5
         ShowHint = True
         ParentShowHint = False
+        OnClick = DelButtonClick
       end
     end
   end

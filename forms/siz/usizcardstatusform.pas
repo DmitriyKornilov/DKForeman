@@ -48,6 +48,7 @@ type
 
     TabNumID: Integer;
     CardID: Integer;
+    CardBD: TDate;
     ItemPostID: Integer;
     NormSubItems: TNormSubItems;
     StatusSubItems: TStatusSubItems;
@@ -61,6 +62,7 @@ type
   public
     procedure SettingsSave;
     procedure DataUpdate(const ATabNumID, ACardID, AItemPostID: Integer;
+                         const ACardBD: TDate;
                          const ANormSubItems: TNormSubItems;
                          const AStatusSubItems: TStatusSubItems);
     procedure ViewUpdate(const AModeType: TModeType);
@@ -152,6 +154,7 @@ begin
   try
     Form.TabNumID:= TabNumID;
     Form.CardID:= CardID;
+    Form.CardBD:= CardBD;
 
     Form.SIZNeedLabel.Caption:= NormSubItems[i].Info.Names[j];
     Form.SIZNeedSizeLabel.Caption:= SIZFullSize(NormSubItems[i].Info.SizeTypes[j],
@@ -262,11 +265,13 @@ begin
 end;
 
 procedure TSIZCardStatusForm.DataUpdate(const ATabNumID, ACardID, AItemPostID: Integer;
+                                        const ACardBD: TDate;
                                         const ANormSubItems: TNormSubItems;
                                         const AStatusSubItems: TStatusSubItems);
 begin
   TabNumID:= ATabNumID;
   CardID:= ACardID;
+  CardBD:= ACardBD;
   ItemPostID:= AItemPostID;
   NormSubItems:= ANormSubItems;
   StatusSubItems:= AStatusSubItems;

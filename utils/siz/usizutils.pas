@@ -11,25 +11,21 @@ uses
   //Project utils
   UConst, USIZSizes;
 
-function SIZLifeInYearsStr(const AMonths: Extended): String;
-function SIZLifeInMonthsStr(const AMonths: Extended): String;
+function SIZLifeInYears(const AMonths: Extended): String;
+function SIZLifeInMonths(const AMonths: Extended): String;
 function SIZLifeInMonthAndYears(const AMonths: Extended): String;
 
 function SIZPeriod(const ALife: Integer;
-                   //выводить 1 перед месяц/год, когда Life=1/12
+                   //выводить "1" перед месяц/год, когда Life=1/12
                    const ANeedLifeCountIfSingle: Boolean = True): String;
 function SIZNumForPeriod(const ANum, ALife: Integer): String;
 function SIZUnitCommaNumForPeriod(const AUnit: String; const ANum, ALife: Integer): String;
 function SIZUnitCycle(const AUnit: String; const ALife: Integer; const ANeedBreak: Boolean): String;
 
-function SIZLifeInMonthsFromDates(const AReceivingDate, AWritingDate: TDate): Extended;
-function SIZLifeInMonths(const AReceivingCount, ANormCount, ANormLife: Integer): Extended;
-
-function SIZWriteoffDate(const AReceivingDate: TDate;
-                         const AReceivingCount, ANormCount, ANormLife: Integer): TDate;
-function SIZWriteoffDateStr(const AReceivingDate: TDate;
-                            const AReceivingCount, ANormCount, ANormLife: Integer): String;
-function SIZWriteoffDateStr(const AWiteoffDate: TDate): String;
+//function SIZLifeInMonthsFromDates(const AReceivingDate, AWritingDate: TDate): Extended;
+function SIZLifeInMonths(const AReceivingCount, ANum, ALife: Integer): Extended;
+function SIZWriteoffDate(const AReceivingDate, AReturnDate: TDate;
+                         const AReceivingCount, ANum, ALife: Integer): TDate;
 
 function SIZFullSize(const ASizeType, ASizeID: Integer;
                       const AHeightID: Integer = 0;
@@ -48,19 +44,9 @@ function SIZDocFullName(const ADocNames, ADocNums: TStrVector;
                         const ADocDates: TDateVector;
                         const ANeedEmptyNumMark: Boolean = False): TStrVector;
 
-procedure SIZStatusInfoVerifyDates(const AReportDate: TDate;
-                                const ALogIDs: TInt64Vector;
-                                const ASizNames:TStrVector;
-                                const ASizCounts: TIntVector;
-                                const AReceivingDates, AWriteoffDates: TDateVector;
-                                out AOutLogIDs: TInt64Vector;
-                                out AOutSizNames: TStrVector;
-                                out AOutSizCounts: TIntVector;
-                                out AOutReceivingDates, AOutWriteoffDates: TDateVector);
-
 implementation
 
-function SIZLifeInYearsStr(const AMonths: Extended): String;
+function SIZLifeInYears(const AMonths: Extended): String;
 var
   X, Y, M: Integer;
 begin
@@ -96,7 +82,7 @@ begin
   end;
 end;
 
-function SIZLifeInMonthsStr(const AMonths: Extended): String;
+function SIZLifeInMonths(const AMonths: Extended): String;
 var
   X, M: Integer;
 begin
@@ -132,8 +118,8 @@ begin
     Result:= '0 месяцев';
     Exit;
   end;
-  MonthStr:= SIZLifeInMonthsStr(AMonths);
-  YearStr:= SIZLifeInYearsStr(AMonths);
+  MonthStr:= SIZLifeInMonths(AMonths);
+  YearStr:= SIZLifeInYears(AMonths);
   Result:= MonthStr;
   if YearStr<>EmptyStr then
     Result:= MonthStr + ' (' + YearStr + ')';
@@ -221,72 +207,52 @@ begin
   end;
 end;
 
-function SIZLifeInMonthsFromDates(const AReceivingDate, AWritingDate: TDate): Extended;
-var
-  D: TDate;
-  IntMonths: Integer;
-  FracMonths: Extended;
-begin
-  D:= AReceivingDate;
-  IntMonths:= 0;
-  while CompareDate(D, AWritingDate)<=0 do
-  begin
-    IntMonths:= IntMonths + 1;
-    D:= IncMonth(AReceivingDate, IntMonths);
-  end;
-  if SameDate(D, AWritingDate) then
-  begin
-    Result:= IntMonths;
-  end
-  else begin
-    IntMonths:= IntMonths - 1;
-    D:= IncMonth(AReceivingDate, IntMonths);
-    FracMonths:= DaysBetweenDates(D, AWritingDate)/30;
-    Result:= IntMonths + FracMonths;
-  end;
-end;
+//function SIZLifeInMonthsFromDates(const AReceivingDate, AWritingDate: TDate): Extended;
+//var
+//  D: TDate;
+//  IntMonths: Integer;
+//  FracMonths: Extended;
+//begin
+//  D:= AReceivingDate;
+//  IntMonths:= 0;
+//  while CompareDate(D, AWritingDate)<=0 do
+//  begin
+//    IntMonths:= IntMonths + 1;
+//    D:= IncMonth(AReceivingDate, IntMonths);
+//  end;
+//  if SameDate(D, AWritingDate) then
+//  begin
+//    Result:= IntMonths;
+//  end
+//  else begin
+//    IntMonths:= IntMonths - 1;
+//    D:= IncMonth(AReceivingDate, IntMonths);
+//    FracMonths:= DaysBetweenDates(D, AWritingDate)/30;
+//    Result:= IntMonths + FracMonths;
+//  end;
+//end;
 
-function SIZLifeInMonths(const AReceivingCount, ANormCount, ANormLife: Integer): Extended;
+function SIZLifeInMonths(const AReceivingCount, ANum, ALife: Integer): Extended;
 begin
-  if ANormCount>0 then
-    Result:= AReceivingCount*ANormLife/ANormCount
+  if ANum>0 then
+    Result:= AReceivingCount*ALife/ANum
   else
     Result:= 0;
 end;
 
-function SIZWriteoffDate(const AReceivingDate: TDate;
-                         const AReceivingCount, ANormCount, ANormLife: Integer): TDate;
+function SIZWriteoffDate(const AReceivingDate, AReturnDate: TDate;
+                         const AReceivingCount, ANum, ALife: Integer): TDate;
 var
-  DeltaMonth: Extended;
+  Months: Extended;
 begin
-  if ANormLife>0 then
-  begin
-    DeltaMonth:= SIZLifeInMonths(AReceivingCount, ANormCount, ANormLife);
-    Result:= IncMonthExt(AReceivingDate, DeltaMonth);
-  end
-  else
-    Result:= INFDATE;
-end;
-
-function SIZWriteoffDateStr(const AReceivingDate: TDate;
-                            const AReceivingCount, ANormCount, ANormLife: Integer): String;
-var
-  D: TDate;
-begin
-  if ANormLife=0 then
-    Result:= '-'
+  if AReturnDate>0 then
+    Result:= AReturnDate
+  else if ALife<=0 then
+    Result:= INFDATE
   else begin
-    D:= SIZWriteoffDate(AReceivingDate, AReceivingCount, ANormCount, ANormLife);
-    Result:= FormatDateTime('dd.mm.yyyy', D);
+    Months:= SIZLifeInMonths(AReceivingCount, ANum, ALife);
+    Result:= IncMonthExt(AReceivingDate, Months);
   end;
-end;
-
-function SIZWriteoffDateStr(const AWiteoffDate: TDate): String;
-begin
-  if SameDate(AWiteoffDate, INFDATE) then
-    Result:= '-'
-  else
-    Result:= FormatDateTime('dd.mm.yyyy', AWiteoffDate);
 end;
 
 function SIZFullSize(const ASizeType, ASizeID: Integer;
@@ -378,54 +344,6 @@ begin
   VDim(Result, Length(ADocNames));
   for i:= 0 to High(ADocNames) do
     Result[i]:= SIZDocFullName(ADocNames[i], ADocNums[i], ADocDates[i], ANeedEmptyNumMark);
-end;
-
-procedure SIZStatusInfoVerifyDates(const AReportDate: TDate;
-                                const ALogIDs: TInt64Vector;
-                                const ASizNames:TStrVector;
-                                const ASizCounts: TIntVector;
-                                const AReceivingDates, AWriteoffDates: TDateVector;
-                                out AOutLogIDs: TInt64Vector;
-                                out AOutSizNames: TStrVector;
-                                out AOutSizCounts: TIntVector;
-                                out AOutReceivingDates, AOutWriteoffDates: TDateVector);
-var
-  i: Integer;
-  MaxWD: TDate;
-begin
-  AOutLogIDs:= nil;
-  AOutSizNames:= nil;
-  AOutSizCounts:= nil;
-  AOutReceivingDates:= nil;
-  AOutWriteoffDates:= nil;
-  //выбираем непросроченные сиз
-  for i:= 0 to High(ASizNames) do
-  begin
-    if CompareDate(AWriteoffDates[i], AReportDate)>=0 then
-    begin
-      VAppend(AOutLogIDs, ALogIDs[i]);
-      VAppend(AOutSizNames, ASizNames[i]);
-      VAppend(AOutSizCounts, ASizCounts[i]);
-      VAppend(AOutReceivingDates, AReceivingDates[i]);
-      VAppend(AOutWriteoffDates, AWriteoffDates[i]);
-    end;
-  end;
-  //если есть непросроченные, выходим
-  if Length(AOutSizNames)>0 then Exit;
-  //последняя дата списания
-  MaxWD:= VMaxDate(AWriteoffDates);
-  //выбираем самые последние просроченые СИЗ
-  for i:= 0 to High(ASizNames) do
-  begin
-    if SameDate(AWriteoffDates[i], MaxWD) then
-    begin
-      VAppend(AOutLogIDs, ALogIDs[i]);
-      VAppend(AOutSizNames, ASizNames[i]);
-      VAppend(AOutSizCounts, ASizCounts[i]);
-      VAppend(AOutReceivingDates, AReceivingDates[i]);
-      VAppend(AOutWriteoffDates, AWriteoffDates[i]);
-    end;
-  end;
 end;
 
 end.

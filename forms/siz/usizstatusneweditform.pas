@@ -66,7 +66,7 @@ type
 
     ReceivingDate: TDate;
 
-    procedure DocLoad(const ASelectedID: Integer = -1);
+    procedure DocListLoad(const ASelectedID: Integer = -1);
     procedure DocChange;
 
     procedure SIZListCreate;
@@ -121,7 +121,7 @@ begin
 
   FormKeepMinSize(Self, False);
 
-  DocLoad;
+  DocListLoad;
   SIZListLoad;
 end;
 
@@ -131,10 +131,10 @@ var
 begin
   DocID:= 0;
   if not SIZDocEditFormOpen(etAdd, 2{выдача СИЗ}, DocID) then Exit;
-  DocLoad(DocID);
+  DocListLoad(DocID);
 end;
 
-procedure TSIZStatusNewEditForm.DocLoad(const ASelectedID: Integer = -1);
+procedure TSIZStatusNewEditForm.DocListLoad(const ASelectedID: Integer = -1);
 var
   SelectedIndex: Integer;
   V: TIntVector;

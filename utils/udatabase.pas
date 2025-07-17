@@ -753,7 +753,7 @@ type
                              out AFs, ANs, APs, AGenders, ATabNums, APostNames: TStrVector): Boolean;
     {Получение данных для формирования списка личных карточек
      для табельного номера ATabNumID: True - ОК, False - пусто}
-    function SIZPersonalCardDataLoad(const ATabNumID: Integer;
+    function SIZPersonalCardListDataLoad(const ATabNumID: Integer;
                  out ACardIDs, AItemIDs, AItemPostIDs: TIntVector;
                  out ACardNums, APostNames, ANormNames, ANormNotes: TStrVector;
                  out ATabNumBDs, ATabNumEDs, ANormBDs, ANormEDs: TDateVector): Boolean;
@@ -761,6 +761,14 @@ type
      True - ОК, False - пусто}
     function SIZPersonalCardListLoad(const ATabNumID: Integer;
                  out ACardIDs, AItemIDs, AItemPostIDs: TIntVector;
+                 out ACardNums, APostNames, ANormNames: TStrVector;
+                 out ACardBDs, ACardEDs: TDateVector): Boolean;
+
+    {Получение списка предыдущих личных карточек для табельного номера ATabNumID
+     с картой CardID: True - ОК, False - пусто}
+    function SIZPrevCardListLoad(const ATabNumID, ACardID: Integer;
+                 const ACardBD: TDate;
+                 out ACardIDs: TIntVector;
                  out ACardNums, APostNames, ANormNames: TStrVector;
                  out ACardBDs, ACardEDs: TDateVector): Boolean;
 
@@ -6485,7 +6493,7 @@ begin
   APostNames:= VReplace(APostNames, Indexes);
 end;
 
-function TDataBase.SIZPersonalCardDataLoad(const ATabNumID: Integer;
+function TDataBase.SIZPersonalCardListDataLoad(const ATabNumID: Integer;
                  out ACardIDs, AItemIDs, AItemPostIDs: TIntVector;
                  out ACardNums, APostNames, ANormNames, ANormNotes: TStrVector;
                  out ATabNumBDs, ATabNumEDs, ANormBDs, ANormEDs: TDateVector): Boolean;
@@ -6572,7 +6580,7 @@ begin
 
   if ATabNumID<=0 then Exit; //еще не назначен таб номер
 
-  Result:= SIZPersonalCardDataLoad(ATabNumID, CardIDs, ItemIDs, ItemPostIDs,
+  Result:= SIZPersonalCardListDataLoad(ATabNumID, CardIDs, ItemIDs, ItemPostIDs,
                                   CardNums, PostNames, NormNames, NormNotes,
                                   TabNumBDs, TabNumEDs, NormBDs, NormEDs);
   if not Result then Exit;
@@ -6614,6 +6622,62 @@ begin
     end;
     i:= i-1;
   end;
+end;
+
+function TDataBase.SIZPrevCardListLoad(const ATabNumID, ACardID: Integer;
+                 const ACardBD: TDate;
+                 out ACardIDs: TIntVector;
+                 out ACardNums, APostNames, ANormNames: TStrVector;
+                 out ACardBDs, ACardEDs: TDateVector): Boolean;
+var
+  CardBD: TDate;
+begin
+  Result:= False;
+
+  ACardIDs:= nil;
+  ACardNums:= nil;
+  APostNames:= nil;
+  ANormNames:= nil;
+  ACardBDs:= nil;
+  ACardEDs:= nil;
+
+  QSetQuery(FQuery);
+  QSetSQL(
+    'SELECT DISTINCT t1.CardID, t1.CardNum, t3.PostName, t4.FirstDate, t4.LastDate,  ' +
+           't6.NormName, t6.Note, t6.BeginDate, t6.EndDate ' +
+    'FROM SIZCARDPERSONAL t1 ' +
+    'INNER JOIN SIZNORMITEMPOST t2 ON (t1.ItemPostID=t2.ItemPostID) ' +
+    'INNER JOIN STAFFPOST t3 ON (t2.PostID=t3.PostID) ' +
+    'INNER JOIN STAFFPOSTLOG t4 ON (t2.PostID=t4.PostID) ' +
+    'INNER JOIN SIZNORMITEM t5 ON (t2.ItemID=t5.ItemID) '  +
+    'INNER JOIN SIZNORM t6 ON (t5.NormID=t6.NormID) ' +
+    'WHERE (t1.TabNumID=:TabNumID) ' +
+    'ORDER BY t4.FirstDate DESC'
+  );
+  QParamInt('TabNumID', ATabNumID);
+  QParamInt('CardID', ACardID);
+  QParamDT('CardBD', ACardBD);
+  QOpen;
+  if not QIsEmpty then
+  begin
+    QFirst;
+    while not QEOF do
+    begin
+      CardBD:= MaxDate(QFieldDT('FirstDate'), QFieldDT('BeginDate'));
+      if CompareDate(CardBD, ACardBD)<0 then
+      begin
+        VAppend(ACardIDs, QFieldInt('CardID'));
+        VAppend(ACardNums, QFieldStr('CardNum'));
+        VAppend(APostNames, QFieldStr('PostName'));
+        VAppend(ANormNames, SIZNormFullName(QFieldStr('NormName'), QFieldStr('Note')));
+        VAppend(ACardBDs, CardBD);
+        VAppend(ACardEDs, MinDate(QFieldDT('LastDate'), QFieldDT('EndDate')));
+      end;
+      QNext;
+    end;
+    Result:= True;
+  end;
+  QClose;
 end;
 
 function TDataBase.SIZPersonalCardAdd(out ACardID: Integer;
@@ -6840,25 +6904,17 @@ var
 
   procedure AddLogData(const AInd1, AInd2: Integer);
   var
-    Count: Integer;
+    ReceivingCount: Integer;
     WriteoffDate: TDate;
-    Months: Extended;
   begin
     VAppend(OutLogIDs, LogIDs[AInd1]);
     VAppend(OutReceivingDates, ReceivingDates[AInd1]);
     //группировка по наименованию СИЗ и заполнение количества
     GroupByNameID(AInd1, AInd2);
     //определение даты списания
-    if ReturnDates[AInd1]>0 then
-      WriteoffDate:= ReturnDates[AInd1]
-    else if Lifes[AInd1]<=0 then
-      WriteoffDate:= INFDATE
-    else begin
-      Count:= VSum(OutSizCounts[High(OutSizCounts)]);
-      Months:= SIZLifeInMonths(Count, Nums[AInd1], Lifes[AInd1]);
-      WriteoffDate:= IncMonthExt(ReceivingDates[AInd1], Months);
-    end;
-
+    ReceivingCount:= VSum(OutSizCounts[High(OutSizCounts)]);
+    WriteoffDate:= SIZWriteoffDate(ReceivingDates[AInd1], ReturnDates[AInd1],
+                                   ReceivingCount, Nums[AInd1], Lifes[AInd1]);
     VAppend(OutWriteoffDates, WriteoffDate);
 
     if CompareDate(WriteoffDate, AReportDate)>=0 then

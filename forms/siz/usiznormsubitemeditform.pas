@@ -198,7 +198,7 @@ begin
   if LifeSpinEdit.Value<12 then
     YearsLabel.Caption:= EmptyStr
   else
-    YearsLabel.Caption:= '(' + SIZLifeInYearsStr(LifeSpinEdit.Value) + ')';
+    YearsLabel.Caption:= '(' + SIZLifeInYears(LifeSpinEdit.Value) + ')';
 end;
 
 procedure TSIZNormSubItemEditForm.SaveButtonClick(Sender: TObject);
