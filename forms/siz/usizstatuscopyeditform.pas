@@ -95,12 +95,12 @@ var
   CardFullNames, ViewCardNums: TStrVector;
 begin
   CardDropDown.Clear;
-  if not DataBase.SIZPrevCardListLoad(TabNumID, CardID, CardBD, CardIDs, CardNums,
+  if not DataBase.SIZPrevCardListLoad(TabNumID, CardBD, CardIDs, CardNums,
                                  PostNames, NormNames, CardBDs, CardEDs) then Exit;
 
   ViewCardNums:= VCut(CardNums);
   VChangeIf(ViewCardNums, EmptyStr, 'б/н');
-  VDim(CardFullNames, Length(CardIDs));
+  VDim(CardFullNames{%H-}, Length(CardIDs));
   for i:= 0 to High(CardIDs) do
     CardFullNames[i]:= '№ ' + ViewCardNums[i] +
                        ' (' + PeriodToStr(CardBDs[i], CardEDs[i]) + ') - '  +

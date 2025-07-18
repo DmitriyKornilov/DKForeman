@@ -766,7 +766,7 @@ type
 
     {Получение списка предыдущих личных карточек для табельного номера ATabNumID
      с картой CardID: True - ОК, False - пусто}
-    function SIZPrevCardListLoad(const ATabNumID, ACardID: Integer;
+    function SIZPrevCardListLoad(const ATabNumID: Integer;
                  const ACardBD: TDate;
                  out ACardIDs: TIntVector;
                  out ACardNums, APostNames, ANormNames: TStrVector;
@@ -781,9 +781,16 @@ type
     function SIZPersonalCardUpdate(const ACardID: Integer;
                                 const ACardNum: String): Boolean;
 
-    {Получение подстроки статуса СИЗ для таб номера ATabNumID и соответствующей AInfoID}
+    {Получение подстроки статуса СИЗ для ACardID}
+    function SIZStatusInfoDataLoad(const ACardID, AWriteoffType, AInfoID: Integer;
+                                const AReceivingFromStoreOnly: Boolean;
+                                out ALogIDs: TInt64Vector;
+                                out AReceivingDates, AReturnDates: TDateVector;
+                                out ANameIDs, ANums, ALifes: TIntVector;
+                                out ASizNames: TStrVector): Boolean;
     procedure SIZStatusInfoLoad(const AReportDate: TDate;
-                                const ATabNumID, AWriteoffType, AInfoID: Integer;
+                                const ACardID, AWriteoffType, AInfoID: Integer;
+                                const AReceivingFromStoreOnly: Boolean;
                                 out AIsInfoFreshExists: Boolean;
                                 out ALogIDs: TInt64Vector;
                                 out AReceivingDates, AWriteoffDates: TDateVector;
@@ -791,16 +798,18 @@ type
                                 out ASizCounts: TIntMatrix);
     {Получение строки статуса СИЗ для таб номера ATabNumID и соответствующих AInfoIDs}
     procedure SIZStatusSubItemLoad(const AReportDate: TDate;
-                                const ATabNumID, AWriteoffType: Integer;
+                                const ACardID, AWriteoffType: Integer;
                                 const AInfoIDs: TIntVector;
+                                const AReceivingFromStoreOnly: Boolean;
                                 var AStatusSubItem: TStatusSubItem);
     {Получение статуса СИЗ для таб номера ATabNumID и соответствующих норм ANormSubItems}
     //AWriteoffType - расчет даты следующей выдачи:
     // 0 - по нормам на момент выдачи,
     // 1 - по текущим нормам}
-    function SIZStatusLoad(const ATabNumID, AWriteoffType: Integer;
+    function SIZStatusLoad(const ATabNumID, ACardID, AWriteoffType: Integer;
                            const AReportDate: TDate;
                            const ANormSubItems: TNormSubItems;
+                           const AReceivingFromStoreOnly: Boolean;
                            var AStatusSubItems: TStatusSubItems): Boolean;
 
 
@@ -6625,7 +6634,7 @@ begin
   end;
 end;
 
-function TDataBase.SIZPrevCardListLoad(const ATabNumID, ACardID: Integer;
+function TDataBase.SIZPrevCardListLoad(const ATabNumID: Integer;
                  const ACardBD: TDate;
                  out ACardIDs: TIntVector;
                  out ACardNums, APostNames, ANormNames: TStrVector;
@@ -6696,10 +6705,10 @@ begin
   Result:= UpdateByInt32ID('SIZCARDPERSONAL', 'CardNum', 'CardID', ACardID, ACardNum);
 end;
 
-
 procedure TDataBase.SIZStatusSubItemLoad(const AReportDate: TDate;
-                                const ATabNumID, AWriteoffType: Integer;
+                                const ACardID, AWriteoffType: Integer;
                                 const AInfoIDs: TIntVector;
+                                const AReceivingFromStoreOnly: Boolean;
                                 var AStatusSubItem: TStatusSubItem);
 var
   i, N: Integer;
@@ -6763,9 +6772,10 @@ begin
 
   for i:= 0 to N-1 do
   begin
-    SIZStatusInfoLoad(AReportDate, ATabNumID, AWriteoffType, AInfoIDs[i],
-                         IsFreshExists, LogIDs, ReceivingDates, WriteoffDates,
-                         SizNames, SizCounts);
+    SIZStatusInfoLoad(AReportDate, ACardID, AWriteoffType, AInfoIDs[i],
+                      AReceivingFromStoreOnly,
+                      IsFreshExists, LogIDs, ReceivingDates, WriteoffDates,
+                      SizNames, SizCounts);
 
     OutIsFreshExists[i]:= IsFreshExists;
     OutLogIDs[i]:= VCut(LogIDs);
@@ -6783,8 +6793,76 @@ begin
     LastWriteoffLoad;
 end;
 
+function TDataBase.SIZStatusInfoDataLoad(const ACardID, AWriteoffType, AInfoID: Integer;
+                                const AReceivingFromStoreOnly: Boolean;
+                                out ALogIDs: TInt64Vector;
+                                out AReceivingDates, AReturnDates: TDateVector;
+                                out ANameIDs, ANums, ALifes: TIntVector;
+                                out ASizNames: TStrVector): Boolean;
+var
+  InfoField, WhereStr: String;
+begin
+  Result:= False;
+
+  ALogIDs:= nil;
+  AReceivingDates:= nil;
+  AReturnDates:= nil;
+  ANameIDs:= nil;
+  ANums:= nil;
+  ALifes:= nil;
+  ASizNames:= nil;
+
+  if AWriteoffType=0 then
+    InfoField:= 'ReceivingInfoID'
+  else
+    InfoField:= 'NowInfoID';
+
+  WhereStr:= 'WHERE (t2.CardID = :CardID) AND (t2.NowInfoID = :InfoID) ';
+  if AReceivingFromStoreOnly then
+    WhereStr:= WhereStr + 'AND (t2.NowInfoID = t2.ReceivingInfoID) ';
+
+  QSetQuery(FQuery);
+  QSetSQL(
+    'SELECT t1.LogID, t2.ReceivingDate,  ' +
+           't3.Num, t3.Life, t6.NameID, t6.SizName, t8.DocDate as ReturnDate ' +
+    'FROM SIZCARDPERSONALLOGINFO t1 ' +
+    'INNER JOIN SIZCARDPERSONALLOG t2 ON (t1.LogID=t2.LogID) ' +
+    //'INNER JOIN SIZCARDPERSONAL tt ON (t2.CardID=tt.CardID) ' +
+    'INNER JOIN SIZNORMSUBITEMINFO t3 ON (t2.' + InfoField + '=t3.InfoID) ' +
+    'INNER JOIN SIZSTORELOG t4 ON (t1.StoreID=t4.StoreID) ' +
+    'INNER JOIN SIZSTOREENTRY t5 ON (t4.EntryID=t5.EntryID) ' +
+    'INNER JOIN SIZNAME t6 ON (t5.NameID=t6.NameID) ' +
+    'LEFT OUTER JOIN SIZSTAFFWRITEOFF t7 ON (t1.StoreID=t7.StoreID) ' +
+    'LEFT OUTER JOIN SIZDOC t8 ON (t7.DocID=t8.DocID) ' +
+    WhereStr +
+    //'WHERE (tt.TabNumID = :TabNumID) AND (t2.NowInfoID = :InfoID) ' +
+    'ORDER BY t2.ReceivingDate DESC, t1.LogID, t5.NameID '
+   );
+  QParamInt('CardID', ACardID);
+  QParamInt('InfoID', AInfoID);
+  QOpen;
+  if not QIsEmpty then
+  begin
+    QFirst;
+    while not QEOF do
+    begin
+      VAppend(ALogIDs, QFieldInt64('LogID'));
+      VAppend(ASizNames, QFieldStr('SizName'));
+      VAppend(AReceivingDates, QFieldDT('ReceivingDate'));
+      VAppend(AReturnDates, QFieldDT('ReturnDate'));
+      VAppend(ANameIDs, QFieldInt('NameID'));
+      VAppend(ANums, QFieldInt('Num'));
+      VAppend(ALifes, QFieldInt('Life'));
+      QNext;
+    end;
+    Result:= True;
+  end;
+  QClose;
+end;
+
 procedure TDataBase.SIZStatusInfoLoad(const AReportDate: TDate;
-                                const ATabNumID, AWriteoffType, AInfoID: Integer;
+                                const ACardID, AWriteoffType, AInfoID: Integer;
+                                const AReceivingFromStoreOnly: Boolean;
                                 out AIsInfoFreshExists: Boolean;
                                 out ALogIDs: TInt64Vector;
                                 out AReceivingDates, AWriteoffDates: TDateVector;
@@ -6800,60 +6878,6 @@ var
   OutReceivingDates, OutWriteoffDates: TDateVector;
   OutSizNames: TStrMatrix;
   OutSizCounts: TIntMatrix;
-
-  procedure DataLoad;
-  var
-    S: String;
-  begin
-    LogIDs:= nil;
-    ReceivingDates:= nil;
-    ReturnDates:= nil;
-    NameIDs:= nil;
-    Nums:= nil;
-    Lifes:= nil;
-    SizNames:= nil;
-
-    if AWriteoffType=0 then
-      S:= 'ReceivingInfoID'
-    else
-      S:= 'NowInfoID';
-
-    QSetQuery(FQuery);
-    QSetSQL(
-      'SELECT t1.LogID, t2.ReceivingDate,  ' +
-             't3.Num, t3.Life, t6.NameID, t6.SizName, t8.DocDate as ReturnDate ' +
-      'FROM SIZCARDPERSONALLOGINFO t1 ' +
-      'INNER JOIN SIZCARDPERSONALLOG t2 ON (t1.LogID=t2.LogID) ' +
-      'INNER JOIN SIZCARDPERSONAL tt ON (t2.CardID=tt.CardID) ' +
-      'INNER JOIN SIZNORMSUBITEMINFO t3 ON (t2.' + S + '=t3.InfoID) ' +
-      'INNER JOIN SIZSTORELOG t4 ON (t1.StoreID=t4.StoreID) ' +
-      'INNER JOIN SIZSTOREENTRY t5 ON (t4.EntryID=t5.EntryID) ' +
-      'INNER JOIN SIZNAME t6 ON (t5.NameID=t6.NameID) ' +
-      'LEFT OUTER JOIN SIZSTAFFWRITEOFF t7 ON (t1.StoreID=t7.StoreID) ' +
-      'LEFT OUTER JOIN SIZDOC t8 ON (t7.DocID=t8.DocID) ' +
-      'WHERE (tt.TabNumID = :TabNumID) AND (t2.NowInfoID = :InfoID) ' +
-      'ORDER BY t2.ReceivingDate DESC, t1.LogID, t5.NameID '
-     );
-    QParamInt('TabNumID', ATabNumID);
-    QParamInt('InfoID', AInfoID);
-    QOpen;
-    if not QIsEmpty then
-    begin
-      QFirst;
-      while not QEOF do
-      begin
-        VAppend(LogIDs, QFieldInt64('LogID'));
-        VAppend(SizNames, QFieldStr('SizName'));
-        VAppend(ReceivingDates, QFieldDT('ReceivingDate'));
-        VAppend(ReturnDates, QFieldDT('ReturnDate'));
-        VAppend(NameIDs, QFieldInt('NameID'));
-        VAppend(Nums, QFieldInt('Num'));
-        VAppend(Lifes, QFieldInt('Life'));
-        QNext;
-      end;
-    end;
-    QClose;
-  end;
 
   procedure GroupByNameID(const ALogN1, ALogN2: Integer);
   var
@@ -6969,9 +6993,9 @@ begin
   ASizNames:= nil;
   ASizCounts:= nil;
 
-  DataLoad;
-
-  if VIsNil(LogIDs) then Exit;
+  if not SIZStatusInfoDataLoad(ACardID, AWriteoffType, AInfoID, AReceivingFromStoreOnly,
+                               LogIDs, ReceivingDates, ReturnDates,
+                               NameIDs, Nums, Lifes, SizNames) then Exit;
 
   GroupByLogID;
 
@@ -6981,9 +7005,10 @@ begin
     LastWriteoffLoad;
 end;
 
-function TDataBase.SIZStatusLoad(const ATabNumID, AWriteoffType: Integer;
+function TDataBase.SIZStatusLoad(const ATabNumID, ACardID, AWriteoffType: Integer;
                            const AReportDate: TDate;
                            const ANormSubItems: TNormSubItems;
+                           const AReceivingFromStoreOnly: Boolean;
                            var AStatusSubItems: TStatusSubItems): Boolean;
 var
   i, StaffID: Integer;
@@ -7010,8 +7035,9 @@ begin
     //заполняем размеры для этой строки StatusSubItem
     StatusSubItemNew(StatusSubItem{%H-}, SizeIDs, HeightIDs);
     //заполняем данные статуса
-    SIZStatusSubItemLoad(AReportDate, ATabNumID, AWriteoffType,
-                      ANormSubItems[i].Info.InfoIDs, StatusSubItem);
+    SIZStatusSubItemLoad(AReportDate, ACardID, AWriteoffType,
+                      ANormSubItems[i].Info.InfoIDs, AReceivingFromStoreOnly,
+                      StatusSubItem);
     //добавляем StatusSubItem в вектор
     StatusSubItemsAdd(AStatusSubItems, StatusSubItem);
   end;
