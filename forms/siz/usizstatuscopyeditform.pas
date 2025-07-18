@@ -46,13 +46,20 @@ type
     CardNums, PostNames, NormNames: TStrVector;
     CardBDs, CardEDs: TDateVector;
 
+    ReceivingDocIDs, ReceivingInfoIDs: TIntVector;
+    NeedSizNames: TStrVector;
+    ReceivingDates, WriteoffDates: TDateMatrix;
+    StoreIDs: TInt64Matrix;
+    ReceivingDocNames, SizNames: TStrMatrix;
+    SizCounts: TIntMatrix;
+
     procedure CardListLoad;
     procedure CardChange;
 
     procedure SIZListCreate;
     procedure SIZListLoad;
   public
-    TabNumID, CardID: Integer;
+    TabNumID, CardID, SIZType: Integer;
     CardBD: TDate;
   end;
 
@@ -119,6 +126,7 @@ procedure TSIZStatusCopyEditForm.SIZListCreate;
 begin
   SIZList:= TVSTCategoryCheckTable.Create(VT);
   //SIZList.OnSelect:= @SIZListSelect;
+  SIZList.Span:= True;
   SIZList.CheckKind:= chkCategory;
   SIZList.TreeLinesVisible:= False;
   SIZList.SetSingleFont(GridFont);
@@ -134,7 +142,28 @@ end;
 
 procedure TSIZStatusCopyEditForm.SIZListLoad;
 begin
-  //(t2.ReceivingInfoID=t2.NowInfoID)!!!!!!!!!!
+  if CardDropDown.ItemIndex<0 then Exit;
+
+  DataBase.SIZPrevCardSIZLoad(CardIDs[CardDropDown.ItemIndex], SIZType, CardBD,
+                              ReceivingDocIDs, ReceivingInfoIDs, NeedSizNames,
+                              ReceivingDates, WriteoffDates,
+                              StoreIDs, ReceivingDocNames, SizNames, SizCounts);
+
+  SIZList.Visible:= False;
+  try
+    SIZList.ValuesClear;
+    SIZList.SetCategories(NeedSizNames);
+    SIZList.SetColumn('Наименование', SizNames, taLeftJustify);
+    SIZList.SetColumn('Количество', MIntToStr(SizCounts));
+    SIZList.SetColumn('Дата выдачи', MFormatDateTime('dd.mm.yyyy', ReceivingDates));
+    SIZList.SetColumn('Дата списания', MFormatDateTime('dd.mm.yyyy', WriteoffDates));
+    SIZList.SetColumn('Документ выдачи', ReceivingDocNames, taLeftJustify);
+    SIZList.Draw;
+    SIZList.ExpandAll(True);
+    SIZList.ShowFirst;
+  finally
+    SIZList.Visible:= True;
+  end;
 end;
 
 procedure TSIZStatusCopyEditForm.CancelButtonClick(Sender: TObject);

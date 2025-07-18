@@ -415,7 +415,7 @@ begin
     DataBase.SIZStatusLoad(TabNumIDs[StaffList.SelectedIndex],
                            CardIDs[CardList.SelectedIndex],
                            ParamList.Selected['WriteoffType'],
-                           Date, SubItems, False, StatusItems);
+                           Date, SubItems, StatusItems);
 end;
 
 procedure TSIZCardForm.CardListSelect;

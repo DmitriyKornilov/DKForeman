@@ -155,6 +155,7 @@ begin
     Form.TabNumID:= TabNumID;
     Form.CardID:= CardID;
     Form.CardBD:= CardBD;
+    Form.SIZType:= NormSubItems[i].Info.SizeTypes[j];
 
     Form.SIZNeedLabel.Caption:= NormSubItems[i].Info.Names[j];
     Form.SIZNeedSizeLabel.Caption:= SIZFullSize(NormSubItems[i].Info.SizeTypes[j],
