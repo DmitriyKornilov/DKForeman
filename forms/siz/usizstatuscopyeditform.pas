@@ -8,9 +8,9 @@ uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, StdCtrls,
   BCButton, Buttons, VirtualTrees,
   //Project utils
-  UVars, UConst, UTypes, UUtils, USIZUtils,
+  UVars, UConst, UUtils,
   //DK packages utils
-  DK_CtrlUtils, DK_VSTTables, DK_Vector, DK_Matrix, DK_VSTDropDown, DK_DateUtils,
+  DK_CtrlUtils, DK_VSTTables, DK_Vector, DK_Matrix, DK_VSTDropDown,
   DK_Dialogs;
 
 type
@@ -23,6 +23,9 @@ type
     CancelButton: TSpeedButton;
     CardBCButton: TBCButton;
     CardLabel: TLabel;
+    CheckAllButton: TSpeedButton;
+    CollapseAllButton: TSpeedButton;
+    ExpandAllButton: TSpeedButton;
     SaveButton: TSpeedButton;
     SIZListLabel: TLabel;
     SIZNeedCountLabel: TLabel;
@@ -32,12 +35,17 @@ type
     SIZNeedSizeLabel: TLabel;
     SIZNeedSizeNameLabel: TLabel;
     SIZPanel: TPanel;
+    UncheckAllButton: TSpeedButton;
     VT: TVirtualStringTree;
     procedure CancelButtonClick(Sender: TObject);
+    procedure CheckAllButtonClick(Sender: TObject);
+    procedure CollapseAllButtonClick(Sender: TObject);
+    procedure ExpandAllButtonClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure SaveButtonClick(Sender: TObject);
+    procedure UncheckAllButtonClick(Sender: TObject);
   private
     SIZList: TVSTCategoryCheckTable;
     CardDropDown: TVSTDropDown;
@@ -59,7 +67,7 @@ type
     procedure SIZListCreate;
     procedure SIZListLoad;
   public
-    TabNumID, CardID, SIZType: Integer;
+    TabNumID, CardID, SIZType, InfoID, ItemPostID: Integer;
     CardBD: TDate;
   end;
 
@@ -89,8 +97,15 @@ end;
 
 procedure TSIZStatusCopyEditForm.FormShow(Sender: TObject);
 begin
-  Images.ToButtons([SaveButton, CancelButton]);
+  Images.ToButtons([
+    SaveButton, CancelButton,
+    ExpandAllButton, CollapseAllButton, CheckAllButton, UncheckAllButton
+  ]);
   SetEventButtons([SaveButton, CancelButton]);
+  SetSimpleButtons([
+    ExpandAllButton, CollapseAllButton, CheckAllButton, UncheckAllButton
+  ]);
+
   FormKeepMinSize(Self, False);
 
   CardListLoad;
@@ -172,8 +187,47 @@ begin
 end;
 
 procedure TSIZStatusCopyEditForm.SaveButtonClick(Sender: TObject);
+var
+  SelectedStoreIDs: TInt64Matrix;
+  SelectedReceivingDates: TDateVector;
+  SelectedReceivingInfoIDs, SelectedReceivingDocIDs: TIntVector;
 begin
+  if not SIZList.IsSelected then
+  begin
+    Inform('Не указано ни одного наименования СИЗ!');
+    Exit;
+  end;
 
+  SelectedReceivingDates:= MFirsts(ReceivingDates, SIZList.CategorySelected);
+  SelectedReceivingInfoIDs:= VCut(ReceivingInfoIDs, SIZList.CategorySelected);
+  SelectedReceivingDocIDs:= VCut(ReceivingDocIDs, SIZList.CategorySelected);
+  SelectedStoreIDs:= MCut(StoreIDs, SIZList.CategorySelected);
+
+  if not DataBase.SIZReceivingNextWrite(CardID, TabNumID, ItemPostID, InfoID,
+                               SelectedReceivingInfoIDs, SelectedReceivingDocIDs,
+                               SelectedReceivingDates, SelectedStoreIDs) then Exit;
+
+  ModalResult:= mrOK;
+end;
+
+procedure TSIZStatusCopyEditForm.CheckAllButtonClick(Sender: TObject);
+begin
+  SIZList.CheckAll(True);
+end;
+
+procedure TSIZStatusCopyEditForm.UncheckAllButtonClick(Sender: TObject);
+begin
+  SIZList.CheckAll(False);
+end;
+
+procedure TSIZStatusCopyEditForm.CollapseAllButtonClick(Sender: TObject);
+begin
+  SIZList.ExpandAll(False);
+end;
+
+procedure TSIZStatusCopyEditForm.ExpandAllButtonClick(Sender: TObject);
+begin
+  SIZList.ExpandAll(True);
 end;
 
 end.

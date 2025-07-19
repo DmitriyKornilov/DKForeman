@@ -795,6 +795,14 @@ type
     function SIZPersonalCardUpdate(const ACardID: Integer;
                                 const ACardNum: String): Boolean;
 
+    {Запись СИЗ в таблицы логов личной карточки}
+    procedure SIZPersonalCardLogWrite(out ALogID: Int64;
+                                 const ACardID, ANowInfoID,
+                                       AReceivingInfoID, ADocID: Integer;
+                                 const AReceivingDate: TDate);
+    procedure SIZPersonalCardLogInfoWrite(const ALogID: Int64;
+                                 const AStoreIDs: TInt64Vector);
+
     {Получение подстроки статуса СИЗ для ACardID}
     function SIZStatusInfoDataLoad(const ACardID, AWriteoffType, AInfoID: Integer;
                                 out ALogIDs: TInt64Vector;
@@ -827,10 +835,14 @@ type
     function SIZReceivingWrite(const ACardID, ATabNumID, AItemPostID,
                                      AReceivingInfoID, ANowInfoID, ADocID: Integer;
                             const AStoreIDs: TInt64Vector;
-                            const AReceivingDate: TDate;
-                            const ACommit: Boolean = True): Boolean;
+                            const AReceivingDate: TDate): Boolean;
     {Удаление информации о выдаче СИЗ (отмена выдачи): True - ОК, False - ошибка}
     function SIZReceivingCancel(const ALogID: Int64): Boolean;
+    {Учет информации о выдаче СИЗ в следующей личной карточке: True - ОК, False - ошибка}
+    function SIZReceivingNextWrite(const ACardID, ATabNumID, AItemPostID, ANowInfoID: Integer;
+                            const AReceivingInfoIDs, ADocIDs: TIntVector;
+                            const AReceivingDates: TDateVector;
+                            const AStoreIDs: TInt64Matrix): Boolean;
   end;
 
 
@@ -6795,7 +6807,7 @@ var
     VReceivingDates:= nil;
 
     NameID:= NameIDs[ALogN1];
-    N1:= 0;
+    N1:= ALogN1;
     for i:= ALogN1+1 to ALogN2 do
     begin
       if NameIDs[i]<>NameID then
@@ -7143,7 +7155,7 @@ var
     VCounts:= nil;
 
     NameID:= NameIDs[ALogN1];
-    N1:= 0;
+    N1:= ALogN1;
     for i:= ALogN1+1 to ALogN2 do
     begin
       if NameIDs[i]<>NameID then
@@ -7297,47 +7309,50 @@ begin
   Result:= True;
 end;
 
+procedure TDataBase.SIZPersonalCardLogWrite(out ALogID: Int64;
+                 const ACardID, ANowInfoID, AReceivingInfoID, ADocID: Integer;
+                 const AReceivingDate: TDate);
+begin
+  QSetQuery(FQuery);
+  QSetSQL(
+    sqlINSERT('SIZCARDPERSONALLOG', ['CardID', 'ReceivingDate', 'ReceivingDocID',
+                                     'ReceivingInfoID', 'NowInfoID'])
+  );
+  QParamInt('CardID', ACardID);
+  QParamDT('ReceivingDate', AReceivingDate);
+  QParamInt('ReceivingDocID', ADocID);
+  QParamInt('ReceivingInfoID', AReceivingInfoID);
+  QParamInt('NowInfoID', ANowInfoID);
+  QExec;
+
+  //получение ID сделанной записи
+  ALogID:= LastWritedInt64ID('SIZCARDPERSONALLOG');
+end;
+
+procedure TDataBase.SIZPersonalCardLogInfoWrite(const ALogID: Int64;
+                                      const AStoreIDs: TInt64Vector);
+var
+  i: Integer;
+begin
+  QSetQuery(FQuery);
+  QSetSQL(
+    sqlINSERT('SIZCARDPERSONALLOGINFO', ['LogID', 'StoreID'])
+  );
+  QParamInt64('LogID', ALogID);
+  for i:= 0 to High(AStoreIDs) do
+  begin
+    QParamInt64('StoreID', AStoreIDs[i]);
+    QExec;
+  end;
+end;
+
 function TDataBase.SIZReceivingWrite(const ACardID, ATabNumID, AItemPostID,
                                      AReceivingInfoID, ANowInfoID, ADocID: Integer;
                             const AStoreIDs: TInt64Vector;
-                            const AReceivingDate: TDate;
-                            const ACommit: Boolean = True): Boolean;
+                            const AReceivingDate: TDate): Boolean;
 var
   CardID: Integer;
   LogID: Int64;
-
-  procedure LogWrite;
-  begin
-    QSetSQL(
-      sqlINSERT('SIZCARDPERSONALLOG', ['CardID', 'ReceivingDate', 'ReceivingDocID',
-                                       'ReceivingInfoID', 'NowInfoID'])
-    );
-    QParamInt('CardID', CardID);
-    QParamDT('ReceivingDate', AReceivingDate);
-    QParamInt('ReceivingDocID', ADocID);
-    QParamInt('ReceivingInfoID', AReceivingInfoID);
-    QParamInt('NowInfoID', ANowInfoID);
-    QExec;
-
-    //получение ID сделанной записи
-    LogID:= LastWritedInt64ID('SIZCARDPERSONALLOG');
-  end;
-
-  procedure LogInfoWrite;
-  var
-    i: Integer;
-  begin
-    QSetSQL(
-      sqlINSERT('SIZCARDPERSONALLOGINFO', ['LogID', 'StoreID'])
-    );
-    QParamInt64('LogID', LogID);
-    for i:= 0 to High(AStoreIDs) do
-    begin
-      QParamInt64('StoreID', AStoreIDs[i]);
-      QExec;
-    end;
-  end;
-
 begin
   Result:= False;
 
@@ -7350,16 +7365,17 @@ begin
                                 AItemPostID, False{no commit}) then Exit;
 
     //записываем выдачу в таблицы логов личной карточки
-    LogWrite;
-    LogInfoWrite;
+    SIZPersonalCardLogWrite(LogID, CardID, ANowInfoID, AReceivingInfoID,
+                            ADocID, AReceivingDate);
+    SIZPersonalCardLogInfoWrite(LogID, AStoreIDs);
 
     //меняем статус СИЗ на складе на "занято"
     UpdateByInt64ID('SIZSTORELOG', 'IsBusy', 'StoreID', AStoreIDs, 1{занято}, False{no commit});
 
-    if ACommit then QCommit;
+    QCommit;
     Result:= True;
   except
-    if ACommit then QRollback;
+    QRollback;
   end;
 end;
 
@@ -7410,6 +7426,62 @@ begin
     QRollback;
   end;
 end;
+
+function TDataBase.SIZReceivingNextWrite(const ACardID, ATabNumID, AItemPostID, ANowInfoID: Integer;
+                            const AReceivingInfoIDs, ADocIDs: TIntVector;
+                            const AReceivingDates: TDateVector;
+                            const AStoreIDs: TInt64Matrix): Boolean;
+var
+  i, CardID: Integer;
+  LogID: Int64;
+begin
+  Result:= False;
+
+  QSetQuery(FQuery);
+  try
+    //если карточки еще нет, то записываем
+    CardID:= ACardID;
+    if CardID=0 then
+      if not SIZPersonalCardAdd(CardID, EmptyStr, ATabNumID,
+                                AItemPostID, False{no commit}) then Exit;
+
+    //записываем выдачу в таблицы логов личной карточки
+    for i:= 0 to High(ADocIDs) do
+    begin
+      SIZPersonalCardLogWrite(LogID, CardID, ANowInfoID, AReceivingInfoIDs[i],
+                              ADocIDs[i], AReceivingDates[i]);
+      SIZPersonalCardLogInfoWrite(LogID, AStoreIDs[i]);
+    end;
+
+    QCommit;
+    Result:= True;
+  except
+    QRollback;
+  end;
+end;
+//var
+//  i, CardID: Integer;
+//begin
+//  Result:= False;
+//
+//  QSetQuery(FQuery);
+//  try
+//    //если карточки еще нет, то записываем
+//    CardID:= ACardID;
+//    if CardID=0 then
+//      if not SIZPersonalCardAdd(CardID, EmptyStr, ATabNumID,
+//                                AItemPostID, False{no commit}) then Exit;
+//    //записываем СИЗ
+//    for i:= 0 to High(ADocIDs) do
+//      SIZReceivingWrite(CardID, ATabNumID, AItemPostID, AReceivingInfoIDs[i],
+//                        ANowInfoID, ADocIDs[i], AStoreIDs[i], AReceivingDates[i],
+//                        False{no commit});
+//    QCommit;
+//    Result:= True;
+//  except
+//    QRollback;
+//  end;
+//end;
 
 end.
 

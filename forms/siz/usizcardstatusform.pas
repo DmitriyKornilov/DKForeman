@@ -153,9 +153,11 @@ begin
   Form:= TSIZStatusCopyEditForm.Create(nil);
   try
     Form.TabNumID:= TabNumID;
+    Form.ItemPostID:= ItemPostID;
     Form.CardID:= CardID;
     Form.CardBD:= CardBD;
     Form.SIZType:= NormSubItems[i].Info.SizeTypes[j];
+    Form.InfoID:=  NormSubItems[i].Info.InfoIDs[j];
 
     Form.SIZNeedLabel.Caption:= NormSubItems[i].Info.Names[j];
     Form.SIZNeedSizeLabel.Caption:= SIZFullSize(NormSubItems[i].Info.SizeTypes[j],
