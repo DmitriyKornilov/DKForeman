@@ -1,11 +1,13 @@
 object SIZCardBackForm: TSIZCardBackForm
   Left = 377
-  Height = 320
+  Height = 400
   Top = 250
-  Width = 560
+  Width = 700
   Caption = 'SIZCardBackForm'
-  ClientHeight = 320
-  ClientWidth = 560
+  ClientHeight = 400
+  ClientWidth = 700
+  DesignTimePPI = 120
+  LCLVersion = '4.0.0.4'
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
@@ -18,8 +20,8 @@ object SIZCardBackForm: TSIZCardBackForm
     BorderSpacing.Top = 2
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 280
-    ClientWidth = 556
+    ClientHeight = 284
+    ClientWidth = 560
     Color = clWhite
     ParentBackground = False
     ParentColor = False
@@ -61,24 +63,24 @@ object SIZCardBackForm: TSIZCardBackForm
     end
     object SheetBottomPanel: TPanel
       Left = 0
-      Height = 18
-      Top = 262
+      Height = 22
+      Top = 258
       Width = 556
       Align = alBottom
       AutoSize = True
       BevelOuter = bvNone
-      ClientHeight = 18
+      ClientHeight = 22
       ClientWidth = 556
       Color = clWhite
-      Constraints.MinHeight = 18
+      Constraints.MinHeight = 22
       ParentBackground = False
       ParentColor = False
       TabOrder = 1
       object ZoomPanel: TPanel
-        Left = 386
+        Left = 344
         Height = 18
         Top = 0
-        Width = 170
+        Width = 212
         Align = alRight
         BevelOuter = bvNone
         Caption = 'ZoomPanel'
@@ -98,15 +100,15 @@ object SIZCardBackForm: TSIZCardBackForm
   end
   object ToolPanel: TPanel
     Left = 0
-    Height = 32
+    Height = 40
     Top = 2
     Width = 560
     Align = alTop
     BorderSpacing.Top = 2
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 28
-    ClientWidth = 556
+    ClientHeight = 40
+    ClientWidth = 560
     ParentFont = False
     TabOrder = 1
     Visible = False
@@ -116,7 +118,7 @@ object SIZCardBackForm: TSIZCardBackForm
       Height = 28
       Hint = 'Отменить выдачу'
       Top = 0
-      Width = 32
+      Width = 40
       Align = alLeft
       Enabled = False
       Images = Images.PX24
@@ -130,7 +132,7 @@ object SIZCardBackForm: TSIZCardBackForm
       Height = 28
       Hint = 'Оформить возврат (списание)'
       Top = 0
-      Width = 32
+      Width = 40
       Align = alLeft
       Enabled = False
       Images = Images.PX24
@@ -144,7 +146,7 @@ object SIZCardBackForm: TSIZCardBackForm
       Height = 28
       Hint = 'Отменить возврат (списание)'
       Top = 0
-      Width = 32
+      Width = 40
       Align = alLeft
       Images = Images.PX24
       ImageIndex = 41

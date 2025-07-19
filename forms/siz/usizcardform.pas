@@ -535,8 +535,15 @@ begin
 end;
 
 procedure TSIZCardForm.CardBackUpdate;
+var
+  CardID: Integer;
 begin
-  (CategoryForm as TSIZCardBackForm).DataUpdate(CardList.IsSelected);
+  if CardList.IsSelected then
+    CardID:= CardIDs[CardList.SelectedIndex]
+  else
+    CardID:= 0;
+
+  (CategoryForm as TSIZCardBackForm).DataUpdate(CardList.IsSelected, CardID);
 end;
 
 procedure TSIZCardForm.CardStatusUpdate;

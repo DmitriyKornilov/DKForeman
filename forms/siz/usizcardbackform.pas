@@ -10,7 +10,7 @@ uses
   //Project utils
   UTypes, UConst, UVars, USIZCardSheet,
   //DK packages utils
-  DK_Zoom, DK_CtrlUtils, DK_Vector;
+  DK_Zoom, DK_CtrlUtils, DK_Vector, DK_Matrix;
 
 type
 
@@ -35,13 +35,23 @@ type
 
     NeedDraw: Boolean;
 
+    CardID: Integer;
+
+    LogIDs: TInt64Vector;
+    ReceivingDates, ReturningDates: TDateVector;
+    NormSizNames: TStrVector;
+    ReceivingDocNames, ReturningDocNames: TStrVector;
+    ReceivingSizNames, WriteoffDocNames: TStrMatrix;
+    SizCounts, SizeTypes: TIntMatrix;
+
+    procedure DataLoad;
     procedure DataDraw(const AZoomPercent: Integer);
     procedure DataReDraw;
 
     procedure SettingsLoad;
   public
     procedure SettingsSave;
-    procedure DataUpdate(const ANeedDraw: Boolean);
+    procedure DataUpdate(const ANeedDraw: Boolean; const ACardID: Integer);
     procedure ViewUpdate(const AModeType: TModeType);
   end;
 
@@ -80,6 +90,14 @@ begin
   ]);
 end;
 
+procedure TSIZCardBackForm.DataLoad;
+begin
+  DataBase.SIZPersonalCardSIZLoad(CardID, LogIDs, ReceivingDates, ReturningDates,
+                                NormSizNames, ReceivingDocNames,
+                                ReturningDocNames, ReceivingSizNames,
+                                WriteoffDocNames, SizCounts, SizeTypes);
+end;
+
 procedure TSIZCardBackForm.DataDraw(const AZoomPercent: Integer);
 begin
   ViewGrid.Visible:= False;
@@ -87,7 +105,9 @@ begin
   try
     ZoomPercent:= AZoomPercent;
     Sheet.Zoom(ZoomPercent);
-    Sheet.Draw(NeedDraw, nil);
+    Sheet.Draw(NeedDraw, ReceivingDates, ReturningDates, NormSizNames,
+               ReceivingDocNames, ReturningDocNames,
+               ReceivingSizNames, WriteoffDocNames, SizCounts, SizeTypes);
   finally
     ViewGrid.Visible:= True;
     Screen.Cursor:= crDefault;
@@ -115,10 +135,11 @@ begin
   DataBase.SettingsUpdate(SETTING_NAMES_SIZCARDBACKFORM, SettingValues);
 end;
 
-procedure TSIZCardBackForm.DataUpdate(const ANeedDraw: Boolean);
+procedure TSIZCardBackForm.DataUpdate(const ANeedDraw: Boolean; const ACardID: Integer);
 begin
   NeedDraw:= ANeedDraw;
-
+  CardID:= ACardID;
+  DataLoad;
   DataReDraw;
 end;
 

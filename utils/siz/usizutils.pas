@@ -323,6 +323,8 @@ function SIZDocFullName(const ADocName, ADocNum: String;
 var
   S: String;
 begin
+  Result:= EmptyStr;
+  if (ADocDate=0) or SameDate(ADocDate, NULDATE) then Exit;
   Result:= ADocName;
   S:= ADocNum;
   if SEmpty(S) and ANeedEmptyNumMark then

@@ -76,13 +76,22 @@ type
       COLUMN9_WIDTH = 100;
       COLUMN10_WIDTH = 100;
     var
-      FItemSIZNames: TStrVector;
+      FReceivingDates, FReturningDates: TDateVector;
+      FNormSizNames: TStrVector;
+      FReceivingDocNames, FReturningDocNames: TStrVector;
+      FReceivingSizNames, FWriteoffDocNames: TStrMatrix;
+      FSizCounts, FSizeTypes: TIntMatrix;
 
     procedure CaptionDraw(var ARow: Integer);
+    procedure LogDraw(var ARow: Integer; const AIndex: Integer);
     procedure GridDraw(var ARow: Integer);
     procedure NoteDraw(var ARow: Integer);
   public
-    procedure Draw(const ANeedDraw: Boolean; const AItemSIZNames: TStrVector);
+    procedure Draw(const ANeedDraw: Boolean;
+                   const AReceivingDates, AReturningDates: TDateVector;
+                   const ANormSizNames, AReceivingDocNames, AReturningDocNames: TStrVector;
+                   const AReceivingSizNames, AWriteoffDocNames: TStrMatrix;
+                   const ASizCounts, ASizeTypes: TIntMatrix);
   end;
 
   { TSIZCardStatusSheet }
@@ -603,19 +612,75 @@ begin
   ARow:= R;
 end;
 
+procedure TSIZCardBackSheet.LogDraw(var ARow: Integer; const AIndex: Integer);
+var
+  i, R1, R2: Integer;
+  S: String;
+begin
+  Writer.SetBackgroundDefault;
+  Writer.SetFont(Font.Name, Font.Size, [], clBlack);
+
+  R1:= ARow;
+  R2:= R1 + High(FReceivingSizNames[AIndex]);
+
+  Writer.SetAlignment(haLeft, vaCenter);
+  Writer.WriteText(R1, 1, R2, 1, FNormSizNames[AIndex], cbtOuter, True, True);
+
+  for i:= 0 to High(FReceivingSizNames[AIndex]) do
+  begin
+    Writer.SetAlignment(haLeft, vaCenter);
+    Writer.WriteText(R1+i, 2, FReceivingSizNames[AIndex, i], cbtOuter, True, True);
+
+    Writer.SetAlignment(haCenter, vaCenter);
+    Writer.WriteDate(R1+i, 3, FReceivingDates[AIndex], cbtOuter);
+    Writer.WriteNumber(R1+i, 4, FSizCounts[AIndex, i], cbtOuter);
+
+    if FSizeTypes[AIndex, i] in [7{лично}, 8{дозатор}] then
+      S:= SSO_SIZETYPE_PICKS[FSizeTypes[AIndex, i]]
+    else
+      S:= EMPTY_MARK;
+    Writer.WriteText(R1+i, 5, S, cbtOuter);
+
+    Writer.WriteText(R1+i, 6, FReceivingDocNames[AIndex], cbtOuter, True, True);
+
+    if FReturningDates[AIndex]>0 then
+    begin
+      Writer.WriteDate(R1+i, 7, FReturningDates[AIndex], cbtOuter);
+      Writer.WriteNumber(R1+i, 8, FSizCounts[AIndex, i], cbtOuter);
+      Writer.WriteText(R1+i, 9, FReturningDocNames[AIndex], cbtOuter, True, True);
+       Writer.WriteText(R1+i, 10, FWriteoffDocNames[AIndex, i], cbtOuter, True, True);
+    end
+    else begin
+      Writer.WriteText(R1+i, 7, EmptyStr, cbtOuter);
+      Writer.WriteText(R1+i, 8, EmptyStr, cbtOuter);
+      Writer.WriteText(R1+i, 9, EmptyStr, cbtOuter);
+      Writer.WriteText(R1+i, 10, EmptyStr, cbtOuter);
+    end;
+
+
+  end;
+
+  ARow:= R2;
+end;
+
 procedure TSIZCardBackSheet.GridDraw(var ARow: Integer);
 var
   i, R: Integer;
 begin
-  R:= ARow;
-  Writer.SetBackgroundDefault;
-  Writer.SetFont(Font.Name, Font.Size, [], clBlack);
-
-  if VIsNil(FItemSIZNames) then
+  if VIsNil(FNormSizNames) then
   begin
+    Writer.SetBackgroundDefault;
+    Writer.SetFont(Font.Name, Font.Size, [], clBlack);
     for i:=1 to 10 do
-      Writer.WriteText(R, i, EmptyStr, cbtOuter);
+      Writer.WriteText(ARow, i, EmptyStr, cbtOuter);
     Exit;
+  end;
+
+  R:= ARow - 1;
+  for i:= 0 to High(FNormSizNames) do
+  begin
+    R:= R + 1;
+    LogDraw(R, i);
   end;
 
   ARow:= R;
@@ -647,7 +712,10 @@ begin
 end;
 
 procedure TSIZCardBackSheet.Draw(const ANeedDraw: Boolean;
-  const AItemSIZNames: TStrVector);
+                   const AReceivingDates, AReturningDates: TDateVector;
+                   const ANormSizNames, AReceivingDocNames, AReturningDocNames: TStrVector;
+                   const AReceivingSizNames, AWriteoffDocNames: TStrMatrix;
+                   const ASizCounts, ASizeTypes: TIntMatrix);
 var
   R: Integer;
 begin
@@ -657,7 +725,15 @@ begin
     Exit;
   end;
 
-  FItemSIZNames:= AItemSIZNames;
+  FReceivingDates:= AReceivingDates;
+  FReturningDates:= AReturningDates;
+  FSizeTypes:= ASizeTypes;
+  FNormSizNames:= ANormSizNames;
+  FReceivingDocNames:= AReceivingDocNames;
+  FReturningDocNames:= AReturningDocNames;
+  FWriteoffDocNames:= AWriteoffDocNames;
+  FReceivingSizNames:= AReceivingSizNames;
+  FSizCounts:= ASizCounts;
 
   Writer.BeginEdit;
 
