@@ -692,7 +692,8 @@ type
     function SIZStoreEntryAdd(const ADocID: Integer;
                          out AEntryID: Int64;
                          const ANomNum, ANote: String;
-                         const ANameID, ASizeID, AHeightID, ACount: Integer): Boolean;
+                         const ANameID, ASizeID, AHeightID, ACount: Integer;
+                         const ACommit: Boolean = True): Boolean;
     {Обновление СИЗ в документе прихода на склад: True - ОК, False - ошибка}
     function SIZStoreEntryUpdate(const ADocID: Integer;
                          const AEntryID: Int64;
@@ -858,6 +859,16 @@ type
                             const AReceivingInfoIDs, ADocIDs: TIntVector;
                             const AReceivingDates: TDateVector;
                             const AStoreIDs: TInt64Matrix): Boolean;
+
+    {Получение данных для записи возврата СИЗ на склад: True - ОК, False - пусто}
+    function SIZReturningDataLoad(const ALogID: Int64;
+                            out AStoreIDs: TInt64Matrix;
+                            out ANomNums: TStrVector;
+                            out ANameIDs, ASizeIDs, AHeightIDs: TIntVector): Boolean;
+    {Возврат СИЗ на склад: True - ОК, False - ошибка}
+    function SIZReturningWrite(const ADocID: Integer;
+                               const ALogID: Int64;
+                               const ANote: String): Boolean;
   end;
 
 
@@ -6013,7 +6024,8 @@ end;
 function TDataBase.SIZStoreEntryAdd(const ADocID: Integer;
                    out AEntryID: Int64;
                    const ANomNum, ANote: String;
-                   const ANameID, ASizeID, AHeightID, ACount: Integer): Boolean;
+                   const ANameID, ASizeID, AHeightID, ACount: Integer;
+                   const ACommit: Boolean = True): Boolean;
 
   procedure StoreEntryWrite;
   begin
@@ -6039,10 +6051,10 @@ begin
     //определяем ID
     AEntryID:= LastWritedInt64ID('SIZSTOREENTRY');
     SIZStoreLogWrite(AEntryID, ACount);
-    QCommit;
+    if ACommit then QCommit;
     Result:= True;
   except
-    QRollback;
+    if ACommit then QRollback;
   end;
 end;
 
@@ -6752,7 +6764,8 @@ begin
     'LEFT OUTER JOIN SIZDOC t10 ON (t9.DocID=t10.DocID) ' +
     'LEFT OUTER JOIN SIZSTOREWRITEOFF t11 ON (t9.ReturnStoreID=t11.StoreID) ' +
     'LEFT OUTER JOIN SIZDOC t12 ON (t11.DocID=t12.DocID) ' +
-    'WHERE (t2.CardID = :CardID) AND (t2.NowInfoID=t2.ReceivingInfoID) ' +
+    'WHERE (t2.CardID = :CardID) ' +
+    //'WHERE (t2.CardID = :CardID) AND (t2.NowInfoID=t2.ReceivingInfoID) ' +
     'ORDER BY t2.ReceivingDate, t1.LogID, t5.NameID '
    );
   QParamInt('CardID', ACardID);
@@ -7675,29 +7688,155 @@ begin
     QRollback;
   end;
 end;
-//var
-//  i, CardID: Integer;
-//begin
-//  Result:= False;
-//
-//  QSetQuery(FQuery);
-//  try
-//    //если карточки еще нет, то записываем
-//    CardID:= ACardID;
-//    if CardID=0 then
-//      if not SIZPersonalCardAdd(CardID, EmptyStr, ATabNumID,
-//                                AItemPostID, False{no commit}) then Exit;
-//    //записываем СИЗ
-//    for i:= 0 to High(ADocIDs) do
-//      SIZReceivingWrite(CardID, ATabNumID, AItemPostID, AReceivingInfoIDs[i],
-//                        ANowInfoID, ADocIDs[i], AStoreIDs[i], AReceivingDates[i],
-//                        False{no commit});
-//    QCommit;
-//    Result:= True;
-//  except
-//    QRollback;
-//  end;
-//end;
+
+function TDataBase.SIZReturningDataLoad(const ALogID: Int64;
+                            out AStoreIDs: TInt64Matrix;
+                            out ANomNums: TStrVector;
+                            out ANameIDs, ASizeIDs, AHeightIDs: TIntVector): Boolean;
+var
+  StoreIDs: TInt64Vector;
+  NomNums: TStrVector;
+  NameIDs, SizeIDs, HeightIDs: TIntVector;
+
+  procedure AddData(const AInd1, AInd2: Integer);
+  begin
+    VAppend(ANomNums, NomNums[AInd1]);
+    VAppend(ANameIDs, NameIDs[AInd1]);
+    VAppend(ASizeIDs, SizeIDs[AInd1]);
+    VAppend(AHeightIDs, HeightIDs[AInd1]);
+    MAppend(AStoreIDs, VCut(StoreIDs, AInd1, AInd2));
+  end;
+
+  procedure GroupData;
+  var
+    i, N1, N2: Integer;
+    NomNum: String;
+    NameID, SizeID, HeightID: Integer;
+  begin
+    NomNum:= NomNums[0];
+    NameID:= NameIDs[0];
+    SizeID:= SizeIDs[0];
+    HeightID:= HeightIDs[0];
+    N1:= 0;
+    for i:= 1 to High(NameIDs) do
+    begin
+      if (NameIDs[i]<>NameID) or (SizeIDs[i]<>SizeID) or
+         (HeightIDs[i]<>HeightID) or (not SSame(NomNum, NomNums[i])) then
+      begin
+        N2:= i - 1;
+        AddData(N1, N2);
+        N1:= i;
+        NomNum:= NomNums[i];
+        NameID:= NameIDs[i];
+        SizeID:= SizeIDs[i];
+        HeightID:= HeightIDs[i];
+      end;
+    end;
+    N2:= High(NameIDs);
+    AddData(N1, N2);
+  end;
+
+begin
+  Result:= False;
+
+  AStoreIDs:= nil;
+  ANomNums:= nil;
+  ANameIDs:= nil;
+  ASizeIDs:= nil;
+  AHeightIDs:= nil;
+
+  StoreIDs:= nil;
+  NomNums:= nil;
+  NameIDs:= nil;
+  SizeIDs:= nil;
+  HeightIDs:= nil;
+
+  QSetQuery(FQuery);
+  QSetSQL(
+    'SELECT t1.StoreID, t3.NomNum, t3.NameID, t3.SizeID, t3.HeightID ' +
+    'FROM SIZCARDPERSONALLOGINFO t1 ' +
+    'INNER JOIN SIZSTORELOG t2 ON (t1.StoreID=t2.StoreID) ' +
+    'INNER JOIN SIZSTOREENTRY t3 ON (t2.EntryID=t3.EntryID) ' +
+    'WHERE (t1.LogID = :LogID) ' +
+    'ORDER BY t3.NomNum, t3.NameID, t3.SizeID, t3.HeightID '
+   );
+  QParamInt64('LogID', ALogID);
+  QOpen;
+  if not QIsEmpty then
+  begin
+    QFirst;
+    while not QEOF do
+    begin
+      VAppend(StoreIDs, QFieldInt64('StoreID'));
+      VAppend(NomNums, QFieldStr('NomNum'));
+      VAppend(NameIDs, QFieldInt('NameID'));
+      VAppend(SizeIDs, QFieldInt('SizeID'));
+      VAppend(HeightIDs, QFieldInt('HeightID'));
+      QNext;
+    end;
+    Result:= True;
+  end;
+  QClose;
+
+  if not Result then Exit;
+
+  GroupData;
+end;
+
+
+
+function TDataBase.SIZReturningWrite(const ADocID: Integer;
+                                     const ALogID: Int64;
+                                     const ANote: String): Boolean;
+var
+  i: Integer;
+  EntryID: Int64;
+  NewStoreIDs: TInt64Vector;
+
+  StoreIDs: TInt64Matrix;
+  NomNums: TStrVector;
+  NameIDs, SizeIDs, HeightIDs: TIntVector;
+
+  procedure ReturningWrite(const AOldIDs, ANewIDs: TInt64Vector);
+  var
+    k: Integer;
+  begin
+    QSetSQL(
+      sqlINSERT('SIZSTAFFRETURN', ['DocID', 'StoreID', 'ReturnStoreID', 'Note'])
+    );
+    QParamStr('Note', ANote);
+    QParamInt('DocID', ADocID);
+    for k:= 0 to High(AOldIDs) do
+    begin
+      QParamInt64('StoreID', AOldIDs[k]);
+      QParamInt64('ReturnStoreID', ANewIDs[k]);
+      QExec;
+    end;
+  end;
+
+begin
+  Result:= False;
+
+  if not SIZReturningDataLoad(ALogID, StoreIDs, NomNums, NameIDs,
+                              SizeIDs, HeightIDs) then Exit;
+
+  QSetQuery(FQuery);
+  try
+    for i:= 0 to High(StoreIDs) do
+    begin
+      SIZStoreEntryAdd(ADocID, EntryID, NomNums[i], ANote,
+                       NameIDs[i], SizeIDs[i], HeightIDs[i], Length(StoreIDs[i]));
+
+      NewStoreIDs:= ValuesInt64ByInt64ID('SIZSTORELOG', 'StoreID', 'EntryID', EntryID);
+      ReturningWrite(StoreIDs[i], NewStoreIDs);
+    end;
+
+    QCommit;
+    Result:= True;
+  except
+    QRollback;
+  end;
+end;
 
 end.
 

@@ -27,7 +27,7 @@ uses
 UParamForm, UVars, USIZDocForm, USIZStoreHistoryForm, USIZDocEditForm, 
 usizstoreentryeditform, USIZStoreWriteoffEditForm, USIZDocStoreEntryForm, 
 USIZDocStoreWriteoffForm, USIZCardTypes, USIZSizeSpecEditForm, 
-USIZStatusNewEditForm, USIZStatusCopyEditForm;
+USIZStatusNewEditForm, USIZStatusCopyEditForm, USIZCardReturnEditForm;
 
 {$R *.res}
 

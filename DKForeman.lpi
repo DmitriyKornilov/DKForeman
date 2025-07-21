@@ -569,6 +569,13 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="USIZStatusCopyEditForm"/>
       </Unit>
+      <Unit>
+        <Filename Value="forms\siz\usizcardreturneditform.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="SIZCardReturnEditForm"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="USIZCardReturnEditForm"/>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

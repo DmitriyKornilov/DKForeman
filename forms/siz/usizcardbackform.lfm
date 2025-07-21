@@ -7,30 +7,29 @@ object SIZCardBackForm: TSIZCardBackForm
   ClientHeight = 400
   ClientWidth = 700
   DesignTimePPI = 120
-  LCLVersion = '4.0.0.4'
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
   object SheetPanel: TPanel
     Left = 0
-    Height = 284
-    Top = 36
-    Width = 560
+    Height = 356
+    Top = 44
+    Width = 700
     Align = alClient
     BorderSpacing.Top = 2
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 284
-    ClientWidth = 560
+    ClientHeight = 352
+    ClientWidth = 696
     Color = clWhite
     ParentBackground = False
     ParentColor = False
     TabOrder = 0
     object ViewGrid: TsWorksheetGrid
       Left = 0
-      Height = 260
+      Height = 328
       Top = 0
-      Width = 556
+      Width = 696
       AutoExpand = []
       DisplayFixedColRow = False
       FrozenBorderPen.Style = psClear
@@ -64,21 +63,21 @@ object SIZCardBackForm: TSIZCardBackForm
     object SheetBottomPanel: TPanel
       Left = 0
       Height = 22
-      Top = 258
-      Width = 556
+      Top = 330
+      Width = 696
       Align = alBottom
       AutoSize = True
       BevelOuter = bvNone
       ClientHeight = 22
-      ClientWidth = 556
+      ClientWidth = 696
       Color = clWhite
       Constraints.MinHeight = 22
       ParentBackground = False
       ParentColor = False
       TabOrder = 1
       object ZoomPanel: TPanel
-        Left = 344
-        Height = 18
+        Left = 484
+        Height = 22
         Top = 0
         Width = 212
         Align = alRight
@@ -91,8 +90,8 @@ object SIZCardBackForm: TSIZCardBackForm
     object ZoomBevel: TBevel
       Left = 0
       Height = 2
-      Top = 260
-      Width = 556
+      Top = 328
+      Width = 696
       Align = alBottom
       Shape = bsBottomLine
       Style = bsRaised
@@ -102,20 +101,20 @@ object SIZCardBackForm: TSIZCardBackForm
     Left = 0
     Height = 40
     Top = 2
-    Width = 560
+    Width = 700
     Align = alTop
     BorderSpacing.Top = 2
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 40
-    ClientWidth = 560
+    ClientHeight = 36
+    ClientWidth = 696
     ParentFont = False
     TabOrder = 1
     Visible = False
     object DelButton: TSpeedButton
       Cursor = crHandPoint
       Left = 0
-      Height = 28
+      Height = 36
       Hint = 'Отменить выдачу'
       Top = 0
       Width = 40
@@ -125,12 +124,13 @@ object SIZCardBackForm: TSIZCardBackForm
       ImageIndex = 5
       ShowHint = True
       ParentShowHint = False
+      OnClick = DelButtonClick
     end
-    object WriteoffButton: TSpeedButton
+    object ReturnButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 32
-      Height = 28
-      Hint = 'Оформить возврат (списание)'
+      Left = 40
+      Height = 36
+      Hint = 'Вернуть на склад'
       Top = 0
       Width = 40
       Align = alLeft
@@ -139,12 +139,13 @@ object SIZCardBackForm: TSIZCardBackForm
       ImageIndex = 40
       ShowHint = True
       ParentShowHint = False
+      OnClick = ReturnButtonClick
     end
     object CancelButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 64
-      Height = 28
-      Hint = 'Отменить возврат (списание)'
+      Left = 80
+      Height = 36
+      Hint = 'Отменить возврат на склад'
       Top = 0
       Width = 40
       Align = alLeft

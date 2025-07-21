@@ -10,7 +10,9 @@ uses
   //Project utils
   UTypes, UConst, UVars, USIZCardSheet,
   //DK packages utils
-  DK_Zoom, DK_CtrlUtils, DK_Vector, DK_Matrix;
+  DK_Zoom, DK_CtrlUtils, DK_Vector, DK_Matrix, DK_Dialogs,
+  //Forms
+  USIZCardReturnEditForm;
 
 type
 
@@ -18,7 +20,7 @@ type
 
   TSIZCardBackForm = class(TForm)
     DelButton: TSpeedButton;
-    WriteoffButton: TSpeedButton;
+    ReturnButton: TSpeedButton;
     CancelButton: TSpeedButton;
     SheetBottomPanel: TPanel;
     SheetPanel: TPanel;
@@ -26,9 +28,11 @@ type
     ToolPanel: TPanel;
     ZoomBevel: TBevel;
     ZoomPanel: TPanel;
+    procedure DelButtonClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure ReturnButtonClick(Sender: TObject);
   private
     ZoomPercent: Integer;
     Sheet: TSIZCardBackSheet;
@@ -47,6 +51,7 @@ type
     procedure DataLoad;
     procedure DataDraw(const AZoomPercent: Integer);
     procedure DataReDraw;
+    procedure DataSelect;
 
     procedure SettingsLoad;
   public
@@ -60,6 +65,8 @@ var
 
 implementation
 
+uses UMainForm, USIZCardForm;
+
 {$R *.lfm}
 
 { TSIZCardBackForm }
@@ -67,9 +74,17 @@ implementation
 procedure TSIZCardBackForm.FormCreate(Sender: TObject);
 begin
   Sheet:= TSIZCardBackSheet.Create(ViewGrid.Worksheet, ViewGrid, GridFont);
+  Sheet.OnSelect:= @DataSelect;
 
   SettingsLoad; //load ZoomPercent
   CreateZoomControls(50, 150, ZoomPercent, ZoomPanel, @DataDraw, True);
+end;
+
+procedure TSIZCardBackForm.DelButtonClick(Sender: TObject);
+begin
+  if not Confirm('Отменить выдачу?') then Exit;
+  if DataBase.SIZReceivingCancel(LogIDs[Sheet.SelectedIndex]) then
+    (MainForm.CategoryForm as TSIZCardForm).CardListLoad(True);
 end;
 
 procedure TSIZCardBackForm.FormDestroy(Sender: TObject);
@@ -83,10 +98,10 @@ begin
     ToolPanel
   ]);
   SetToolButtons([
-    DelButton, WriteoffButton, CancelButton
+    DelButton, ReturnButton, CancelButton
   ]);
   Images.ToButtons([
-    DelButton, WriteoffButton, CancelButton
+    DelButton, ReturnButton, CancelButton
   ]);
 end;
 
@@ -119,6 +134,17 @@ begin
   DataDraw(ZoomPercent);
 end;
 
+procedure TSIZCardBackForm.DataSelect;
+begin
+  DelButton.Enabled:= Sheet.IsSelected;
+  ReturnButton.Enabled:= DelButton.Enabled;
+  CancelButton.Enabled:= DelButton.Enabled;
+
+  CancelButton.Visible:= Sheet.IsSelected and
+                         (ReturningDates[Sheet.SelectedIndex]>0);
+  ReturnButton.Visible:= not CancelButton.Visible;
+end;
+
 procedure TSIZCardBackForm.SettingsLoad;
 var
   SettingValues: TIntVector;
@@ -146,7 +172,25 @@ end;
 procedure TSIZCardBackForm.ViewUpdate(const AModeType: TModeType);
 begin
   ToolPanel.Visible:= AModeType=mtEditing;
-  //Sheet.CanSelect:= AModeType=mtEditing;
+  Sheet.CanSelect:= AModeType=mtEditing;
+end;
+
+procedure TSIZCardBackForm.ReturnButtonClick(Sender: TObject);
+var
+  Form: TSIZCardReturnEditForm;
+begin
+  Form:= TSIZCardReturnEditForm.Create(nil);
+  try
+    Form.LogID:= LogIDs[Sheet.SelectedIndex];
+    Form.ReceivingDocName:= ReceivingDocNames[Sheet.SelectedIndex];
+    Form.ReceivingDate:= ReturningDates[Sheet.SelectedIndex];
+    Form.SizNames:= ReceivingSizNames[Sheet.SelectedIndex];
+    Form.SizCounts:= SizCounts[Sheet.SelectedIndex];
+    if Form.ShowModal=mrOK then
+      (MainForm.CategoryForm as TSIZCardForm).CardListLoad(True);
+  finally
+    FreeAndNil(Form);
+  end;
 end;
 
 end.
