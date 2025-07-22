@@ -656,8 +656,9 @@ type
     {Обновление документа списания (передачи) СИЗ со склада: True - ОК, False - ошибка}
     function SIZDocStoreWriteoffDelete(const ADocID: Integer): Boolean;
 
-    {Удаление пустых документов прихода СИЗ на склад за год: True - ОК, False - ошибка}
-    function SIZEmptyDocStoreEntryDelete(const AYear: Integer): Boolean;
+    {Удаление пустых документов за год: True - ОК, False - ошибка}
+    function SIZDocStoreEmptyDelete(const ADocType, AYear: Integer): Boolean;
+
 
     (**************************************************************************
                                 СКЛАД СИЗ
@@ -5681,33 +5682,43 @@ begin
   end;
 end;
 
-function TDataBase.SIZEmptyDocStoreEntryDelete(const AYear: Integer): Boolean;
+function TDataBase.SIZDocStoreEmptyDelete(const ADocType, AYear: Integer): Boolean;
 var
   DocIDs: TIntVector;
+  FromStr: String;
 begin
   Result:= False;
+
+  case ADocType of
+  1: FromStr:= 'FROM SIZSTOREENTRY ';
+  2: FromStr:= 'FROM SIZCARDPERSONALLOG ';
+  3: FromStr:= 'FROM SIZSTOREWRITEOFF ';
+  4: FromStr:= 'FROM SIZSTAFFRETURN ';
+  end;
 
   //определяем ID пустых документов
   DocIDs:= nil;
   QSetQuery(FQuery);
   QSetSQL(
-    'SELECT t1.DocID, t2.RowCount ' +
+    'SELECT t1.DocID, t2.DocCount ' +
     'FROM SIZDOC t1 ' +
     'LEFT OUTER JOIN ( ' +
-      'SELECT DocID, COUNT(DocID) as RowCount ' +
-      'FROM SIZSTOREENTRY '  +
+      'SELECT DocID, COUNT(DocID) as DocCount ' +
+      FromStr  +
+      'GROUP BY DocID ' +
       ') t2 ON (t1.DocID=t2.DocID) ' +
-    'WHERE (t1.DocType=1) AND (DocDate BETWEEN :BD AND :ED)'
+    'WHERE (t1.DocType = :DocType) AND (t1.DocDate BETWEEN :BD AND :ED)'
   );
   QParamDT('BD', FirstDayInYear(AYear));
   QParamDT('ED', LastDayInYear(AYear));
+  QParamInt('DocType', ADocType);
   QOpen;
   if not QIsEmpty then
   begin
     QFirst;
     while not QEOF do
     begin
-      if QFieldInt('RowCount')=0 then
+      if QFieldInt('DocCount')=0 then
         VAppend(DocIDs, QFieldInt('DocID'));
       QNext;
     end;
@@ -6694,7 +6705,7 @@ begin
     'INNER JOIN SIZSTORELOG t4 ON (t1.StoreID=t4.StoreID) ' +
     'INNER JOIN SIZSTOREENTRY t5 ON (t4.EntryID=t5.EntryID) ' +
     'INNER JOIN SIZNAME t6 ON (t5.NameID=t6.NameID) ' +
-    'INNER JOIN SIZDOC t7 ON (t2.ReceivingDocID=t7.DocID) ' +
+    'INNER JOIN SIZDOC t7 ON (t2.DocID=t7.DocID) ' +
     'INNER JOIN SIZNAME t8 ON (t3.NameID=t8.NameID) ' +
     'LEFT OUTER JOIN SIZSTAFFRETURN t9 ON (t1.StoreID=t9.StoreID) ' +
     'LEFT OUTER JOIN SIZDOC t10 ON (t9.DocID=t10.DocID) ' +
@@ -6903,7 +6914,7 @@ begin
     'INNER JOIN SIZSTORELOG t4 ON (t1.StoreID=t4.StoreID) ' +
     'INNER JOIN SIZSTOREENTRY t5 ON (t4.EntryID=t5.EntryID) ' +
     'INNER JOIN SIZNAME t6 ON (t5.NameID=t6.NameID) ' +
-    'INNER JOIN SIZDOC t7 ON (t2.ReceivingDocID=t7.DocID) ' +
+    'INNER JOIN SIZDOC t7 ON (t2.DocID=t7.DocID) ' +
     'INNER JOIN SIZNAME t8 ON (t3.NameID=t8.NameID) ' +
     'LEFT OUTER JOIN SIZSTAFFRETURN t9 ON (t1.StoreID=t9.StoreID) ' +
     'LEFT OUTER JOIN SIZDOC t10 ON (t9.DocID=t10.DocID) ' +
@@ -7481,12 +7492,12 @@ procedure TDataBase.SIZPersonalCardLogWrite(out ALogID: Int64;
 begin
   QSetQuery(FQuery);
   QSetSQL(
-    sqlINSERT('SIZCARDPERSONALLOG', ['CardID', 'ReceivingDate', 'ReceivingDocID',
+    sqlINSERT('SIZCARDPERSONALLOG', ['CardID', 'ReceivingDate', 'DocID',
                                      'ReceivingInfoID', 'NowInfoID'])
   );
   QParamInt('CardID', ACardID);
   QParamDT('ReceivingDate', AReceivingDate);
-  QParamInt('ReceivingDocID', ADocID);
+  QParamInt('DocID', ADocID);
   QParamInt('ReceivingInfoID', AReceivingInfoID);
   QParamInt('NowInfoID', ANowInfoID);
   QExec;

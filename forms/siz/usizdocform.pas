@@ -192,6 +192,7 @@ begin
   end;
 
   ExportButton.Enabled:= not VIsNil(DocIDs);
+  DocEraseButton.Enabled:= ExportButton.Enabled;
 end;
 
 procedure TSIZDocForm.CloseButtonClick(Sender: TObject);
@@ -238,6 +239,13 @@ begin
   DocEdit(etEdit);
 end;
 
+procedure TSIZDocForm.DocEraseButtonClick(Sender: TObject);
+begin
+  if not Confirm('Удалить все пустые документы?') then Exit;
+  if DataBase.SIZDocStoreEmptyDelete(DocType, YearSpinEdit.Value) then
+    DocListLoad;
+end;
+
 procedure TSIZDocForm.DocDelButtonClick(Sender: TObject);
 var
   NeedReload: Boolean;
@@ -247,21 +255,6 @@ begin
     1: ; //!!!!
     2: ; //!!!!
     3: NeedReload:= DataBase.SIZDocStoreWriteoffDelete(DocIDs[DocList.SelectedIndex]);
-    4: ; //!!!!
-  end;
-
-  if NeedReload then DocListLoad;
-end;
-
-procedure TSIZDocForm.DocEraseButtonClick(Sender: TObject);
-var
-  NeedReload: Boolean;
-begin
-  if not Confirm('Удалить все пустые документы?') then Exit;
-  case DocType of
-    1: NeedReload:= DataBase.SIZEmptyDocStoreEntryDelete(YearSpinEdit.Value);
-    2: ; //!!!!
-    3: ; //!!!!
     4: ; //!!!!
   end;
 

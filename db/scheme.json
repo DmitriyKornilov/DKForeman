@@ -1357,7 +1357,7 @@
       "LOGID",
       "CARDID",
       "RECEIVINGDATE",
-      "RECEIVINGDOCID",
+      "DOCID",
       "RECEIVINGINFOID",
       "NOWINFOID"
     ],
@@ -1433,7 +1433,7 @@
         ]
       }
     },
-    "RECEIVINGDOCID" : {
+    "DOCID" : {
       "FieldType" : "INTEGER",
       "PrimaryKey" : false,
       "Status" : false,
@@ -1627,7 +1627,7 @@
         ],
         "FieldNames" : [
           "DOCID",
-          "RECEIVINGDOCID"
+          "DOCID"
         ]
       }
     },
