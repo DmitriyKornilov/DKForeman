@@ -404,7 +404,7 @@ procedure TSIZNormForm.NormItemDelete;
 begin
   if not NormItemSheet.IsSelected then Exit;
   if not Confirm('Удалить всю информацию по пункту №"' +
-                 IntToStr(ItemOrderNums[NormItemSheet.SelectedIndex]) +
+                 IntToStr(ItemOrderNums[NormItemSheet.SelectedIndex]+1) +
                  '"?') then Exit;
   DataBase.SIZNormItemDelete(ItemIDs[NormItemSheet.SelectedIndex]);
   NormItemListLoad;
@@ -459,7 +459,7 @@ var
   SubItem: TNormSubItem;
 begin
   if not NormSubItemSheet.IsSelected then Exit;
-  if not Confirm('Удалить всю информацию по строке?') then Exit;
+  if not Confirm('Удалить всю информацию по строке пункта норм?') then Exit;
 
   SubItem:= NormSubItems[NormSubItemSheet.SelectedIndex];
   DataBase.SIZNormSubItemDelete(ItemIDs[NormItemSheet.SelectedIndex],
