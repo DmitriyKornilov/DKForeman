@@ -573,6 +573,7 @@
         <Filename Value="forms\siz\usizcardreturneditform.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="SIZCardReturnEditForm"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="USIZCardReturnEditForm"/>
       </Unit>

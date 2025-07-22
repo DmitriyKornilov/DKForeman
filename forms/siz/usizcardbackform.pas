@@ -28,6 +28,7 @@ type
     ToolPanel: TPanel;
     ZoomBevel: TBevel;
     ZoomPanel: TPanel;
+    procedure CancelButtonClick(Sender: TObject);
     procedure DelButtonClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -78,13 +79,6 @@ begin
 
   SettingsLoad; //load ZoomPercent
   CreateZoomControls(50, 150, ZoomPercent, ZoomPanel, @DataDraw, True);
-end;
-
-procedure TSIZCardBackForm.DelButtonClick(Sender: TObject);
-begin
-  if not Confirm('Отменить выдачу?') then Exit;
-  if DataBase.SIZReceivingCancel(LogIDs[Sheet.SelectedIndex]) then
-    (MainForm.CategoryForm as TSIZCardForm).CardListLoad(True);
 end;
 
 procedure TSIZCardBackForm.FormDestroy(Sender: TObject);
@@ -191,6 +185,20 @@ begin
   finally
     FreeAndNil(Form);
   end;
+end;
+
+procedure TSIZCardBackForm.DelButtonClick(Sender: TObject);
+begin
+  if not Confirm('Отменить выдачу?') then Exit;
+  if DataBase.SIZReceivingCancel(LogIDs[Sheet.SelectedIndex]) then
+    (MainForm.CategoryForm as TSIZCardForm).CardListLoad(True);
+end;
+
+procedure TSIZCardBackForm.CancelButtonClick(Sender: TObject);
+begin
+  if not Confirm('Отменить возврат на склад?') then Exit;
+  if DataBase.SIZReturningCancel(LogIDs[Sheet.SelectedIndex]) then
+    (MainForm.CategoryForm as TSIZCardForm).CardListLoad(True);
 end;
 
 end.

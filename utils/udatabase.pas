@@ -869,6 +869,8 @@ type
     function SIZReturningWrite(const ADocID: Integer;
                                const ALogID: Int64;
                                const ANote: String): Boolean;
+    {Удаление информации о возврате СИЗ (отмена возврата): True - ОК, False - ошибка}
+    function SIZReturningCancel(const ALogID: Int64): Boolean;
   end;
 
 
@@ -6288,8 +6290,8 @@ function TDataBase.SIZStoreWriteoffCancel(const AStoreIDs: TInt64Vector;
                                           const ACommit: Boolean = True): Boolean;
 begin
   Result:= False;
+  QSetQuery(FQuery);
   try
-    QSetQuery(FQuery);
     //отмечаем СИЗ на складе, как свободные
     UpdateByInt64ID('SIZSTORELOG', 'IsBusy', 'StoreID', AStoreIDs, 0{свободно}, False{no commit});
 
@@ -6840,6 +6842,7 @@ var
     VSizNames:= nil;
     VCounts:= nil;
     VSizeTypes:= nil;
+    VWriteoffDocNames:= nil;
 
     NameID:= NameIDs[ALogN1];
     N1:= ALogN1;
@@ -7515,7 +7518,7 @@ begin
   StatusSubItemsClear(AStatusSubItems{%H-});
 
   //загружаем ID размеров сотрудника
-  SIZStaffSizeIndexesClear(StaffSizes);
+  SIZStaffSizeIndexesClear(StaffSizes{%H-});
   if StaffIDByTabNumID(ATabNumID, StaffID) then
     SIZStaffSizeLoad(StaffID, StaffSizes);
 
@@ -7830,6 +7833,34 @@ begin
       NewStoreIDs:= ValuesInt64ByInt64ID('SIZSTORELOG', 'StoreID', 'EntryID', EntryID);
       ReturningWrite(StoreIDs[i], NewStoreIDs);
     end;
+
+    QCommit;
+    Result:= True;
+  except
+    QRollback;
+  end;
+end;
+
+function TDataBase.SIZReturningCancel(const ALogID: Int64): Boolean;
+var
+  StoreIDs, ReturnStoreIDs: TInt64Vector;
+  EntryID: Int64;
+begin
+  Result:= False;
+  QSetQuery(FQuery);
+  try
+    //получаем ID записей СИЗ по данному LogID
+    StoreIDs:= ValuesInt64ByInt64ID('SIZCARDPERSONALLOGINFO', 'StoreID', 'LogID', ALogID);
+    //получаем ID записей СИЗ после возврата
+    ReturnStoreIDs:= ValuesInt64ByInt64ID('SIZSTAFFRETURN', 'ReturnStoreID', 'StoreID', StoreIDs);
+    //удаляем записи из документа списания со склада (если уже было списано)
+    SIZStoreWriteoffCancel(ReturnStoreIDs, False{no commit});
+    //получаем ID прихода на склад при возврате
+    EntryID:= ValueInt64ByInt64ID('SIZSTORELOG', 'EntryID', 'StoreID', VFirst(ReturnStoreIDs));
+    //удаляем приход на склад (и, соответственно, записи из SIZSTORELOG)
+    Delete('SIZSTOREENTRY', 'EntryID', EntryID, False{no commit});
+    //удаляем записи из таблицы возврата
+    Delete('SIZSTAFFRETURN', 'ReturnStoreID', ReturnStoreIDs, False{no commit});
 
     QCommit;
     Result:= True;

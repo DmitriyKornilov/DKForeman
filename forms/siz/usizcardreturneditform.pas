@@ -85,9 +85,9 @@ begin
   Images.ToButtons([SaveButton, CancelButton, NewDocButton]);
   SetEventButtons([SaveButton, CancelButton]);
   SetSimpleButtons([NewDocButton]);
-
   FormKeepMinSize(Self, False);
 
+  DocListLoad;
   SIZListLoad;
 end;
 
@@ -138,7 +138,7 @@ begin
   try
     SIZList.ValuesClear;
     SIZList.SetColumn('Наименование', SizNames, taLeftJustify);
-    VDim(V, Length(SizNames), FormatDateTime('dd.mm.yyyy', ReceivingDate));
+    VDim(V{%H-}, Length(SizNames), FormatDateTime('dd.mm.yyyy', ReceivingDate));
     SIZList.SetColumn('Дата выдачи', V);
     SIZList.SetColumn('Количество', VIntToStr(SizCounts));
     VDim(V, Length(SizNames), ReceivingDocName);

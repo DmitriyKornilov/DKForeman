@@ -831,6 +831,8 @@ procedure TSIZCardBackSheet.Draw(const ANeedDraw: Boolean;
 var
   R: Integer;
 begin
+  DelSelection;
+
   if not ANeedDraw then
   begin
     Writer.Clear;
