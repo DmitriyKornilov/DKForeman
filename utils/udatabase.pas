@@ -32,6 +32,7 @@ type
     procedure SettingsUpdate(const ASettingNames: TStrVector; const ASettingValues: TIntVector);
     function TextParamLoad(const AParamName: String): String;
     procedure TextParamUpdate(const AParamName, AParamValue: String);
+
     (**************************************************************************
                                      СПРАВОЧНИКИ
     **************************************************************************)
@@ -43,7 +44,6 @@ type
                                  out ADigMarks: TIntVector;
                                  const ASelectDigMark: Integer = -1;
                                  const AIDNotZero: Boolean = True);
-
 
     (**************************************************************************
                                          ШТАТ
@@ -91,8 +91,6 @@ type
                    out ATabNumIDs: TIntVector;
                    out AFamilies, ANames, APatronymics, ATabNums, APostNames, AScheduleNames: TStrVector): Boolean;
 
-
-
     {Добавление данных нового человека: True - ОК, False - ошибка}
     function StaffMainAdd(out AStaffID: Integer;
                           const AFamily, AName, APatronymic: String;
@@ -116,7 +114,6 @@ type
                           out AStaffIDs, AGenders: TIntVector;
                           out AFamilies, ANames, APatronymics: TStrVector;
                           out ABornDates: TDateVector): Boolean;
-
 
     {Список табельных номеров по ID человека: True - ОК, False - список пуст}
     function StaffTabNumListLoad(const AStaffID: Integer;
@@ -162,7 +159,6 @@ type
                                   const ABeginDate, AEndDate: TDate;
                                   out AScheduleIDs: TIntVector;
                                   out ABeginDates, AEndDates: TDateMatrix): Boolean;
-
 
     {Постоянная должность таб номера на дату
     (или первая после даты, если на эту дату еще не работал): True - ОК, False - пусто (уволен)}
@@ -486,11 +482,6 @@ type
                               out APostNames: TStrMatrix): Boolean;
     function SIZNormItemLoad(const AItemID: Integer; out AItem: TNormItem): Boolean;
 
-
-
-    {Проверка наличия в базе пункта нормы}
-    //function SIZIsNormItemExists(const ANormID, AItemID: Integer;
-    //                             const AItemName: String): Boolean;
     {Проверка пересечения периода действия нормы для указанной должности с другими
      пунктами этой и других норм}
     function SIZNormItemIntersectionExists(const APostID, AItemID: Integer;
@@ -872,8 +863,6 @@ type
     {Удаление информации о возврате СИЗ (отмена возврата): True - ОК, False - ошибка}
     function SIZReturningCancel(const ALogID: Int64; const ACommit: Boolean = True): Boolean;
   end;
-
-
 
 implementation
 
@@ -2078,13 +2067,6 @@ var
   Cycle: TScheduleCycle;
   Corrections: TScheduleCorrections;
 begin
-  //TPostScheduleInfo = record
-  //  ScheduleIDs: TIntVector; //список уникальных ID графиков
-  //  Cycles: array of TScheduleCycle;
-  //  Corrections: array of array of TScheduleCorrections;
-  //  FirstDates, LastDates: TDateMatrix; //график с одним ID может попадаться в периоде несколько раз
-  //end;
-  //
   Result:= False;
   AInfo:= EmptyShiftScheduleInfo;
 
@@ -2116,10 +2098,7 @@ begin
                                       FirstDates[i, j], LastDates[i, j]) then
         AInfo.Corrections[i, j]:= Corrections;
   end;
-
 end;
-
-
 
 function TDataBase.StaffScheduleHistoryLoad(const ATabNumID: Integer;
                           out AHistoryIDs, AScheduleIDs, AWeekHours: TIntVector;
@@ -4683,23 +4662,6 @@ begin
   end;
 end;
 
-//function TDataBase.SIZIsNormItemExists(const ANormID, AItemID: Integer;
-//  const AItemName: String): Boolean;
-//begin
-//  QSetQuery(FQuery);
-//  QSetSQL(
-//    'SELECT ItemID ' +
-//    'FROM SIZNORMITEM ' +
-//    'WHERE (ItemName= :ItemName) AND (ItemID<>:ItemID) AND (NormID=:NormID)'
-//  );
-//  QParamStr('ItemName', AItemName);
-//  QParamInt('ItemID', AItemID);
-//  QParamInt('NormID', ANormID);
-//  QOpen;
-//  Result:= not QIsEmpty;
-//  QClose;
-//end;
-
 function TDataBase.SIZNormItemIntersectionExists(const APostID, AItemID: Integer;
               const ABeginDate, AEndDate: TDate;
               out ANormName, AOrderNum: String): Boolean;
@@ -4938,28 +4900,6 @@ var
     end;
   end;
 
-  procedure GetInfoIDs;
-  begin
-    InfoIDs:= nil;
-    QSetSQL(
-      'SELECT InfoID ' +
-      'FROM SIZNORMSUBITEMINFO ' +
-      'WHERE SubItemID = :SubItemID'
-    );
-    QParamInt('SubItemID', ASubItemID);
-    QOpen;
-    if not QIsEmpty then
-    begin
-      QFirst;
-      while not QEOF do
-      begin
-        VAppend(InfoIDs, QFieldInt('InfoID'));
-        QNext;
-      end;
-    end;
-    QClose;
-  end;
-
 begin
   Result:= False;
   QSetQuery(FQuery);
@@ -4969,7 +4909,7 @@ begin
     //сдвигаем вверх порядковые номера строк, лежащих ниже удаляемой
     MoveSubItemsUp;
     //определяем список InfoID для этой строки пункта норм
-    GetInfoIDs;
+    InfoIDs:= ValuesInt32ByInt32ID('SIZNORMSUBITEMINFO', 'InfoID', 'SubItemID', ASubItemID);
     //удаляем эти InfoID (с обработкой)
     SIZNormSubItemInfoDelete(InfoIDs, False{no commit});
     //удаляем строку пункта нормы
@@ -5650,26 +5590,9 @@ var
   StoreIDs: TInt64Vector;
 begin
   Result:= False;
-  StoreIDs:= nil;
   QSetQuery(FQuery);
   try
-    QSetSQL(
-      'SELECT StoreID ' +
-      'FROM SIZSTOREWRITEOFF ' +
-      'WHERE DocID = :DocID'
-    );
-    QParamInt('DocID', ADocID);
-    QOpen;
-    if not QIsEmpty then
-    begin
-      QFirst;
-      while not QEOF do
-      begin
-        VAppend(StoreIDs, QFieldInt64('StoreID'));
-        QNext;
-      end;
-    end;
-    QClose;
+    StoreIDs:= ValuesInt64ByInt32ID('SIZSTOREWRITEOFF', 'StoreID', 'DocID', ADocID);
 
     if not VIsNil(StoreIDs) then
       SIZStoreWriteoffCancel(StoreIDs, False{no commit});
