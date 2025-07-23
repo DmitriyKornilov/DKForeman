@@ -88,7 +88,7 @@ begin
   SizeListCreate;
   ParamListCreate;
   SettingsLoad;
-  CreateFilterControls('Фильтр по Ф.И.О.:', FilterPanel, @SizeListFilter);
+  DKFilterCreate('Фильтр по Ф.И.О.:', FilterPanel, @SizeListFilter);
   CanLoadSizeList:= True;
 end;
 

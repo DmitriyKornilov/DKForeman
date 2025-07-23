@@ -10,7 +10,7 @@ uses
   //Project utils
   UVars, UConst, UTypes,
   //DK packages utils
-  DK_CtrlUtils, DK_VSTTables, DK_Vector, DK_Matrix, DK_StrUtils, DK_VSTDropDown,
+  DK_CtrlUtils, DK_VSTTables, DK_Vector, DK_Matrix, DK_StrUtils, DK_DropFilter,
   //Forms
   USIZDocForm, USIZStoreHistoryForm, USIZStoreWriteoffEditForm;
 
@@ -61,8 +61,8 @@ type
   private
     ModeType: TModeType;
 
+    DropFilter: TDKDropFilter;
     SIZList: TVSTCategoryCheckTable;
-    FilterDocDropDown: TVSTDropDown;
 
     CategoryNames: TStrMatrix;
     StoreIDs: TInt64Matrix;
@@ -75,6 +75,9 @@ type
     ShowSizCounts: TIntMatrix;
 
     FilterDocNames: TStrVector;
+    FilterIndex: Integer;
+
+    procedure FilterChange(const AFilterIndex: Integer);
 
     procedure SIZListCreate;
     procedure SIZListLoad;
@@ -106,16 +109,14 @@ procedure TSIZStoreForm.FormCreate(Sender: TObject);
 begin
   ModeType:= mtView;
 
-  FilterDocDropDown:= TVSTDropDown.Create(FilterDocBCButton);
-  FilterDocDropDown.DropDownCount:= 20;
-  FilterDocDropDown.OnChange:= @SIZListShow;
-
   SIZListCreate;
+
+  FilterIndex:= -1;
+  DropFilter:= DKDropFilterCreate('Фильтр по документу:', FilterPanel, @FilterChange);
 end;
 
 procedure TSIZStoreForm.FormDestroy(Sender: TObject);
 begin
-  FreeAndNil(FilterDocDropDown);
   FreeAndNil(SIZList);
 end;
 
@@ -141,6 +142,12 @@ begin
   ]);
 
   DataUpdate;
+end;
+
+procedure TSIZStoreForm.FilterChange(const AFilterIndex: Integer);
+begin
+  FilterIndex:= AFilterIndex;
+  SIZListShow;
 end;
 
 procedure TSIZStoreForm.HistoryButtonClick(Sender: TObject);
@@ -172,8 +179,7 @@ begin
                         SizNames, SizUnits, SizSizes, DocNames);
 
   FilterDocNames:= VAdd(['ВСЕ ДОКУМЕНТЫ'], VUnique(MToVector(DocNames)));
-  FilterDocDropDown.Items:= FilterDocNames;
-  FilterDocDropDown.ItemIndex:= 0;
+  DropFilter.SetItems(FilterDocNames);
 
   SIZExpandAllButton.Enabled:= not MIsNil(StoreIDs);
   SIZCollapseAllButton.Enabled:= SIZExpandAllButton.Enabled;
@@ -213,7 +219,7 @@ var
     i, j, N: Integer;
     Indexes: TIntVector;
   begin
-    if FilterDocDropDown.ItemIndex=0 then
+    if FilterIndex=0 then
     begin //все документы - нет фильтра - исходные вектора
       ShowStoreIDs:= StoreIDs;
       ShowCategoryNames:= CategoryNames;
@@ -230,7 +236,7 @@ var
       Indexes:= nil;
       for i:= 0 to High(CategoryNames) do
       begin
-        if VIndexOf(DocNames[i], FilterDocNames[FilterDocDropDown.ItemIndex])>=0 then
+        if VIndexOf(DocNames[i], FilterDocNames[FilterIndex])>=0 then
         begin
           MAppend(ShowCategoryNames, CategoryNames[i]);
           VAppend(Indexes, i);
@@ -249,7 +255,7 @@ var
       begin
         for j:= 0 to High(NomNums[Indexes[i]]) do
         begin
-          if DocNames[Indexes[i], j]<>FilterDocNames[FilterDocDropDown.ItemIndex] then continue;
+          if DocNames[Indexes[i], j]<>FilterDocNames[FilterIndex] then continue;
           VAppend(ShowStoreIDs[i], StoreIDs[Indexes[i], j]);
           VAppend(TmpNomNums[i], NomNums[Indexes[i], j]);
           VAppend(TmpSizNames[i], SizNames[Indexes[i], j]);

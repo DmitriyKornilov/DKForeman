@@ -265,7 +265,7 @@ begin
   LegendCreate;
   SettingsLoad; //load ZoomPercent
   CreateZoomControls(50, 150, ZoomPercent, ZoomPanel, @ScheduleDraw, True);
-  CreateFilterControls('Фильтр по Ф.И.О.:', FilterPanel, @StaffListFilter, 300);
+  DKFilterCreate('Фильтр по Ф.И.О.:', FilterPanel, @StaffListFilter, 300);
 
   CanDraw:= True;
 end;

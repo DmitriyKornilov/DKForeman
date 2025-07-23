@@ -88,7 +88,7 @@ begin
   SetEventButtons([SaveButton, CancelButton]);
   Images.ToButtons([SaveButton, CancelButton]);
 
-  CreateFilterControls(FilterCaption, FilterPanel, @ListFilter);
+  DKFilterCreate(FilterCaption, FilterPanel, @ListFilter);
   List:= TVSTStringList.Create(ListVT, EmptyStr, nil);
   ListLoad;
 end;

@@ -157,7 +157,7 @@ begin
   CardListCreate;
   ParamListCreate;
   SettingsLoad;
-  CreateFilterControls('Фильтр по Ф.И.О.:', FilterPanel, @StaffListFilter, 300);
+  DKFilterCreate('Фильтр по Ф.И.О.:', FilterPanel, @StaffListFilter, 300);
 
   CanDataUpdate:= True;
 end;

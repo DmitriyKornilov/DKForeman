@@ -171,7 +171,7 @@ begin
   SettingsLoad;
   TabNumListCreate;
   PostLogCreate;
-  CreateFilterControls('Фильтр по Ф.И.О.:', FilterPanel, @StaffListFilter);
+  DKFilterCreate('Фильтр по Ф.И.О.:', FilterPanel, @StaffListFilter);
   CanLoadStaffList:= True;
 end;
 

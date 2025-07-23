@@ -107,7 +107,7 @@ begin
   ParamListCreate;
   SettingsLoad;
   YearSpinEdit.Value:= YearOf(Date);
-  CreateFilterControls('Фильтр по Ф.И.О.:', FilterPanel, @StaffListFilter);
+  DKFilterCreate('Фильтр по Ф.И.О.:', FilterPanel, @StaffListFilter);
   CanLoadStaffList:= True;
 end;
 

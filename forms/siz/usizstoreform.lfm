@@ -260,6 +260,8 @@ object SIZStoreForm: TSIZStoreForm
       end
     end
     object SIZEditButtonPanel: TPanel
+      AnchorSideLeft.Control = SIZViewButtonPanel
+      AnchorSideLeft.Side = asrBottom
       Left = 80
       Height = 36
       Top = 0
@@ -328,14 +330,16 @@ object SIZStoreForm: TSIZStoreForm
       end
     end
     object FilterPanel: TPanel
+      AnchorSideLeft.Control = SIZEditButtonPanel
+      AnchorSideLeft.Side = asrBottom
       Left = 221
       Height = 36
       Top = 0
-      Width = 812
+      Width = 800
       Align = alLeft
       BevelOuter = bvNone
       ClientHeight = 36
-      ClientWidth = 812
+      ClientWidth = 800
       TabOrder = 2
       object DividerBevel4: TDividerBevel
         Left = 0
@@ -359,6 +363,7 @@ object SIZStoreForm: TSIZStoreForm
         Top = 8
         Width = 152
         Caption = 'Фильтр по документу:'
+        Visible = False
       end
       object FilterDocBCButton: TBCButton
         Tag = -1
@@ -371,7 +376,7 @@ object SIZStoreForm: TSIZStoreForm
         Left = 181
         Height = 29
         Top = 4
-        Width = 623
+        Width = 611
         Anchors = [akTop, akLeft, akRight]
         StateClicked.Background.Gradient1.StartColor = 8404992
         StateClicked.Background.Gradient1.EndColor = 4194304
@@ -467,6 +472,7 @@ object SIZStoreForm: TSIZStoreForm
         RoundingDropDown.RoundY = 1
         Style = bbtDropDown
         TextApplyGlobalOpacity = False
+        Visible = False
         DropDownStyle = bdsCommon
         MemoryUsage = bmuHigh
       end
