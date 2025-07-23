@@ -1,37 +1,36 @@
 object SIZStoreForm: TSIZStoreForm
   Left = 408
-  Height = 240
+  Height = 192
   Top = 250
-  Width = 1062
+  Width = 850
   Caption = 'SIZStoreForm'
-  ClientHeight = 240
-  ClientWidth = 1062
-  DesignTimePPI = 120
+  ClientHeight = 192
+  ClientWidth = 850
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
   object ToolPanel: TPanel
     Left = 2
-    Height = 40
+    Height = 32
     Top = 2
-    Width = 1058
+    Width = 846
     Align = alTop
     BorderSpacing.Left = 2
     BorderSpacing.Top = 2
     BorderSpacing.Right = 2
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 36
-    ClientWidth = 1054
+    ClientHeight = 28
+    ClientWidth = 842
     ParentFont = False
     TabOrder = 0
     object CloseButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 1014
-      Height = 36
+      Left = 810
+      Height = 28
       Hint = 'Закрыть'
       Top = 0
-      Width = 40
+      Width = 32
       Align = alRight
       Images = Images.PX24
       ImageIndex = 3
@@ -40,10 +39,10 @@ object SIZStoreForm: TSIZStoreForm
       OnClick = CloseButtonClick
     end
     object DividerBevel1: TDividerBevel
-      Left = 993
-      Height = 36
+      Left = 792
+      Height = 28
       Top = 0
-      Width = 21
+      Width = 18
       Caption = 'DividerBevel1'
       Align = alRight
       BevelWidth = 2
@@ -53,11 +52,11 @@ object SIZStoreForm: TSIZStoreForm
     end
     object ExportButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 592
-      Height = 36
+      Left = 516
+      Height = 28
       Hint = 'Экспорт в формат электронной таблицы XLSX или ODS'
       Top = 0
-      Width = 109
+      Width = 96
       Align = alLeft
       AutoSize = True
       Caption = ' Экспорт '
@@ -71,10 +70,10 @@ object SIZStoreForm: TSIZStoreForm
     object EntryButton: TSpeedButton
       Cursor = crHandPoint
       Left = 0
-      Height = 36
+      Height = 28
       Hint = 'Поступление новых СИЗ на склад'
       Top = 0
-      Width = 140
+      Width = 121
       Align = alLeft
       AutoSize = True
       Caption = 'Поступление '
@@ -87,10 +86,10 @@ object SIZStoreForm: TSIZStoreForm
       OnClick = EntryButtonClick
     end
     object DividerBevel2: TDividerBevel
-      Left = 571
-      Height = 36
+      Left = 498
+      Height = 28
       Top = 0
-      Width = 21
+      Width = 18
       Caption = 'DividerBevel2'
       Align = alLeft
       BevelWidth = 2
@@ -100,11 +99,11 @@ object SIZStoreForm: TSIZStoreForm
     end
     object OutButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 257
-      Height = 36
+      Left = 223
+      Height = 28
       Hint = 'Выдача СИЗ сотрудникам'
       Top = 0
-      Width = 101
+      Width = 89
       Align = alLeft
       AutoSize = True
       Caption = 'Выдача '
@@ -118,11 +117,11 @@ object SIZStoreForm: TSIZStoreForm
     end
     object WriteoffButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 140
-      Height = 36
+      Left = 121
+      Height = 28
       Hint = 'Списание СИЗ со клада'
       Top = 0
-      Width = 117
+      Width = 102
       Align = alLeft
       AutoSize = True
       Caption = 'Списание '
@@ -136,11 +135,11 @@ object SIZStoreForm: TSIZStoreForm
     end
     object HistoryButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 463
-      Height = 36
+      Left = 403
+      Height = 28
       Hint = 'История движения СИЗ по складу'
       Top = 0
-      Width = 108
+      Width = 95
       Align = alLeft
       AutoSize = True
       Caption = 'История '
@@ -154,11 +153,11 @@ object SIZStoreForm: TSIZStoreForm
     end
     object BackButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 358
-      Height = 36
+      Left = 312
+      Height = 28
       Hint = 'Возврат сотрудниками СИЗ на склад'
       Top = 0
-      Width = 105
+      Width = 91
       Align = alLeft
       AutoSize = True
       Caption = 'Возврат '
@@ -173,9 +172,9 @@ object SIZStoreForm: TSIZStoreForm
   end
   object CaptionPanel: TPanel
     Left = 2
-    Height = 30
-    Top = 44
-    Width = 1058
+    Height = 24
+    Top = 36
+    Width = 846
     Align = alTop
     Alignment = taLeftJustify
     BorderSpacing.Around = 2
@@ -191,12 +190,12 @@ object SIZStoreForm: TSIZStoreForm
   end
   object VT: TVirtualStringTree
     Left = 2
-    Height = 120
-    Top = 118
-    Width = 1058
+    Height = 94
+    Top = 96
+    Width = 846
     Align = alClient
     BorderSpacing.Around = 2
-    DefaultNodeHeight = 25
+    DefaultNodeHeight = 20
     DefaultText = 'Node'
     Header.AutoSizeIndex = 0
     Header.Columns = <>
@@ -205,147 +204,35 @@ object SIZStoreForm: TSIZStoreForm
   end
   object SIZToolPanel: TPanel
     Left = 0
-    Height = 40
-    Top = 76
-    Width = 1060
+    Height = 32
+    Top = 62
+    Width = 848
     Align = alTop
     BorderSpacing.Top = 2
     BorderSpacing.Right = 2
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 36
-    ClientWidth = 1056
+    ClientHeight = 28
+    ClientWidth = 844
     ParentBackground = False
     ParentColor = False
     ParentFont = False
     TabOrder = 3
-    object SIZViewButtonPanel: TPanel
-      Left = 0
-      Height = 36
+    object ToolFilterPanel: TPanel
+      Left = 178
+      Height = 28
       Top = 0
-      Width = 80
+      Width = 640
       Align = alLeft
-      AutoSize = True
       BevelOuter = bvNone
-      ClientHeight = 36
-      ClientWidth = 80
+      ClientHeight = 28
+      ClientWidth = 640
       TabOrder = 0
-      object SIZCollapseAllButton: TSpeedButton
-        Cursor = crHandPoint
-        Left = 40
-        Height = 36
-        Hint = 'Свернуть всё'
-        Top = 0
-        Width = 40
-        Align = alLeft
-        Images = Images.PX24
-        ImageIndex = 61
-        ShowHint = True
-        ParentShowHint = False
-        OnClick = SIZCollapseAllButtonClick
-      end
-      object SIZExpandAllButton: TSpeedButton
-        Cursor = crHandPoint
-        Left = 0
-        Height = 36
-        Hint = 'Развернуть всё'
-        Top = 0
-        Width = 40
-        Align = alLeft
-        Images = Images.PX24
-        ImageIndex = 60
-        ShowHint = True
-        ParentShowHint = False
-        OnClick = SIZExpandAllButtonClick
-      end
-    end
-    object SIZEditButtonPanel: TPanel
-      AnchorSideLeft.Control = SIZViewButtonPanel
-      AnchorSideLeft.Side = asrBottom
-      Left = 80
-      Height = 36
-      Top = 0
-      Width = 141
-      Align = alLeft
-      AutoSize = True
-      BevelOuter = bvNone
-      ClientHeight = 36
-      ClientWidth = 141
-      TabOrder = 1
-      Visible = False
-      object DividerBevel3: TDividerBevel
-        Left = 80
-        Height = 36
-        Top = 0
-        Width = 21
-        Caption = 'DividerBevel2'
-        Align = alLeft
-        BevelWidth = 2
-        Font.Style = [fsBold]
-        Orientation = trVertical
-        ParentFont = False
-      end
-      object SIZWriteoffButton: TSpeedButton
-        Cursor = crHandPoint
-        Left = 101
-        Height = 36
-        Hint = 'Списать или передать СИЗ со склада'
-        Top = 0
-        Width = 40
-        Align = alLeft
-        Enabled = False
-        Images = Images.PX24
-        ImageIndex = 40
-        ShowHint = True
-        ParentShowHint = False
-        OnClick = SIZWriteoffButtonClick
-      end
-      object SIZCheckAllButton: TSpeedButton
-        Cursor = crHandPoint
-        Left = 0
-        Height = 36
-        Hint = 'Выбрать все СИЗ'
-        Top = 0
-        Width = 40
-        Align = alLeft
-        Images = Images.PX24
-        ImageIndex = 12
-        ShowHint = True
-        ParentShowHint = False
-        OnClick = SIZCheckAllButtonClick
-      end
-      object SIZUncheckAllButton: TSpeedButton
-        Cursor = crHandPoint
-        Left = 40
-        Height = 36
-        Hint = 'Снять выбор со всех СИЗ'
-        Top = 0
-        Width = 40
-        Align = alLeft
-        Images = Images.PX24
-        ImageIndex = 13
-        ShowHint = True
-        ParentShowHint = False
-        OnClick = SIZUncheckAllButtonClick
-      end
-    end
-    object FilterPanel: TPanel
-      AnchorSideLeft.Control = SIZEditButtonPanel
-      AnchorSideLeft.Side = asrBottom
-      Left = 221
-      Height = 36
-      Top = 0
-      Width = 800
-      Align = alLeft
-      BevelOuter = bvNone
-      ClientHeight = 36
-      ClientWidth = 800
-      TabOrder = 2
       object DividerBevel4: TDividerBevel
         Left = 0
-        Height = 36
+        Height = 28
         Top = 0
-        Width = 21
+        Width = 18
         Caption = 'DividerBevel2'
         Align = alLeft
         BevelWidth = 2
@@ -353,128 +240,136 @@ object SIZStoreForm: TSIZStoreForm
         Orientation = trVertical
         ParentFont = False
       end
-      object FilterLabel: TLabel
-        AnchorSideLeft.Control = DividerBevel4
-        AnchorSideLeft.Side = asrBottom
-        AnchorSideTop.Control = FilterDocBCButton
-        AnchorSideTop.Side = asrCenter
-        Left = 21
-        Height = 20
-        Top = 8
-        Width = 152
-        Caption = 'Фильтр по документу:'
-        Visible = False
+      object FilterPanel: TPanel
+        Left = 18
+        Height = 28
+        Top = 0
+        Width = 622
+        Align = alClient
+        BevelOuter = bvNone
+        Caption = 'FilterPanel'
+        TabOrder = 0
       end
-      object FilterDocBCButton: TBCButton
-        Tag = -1
-        AnchorSideLeft.Control = FilterLabel
+    end
+    object ToolButtonPanel: TPanel
+      Left = 0
+      Height = 28
+      Top = 0
+      Width = 178
+      Align = alLeft
+      AutoSize = True
+      BevelOuter = bvNone
+      ClientHeight = 28
+      ClientWidth = 178
+      TabOrder = 1
+      object SIZViewButtonPanel: TPanel
+        Left = 0
+        Height = 28
+        Top = 0
+        Width = 64
+        Align = alLeft
+        AutoSize = True
+        BevelOuter = bvNone
+        ClientHeight = 28
+        ClientWidth = 64
+        TabOrder = 0
+        object SIZCollapseAllButton: TSpeedButton
+          Cursor = crHandPoint
+          Left = 32
+          Height = 28
+          Hint = 'Свернуть всё'
+          Top = 0
+          Width = 32
+          Align = alLeft
+          Images = Images.PX24
+          ImageIndex = 61
+          ShowHint = True
+          ParentShowHint = False
+          OnClick = SIZCollapseAllButtonClick
+        end
+        object SIZExpandAllButton: TSpeedButton
+          Cursor = crHandPoint
+          Left = 0
+          Height = 28
+          Hint = 'Развернуть всё'
+          Top = 0
+          Width = 32
+          Align = alLeft
+          Images = Images.PX24
+          ImageIndex = 60
+          ShowHint = True
+          ParentShowHint = False
+          OnClick = SIZExpandAllButtonClick
+        end
+      end
+      object SIZEditButtonPanel: TPanel
         AnchorSideLeft.Side = asrBottom
-        AnchorSideTop.Control = FilterPanel
-        AnchorSideTop.Side = asrCenter
-        AnchorSideRight.Control = FilterPanel
-        AnchorSideRight.Side = asrBottom
-        Left = 181
-        Height = 29
-        Top = 4
-        Width = 611
-        Anchors = [akTop, akLeft, akRight]
-        StateClicked.Background.Gradient1.StartColor = 8404992
-        StateClicked.Background.Gradient1.EndColor = 4194304
-        StateClicked.Background.Gradient1.GradientType = gtRadial
-        StateClicked.Background.Gradient1.Point1XPercent = 50
-        StateClicked.Background.Gradient1.Point1YPercent = 100
-        StateClicked.Background.Gradient1.Point2XPercent = 0
-        StateClicked.Background.Gradient1.Point2YPercent = 0
-        StateClicked.Background.Gradient2.StartColor = clWhite
-        StateClicked.Background.Gradient2.EndColor = clBlack
-        StateClicked.Background.Gradient2.GradientType = gtLinear
-        StateClicked.Background.Gradient2.Point1XPercent = 0
-        StateClicked.Background.Gradient2.Point1YPercent = 0
-        StateClicked.Background.Gradient2.Point2XPercent = 0
-        StateClicked.Background.Gradient2.Point2YPercent = 100
-        StateClicked.Background.Gradient1EndPercent = 100
-        StateClicked.Background.Style = bbsGradient
-        StateClicked.Border.Style = bboNone
-        StateClicked.FontEx.Color = 16770790
-        StateClicked.FontEx.FontQuality = fqSystemClearType
-        StateClicked.FontEx.Shadow = True
-        StateClicked.FontEx.ShadowRadius = 2
-        StateClicked.FontEx.ShadowOffsetX = 1
-        StateClicked.FontEx.ShadowOffsetY = 1
-        StateClicked.FontEx.Style = [fsBold]
-        StateHover.Background.Color = clWindow
-        StateHover.Background.Gradient1.StartColor = 16744448
-        StateHover.Background.Gradient1.EndColor = 8404992
-        StateHover.Background.Gradient1.GradientType = gtRadial
-        StateHover.Background.Gradient1.Point1XPercent = 50
-        StateHover.Background.Gradient1.Point1YPercent = 100
-        StateHover.Background.Gradient1.Point2XPercent = 0
-        StateHover.Background.Gradient1.Point2YPercent = 0
-        StateHover.Background.Gradient2.StartColor = clWhite
-        StateHover.Background.Gradient2.EndColor = clBlack
-        StateHover.Background.Gradient2.GradientType = gtLinear
-        StateHover.Background.Gradient2.Point1XPercent = 0
-        StateHover.Background.Gradient2.Point1YPercent = 0
-        StateHover.Background.Gradient2.Point2XPercent = 0
-        StateHover.Background.Gradient2.Point2YPercent = 100
-        StateHover.Background.Gradient1EndPercent = 100
-        StateHover.Background.Style = bbsColor
-        StateHover.Border.Color = clWindowFrame
-        StateHover.Border.Style = bboSolid
-        StateHover.FontEx.Color = clWindowText
-        StateHover.FontEx.FontQuality = fqSystemClearType
-        StateHover.FontEx.Shadow = False
-        StateHover.FontEx.ShadowRadius = 2
-        StateHover.FontEx.ShadowOffsetX = 1
-        StateHover.FontEx.ShadowOffsetY = 1
-        StateHover.FontEx.Style = []
-        StateHover.FontEx.TextAlignment = bcaLeftCenter
-        StateHover.FontEx.PaddingLeft = 5
-        StateNormal.Background.Color = clWindow
-        StateNormal.Background.Gradient1.StartColor = 4194304
-        StateNormal.Background.Gradient1.EndColor = 8405056
-        StateNormal.Background.Gradient1.GradientType = gtLinear
-        StateNormal.Background.Gradient1.Point1XPercent = 0
-        StateNormal.Background.Gradient1.Point1YPercent = 0
-        StateNormal.Background.Gradient1.Point2XPercent = 0
-        StateNormal.Background.Gradient1.Point2YPercent = 100
-        StateNormal.Background.Gradient2.StartColor = 8405056
-        StateNormal.Background.Gradient2.EndColor = 4194304
-        StateNormal.Background.Gradient2.GradientType = gtRadial
-        StateNormal.Background.Gradient2.Point1XPercent = 50
-        StateNormal.Background.Gradient2.Point1YPercent = 100
-        StateNormal.Background.Gradient2.Point2XPercent = 0
-        StateNormal.Background.Gradient2.Point2YPercent = 0
-        StateNormal.Background.Gradient1EndPercent = 60
-        StateNormal.Background.Style = bbsColor
-        StateNormal.Border.Color = clWindowFrame
-        StateNormal.Border.Style = bboSolid
-        StateNormal.FontEx.Color = clWindowText
-        StateNormal.FontEx.FontQuality = fqSystemClearType
-        StateNormal.FontEx.Shadow = False
-        StateNormal.FontEx.ShadowRadius = 2
-        StateNormal.FontEx.ShadowOffsetX = 1
-        StateNormal.FontEx.ShadowOffsetY = 1
-        StateNormal.FontEx.Style = []
-        StateNormal.FontEx.TextAlignment = bcaLeftCenter
-        StateNormal.FontEx.PaddingLeft = 5
-        BorderSpacing.Left = 8
-        BorderSpacing.Top = 8
-        BorderSpacing.Right = 8
-        Color = clNone
-        DropDownWidth = 16
-        DropDownArrowSize = 8
-        GlobalOpacity = 255
-        ParentColor = False
-        Rounding.RoundX = 0
-        Rounding.RoundY = 0
-        RoundingDropDown.RoundX = 1
-        RoundingDropDown.RoundY = 1
-        Style = bbtDropDown
-        TextApplyGlobalOpacity = False
+        Left = 64
+        Height = 28
+        Top = 0
+        Width = 114
+        Align = alLeft
+        AutoSize = True
+        BevelOuter = bvNone
+        ClientHeight = 28
+        ClientWidth = 114
+        TabOrder = 1
         Visible = False
-        DropDownStyle = bdsCommon
-        MemoryUsage = bmuHigh
+        object DividerBevel3: TDividerBevel
+          Left = 64
+          Height = 28
+          Top = 0
+          Width = 18
+          Caption = 'DividerBevel2'
+          Align = alLeft
+          BevelWidth = 2
+          Font.Style = [fsBold]
+          Orientation = trVertical
+          ParentFont = False
+        end
+        object SIZWriteoffButton: TSpeedButton
+          Cursor = crHandPoint
+          Left = 82
+          Height = 28
+          Hint = 'Списать или передать СИЗ со склада'
+          Top = 0
+          Width = 32
+          Align = alLeft
+          Enabled = False
+          Images = Images.PX24
+          ImageIndex = 40
+          ShowHint = True
+          ParentShowHint = False
+          OnClick = SIZWriteoffButtonClick
+        end
+        object SIZCheckAllButton: TSpeedButton
+          Cursor = crHandPoint
+          Left = 0
+          Height = 28
+          Hint = 'Выбрать все СИЗ'
+          Top = 0
+          Width = 32
+          Align = alLeft
+          Images = Images.PX24
+          ImageIndex = 12
+          ShowHint = True
+          ParentShowHint = False
+          OnClick = SIZCheckAllButtonClick
+        end
+        object SIZUncheckAllButton: TSpeedButton
+          Cursor = crHandPoint
+          Left = 32
+          Height = 28
+          Hint = 'Снять выбор со всех СИЗ'
+          Top = 0
+          Width = 32
+          Align = alLeft
+          Images = Images.PX24
+          ImageIndex = 13
+          ShowHint = True
+          ParentShowHint = False
+          OnClick = SIZUncheckAllButtonClick
+        end
       end
     end
   end

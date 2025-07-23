@@ -19,27 +19,27 @@ type
   { TSIZStoreForm }
 
   TSIZStoreForm = class(TForm)
+    DividerBevel3: TDividerBevel;
     DividerBevel4: TDividerBevel;
-    FilterDocBCButton: TBCButton;
     FilterPanel: TPanel;
-    FilterLabel: TLabel;
-    SIZCheckAllButton: TSpeedButton;
+    ToolFilterPanel: TPanel;
     CloseButton: TSpeedButton;
     DividerBevel1: TDividerBevel;
     CaptionPanel: TPanel;
     DividerBevel2: TDividerBevel;
-    DividerBevel3: TDividerBevel;
     HistoryButton: TSpeedButton;
     OutButton: TSpeedButton;
     ExportButton: TSpeedButton;
     EntryButton: TSpeedButton;
-    SIZWriteoffButton: TSpeedButton;
+    ToolButtonPanel: TPanel;
+    SIZCheckAllButton: TSpeedButton;
     SIZCollapseAllButton: TSpeedButton;
     SIZEditButtonPanel: TPanel;
     SIZExpandAllButton: TSpeedButton;
     SIZToolPanel: TPanel;
-    SIZViewButtonPanel: TPanel;
     SIZUncheckAllButton: TSpeedButton;
+    SIZViewButtonPanel: TPanel;
+    SIZWriteoffButton: TSpeedButton;
     WriteoffButton: TSpeedButton;
     ToolPanel: TPanel;
     VT: TVirtualStringTree;
@@ -112,7 +112,7 @@ begin
   SIZListCreate;
 
   FilterIndex:= -1;
-  DropFilter:= DKDropFilterCreate('Фильтр по документу:', FilterPanel, @FilterChange);
+  DropFilter:= DKDropFilterCreate('Фильтр по документу:', ToolFilterPanel, @FilterChange);
 end;
 
 procedure TSIZStoreForm.FormDestroy(Sender: TObject);

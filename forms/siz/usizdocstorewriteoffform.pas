@@ -22,15 +22,21 @@ type
     DividerBevel3: TDividerBevel;
     EditButtonPanel: TPanel;
     ExpandAllButton: TSpeedButton;
+    CheckAllButton: TSpeedButton;
+    CheckButtonPanel: TPanel;
+    UncheckAllButton: TSpeedButton;
+    ToolButtonPanel: TPanel;
     ToolPanel: TPanel;
     ViewButtonPanel: TPanel;
     VT: TVirtualStringTree;
+    procedure CheckAllButtonClick(Sender: TObject);
     procedure CollapseAllButtonClick(Sender: TObject);
     procedure DelButtonClick(Sender: TObject);
     procedure ExpandAllButtonClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure UncheckAllButtonClick(Sender: TObject);
   private
     DocID: Integer;
     IsEditing: Boolean;
@@ -83,11 +89,11 @@ begin
   ]);
 
   SetToolButtons([
-    ExpandAllButton, CollapseAllButton, DelButton
+    ExpandAllButton, CollapseAllButton, CheckAllButton, UncheckAllButton, DelButton
   ]);
 
   Images.ToButtons([
-    ExpandAllButton, CollapseAllButton, DelButton
+    ExpandAllButton, CollapseAllButton, CheckAllButton, UncheckAllButton, DelButton
   ]);
 end;
 
@@ -219,6 +225,7 @@ procedure TSIZDocStoreWriteoffForm.ViewUpdate(const AIsEditing: Boolean);
 begin
   IsEditing:= AIsEditing;
   EditButtonPanel.Visible:= AIsEditing;
+  CheckButtonPanel.Visible:= AIsEditing;
   if AIsEditing then
     SIZList.CheckKind:= chkAll
   else
@@ -240,6 +247,16 @@ end;
 procedure TSIZDocStoreWriteoffForm.CollapseAllButtonClick(Sender: TObject);
 begin
   SIZList.ExpandAll(False);
+end;
+
+procedure TSIZDocStoreWriteoffForm.CheckAllButtonClick(Sender: TObject);
+begin
+  SIZList.CheckAll(True);
+end;
+
+procedure TSIZDocStoreWriteoffForm.UncheckAllButtonClick(Sender: TObject);
+begin
+  SIZList.CheckAll(False);
 end;
 
 procedure TSIZDocStoreWriteoffForm.DelButtonClick(Sender: TObject);
