@@ -648,6 +648,8 @@ type
     function SIZDocStoreEntryDelete(const ADocID: Integer): Boolean;
     {Удаление документа списания (передачи) СИЗ со склада: True - ОК, False - ошибка}
     function SIZDocStoreWriteoffDelete(const ADocID: Integer): Boolean;
+    {Удаление документа прихода СИЗ на склад: True - ОК, False - ошибка}
+    function SIZDocReceivingDelete(const ADocID: Integer): Boolean;
 
     {Удаление пустых документов за год: True - ОК, False - ошибка}
     function SIZDocStoreEmptyDelete(const ADocType, AYear: Integer): Boolean;
@@ -5605,7 +5607,7 @@ var
     end;
   end;
 
-  function GetRemainingLogIDs(const ALogIDs: TInt64Vector): TInt64Vector;
+  function GetEmptyLogIDs(const ALogIDs: TInt64Vector): TInt64Vector;
   var
     i: Integer;
     V: TInt64Vector;
@@ -5642,7 +5644,7 @@ begin
       //удаляем строки из инфо лога выдачи
       Delete('SIZCARDPERSONALLOGINFO', 'StoreID', StoreIDs, False{no commit});
       //получаем ID логов, которых не осталось (пустые)
-      LogIDs:= GetRemainingLogIDs(LogIDs);
+      LogIDs:= GetEmptyLogIDs(LogIDs);
       //удаляем пустые
       if not VIsNil(LogIDs) then
         Delete('SIZCARDPERSONALLOG', 'LogID', LogIDs, False{no commit});
@@ -5674,10 +5676,39 @@ begin
   Result:= False;
   QSetQuery(FQuery);
   try
+    //получаем ID списанного со склада
     StoreIDs:= ValuesInt64ByInt32ID('SIZSTOREWRITEOFF', 'StoreID', 'DocID', ADocID);
-
+    //отменяем списание
     if not VIsNil(StoreIDs) then
       SIZStoreWriteoffCancel(StoreIDs, False{no commit});
+    //удаляем документ списания (и, соответственно, записи из SIZSTOREWRITEOFF)
+    Delete('SIZDOC', 'DocID', ADocID, False{no commit});
+
+    QCommit;
+    Result:= True;
+  except
+    QRollback;
+  end;
+end;
+
+function TDataBase.SIZDocReceivingDelete(const ADocID: Integer): Boolean;
+var
+  LogIDs, StoreIDs: TInt64Vector;
+begin
+  Result:= False;
+  QSetQuery(FQuery);
+  try
+    //получаем ID логов выданного со склада
+    LogIDs:= ValuesInt64ByInt32ID('SIZCARDPERSONALLOG', 'LogID', 'DocID', ADocID);
+    if not VIsNil(LogIDs) then
+    begin
+      //получаем ID выданного со склада
+      StoreIDs:= ValuesInt64ByInt64ID('SIZCARDPERSONALLOGINFO', 'StoreID', 'LogID', LogIDs);
+      //отмечаем СИЗ на складе, как свободные
+      if not VIsNil(StoreIDs) then
+        UpdateByInt64ID('SIZSTORELOG', 'IsBusy', 'StoreID', AStoreIDs, 0{свободно}, False{no commit});
+    end;
+    //удаляем документ выдачи (и, соответственно, записи из SIZCARDPERSONALLOG и SIZCARDPERSONALLOGINFO)
     Delete('SIZDOC', 'DocID', ADocID, False{no commit});
 
     QCommit;
