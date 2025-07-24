@@ -8,9 +8,9 @@ uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, Buttons,
   fpspreadsheetgrid,
   //Project utils
-  UTypes, UConst, UVars, USIZSizes, USIZCardSheet, USIZNormTypes,
+  UConst, UVars, USIZSizes, USIZCardSheet, USIZNormTypes,
   //DK packages utils
-  DK_Zoom, DK_CtrlUtils, DK_Vector, DK_StrUtils;
+  DK_Zoom, DK_Vector;
 
 type
 

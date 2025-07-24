@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, Buttons,
-  StdCtrls, VirtualTrees, BCButton, DividerBevel,
+  VirtualTrees, DividerBevel,
   //Project utils
   UVars, UConst, UTypes,
   //DK packages utils

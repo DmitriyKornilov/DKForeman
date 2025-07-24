@@ -1,59 +1,60 @@
 object SIZDocStoreWriteoffForm: TSIZDocStoreWriteoffForm
   Left = 377
-  Height = 160
+  Height = 200
   Top = 250
-  Width = 400
+  Width = 500
   Caption = 'SIZDocStoreWriteoffForm'
-  ClientHeight = 160
-  ClientWidth = 400
+  ClientHeight = 200
+  ClientWidth = 500
+  DesignTimePPI = 120
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
   object ToolPanel: TPanel
     Left = 0
-    Height = 32
+    Height = 40
     Top = 2
-    Width = 398
+    Width = 498
     Align = alTop
     BorderSpacing.Top = 2
     BorderSpacing.Right = 2
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 28
-    ClientWidth = 394
+    ClientHeight = 36
+    ClientWidth = 494
     ParentBackground = False
     ParentColor = False
     ParentFont = False
     TabOrder = 0
     object ToolButtonPanel: TPanel
       Left = 0
-      Height = 28
+      Height = 36
       Top = 0
-      Width = 128
+      Width = 160
       Align = alLeft
       AutoSize = True
       BevelOuter = bvNone
-      ClientHeight = 28
-      ClientWidth = 128
+      ClientHeight = 36
+      ClientWidth = 160
       TabOrder = 0
       object ViewButtonPanel: TPanel
         Left = 0
-        Height = 28
+        Height = 36
         Top = 0
-        Width = 64
+        Width = 80
         Align = alLeft
         AutoSize = True
         BevelOuter = bvNone
-        ClientHeight = 28
-        ClientWidth = 64
+        ClientHeight = 36
+        ClientWidth = 80
         TabOrder = 0
         object CollapseAllButton: TSpeedButton
           Cursor = crHandPoint
-          Left = 32
-          Height = 28
+          Left = 40
+          Height = 36
           Hint = 'Свернуть всё'
           Top = 0
-          Width = 32
+          Width = 40
           Align = alLeft
           Images = Images.PX24
           ImageIndex = 61
@@ -64,10 +65,10 @@ object SIZDocStoreWriteoffForm: TSIZDocStoreWriteoffForm
         object ExpandAllButton: TSpeedButton
           Cursor = crHandPoint
           Left = 0
-          Height = 28
+          Height = 36
           Hint = 'Развернуть всё'
           Top = 0
-          Width = 32
+          Width = 40
           Align = alLeft
           Images = Images.PX24
           ImageIndex = 60
@@ -78,24 +79,24 @@ object SIZDocStoreWriteoffForm: TSIZDocStoreWriteoffForm
       end
       object CheckButtonPanel: TPanel
         AnchorSideLeft.Side = asrBottom
-        Left = 64
-        Height = 28
+        Left = 80
+        Height = 36
         Top = 0
-        Width = 64
+        Width = 80
         Align = alLeft
         AutoSize = True
         BevelOuter = bvNone
-        ClientHeight = 28
-        ClientWidth = 64
+        ClientHeight = 36
+        ClientWidth = 80
         TabOrder = 1
         Visible = False
         object CheckAllButton: TSpeedButton
           Cursor = crHandPoint
           Left = 0
-          Height = 28
+          Height = 36
           Hint = 'Выбрать все СИЗ'
           Top = 0
-          Width = 32
+          Width = 40
           Align = alLeft
           Images = Images.PX24
           ImageIndex = 12
@@ -105,11 +106,11 @@ object SIZDocStoreWriteoffForm: TSIZDocStoreWriteoffForm
         end
         object UncheckAllButton: TSpeedButton
           Cursor = crHandPoint
-          Left = 32
-          Height = 28
+          Left = 40
+          Height = 36
           Hint = 'Снять выбор со всех СИЗ'
           Top = 0
-          Width = 32
+          Width = 40
           Align = alLeft
           Images = Images.PX24
           ImageIndex = 13
@@ -120,22 +121,22 @@ object SIZDocStoreWriteoffForm: TSIZDocStoreWriteoffForm
       end
     end
     object EditButtonPanel: TPanel
-      Left = 128
-      Height = 28
+      Left = 160
+      Height = 36
       Top = 0
-      Width = 50
+      Width = 61
       Align = alLeft
       AutoSize = True
       BevelOuter = bvNone
-      ClientHeight = 28
-      ClientWidth = 50
+      ClientHeight = 36
+      ClientWidth = 61
       TabOrder = 1
       Visible = False
       object DividerBevel3: TDividerBevel
         Left = 0
-        Height = 28
+        Height = 36
         Top = 0
-        Width = 18
+        Width = 21
         Caption = 'DividerBevel2'
         Align = alLeft
         BevelWidth = 2
@@ -145,11 +146,11 @@ object SIZDocStoreWriteoffForm: TSIZDocStoreWriteoffForm
       end
       object DelButton: TSpeedButton
         Cursor = crHandPoint
-        Left = 18
-        Height = 28
+        Left = 21
+        Height = 36
         Hint = 'Отменить списание (передачу) СИЗ'
         Top = 0
-        Width = 32
+        Width = 40
         Align = alLeft
         Enabled = False
         Images = Images.PX24
@@ -162,14 +163,14 @@ object SIZDocStoreWriteoffForm: TSIZDocStoreWriteoffForm
   end
   object VT: TVirtualStringTree
     Left = 0
-    Height = 122
-    Top = 36
-    Width = 398
+    Height = 154
+    Top = 44
+    Width = 498
     Align = alClient
     BorderSpacing.Top = 2
     BorderSpacing.Right = 2
     BorderSpacing.Bottom = 2
-    DefaultNodeHeight = 20
+    DefaultNodeHeight = 25
     DefaultText = 'Node'
     Header.AutoSizeIndex = 0
     Header.Columns = <>
