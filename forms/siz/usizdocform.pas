@@ -252,7 +252,7 @@ var
 begin
   if not Confirm('Удалить документ?') then Exit;
   case DocType of
-    1: ; //!!!!
+    1: NeedReload:= DataBase.SIZDocStoreEntryDelete(DocIDs[DocList.SelectedIndex]);
     2: ; //!!!!
     3: NeedReload:= DataBase.SIZDocStoreWriteoffDelete(DocIDs[DocList.SelectedIndex]);
     4: ; //!!!!

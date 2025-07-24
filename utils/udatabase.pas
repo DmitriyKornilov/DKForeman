@@ -644,7 +644,9 @@ type
                          const ADocDate: TDate;
                          const ADocType, ADocForm: Integer): Boolean;
 
-    {Обновление документа списания (передачи) СИЗ со склада: True - ОК, False - ошибка}
+    {Удаление документа прихода СИЗ на склад: True - ОК, False - ошибка}
+    function SIZDocStoreEntryDelete(const ADocID: Integer): Boolean;
+    {Удаление документа списания (передачи) СИЗ со склада: True - ОК, False - ошибка}
     function SIZDocStoreWriteoffDelete(const ADocID: Integer): Boolean;
 
     {Удаление пустых документов за год: True - ОК, False - ошибка}
@@ -5578,6 +5580,86 @@ begin
     QParamInt('DocType', ADocType);
     QParamInt('DocForm', ADocForm);
     QExec;
+    QCommit;
+    Result:= True;
+  except
+    QRollback;
+  end;
+end;
+
+function TDataBase.SIZDocStoreEntryDelete(const ADocID: Integer): Boolean;
+var
+  LogIDs, EntryIDs, StoreIDs, ReturnStoreIDs, ReturnEntryIDs: TInt64Vector;
+
+  function GetReturnStoreIDs(const AStoreIDs: TInt64Vector): TInt64Vector;
+  var
+    V: TInt64Vector;
+  begin
+    //получаем ID записей СИЗ после возврата (может быть не один возврат)
+    Result:= nil;
+    V:= ValuesInt64ByInt64ID('SIZSTAFFRETURN', 'ReturnStoreID', 'StoreID', AStoreIDs);
+    while not VIsNil(V) do
+    begin
+      Result:= VAdd(Result, V);
+      V:= ValuesInt64ByInt64ID('SIZSTAFFRETURN', 'ReturnStoreID', 'StoreID', V);
+    end;
+  end;
+
+  function GetRemainingLogIDs(const ALogIDs: TInt64Vector): TInt64Vector;
+  var
+    i: Integer;
+    V: TInt64Vector;
+  begin
+    Result:= nil;
+    V:= ValuesInt64ByInt64ID('SIZCARDPERSONALLOGINFO', 'LogID', 'LogID', ALogIDs);
+    for i:= 0 to High(ALogIDs) do
+      if VIndexOf(V, ALogIDs[i])<0 then
+        VAppend(Result, ALogIDs[i]);
+  end;
+
+begin
+  Result:= False;
+  QSetQuery(FQuery);
+  try
+    //получаем ID записей прихода
+    EntryIDs:= ValuesInt64ByInt32ID('SIZSTOREENTRY', 'EntryID', 'DocID', ADocID);
+    if not VIsNil(EntryIDs) then
+    begin
+      //получаем ID склада
+      StoreIDs:= ValuesInt64ByInt64ID('SIZSTORELOG', 'StoreID', 'EntryID', EntryIDs);
+      //получаем ID записей СИЗ после возврата
+      ReturnStoreIDs:= GetReturnStoreIDs(StoreIDs);
+      if not VIsNil(ReturnStoreIDs) then
+      begin
+        //получаем ID прихода на склад при возврате
+        ReturnEntryIDs:= ValuesInt64ByInt64ID('SIZSTORELOG', 'EntryID', 'StoreID', ReturnStoreIDs);
+        //обединяем ID склада
+        StoreIDs:= VAdd(StoreIDs, ReturnStoreIDs);
+      end;
+
+      //получаем ID логов выдачи
+      LogIDs:= ValuesInt64ByInt64ID('SIZCARDPERSONALLOGINFO', 'LogID', 'StoreID', StoreIDs);
+      //удаляем строки из инфо лога выдачи
+      Delete('SIZCARDPERSONALLOGINFO', 'StoreID', StoreIDs, False{no commit});
+      //получаем ID логов, которых не осталось (пустые)
+      LogIDs:= GetRemainingLogIDs(LogIDs);
+      //удаляем пустые
+      if not VIsNil(LogIDs) then
+        Delete('SIZCARDPERSONALLOG', 'LogID', LogIDs, False{no commit});
+
+      //удаляем записи из документа списания со склада
+      Delete('SIZSTOREWRITEOFF', 'StoreID', StoreIDs, False{no commit});
+       //удаляем записи из таблицы возврата
+      if not VIsNil(ReturnStoreIDs) then
+        Delete('SIZSTAFFRETURN', 'ReturnStoreID', ReturnStoreIDs, False{no commit});
+      //удаляем приход на склад при возврате (и, соответственно, записи из SIZSTORELOG)
+      if not VIsNil(ReturnEntryIDs) then
+        Delete('SIZSTOREENTRY', 'EntryID', ReturnEntryIDs, False{no commit});
+    end;
+
+    //удалям документ прихода (и, соответственно, записи из SIZSTOREENTRY и SIZSTORELOG)
+    Delete('SIZDOC', 'DocID', ADocID, False{no commit});
+
     QCommit;
     Result:= True;
   except
