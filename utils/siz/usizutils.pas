@@ -14,6 +14,7 @@ uses
 function SIZLifeInYears(const AMonths: Extended): String;
 function SIZLifeInMonths(const AMonths: Extended): String;
 function SIZLifeInMonthAndYears(const AMonths: Extended): String;
+function SIZLifeInMonthOrYears(const AReceivingCount, ANum, ALife: Integer): String;
 
 function SIZPeriod(const ALife: Integer;
                    //выводить "1" перед месяц/год, когда Life=1/12
@@ -123,6 +124,21 @@ begin
   Result:= MonthStr;
   if YearStr<>EmptyStr then
     Result:= MonthStr + ' (' + YearStr + ')';
+end;
+
+function SIZLifeInMonthOrYears(const AReceivingCount, ANum, ALife: Integer): String;
+var
+  Months: Extended;
+begin
+  if ALife<=0 then //особый срок службы
+    Result:= SIZ_LIFE_PICKS[ALife]
+  else begin
+    Months:= SIZLifeInMonths(AReceivingCount, ANum, ALife);
+    if Months<12 then
+      Result:= SIZLifeInMonths(Months)
+    else
+      Result:= SIZLifeInYears(Months);
+  end;
 end;
 
 function SIZPeriod(const ALife: Integer; const ANeedLifeCountIfSingle: Boolean = True): String;

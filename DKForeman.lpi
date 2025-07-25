@@ -581,6 +581,7 @@
         <Filename Value="forms\siz\usizdocreceivingform.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="SIZDocReceivingForm"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="USIZDocReceivingForm"/>
       </Unit>
