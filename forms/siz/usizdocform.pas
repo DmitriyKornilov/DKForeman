@@ -12,7 +12,8 @@ uses
   //DK packages utils
   DK_VSTTables, DK_Vector, DK_CtrlUtils, DK_DateUtils, DK_Dialogs,
   //Forms
-  USIZDocEditForm, USIZDocStoreEntryForm, USIZDocStoreWriteoffForm;
+  USIZDocEditForm, USIZDocStoreEntryForm, USIZDocStoreWriteoffForm,
+  USIZDocReturningForm, USIZDocReceivingForm;
 
 type
 
@@ -46,6 +47,7 @@ type
     procedure DocEraseButtonClick(Sender: TObject);
     procedure DocVTDblClick(Sender: TObject);
     procedure EditingButtonClick(Sender: TObject);
+    procedure ExportButtonClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -253,9 +255,9 @@ begin
   if not Confirm('Удалить документ?') then Exit;
   case DocType of
     1: NeedReload:= DataBase.SIZDocStoreEntryDelete(DocIDs[DocList.SelectedIndex]);
-    2: ; //!!!!
+    2: NeedReload:= DataBase.SIZDocReceivingDelete(DocIDs[DocList.SelectedIndex]);
     3: NeedReload:= DataBase.SIZDocStoreWriteoffDelete(DocIDs[DocList.SelectedIndex]);
-    4: ; //!!!!
+    4: NeedReload:= DataBase.SIZDocReturningDelete(DocIDs[DocList.SelectedIndex]);
   end;
 
   if NeedReload then DocListLoad;
@@ -265,9 +267,9 @@ procedure TSIZDocForm.SIZFormShow;
 begin
   case DocType of
     1: SIZForm:= FormOnPanelCreate(TSIZDocStoreEntryForm, SIZFormPanel);
-    2: ; //!!!!
+    2: SIZForm:= FormOnPanelCreate(TSIZDocReceivingForm, SIZFormPanel);
     3: SIZForm:= FormOnPanelCreate(TSIZDocStoreWriteoffForm, SIZFormPanel);
-    4: ; //!!!!
+    4: SIZForm:= FormOnPanelCreate(TSIZDocReturningForm, SIZFormPanel);
   end;
 
   if Assigned(SIZForm) then
@@ -281,9 +283,9 @@ procedure TSIZDocForm.SIZFormViewUpdate;
 begin
   case DocType of
     1: (SIZForm as TSIZDocStoreEntryForm).ViewUpdate(EditingButton.Down);
-    2: ; //!!!!
+    2: (SIZForm as TSIZDocReceivingForm).ViewUpdate(EditingButton.Down);
     3: (SIZForm as TSIZDocStoreWriteoffForm).ViewUpdate(EditingButton.Down);
-    4: ; //!!!!
+    4: (SIZForm as TSIZDocReturningForm).ViewUpdate(EditingButton.Down);
   end;
 end;
 
@@ -296,9 +298,9 @@ begin
     DocID:= DocIDs[DocList.SelectedIndex];
   case DocType of
     1: (SIZForm as TSIZDocStoreEntryForm).DocChange(DocID);
-    2: ; //!!!!
+    2: (SIZForm as TSIZDocReceivingForm).DocChange(DocID);
     3: (SIZForm as TSIZDocStoreWriteoffForm).DocChange(DocID);
-    4: ; //!!!!
+    4: (SIZForm as TSIZDocReturningForm).DocChange(DocID);
   end;
 end;
 
@@ -316,6 +318,11 @@ end;
 procedure TSIZDocForm.EditingButtonClick(Sender: TObject);
 begin
   ViewUpdate;
+end;
+
+procedure TSIZDocForm.ExportButtonClick(Sender: TObject);
+begin
+  //!!!!
 end;
 
 end.

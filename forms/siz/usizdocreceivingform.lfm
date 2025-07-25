@@ -1,0 +1,179 @@
+object SIZDocReceivingForm: TSIZDocReceivingForm
+  Left = 377
+  Height = 200
+  Top = 250
+  Width = 500
+  Caption = 'SIZDocReceivingForm'
+  ClientHeight = 200
+  ClientWidth = 500
+  DesignTimePPI = 120
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  OnShow = FormShow
+  object ToolPanel: TPanel
+    Left = 0
+    Height = 40
+    Top = 2
+    Width = 498
+    Align = alTop
+    BorderSpacing.Top = 2
+    BorderSpacing.Right = 2
+    BevelOuter = bvNone
+    BorderStyle = bsSingle
+    ClientHeight = 36
+    ClientWidth = 494
+    ParentBackground = False
+    ParentColor = False
+    ParentFont = False
+    TabOrder = 0
+    object ToolButtonPanel: TPanel
+      Left = 0
+      Height = 36
+      Top = 0
+      Width = 160
+      Align = alLeft
+      AutoSize = True
+      BevelOuter = bvNone
+      ClientHeight = 36
+      ClientWidth = 160
+      TabOrder = 0
+      object ViewButtonPanel: TPanel
+        Left = 0
+        Height = 36
+        Top = 0
+        Width = 80
+        Align = alLeft
+        AutoSize = True
+        BevelOuter = bvNone
+        ClientHeight = 36
+        ClientWidth = 80
+        TabOrder = 0
+        object CollapseAllButton: TSpeedButton
+          Cursor = crHandPoint
+          Left = 40
+          Height = 36
+          Hint = 'Свернуть всё'
+          Top = 0
+          Width = 40
+          Align = alLeft
+          Images = Images.PX24
+          ImageIndex = 61
+          ShowHint = True
+          ParentShowHint = False
+          OnClick = CollapseAllButtonClick
+        end
+        object ExpandAllButton: TSpeedButton
+          Cursor = crHandPoint
+          Left = 0
+          Height = 36
+          Hint = 'Развернуть всё'
+          Top = 0
+          Width = 40
+          Align = alLeft
+          Images = Images.PX24
+          ImageIndex = 60
+          ShowHint = True
+          ParentShowHint = False
+          OnClick = ExpandAllButtonClick
+        end
+      end
+      object CheckButtonPanel: TPanel
+        AnchorSideLeft.Side = asrBottom
+        Left = 80
+        Height = 36
+        Top = 0
+        Width = 80
+        Align = alLeft
+        AutoSize = True
+        BevelOuter = bvNone
+        ClientHeight = 36
+        ClientWidth = 80
+        TabOrder = 1
+        Visible = False
+        object CheckAllButton: TSpeedButton
+          Cursor = crHandPoint
+          Left = 0
+          Height = 36
+          Hint = 'Выбрать все СИЗ'
+          Top = 0
+          Width = 40
+          Align = alLeft
+          Images = Images.PX24
+          ImageIndex = 12
+          ShowHint = True
+          ParentShowHint = False
+          OnClick = CheckAllButtonClick
+        end
+        object UncheckAllButton: TSpeedButton
+          Cursor = crHandPoint
+          Left = 40
+          Height = 36
+          Hint = 'Снять выбор со всех СИЗ'
+          Top = 0
+          Width = 40
+          Align = alLeft
+          Images = Images.PX24
+          ImageIndex = 13
+          ShowHint = True
+          ParentShowHint = False
+          OnClick = UncheckAllButtonClick
+        end
+      end
+    end
+    object EditButtonPanel: TPanel
+      Left = 160
+      Height = 36
+      Top = 0
+      Width = 61
+      Align = alLeft
+      AutoSize = True
+      BevelOuter = bvNone
+      ClientHeight = 36
+      ClientWidth = 61
+      TabOrder = 1
+      Visible = False
+      object DividerBevel3: TDividerBevel
+        Left = 0
+        Height = 36
+        Top = 0
+        Width = 21
+        Caption = 'DividerBevel2'
+        Align = alLeft
+        BevelWidth = 2
+        Font.Style = [fsBold]
+        Orientation = trVertical
+        ParentFont = False
+      end
+      object DelButton: TSpeedButton
+        Cursor = crHandPoint
+        Left = 21
+        Height = 36
+        Hint = 'Отменить выдачу СИЗ'
+        Top = 0
+        Width = 40
+        Align = alLeft
+        Enabled = False
+        Images = Images.PX24
+        ImageIndex = 5
+        ShowHint = True
+        ParentShowHint = False
+      end
+    end
+  end
+  object VT: TVirtualStringTree
+    Left = 0
+    Height = 154
+    Top = 44
+    Width = 498
+    Align = alClient
+    BorderSpacing.Top = 2
+    BorderSpacing.Right = 2
+    BorderSpacing.Bottom = 2
+    DefaultNodeHeight = 25
+    DefaultText = 'Node'
+    Header.AutoSizeIndex = 0
+    Header.Columns = <>
+    Header.MainColumn = -1
+    TabOrder = 1
+  end
+end

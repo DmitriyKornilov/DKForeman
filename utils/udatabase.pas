@@ -648,8 +648,10 @@ type
     function SIZDocStoreEntryDelete(const ADocID: Integer): Boolean;
     {Удаление документа списания (передачи) СИЗ со склада: True - ОК, False - ошибка}
     function SIZDocStoreWriteoffDelete(const ADocID: Integer): Boolean;
-    {Удаление документа прихода СИЗ на склад: True - ОК, False - ошибка}
+    {Удаление документа выдачи СИЗ: True - ОК, False - ошибка}
     function SIZDocReceivingDelete(const ADocID: Integer): Boolean;
+    {Удаление документа возврата СИЗ: True - ОК, False - ошибка}
+    function SIZDocReturningDelete(const ADocID: Integer): Boolean;
 
     {Удаление пустых документов за год: True - ОК, False - ошибка}
     function SIZDocStoreEmptyDelete(const ADocType, AYear: Integer): Boolean;
@@ -695,7 +697,7 @@ type
                          const ANomNum, ANote: String;
                          const ANameID, ASizeID, AHeightID, ACount, AOldCount: Integer): Boolean;
 
-    {Загрузка документа списания (передачи) СИЗ со склад: True - ОК, False - пусто}
+    {Загрузка документа списания (передачи) СИЗ со склада: True - ОК, False - пусто}
     function SIZStoreWriteOffLoad(const ADocID: Integer;
                          out AStoreIDs: TInt64Vector;
                          out ANomNums, ASizNames, ASizUnits, AEntryDocNames,
@@ -708,8 +710,6 @@ type
                          out ASizCounts: TIntMatrix;
                          out ANomNums, ASizNames, ASizUnits,
                              ASizSizes, AEntryDocNames, ANotes: TStrMatrix): Boolean;
-
-
     {Запись СИЗ в документ списания (передачи) со склада: True - ОК, False - ошибка}
     function SIZStoreWriteoffAdd(const ADocID: Integer;
                                  const AStoreIDs: TInt64Vector;
@@ -729,6 +729,21 @@ type
                          out ANomNums, ASizNames, ASizUnits,
                              ASizSizes, ADocNames: TStrMatrix;
                          const ANeedCountInCategory: Boolean = True): Boolean;
+
+    {Загрузка документа выдачи СИЗ: True - ОК, False - пусто}
+    function SIZStoreReceivingLoad(const ADocID: Integer;
+                         out AStoreIDs: TInt64Vector;
+                         out AFs, ANs, APs, ATabNums, APostNames,
+                             ANomNums, ASizNames, ASizUnits,
+                             AEntryDocNames, AEntryDocNums: TStrVector;
+                         out ATabNumIDs, ANums, ALifes, ANameIDs: TIntVector;
+                         out AEntryDocDates: TDateVector): Boolean;
+   { function SIZStoreReceivingLoad(const ADocID: Integer;
+                         out AStaffNames: TStrVector;
+                         out AStoreIDs: TInt64Matrix;
+                         out ASizCounts: TIntMatrix;
+                         out ANomNums, ASizNames, ASizUnits, ASizLifes,
+                             AEntryDocNames: TStrMatrix): Boolean; }
 
     {Отмена прихода на склад: True - ОК, False - пусто}
     function SIZStoreEntryCancel(const AStoreIDs: TInt64Vector;
@@ -5678,6 +5693,28 @@ begin
   end;
 end;
 
+function TDataBase.SIZDocReturningDelete(const ADocID: Integer): Boolean;
+var
+  StoreIDs: TInt64Vector;
+begin
+  Result:= False;
+  QSetQuery(FQuery);
+  try
+    //получаем ID возвращенного
+    StoreIDs:= ValuesInt64ByInt32ID('SIZSTAFFRETURN', 'StoreID', 'DocID', ADocID);
+    //отменяем списание
+    if not VIsNil(StoreIDs) then
+      SIZStoreReturningCancel(StoreIDs, False{no commit});
+    //удаляем документ возврата
+    Delete('SIZDOC', 'DocID', ADocID, False{no commit});
+
+    QCommit;
+    Result:= True;
+  except
+    QRollback;
+  end;
+end;
+
 function TDataBase.SIZDocStoreEmptyDelete(const ADocType, AYear: Integer): Boolean;
 var
   DocIDs: TIntVector;
@@ -6375,6 +6412,96 @@ begin
       ACategoryNames[i, 3]:= IntToStr(VSum(ASizCounts[i]));
   end;
 
+end;
+
+function TDataBase.SIZStoreReceivingLoad(const ADocID: Integer;
+                         out AStoreIDs: TInt64Vector;
+                         out AFs, ANs, APs, ATabNums, APostNames,
+                             ANomNums, ASizNames, ASizUnits,
+                             AEntryDocNames, AEntryDocNums: TStrVector;
+                         out ATabNumIDs, ANums, ALifes, ANameIDs: TIntVector;
+                         out AEntryDocDates: TDateVector): Boolean;
+begin
+  AStoreIDs:= nil;
+
+  AFs:= nil;
+  ANs:= nil;
+  APs:= nil;
+  ATabNums:= nil;
+  APostNames:= nil;
+  ANomNums:= nil;
+  ASizNames:= nil;
+  ASizUnits:= nil;
+  AEntryDocNames:= nil;
+  AEntryDocNums:= nil;
+
+  ATabNumIDs:= nil;
+  ANums:= nil;
+  ALifes:= nil;
+  ANameIDs:= nil;
+
+  AEntryDocDates:= nil;
+
+  QSetQuery(FQuery);
+  QSetSQL(
+    'SELECT t1.StoreID, ' +
+           't4.TabNumID, t4.TabNum, '  +
+           't5.Family, t5.Name, t5.Patronymic, ' +
+           't7.PostName, ' +
+           't9.NomNum, ' +
+           't10.SizName, t10.NameID, ' +
+           't11.UnitStringCode AS SizUnit, ' +
+           't12.Num, t12.Life, ' +
+           't13.DocName, t13.DocNum, t13.DocDate ' +
+    'FROM SIZCARDPERSONALLOGINFO t1 ' +
+    'INNER JOIN SIZCARDPERSONALLOG t2 ON (t1.LogID=t2.LogID) ' +
+    'INNER JOIN SIZCARDPERSONAL t3 ON (t2.CardID=t3.CardID) ' +
+    'INNER JOIN STAFFTABNUM t4 ON (t3.TabNumID=t4.TabNumID) ' +
+    'INNER JOIN STAFFMAIN t5 ON (t4.StaffID=t5.StaffID) ' +
+    'INNER JOIN SIZNORMITEMPOST t6 ON (t3.ItemPostID=t6.ItemPostID) ' +
+    'INNER JOIN STAFFPOST t7 ON (t6.PostID=t7.PostID) ' +
+    'INNER JOIN SIZSTORELOG t8 ON (t1.StoreID=t8.StoreID) ' +
+    'INNER JOIN SIZSTOREENTRY t9 ON (t8.EntryID=t9.EntryID) ' +
+    'INNER JOIN SIZNAME t10 ON (t9.NameID=t10.NameID) ' +
+    'INNER JOIN SIZUNIT t11 ON (t10.UnitID=t11.UnitID) ' +
+    'INNER JOIN SIZNORMSUBITEMINFO t12 ON (t2.NowInfoID=t12.InfoID) ' +
+    'INNER JOIN SIZDOC t13 ON (t2.DocID=t13.DocID) ' +
+    'WHERE t1.DocID = :DocID ' +
+    'ORDER BY t5.Family, t5.Name, t5.Patronymic, t10.SizName, t9.NomNum'
+  );
+  QParamInt('DocID', ADocID);
+  QOpen;
+  if not QIsEmpty then
+  begin
+    QFirst;
+    while not QEOF do
+    begin
+      VAppend(AStoreIDs, QFieldInt64('StoreID'));
+
+      VAppend(AFs, QFieldStr('Family'));
+      VAppend(ANs, QFieldStr('Name'));
+      VAppend(APs, QFieldStr('Patronymic'));
+      VAppend(ATabNums, QFieldStr('TabNum'));
+      VAppend(APostNames, QFieldStr('PostName'));
+
+      VAppend(ANomNums, QFieldStr('NomNum'));
+      VAppend(ASizNames, QFieldStr('SizName'));
+      VAppend(ASizUnits, QFieldStr('SizUnit'));
+
+      VAppend(ATabNumIDs, QFieldInt('TabNumID'));
+      VAppend(ANums, QFieldInt('Num'));
+      VAppend(ALifes, QFieldInt('Life'));
+      VAppend(ANameIDs, QFieldInt('NameID'));
+
+      VAppend(AEntryDocNames, QFieldStr('DocName'));
+      VAppend(AEntryDocNums, QFieldStr('DocNum'));
+      VAppend(AEntryDocDates, QFieldDT('DocDate'));
+
+      QNext;
+    end;
+    Result:= True;
+  end;
+  QClose;
 end;
 
 function TDataBase.SIZStaffListForPersonalCardsLoad(const AFilterValue: String;
@@ -7552,10 +7679,12 @@ var
 
 begin
   Result:= False;
-  StoreIDs:= ValuesInt64ByInt64ID('SIZCARDPERSONALLOGINFO', 'StoreID', 'LogID', ALogID);
-  if VIsNil(StoreIDs) then Exit;
   if ItWasFreeSIZ then  //если была выдача сиз со склада - полностью отменяем выдачу
-    Result:= SIZStoreReceivingCancel(StoreIDs, ACommit)
+  begin
+    StoreIDs:= ValuesInt64ByInt64ID('SIZCARDPERSONALLOGINFO', 'StoreID', 'LogID', ALogID, True{Unique});
+    if not VIsNil(StoreIDs) then
+      Result:= SIZStoreReceivingCancel(StoreIDs, ACommit)
+  end
   else //был учет ранее выданных сиз - просто удаляем строку из лога
     Result:= Delete('SIZCARDPERSONALLOG', 'LogID', ALogID, ACommit);
 end;
@@ -7747,7 +7876,7 @@ var
   StoreIDs: TInt64Vector;
 begin
   Result:= False;
-  StoreIDs:= ValuesInt64ByInt64ID('SIZCARDPERSONALLOGINFO', 'StoreID', 'LogID', ALogID);
+  StoreIDs:= ValuesInt64ByInt64ID('SIZCARDPERSONALLOGINFO', 'StoreID', 'LogID', ALogID, True{Unique});
   if VIsNil(StoreIDs) then Exit;
   Result:= SIZStoreReturningCancel(StoreIDs, ACommit);
 end;
@@ -7902,9 +8031,6 @@ begin
     if ACommit then QRollback;
   end;
 end;
-
-
-
 
 end.
 

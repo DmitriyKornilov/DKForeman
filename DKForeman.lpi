@@ -577,6 +577,20 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="USIZCardReturnEditForm"/>
       </Unit>
+      <Unit>
+        <Filename Value="forms\siz\usizdocreceivingform.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="SIZDocReceivingForm"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="USIZDocReceivingForm"/>
+      </Unit>
+      <Unit>
+        <Filename Value="forms\siz\usizdocreturningform.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="SIZDocReturningForm"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="USIZDocReturningForm"/>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
