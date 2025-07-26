@@ -1566,13 +1566,13 @@ begin
   Writer.SetFont(Font.Name, Font.Size-2, [], clBlack);
   Writer.SetAlignment(haLeft, vaCenter);
   Writer.WriteText(R, 24, R, 28, 'Унифицированная форма № Т-7');
-  Writer.SetRowHeight(R, 15);
+  Writer.SetRowHeight(R, 12);
   R:= R + 1;
   Writer.WriteText(R, 24, R, 28, 'Утверждена Постановлением Госкомстата');
-  Writer.SetRowHeight(R, 15);
+  Writer.SetRowHeight(R, 12);
   R:= R + 1;
   Writer.WriteText(R, 24, R, 28, 'России от 05.01.2004 № 1');
-  Writer.SetRowHeight(R, 15);
+  Writer.SetRowHeight(R, 12);
 
   R:= R + 2;
   Writer.SetFont(Font.Name, Font.Size, [], clBlack);
