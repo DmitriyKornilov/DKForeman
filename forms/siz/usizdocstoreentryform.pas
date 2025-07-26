@@ -60,6 +60,7 @@ type
   public
     procedure ViewUpdate(const AIsEditing: Boolean);
     procedure DocChange(const ADocID: Integer);
+    procedure DocExport;
   end;
 
 var
@@ -238,6 +239,11 @@ begin
   SIZListLoad;
 end;
 
+procedure TSIZDocStoreEntryForm.DocExport;
+begin
+  //!!!
+end;
+
 procedure TSIZDocStoreEntryForm.ExpandAllButtonClick(Sender: TObject);
 begin
   SIZList.ExpandAll(True);
@@ -269,9 +275,13 @@ begin
 end;
 
 procedure TSIZDocStoreEntryForm.DelButtonClick(Sender: TObject);
+var
+  DelEntryID: Int64;
 begin
-  if not Confirm('Удалить СИЗ документа?') then Exit;
-  //!!!!!
+  if not Confirm('Удалить СИЗ из документа?') then Exit;
+  DelEntryID:= EntryIDs[SIZList.SelectedIndex1, SIZList.SelectedIndex2];
+  if DataBase.SIZStoreEntryDelete(DelEntryID) then
+    SIZListLoad;
 end;
 
 end.

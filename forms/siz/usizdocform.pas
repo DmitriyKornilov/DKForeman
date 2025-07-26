@@ -338,7 +338,12 @@ end;
 
 procedure TSIZDocForm.ExportButtonClick(Sender: TObject);
 begin
-  //!!!!
+  case DocType of
+    1: (SIZForm as TSIZDocStoreEntryForm).DocExport;
+    2: (SIZForm as TSIZDocReceivingForm).DocExport;
+    3: (SIZForm as TSIZDocStoreWriteoffForm).DocExport;
+    4: (SIZForm as TSIZDocReturningForm).DocExport;
+  end;
 end;
 
 end.

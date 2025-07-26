@@ -701,6 +701,9 @@ type
                          const AEntryID: Int64;
                          const ANomNum, ANote: String;
                          const ANameID, ASizeID, AHeightID, ACount, AOldCount: Integer): Boolean;
+    {Удаление информации о поступлении СИЗ: True - ОК, False - ошибка}
+    function SIZStoreEntryDelete(const AEntryID: Int64; const ACommit: Boolean = True): Boolean;
+
 
     {Загрузка документа списания (передачи) СИЗ со склада: True - ОК, False - пусто}
     function SIZStoreWriteOffLoad(const ADocID: Integer;
@@ -6137,6 +6140,16 @@ begin
   except
     QRollback;
   end;
+end;
+
+function TDataBase.SIZStoreEntryDelete(const AEntryID: Int64; const ACommit: Boolean): Boolean;
+var
+  StoreIDs: TInt64Vector;
+begin
+  Result:= False;
+  StoreIDs:= ValuesInt64ByInt64ID('SIZSTORELOG', 'StoreID', 'EntryID', AEntryID, True{Unique});
+  if VIsNil(StoreIDs) then Exit;
+  Result:= SIZStoreEntryCancel(StoreIDs, ACommit);
 end;
 
 function TDataBase.SIZStoreWriteOffLoad(const ADocID: Integer;
