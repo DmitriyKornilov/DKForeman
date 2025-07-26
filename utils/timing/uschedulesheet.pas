@@ -106,6 +106,7 @@ type
   protected
     function SetWidths: TIntVector; override;
   private
+    FCompany, FDepartment: String;
     FYear: Word;
     FStaffNames: TStrVector;
     FTabNums: TStrVector;
@@ -118,7 +119,8 @@ type
   public
     constructor Create(const AWorksheet: TsWorksheet; const AGrid: TsWorksheetGrid;
                        const AFont: TFont);
-    procedure Draw(const AYear: Word;
+    procedure Draw(const ACompany, ADepartment: String;
+                   const AYear: Word;
                    const AStaffNames, ATabNums, APostNames: TStrVector;
                    const AFirstDates: TDateVector;
                    const ATotalCounts: TIntVector);
@@ -1588,7 +1590,13 @@ begin
   Writer.WriteText(R, 23, R, 25, 'по ОКПО');
   Writer.SetAlignment(haCenter, vaCenter);
   Writer.WriteText(R, 26, R, 28, '', cbtOuter);
-  Writer.WriteText(R,  1, R, 22, '', cbtBottom);
+  Writer.WriteText(R,  1, R, 22, FCompany, cbtBottom, True, True);
+  if not Writer.HasGrid then
+  begin
+    Writer.SetBorders(lsMedium, scBlack, lsThin, clBlack);
+    Writer.DrawBorders(R-1, 26, R, 28, cbtAll);
+    Writer.SetBordersDefault;
+  end;
 
   R:= R + 1;
   Writer.SetFont(Font.Name, Font.Size-2, [], clBlack);
@@ -1649,6 +1657,13 @@ begin
   Writer.WriteText(R, 14, R, 15, '', cbtOuter);
   Writer.SetFont(Font.Name, Font.Size, [fsBold], clBlack);
   Writer.WriteNumber(R, 16, R, 16, FYear, cbtOuter);
+  if not Writer.HasGrid then
+  begin
+    Writer.SetBorders(lsMedium, scBlack, lsThin, clBlack);
+    Writer.DrawBorders(R, 12, R, 16, cbtAll);
+    Writer.SetBordersDefault;
+  end;
+
   Writer.SetFont(Font.Name, Font.Size-2, [], clBlack);
   Writer.SetAlignment(haCenter, vaTop);
   Writer.WriteText(R, 18, R, 21, '(личная подпись)', cbtTop);
@@ -1716,7 +1731,7 @@ begin
 
   Writer.SetFont(Font.Name, Font.Size, [], clBlack);
   Writer.SetAlignment(haLeft, vaCenter);
-  Writer.WriteText(R, 1,  R, 4,  '', cbtOuter, True, True);
+  Writer.WriteText(R, 1,  R, 4,  FDepartment, cbtOuter, True, True);
   Writer.WriteText(R, 5,  R, 9,  FPostNames[AIndex], cbtOuter, True, True);
   Writer.WriteText(R, 10, R, 12, FStaffNames[AIndex], cbtOuter, True, True);
   Writer.SetAlignment(haCenter, vaCenter);
@@ -1760,13 +1775,16 @@ begin
   inherited Create(AWorksheet, AGrid, AFont, 20);
 end;
 
-procedure TVacationScheduleSheet.Draw(const AYear: Word;
+procedure TVacationScheduleSheet.Draw(const ACompany, ADepartment: String;
+                   const AYear: Word;
                    const AStaffNames, ATabNums, APostNames: TStrVector;
                    const AFirstDates: TDateVector;
                    const ATotalCounts: TIntVector);
 var
   i, R, CaptionRowCount: Integer;
 begin
+  FCompany:= ACompany;
+  FDepartment:= ADepartment;
   FYear:= AYear;
   FStaffNames:= AStaffNames;
   FTabNums:= ATabNums;
@@ -1780,12 +1798,11 @@ begin
   for i:= 0 to High(FStaffNames) do
     LineDraw(R, i);
   BottomDraw(R);
-  //if Writer.HasGrid then
-    Writer.SetFrozenRows(CaptionRowCount);
-  //else begin
-    Writer.SetRepeatedRows(CaptionRowCount-3, CaptionRowCount);
-    Writer.WorkSheet.PageLayout.Footers[HEADER_FOOTER_INDEX_ALL] := '&R страница &P (из &N)';
-  //end;
+
+  Writer.SetFrozenRows(CaptionRowCount);
+  Writer.SetRepeatedRows(CaptionRowCount-3, CaptionRowCount);
+  Writer.WorkSheet.PageLayout.Footers[HEADER_FOOTER_INDEX_ALL] := '&R страница &P (из &N)';
+
   Writer.EndEdit;
 end;
 

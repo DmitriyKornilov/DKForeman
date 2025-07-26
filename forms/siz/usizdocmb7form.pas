@@ -9,6 +9,7 @@ uses
   DividerBevel, fpspreadsheetgrid,
   //DK packages utils
   DK_Vector, DK_Matrix, DK_Zoom, DK_CtrlUtils, DK_SheetTypes, DK_StrUtils,
+  DK_SheetExporter,
   //Project utils
   UVars, UConst, USIZDocSheet;
 
@@ -45,8 +46,13 @@ type
     ReceivingDocNames, ReceivingDocNums, Notes: TStrMatrix;
     ReceivingDates: TDateMatrix;
 
+    VFIOs, VTabNums, VSIZNames, VNomNums, VSTRUnits, VSIZLifes: TStrVector;
+    VDIGUnits, VSIZCounts: TIntVector;
+    VReceivingDates: TDateVector;
+
     procedure DocLoad;
     procedure DocDraw(const AZoomPercent: Integer);
+    procedure DocExport;
 
     procedure SettingsLoad;
     procedure SettingsSave;
@@ -122,10 +128,37 @@ end;
 
 procedure TSIZDocMB7Form.ExportButtonClick(Sender: TObject);
 begin
-  SheetFromGridSave(Sheet, ZoomPercent, @DocDraw, 'МБ-7', 'Выполнено!', True);
+  DocExport;
+end;
+
+procedure TSIZDocMB7Form.DocExport;
+var
+  Exporter: TSheetsExporter;
+  Worksheet: TsWorksheet;
+  ExpSheet: TSIZDocMB7Sheet;
+begin
+  Exporter:= TSheetsExporter.Create;
+  try
+    Worksheet:= Exporter.AddWorksheet('МБ-7');
+    ExpSheet:= TSIZDocMB7Sheet.Create(Worksheet, nil, GridFont);
+    try
+      ExpSheet.Draw(Company, Department, DocNum, DocDate, IsReturn,
+               VFIOs, VTabNums, VSIZNames, VNomNums, VSTRUnits, VSIZLifes,
+               VDIGUnits, VSIZCounts, VReceivingDates);
+    finally
+      FreeAndNil(ExpSheet);
+    end;
+    Exporter.PageSettings(spoLandscape);
+    Exporter.Save('Выполнено!');
+  finally
+    FreeAndNil(Exporter);
+  end;
 end;
 
 procedure TSIZDocMB7Form.DocLoad;
+var
+  i: Integer;
+  V: TStrVector;
 begin
   if DocID=0 then Exit;
   DataBase.SIZDocLoad(DocID, DocName, DocNum, DocDate, DocType, DocForm);
@@ -141,15 +174,7 @@ begin
                                    StoreIDs, SizCounts, SizDigUnits,
                                    NomNums, SizNames, SizStrUnits, SizLifes,
                                    ReceivingDates);
-end;
 
-procedure TSIZDocMB7Form.DocDraw(const AZoomPercent: Integer);
-var
-  i: Integer;
-  VFIOs, VTabNums, VSIZNames, VNomNums, VSTRUnits, VSIZLifes, V: TStrVector;
-  VDIGUnits, VSIZCounts: TIntVector;
-  VReceivingDates: TDateVector;
-begin
   VFIOs:= nil;
   VTabNums:= nil;
   for i:= 0 to High(NomNums) do
@@ -166,7 +191,10 @@ begin
   VSIZLifes:= MToVector(SizLifes);
   VSIZCounts:= MToVector(SizCounts);
   VReceivingDates:= MToVector(ReceivingDates);
+end;
 
+procedure TSIZDocMB7Form.DocDraw(const AZoomPercent: Integer);
+begin
   ViewGrid.Visible:= False;
   Screen.Cursor:= crHourGlass;
   try

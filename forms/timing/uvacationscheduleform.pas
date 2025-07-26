@@ -8,7 +8,7 @@ uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls,
   Buttons, Spin, DividerBevel, fpspreadsheetgrid,
   //DK packages utils
-  DK_Vector, DK_Zoom, DK_CtrlUtils, DK_SheetTypes,
+  DK_Vector, DK_Zoom, DK_CtrlUtils, DK_SheetTypes, DK_SheetExporter,
   //Project utils
   UVars, UConst, UScheduleSheet;
 
@@ -43,6 +43,7 @@ type
 
     procedure ScheduleChange;
     procedure ScheduleDraw(const AZoomPercent: Integer);
+    procedure ScheduleExport;
 
     procedure SettingsLoad;
     procedure SettingsSave;
@@ -114,8 +115,7 @@ end;
 
 procedure TVacationScheduleForm.ExportButtonClick(Sender: TObject);
 begin
-  SheetFromGridSave(Sheet, ZoomPercent, @ScheduleDraw,
-                    YearSpinEdit.Text, 'Выполнено!', True);
+  ScheduleExport;
 end;
 
 procedure TVacationScheduleForm.YearSpinEditChange(Sender: TObject);
@@ -137,10 +137,34 @@ begin
   try
     ZoomPercent:= AZoomPercent;
     Sheet.Zoom(ZoomPercent);
-    Sheet.Draw(YearSpinEdit.Value, StaffNames, TabNums, PostNames, FirstDates, TotalCounts);
+    Sheet.Draw(Company, Department, YearSpinEdit.Value, StaffNames, TabNums,
+               PostNames, FirstDates, TotalCounts);
   finally
     ViewGrid.Visible:= True;
     Screen.Cursor:= crDefault;
+  end;
+end;
+
+procedure TVacationScheduleForm.ScheduleExport;
+var
+  Exporter: TSheetsExporter;
+  Worksheet: TsWorksheet;
+  ExpSheet: TVacationScheduleSheet;
+begin
+  Exporter:= TSheetsExporter.Create;
+  try
+    Worksheet:= Exporter.AddWorksheet(IntToStr(YearSpinEdit.Value));
+    ExpSheet:= TVacationScheduleSheet.Create(Worksheet, nil, GridFont);
+    try
+      ExpSheet.Draw(Company, Department, YearSpinEdit.Value, StaffNames, TabNums,
+                    PostNames, FirstDates, TotalCounts);
+    finally
+      FreeAndNil(ExpSheet);
+    end;
+    Exporter.PageSettings(spoLandscape);
+    Exporter.Save('Выполнено!');
+  finally
+    FreeAndNil(Exporter);
   end;
 end;
 

@@ -5,7 +5,7 @@ unit USIZDocSheet;
 interface
 
 uses
-  Classes, SysUtils, Graphics,
+  Classes, SysUtils, Graphics, fpstypes,
   //DK packages utils
   DK_SheetTypes, DK_Vector, DK_Const, DK_SheetWriter, DK_SheetConst, DK_Math;
 
@@ -120,12 +120,12 @@ begin
   Writer.WriteText(R, C1, R, C2, '0320003', cbtOuter);
   R:= R + 1;
   Writer.WriteText(R, C1, R, C2, EmptyStr, cbtOuter);
-  {if not Writer.HasGrid then
+  if not Writer.HasGrid then
   begin
-    Writer.SetBorders(lsMedium, scBlack);
+    Writer.SetBorders(lsMedium, scBlack, lsThin, clBlack);
     Writer.DrawBorders(R-1, C1, R, C2, cbtAll);
     Writer.SetBordersDefault;
-  end; }
+  end;
 
   R:= R - 1;
   C1:= 1;
@@ -182,14 +182,14 @@ begin
   C1:= C2+1;
   C2:= C1+1;
   Writer.WriteText(R, C1, R, C2, EmptyStr{вид деятельности}, cbtOuter, True, True);
-  {if not Writer.HasGrid then
+  if not Writer.HasGrid then
   begin
     C1:= Writer.ColCount-9;
     C2:= Writer.ColCount;
     Writer.SetBorders(lsMedium, scBlack, lsThin, scBlack);
     Writer.DrawBorders(R, C1, R, C2, cbtAll);
     Writer.SetBordersDefault;
-  end;}
+  end;
 
   ARow:= R;
 end;
@@ -246,8 +246,6 @@ begin
   Writer.WriteText(R, C1, R+1, C2, 'Подпись в получении (сдаче)', cbtOuter);
 
   Writer.WriteNumber(R+2, C1, R+2, C2, 11, cbtOuter);
-
-  Writer.SetRepeatedRows(R, R+2);
 
   Writer.DrawBorders(ARow, 1, R+2, Writer.ColCount, cbtAll);
 
@@ -328,14 +326,14 @@ begin
     EmptyLine(i);
 
   RR:= ARow + Max(Length(FFIOs), MINROWS) - 1;
-  {if not Writer.HasGrid then
+  if not Writer.HasGrid then
   begin
     Writer.SetBorders(lsMedium, scBlack, lsThin, scBlack);
     Writer.DrawBorders(ARow, 4, RR, 4, cbtAll);
     Writer.DrawBorders(ARow, 9, RR, 11, cbtAll);
     Writer.DrawBorders(ARow, 14, RR, 19, cbtAll);
     Writer.SetBordersDefault;
-  end;  }
+  end;
 
   ARow:= RR;
 end;
@@ -417,7 +415,7 @@ procedure TSIZDocMB7Sheet.Draw(const ACompany, ADepartment, ADocNum: String;
                    const ADIGUnits, ASIZCounts: TIntVector;
                    const AReceivingDates: TDateVector);
 var
-  R: Integer;
+  R, CaptionRowCount: Integer;
 begin
   FCompany:= ACompany;
   FDepartment:= ADepartment;
@@ -441,10 +439,15 @@ begin
   HeaderDraw(R);
   R:= R + 2;
   CaptionDraw(R);
+  CaptionRowCount:= R;
   R:= R + 1;
   DataDraw(R);
   R:= R + 2;
   FooterDraw(R);
+
+  Writer.SetFrozenRows(CaptionRowCount);
+  Writer.SetRepeatedRows(CaptionRowCount-2, CaptionRowCount);
+  Writer.WorkSheet.PageLayout.Footers[HEADER_FOOTER_INDEX_ALL] := '&R страница &P (из &N)';
 
   Writer.EndEdit;
 end;
