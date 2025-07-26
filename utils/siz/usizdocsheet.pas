@@ -122,7 +122,7 @@ begin
   Writer.WriteText(R, C1, R, C2, EmptyStr, cbtOuter);
   if not Writer.HasGrid then
   begin
-    Writer.SetBorders(lsMedium, scBlack, lsThin, clBlack);
+    Writer.SetBorders(lsMedium, clBlack, lsThin, clBlack);
     Writer.DrawBorders(R-1, C1, R, C2, cbtAll);
     Writer.SetBordersDefault;
   end;
@@ -186,7 +186,7 @@ begin
   begin
     C1:= Writer.ColCount-9;
     C2:= Writer.ColCount;
-    Writer.SetBorders(lsMedium, scBlack, lsThin, scBlack);
+    Writer.SetBorders(lsMedium, clBlack, lsThin, clBlack);
     Writer.DrawBorders(R, C1, R, C2, cbtAll);
     Writer.SetBordersDefault;
   end;
@@ -328,7 +328,7 @@ begin
   RR:= ARow + Max(Length(FFIOs), MINROWS) - 1;
   if not Writer.HasGrid then
   begin
-    Writer.SetBorders(lsMedium, scBlack, lsThin, scBlack);
+    Writer.SetBorders(lsMedium, clBlack, lsThin, clBlack);
     Writer.DrawBorders(ARow, 4, RR, 4, cbtAll);
     Writer.DrawBorders(ARow, 9, RR, 11, cbtAll);
     Writer.DrawBorders(ARow, 14, RR, 19, cbtAll);

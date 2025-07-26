@@ -1158,7 +1158,8 @@ begin
   Writer.WriteText(R, Writer.ColCount-5, R, Writer.ColCount, 'Унифицированная форма № Т-12');
   Writer.WriteText(R+1, Writer.ColCount-5, R+1, Writer.ColCount, 'Утверждена Постановлением Госкомстата');
   Writer.WriteText(R+2, Writer.ColCount-5, R+2, Writer.ColCount, 'России от 5 января 2004 г. № 1');
-  for i:= 0 to 2 do Writer.SetRowHeight(R+i, SMALLROWHEIGHT);
+  for i:= 0 to 2 do
+    Writer.SetRowHeight(R+i, SMALLROWHEIGHT);
   R:= R + 4;
   Writer.SetFont(Font.Name, Font.Size+1, [{fsBold}], clBlack);
   Writer.SetAlignment(haCenter, vaCenter);
@@ -1167,30 +1168,37 @@ begin
   Writer.SetAlignment(haRight, vaCenter);
   Writer.WriteText(R, Writer.ColCount-5, R, Writer.ColCount-2, 'Форма по ОКУД');
   Writer.SetAlignment(haCenter, vaCenter);
-  if not Writer.HasGrid then Writer.SetBorders(BOLD_LINE_STYLE, clBlack);
   Writer.WriteText(R, Writer.ColCount-1, R, Writer.ColCount, '0301007', cbtOuter);
   R:= R + 1;
   Writer.SetAlignment(haRight, vaCenter);
   Writer.WriteText(R, Writer.ColCount-4, R, Writer.ColCount-2, 'по ОКПО');
   Writer.SetAlignment(haCenter, vaCenter);
   Writer.WriteText(R, Writer.ColCount-1, R, Writer.ColCount, '', cbtOuter);
-  if not Writer.HasGrid then Writer.SetBordersDefault;
-  Writer.SetFont(Font.Name, Font.Size+4, [fsBold], clBlack);
+
+  Writer.SetFont(Font.Name, Font.Size+3, [{fsBold}], clBlack);
   Writer.SetAlignment(haCenter, vaBottom);
-  Writer.WriteText(R, C, R, Writer.ColCount-5, EmptyStr, cbtBottom);
+  Writer.WriteText(R, C, R, Writer.ColCount-5, FCompany, cbtBottom, True, True);
   R:= R + 1;
   Writer.SetFont(Font.Name, Font.Size+1, [{fsBold}], clBlack);
-  if not Writer.HasGrid then Writer.SetBorders(BOLD_LINE_STYLE, clBlack);
   Writer.WriteText(R, Writer.ColCount-1, R+1, Writer.ColCount, EmptyStr, cbtOuter);
-  if Writer.HasGrid then Writer.WriteText(R+2, Writer.ColCount-1, R+2, Writer.ColCount, EmptyStr, cbtTop);
-  if not Writer.HasGrid then Writer.SetBordersDefault;
+  if Writer.HasGrid then
+    Writer.WriteText(R+2, Writer.ColCount-1, R+2, Writer.ColCount, EmptyStr, cbtTop);
+
   Writer.SetFont(Font.Name, Font.Size-1, [{fsBold}], clBlack);
   Writer.SetAlignment(haCenter, vaTop);
   Writer.WriteText(R, C, R, Writer.ColCount-5, '(наименование организации)');
   R:= R + 1;
-  Writer.SetFont(Font.Name, Font.Size+4, [fsBold], clBlack);
+  Writer.SetFont(Font.Name, Font.Size+3, [{fsBold}], clBlack);
   Writer.SetAlignment(haCenter, vaBottom);
-  Writer.WriteText(R, C, R, Writer.ColCount-5, EmptyStr  {ADepartment}, cbtBottom);
+  Writer.WriteText(R, C, R, Writer.ColCount-5, FDepartment, cbtBottom, True, True);
+
+  if not Writer.HasGrid then
+  begin
+    Writer.SetBorders(BOLD_LINE_STYLE, clBlack, BORDER_STYLE_DEFAULT, clBlack);
+    Writer.DrawBorders(R-3, Writer.ColCount-1, R, Writer.ColCount, cbtAll);
+    Writer.SetBordersDefault;
+  end;
+
   R:= R + 1;
   Writer.SetFont(Font.Name, Font.Size-1, [{fsBold}], clBlack);
   Writer.SetAlignment(haCenter, vaTop);
@@ -1213,12 +1221,19 @@ begin
   end;
   R:= R + 2;
   Writer.SetFont(Font.Name, Font.Size+1, [fsBold], clBlack);
-  if not Writer.HasGrid then Writer.SetBorders(BOLD_LINE_STYLE, clBlack);
   Writer.WriteText(R, Writer.ColCount-17, R, Writer.ColCount-14, EmptyStr, cbtOuter);
   Writer.WriteText(R, Writer.ColCount-13, R, Writer.ColCount-11, EndDateStr, cbtOuter);
   Writer.WriteText(R, Writer.ColCount-9, R, Writer.ColCount-8, BeginDateStr, cbtOuter);
   Writer.WriteText(R, Writer.ColCount-7, R, Writer.ColCount-6, EndDateStr , cbtOuter);
-  if not Writer.HasGrid then Writer.SetBordersDefault;
+
+  if not Writer.HasGrid then
+  begin
+    Writer.SetBorders(BOLD_LINE_STYLE, clBlack, BORDER_STYLE_DEFAULT, clBlack);
+    Writer.DrawBorders(R, Writer.ColCount-17, R, Writer.ColCount-11, cbtAll);
+    Writer.DrawBorders(R, Writer.ColCount-9, R, Writer.ColCount-6, cbtAll);
+    Writer.SetBordersDefault;
+  end;
+
   Writer.SetFont(Font.Name, Font.Size+6, [fsBold], clBlack);
   Writer.WriteText(R, C+19, R, C+24, 'ТАБЕЛЬ');
   Writer.SetRowHeight(R, BIGROWHEIGHT);
@@ -1237,7 +1252,7 @@ begin
 
   R:= IndexToRow(Length(FTimetables)) + 1;
   C:= 1;
-  Writer.SetFont(Font.Name, Font.Size+1, [fsBold], clBlack);
+  Writer.SetFont(Font.Name, Font.Size+1, [{fsBold}], clBlack);
   Writer.SetAlignment(haLeft, vaCenter);
   Writer.WriteText(R, C+22, R, C+27, 'Руководитель');
   R:= R + 1;
@@ -1249,7 +1264,7 @@ begin
   Writer.WriteText(R, C+8, R, C+11, EmptyStr, cbtBottom);
   Writer.WriteText(R, C+13, R, C+17, EmptyStr, cbtBottom);
   Writer.SetAlignment(haLeft, vaBottom);
-  Writer.SetFont(Font.Name, Font.Size+1, [fsBold], clBlack);
+  Writer.SetFont(Font.Name, Font.Size+1, [{fsBold}], clBlack);
   Writer.WriteText(R, C+22, R, C+27, 'структурного подразделения');
   Writer.SetFont(Font.Name, Font.Size+1, [], clBlack);
   Writer.SetAlignment(haCenter, vaBottom);
@@ -1274,7 +1289,7 @@ begin
   Writer.WriteText(R, C+37, R, C+39, '(расшифровка подписи)');
   R:= R + 1;
   Writer.SetAlignment(haLeft, vaBottom);
-  Writer.SetFont(Font.Name, Font.Size+1, [fsBold], clBlack);
+  Writer.SetFont(Font.Name, Font.Size+1, [{fsBold}], clBlack);
   Writer.WriteText(R, C+22, R, C+27, 'Работник');
   R:= R + 1;
   Writer.WriteText(R, C+22, R, C+27, 'кадровой службы');
@@ -1308,7 +1323,7 @@ begin
   C:= 1;
   R:= FirstRow;
   Writer.SetAlignment(haCenter, vaCenter);
-  Writer.SetFont(Font.Name, Font.Size, [fsBold], clBlack);
+  Writer.SetFont(Font.Name, Font.Size, [{fsBold}], clBlack);
   Writer.WriteText(R, C, R+3, C, 'Номер по порядку', cbtOuter);
   Writer.WriteNumber(R+4, C, 1, cbtOuter);
   C:= C+1;
@@ -1653,7 +1668,8 @@ begin
   Writer.WriteText(R, Writer.ColCount-4, R, Writer.ColCount, 'Унифицированная форма № Т-13');
   Writer.WriteText(R+1, Writer.ColCount-4, R+1, Writer.ColCount, 'Утверждена Постановлением Госкомстата');
   Writer.WriteText(R+2, Writer.ColCount-4, R+2, Writer.ColCount, 'России от 5 января 2004 г. № 1');
-  for i:= 0 to 2 do Writer.SetRowHeight(R+i, SMALLROWHEIGHT);
+  for i:= 0 to 2 do
+    Writer.SetRowHeight(R+i, SMALLROWHEIGHT);
   R:= R + 4;
   Writer.SetFont(Font.Name, Font.Size+1, [{fsBold}], clBlack);
   Writer.SetAlignment(haCenter, vaCenter);
@@ -1662,30 +1678,37 @@ begin
   Writer.SetAlignment(haRight, vaCenter);
   Writer.WriteText(R, Writer.ColCount-5, R, Writer.ColCount-2, 'Форма по ОКУД');
   Writer.SetAlignment(haCenter, vaCenter);
-  if not Writer.HasGrid then Writer.SetBorders(BOLD_LINE_STYLE, clBlack);
   Writer.WriteText(R, Writer.ColCount-1, R, Writer.ColCount, '0301008', cbtOuter);
   R:= R + 1;
   Writer.SetAlignment(haRight, vaCenter);
   Writer.WriteText(R, Writer.ColCount-3, R, Writer.ColCount-2, 'по ОКПО');
   Writer.SetAlignment(haCenter, vaCenter);
   Writer.WriteText(R, Writer.ColCount-1, R, Writer.ColCount, EmptyStr, cbtOuter);
-  if not Writer.HasGrid then Writer.SetBordersDefault;
-  Writer.SetFont(Font.Name, Font.Size+4, [fsBold], clBlack);
+
+  Writer.SetFont(Font.Name, Font.Size+3, [{fsBold}], clBlack);
   Writer.SetAlignment(haCenter, vaBottom);
-  Writer.WriteText(R, C, R, Writer.ColCount-4, EmptyStr, cbtBottom);
+  Writer.WriteText(R, C, R, Writer.ColCount-4, FCompany, cbtBottom, True, True);
   R:= R + 1;
   Writer.SetFont(Font.Name, Font.Size+1, [{fsBold}], clBlack);
-  if not Writer.HasGrid then Writer.SetBorders(BOLD_LINE_STYLE, clBlack);
   Writer.WriteText(R, Writer.ColCount-1, R+1, Writer.ColCount, EmptyStr, cbtOuter);
-  if Writer.HasGrid then Writer.WriteText(R+2, Writer.ColCount-1, R+2, Writer.ColCount, EmptyStr, cbtTop);
-  if not Writer.HasGrid then Writer.SetBordersDefault;
+  if Writer.HasGrid then
+    Writer.WriteText(R+2, Writer.ColCount-1, R+2, Writer.ColCount, EmptyStr, cbtTop);
+
   Writer.SetFont(Font.Name, Font.Size-1, [{fsBold}], clBlack);
   Writer.SetAlignment(haCenter, vaTop);
   Writer.WriteText(R, C, R, Writer.ColCount-4, '(наименование организации)');
   R:= R + 1;
-  Writer.SetFont(Font.Name, Font.Size+4, [fsBold], clBlack);
+  Writer.SetFont(Font.Name, Font.Size+3, [{fsBold}], clBlack);
   Writer.SetAlignment(haCenter, vaBottom);
-  Writer.WriteText(R, C, R, Writer.ColCount-4, EmptyStr, cbtBottom);
+  Writer.WriteText(R, C, R, Writer.ColCount-4, FDepartment, cbtBottom, True, True);
+
+  if not Writer.HasGrid then
+  begin
+    Writer.SetBorders(BOLD_LINE_STYLE, clBlack, BORDER_STYLE_DEFAULT, clBlack);
+    Writer.DrawBorders(R-3, Writer.ColCount-1, R, Writer.ColCount, cbtAll);
+    Writer.SetBordersDefault;
+  end;
+
   R:= R + 1;
   Writer.SetFont(Font.Name, Font.Size-1, [{fsBold}], clBlack);
   Writer.SetAlignment(haCenter, vaTop);
@@ -1708,12 +1731,19 @@ begin
   end;
   R:= R + 2;
   Writer.SetFont(Font.Name, Font.Size+1, [fsBold], clBlack);
-  if not Writer.HasGrid then Writer.SetBorders(BOLD_LINE_STYLE, clBlack);
   Writer.WriteText(R, Writer.ColCount-13, R, Writer.ColCount-11, EmptyStr, cbtOuter);
   Writer.WriteText(R, Writer.ColCount-10, R, Writer.ColCount-8, EndDateStr, cbtOuter);
   Writer.WriteText(R, Writer.ColCount-6, BeginDateStr, cbtOuter);
   Writer.WriteText(R, Writer.ColCount-5, R, Writer.ColCount-4, EndDateStr , cbtOuter);
-  if not Writer.HasGrid then Writer.SetBordersDefault;
+
+  if not Writer.HasGrid then
+  begin
+    Writer.SetBorders(BOLD_LINE_STYLE, clBlack, BORDER_STYLE_DEFAULT, clBlack);
+    Writer.DrawBorders(R, Writer.ColCount-13, R, Writer.ColCount-8, cbtAll);
+    Writer.DrawBorders(R, Writer.ColCount-6, R, Writer.ColCount-4, cbtAll);
+    Writer.SetBordersDefault;
+  end;
+
   Writer.SetFont(Font.Name, Font.Size+6, [fsBold], clBlack);
   Writer.WriteText(R, C+15, R, C+17, 'ТАБЕЛЬ');
   Writer.SetRowHeight(R, BIGROWHEIGHT);
@@ -1732,7 +1762,7 @@ begin
 
   R:= IndexToRow(Length(FTimetables)) + 1;
   C:= 1;
-  Writer.SetFont(Font.Name, Font.Size+1, [fsBold], clBlack);
+  Writer.SetFont(Font.Name, Font.Size+1, [{fsBold}], clBlack);
   Writer.SetAlignment(haLeft, vaCenter);
   Writer.WriteText(R, C+17, R, C+20, 'Руководитель');
   R:= R + 1;
@@ -1744,7 +1774,7 @@ begin
   Writer.WriteText(R, C+7, R, C+9, EmptyStr, cbtBottom);
   Writer.WriteText(R, C+11, R, C+14, EmptyStr, cbtBottom);
   Writer.SetAlignment(haLeft, vaBottom);
-  Writer.SetFont(Font.Name, Font.Size+1, [fsBold], clBlack);
+  Writer.SetFont(Font.Name, Font.Size+1, [{fsBold}], clBlack);
   Writer.WriteText(R, C+17, R, C+20, 'структурного подразделения');
   Writer.SetFont(Font.Name, Font.Size+1, [], clBlack);
   Writer.SetAlignment(haCenter, vaBottom);
@@ -1769,7 +1799,7 @@ begin
   Writer.WriteText(R, C+27, R, C+28, '(расшифровка подписи)');
   R:= R + 1;
   Writer.SetAlignment(haLeft, vaBottom);
-  Writer.SetFont(Font.Name, Font.Size+1, [fsBold], clBlack);
+  Writer.SetFont(Font.Name, Font.Size+1, [{fsBold}], clBlack);
   Writer.WriteText(R, C+17, R, C+20, 'Работник');
   R:= R + 1;
   Writer.WriteText(R, C+17, R, C+20, 'кадровой службы');
@@ -1801,7 +1831,7 @@ begin
 
   FirstRow:= 15*Ord(FNeedTopBottom) + 1;
   Writer.SetAlignment(haCenter, vaCenter);
-  Writer.SetFont(Font.Name, Font.Size, [fsBold], clBlack);
+  Writer.SetFont(Font.Name, Font.Size, [{fsBold}], clBlack);
   C:= 1;
   R:= FirstRow;
   Writer.WriteText(R, C, R+6, C, 'Номер по порядку', cbtOuter);

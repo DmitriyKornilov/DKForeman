@@ -876,7 +876,7 @@ begin
       1: //форма T-12
         begin
           SheetT12.Zoom(ZoomPercent);
-          SheetT12.Draw(MonthCalendar, Timetables,
+          SheetT12.Draw(Company,Department, MonthCalendar, Timetables,
                  StaffNames, TabNums, PostNames,
                  ParamList.Selected['ViewType']=0,
                  ParamList.Selected['MonthType']=0,
@@ -886,7 +886,7 @@ begin
       2: //форма T-13
         begin
           SheetT13.Zoom(ZoomPercent);
-          SheetT13.Draw(MonthCalendar, Timetables,
+          SheetT13.Draw(Company,Department, MonthCalendar, Timetables,
                  StaffNames, TabNums, PostNames,
                  ParamList.Selected['ViewType']=0,
                  ParamList.Selected['MonthType']=0,
@@ -940,7 +940,8 @@ var
   begin
     ExpSheetT12:= TTimetableSheetT12.Create(Worksheet, nil, GridFont);
     try
-      ExpSheetT12.Draw(MonthCalendar, Timetables, StaffNames, TabNums, PostNames,
+      ExpSheetT12.Draw(Company,Department, MonthCalendar,
+                   Timetables, StaffNames, TabNums, PostNames,
                    ParamList.Selected['ViewType']=0,
                    ParamList.Selected['MonthType']=0,
                    ParamList.Checkeds['ExportParams'],
@@ -956,7 +957,8 @@ var
   begin
     ExpSheetT13:= TTimetableSheetT13.Create(Worksheet, nil, GridFont);
     try
-      ExpSheetT13.Draw(MonthCalendar, Timetables, StaffNames, TabNums, PostNames,
+      ExpSheetT13.Draw(Company,Department, MonthCalendar,
+                   Timetables, StaffNames, TabNums, PostNames,
                    ParamList.Selected['ViewType']=0,
                    ParamList.Selected['MonthType']=0,
                    ParamList.Checkeds['ExportParams'],

@@ -1593,7 +1593,7 @@ begin
   Writer.WriteText(R,  1, R, 22, FCompany, cbtBottom, True, True);
   if not Writer.HasGrid then
   begin
-    Writer.SetBorders(lsMedium, scBlack, lsThin, clBlack);
+    Writer.SetBorders(lsMedium, clBlack, lsThin, clBlack);
     Writer.DrawBorders(R-1, 26, R, 28, cbtAll);
     Writer.SetBordersDefault;
   end;
@@ -1659,7 +1659,7 @@ begin
   Writer.WriteNumber(R, 16, R, 16, FYear, cbtOuter);
   if not Writer.HasGrid then
   begin
-    Writer.SetBorders(lsMedium, scBlack, lsThin, clBlack);
+    Writer.SetBorders(lsMedium, clBlack, lsThin, clBlack);
     Writer.DrawBorders(R, 12, R, 16, cbtAll);
     Writer.SetBordersDefault;
   end;

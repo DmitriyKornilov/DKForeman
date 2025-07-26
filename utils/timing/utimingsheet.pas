@@ -166,6 +166,7 @@ type
   TMonthFormSheet = class(TMonthCustomSheet)
   protected
     FTimetables: TTimetableVector;
+    FCompany, FDepartment: String;
     FCalendar: TCalendar;
     FYear, FMonth: Word;
     FHalfMonth: Boolean;
@@ -180,7 +181,8 @@ type
 
     function IndexToRow(const AIndex: Integer): Integer; virtual; abstract;
   public
-    procedure Draw(const ACalendar: TCalendar;
+    procedure Draw(const ACompany, ADepartment: String;
+                   const ACalendar: TCalendar;
                    const ATimetables: TTimetableVector;
                    const AStaffNames, ATabNums, APostNames: TStrVector;
                    const ANeedTopBottom, AHalfMonth: Boolean;
@@ -992,7 +994,8 @@ end;
 
 { TMonthFormSheet }
 
-procedure TMonthFormSheet.Draw(const ACalendar: TCalendar;
+procedure TMonthFormSheet.Draw(const ACompany, ADepartment: String;
+                   const ACalendar: TCalendar;
                    const ATimetables: TTimetableVector;
                    const AStaffNames, ATabNums, APostNames: TStrVector;
                    const ANeedTopBottom, AHalfMonth: Boolean;
@@ -1007,6 +1010,8 @@ begin
   SelectionClear;
 
   FTimetables:= ATimetables;
+  FCompany:= ACompany;
+  FDepartment:= ADepartment;
   FCalendar:= ACalendar;
   FYear:= YearOfDate(ACalendar.BeginDate);
   FMonth:= MonthOfDate(ACalendar.BeginDate);
