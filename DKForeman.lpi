@@ -589,8 +589,21 @@
         <Filename Value="forms\siz\usizdocreturningform.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="SIZDocReturningForm"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="USIZDocReturningForm"/>
+      </Unit>
+      <Unit>
+        <Filename Value="utils\siz\usizdocsheet.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="USIZDocSheet"/>
+      </Unit>
+      <Unit>
+        <Filename Value="forms\siz\usizdocmb7form.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="SIZDocMB7Form"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="USIZDocMB7Form"/>
       </Unit>
     </Units>
   </ProjectOptions>

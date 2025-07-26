@@ -28,7 +28,7 @@ UParamForm, UVars, USIZDocForm, USIZStoreHistoryForm, USIZDocEditForm,
 usizstoreentryeditform, USIZStoreWriteoffEditForm, USIZDocStoreEntryForm, 
 USIZDocStoreWriteoffForm, USIZCardTypes, USIZSizeSpecEditForm, 
 USIZStatusNewEditForm, USIZStatusCopyEditForm, USIZCardReturnEditForm, 
-USIZDocReceivingForm, USIZDocReturningForm;
+USIZDocReceivingForm, USIZDocReturningForm, USIZDocSheet, USIZDocMB7Form;
 
 {$R *.res}
 

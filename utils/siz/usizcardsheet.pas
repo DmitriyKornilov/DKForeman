@@ -5,8 +5,8 @@ unit USIZCardSheet;
 interface
 
 uses
-  Classes, SysUtils, Graphics, fpstypes, DateUtils, Controls,
-  fpspreadsheet, fpspreadsheetgrid,
+  Classes, SysUtils, Graphics, DateUtils, Controls,
+  fpspreadsheet, fpspreadsheetgrid, fpstypes,
   //DK packages utils
   DK_SheetTypes, DK_Vector, DK_Matrix, DK_StrUtils, DK_Const, DK_SheetWriter,
   DK_SheetConst, DK_DateUtils, DK_Color,

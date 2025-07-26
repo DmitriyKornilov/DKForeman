@@ -56,6 +56,7 @@ object SIZDocStoreWriteoffForm: TSIZDocStoreWriteoffForm
           Top = 0
           Width = 40
           Align = alLeft
+          Enabled = False
           Images = Images.PX24
           ImageIndex = 61
           ShowHint = True
@@ -70,6 +71,7 @@ object SIZDocStoreWriteoffForm: TSIZDocStoreWriteoffForm
           Top = 0
           Width = 40
           Align = alLeft
+          Enabled = False
           Images = Images.PX24
           ImageIndex = 60
           ShowHint = True
@@ -98,6 +100,7 @@ object SIZDocStoreWriteoffForm: TSIZDocStoreWriteoffForm
           Top = 0
           Width = 40
           Align = alLeft
+          Enabled = False
           Images = Images.PX24
           ImageIndex = 12
           ShowHint = True
@@ -112,6 +115,7 @@ object SIZDocStoreWriteoffForm: TSIZDocStoreWriteoffForm
           Top = 0
           Width = 40
           Align = alLeft
+          Enabled = False
           Images = Images.PX24
           ImageIndex = 13
           ShowHint = True

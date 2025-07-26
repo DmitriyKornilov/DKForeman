@@ -13,13 +13,14 @@ uses
   DK_VSTTables, DK_Vector, DK_CtrlUtils, DK_DateUtils, DK_Dialogs,
   //Forms
   USIZDocEditForm, USIZDocStoreEntryForm, USIZDocStoreWriteoffForm,
-  USIZDocReturningForm, USIZDocReceivingForm;
+  USIZDocReturningForm, USIZDocReceivingForm, USIZDocMB7Form;
 
 type
 
   { TSIZDocForm }
 
   TSIZDocForm = class(TForm)
+    DividerBevel2: TDividerBevel;
     DividerBevel4: TDividerBevel;
     DocAddButton: TSpeedButton;
     DocDelButton: TSpeedButton;
@@ -30,6 +31,8 @@ type
     DividerBevel1: TDividerBevel;
     EditingButton: TSpeedButton;
     ExportButton: TSpeedButton;
+    DocFormButton: TSpeedButton;
+    DocFormPanel: TPanel;
     SIZFormPanel: TPanel;
     SIZCaptionPanel: TPanel;
     DocPanel: TPanel;
@@ -45,6 +48,7 @@ type
     procedure DocDelButtonClick(Sender: TObject);
     procedure DocEditButtonClick(Sender: TObject);
     procedure DocEraseButtonClick(Sender: TObject);
+    procedure DocFormButtonClick(Sender: TObject);
     procedure DocVTDblClick(Sender: TObject);
     procedure EditingButtonClick(Sender: TObject);
     procedure ExportButtonClick(Sender: TObject);
@@ -133,6 +137,7 @@ begin
   ]);
 
   Caption:= MAIN_CAPTION + OTHER_DESCRIPTION[DocType+6];
+  DocFormPanel.Visible:= DocType=2;
 
   SIZFormShow;
 
@@ -194,6 +199,7 @@ begin
   end;
 
   ExportButton.Enabled:= not VIsNil(DocIDs);
+  DocFormButton.Enabled:= ExportButton.Enabled;
   DocEraseButton.Enabled:= ExportButton.Enabled;
 end;
 
@@ -261,6 +267,12 @@ begin
   end;
 
   if NeedReload then DocListLoad;
+end;
+
+procedure TSIZDocForm.DocFormButtonClick(Sender: TObject);
+begin
+  if not DocList.IsSelected then Exit;
+  SIZDocMB7FormOpen(DocIDs[DocList.SelectedIndex]);
 end;
 
 procedure TSIZDocForm.SIZFormShow;

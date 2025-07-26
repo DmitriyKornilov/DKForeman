@@ -55,7 +55,7 @@ object SIZDocForm: TSIZDocForm
     end
     object ExportButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 86
+      Left = 244
       Height = 36
       Hint = 'Экспорт в формат электронной таблицы XLSX или ODS'
       Top = 0
@@ -128,6 +128,49 @@ object SIZDocForm: TSIZDocForm
       Font.Style = [fsBold]
       Orientation = trVertical
       ParentFont = False
+    end
+    object DocFormPanel: TPanel
+      Left = 86
+      Height = 36
+      Top = 0
+      Width = 158
+      Align = alLeft
+      AutoSize = True
+      BevelOuter = bvNone
+      ClientHeight = 36
+      ClientWidth = 158
+      TabOrder = 1
+      Visible = False
+      object DocFormButton: TSpeedButton
+        Cursor = crHandPoint
+        Left = 0
+        Height = 36
+        Hint = 'Общий табель учета рабочего времени на месяц'
+        Top = 0
+        Width = 137
+        Align = alLeft
+        AutoSize = True
+        Caption = 'Форма МБ-7 '
+        Images = Images.PX24
+        ImageIndex = 43
+        Margin = 5
+        Spacing = 5
+        ShowHint = True
+        ParentShowHint = False
+        OnClick = DocFormButtonClick
+      end
+      object DividerBevel2: TDividerBevel
+        Left = 137
+        Height = 36
+        Top = 0
+        Width = 21
+        Caption = 'DividerBevel2'
+        Align = alLeft
+        BevelWidth = 2
+        Font.Style = [fsBold]
+        Orientation = trVertical
+        ParentFont = False
+      end
     end
   end
   object DocPanel: TPanel

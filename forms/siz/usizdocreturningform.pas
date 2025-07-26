@@ -41,6 +41,8 @@ type
     IsEditing: Boolean;
     SIZList: TVSTCategoryCheckTable;
 
+    StoreIDs: TInt64Matrix3D;
+
     procedure SIZListCreate;
     procedure SIZListLoad;
     procedure SIZListSelect;
@@ -109,6 +111,11 @@ end;
 procedure TSIZDocReturningForm.SIZListLoad;
 begin
 
+
+  ExpandAllButton.Enabled:= not MIsNil(StoreIDs);
+  CollapseAllButton.Enabled:= ExpandAllButton.Enabled;
+  CheckAllButton.Enabled:= ExpandAllButton.Enabled;
+  UncheckAllButton.Enabled:= ExpandAllButton.Enabled;
 end;
 
 procedure TSIZDocReturningForm.SIZListSelect;

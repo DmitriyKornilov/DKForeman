@@ -131,6 +131,8 @@ begin
 
   ExpandAllButton.Enabled:= not MIsNil(StoreIDs);
   CollapseAllButton.Enabled:= ExpandAllButton.Enabled;
+  CheckAllButton.Enabled:= ExpandAllButton.Enabled;
+  UncheckAllButton.Enabled:= ExpandAllButton.Enabled;
 end;
 
 procedure TSIZDocStoreWriteoffForm.SIZListShow;

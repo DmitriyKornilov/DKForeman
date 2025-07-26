@@ -10,7 +10,7 @@ uses
   //Project utils
   UVars, UConst, UTimingUtils,
   //DK packages utils
-  DK_VSTTables, DK_Vector, DK_Matrix, DK_CtrlUtils, DK_Dialogs, DK_StrUtils;
+  DK_VSTTables, DK_Vector, DK_Matrix, DK_CtrlUtils, DK_Dialogs;
 
 type
 
@@ -131,6 +131,8 @@ begin
 
   ExpandAllButton.Enabled:= not MIsNil(StoreIDs);
   CollapseAllButton.Enabled:= ExpandAllButton.Enabled;
+  CheckAllButton.Enabled:= ExpandAllButton.Enabled;
+  UncheckAllButton.Enabled:= ExpandAllButton.Enabled;
 end;
 
 procedure TSIZDocReceivingForm.SIZListShow;

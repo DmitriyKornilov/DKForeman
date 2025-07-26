@@ -639,6 +639,11 @@ type
                          const ADocDate: TDate;
                          const ADocType, ADocForm: Integer): Boolean;
     {Обновление документа: True - ОК, False - ошибка}
+    function SIZDocLoad(const ADocID: Integer;
+                         out ADocName, ADocNum: String;
+                         out ADocDate: TDate;
+                         out ADocType, ADocForm: Integer): Boolean;
+    {Данные документа: True - ОК, False - пусто}
     function SIZDocUpdate(const ADocID: Integer;
                          const ADocName, ADocNum: String;
                          const ADocDate: TDate;
@@ -5587,6 +5592,39 @@ begin
   except
     QRollback;
   end;
+end;
+
+function TDataBase.SIZDocLoad(const ADocID: Integer;
+                         out ADocName, ADocNum: String;
+                         out ADocDate: TDate;
+                         out ADocType, ADocForm: Integer): Boolean;
+begin
+  Result:= False;
+
+  ADocName:= EmptyStr;
+  ADocNum:= EmptyStr;
+  ADocDate:= 0;
+  ADocType:= 0;
+  ADocForm:= 0;
+
+  QSetQuery(FQuery);
+  QSetSQL(
+    'SELECT * FROM SIZDOC ' +
+    'WHERE DocID = :DocID'
+  );
+  QParamInt('DocID', ADocID);
+  QOpen;
+  if not QIsEmpty then
+  begin
+    QFirst;
+    ADocName:= QFieldStr('DocName');
+    ADocNum:= QFieldStr('DocNum');
+    ADocDate:= QFieldDT('DocDate');
+    ADocType:= QFieldInt('DocType');
+    ADocForm:= QFieldInt('DocForm');
+    Result:= True;
+  end;
+  QClose;
 end;
 
 function TDataBase.SIZDocUpdate(const ADocID: Integer;

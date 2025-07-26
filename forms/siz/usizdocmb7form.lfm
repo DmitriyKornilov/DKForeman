@@ -1,12 +1,12 @@
-object VacationScheduleForm: TVacationScheduleForm
-  Left = 600
-  Height = 240
-  Top = 259
-  Width = 769
+object SIZDocMB7Form: TSIZDocMB7Form
+  Left = 377
+  Height = 200
+  Top = 250
+  Width = 500
   BorderIcons = [biSystemMenu, biMaximize]
-  Caption = 'VacationScheduleForm'
-  ClientHeight = 240
-  ClientWidth = 769
+  Caption = 'SIZDocMB7Form'
+  ClientHeight = 200
+  ClientWidth = 500
   DesignTimePPI = 120
   WindowState = wsMaximized
   OnCreate = FormCreate
@@ -16,7 +16,7 @@ object VacationScheduleForm: TVacationScheduleForm
     Left = 2
     Height = 40
     Top = 2
-    Width = 765
+    Width = 496
     Align = alTop
     BorderSpacing.Left = 2
     BorderSpacing.Top = 2
@@ -24,41 +24,11 @@ object VacationScheduleForm: TVacationScheduleForm
     BevelOuter = bvNone
     BorderStyle = bsSingle
     ClientHeight = 36
-    ClientWidth = 761
+    ClientWidth = 492
     ParentFont = False
     TabOrder = 0
-    object YearPanel: TPanel
-      Left = 0
-      Height = 36
-      Top = 0
-      Width = 65
-      Align = alLeft
-      AutoSize = True
-      BevelOuter = bvNone
-      ClientHeight = 36
-      ClientWidth = 65
-      TabOrder = 0
-      object YearSpinEdit: TSpinEdit
-        AnchorSideTop.Control = YearPanel
-        AnchorSideTop.Side = asrCenter
-        Left = 2
-        Height = 28
-        Top = 4
-        Width = 63
-        Align = alCustom
-        Alignment = taCenter
-        BorderSpacing.Left = 2
-        BorderSpacing.Top = 2
-        BorderSpacing.Bottom = 2
-        MinValue = 2010
-        TabStop = False
-        TabOrder = 0
-        Value = 2022
-        OnChange = YearSpinEditChange
-      end
-    end
     object DividerBevel1: TDividerBevel
-      Left = 700
+      Left = 431
       Height = 36
       Top = 0
       Width = 21
@@ -71,7 +41,7 @@ object VacationScheduleForm: TVacationScheduleForm
     end
     object CloseButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 721
+      Left = 452
       Height = 36
       Hint = 'Закрыть'
       Top = 0
@@ -83,21 +53,9 @@ object VacationScheduleForm: TVacationScheduleForm
       ParentShowHint = False
       OnClick = CloseButtonClick
     end
-    object DividerBevel2: TDividerBevel
-      Left = 65
-      Height = 36
-      Top = 0
-      Width = 21
-      Caption = 'DividerBevel2'
-      Align = alLeft
-      BevelWidth = 2
-      Font.Style = [fsBold]
-      Orientation = trVertical
-      ParentFont = False
-    end
     object ExportButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 86
+      Left = 0
       Height = 36
       Hint = 'Экспорт в формат электронной таблицы XLSX или ODS'
       Top = 0
@@ -116,9 +74,9 @@ object VacationScheduleForm: TVacationScheduleForm
   end
   object SheetPanel: TPanel
     Left = 2
-    Height = 194
+    Height = 154
     Top = 44
-    Width = 765
+    Width = 496
     Align = alClient
     BorderSpacing.Left = 2
     BorderSpacing.Top = 2
@@ -126,17 +84,17 @@ object VacationScheduleForm: TVacationScheduleForm
     BorderSpacing.Bottom = 2
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 190
-    ClientWidth = 761
+    ClientHeight = 150
+    ClientWidth = 492
     Color = clWhite
     ParentBackground = False
     ParentColor = False
     TabOrder = 1
     object ViewGrid: TsWorksheetGrid
       Left = 0
-      Height = 166
+      Height = 126
       Top = 0
-      Width = 761
+      Width = 492
       AutoExpand = []
       DisplayFixedColRow = False
       FrozenBorderPen.Style = psClear
@@ -170,8 +128,8 @@ object VacationScheduleForm: TVacationScheduleForm
     object ZoomPanel: TPanel
       Left = 0
       Height = 22
-      Top = 168
-      Width = 761
+      Top = 128
+      Width = 492
       Align = alBottom
       BevelOuter = bvNone
       Color = clWhite
@@ -182,8 +140,8 @@ object VacationScheduleForm: TVacationScheduleForm
     object ZoomBevel: TBevel
       Left = 0
       Height = 2
-      Top = 166
-      Width = 761
+      Top = 126
+      Width = 492
       Align = alBottom
       Shape = bsBottomLine
       Style = bsRaised
