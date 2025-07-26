@@ -142,7 +142,7 @@ begin
   VTabNums:= nil;
   for i:= 0 to High(NomNums) do
   begin
-    VDim(V, Length(NomNums[i]), SNameLong(Fs[i], Ns[i], Ps[i]));
+    VDim(V{%H-}, Length(NomNums[i]), SNameLong(Fs[i], Ns[i], Ps[i]));
     VFIOs:= VAdd(VFIOs, V);
     VDim(V, Length(NomNums[i]), TabNums[i]);
     VTabNums:= VAdd(VTabNums, V);
