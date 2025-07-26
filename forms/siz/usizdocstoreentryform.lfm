@@ -7,6 +7,7 @@ object SIZDocStoreEntryForm: TSIZDocStoreEntryForm
   ClientHeight = 200
   ClientWidth = 500
   DesignTimePPI = 120
+  LCLVersion = '4.0.0.4'
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
@@ -20,8 +21,8 @@ object SIZDocStoreEntryForm: TSIZDocStoreEntryForm
     BorderSpacing.Right = 2
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 36
-    ClientWidth = 494
+    ClientHeight = 40
+    ClientWidth = 498
     ParentBackground = False
     ParentColor = False
     ParentFont = False

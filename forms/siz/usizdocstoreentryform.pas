@@ -113,7 +113,8 @@ begin
   SIZList.AddColumn('Единица измерения', 150);
   SIZList.AddColumn('Количество', 100);
   SIZList.AddColumn('Размер/объём/вес', 130);
-  SIZList.AddColumn('Примечание', 300);
+  SIZList.AddColumn('Примечание', 150);
+  SIZList.AutosizeColumnEnable('Наименование');
   SIZList.Draw;
 end;
 
@@ -125,6 +126,8 @@ begin
   if DocID<=0 then
   begin
     SIZList.ValuesClear;
+    ExpandAllButton.Enabled:= False;
+    CollapseAllButton.Enabled:= False;
     Exit;
   end;
 

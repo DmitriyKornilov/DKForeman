@@ -42,6 +42,7 @@ type
     StoreIDs: TInt64Matrix3D;
     SizCounts, SizDigUnits: TIntMatrix;
     NomNums, SizNames, SizStrUnits, SizLifes: TStrMatrix;
+    ReceivingDocNames, ReceivingDocNums, Notes: TStrMatrix;
     ReceivingDates: TDateMatrix;
 
     procedure DocLoad;
@@ -51,22 +52,24 @@ type
     procedure SettingsSave;
   public
     DocID: Integer;
+    IsReturn: Boolean;
   end;
 
 var
   SIZDocMB7Form: TSIZDocMB7Form;
 
-  procedure SIZDocMB7FormOpen(const ADocID: Integer);
+  procedure SIZDocMB7FormOpen(const ADocID: Integer; const AIsReturn: Boolean);
 
 implementation
 
-procedure SIZDocMB7FormOpen(const ADocID: Integer);
+procedure SIZDocMB7FormOpen(const ADocID: Integer; const AIsReturn: Boolean);
 var
   Form: TSIZDocMB7Form;
 begin
   Form:= TSIZDocMB7Form.Create(nil);
   try
     Form.DocID:= ADocID;
+    Form.IsReturn:= AIsReturn;
     Form.ShowModal;
   finally
     FreeAndNil(Form);
@@ -126,10 +129,18 @@ procedure TSIZDocMB7Form.DocLoad;
 begin
   if DocID=0 then Exit;
   DataBase.SIZDocLoad(DocID, DocName, DocNum, DocDate, DocType, DocForm);
-  DataBase.SIZStoreReceivingLoad(DocID, Fs, Ns, Ps, TabNums, PostNames,
+
+  if IsReturn then
+    DataBase.SIZStoreReturningLoad(DocID, Fs, Ns, Ps, TabNums, PostNames,
                                  StoreIDs, SizCounts, SizDigUnits,
                                  NomNums, SizNames, SizStrUnits, SizLifes,
-                                 ReceivingDates);
+                                 ReceivingDocNames, ReceivingDocNums, Notes,
+                                 ReceivingDates)
+  else
+    DataBase.SIZStoreReceivingLoad(DocID, Fs, Ns, Ps, TabNums, PostNames,
+                                   StoreIDs, SizCounts, SizDigUnits,
+                                   NomNums, SizNames, SizStrUnits, SizLifes,
+                                   ReceivingDates);
 end;
 
 procedure TSIZDocMB7Form.DocDraw(const AZoomPercent: Integer);
@@ -137,6 +148,7 @@ var
   i: Integer;
   VFIOs, VTabNums, VSIZNames, VNomNums, VSTRUnits, VSIZLifes, V: TStrVector;
   VDIGUnits, VSIZCounts: TIntVector;
+  VReceivingDates: TDateVector;
 begin
   VFIOs:= nil;
   VTabNums:= nil;
@@ -153,15 +165,16 @@ begin
   VDIGUnits:= MToVector(SizDigUnits);
   VSIZLifes:= MToVector(SizLifes);
   VSIZCounts:= MToVector(SizCounts);
+  VReceivingDates:= MToVector(ReceivingDates);
 
   ViewGrid.Visible:= False;
   Screen.Cursor:= crHourGlass;
   try
     ZoomPercent:= AZoomPercent;
     Sheet.Zoom(ZoomPercent);
-    Sheet.Draw(Company, Department, DocNum, DocDate, False{выдача},
+    Sheet.Draw(Company, Department, DocNum, DocDate, IsReturn,
                VFIOs, VTabNums, VSIZNames, VNomNums, VSTRUnits, VSIZLifes,
-               VDIGUnits, VSIZCounts);
+               VDIGUnits, VSIZCounts, VReceivingDates);
   finally
     ViewGrid.Visible:= True;
     Screen.Cursor:= crDefault;

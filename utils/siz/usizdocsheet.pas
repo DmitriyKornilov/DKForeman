@@ -52,6 +52,7 @@ type
 
       FFIOs, FTabNums, FSIZNames, FNomNums, FSTRUnits, FSIZLifes: TStrVector;
       FDIGUnits, FSIZCounts: TIntVector;
+      FReceivingDates: TDateVector;
 
     procedure HeaderDraw(var ARow: Integer);
     procedure CaptionDraw(var ARow: Integer);
@@ -63,7 +64,8 @@ type
                    const AIsReturn: Boolean;
                    const AFIOs, ATabNums, ASIZNames, ANomNums,
                          ASTRUnits, ASIZLifes: TStrVector;
-                   const ADIGUnits, ASIZCounts: TIntVector);
+                   const ADIGUnits, ASIZCounts: TIntVector;
+                   const AReceivingDates: TDateVector);
   end;
 
 implementation
@@ -170,7 +172,10 @@ begin
   Writer.WriteDate(R, C1, R, C2, FDocDate, cbtOuter);
   C1:= C2+1;
   C2:= C1+2;
-  Writer.WriteText(R, C1, R, C2, EmptyStr{код вида операции}, cbtOuter, True, True);
+  if FIsReturn then
+    Writer.WriteText(R, C1, R, C2, 'Списание (возврат)', cbtOuter, True, True)
+  else
+    Writer.WriteText(R, C1, R, C2, 'Выдача в эксплуатацию', cbtOuter, True, True);
   C1:= C2+1;
   C2:= C1+2;
   Writer.WriteText(R, C1, R, C2, FDepartment, cbtOuter, True, True);
@@ -238,10 +243,8 @@ begin
   Writer.WriteNumber(R+2, C1, R+2, C2, 10, cbtOuter);
   C1:= C2+1;
   C2:= C1;
-  if FIsReturn then
-    Writer.WriteText(R, C1, R+1, C2, 'Подпись в сдаче', cbtOuter)
-  else
-    Writer.WriteText(R, C1, R+1, C2, 'Подпись в получении', cbtOuter);
+  Writer.WriteText(R, C1, R+1, C2, 'Подпись в получении (сдаче)', cbtOuter);
+
   Writer.WriteNumber(R+2, C1, R+2, C2, 11, cbtOuter);
 
   Writer.SetRepeatedRows(R, R+2);
@@ -307,12 +310,10 @@ var
     C1:= C2+1; C2:= C1+1;
     Writer.WriteNumber(R, C1, R, C2, FSIZCounts[AInd], cbtOuter);
     C1:= C2+1; C2:= C1+1;
-    if FIsReturn then
-      Writer.WriteText(R, C1, R, C2, EmptyStr, cbtOuter)
-    else
-      Writer.WriteDate(R, C1, R, C2, FDocDate, cbtOuter);
+    Writer.WriteDate(R, C1, R, C2, FReceivingDates[AInd], cbtOuter);
     C1:= C2+1; C2:= C1+1;
     Writer.WriteText(R, C1, R, C2, FSIZLifes[AInd], cbtOuter);
+
     C1:= C2+1; C2:= C1;
     Writer.WriteText(R, C1, R, C2, EmptyStr, cbtOuter);
   end;
@@ -413,7 +414,8 @@ procedure TSIZDocMB7Sheet.Draw(const ACompany, ADepartment, ADocNum: String;
                    const AIsReturn: Boolean;
                    const AFIOs, ATabNums, ASIZNames, ANomNums,
                          ASTRUnits, ASIZLifes: TStrVector;
-                   const ADIGUnits, ASIZCounts: TIntVector);
+                   const ADIGUnits, ASIZCounts: TIntVector;
+                   const AReceivingDates: TDateVector);
 var
   R: Integer;
 begin
@@ -431,6 +433,7 @@ begin
   FSIZLifes:= ASIZLifes;
   FDIGUnits:= ADIGUnits;
   FSIZCounts:= ASIZCounts;
+  FReceivingDates:= AReceivingDates;
 
   Writer.BeginEdit;
 

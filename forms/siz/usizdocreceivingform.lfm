@@ -7,7 +7,6 @@ object SIZDocReceivingForm: TSIZDocReceivingForm
   ClientHeight = 200
   ClientWidth = 500
   DesignTimePPI = 120
-  LCLVersion = '4.0.0.4'
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
@@ -21,8 +20,8 @@ object SIZDocReceivingForm: TSIZDocReceivingForm
     BorderSpacing.Right = 2
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 40
-    ClientWidth = 498
+    ClientHeight = 36
+    ClientWidth = 494
     ParentBackground = False
     ParentColor = False
     ParentFont = False

@@ -137,7 +137,7 @@ begin
   ]);
 
   Caption:= MAIN_CAPTION + OTHER_DESCRIPTION[DocType+6];
-  DocFormPanel.Visible:= DocType=2;
+  DocFormPanel.Visible:= DocType in [2, 4];
 
   SIZFormShow;
 
@@ -272,7 +272,11 @@ end;
 procedure TSIZDocForm.DocFormButtonClick(Sender: TObject);
 begin
   if not DocList.IsSelected then Exit;
-  SIZDocMB7FormOpen(DocIDs[DocList.SelectedIndex]);
+
+  case DocType of
+    2: SIZDocMB7FormOpen(DocIDs[DocList.SelectedIndex], False{выдача});
+    4: SIZDocMB7FormOpen(DocIDs[DocList.SelectedIndex], True{возврат});
+  end;
 end;
 
 procedure TSIZDocForm.SIZFormShow;

@@ -112,7 +112,8 @@ begin
   SIZList.AddColumn('Количество', 100);
   SIZList.AddColumn('Размер/объём/вес', 130);
   SIZList.AddColumn('Документ поступления', 200);
-  SIZList.AddColumn('Примечание', 300);
+  SIZList.AddColumn('Примечание', 150);
+  SIZList.AutosizeColumnEnable('Наименование');
   SIZList.Draw;
 end;
 

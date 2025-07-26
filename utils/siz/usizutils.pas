@@ -44,6 +44,9 @@ function SIZDocFullName(const ADocName, ADocNum: String;
 function SIZDocFullName(const ADocNames, ADocNums: TStrVector;
                         const ADocDates: TDateVector;
                         const ANeedEmptyNumMark: Boolean = False): TStrVector;
+function SIZDocFullName(const ADocNames, ADocNums: TStrMatrix;
+                        const ADocDates: TDateMatrix;
+                        const ANeedEmptyNumMark: Boolean = False): TStrMatrix;
 
 implementation
 
@@ -360,6 +363,20 @@ begin
   if VIsNil(ADocNames) then Exit;
 
   VDim(Result, Length(ADocNames));
+  for i:= 0 to High(ADocNames) do
+    Result[i]:= SIZDocFullName(ADocNames[i], ADocNums[i], ADocDates[i], ANeedEmptyNumMark);
+end;
+
+function SIZDocFullName(const ADocNames, ADocNums: TStrMatrix;
+                        const ADocDates: TDateMatrix;
+                        const ANeedEmptyNumMark: Boolean = False): TStrMatrix;
+var
+  i: Integer;
+begin
+  Result:= nil;
+  if MIsNil(ADocNames) then Exit;
+
+  MDim(Result, Length(ADocNames));
   for i:= 0 to High(ADocNames) do
     Result[i]:= SIZDocFullName(ADocNames[i], ADocNums[i], ADocDates[i], ANeedEmptyNumMark);
 end;

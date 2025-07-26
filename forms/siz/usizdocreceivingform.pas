@@ -110,8 +110,7 @@ begin
   SIZList.AddColumn('Количество', 120);
   SIZList.AddColumn('Дата выдачи', 120);
   SIZList.AddColumn('Срок службы', 150);
-  //SIZList.AutosizeColumnEnable('Наименование');
-  SIZList.AutosizeColumnDisable;
+  SIZList.AutosizeColumnEnable('Наименование');
   SIZList.Draw;
 end;
 
@@ -120,8 +119,13 @@ begin
   if DocID<=0 then
   begin
     SIZList.ValuesClear;
+    ExpandAllButton.Enabled:= False;
+    CollapseAllButton.Enabled:= False;
+    CheckAllButton.Enabled:= False;
+    UncheckAllButton.Enabled:= False;
     Exit;
   end;
+
   DataBase.SIZStoreReceivingLoad(DocID, Fs, Ns, Ps, TabNums, PostNames,
                                  StoreIDs, SizCounts, SizDigUnits,
                                  NomNums, SizNames, SizStrUnits, SizLifes,
@@ -170,10 +174,9 @@ begin
   EditButtonPanel.Visible:= AIsEditing;
   CheckButtonPanel.Visible:= AIsEditing;
   if AIsEditing then
-    SIZList.CheckKind:= chkAll
+    SIZList.CheckKind:= chkCategory
   else
     SIZList.CheckKind:= chkNone;
-  //SIZListShow;
 end;
 
 procedure TSIZDocReceivingForm.DocChange(const ADocID: Integer);
