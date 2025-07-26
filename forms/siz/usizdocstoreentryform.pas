@@ -42,6 +42,7 @@ type
     procedure VTDblClick(Sender: TObject);
   private
     DocID: Integer;
+    IsEditing: Boolean;
 
     SIZList: TVSTCategoryRadioTable;
 
@@ -162,6 +163,9 @@ begin
     SIZList.Visible:= True;
   end;
 
+  if IsEditing and (not MIsNil(EntryIDs)) then
+    SIZList.Select(0, 0);
+
   ExpandAllButton.Enabled:= not MIsNil(EntryIDs);
   CollapseAllButton.Enabled:= ExpandAllButton.Enabled;
 end;
@@ -218,8 +222,13 @@ end;
 
 procedure TSIZDocStoreEntryForm.ViewUpdate(const AIsEditing: Boolean);
 begin
-  EditButtonPanel.Visible:= AIsEditing;
-  SIZList.RadioEnable:= AIsEditing;
+  IsEditing:= AIsEditing;
+
+  EditButtonPanel.Visible:= IsEditing;
+  SIZList.RadioEnable:= IsEditing;
+
+  if IsEditing and (not MIsNil(EntryIDs)) then
+    SIZList.Select(0, 0);
 end;
 
 procedure TSIZDocStoreEntryForm.DocChange(const ADocID: Integer);
