@@ -72,7 +72,7 @@ uses
 
   procedure ScheduleCycleToWeek(var ACycle: TScheduleCycle);
   procedure ScheduleCycleToCount(var ACycle: TScheduleCycle; const ACount: Integer; const AFirstDate: TDate);
-  procedure ScheduleCycleDateColumnSet(const ATable: TVSTCustomSimpleTable; const ACycle: TScheduleCycle; out AStrDates: TStrVector);
+  procedure ScheduleCycleDateColumnSet(const ATable: TVSTCoreTable; const ACycle: TScheduleCycle; out AStrDates: TStrVector);
   procedure ScheduleCycleDraw(const ATable: TVSTEdit; const ACycle: TScheduleCycle);
   procedure ScheduleCycleDraw(const ATable: TVSTTable; const ACycle: TScheduleCycle);
   procedure ScheduleShiftByCalendar(const AScheduleID: Integer;
@@ -689,7 +689,7 @@ begin
   VRedim(ACycle.ShiftNums, ACount, 0);
 end;
 
-procedure ScheduleCycleDateColumnSet(const ATable: TVSTCustomSimpleTable;
+procedure ScheduleCycleDateColumnSet(const ATable: TVSTCoreTable;
                                      const ACycle: TScheduleCycle;
                                      out AStrDates: TStrVector);
 begin

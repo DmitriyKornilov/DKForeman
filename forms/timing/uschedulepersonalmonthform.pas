@@ -11,7 +11,7 @@ uses
   //DK packages utils
   DK_Vector, DK_Matrix, DK_Math, DK_Fonts, DK_Const, DK_DateUtils,
   DK_StrUtils, DK_VSTTables, DK_VSTParamList, DK_Zoom, DK_SheetExporter,
-  DK_Progress, DK_CtrlUtils,
+  DK_Progress, DK_CtrlUtils, DK_VSTCategoryTables,
   //Project utils
   UVars, UConst, UUtils, UTimingUtils, UCalendar, USchedule, UScheduleSheet,
   UWorkHours, UTypes,

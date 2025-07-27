@@ -10,8 +10,8 @@ uses
   //Project utils
   UVars, UConst, UTypes, USIZUtils,
   //DK packages utils
-  DK_CtrlUtils, DK_VSTTables, DK_Vector, DK_Matrix, DK_VSTDropDown, DK_DateUtils,
-  DK_Dialogs,
+  DK_CtrlUtils, DK_Vector, DK_Matrix, DK_VSTDropDown, DK_DateUtils,
+  DK_Dialogs, DK_VSTCategoryTables,
   //Forms
   USIZDocEditForm;
 

@@ -292,7 +292,7 @@ end;
 procedure TScheduleShiftCalendarForm.ColorSelect;
 begin
   DelButton.Enabled:= ColorList.IsSelected and
-                      (ColorList.SelectedRowIndex<>ColorList.Count-1) and //нельзя удалять цвет undefined
+                      (ColorList.SelectedRowIndex<>ColorList.RowCount-1) and //нельзя удалять цвет undefined
                       (ColorList.SelectedRowIndex<>0);    //нельзя удалять цвет нерабочего дня
 
   EditButton.Enabled:= ColorList.IsSelected;
@@ -349,7 +349,7 @@ end;
 
 procedure TScheduleShiftCalendarForm.AddButtonClick(Sender: TObject);
 begin
-  if ColorList.Count>=367 then Exit;  //0 - not work color, 1..365 - shift colors, 366 - undefined color
+  if ColorList.RowCount>=367 then Exit;  //0 - not work color, 1..365 - shift colors, 366 - undefined color
 
   VIns(ColorNames, High(ColorNames), 'Смена №' + IntToStr(High(ColorNames)));
   VIns(ColorValues, High(ColorValues), COLOR_SHIFT_UNDEFINED_VALUE);

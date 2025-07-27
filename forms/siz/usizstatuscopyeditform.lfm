@@ -9,6 +9,7 @@ object SIZStatusCopyEditForm: TSIZStatusCopyEditForm
   ClientWidth = 1125
   DesignTimePPI = 120
   Position = poScreenCenter
+  LCLVersion = '4.0.0.4'
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
@@ -348,8 +349,8 @@ object SIZStatusCopyEditForm: TSIZStatusCopyEditForm
     BorderSpacing.Bottom = 12
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 255
-    ClientWidth = 1105
+    ClientHeight = 259
+    ClientWidth = 1109
     TabOrder = 1
     object VT: TVirtualStringTree
       Left = 0

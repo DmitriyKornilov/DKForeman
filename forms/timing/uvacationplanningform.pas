@@ -8,8 +8,8 @@ uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, Buttons,
   DividerBevel, Spin, StdCtrls, VirtualTrees, fpspreadsheetgrid, DateUtils,
   //DK packages utils
-  DK_Vector, DK_Matrix, DK_VSTTables, DK_Zoom, DK_Progress, DK_DateUtils,
-  DK_ColorLegend, DK_CtrlUtils,
+  DK_Vector, DK_Matrix, DK_VSTTables, DK_VSTCategoryTables, DK_Zoom, DK_Progress,
+  DK_DateUtils, DK_ColorLegend, DK_CtrlUtils,
   //Project utils
   UVars, UConst, UTimingUtils, UScheduleSheet, UCalendar, USchedule,
   //Forms
