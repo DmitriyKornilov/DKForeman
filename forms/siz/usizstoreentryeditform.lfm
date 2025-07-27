@@ -294,6 +294,7 @@ object SIZStoreEntryEditForm: TSIZStoreEntryEditForm
     BorderSpacing.Left = 8
     BorderSpacing.Top = 12
     BorderSpacing.Bottom = 12
+    MaxValue = 10000
     MinValue = 1
     TabOrder = 2
     Value = 1
@@ -639,7 +640,9 @@ object SIZStoreEntryEditForm: TSIZStoreEntryEditForm
     BorderSpacing.Left = 8
     BorderSpacing.Top = 12
     BorderSpacing.Bottom = 12
-    MinValue = 1
+    Increment = 50
+    MaxValue = 100000
+    MinValue = 50
     TabOrder = 5
     Value = 100
     Visible = False

@@ -813,12 +813,13 @@ type
     function SIZPersonalCardDataLoad(const ACardID: Integer;
                                 out ALogIDs: TInt64Vector;
                                 out AReceivingDates, AReturningDates: TDateVector;
-                                out ANameIDs, ASizeTypes: TIntVector;
+                                out ANameIDs, ASizeTypes, ANormSIZTypes, ASizeIDs: TIntVector;
                                 out ANormSizNames, AReceivingSizNames, AReceivingDocNames,
                                     AReturningDocNames, AWriteoffDocNames: TStrVector): Boolean;
     function SIZPersonalCardSIZLoad(const ACardID: Integer;
                                 out ALogIDs: TInt64Vector;
                                 out AReceivingDates, AReturningDates: TDateVector;
+                                out ANormSIZTypes: TIntVector;
                                 out ANormSizNames, AReceivingDocNames, AReturningDocNames: TStrVector;
                                 out AReceivingSizNames, AWriteoffDocNames: TStrMatrix;
                                 out ASizCounts, ASizeTypes: TIntMatrix): Boolean;
@@ -835,7 +836,8 @@ type
     function SIZPrevCardDataLoad(const ACardID, ASIZType: Integer;
                                 out ALogIDs, AStoreIDs: TInt64Vector;
                                 out AReceivingDates, AReturningDates: TDateVector;
-                                out ANameIDs, ANums, ALifes, AReceivingDocIDs, AReceivingInfoIDs: TIntVector;
+                                out ANameIDs, ANums, ALifes, ANormSIZTypes, ASizeIDs,
+                                    AReceivingDocIDs, AReceivingInfoIDs: TIntVector;
                                 out AReceivingSizNames, AReceivingDocNames, ANormSizNames: TStrVector): Boolean;
     function SIZPrevCardSIZLoad(const ACardID, ASIZType: Integer;
                                 const AReportDate: TDate;
@@ -867,7 +869,7 @@ type
     function SIZStatusInfoDataLoad(const ACardID, AWriteoffType, AInfoID: Integer;
                                 out ALogIDs: TInt64Vector;
                                 out AReceivingDates, AReturningDates: TDateVector;
-                                out ANameIDs, ANums, ALifes: TIntVector;
+                                out ANameIDs, ANums, ALifes, ASizeIDs, ASizTypes: TIntVector;
                                 out ASizNames: TStrVector): Boolean;
     procedure SIZStatusInfoLoad(const AReportDate: TDate;
                                 const ACardID, AWriteoffType, AInfoID: Integer;
@@ -7307,7 +7309,7 @@ end;
 function TDataBase.SIZPersonalCardDataLoad(const ACardID: Integer;
                                 out ALogIDs: TInt64Vector;
                                 out AReceivingDates, AReturningDates: TDateVector;
-                                out ANameIDs, ASizeTypes: TIntVector;
+                                out ANameIDs, ASizeTypes, ANormSIZTypes, ASizeIDs: TIntVector;
                                 out ANormSizNames, AReceivingSizNames, AReceivingDocNames,
                                     AReturningDocNames, AWriteoffDocNames: TStrVector): Boolean;
 begin
@@ -7318,6 +7320,8 @@ begin
   AReturningDates:= nil;
   ANameIDs:= nil;
   ASizeTypes:= nil;
+  ANormSIZTypes:= nil;
+  ASizeIDs:= nil;
 
   ANormSizNames:= nil;
   AReceivingSizNames:= nil;
@@ -7329,9 +7333,10 @@ begin
   QSetSQL(
     'SELECT t1.LogID, ' +
            't2.ReceivingDate, ' +
+           't5.SizeID, ' +
            't6.NameID, t6.SizeType, t6.SizName AS ReceivingSizName, ' +
            't7.DocName AS ReceivingDocName, t7.DocNum AS ReceivingDocNum, t7.DocDate AS ReceivingDocDate, ' +
-           't8.SizName AS NormSizName, ' +
+           't8.SizName AS NormSizName, t8.SIZType AS NormSIZType, ' +
            't10.DocName AS ReturningDocName, t10.DocNum AS ReturningDocNum, t10.DocDate AS ReturningDocDate, ' +
            't12.DocName AS WriteoffDocName, t12.DocNum AS WriteoffDocNum, t12.DocDate AS WriteoffDocDate ' +
     'FROM SIZCARDPERSONALLOGINFO t1 ' +
@@ -7362,6 +7367,8 @@ begin
       VAppend(AReturningDates, QFieldDT('ReturningDocDate'));
       VAppend(ANameIDs, QFieldInt('NameID'));
       VAppend(ASizeTypes, QFieldInt('SizeType'));
+      VAppend(ASizeIDs, QFieldInt('SizeID'));
+      VAppend(ANormSIZTypes, QFieldInt('NormSIZType'));
       VAppend(ANormSizNames, QFieldStr('NormSizName'));
       VAppend(AReceivingSizNames, QFieldStr('ReceivingSizName'));
       VAppend(AReceivingDocNames, SIZDocFullName(QFieldStr('ReceivingDocName'),
@@ -7383,13 +7390,14 @@ end;
 function TDataBase.SIZPersonalCardSIZLoad(const ACardID: Integer;
                                 out ALogIDs: TInt64Vector;
                                 out AReceivingDates, AReturningDates: TDateVector;
+                                out ANormSIZTypes: TIntVector;
                                 out ANormSizNames, AReceivingDocNames, AReturningDocNames: TStrVector;
                                 out AReceivingSizNames, AWriteoffDocNames: TStrMatrix;
                                 out ASizCounts, ASizeTypes: TIntMatrix): Boolean;
 var
   LogIDs: TInt64Vector;
   ReceivingDates, ReturningDates: TDateVector;
-  NameIDs, SizeTypes: TIntVector;
+  NameIDs, SizeTypes, NormSIZTypes, SizeIDs: TIntVector;
   NormSizNames, ReceivingSizNames: TStrVector;
   ReceivingDocNames, ReturningDocNames, WriteoffDocNames: TStrVector;
 
@@ -7432,7 +7440,10 @@ var
       begin
         N2:= i - 1;
         VAppend(VSizNames, ReceivingSizNames[N1]);
-        VAppend(VCounts, N2-N1+1);
+        if NormSIZTypes[N1]=0 then //дерматологические
+          VAppend(VCounts, VSum(SizeIDs, N1, N2))
+        else //прочие
+          VAppend(VCounts, N2-N1+1);
         VAppend(VSizeTypes, SizeTypes[N1]);
         VAppend(VWriteoffDocNames, UniqueWriteoffDocNames(N1,N2));
         N1:= i;
@@ -7441,7 +7452,10 @@ var
     end;
     N2:= ALogN2;
     VAppend(VSizNames, ReceivingSizNames[N1]);
-    VAppend(VCounts, N2-N1+1);
+    if NormSIZTypes[N1]=0 then //дерматологические
+      VAppend(VCounts, VSum(SizeIDs, N1, N2))
+    else //прочие
+      VAppend(VCounts, N2-N1+1);
     VAppend(VSizeTypes, SizeTypes[N1]);
     VAppend(VWriteoffDocNames, UniqueWriteoffDocNames(N1,N2));
 
@@ -7456,6 +7470,7 @@ var
     VAppend(ALogIDs, LogIDs[AInd1]);
     VAppend(AReceivingDates, ReceivingDates[AInd1]);
     VAppend(AReturningDates, ReturningDates[AInd1]);
+    VAppend(ANormSIZTypes, NormSIZTypes[AInd1]);
     VAppend(ANormSizNames, NormSizNames[AInd1]);
     VAppend(AReceivingDocNames, ReceivingDocNames[AInd1]);
     VAppend(AReturningDocNames, ReturningDocNames[AInd1]);
@@ -7492,6 +7507,7 @@ begin
   AReceivingDates:= nil;
   AReturningDates:= nil;
   ASizeTypes:= nil;
+  ANormSIZTypes:= nil;
   ANormSizNames:= nil;
   AReceivingDocNames:= nil;
   AReturningDocNames:= nil;
@@ -7500,7 +7516,8 @@ begin
   ASizCounts:= nil;
 
   if not SIZPersonalCardDataLoad(ACardID, LogIDs, ReceivingDates, ReturningDates,
-                                 NameIDs, SizeTypes, NormSizNames, ReceivingSizNames,
+                                 NameIDs, SizeTypes, NormSIZTypes, SizeIDs,
+                                 NormSizNames, ReceivingSizNames,
                                  ReceivingDocNames, ReturningDocNames,
                                  WriteoffDocNames) then Exit;
 
@@ -7512,7 +7529,8 @@ end;
 function TDataBase.SIZPrevCardDataLoad(const ACardID, ASIZType: Integer;
                                 out ALogIDs, AStoreIDs: TInt64Vector;
                                 out AReceivingDates, AReturningDates: TDateVector;
-                                out ANameIDs, ANums, ALifes, AReceivingDocIDs, AReceivingInfoIDs: TIntVector;
+                                out ANameIDs, ANums, ALifes, ANormSIZTypes, ASizeIDs,
+                                    AReceivingDocIDs, AReceivingInfoIDs: TIntVector;
                                 out AReceivingSizNames, AReceivingDocNames, ANormSizNames: TStrVector): Boolean;
 var
   WhereStr: String;
@@ -7526,6 +7544,8 @@ begin
   ANameIDs:= nil;
   ANums:= nil;
   ALifes:= nil;
+  ANormSIZTypes:= nil;
+  ASizeIDs:= nil;
   AReceivingDocIDs:= nil;
   AReceivingInfoIDs:= nil;
   AReceivingSizNames:= nil;
@@ -7541,9 +7561,10 @@ begin
     'SELECT t1.LogID, t1.StoreID, ' +
            't2.ReceivingDate, t2.ReceivingInfoID, ' +
            't3.Num, t3.Life, ' +
+           't5.SizeID, ' +
            't6.NameID, t6.SizName, ' +
            't7.DocID, t7.DocName, t7.DocNum, t7.DocDate, ' +
-           't8.SizName as NormSizName, ' +
+           't8.SizName as NormSizName, t8.SIZType AS NormSIZType, ' +
            't10.DocDate as ReturningDate ' +
     'FROM SIZCARDPERSONALLOGINFO t1 ' +
     'INNER JOIN SIZCARDPERSONALLOG t2 ON (t1.LogID=t2.LogID) ' +
@@ -7575,6 +7596,8 @@ begin
       VAppend(ANameIDs, QFieldInt('NameID'));
       VAppend(ANums, QFieldInt('Num'));
       VAppend(ALifes, QFieldInt('Life'));
+      VAppend(ANormSIZTypes, QFieldInt('NormSIZType'));
+      VAppend(ASizeIDs, QFieldInt('SizeID'));
       VAppend(AReceivingDocIDs, QFieldInt('DocID'));
       VAppend(AReceivingInfoIDs, QFieldInt('ReceivingInfoID'));
       VAppend(AReceivingDocNames, SIZDocFullName(QFieldStr('DocName'), QFieldStr('DocNum'), QFieldDT('DocDate')));
@@ -7596,7 +7619,8 @@ function TDataBase.SIZPrevCardSIZLoad(const ACardID, ASIZType: Integer;
 var
   LogIDs, StoreIDs: TInt64Vector;
   ReceivingDates, ReturnDates: TDateVector;
-  NameIDs, Nums, Lifes, ReceivingDocIDs, ReceivingInfoIDs: TIntVector;
+  NameIDs, Nums, Lifes, NormSIZTypes, SizeIDs: TIntVector;
+  ReceivingDocIDs, ReceivingInfoIDs: TIntVector;
   SizNames, ReceivingDocNames, NormSizNames: TStrVector;
 
   IsInfoFreshExists: Boolean;
@@ -7630,7 +7654,10 @@ var
         VAppend(VSizNames, SizNames[N1]);
         VAppend(VReceivingDocNames, ReceivingDocNames[N1]);
         VAppend(VReceivingDates, ReceivingDates[N1]);
-        VAppend(VCounts, N2-N1+1);
+        if NormSIZTypes[N1]=0 then //дерматологические
+          VAppend(VCounts, VSum(SizeIDs, N1, N2))
+        else //прочие
+          VAppend(VCounts, N2-N1+1);
         N1:= i;
         NameID:= NameIDs[i];
       end;
@@ -7639,7 +7666,10 @@ var
     VAppend(VSizNames, SizNames[N1]);
     VAppend(VReceivingDocNames, ReceivingDocNames[N1]);
     VAppend(VReceivingDates, ReceivingDates[N1]);
-    VAppend(VCounts, N2-N1+1);
+    if NormSIZTypes[N1]=0 then //дерматологические
+      VAppend(VCounts, VSum(SizeIDs, N1, N2))
+    else //прочие
+      VAppend(VCounts, N2-N1+1);
 
     MAppend(OutSizNames, VSizNames);
     MAppend(OutReceivingDocNames, VReceivingDocNames);
@@ -7751,7 +7781,8 @@ begin
 
   if not SIZPrevCardDataLoad(ACardID, ASIZType,
                              LogIDs, StoreIDs, ReceivingDates, ReturnDates,
-                             NameIDs, Nums, Lifes, ReceivingDocIDs, ReceivingInfoIDs,
+                             NameIDs, Nums, Lifes, NormSIZTypes, SizeIDs,
+                             ReceivingDocIDs, ReceivingInfoIDs,
                              SizNames, ReceivingDocNames, NormSizNames) then Exit;
 
   GroupByLogID;
@@ -7886,7 +7917,7 @@ end;
 function TDataBase.SIZStatusInfoDataLoad(const ACardID, AWriteoffType, AInfoID: Integer;
                                 out ALogIDs: TInt64Vector;
                                 out AReceivingDates, AReturningDates: TDateVector;
-                                out ANameIDs, ANums, ALifes: TIntVector;
+                                out ANameIDs, ANums, ALifes, ASizeIDs, ASizTypes: TIntVector;
                                 out ASizNames: TStrVector): Boolean;
 var
   InfoField: String;
@@ -7899,6 +7930,8 @@ begin
   ANameIDs:= nil;
   ANums:= nil;
   ALifes:= nil;
+  ASizeIDs:= nil;
+  ASizTypes:= nil;
   ASizNames:= nil;
 
   if AWriteoffType=0 then
@@ -7909,7 +7942,10 @@ begin
   QSetQuery(FQuery);
   QSetSQL(
     'SELECT t1.LogID, t2.ReceivingDate,  ' +
-           't3.Num, t3.Life, t6.NameID, t6.SizName, t8.DocDate as ReturnDate ' +
+           't3.Num, t3.Life, ' +
+           't5.SizeID, ' +
+           't6.NameID, t6.SizName, t6.SizType, ' +
+           't8.DocDate as ReturnDate ' +
     'FROM SIZCARDPERSONALLOGINFO t1 ' +
     'INNER JOIN SIZCARDPERSONALLOG t2 ON (t1.LogID=t2.LogID) ' +
     'INNER JOIN SIZNORMSUBITEMINFO t3 ON (t2.' + InfoField + '=t3.InfoID) ' +
@@ -7936,6 +7972,8 @@ begin
       VAppend(ANameIDs, QFieldInt('NameID'));
       VAppend(ANums, QFieldInt('Num'));
       VAppend(ALifes, QFieldInt('Life'));
+      VAppend(ASizeIDs, QFieldInt('SizeID'));
+      VAppend(ASizTypes, QFieldInt('SizType'));
       QNext;
     end;
     Result:= True;
@@ -7953,7 +7991,7 @@ procedure TDataBase.SIZStatusInfoLoad(const AReportDate: TDate;
 var
   LogIDs: TInt64Vector;
   ReceivingDates, ReturnDates: TDateVector;
-  NameIDs, Nums, Lifes: TIntVector;
+  NameIDs, Nums, Lifes, SizeIDs, SIZTypes: TIntVector;
   SizNames: TStrVector;
 
   OutLogIDs: TInt64Vector;
@@ -7978,14 +8016,20 @@ var
       begin
         N2:= i - 1;
         VAppend(VNames, SizNames[N1]);
-        VAppend(VCounts, N2-N1+1);
+        if SIZTypes[N1]=0 then //дерматологические
+          VAppend(VCounts, VSum(SizeIDs, N1, N2))
+        else //прочие
+          VAppend(VCounts, N2-N1+1);
         N1:= i;
         NameID:= NameIDs[i];
       end;
     end;
     N2:= ALogN2;
     VAppend(VNames, SizNames[N1]);
-    VAppend(VCounts, N2-N1+1);
+    if SIZTypes[N1]=0 then //дерматологические
+      VAppend(VCounts, VSum(SizeIDs, N1, N2))
+    else //прочие
+      VAppend(VCounts, N2-N1+1);
 
     MAppend(OutSizNames, VNames);
     MAppend(OutSizCounts, VCounts);
@@ -8077,7 +8121,8 @@ begin
 
   if not SIZStatusInfoDataLoad(ACardID, AWriteoffType, AInfoID,
                                LogIDs, ReceivingDates, ReturnDates,
-                               NameIDs, Nums, Lifes, SizNames) then Exit;
+                               NameIDs, Nums, Lifes, SizeIDs, SIZTypes,
+                               SizNames) then Exit;
 
   GroupByLogID;
 

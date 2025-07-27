@@ -667,7 +667,7 @@ begin
     Writer.WriteNumber(R1+i, 4, FSizCounts[AIndex, i], cbtOuter);
 
     if FSizeTypes[AIndex, i] in [7{лично}, 8{дозатор}] then
-      S:= SSO_SIZETYPE_PICKS[FSizeTypes[AIndex, i]]
+      S:= SSO_SIZETYPE_PICKS[VIndexOf(SSO_SIZETYPE_KEYS, FSizeTypes[AIndex, i])]
     else
       S:= EMPTY_MARK;
     Writer.WriteText(R1+i, 5, S, cbtOuter);
@@ -994,7 +994,8 @@ begin
 
   if n=0 then
   begin
-    Writer.AddCellBGColorIndex(R1, 8, COLOR_INDEX_SIZSTATUS_ERROR);
+    if not FStatusSubItems[ASubItemIndex].IsFreshExists then
+      Writer.AddCellBGColorIndex(R1, 8, COLOR_INDEX_SIZSTATUS_ERROR);
     RowsAndIndexesSave(R1, R2, R1, R2, ASubItemIndex, AInfoIndex, -1, False);
     Exit;
   end;
@@ -1073,6 +1074,7 @@ begin
     for j:= 5 to 6 do
       Writer.DrawBorders(SubInfoRows1[i], j, SubInfoRows2[i], j, cbtAll);
   Writer.SetBordersDefault;
+
   for i:= 0 to High(SubInfoRows2) do
     for j:= 7 to Writer.ColCount do
       Writer.DrawBorders(SubInfoRows1[i], j, SubInfoRows2[i], j, cbtOuter);

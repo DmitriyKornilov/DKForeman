@@ -7,30 +7,29 @@ object SIZCardStatusForm: TSIZCardStatusForm
   ClientHeight = 400
   ClientWidth = 700
   DesignTimePPI = 120
-  LCLVersion = '4.0.0.4'
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
   object SheetPanel: TPanel
     Left = 0
-    Height = 284
-    Top = 36
-    Width = 560
+    Height = 356
+    Top = 44
+    Width = 700
     Align = alClient
     BorderSpacing.Top = 2
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 284
-    ClientWidth = 560
+    ClientHeight = 352
+    ClientWidth = 696
     Color = clWhite
     ParentBackground = False
     ParentColor = False
     TabOrder = 0
     object ViewGrid: TsWorksheetGrid
       Left = 0
-      Height = 260
+      Height = 328
       Top = 0
-      Width = 556
+      Width = 696
       AutoExpand = []
       DisplayFixedColRow = False
       FrozenBorderPen.Style = psClear
@@ -64,21 +63,21 @@ object SIZCardStatusForm: TSIZCardStatusForm
     object SheetBottomPanel: TPanel
       Left = 0
       Height = 22
-      Top = 258
-      Width = 556
+      Top = 330
+      Width = 696
       Align = alBottom
       AutoSize = True
       BevelOuter = bvNone
       ClientHeight = 22
-      ClientWidth = 556
+      ClientWidth = 696
       Color = clWhite
       Constraints.MinHeight = 22
       ParentBackground = False
       ParentColor = False
       TabOrder = 1
       object ZoomPanel: TPanel
-        Left = 344
-        Height = 18
+        Left = 484
+        Height = 22
         Top = 0
         Width = 212
         Align = alRight
@@ -91,8 +90,8 @@ object SIZCardStatusForm: TSIZCardStatusForm
     object ZoomBevel: TBevel
       Left = 0
       Height = 2
-      Top = 260
-      Width = 556
+      Top = 328
+      Width = 696
       Align = alBottom
       Shape = bsBottomLine
       Style = bsRaised
@@ -102,20 +101,20 @@ object SIZCardStatusForm: TSIZCardStatusForm
     Left = 0
     Height = 40
     Top = 2
-    Width = 560
+    Width = 700
     Align = alTop
     BorderSpacing.Top = 2
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 40
-    ClientWidth = 560
+    ClientHeight = 36
+    ClientWidth = 696
     ParentFont = False
     TabOrder = 1
     Visible = False
     object AddButton: TSpeedButton
       Cursor = crHandPoint
       Left = 0
-      Height = 28
+      Height = 36
       Hint = 'Выдать новое'
       Top = 0
       Width = 40
@@ -129,8 +128,8 @@ object SIZCardStatusForm: TSIZCardStatusForm
     end
     object DelButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 64
-      Height = 28
+      Left = 80
+      Height = 36
       Hint = 'Отменить выдачу'
       Top = 0
       Width = 40
@@ -144,8 +143,8 @@ object SIZCardStatusForm: TSIZCardStatusForm
     end
     object SizeButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 96
-      Height = 28
+      Left = 120
+      Height = 36
       Hint = 'Указать особый размер'
       Top = 0
       Width = 40
@@ -158,10 +157,10 @@ object SIZCardStatusForm: TSIZCardStatusForm
       OnClick = SizeButtonClick
     end
     object DividerBevel1: TDividerBevel
-      Left = 128
-      Height = 28
+      Left = 160
+      Height = 36
       Top = 0
-      Width = 18
+      Width = 21
       Caption = 'DividerBevel1'
       Align = alLeft
       BevelWidth = 2
@@ -174,10 +173,10 @@ object SIZCardStatusForm: TSIZCardStatusForm
       AnchorSideLeft.Side = asrBottom
       AnchorSideTop.Control = ToolPanel
       AnchorSideTop.Side = asrCenter
-      Left = 182
-      Height = 15
-      Top = 9
-      Width = 150
+      Left = 181
+      Height = 20
+      Top = 8
+      Width = 192
       Caption = 'Выделять даты списания за'
     end
     object DaysCountSpinEdit: TSpinEdit
@@ -185,8 +184,8 @@ object SIZCardStatusForm: TSIZCardStatusForm
       AnchorSideLeft.Side = asrBottom
       AnchorSideTop.Control = ToolPanel
       AnchorSideTop.Side = asrCenter
-      Left = 378
-      Height = 23
+      Left = 381
+      Height = 28
       Top = 4
       Width = 62
       BorderSpacing.Left = 8
@@ -200,17 +199,17 @@ object SIZCardStatusForm: TSIZCardStatusForm
       AnchorSideLeft.Side = asrBottom
       AnchorSideTop.Control = ToolPanel
       AnchorSideTop.Side = asrCenter
-      Left = 448
-      Height = 15
-      Top = 9
-      Width = 26
+      Left = 451
+      Height = 20
+      Top = 8
+      Width = 34
       BorderSpacing.Left = 8
       Caption = 'дней'
     end
     object CopyButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 32
-      Height = 28
+      Left = 40
+      Height = 36
       Hint = 'Учесть ранее выданное'
       Top = 0
       Width = 40

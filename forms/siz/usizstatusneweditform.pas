@@ -213,7 +213,11 @@ var
   Months: Extended;
   WriteoffDate: TDate;
 begin
-  Count:= VSum(MToVector(SizCounts, SIZList.Selected));
+  if SIZType=0 then  //дерматологические
+    Count:= VSum(VStrToInt(MToVector(SizSizes, SIZList.Selected)))
+  else //прочие
+    Count:= VSum(MToVector(SizCounts, SIZList.Selected));
+
   Months:= SIZLifeInMonths(Count, Num, Life);
   if DocDropDown.ItemIndex>=0 then
     ReceivingDate:= DocDates[DocDropDown.ItemIndex]

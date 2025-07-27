@@ -44,6 +44,7 @@ type
 
     LogIDs: TInt64Vector;
     ReceivingDates, ReturningDates: TDateVector;
+    NormSIZTypes: TIntVector;
     NormSizNames: TStrVector;
     ReceivingDocNames, ReturningDocNames: TStrVector;
     ReceivingSizNames, WriteoffDocNames: TStrMatrix;
@@ -102,7 +103,7 @@ end;
 procedure TSIZCardBackForm.DataLoad;
 begin
   DataBase.SIZPersonalCardSIZLoad(CardID, LogIDs, ReceivingDates, ReturningDates,
-                                NormSizNames, ReceivingDocNames,
+                                NormSIZTypes, NormSizNames, ReceivingDocNames,
                                 ReturningDocNames, ReceivingSizNames,
                                 WriteoffDocNames, SizCounts, SizeTypes);
 end;
@@ -131,7 +132,8 @@ end;
 procedure TSIZCardBackForm.DataSelect;
 begin
   DelButton.Enabled:= Sheet.IsSelected;
-  ReturnButton.Enabled:= DelButton.Enabled;
+  ReturnButton.Enabled:= DelButton.Enabled and
+                         (NormSIZTypes[Sheet.SelectedIndex]>0{не дерматологические});
   CancelButton.Enabled:= DelButton.Enabled;
 
   CancelButton.Visible:= Sheet.IsSelected and
