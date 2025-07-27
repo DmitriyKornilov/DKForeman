@@ -14,7 +14,8 @@ uses
   DK_VSTTables, DK_VSTParamList, DK_Vector, DK_Filter, DK_CtrlUtils, DK_Color,
   DK_StrUtils,
   //Forms
-  USIZCardFrontForm, USIZCardBackForm, USIZCardStatusForm, USIZCardEditForm;
+  USIZCardFrontForm, USIZCardBackForm, USIZCardStatusForm, USIZCardEditForm,
+  USIZStaffHistoryForm;
 
 type
 
@@ -71,6 +72,7 @@ type
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FrontTabButtonClick(Sender: TObject);
+    procedure HistoryButtonClick(Sender: TObject);
     procedure PostRadioButtonClick(Sender: TObject);
     procedure StatusTabButtonClick(Sender: TObject);
     procedure TabNumRadioButtonClick(Sender: TObject);
@@ -218,6 +220,16 @@ begin
   MainForm.CategorySelect(0);
 end;
 
+procedure TSIZCardForm.HistoryButtonClick(Sender: TObject);
+var
+  i: Integer;
+  StaffName: String;
+begin
+  i:= StaffList.SelectedIndex;
+  StaffName:= SNameLong(Families[i], Names[i], Patronymics[i]);
+  SIZStaffHistoryFormOpen(TabNumIDs[i], StaffName, TabNums[i]);
+end;
+
 procedure TSIZCardForm.DescendingButtonClick(Sender: TObject);
 begin
   DescendingButton.Visible:= False;
@@ -339,11 +351,11 @@ end;
 procedure TSIZCardForm.StaffListSelect;
 begin
   CardListCaptionPanel.Caption:= '  Личные карточки учета выдачи СИЗ';
+  HistoryButton.Enabled:= StaffList.IsSelected;
   if not StaffList.IsSelected then Exit;
 
   SIZStaffSizeIndexesClear(PersonSizes);
-  if StaffList.IsSelected then
-    DataBase.SIZStaffSizeLoad(StaffIDs[StaffList.SelectedIndex], PersonSizes);
+  DataBase.SIZStaffSizeLoad(StaffIDs[StaffList.SelectedIndex], PersonSizes);
 
   CardListCaptionPanel.Caption:= CardListCaptionPanel.Caption + ': ' +
                                 StaffLongNames[StaffList.SelectedIndex];

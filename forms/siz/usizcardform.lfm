@@ -9,7 +9,6 @@ object SIZCardForm: TSIZCardForm
   ClientHeight = 478
   ClientWidth = 1300
   DesignTimePPI = 120
-  LCLVersion = '4.0.0.4'
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
@@ -24,8 +23,8 @@ object SIZCardForm: TSIZCardForm
     BorderSpacing.Right = 2
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 40
-    ClientWidth = 1296
+    ClientHeight = 36
+    ClientWidth = 1292
     ParentFont = False
     TabOrder = 0
     object CloseButton: TSpeedButton
@@ -87,18 +86,20 @@ object SIZCardForm: TSIZCardForm
       Cursor = crHandPoint
       Left = 0
       Height = 36
-      Hint = 'Полная истоия выдачи СИЗ за всё время'
+      Hint = 'История выдачи СИЗ за всё время'
       Top = 0
       Width = 164
       Align = alLeft
       AutoSize = True
       Caption = 'История выдачи '
+      Enabled = False
       Images = Images.PX24
       ImageIndex = 59
       Margin = 5
       Spacing = 5
       ShowHint = True
       ParentShowHint = False
+      OnClick = HistoryButtonClick
     end
   end
   object SettingPanel: TPanel
@@ -200,8 +201,8 @@ object SIZCardForm: TSIZCardForm
         BorderSpacing.Bottom = 2
         BevelOuter = bvNone
         BorderStyle = bsSingle
-        ClientHeight = 40
-        ClientWidth = 580
+        ClientHeight = 36
+        ClientWidth = 576
         ParentBackground = False
         ParentColor = False
         ParentFont = False
@@ -229,8 +230,8 @@ object SIZCardForm: TSIZCardForm
         BorderSpacing.Top = 2
         BevelOuter = bvNone
         BorderStyle = bsSingle
-        ClientHeight = 40
-        ClientWidth = 580
+        ClientHeight = 36
+        ClientWidth = 576
         TabOrder = 2
         object OrderLabel: TLabel
           AnchorSideLeft.Control = OrderButtonPanel
@@ -574,8 +575,8 @@ object SIZCardForm: TSIZCardForm
           BorderSpacing.Top = 2
           BevelOuter = bvNone
           BorderStyle = bsSingle
-          ClientHeight = 40
-          ClientWidth = 404
+          ClientHeight = 36
+          ClientWidth = 400
           ParentFont = False
           TabOrder = 3
           object FrontEditButton: TSpeedButton

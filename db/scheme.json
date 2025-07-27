@@ -1039,7 +1039,8 @@
         "SIZCARDSTATUSFORM.WARNDAYSCOUNT",
         "SIZCARDFORM.LISTTYPE",
         "SIZCARDFORM.WRITEOFFTYPE",
-        "SIZDOCMB7FORM.ZOOM"
+        "SIZDOCMB7FORM.ZOOM",
+        "SIZSTAFFHISTORYFORM.ZOOM"
       ],
       "ReferenceTo" : {
         "TableName" : "",
@@ -1165,6 +1166,7 @@
         "50",
         "1",
         "1",
+        "100",
         "100"
       ],
       "ReferenceTo" : {

@@ -102,7 +102,7 @@ end;
 
 procedure TSIZCardBackForm.DataLoad;
 begin
-  DataBase.SIZPersonalCardSIZLoad(CardID, LogIDs, ReceivingDates, ReturningDates,
+  DataBase.SIZPersonalCardSIZLoad(0, CardID, LogIDs, ReceivingDates, ReturningDates,
                                 NormSIZTypes, NormSizNames, ReceivingDocNames,
                                 ReturningDocNames, ReceivingSizNames,
                                 WriteoffDocNames, SizCounts, SizeTypes);

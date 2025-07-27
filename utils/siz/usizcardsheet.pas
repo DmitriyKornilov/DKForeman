@@ -85,6 +85,7 @@ type
       FReceivingDocNames, FReturningDocNames: TStrVector;
       FReceivingSizNames, FWriteoffDocNames: TStrMatrix;
       FSizCounts, FSizeTypes: TIntMatrix;
+      FIsAllHistory: Boolean;
 
       FFirstRows: TIntVector;
       FLastRows: TIntVector;
@@ -113,7 +114,8 @@ type
                    const AReceivingDates, AReturningDates: TDateVector;
                    const ANormSizNames, AReceivingDocNames, AReturningDocNames: TStrVector;
                    const AReceivingSizNames, AWriteoffDocNames: TStrMatrix;
-                   const ASizCounts, ASizeTypes: TIntMatrix);
+                   const ASizCounts, ASizeTypes: TIntMatrix;
+                   const AIsAllHistory: Boolean = False);
 
     property CanSelect: Boolean read FCanSelect write SetCanSelect;
     property IsSelected: Boolean read GetIsSelected;
@@ -614,12 +616,18 @@ begin
                                  'дерматологических СИЗ', cbtOuter, True, True);
 
   Writer.WriteText(R, 3, R, 6, 'Выдано', cbtOuter, True, True);
-  Writer.WriteText(R, 7, R, 10, 'Возвращено**', cbtOuter, True, True);
+  if FIsAllHistory then
+    Writer.WriteText(R, 7, R, 10, 'Возвращено', cbtOuter, True, True)
+  else
+    Writer.WriteText(R, 7, R, 10, 'Возвращено**', cbtOuter, True, True);
 
   R:= R + 1;
   Writer.WriteText(R, 3, 'дата', cbtOuter, True, True);
   Writer.WriteText(R, 4, 'коли-'+ SYMBOL_BREAK + 'чество', cbtOuter, True, True);
-  Writer.WriteText(R, 5, 'лично/'+ SYMBOL_BREAK + 'дозатор*', cbtOuter, True, True);
+  if FIsAllHistory then
+    Writer.WriteText(R, 5, 'лично/'+ SYMBOL_BREAK + 'дозатор', cbtOuter, True, True)
+  else
+    Writer.WriteText(R, 5, 'лично/'+ SYMBOL_BREAK + 'дозатор*', cbtOuter, True, True);
   Writer.WriteText(R, 6, 'подпись' + SYMBOL_BREAK +
                          'получившего' + SYMBOL_BREAK +
                          'СИЗ', cbtOuter, True, True);
@@ -635,8 +643,6 @@ begin
   R:= R + 1;
   for i:=1 to 10 do
     Writer.WriteNumber(R, i, i, cbtOuter);
-
-  Writer.SetFrozenRows(R-ARow+1);
 
   ARow:= R;
 end;
@@ -827,9 +833,10 @@ procedure TSIZCardBackSheet.Draw(const ANeedDraw: Boolean;
                    const AReceivingDates, AReturningDates: TDateVector;
                    const ANormSizNames, AReceivingDocNames, AReturningDocNames: TStrVector;
                    const AReceivingSizNames, AWriteoffDocNames: TStrMatrix;
-                   const ASizCounts, ASizeTypes: TIntMatrix);
+                   const ASizCounts, ASizeTypes: TIntMatrix;
+                   const AIsAllHistory: Boolean = False);
 var
-  R: Integer;
+  R, CaptionRowCount: Integer;
 begin
   DelSelection;
 
@@ -848,6 +855,7 @@ begin
   FWriteoffDocNames:= AWriteoffDocNames;
   FReceivingSizNames:= AReceivingSizNames;
   FSizCounts:= ASizCounts;
+  FIsAllHistory:= AIsAllHistory;
 
   FFirstRows:= nil;
   FLastRows:= nil;
@@ -856,10 +864,19 @@ begin
 
   R:= 1;
   CaptionDraw(R);
+  CaptionRowCount:= R;
   R:= R + 1;
   GridDraw(R);
-  R:= R + 1;
-  NoteDraw(R);
+  if not FIsAllHistory then
+  begin
+    R:= R + 1;
+    NoteDraw(R);
+  end;
+
+  BordersDraw(1, R, 1, Writer.ColCount);
+
+  Writer.SetFrozenRows(CaptionRowCount);
+  Writer.SetRepeatedRows(CaptionRowCount-2, CaptionRowCount);
 
   Writer.EndEdit;
 

@@ -809,14 +809,16 @@ type
                  out ACardNums, APostNames, ANormNames: TStrVector;
                  out ACardBDs, ACardEDs: TDateVector): Boolean;
 
-    {Получение СИЗ из личной карточки: True - ОК, False - пусто}
-    function SIZPersonalCardDataLoad(const ACardID: Integer;
+    {Получение СИЗ из личной карточки: True - ОК, False - пусто
+     Если ACardID>0 - СИЗ для конкретной карточки (ATabNumID может быть =0),
+     Если ACardID=0 и ATabNumID>0 - вся история для этого таб. номера}
+    function SIZPersonalCardDataLoad(const ATabNumID, ACardID: Integer;
                                 out ALogIDs: TInt64Vector;
                                 out AReceivingDates, AReturningDates: TDateVector;
                                 out ANameIDs, ASizeTypes, ANormSIZTypes, ASizeIDs: TIntVector;
                                 out ANormSizNames, AReceivingSizNames, AReceivingDocNames,
                                     AReturningDocNames, AWriteoffDocNames: TStrVector): Boolean;
-    function SIZPersonalCardSIZLoad(const ACardID: Integer;
+    function SIZPersonalCardSIZLoad(const ATabNumID, ACardID: Integer;
                                 out ALogIDs: TInt64Vector;
                                 out AReceivingDates, AReturningDates: TDateVector;
                                 out ANormSIZTypes: TIntVector;
@@ -7306,12 +7308,14 @@ begin
   end;
 end;
 
-function TDataBase.SIZPersonalCardDataLoad(const ACardID: Integer;
+function TDataBase.SIZPersonalCardDataLoad(const ATabNumID, ACardID: Integer;
                                 out ALogIDs: TInt64Vector;
                                 out AReceivingDates, AReturningDates: TDateVector;
                                 out ANameIDs, ASizeTypes, ANormSIZTypes, ASizeIDs: TIntVector;
                                 out ANormSizNames, AReceivingSizNames, AReceivingDocNames,
                                     AReturningDocNames, AWriteoffDocNames: TStrVector): Boolean;
+var
+  WhereStr: String;
 begin
   Result:= False;
 
@@ -7329,6 +7333,11 @@ begin
   AReturningDocNames:= nil;
   AWriteoffDocNames:= nil;
 
+  if ACardID>0 then
+    WhereStr:= 'WHERE (t2.CardID = :CardID) '
+  else
+    WhereStr:= 'WHERE (t0.TabNumID = :TabNumID) AND (t2.NowInfoID=t2.ReceivingInfoID) ';
+
   QSetQuery(FQuery);
   QSetSQL(
     'SELECT t1.LogID, ' +
@@ -7341,6 +7350,7 @@ begin
            't12.DocName AS WriteoffDocName, t12.DocNum AS WriteoffDocNum, t12.DocDate AS WriteoffDocDate ' +
     'FROM SIZCARDPERSONALLOGINFO t1 ' +
     'INNER JOIN SIZCARDPERSONALLOG t2 ON (t1.LogID=t2.LogID) ' +
+    'INNER JOIN SIZCARDPERSONAL t0 ON (t2.CardID=t0.CardID) ' +
     'INNER JOIN SIZNORMSUBITEMINFO t3 ON (t2.ReceivingInfoID=t3.InfoID) ' +
     'INNER JOIN SIZSTORELOG t4 ON (t1.StoreID=t4.StoreID) ' +
     'INNER JOIN SIZSTOREENTRY t5 ON (t4.EntryID=t5.EntryID) ' +
@@ -7351,10 +7361,12 @@ begin
     'LEFT OUTER JOIN SIZDOC t10 ON (t9.DocID=t10.DocID) ' +
     'LEFT OUTER JOIN SIZSTOREWRITEOFF t11 ON (t9.ReturnStoreID=t11.StoreID) ' +
     'LEFT OUTER JOIN SIZDOC t12 ON (t11.DocID=t12.DocID) ' +
-    'WHERE (t2.CardID = :CardID) ' +
+    WhereStr +
+    //'WHERE (t2.CardID = :CardID) ' +
     //'WHERE (t2.CardID = :CardID) AND (t2.NowInfoID=t2.ReceivingInfoID) ' +
     'ORDER BY t2.ReceivingDate, t1.LogID, t5.NameID '
    );
+  QParamInt('TabNumID', ATabNumID);
   QParamInt('CardID', ACardID);
   QOpen;
   if not QIsEmpty then
@@ -7387,7 +7399,7 @@ begin
   QClose;
 end;
 
-function TDataBase.SIZPersonalCardSIZLoad(const ACardID: Integer;
+function TDataBase.SIZPersonalCardSIZLoad(const ATabNumID, ACardID: Integer;
                                 out ALogIDs: TInt64Vector;
                                 out AReceivingDates, AReturningDates: TDateVector;
                                 out ANormSIZTypes: TIntVector;
@@ -7515,7 +7527,8 @@ begin
   AReceivingSizNames:= nil;
   ASizCounts:= nil;
 
-  if not SIZPersonalCardDataLoad(ACardID, LogIDs, ReceivingDates, ReturningDates,
+  if not SIZPersonalCardDataLoad(ATabNumID, ACardID, LogIDs,
+                                 ReceivingDates, ReturningDates,
                                  NameIDs, SizeTypes, NormSIZTypes, SizeIDs,
                                  NormSizNames, ReceivingSizNames,
                                  ReceivingDocNames, ReturningDocNames,

@@ -606,6 +606,13 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="USIZDocMB7Form"/>
       </Unit>
+      <Unit>
+        <Filename Value="forms\siz\usizstaffhistoryform.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="SIZStaffHistoryForm"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="USIZStaffHistoryForm"/>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
