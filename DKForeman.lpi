@@ -610,6 +610,7 @@
         <Filename Value="forms\siz\usizstaffhistoryform.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="SIZStaffHistoryForm"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="USIZStaffHistoryForm"/>
       </Unit>

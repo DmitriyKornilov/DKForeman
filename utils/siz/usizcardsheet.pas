@@ -21,14 +21,14 @@ type
   protected
     function SetWidths: TIntVector; override;
   private
-    const //700
+    const //710
       COLUMN1_WIDTH = 40;
       COLUMN2_WIDTH = 25;
       COLUMN3_WIDTH = 100;
       COLUMN4_WIDTH = 120;
       COLUMN5_WIDTH = 25;
-      COLUMN6_WIDTH = 170;
-      COLUMN7_WIDTH = 20;
+      COLUMN6_WIDTH = 175;
+      COLUMN7_WIDTH = 25;
       COLUMN8_WIDTH = 100;
       COLUMN9_WIDTH = 100;
     var
@@ -64,15 +64,15 @@ type
   protected
     function SetWidths: TIntVector; override;
   private
-    const //980
-      COLUMN1_WIDTH = 200;
-      COLUMN2_WIDTH = 200;
-      COLUMN3_WIDTH = 60;
-      COLUMN4_WIDTH = 50;
+    const //1035
+      COLUMN1_WIDTH = 205;
+      COLUMN2_WIDTH = 210;
+      COLUMN3_WIDTH = 70;
+      COLUMN4_WIDTH = 60;
       COLUMN5_WIDTH = 60;
       COLUMN6_WIDTH = 100;
-      COLUMN7_WIDTH = 60;
-      COLUMN8_WIDTH = 50;
+      COLUMN7_WIDTH = 70;
+      COLUMN8_WIDTH = 60;
       COLUMN9_WIDTH = 100;
       COLUMN10_WIDTH = 100;
     var
@@ -129,12 +129,12 @@ type
   protected
     function SetWidths: TIntVector; override;
   private
-    const //980
-      COLUMN1_WIDTH = 230; //перечень СИЗ по нормам
+    const //1035
+      COLUMN1_WIDTH = 250; //перечень СИЗ по нормам
       COLUMN2_WIDTH = 80;  //единица измерения
-      COLUMN3_WIDTH = 100; //количество на период
-      COLUMN4_WIDTH = 100; //размер
-      COLUMN5_WIDTH = 230; //перечень выданных СИЗ
+      COLUMN3_WIDTH = 110; //количество на период
+      COLUMN4_WIDTH = 105; //размер
+      COLUMN5_WIDTH = 250; //перечень выданных СИЗ
       COLUMN6_WIDTH = 80;  //количество
       COLUMN7_WIDTH = 80;  //дата выдачи
       COLUMN8_WIDTH = 80;  //дата следующей выдачи
