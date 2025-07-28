@@ -12,10 +12,10 @@ uses
   USIZNormTypes, USIZCardTypes,
   //DK packages utils
   DK_VSTTables, DK_VSTParamList, DK_Vector, DK_Filter, DK_CtrlUtils, DK_Color,
-  DK_StrUtils,
+  DK_StrUtils, DK_SheetExporter, DK_Progress, DK_Dialogs,
   //Forms
   USIZCardFrontForm, USIZCardBackForm, USIZCardStatusForm, USIZCardEditForm,
-  USIZStaffHistoryForm;
+  USIZStaffHistoryForm, UChooseForm;
 
 type
 
@@ -66,6 +66,7 @@ type
     procedure BackTabButtonClick(Sender: TObject);
     procedure CloseButtonClick(Sender: TObject);
     procedure DescendingButtonClick(Sender: TObject);
+    procedure ExportButtonClick(Sender: TObject);
     procedure FrontEditButtonClick(Sender: TObject);
     procedure FIORadioButtonClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -118,12 +119,24 @@ type
     procedure CategorySelect(const ACategory: Byte);
     procedure CardSettingsSave;
 
+    procedure CardFrontData(out ACardID: Integer;
+                            out ACardNum, AFamily, APersonName, APatronymic,
+                                AGender, ATabNum, APostName: String;
+                            out ACardBD, ACardED: TDate);
     procedure CardFrontUpdate;
     procedure CardBackUpdate;
     procedure CardStatusUpdate;
     procedure CardDataUpdate;
 
     procedure CardViewUpdate;
+
+    procedure SelectedCardExport;
+    procedure ActualCardExport;
+    procedure StatusExport;
+    procedure PersonCardsExport;
+    procedure AllCardsExport;
+    procedure AllStatusesExport;
+    procedure DataExport;
 
     procedure SettingsLoad;
   public
@@ -235,6 +248,11 @@ begin
   DescendingButton.Visible:= False;
   AscendingButton.Visible:= True;
   StaffListLoad;
+end;
+
+procedure TSIZCardForm.ExportButtonClick(Sender: TObject);
+begin
+  DataExport;
 end;
 
 procedure TSIZCardForm.FIORadioButtonClick(Sender: TObject);
@@ -510,36 +528,48 @@ begin
   CardList.Select(CardIndex);
 end;
 
-procedure TSIZCardForm.CardFrontUpdate;
-var
-  CardNum, Family, PersonName, Patronymic, Gender, TabNum, PostName: String;
-  CardBD, CardED: TDate;
+procedure TSIZCardForm.CardFrontData(out ACardID: Integer;
+                                     out ACardNum, AFamily, APersonName,
+                                         APatronymic, AGender, ATabNum, APostName: String;
+                                     out ACardBD, ACardED: TDate);
 begin
   if CardList.IsSelected then
   begin
-    CardNum:= CardNums[CardList.SelectedIndex];
-    CardBD:= CardBDs[CardList.SelectedIndex];
-    CardED:= CardEDs[CardList.SelectedIndex];
-    PostName:= CardPostNames[CardList.SelectedIndex];
+    ACardID:= CardIDs[CardList.SelectedIndex];
+    ACardNum:= CardNums[CardList.SelectedIndex];
+    ACardBD:= CardBDs[CardList.SelectedIndex];
+    ACardED:= CardEDs[CardList.SelectedIndex];
+    APostName:= CardPostNames[CardList.SelectedIndex];
 
-    Family:= Families[StaffList.SelectedIndex];
-    PersonName:= Names[StaffList.SelectedIndex];
-    Patronymic:= Patronymics[StaffList.SelectedIndex];
-    Gender:= Genders[StaffList.SelectedIndex];
-    TabNum:= TabNums[StaffList.SelectedIndex];
+    AFamily:= Families[StaffList.SelectedIndex];
+    APersonName:= Names[StaffList.SelectedIndex];
+    APatronymic:= Patronymics[StaffList.SelectedIndex];
+    AGender:= Genders[StaffList.SelectedIndex];
+    ATabNum:= TabNums[StaffList.SelectedIndex];
   end
   else begin
-    CardNum:= EmptyStr;
-    CardBD:= 0;
-    CardED:= 0;
-    PostName:= EmptyStr;
+    ACardID:= 0;
+    ACardNum:= EmptyStr;
+    ACardBD:= 0;
+    ACardED:= 0;
+    APostName:= EmptyStr;
 
-    Family:= EmptyStr;
-    PersonName:= EmptyStr;
-    Patronymic:= EmptyStr;
-    Gender:= EmptyStr;
-    TabNum:= EmptyStr;
+    AFamily:= EmptyStr;
+    APersonName:= EmptyStr;
+    APatronymic:= EmptyStr;
+    AGender:= EmptyStr;
+    ATabNum:= EmptyStr;
   end;
+end;
+
+procedure TSIZCardForm.CardFrontUpdate;
+var
+  CardID: Integer;
+  CardNum, Family, PersonName, Patronymic, Gender, TabNum, PostName: String;
+  CardBD, CardED: TDate;
+begin
+  CardFrontData(CardID, CardNum, Family, PersonName, Patronymic, Gender,
+                TabNum, PostName, CardBD, CardED);
 
   (CategoryForm as TSIZCardFrontForm).DataUpdate(CardNum,
         Family, PersonName, Patronymic, Gender, TabNum, PostName,
@@ -632,6 +662,76 @@ begin
     (CategoryForm as TSIZCardBackForm).ViewUpdate(ModeType)
   else if Category=3 then
     (CategoryForm as TSIZCardStatusForm).ViewUpdate(ModeType);
+end;
+
+procedure TSIZCardForm.SelectedCardExport;
+begin
+  if not CardList.IsSelected  then
+  begin
+    Inform('Нет данных для экспорта!');
+    Exit;
+  end;
+
+
+end;
+
+procedure TSIZCardForm.ActualCardExport;
+begin
+
+end;
+
+procedure TSIZCardForm.StatusExport;
+begin
+
+end;
+
+procedure TSIZCardForm.PersonCardsExport;
+begin
+
+end;
+
+procedure TSIZCardForm.AllCardsExport;
+begin
+
+end;
+
+procedure TSIZCardForm.AllStatusesExport;
+begin
+
+end;
+
+procedure TSIZCardForm.DataExport;
+var
+  V: TStrVector;
+  S, PersonName: String;
+  ChooseIndex: Integer;
+begin
+  if not StaffList.IsSelected then Exit;
+
+  PersonName:= SNameLong(Families[StaffList.SelectedIndex],
+                         Names[StaffList.SelectedIndex],
+                         Patronymics[StaffList.SelectedIndex]) +
+               ' [таб.№ ' + TabNums[StaffList.SelectedIndex] + ']';
+
+  S:= 'Сохранить в файл:';
+  V:= VCreateStr([
+    'Выбранную личную карточку сотрудника: ' + PersonName,
+    'Актуальную личную карточку сотрудника: ' + PersonName,
+    'Статус выдачи СИЗ сотруднику: ' + PersonName,
+    'Все личные карточки сотрудника: ' + PersonName,
+    'Актуальные личные карточки всех сотрудников',
+    'Статус выдачи СИЗ всем сотрудникам'
+  ]);
+  if not Choose(S, V, ChooseIndex, 700) then Exit;
+
+  case ChooseIndex of
+    0: SelectedCardExport;
+    1: ActualCardExport;
+    2: StatusExport;
+    3: PersonCardsExport;
+    4: AllCardsExport;
+    5: AllStatusesExport;
+  end;
 end;
 
 procedure TSIZCardForm.DataUpdate;

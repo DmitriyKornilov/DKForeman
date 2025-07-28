@@ -8,8 +8,7 @@ uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, Buttons,
   fpspreadsheetgrid, DividerBevel,
   //DK packages utils
-  DK_Vector, DK_Matrix, DK_Zoom, DK_CtrlUtils, DK_SheetTypes, DK_StrUtils,
-  DK_SheetExporter,
+  DK_Vector, DK_Matrix, DK_Zoom, DK_CtrlUtils, DK_SheetTypes, DK_SheetExporter,
   //Project utils
   UVars, UConst, USIZCardSheet;
 
@@ -114,8 +113,7 @@ begin
     CloseButton
   ]);
 
-  SheetTitle:= StaffName + ' [таб.№ ' + TabNum +
-               '] - история выдачи средств индивидуальной защиты';
+  SheetTitle:= StaffName + ' [таб.№ ' + TabNum + '] - история выдачи СИЗ';
   DataLoad;
   DataDraw(ZoomPercent);
 end;
@@ -164,7 +162,7 @@ begin
       FreeAndNil(ExpSheet);
     end;
     Exporter.PageSettings(spoLandscape);
-    Exporter.Save('Выполнено!');
+    Exporter.Save('Выполнено!', SheetTitle);
   finally
     FreeAndNil(Exporter);
   end;
