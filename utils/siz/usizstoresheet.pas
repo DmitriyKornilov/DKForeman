@@ -13,6 +13,27 @@ uses
 
 type
 
+  { TSIZStoreSheet }
+
+  TSIZStoreSheet = class(TCustomSheet)
+  protected
+    function SetWidths: TIntVector; override;
+  private
+    const //1200
+      COLWIDTHS: array of Integer = (
+        {01} 40,  //№п/п
+        {02} 200, //номенкл. номер
+        {03} 280, //наименование
+        {04} 150, //единица измерения
+        {05} 150, //количество
+        {06} 180, //размер, объем, вес
+        {07} 200  //документ поступления
+      );
+  public
+    procedure Draw(const ANomNums, ASizNames, ASizUnits, ASizSizes, ADocNames: TStrMatrix;
+                   const ASizCounts: TIntMatrix);
+  end;
+
   { TSIZStoreEntrySheet }
 
   TSIZStoreEntrySheet = class(TCustomSheet)
@@ -111,6 +132,60 @@ type
 
 
 implementation
+
+{ TSIZStoreSheet }
+
+function TSIZStoreSheet.SetWidths: TIntVector;
+begin
+  Result:= VCreateInt(COLWIDTHS);
+end;
+
+procedure TSIZStoreSheet.Draw(const ANomNums, ASizNames, ASizUnits, ASizSizes, ADocNames: TStrMatrix;
+                   const ASizCounts: TIntMatrix);
+var
+  i, j, R: Integer;
+
+  procedure CaptionDraw;
+  begin
+    Writer.SetBackgroundDefault;
+    Writer.SetFont(Font.Name, Font.Size, [fsBold], clBlack);
+    Writer.SetAlignment(haCenter, vaCenter);
+    Writer.WriteText(R, 1, '№ п/п', cbtOuter, True, True);
+    Writer.WriteText(R, 2, 'Номенклатурный номер', cbtOuter, True, True);
+    Writer.WriteText(R, 3, 'Наименование СИЗ', cbtOuter, True, True);
+    Writer.WriteText(R, 4, 'Единица измерения', cbtOuter, True, True);
+    Writer.WriteText(R, 5, 'Количество', cbtOuter, True, True);
+    Writer.WriteText(R, 6, 'Размер/объём/вес', cbtOuter, True, True);
+    Writer.WriteText(R, 7, 'Документ поступления', cbtOuter, True, True);
+  end;
+
+  procedure LineDraw(const AInd1, AInd2: Integer);
+  begin
+    Writer.SetBackgroundDefault;
+    Writer.SetFont(Font.Name, Font.Size, [], clBlack);
+    R:= R + 1;
+    Writer.SetAlignment(haCenter, vaCenter);
+    Writer.WriteNumber(R, 1, R-1, cbtOuter);
+    Writer.WriteText(R, 2, ANomNums[AInd1, AInd2], cbtOuter);
+    Writer.WriteText(R, 4, ASizUnits[AInd1, AInd2], cbtOuter);
+    Writer.WriteNumber(R, 5, ASizCounts[AInd1, AInd2], cbtOuter);
+    Writer.WriteText(R, 6, ASizSizes[AInd1, AInd2], cbtOuter);
+    Writer.SetAlignment(haLeft, vaCenter);
+    Writer.WriteText(R, 3, ASizNames[AInd1, AInd2], cbtOuter, True, True);
+    Writer.WriteText(R, 7, ADocNames[AInd1, AInd2], cbtOuter, True, True);
+  end;
+
+begin
+  Writer.BeginEdit;
+
+  R:= 1;
+  CaptionDraw;
+  for i:= 0 to High(ANomNums) do
+    for j:= 0 to High(ANomNums[i]) do
+      LineDraw(i, j);
+
+  Writer.EndEdit;
+end;
 
 { TSIZStoreEntrySheet }
 

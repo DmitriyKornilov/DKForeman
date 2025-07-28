@@ -8,9 +8,10 @@ uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, Buttons,
   VirtualTrees, DividerBevel,
   //Project utils
-  UVars, UConst, UTypes,
+  UVars, UConst, UTypes, USIZStoreSheet,
   //DK packages utils
-  DK_CtrlUtils, DK_VSTCategoryTables, DK_Vector, DK_Matrix, DK_StrUtils, DK_DropFilter,
+  DK_CtrlUtils, DK_VSTCategoryTables, DK_Vector, DK_Matrix, DK_StrUtils,
+  DK_DropFilter, DK_SheetExporter,
   //Forms
   USIZDocForm, USIZStoreHistoryForm, USIZStoreWriteoffEditForm;
 
@@ -47,6 +48,7 @@ type
     procedure BackButtonClick(Sender: TObject);
     procedure CloseButtonClick(Sender: TObject);
     procedure EntryButtonClick(Sender: TObject);
+    procedure ExportButtonClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -84,6 +86,8 @@ type
     procedure SIZListShow;
     procedure SIZListCalc;
     procedure SIZListSelect;
+
+    procedure DataExport;
   public
     procedure ViewUpdate(const AModeType: TModeType);
     procedure DataUpdate;
@@ -336,6 +340,29 @@ begin
   SIZWriteoffButton.Enabled:= SIZList.IsSelected;
 end;
 
+procedure TSIZStoreForm.DataExport;
+var
+  Exporter: TSheetsExporter;
+  ExpSheet: TSIZStoreSheet;
+  Worksheet: TsWorksheet;
+begin
+  Exporter:= TSheetsExporter.Create;
+  try
+    Worksheet:= Exporter.AddWorksheet('Лист1');
+    ExpSheet:= TSIZStoreSheet.Create(Worksheet, nil, GridFont);
+    try
+      ExpSheet.Draw(ShowNomNums, ShowSizNames, ShowSizUnits, ShowSizSizes,
+                    ShowDocNames, ShowSizCounts);
+    finally
+      FreeAndNil(ExpSheet);
+    end;
+    Exporter.PageSettings(spoLandscape);
+    Exporter.Save('Выполнено!', FormatDateTime('Склад на dd.mm.yyyy', Date));
+  finally
+    FreeAndNil(Exporter);
+  end;
+end;
+
 procedure TSIZStoreForm.ViewUpdate(const AModeType: TModeType);
 begin
   ModeType:= AModeType;
@@ -374,6 +401,11 @@ procedure TSIZStoreForm.BackButtonClick(Sender: TObject);
 begin
   SIZDocFormOpen(4);
   SIZListLoad;
+end;
+
+procedure TSIZStoreForm.ExportButtonClick(Sender: TObject);
+begin
+  DataExport;
 end;
 
 procedure TSIZStoreForm.SIZExpandAllButtonClick(Sender: TObject);

@@ -1,37 +1,36 @@
 object SIZStoreForm: TSIZStoreForm
   Left = 408
-  Height = 240
+  Height = 192
   Top = 250
-  Width = 1062
+  Width = 850
   Caption = 'SIZStoreForm'
-  ClientHeight = 240
-  ClientWidth = 1062
-  DesignTimePPI = 120
+  ClientHeight = 192
+  ClientWidth = 850
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
   object ToolPanel: TPanel
     Left = 2
-    Height = 40
+    Height = 32
     Top = 2
-    Width = 1058
+    Width = 846
     Align = alTop
     BorderSpacing.Left = 2
     BorderSpacing.Top = 2
     BorderSpacing.Right = 2
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 36
-    ClientWidth = 1054
+    ClientHeight = 28
+    ClientWidth = 842
     ParentFont = False
     TabOrder = 0
     object CloseButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 1014
-      Height = 36
+      Left = 810
+      Height = 28
       Hint = 'Закрыть'
       Top = 0
-      Width = 40
+      Width = 32
       Align = alRight
       Images = Images.PX24
       ImageIndex = 3
@@ -40,10 +39,10 @@ object SIZStoreForm: TSIZStoreForm
       OnClick = CloseButtonClick
     end
     object DividerBevel1: TDividerBevel
-      Left = 993
-      Height = 36
+      Left = 792
+      Height = 28
       Top = 0
-      Width = 21
+      Width = 18
       Caption = 'DividerBevel1'
       Align = alRight
       BevelWidth = 2
@@ -53,11 +52,11 @@ object SIZStoreForm: TSIZStoreForm
     end
     object ExportButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 592
-      Height = 36
+      Left = 516
+      Height = 28
       Hint = 'Экспорт в формат электронной таблицы XLSX или ODS'
       Top = 0
-      Width = 109
+      Width = 96
       Align = alLeft
       AutoSize = True
       Caption = ' Экспорт '
@@ -67,14 +66,15 @@ object SIZStoreForm: TSIZStoreForm
       Spacing = 5
       ShowHint = True
       ParentShowHint = False
+      OnClick = ExportButtonClick
     end
     object EntryButton: TSpeedButton
       Cursor = crHandPoint
       Left = 0
-      Height = 36
+      Height = 28
       Hint = 'Поступление новых СИЗ на склад'
       Top = 0
-      Width = 140
+      Width = 121
       Align = alLeft
       AutoSize = True
       Caption = 'Поступление '
@@ -87,10 +87,10 @@ object SIZStoreForm: TSIZStoreForm
       OnClick = EntryButtonClick
     end
     object DividerBevel2: TDividerBevel
-      Left = 571
-      Height = 36
+      Left = 498
+      Height = 28
       Top = 0
-      Width = 21
+      Width = 18
       Caption = 'DividerBevel2'
       Align = alLeft
       BevelWidth = 2
@@ -100,11 +100,11 @@ object SIZStoreForm: TSIZStoreForm
     end
     object OutButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 257
-      Height = 36
+      Left = 223
+      Height = 28
       Hint = 'Выдача СИЗ сотрудникам'
       Top = 0
-      Width = 101
+      Width = 89
       Align = alLeft
       AutoSize = True
       Caption = 'Выдача '
@@ -118,11 +118,11 @@ object SIZStoreForm: TSIZStoreForm
     end
     object WriteoffButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 140
-      Height = 36
+      Left = 121
+      Height = 28
       Hint = 'Списание СИЗ со клада'
       Top = 0
-      Width = 117
+      Width = 102
       Align = alLeft
       AutoSize = True
       Caption = 'Списание '
@@ -136,11 +136,11 @@ object SIZStoreForm: TSIZStoreForm
     end
     object HistoryButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 463
-      Height = 36
+      Left = 403
+      Height = 28
       Hint = 'История движения СИЗ по складу'
       Top = 0
-      Width = 108
+      Width = 95
       Align = alLeft
       AutoSize = True
       Caption = 'История '
@@ -154,11 +154,11 @@ object SIZStoreForm: TSIZStoreForm
     end
     object BackButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 358
-      Height = 36
+      Left = 312
+      Height = 28
       Hint = 'Возврат сотрудниками СИЗ на склад'
       Top = 0
-      Width = 105
+      Width = 91
       Align = alLeft
       AutoSize = True
       Caption = 'Возврат '
@@ -173,9 +173,9 @@ object SIZStoreForm: TSIZStoreForm
   end
   object CaptionPanel: TPanel
     Left = 2
-    Height = 30
-    Top = 44
-    Width = 1058
+    Height = 24
+    Top = 36
+    Width = 846
     Align = alTop
     Alignment = taLeftJustify
     BorderSpacing.Around = 2
@@ -191,12 +191,12 @@ object SIZStoreForm: TSIZStoreForm
   end
   object VT: TVirtualStringTree
     Left = 2
-    Height = 120
-    Top = 118
-    Width = 1058
+    Height = 94
+    Top = 96
+    Width = 846
     Align = alClient
     BorderSpacing.Around = 2
-    DefaultNodeHeight = 25
+    DefaultNodeHeight = 20
     DefaultText = 'Node'
     Header.AutoSizeIndex = 0
     Header.Columns = <>
@@ -205,35 +205,35 @@ object SIZStoreForm: TSIZStoreForm
   end
   object SIZToolPanel: TPanel
     Left = 0
-    Height = 40
-    Top = 76
-    Width = 1060
+    Height = 32
+    Top = 62
+    Width = 848
     Align = alTop
     BorderSpacing.Top = 2
     BorderSpacing.Right = 2
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 36
-    ClientWidth = 1056
+    ClientHeight = 28
+    ClientWidth = 844
     ParentBackground = False
     ParentColor = False
     ParentFont = False
     TabOrder = 3
     object ToolFilterPanel: TPanel
-      Left = 221
-      Height = 36
+      Left = 178
+      Height = 28
       Top = 0
-      Width = 800
+      Width = 640
       Align = alLeft
       BevelOuter = bvNone
-      ClientHeight = 36
-      ClientWidth = 800
+      ClientHeight = 28
+      ClientWidth = 640
       TabOrder = 0
       object DividerBevel4: TDividerBevel
         Left = 0
-        Height = 36
+        Height = 28
         Top = 0
-        Width = 21
+        Width = 18
         Caption = 'DividerBevel2'
         Align = alLeft
         BevelWidth = 2
@@ -242,10 +242,10 @@ object SIZStoreForm: TSIZStoreForm
         ParentFont = False
       end
       object FilterPanel: TPanel
-        Left = 21
-        Height = 36
+        Left = 18
+        Height = 28
         Top = 0
-        Width = 779
+        Width = 622
         Align = alClient
         BevelOuter = bvNone
         Caption = 'FilterPanel'
@@ -254,33 +254,33 @@ object SIZStoreForm: TSIZStoreForm
     end
     object ToolButtonPanel: TPanel
       Left = 0
-      Height = 36
+      Height = 28
       Top = 0
-      Width = 221
+      Width = 178
       Align = alLeft
       AutoSize = True
       BevelOuter = bvNone
-      ClientHeight = 36
-      ClientWidth = 221
+      ClientHeight = 28
+      ClientWidth = 178
       TabOrder = 1
       object SIZViewButtonPanel: TPanel
         Left = 0
-        Height = 36
+        Height = 28
         Top = 0
-        Width = 80
+        Width = 64
         Align = alLeft
         AutoSize = True
         BevelOuter = bvNone
-        ClientHeight = 36
-        ClientWidth = 80
+        ClientHeight = 28
+        ClientWidth = 64
         TabOrder = 0
         object SIZCollapseAllButton: TSpeedButton
           Cursor = crHandPoint
-          Left = 40
-          Height = 36
+          Left = 32
+          Height = 28
           Hint = 'Свернуть всё'
           Top = 0
-          Width = 40
+          Width = 32
           Align = alLeft
           Enabled = False
           Images = Images.PX24
@@ -292,10 +292,10 @@ object SIZStoreForm: TSIZStoreForm
         object SIZExpandAllButton: TSpeedButton
           Cursor = crHandPoint
           Left = 0
-          Height = 36
+          Height = 28
           Hint = 'Развернуть всё'
           Top = 0
-          Width = 40
+          Width = 32
           Align = alLeft
           Enabled = False
           Images = Images.PX24
@@ -307,22 +307,22 @@ object SIZStoreForm: TSIZStoreForm
       end
       object SIZEditButtonPanel: TPanel
         AnchorSideLeft.Side = asrBottom
-        Left = 80
-        Height = 36
+        Left = 64
+        Height = 28
         Top = 0
-        Width = 141
+        Width = 114
         Align = alLeft
         AutoSize = True
         BevelOuter = bvNone
-        ClientHeight = 36
-        ClientWidth = 141
+        ClientHeight = 28
+        ClientWidth = 114
         TabOrder = 1
         Visible = False
         object DividerBevel3: TDividerBevel
-          Left = 80
-          Height = 36
+          Left = 64
+          Height = 28
           Top = 0
-          Width = 21
+          Width = 18
           Caption = 'DividerBevel2'
           Align = alLeft
           BevelWidth = 2
@@ -332,11 +332,11 @@ object SIZStoreForm: TSIZStoreForm
         end
         object SIZWriteoffButton: TSpeedButton
           Cursor = crHandPoint
-          Left = 101
-          Height = 36
+          Left = 82
+          Height = 28
           Hint = 'Списать или передать СИЗ со склада'
           Top = 0
-          Width = 40
+          Width = 32
           Align = alLeft
           Enabled = False
           Images = Images.PX24
@@ -348,10 +348,10 @@ object SIZStoreForm: TSIZStoreForm
         object SIZCheckAllButton: TSpeedButton
           Cursor = crHandPoint
           Left = 0
-          Height = 36
+          Height = 28
           Hint = 'Выбрать все СИЗ'
           Top = 0
-          Width = 40
+          Width = 32
           Align = alLeft
           Enabled = False
           Images = Images.PX24
@@ -362,11 +362,11 @@ object SIZStoreForm: TSIZStoreForm
         end
         object SIZUncheckAllButton: TSpeedButton
           Cursor = crHandPoint
-          Left = 40
-          Height = 36
+          Left = 32
+          Height = 28
           Hint = 'Снять выбор со всех СИЗ'
           Top = 0
-          Width = 40
+          Width = 32
           Align = alLeft
           Enabled = False
           Images = Images.PX24
