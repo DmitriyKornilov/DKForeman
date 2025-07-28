@@ -56,7 +56,6 @@ type
   public
     procedure ViewUpdate(const AIsEditing: Boolean);
     procedure DocChange(const ADocID: Integer);
-    procedure DocExport;
   end;
 
 var
@@ -184,11 +183,6 @@ procedure TSIZDocReceivingForm.DocChange(const ADocID: Integer);
 begin
   DocID:= ADocID;
   SIZListLoad;
-end;
-
-procedure TSIZDocReceivingForm.DocExport;
-begin
-  //!!!
 end;
 
 procedure TSIZDocReceivingForm.ExpandAllButtonClick(Sender: TObject);

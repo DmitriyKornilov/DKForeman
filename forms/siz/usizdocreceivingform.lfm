@@ -1,18 +1,18 @@
 object SIZDocReceivingForm: TSIZDocReceivingForm
   Left = 377
-  Height = 200
+  Height = 160
   Top = 250
-  Width = 500
+  Width = 400
   Caption = 'SIZDocReceivingForm'
-  ClientHeight = 200
-  ClientWidth = 500
-  DesignTimePPI = 120
+  ClientHeight = 160
+  ClientWidth = 400
+  LCLVersion = '4.0.0.4'
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
   object ToolPanel: TPanel
     Left = 0
-    Height = 40
+    Height = 32
     Top = 2
     Width = 498
     Align = alTop
@@ -20,8 +20,8 @@ object SIZDocReceivingForm: TSIZDocReceivingForm
     BorderSpacing.Right = 2
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 36
-    ClientWidth = 494
+    ClientHeight = 32
+    ClientWidth = 498
     ParentBackground = False
     ParentColor = False
     ParentFont = False
@@ -54,7 +54,7 @@ object SIZDocReceivingForm: TSIZDocReceivingForm
           Height = 36
           Hint = 'Свернуть всё'
           Top = 0
-          Width = 40
+          Width = 32
           Align = alLeft
           Enabled = False
           Images = Images.PX24
@@ -69,7 +69,7 @@ object SIZDocReceivingForm: TSIZDocReceivingForm
           Height = 36
           Hint = 'Развернуть всё'
           Top = 0
-          Width = 40
+          Width = 32
           Align = alLeft
           Enabled = False
           Images = Images.PX24
@@ -98,7 +98,7 @@ object SIZDocReceivingForm: TSIZDocReceivingForm
           Height = 36
           Hint = 'Выбрать все СИЗ'
           Top = 0
-          Width = 40
+          Width = 32
           Align = alLeft
           Enabled = False
           Images = Images.PX24
@@ -113,7 +113,7 @@ object SIZDocReceivingForm: TSIZDocReceivingForm
           Height = 36
           Hint = 'Снять выбор со всех СИЗ'
           Top = 0
-          Width = 40
+          Width = 32
           Align = alLeft
           Enabled = False
           Images = Images.PX24
@@ -154,7 +154,7 @@ object SIZDocReceivingForm: TSIZDocReceivingForm
         Height = 36
         Hint = 'Отменить выдачу СИЗ'
         Top = 0
-        Width = 40
+        Width = 32
         Align = alLeft
         Enabled = False
         Images = Images.PX24
@@ -174,7 +174,7 @@ object SIZDocReceivingForm: TSIZDocReceivingForm
     BorderSpacing.Top = 2
     BorderSpacing.Right = 2
     BorderSpacing.Bottom = 2
-    DefaultNodeHeight = 25
+    DefaultNodeHeight = 20
     DefaultText = 'Node'
     Header.AutoSizeIndex = 0
     Header.Columns = <>

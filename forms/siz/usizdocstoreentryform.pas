@@ -60,7 +60,6 @@ type
   public
     procedure ViewUpdate(const AIsEditing: Boolean);
     procedure DocChange(const ADocID: Integer);
-    procedure DocExport;
   end;
 
 var
@@ -237,11 +236,6 @@ begin
   DocID:= ADocID;
   AddButton.Enabled:= DocID>0;
   SIZListLoad;
-end;
-
-procedure TSIZDocStoreEntryForm.DocExport;
-begin
-  //!!!
 end;
 
 procedure TSIZDocStoreEntryForm.ExpandAllButtonClick(Sender: TObject);

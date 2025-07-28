@@ -29,7 +29,7 @@ usizstoreentryeditform, USIZStoreWriteoffEditForm, USIZDocStoreEntryForm,
 USIZDocStoreWriteoffForm, USIZCardTypes, USIZSizeSpecEditForm, 
 USIZStatusNewEditForm, USIZStatusCopyEditForm, USIZCardReturnEditForm, 
 USIZDocReceivingForm, USIZDocReturningForm, USIZDocSheet, USIZDocMB7Form, 
-USIZStaffHistoryForm;
+USIZStaffHistoryForm, USIZStoreSheet;
 
 {$R *.res}
 

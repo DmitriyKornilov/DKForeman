@@ -614,6 +614,11 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="USIZStaffHistoryForm"/>
       </Unit>
+      <Unit>
+        <Filename Value="utils\siz\usizstoresheet.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="USIZStoreSheet"/>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

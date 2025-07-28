@@ -8,12 +8,13 @@ uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, Buttons,
   VirtualTrees, DividerBevel, Spin,
   //Project utils
-  UVars, UConst, UTypes, UUtils, USIZUtils,
+  UVars, UConst, UTypes, UUtils, USIZUtils, USIZStoreSheet,
   //DK packages utils
-  DK_VSTTables, DK_Vector, DK_CtrlUtils, DK_DateUtils, DK_Dialogs,
+  DK_VSTTables, DK_Vector, DK_CtrlUtils, DK_DateUtils, DK_Dialogs, DK_Progress,
+  DK_SheetExporter, DK_Matrix,
   //Forms
   USIZDocEditForm, USIZDocStoreEntryForm, USIZDocStoreWriteoffForm,
-  USIZDocReturningForm, USIZDocReceivingForm, USIZDocMB7Form;
+  USIZDocReturningForm, USIZDocReceivingForm, USIZDocMB7Form, UChooseForm;
 
 type
 
@@ -70,6 +71,12 @@ type
 
     procedure DocEdit(const AEditingType: TEditingType);
     procedure DocChange;
+
+    procedure DocStoreEntryExport(const AIsAllDocs: Boolean);
+    procedure DocReceivingExport(const AIsAllDocs: Boolean);
+    procedure DocStoreWriteoffExport(const AIsAllDocs: Boolean);
+    procedure DocReturningExport(const AIsAllDocs: Boolean);
+    procedure DocExport;
 
     procedure SIZFormShow;
     procedure SIZFormViewUpdate;
@@ -320,6 +327,391 @@ begin
   end;
 end;
 
+procedure TSIZDocForm.DocStoreEntryExport(const AIsAllDocs: Boolean);
+var
+  ExpEntryIDs: TInt64Matrix;
+  ExpNomNums, ExpSizNames, ExpSizUnits, ExpNotes: TStrMatrix;
+  ExpSizCounts, ExpSizTypes, ExpNameIDs, ExpSizeIDs, ExpHeightIDs, ExpSizeTypes: TIntMatrix;
+
+  ExpSheet: TSIZStoreEntrySheet;
+  Worksheet: TsWorksheet;
+
+  procedure ExportSingleDoc;
+  var
+    Exporter: TSheetsExporter;
+  begin
+    Exporter:= TSheetsExporter.Create;
+    try
+      Worksheet:= Exporter.AddWorksheet('Лист1');
+      ExpSheet:= TSIZStoreEntrySheet.Create(Worksheet, nil, GridFont);
+      try
+        DataBase.SIZStoreEntryLoad(DocIDs[DocList.SelectedIndex],
+                     ExpEntryIDs, ExpNomNums, ExpSizNames, ExpSizUnits,
+                     ExpNotes, ExpSizCounts, ExpSizTypes, ExpNameIDs, ExpSizeIDs,
+                     ExpHeightIDs, ExpSizeTypes);
+        ExpSheet.Draw(ExpNomNums, ExpSizNames, ExpSizUnits, ExpNotes,
+                     ExpSizCounts, ExpSizeIDs, ExpHeightIDs, ExpSizeTypes);
+      finally
+        FreeAndNil(ExpSheet);
+      end;
+      Exporter.PageSettings(spoLandscape);
+      Exporter.Save('Выполнено!', DocFullNames[DocList.SelectedIndex]);
+    finally
+      FreeAndNil(Exporter);
+    end;
+  end;
+
+  procedure ExportSeveralDocs;
+  var
+    i: Integer;
+    Exporter: TBooksExporter;
+    Progress: TProgress;
+  begin
+    Exporter:= TBooksExporter.Create;
+    if not Exporter.BeginExport then
+    begin
+      FreeAndNil(Exporter);
+      Exit;
+    end;
+    try
+      Progress:= TProgress.Create(nil);
+      try
+        Progress.WriteLine1('Экспорт документа');
+        Progress.WriteLine2(EmptyStr);
+        Progress.Show;
+        for i:=0 to High(DocIDs) do
+        begin
+          Progress.WriteLine2(DocFullNames[i]);
+          Worksheet:= Exporter.AddWorksheet('Лист1');
+          ExpSheet:= TSIZStoreEntrySheet.Create(Worksheet, nil, GridFont);
+          try
+            DataBase.SIZStoreEntryLoad(DocIDs[i],
+                     ExpEntryIDs, ExpNomNums, ExpSizNames, ExpSizUnits,
+                     ExpNotes, ExpSizCounts, ExpSizTypes, ExpNameIDs, ExpSizeIDs,
+                     ExpHeightIDs, ExpSizeTypes);
+            ExpSheet.Draw(ExpNomNums, ExpSizNames, ExpSizUnits, ExpNotes,
+                     ExpSizCounts, ExpSizeIDs, ExpHeightIDs, ExpSizeTypes);
+          finally
+            FreeAndNil(ExpSheet);
+          end;
+          Exporter.PageSettings(spoLandscape);
+          Exporter.Save(DocFullNames[i]);
+        end;
+      finally
+        FreeAndNil(Progress);
+      end;
+      Exporter.EndExport('Выполнено!');
+    finally
+      FreeAndNil(Exporter);
+    end;
+  end;
+
+begin
+  if AIsAllDocs then
+    ExportSeveralDocs
+  else
+    ExportSingleDoc;
+end;
+
+procedure TSIZDocForm.DocReceivingExport(const AIsAllDocs: Boolean);
+var
+  ExpFs, ExpNs, ExpPs, ExpTabNums, ExpPostNames: TStrVector;
+  ExpStoreIDs: TInt64Matrix3D;
+  ExpSizCounts, ExpSizDigUnits: TIntMatrix;
+  ExpNomNums, ExpSizNames, ExpSizStrUnits, ExpSizLifes: TStrMatrix;
+  ExpReceivingDates: TDateMatrix;
+
+  ExpSheet: TSIZStoreReceivingSheet;
+  Worksheet: TsWorksheet;
+
+  procedure ExportSingleDoc;
+  var
+    Exporter: TSheetsExporter;
+  begin
+    Exporter:= TSheetsExporter.Create;
+    try
+      Worksheet:= Exporter.AddWorksheet('Лист1');
+      ExpSheet:= TSIZStoreReceivingSheet.Create(Worksheet, nil, GridFont);
+      try
+        DataBase.SIZStoreReceivingLoad(DocIDs[DocList.SelectedIndex],
+                                 ExpFs, ExpNs, ExpPs, ExpTabNums, ExpPostNames,
+                                 ExpStoreIDs, ExpSizCounts, ExpSizDigUnits,
+                                 ExpNomNums, ExpSizNames, ExpSizStrUnits,
+                                 ExpSizLifes, ExpReceivingDates);
+        ExpSheet.Draw(ExpFs, ExpNs, ExpPs, ExpTabNums, ExpPostNames,
+                      ExpSizCounts, ExpNomNums, ExpSizNames, ExpSizStrUnits,
+                      ExpSizLifes, ExpReceivingDates);
+      finally
+        FreeAndNil(ExpSheet);
+      end;
+      Exporter.PageSettings(spoLandscape);
+      Exporter.Save('Выполнено!', DocFullNames[DocList.SelectedIndex]);
+    finally
+      FreeAndNil(Exporter);
+    end;
+  end;
+
+  procedure ExportSeveralDocs;
+  var
+    i: Integer;
+    Exporter: TBooksExporter;
+    Progress: TProgress;
+  begin
+    Exporter:= TBooksExporter.Create;
+    if not Exporter.BeginExport then
+    begin
+      FreeAndNil(Exporter);
+      Exit;
+    end;
+    try
+      Progress:= TProgress.Create(nil);
+      try
+        Progress.WriteLine1('Экспорт документа');
+        Progress.WriteLine2(EmptyStr);
+        Progress.Show;
+        for i:=0 to High(DocIDs) do
+        begin
+          Progress.WriteLine2(DocFullNames[i]);
+          Worksheet:= Exporter.AddWorksheet('Лист1');
+          ExpSheet:= TSIZStoreReceivingSheet.Create(Worksheet, nil, GridFont);
+          try
+            DataBase.SIZStoreReceivingLoad(DocIDs[i],
+                                 ExpFs, ExpNs, ExpPs, ExpTabNums, ExpPostNames,
+                                 ExpStoreIDs, ExpSizCounts, ExpSizDigUnits,
+                                 ExpNomNums, ExpSizNames, ExpSizStrUnits,
+                                 ExpSizLifes, ExpReceivingDates);
+            ExpSheet.Draw(ExpFs, ExpNs, ExpPs, ExpTabNums, ExpPostNames,
+                          ExpSizCounts, ExpNomNums, ExpSizNames, ExpSizStrUnits,
+                          ExpSizLifes, ExpReceivingDates);
+          finally
+            FreeAndNil(ExpSheet);
+          end;
+          Exporter.PageSettings(spoLandscape);
+          Exporter.Save(DocFullNames[i]);
+        end;
+      finally
+        FreeAndNil(Progress);
+      end;
+      Exporter.EndExport('Выполнено!');
+    finally
+      FreeAndNil(Exporter);
+    end;
+  end;
+
+begin
+  if AIsAllDocs then
+    ExportSeveralDocs
+  else
+    ExportSingleDoc;
+end;
+
+procedure TSIZDocForm.DocStoreWriteoffExport(const AIsAllDocs: Boolean);
+var
+  ExpCategoryNames:TStrMatrix;
+  ExpStoreIDs: TInt64Matrix;
+  ExpSizCounts: TIntMatrix;
+  ExpNomNums, ExpSizNames, ExpSizUnits, ExpSizSizes, ExpEntryDocNames, ExpNotes: TStrMatrix;
+
+  ExpSheet: TSIZStoreWriteoffSheet;
+  Worksheet: TsWorksheet;
+
+  procedure ExportSingleDoc;
+  var
+    Exporter: TSheetsExporter;
+  begin
+    Exporter:= TSheetsExporter.Create;
+    try
+      Worksheet:= Exporter.AddWorksheet('Лист1');
+      ExpSheet:= TSIZStoreWriteoffSheet.Create(Worksheet, nil, GridFont);
+      try
+        DataBase.SIZStoreWriteOffLoad(DocIDs[DocList.SelectedIndex],
+                                ExpCategoryNames, ExpStoreIDs, ExpSizCounts,
+                                ExpNomNums, ExpSizNames, ExpSizUnits, ExpSizSizes,
+                                ExpEntryDocNames, ExpNotes);
+        ExpSheet.Draw(ExpNomNums, ExpSizNames, ExpSizUnits, ExpSizSizes,
+                                ExpEntryDocNames, ExpNotes, ExpSizCounts);
+      finally
+        FreeAndNil(ExpSheet);
+      end;
+      Exporter.PageSettings(spoLandscape);
+      Exporter.Save('Выполнено!', DocFullNames[DocList.SelectedIndex]);
+    finally
+      FreeAndNil(Exporter);
+    end;
+  end;
+
+  procedure ExportSeveralDocs;
+  var
+    i: Integer;
+    Exporter: TBooksExporter;
+    Progress: TProgress;
+  begin
+    Exporter:= TBooksExporter.Create;
+    if not Exporter.BeginExport then
+    begin
+      FreeAndNil(Exporter);
+      Exit;
+    end;
+    try
+      Progress:= TProgress.Create(nil);
+      try
+        Progress.WriteLine1('Экспорт документа');
+        Progress.WriteLine2(EmptyStr);
+        Progress.Show;
+        for i:=0 to High(DocIDs) do
+        begin
+          Progress.WriteLine2(DocFullNames[i]);
+          Worksheet:= Exporter.AddWorksheet('Лист1');
+          ExpSheet:= TSIZStoreWriteoffSheet.Create(Worksheet, nil, GridFont);
+          try
+            DataBase.SIZStoreWriteOffLoad(DocIDs[i],
+                                ExpCategoryNames, ExpStoreIDs, ExpSizCounts,
+                                ExpNomNums, ExpSizNames, ExpSizUnits, ExpSizSizes,
+                                ExpEntryDocNames, ExpNotes);
+            ExpSheet.Draw(ExpNomNums, ExpSizNames, ExpSizUnits, ExpSizSizes,
+                                ExpEntryDocNames, ExpNotes, ExpSizCounts);
+          finally
+            FreeAndNil(ExpSheet);
+          end;
+          Exporter.PageSettings(spoLandscape);
+          Exporter.Save(DocFullNames[i]);
+        end;
+      finally
+        FreeAndNil(Progress);
+      end;
+      Exporter.EndExport('Выполнено!');
+    finally
+      FreeAndNil(Exporter);
+    end;
+  end;
+
+begin
+  if AIsAllDocs then
+    ExportSeveralDocs
+  else
+    ExportSingleDoc;
+end;
+
+procedure TSIZDocForm.DocReturningExport(const AIsAllDocs: Boolean);
+var
+  ExpFs, ExpNs, ExpPs, ExpTabNums, ExpPostNames: TStrVector;
+  ExpStoreIDs: TInt64Matrix3D;
+  ExpSizCounts, ExpSizDigUnits: TIntMatrix;
+  ExpNomNums, ExpSizNames, ExpSizStrUnits, ExpSizLifes: TStrMatrix;
+  ExpReceivingDocNames, ExpReceivingDocNums, ExpNotes: TStrMatrix;
+  ExpReceivingDates: TDateMatrix;
+
+  ExpSheet: TSIZStoreReturningSheet;
+  Worksheet: TsWorksheet;
+
+  procedure ExportSingleDoc;
+  var
+    Exporter: TSheetsExporter;
+  begin
+    Exporter:= TSheetsExporter.Create;
+    try
+      Worksheet:= Exporter.AddWorksheet('Лист1');
+      ExpSheet:= TSIZStoreReturningSheet.Create(Worksheet, nil, GridFont);
+      try
+        DataBase.SIZStoreReturningLoad(DocIDs[DocList.SelectedIndex],
+                           ExpFs, ExpNs, ExpPs, ExpTabNums, ExpPostNames,
+                           ExpStoreIDs, ExpSizCounts, ExpSizDigUnits,
+                           ExpNomNums, ExpSizNames, ExpSizStrUnits, ExpSizLifes,
+                           ExpReceivingDocNames, ExpReceivingDocNums, ExpNotes,
+                           ExpReceivingDates);
+        ExpSheet.Draw(ExpFs, ExpNs, ExpPs, ExpTabNums, ExpPostNames,
+                      ExpSizCounts, ExpNomNums, ExpSizNames, ExpSizStrUnits,
+                      ExpReceivingDocNames, ExpReceivingDocNums,
+                      ExpNotes, ExpReceivingDates);
+      finally
+        FreeAndNil(ExpSheet);
+      end;
+      Exporter.PageSettings(spoLandscape);
+      Exporter.Save('Выполнено!', DocFullNames[DocList.SelectedIndex]);
+    finally
+      FreeAndNil(Exporter);
+    end;
+  end;
+
+  procedure ExportSeveralDocs;
+  var
+    i: Integer;
+    Exporter: TBooksExporter;
+    Progress: TProgress;
+  begin
+    Exporter:= TBooksExporter.Create;
+    if not Exporter.BeginExport then
+    begin
+      FreeAndNil(Exporter);
+      Exit;
+    end;
+    try
+      Progress:= TProgress.Create(nil);
+      try
+        Progress.WriteLine1('Экспорт документа');
+        Progress.WriteLine2(EmptyStr);
+        Progress.Show;
+        for i:=0 to High(DocIDs) do
+        begin
+          Progress.WriteLine2(DocFullNames[i]);
+          Worksheet:= Exporter.AddWorksheet('Лист1');
+          ExpSheet:= TSIZStoreReturningSheet.Create(Worksheet, nil, GridFont);
+          try
+            DataBase.SIZStoreReturningLoad(DocIDs[i],
+                           ExpFs, ExpNs, ExpPs, ExpTabNums, ExpPostNames,
+                           ExpStoreIDs, ExpSizCounts, ExpSizDigUnits,
+                           ExpNomNums, ExpSizNames, ExpSizStrUnits, ExpSizLifes,
+                           ExpReceivingDocNames, ExpReceivingDocNums, ExpNotes,
+                           ExpReceivingDates);
+            ExpSheet.Draw(ExpFs, ExpNs, ExpPs, ExpTabNums, ExpPostNames,
+                          ExpSizCounts, ExpNomNums, ExpSizNames, ExpSizStrUnits,
+                          ExpReceivingDocNames, ExpReceivingDocNums,
+                          ExpNotes, ExpReceivingDates);
+          finally
+            FreeAndNil(ExpSheet);
+          end;
+          Exporter.PageSettings(spoLandscape);
+          Exporter.Save(DocFullNames[i]);
+        end;
+      finally
+        FreeAndNil(Progress);
+      end;
+      Exporter.EndExport('Выполнено!');
+    finally
+      FreeAndNil(Exporter);
+    end;
+  end;
+
+begin
+  if AIsAllDocs then
+    ExportSeveralDocs
+  else
+    ExportSingleDoc;
+end;
+
+procedure TSIZDocForm.DocExport;
+var
+  V: TStrVector;
+  S: String;
+  ChooseIndex: Integer;
+begin
+  if not DocList.IsSelected then Exit;
+
+  S:= 'Сохранить в файл:';
+  V:= VCreateStr([
+    'Документ: "' + DocFullNames[DocList.SelectedIndex] + '"',
+    'Все документы за ' + YearSpinEdit.Text + ' год'
+  ]);
+  if not Choose(S, V, ChooseIndex) then Exit;
+
+  case DocType of
+    1: DocStoreEntryExport(ChooseIndex=1);
+    2: DocReceivingExport(ChooseIndex=1);
+    3: DocStoreWriteoffExport(ChooseIndex=1);
+    4: DocReturningExport(ChooseIndex=1);
+  end;
+end;
+
 procedure TSIZDocForm.ViewUpdate;
 begin
   DocToolPanel.Visible:= EditingButton.Down;
@@ -338,12 +730,7 @@ end;
 
 procedure TSIZDocForm.ExportButtonClick(Sender: TObject);
 begin
-  case DocType of
-    1: (SIZForm as TSIZDocStoreEntryForm).DocExport;
-    2: (SIZForm as TSIZDocReceivingForm).DocExport;
-    3: (SIZForm as TSIZDocStoreWriteoffForm).DocExport;
-    4: (SIZForm as TSIZDocReturningForm).DocExport;
-  end;
+  DocExport;
 end;
 
 end.
