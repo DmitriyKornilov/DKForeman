@@ -34,6 +34,7 @@ type
   private
     ZoomPercent: Integer;
     Sheet: TSIZCardBackSheet;
+    SheetTitle: String;
 
     LogIDs: TInt64Vector;
     ReceivingDates, ReturningDates: TDateVector;
@@ -113,7 +114,8 @@ begin
     CloseButton
   ]);
 
-  Caption:= Caption + ' - ' + StaffName + ' [таб.№ ' + TabNum + ']';
+  SheetTitle:= StaffName + ' [таб.№ ' + TabNum +
+               '] - история выдачи средств индивидуальной защиты';
   DataLoad;
   DataDraw(ZoomPercent);
 end;
@@ -136,7 +138,7 @@ begin
     Sheet.Draw(True{NeedDraw}, ReceivingDates, ReturningDates, NormSizNames,
                ReceivingDocNames, ReturningDocNames,
                ReceivingSizNames, WriteoffDocNames, SizCounts, SizeTypes,
-               True{IsHistory});
+               True{IsHistory}, SheetTitle);
   finally
     ViewGrid.Visible:= True;
     Screen.Cursor:= crDefault;
@@ -157,7 +159,7 @@ begin
       ExpSheet.Draw(True{NeedDraw}, ReceivingDates, ReturningDates, NormSizNames,
                     ReceivingDocNames, ReturningDocNames,
                     ReceivingSizNames, WriteoffDocNames, SizCounts, SizeTypes,
-                    True{IsHistory});
+                    True{IsHistory}, SheetTitle);
     finally
       FreeAndNil(ExpSheet);
     end;

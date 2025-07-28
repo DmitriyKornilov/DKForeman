@@ -22,15 +22,17 @@ type
     function SetWidths: TIntVector; override;
   private
     const //710
-      COLUMN1_WIDTH = 40;
-      COLUMN2_WIDTH = 25;
-      COLUMN3_WIDTH = 100;
-      COLUMN4_WIDTH = 120;
-      COLUMN5_WIDTH = 25;
-      COLUMN6_WIDTH = 175;
-      COLUMN7_WIDTH = 25;
-      COLUMN8_WIDTH = 100;
-      COLUMN9_WIDTH = 100;
+      COLWIDTHS: array of Integer = (
+        {01} 40,
+        {02} 25,
+        {03} 100,
+        {04} 120,
+        {05} 25,
+        {06} 175,
+        {07} 25,
+        {08} 100,
+        {09} 100
+      );
     var
       FCardNum, FFamily, FPersonName, FPatronymic, FGender,
       FTabNum, FPostName, FDepartment: String;
@@ -65,16 +67,18 @@ type
     function SetWidths: TIntVector; override;
   private
     const //1035
-      COLUMN1_WIDTH = 205;
-      COLUMN2_WIDTH = 210;
-      COLUMN3_WIDTH = 70;
-      COLUMN4_WIDTH = 60;
-      COLUMN5_WIDTH = 60;
-      COLUMN6_WIDTH = 100;
-      COLUMN7_WIDTH = 70;
-      COLUMN8_WIDTH = 60;
-      COLUMN9_WIDTH = 100;
-      COLUMN10_WIDTH = 100;
+      COLWIDTHS: array of Integer = (
+        {01} 205,
+        {02} 210,
+        {03} 70,
+        {04} 60,
+        {05} 60,
+        {06} 100,
+        {07} 70,
+        {08} 60,
+        {09} 100,
+        {10} 100
+      );
     var
       FOnSelect: TSheetEvent;
       FCanSelect: Boolean;
@@ -86,10 +90,12 @@ type
       FReceivingSizNames, FWriteoffDocNames: TStrMatrix;
       FSizCounts, FSizeTypes: TIntMatrix;
       FIsAllHistory: Boolean;
+      FTitle: String;
 
       FFirstRows: TIntVector;
       FLastRows: TIntVector;
 
+    procedure TitleDraw(var ARow: Integer);
     procedure CaptionDraw(var ARow: Integer);
     procedure LogDraw(var ARow: Integer; const AIndex: Integer);
     procedure GridDraw(var ARow: Integer);
@@ -115,7 +121,8 @@ type
                    const ANormSizNames, AReceivingDocNames, AReturningDocNames: TStrVector;
                    const AReceivingSizNames, AWriteoffDocNames: TStrMatrix;
                    const ASizCounts, ASizeTypes: TIntMatrix;
-                   const AIsAllHistory: Boolean = False);
+                   const AIsAllHistory: Boolean = False;
+                   const ATitle: String = '');
 
     property CanSelect: Boolean read FCanSelect write SetCanSelect;
     property IsSelected: Boolean read GetIsSelected;
@@ -130,14 +137,16 @@ type
     function SetWidths: TIntVector; override;
   private
     const //1035
-      COLUMN1_WIDTH = 250; //перечень СИЗ по нормам
-      COLUMN2_WIDTH = 80;  //единица измерения
-      COLUMN3_WIDTH = 110; //количество на период
-      COLUMN4_WIDTH = 105; //размер
-      COLUMN5_WIDTH = 250; //перечень выданных СИЗ
-      COLUMN6_WIDTH = 80;  //количество
-      COLUMN7_WIDTH = 80;  //дата выдачи
-      COLUMN8_WIDTH = 80;  //дата следующей выдачи
+      COLWIDTHS: array of Integer = (
+        {01} 250, //перечень СИЗ по нормам
+        {02} 80,  //единица измерения
+        {03} 110, //количество на период
+        {04} 105, //размер
+        {05} 250, //перечень выданных СИЗ
+        {06} 80,  //количество
+        {07} 80,  //дата выдачи
+        {08} 80   //дата следующей выдачи
+      );
     var
       FOnSelect: TSheetEvent;
       FCanSelect: Boolean;
@@ -206,17 +215,7 @@ implementation
 
 function TSIZCardFrontSheet.SetWidths: TIntVector;
 begin
-  Result:= VCreateInt([
-    COLUMN1_WIDTH,
-    COLUMN2_WIDTH,
-    COLUMN3_WIDTH,
-    COLUMN4_WIDTH,
-    COLUMN5_WIDTH,
-    COLUMN6_WIDTH,
-    COLUMN7_WIDTH,
-    COLUMN8_WIDTH,
-    COLUMN9_WIDTH
-  ]);
+  Result:= VCreateInt(COLWIDTHS);
 end;
 
 procedure TSIZCardFrontSheet.AttachmentDraw(var ARow: Integer);
@@ -587,18 +586,19 @@ end;
 
 function TSIZCardBackSheet.SetWidths: TIntVector;
 begin
-  Result:= VCreateInt([
-    COLUMN1_WIDTH,
-    COLUMN2_WIDTH,
-    COLUMN3_WIDTH,
-    COLUMN4_WIDTH,
-    COLUMN5_WIDTH,
-    COLUMN6_WIDTH,
-    COLUMN7_WIDTH,
-    COLUMN8_WIDTH,
-    COLUMN9_WIDTH,
-    COLUMN10_WIDTH
-  ]);
+  Result:= VCreateInt(COLWIDTHS);
+end;
+
+procedure TSIZCardBackSheet.TitleDraw(var ARow: Integer);
+var
+  R: Integer;
+begin
+  R:= ARow;
+  Writer.SetBackgroundDefault;
+  Writer.SetFont(Font.Name, Font.Size+2, [fsBold], clBlack);
+  Writer.SetAlignment(haCenter, vaCenter);
+  Writer.WriteText(R, 1, R, Writer.ColCount, FTitle, cbtNone, True, True);
+  ARow:= R;
 end;
 
 procedure TSIZCardBackSheet.CaptionDraw(var ARow: Integer);
@@ -834,7 +834,8 @@ procedure TSIZCardBackSheet.Draw(const ANeedDraw: Boolean;
                    const ANormSizNames, AReceivingDocNames, AReturningDocNames: TStrVector;
                    const AReceivingSizNames, AWriteoffDocNames: TStrMatrix;
                    const ASizCounts, ASizeTypes: TIntMatrix;
-                   const AIsAllHistory: Boolean = False);
+                   const AIsAllHistory: Boolean = False;
+                   const ATitle: String = '');
 var
   R, CaptionRowCount: Integer;
 begin
@@ -856,6 +857,7 @@ begin
   FReceivingSizNames:= AReceivingSizNames;
   FSizCounts:= ASizCounts;
   FIsAllHistory:= AIsAllHistory;
+  FTitle:= ATitle;
 
   FFirstRows:= nil;
   FLastRows:= nil;
@@ -863,6 +865,11 @@ begin
   Writer.BeginEdit;
 
   R:= 1;
+  if not SEmpty(FTitle) then
+  begin
+    TitleDraw(R);
+    R:= R + 1;
+  end;
   CaptionDraw(R);
   CaptionRowCount:= R;
   R:= R + 1;
@@ -873,10 +880,9 @@ begin
     NoteDraw(R);
   end;
 
-  BordersDraw(1, R, 1, Writer.ColCount);
-
   Writer.SetFrozenRows(CaptionRowCount);
   Writer.SetRepeatedRows(CaptionRowCount-2, CaptionRowCount);
+  Writer.WorkSheet.PageLayout.Footers[HEADER_FOOTER_INDEX_ALL] := '&R страница &P (из &N)';
 
   Writer.EndEdit;
 
@@ -888,16 +894,7 @@ end;
 
 function TSIZCardStatusSheet.SetWidths: TIntVector;
 begin
-  Result:= VCreateInt([
-    COLUMN1_WIDTH,
-    COLUMN2_WIDTH,
-    COLUMN3_WIDTH,
-    COLUMN4_WIDTH,
-    COLUMN5_WIDTH,
-    COLUMN6_WIDTH,
-    COLUMN7_WIDTH,
-    COLUMN8_WIDTH
-  ]);
+  Result:= VCreateInt(COLWIDTHS);
 end;
 
 procedure TSIZCardStatusSheet.CaptionDraw(var ARow: Integer);
