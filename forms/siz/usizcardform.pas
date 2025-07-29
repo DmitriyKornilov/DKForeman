@@ -99,8 +99,8 @@ type
     CardPostNames, CardNums, ViewCardNums, CardNormNames: TStrVector;
     CardBDs, CardEDs: TDateVector;
 
-    SubItems: TNormSubItems;
-    StatusItems: TStatusSubItems;
+    NormSubItems: TNormSubItems;
+    StatusSubItems: TStatusSubItems;
 
     procedure ParamListCreate;
     procedure WriteoffTypeChange;
@@ -439,19 +439,19 @@ end;
 
 procedure TSIZCardForm.CardLoad;
 begin
-  NormSubItemsClear(SubItems);
+  NormSubItemsClear(NormSubItems);
   if CardList.IsSelected then
-    DataBase.SIZNormSubItemsLoad(CardItemIDs[CardList.SelectedIndex], SubItems);
+    DataBase.SIZNormSubItemsLoad(CardItemIDs[CardList.SelectedIndex], NormSubItems);
 end;
 
 procedure TSIZCardForm.StatusLoad;
 begin
-  StatusSubItemsClear(StatusItems);
-  if Length(SubItems)>0 then
+  StatusSubItemsClear(StatusSubItems);
+  if Length(NormSubItems)>0 then
     DataBase.SIZStatusLoad(TabNumIDs[StaffList.SelectedIndex],
                            CardIDs[CardList.SelectedIndex],
                            ParamList.Selected['WriteoffType'],
-                           Date, SubItems, StatusItems);
+                           Date, NormSubItems, StatusSubItems);
 end;
 
 procedure TSIZCardForm.CardListSelect;
@@ -567,7 +567,7 @@ begin
 
   (CategoryForm as TSIZCardFrontForm).DataUpdate(CardNum,
         Family, PersonName, Patronymic, Gender, TabNum, PostName,
-        CardBD, CardED, PersonSizes, SubItems);
+        CardBD, CardED, PersonSizes, NormSubItems);
 end;
 
 procedure TSIZCardForm.CardBackUpdate;
@@ -600,7 +600,7 @@ begin
   end;
 
   (CategoryForm as TSIZCardStatusForm).DataUpdate(TabNumIDs[StaffList.SelectedIndex],
-                                     CardID, CardItemPostID, CardBD, SubItems, StatusItems);
+                                     CardID, CardItemPostID, CardBD, NormSubItems, StatusSubItems);
 end;
 
 procedure TSIZCardForm.CardDataUpdate;
@@ -711,7 +711,7 @@ procedure TSIZCardForm.CardExport(const ASelected: Boolean); //true-выбран
 var
   Exporter: TSheetsExporter;
   Worksheet: TsWorksheet;
-  CardFileName: String;
+  FileName: String;
 
   ExpSubItems: TNormSubItems;
   ExpSizes: TSIZStaffSizeIndexes;
@@ -757,22 +757,83 @@ begin
                     Genders[StaffList.SelectedIndex],
                     TabNums[StaffList.SelectedIndex],
                     ExpPostName, ExpCardBD, ExpCardED, ExpSizes, ExpSubItems,
-                    Worksheet, CardFileName);
+                    Worksheet, FileName);
     Exporter.PageSettings(spoPortrait);
 
     Worksheet:= Exporter.AddWorksheet('Оборотная сторона');
     CardBackExport(ExpCardID, Worksheet);
     Exporter.PageSettings(spoLandscape);
 
-    Exporter.Save('Выполнено!', CardFileName);
+    Exporter.Save('Выполнено!', FileName);
   finally
     FreeAndNil(Exporter);
   end;
 end;
 
 procedure TSIZCardForm.StatusExport;
-begin
+var
+  Exporter: TSheetsExporter;
+  Worksheet: TsWorksheet;
+  ExpSheet: TSIZCardStatusSheet;
+  StatusTitle, FileName: String;
+  R, WarnDaysCount: Integer;
 
+  ExpNormSubItems: TNormSubItems;
+  ExpStatusSubItems: TStatusSubItems;
+
+  ExpCardID, ExpItemID, ExpItemPostID: Integer;
+  ExpCardNum, ExpPostName, ExpNormName: String;
+  ExpCardBD, ExpCardED: TDate;
+begin
+  if (not StaffList.IsSelected) or
+     (not DataBase.SIZPersonalCardForDateLoad(TabNumIDs[StaffList.SelectedIndex],
+                  Date, ExpCardID, ExpItemID, ExpItemPostID,
+                  ExpCardNum, ExpPostName, ExpNormName,
+                  ExpCardBD, ExpCardED)) then
+  begin
+    Inform('Нет данных для экспорта!');
+    Exit;
+  end;
+
+  WarnDaysCount:= DataBase.SettingLoad('SIZCARDSTATUSFORM.WARNDAYSCOUNT');
+
+  NormSubItemsClear(ExpNormSubItems{%H-});
+  DataBase.SIZNormSubItemsLoad(ExpItemID, ExpNormSubItems);
+
+  StatusSubItemsClear(ExpStatusSubItems{%H-});
+  if Length(ExpNormSubItems)>0 then
+    DataBase.SIZStatusLoad(TabNumIDs[StaffList.SelectedIndex],
+                           ExpCardID,
+                           ParamList.Selected['WriteoffType'],
+                           Date, ExpNormSubItems, ExpStatusSubItems);
+
+  FileName:= StaffFullName(Families[StaffList.SelectedIndex],
+                           Names[StaffList.SelectedIndex],
+                           Patronymics[StaffList.SelectedIndex],
+                           TabNums[StaffList.SelectedIndex], True{short}) +
+           ' (' + PeriodToStr(ExpCardBD, ExpCardED) + ')';
+
+  StatusTitle:= StaffFullName(Families[StaffList.SelectedIndex],
+                           Names[StaffList.SelectedIndex],
+                           Patronymics[StaffList.SelectedIndex],
+                           TabNums[StaffList.SelectedIndex],
+                           ExpPostName, False{long});
+
+  Exporter:= TSheetsExporter.Create;
+  try
+    Worksheet:= Exporter.AddWorksheet('Лист1');
+    ExpSheet:= TSIZCardStatusSheet.Create(Worksheet, nil, GridFont);
+    try
+      R:= 1;
+      ExpSheet.Draw(R, ExpNormSubItems, ExpStatusSubItems, WarnDaysCount, StatusTitle);
+    finally
+      FreeAndNil(ExpSheet);
+    end;
+    Exporter.PageSettings(spoLandscape);
+    Exporter.Save('Выполнено!', FileName);
+  finally
+    FreeAndNil(Exporter);
+  end;
 end;
 
 procedure TSIZCardForm.PersonCardsExport;
@@ -784,7 +845,7 @@ var
 
   ExpSubItems: TNormSubItems;
   ExpSizes: TSIZStaffSizeIndexes;
-  S, CardFileName: String;
+  S, FileName: String;
 begin
   if not CardList.IsSelected  then
   begin
@@ -825,14 +886,14 @@ begin
                     TabNums[StaffList.SelectedIndex],
                     CardPostNames[i], CardBDs[i], CardEDs[i],
                     ExpSizes, ExpSubItems,
-                    Worksheet, CardFileName);
+                    Worksheet, FileName);
         Exporter.PageSettings(spoPortrait);
 
         Worksheet:= Exporter.AddWorksheet('Оборотная сторона', False{старая книга});
         CardBackExport(CardIDs[i], Worksheet);
         Exporter.PageSettings(spoLandscape);
 
-        Exporter.Save(CardFileName);
+        Exporter.Save(FileName);
       end;
 
     finally
@@ -851,7 +912,7 @@ var
   Worksheet: TsWorksheet;
   Progress: TProgress;
 
-  S, CardFileName: String;
+  S, FileName: String;
 
   ExpSubItems: TNormSubItems;
   ExpSizes: TSIZStaffSizeIndexes;
@@ -899,14 +960,14 @@ begin
         CardFrontExport(ExpCardNum, Families[i], Names[i], Patronymics[i],
                     Genders[i], TabNums[i],
                     ExpPostName, ExpCardBD, ExpCardED, ExpSizes, ExpSubItems,
-                    Worksheet, CardFileName);
+                    Worksheet, FileName);
         Exporter.PageSettings(spoPortrait);
 
         Worksheet:= Exporter.AddWorksheet('Оборотная сторона', False{старая книга});
         CardBackExport(ExpCardID, Worksheet);
         Exporter.PageSettings(spoLandscape);
 
-        Exporter.Save(CardFileName);
+        Exporter.Save(FileName);
       end;
 
     finally
@@ -919,8 +980,80 @@ begin
 end;
 
 procedure TSIZCardForm.AllStatusesExport;
-begin
+var
+  Exporter: TSheetsExporter;
+  Worksheet: TsWorksheet;
+  ExpSheet: TSIZCardStatusSheet;
+  Progress: TProgress;
+  i, N, R, WarnDaysCount: Integer;
+  S: String;
 
+  ExpNormSubItems: TNormSubItems;
+  ExpStatusSubItems: TStatusSubItems;
+
+  ExpCardID, ExpItemID, ExpItemPostID: Integer;
+  ExpCardNum, ExpPostName, ExpNormName: String;
+  ExpCardBD, ExpCardED: TDate;
+begin
+  if VIsNil(TabNumIDs) then
+  begin
+    Inform('Нет данных для экспорта!');
+    Exit;
+  end;
+
+  WarnDaysCount:= DataBase.SettingLoad('SIZCARDSTATUSFORM.WARNDAYSCOUNT');
+
+  Exporter:= TSheetsExporter.Create;
+  try
+    Worksheet:= Exporter.AddWorksheet('Лист1');
+    ExpSheet:= TSIZCardStatusSheet.Create(Worksheet, nil, GridFont);
+    Progress:= TProgress.Create(nil);
+    try
+      Progress.WriteLine1('Экспорт статусов выдачи СИЗ');
+      Progress.WriteLine2(EmptyStr);
+      Progress.Show;
+
+      R:= 1;
+      N:= 0;
+      ExpSheet.DrawBegin;
+      for i:=0 to High(TabNumIDs) do
+      begin
+        S:= StaffFullName(Families[i], Names[i], Patronymics[i],
+                               TabNums[i], False{long});
+        Progress.WriteLine2(S);
+        if not DataBase.SIZPersonalCardForDateLoad(TabNumIDs[i],
+                  Date, ExpCardID, ExpItemID, ExpItemPostID,
+                  ExpCardNum, ExpPostName, ExpNormName,
+                  ExpCardBD, ExpCardED) then continue;
+
+        NormSubItemsClear(ExpNormSubItems{%H-});
+        DataBase.SIZNormSubItemsLoad(ExpItemID, ExpNormSubItems);
+
+        StatusSubItemsClear(ExpStatusSubItems{%H-});
+        if Length(ExpNormSubItems)>0 then
+          DataBase.SIZStatusLoad(TabNumIDs[i], ExpCardID,
+                                 ParamList.Selected['WriteoffType'],
+                                 Date, ExpNormSubItems, ExpStatusSubItems);
+
+        N:= N + 1;
+        S:= IntToStr(N) + '. ' +
+            StaffFullName(Families[i], Names[i], Patronymics[i],
+                          TabNums[i], ExpPostName, False{long});
+
+        ExpSheet.DrawNext(R, ExpNormSubItems, ExpStatusSubItems, WarnDaysCount, S);
+        R:= R + 1;
+      end;
+      ExpSheet.DrawEnd;
+
+    finally
+      FreeAndNil(ExpSheet);
+      FreeAndNil(Progress);
+    end;
+    Exporter.PageSettings(spoLandscape);
+    Exporter.Save('Выполнено!', Department);
+  finally
+    FreeAndNil(Exporter);
+  end;
 end;
 
 procedure TSIZCardForm.DataExport;

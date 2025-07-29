@@ -211,14 +211,16 @@ begin
 end;
 
 procedure TSIZCardStatusForm.DataDraw(const AZoomPercent: Integer);
+var
+  R: Integer;
 begin
   ViewGrid.Visible:= False;
   Screen.Cursor:= crHourGlass;
   try
     ZoomPercent:= AZoomPercent;
     Sheet.Zoom(ZoomPercent);
-    Sheet.Draw(NormSubItems, StatusSubItems, DaysCountSpinEdit.Value);
-
+    R:= 1;
+    Sheet.Draw(R, NormSubItems, StatusSubItems, DaysCountSpinEdit.Value);
   finally
     ViewGrid.Visible:= True;
     Screen.Cursor:= crDefault;
