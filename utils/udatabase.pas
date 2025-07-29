@@ -744,7 +744,8 @@ type
                          out ALogIDs, AStoreIDs: TInt64Vector;
                          out AFs, ANs, APs, ATabNums, APostNames,
                              ANomNums, ASizNames, ASizSTRUnits: TStrVector;
-                         out ATabNumIDs, ANums, ALifes, ANameIDs, ASizDIGUnits: TIntVector;
+                         out ATabNumIDs, ANums, ALifes, ANameIDs, ASizDIGUnits,
+                             ASIZTypes, ASizeIDs: TIntVector;
                          out AReceivingDates: TDateVector): Boolean;
     function SIZStoreReceivingLoad(const ADocID: Integer;
                          out AFs, ANs, APs, ATabNums, APostNames: TStrVector;
@@ -6496,7 +6497,8 @@ function TDataBase.SIZStoreReceivingLoad(const ADocID: Integer;
                          out ALogIDs, AStoreIDs: TInt64Vector;
                          out AFs, ANs, APs, ATabNums, APostNames,
                              ANomNums, ASizNames, ASizSTRUnits: TStrVector;
-                         out ATabNumIDs, ANums, ALifes, ANameIDs, ASizDIGUnits: TIntVector;
+                         out ATabNumIDs, ANums, ALifes, ANameIDs, ASizDIGUnits,
+                             ASIZTypes, ASizeIDs: TIntVector;
                          out AReceivingDates: TDateVector): Boolean;
 begin
   AStoreIDs:= nil;
@@ -6511,6 +6513,8 @@ begin
   ASizNames:= nil;
   ASizSTRUnits:= nil;
   ASizDIGUnits:= nil;
+  ASIZTypes:= nil;
+  ASizeIDs:= nil;
 
   ATabNumIDs:= nil;
   ANums:= nil;
@@ -6525,8 +6529,8 @@ begin
            't4.TabNumID, t4.TabNum, '  +
            't5.Family, t5.Name, t5.Patronymic, ' +
            't7.PostName, ' +
-           't9.NomNum, ' +
-           't10.SizName, t10.NameID, ' +
+           't9.NomNum, t9.SizeID, ' +
+           't10.SizName, t10.NameID, t10.SIZType, ' +
            't11.UnitStringCode,  t11.UnitDigitalCode, ' +
            't12.Num, t12.Life, ' +
            't13.DocDate ' +
@@ -6571,6 +6575,8 @@ begin
       VAppend(ANums, QFieldInt('Num'));
       VAppend(ALifes, QFieldInt('Life'));
       VAppend(ANameIDs, QFieldInt('NameID'));
+      VAppend(ASIZTypes, QFieldInt('SIZType'));
+      VAppend(ASizeIDs, QFieldInt('SizeID'));
 
       VAppend(AReceivingDates, QFieldDT('DocDate'));
 
@@ -6590,7 +6596,7 @@ function TDataBase.SIZStoreReceivingLoad(const ADocID: Integer;
 var
   LogIDs, StoreIDs: TInt64Vector;
   Fs, Ns, Ps, TabNums, PostNames, NomNums, SizNames, SizSTRUnits: TStrVector;
-  TabNumIDs, Nums, Lifes, NameIDs, SizDIGUnits: TIntVector;
+  TabNumIDs, Nums, Lifes, NameIDs, SizDIGUnits, SIZTypes, SizeIDs: TIntVector;
   ReceivingDates: TDateVector;
 
   VNomNums, VSizNames, VLifes, VSizSTRUnits: TStrVector;
@@ -6615,7 +6621,10 @@ var
         N2:= i - 1;
         VAppend(VNomNums, NomNums[N1]);
         VAppend(VSizNames, SizNames[N1]);
-        VAppend(VCounts, N2-N1+1);
+        if SIZTypes[N1]=0 then //дерматологические
+          VAppend(VCounts, VSum(SizeIDs, N1, N2))
+        else //прочие
+          VAppend(VCounts, N2-N1+1);
         MAppend(MStoreIDs, VCut(StoreIDs, N1, N2));
         N1:= i;
         NameID:= NameIDs[i];
@@ -6625,7 +6634,10 @@ var
     N2:= AInd2;
     VAppend(VNomNums, NomNums[N1]);
     VAppend(VSizNames, SizNames[N1]);
-    VAppend(VCounts, N2-N1+1);
+    if SIZTypes[N1]=0 then //дерматологические
+      VAppend(VCounts, VSum(SizeIDs, N1, N2))
+    else //прочие
+      VAppend(VCounts, N2-N1+1);
     MAppend(MStoreIDs, VCut(StoreIDs, N1, N2));
   end;
 
@@ -6748,7 +6760,7 @@ begin
   if not SIZStoreReceivingLoad(ADocID, LogIDs, StoreIDs, Fs, Ns, Ps, TabNums,
                                PostNames, NomNums, SizNames, SizSTRUnits,
                                TabNumIDs, Nums, Lifes, NameIDs, SizDIGUnits,
-                               ReceivingDates) then Exit;
+                               SIZTypes, SizeIDs, ReceivingDates) then Exit;
   GroupByStaffName;
 
   Result:= True;
