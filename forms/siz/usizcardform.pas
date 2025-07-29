@@ -6,10 +6,10 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, VirtualTrees,
-  Buttons, DividerBevel, StdCtrls, ComCtrls, fpspreadsheetgrid,
+  Buttons, DividerBevel, StdCtrls, ComCtrls, fpspreadsheetgrid, ColorSpeedButton,
   //Project utils
-  UVars, UConst, UTypes, UUtils, UTimingUtils, ColorSpeedButton, USIZSizes,
-  USIZNormTypes, USIZCardTypes, USIZCardSheet,
+  UVars, UConst, UTypes, UUtils, USIZSizes, USIZNormTypes, USIZCardTypes,
+  USIZCardSheet,
   //DK packages utils
   DK_VSTTables, DK_VSTParamList, DK_Vector, DK_Filter, DK_CtrlUtils, DK_Color,
   DK_StrUtils, DK_SheetExporter, DK_Progress, DK_Dialogs, DK_Matrix,
@@ -355,8 +355,8 @@ begin
                              ParamList.Selected['ListType'],
                              OrderType, IsDescOrder, StaffIDs, TabNumIDs,
                              Families, Names, Patronymics, Genders, TabNums, PostNames);
-  StaffLongNames:= StaffNamesForPersonalTiming(Families, Names, Patronymics, TabNums, PostNames, True);
-  StaffShortNames:= StaffNamesForPersonalTiming(Families, Names, Patronymics, TabNums, PostNames, False);
+  StaffLongNames:= StaffFullName(Families, Names, Patronymics, TabNums, PostNames, False{long});
+  StaffShortNames:= StaffFullName(Families, Names, Patronymics, TabNums, PostNames, True{short});
 
   StaffList.Visible:= False;
   try
@@ -676,7 +676,7 @@ begin
     FreeAndNil(ExpSheet);
   end;
 
-  ACardFileName:= StaffNameAndTabNum(AF, AN, AP, ATabNum, True{short}) +
+  ACardFileName:= StaffFullName(AF, AN, AP, ATabNum, True{short}) +
                   ' (' + PeriodToStr(ACardBD, ACardED) + ')';
 end;
 
@@ -820,7 +820,7 @@ begin
       Progress.Show;
       for i:=0 to High(TabNumIDs) do
       begin
-        S:= StaffNameAndTabNum(Families[i], Names[i], Patronymics[i],
+        S:= StaffFullName(Families[i], Names[i], Patronymics[i],
                                TabNums[i], False{long});
         Progress.WriteLine2(S);
         //данные
@@ -871,7 +871,7 @@ var
 begin
   if not StaffList.IsSelected then Exit;
 
-  PersonName:= StaffNameAndTabNum(Families[StaffList.SelectedIndex],
+  PersonName:= StaffFullName(Families[StaffList.SelectedIndex],
                                   Names[StaffList.SelectedIndex],
                                   Patronymics[StaffList.SelectedIndex],
                                   TabNums[StaffList.SelectedIndex],

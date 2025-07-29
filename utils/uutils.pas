@@ -25,8 +25,19 @@ uses
   function MPeriodToStr(const ABeginDates, AEndDates: TDateMatrix): TStrMatrix;
 
   //Staff
-  function StaffNameAndTabNum(const AFamily, AName, APatronymic, ATabNum: String;
-                              const AIsShortName: Boolean): String;
+  function StaffFullName(const AFamily, AName, APatronymic: String;
+                         const AIsShortName: Boolean): String;
+  function StaffFullName(const AFamilies, ANames, APatronymics: TStrVector;
+                         const AIsShortName: Boolean): TStrVector;
+  function StaffFullName(const AStaffName, ATabNum: String): String;
+  function StaffFullName(const AFamily, AName, APatronymic, ATabNum: String;
+                         const AIsShortName: Boolean): String;
+  function StaffFullName(const AFamilies, ANames, APatronymics, ATabNums: TStrVector;
+                         const AIsShortName: Boolean): TStrVector;
+  function StaffFullName(const AFamily, AName, APatronymic, ATabNum, APostName: String;
+                         const AIsShortName: Boolean): String;
+  function StaffFullName(const AFamilies, ANames, APatronymics, ATabNums, APostNames: TStrVector;
+                         const AIsShortName: Boolean): TStrVector;
 
 implementation
 
@@ -85,16 +96,78 @@ begin
     MAppend(Result, VPeriodToStr(ABeginDates[i], AEndDates[i]));
 end;
 
-function StaffNameAndTabNum(const AFamily, AName, APatronymic, ATabNum: String;
-                            const AIsShortName: Boolean): String;
+function StaffFullName(const AFamily, AName, APatronymic: String;
+                       const AIsShortName: Boolean): String;
 begin
   Result:= EmptyStr;
   if AIsShortName then
     Result:= SNameShort(AFamily, AName, APatronymic)
   else
     Result:= SNameLong(AFamily, AName, APatronymic);
-  if SEmpty(Result) or SEmpty(ATabNum) then Exit;
-  Result:= Result + ' [таб.№ ' + ATabNum + ']';
+end;
+
+function StaffFullName(const AFamilies, ANames, APatronymics: TStrVector;
+                       const AIsShortName: Boolean): TStrVector;
+var
+  i: Integer;
+begin
+  Result:= nil;
+  if VIsNil(AFamilies) then Exit;
+  for i:= 0 to High(AFamilies) do
+    VAppend(Result, StaffFullName(AFamilies[i], ANames[i], APatronymics[i],
+                                  AIsShortName));
+end;
+
+function StaffFullName(const AStaffName, ATabNum: String): String;
+begin
+  if SEmpty(AStaffName) or SEmpty(ATabNum) then
+    Result:= EmptyStr
+  else
+    Result:= AStaffName + ' [таб.№ ' + ATabNum + ']';
+end;
+
+function StaffFullName(const AFamily, AName, APatronymic, ATabNum: String;
+                       const AIsShortName: Boolean): String;
+var
+  StaffName: String;
+begin
+  StaffName:= StaffFullName(AFamily, AName, APatronymic, AIsShortName);
+  Result:= StaffFullName(StaffName, ATabNum);
+end;
+
+function StaffFullName(const AFamilies, ANames, APatronymics, ATabNums: TStrVector;
+                       const AIsShortName: Boolean): TStrVector;
+var
+  i: Integer;
+begin
+  Result:= nil;
+  if VIsNil(AFamilies) then Exit;
+  for i:= 0 to High(AFamilies) do
+    VAppend(Result, StaffFullName(AFamilies[i], ANames[i], APatronymics[i],
+                                  ATabNums[i], AIsShortName));
+end;
+
+function StaffFullName(const AFamily, AName, APatronymic, ATabNum, APostName: String;
+                       const AIsShortName: Boolean): String;
+begin
+  Result:= StaffFullName(AFamily, AName, APatronymic, ATabNum, AIsShortName);
+  if SEmpty(Result) then Exit;
+  if Sempty(APostName) or SSame(APostName, '<не указана>') then
+    Result:= Result + ' - <должность не указана>'
+  else
+    Result:= Result + ' - ' + APostName;
+end;
+
+function StaffFullName(const AFamilies, ANames, APatronymics, ATabNums, APostNames: TStrVector;
+                       const AIsShortName: Boolean): TStrVector;
+var
+  i: Integer;
+begin
+  Result:= nil;
+  if VIsNil(AFamilies) then Exit;
+  for i:= 0 to High(AFamilies) do
+    VAppend(Result, StaffFullName(AFamilies[i], ANames[i], APatronymics[i],
+                                  ATabNums[i], APostNames[i], AIsShortName));
 end;
 
 end.

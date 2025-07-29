@@ -7,11 +7,10 @@ interface
 uses
   Classes, SysUtils, DateUtils,
   //DK packages utils
-  DK_Color, DK_Vector, DK_Matrix, DK_DateUtils, DK_Const, DK_Fonts,
-  DK_StrUtils, DK_VSTEdit, DK_VSTTables, DK_VSTCore,
+  DK_Color, DK_Vector, DK_Matrix, DK_DateUtils, DK_Const, DK_Fonts, DK_VSTEdit,
+  DK_VSTTables, DK_VSTCore,
   //Project utils
   UVars, UConst, UWorkHours, UCalendar, USchedule, UTimetable;
-
 
   {----Staff list--------------------------------------------------------------}
 
@@ -36,19 +35,6 @@ uses
                    out ACategoryNames: TStrVector;
                    out ATabNumIDs: TIntMatrix;
                    out AStaffNames, ATabNums, APostNames, AScheduleNames: TStrMatrix): Boolean;
-
-  function StaffNameForVacationPlanning(const AStaffName, ATabNum: String): String;
-  function StaffNameForVacationPlanning(const AStaffName, ATabNum, APostName: String): String;
-  function StaffNameForVacationPlanning(const AStaffNames, ATabNums, APostNames: TStrVector): TStrVector;
-
-  function StaffNameForPersonalTiming(const AF, AN, AP, ATabNum, APostName: String;
-                              const ANeedLongName: Boolean = False): String;
-  function StaffNamesForPersonalTiming(const AFs, ANs, APs, ATabNums, APostNames: TStrVector;
-                              const ANeedLongName: Boolean = False): TStrVector;
-  function StaffNameForScheduleName(const AF, AN, AP, ATabNum: String;
-                              const ANeedLongName: Boolean = True): String;
-  function StaffNamesForScheduleNames(const AFs, ANs, APs, ATabNums: TStrVector;
-                              const ANeedLongName: Boolean = True): TStrVector;
 
   {----Calendar----------------------------------------------------------------}
 
@@ -330,75 +316,6 @@ begin
   N2:= High(V);
   VAppend(ACategoryNames, S);
   AddToMatrix(N1, N2);
-end;
-
-function StaffNameForVacationPlanning(const AStaffName, ATabNum: String): String;
-begin
-  Result:= AStaffName + ' [' + ATabNum + ']';
-end;
-
-function StaffNameForVacationPlanning(const AStaffName, ATabNum, APostName: String): String;
-begin
-  Result:= StaffNameForVacationPlanning(AStaffName, ATabNum) + ' - ';
-  if SSame(APostName, '<не указана>') then
-     Result:= Result + '<должность не указана>'
-  else
-    Result:= Result + APostName;
-end;
-
-function StaffNameForVacationPlanning(const AStaffNames, ATabNums, APostNames: TStrVector): TStrVector;
-var
-  i: Integer;
-begin
-  Result:= nil;
-  if VIsNil(ATabNums) then Exit;
-  VDim(Result, Length(ATabNums));
-  for i:= 0 to High(Result) do
-    Result[i]:= StaffNameForVacationPlanning(AStaffNames[i], ATabNums[i], APostNames[i]);
-end;
-
-function StaffNameForPersonalTiming(const AF, AN, AP, ATabNum, APostName: String;
-                            const ANeedLongName: Boolean = False): String;
-begin
-  Result:= StaffNameForScheduleName(AF, AN, AP, ATabNum, ANeedLongName) + ' - ';
-  if SSame(APostName, '<не указана>') then
-     Result:= Result + '<должность не указана>'
-  else
-    Result:= Result + APostName;
-end;
-
-function StaffNamesForPersonalTiming(const AFs, ANs, APs, ATabNums, APostNames: TStrVector;
-                            const ANeedLongName: Boolean = False): TStrVector;
-var
-  i: Integer;
-begin
-  Result:= nil;
-  if VIsNil(ATabNums) then Exit;
-  VDim(Result, Length(ATabNums));
-  for i:= 0 to High(Result) do
-    Result[i]:= StaffNameForPersonalTiming(AFs[i], ANs[i], APs[i], ATabNums[i], APostNames[i], ANeedLongName);
-end;
-
-function StaffNameForScheduleName(const AF, AN, AP, ATabNum: String;
-                              const ANeedLongName: Boolean = True): String;
-begin
-  if ANeedLongName then
-    Result:= SNameLong(AF, AN, AP)
-  else
-    Result:= SNameShort(AF, AN, AP);
-  Result:= Result + ' [таб.№ ' + ATabNum + ']';
-end;
-
-function StaffNamesForScheduleNames(const AFs, ANs, APs, ATabNums: TStrVector;
-                              const ANeedLongName: Boolean = True): TStrVector;
-var
-  i: Integer;
-begin
-  Result:= nil;
-  if VIsNil(ATabNums) then Exit;
-  VDim(Result, Length(ATabNums));
-  for i:= 0 to High(Result) do
-    Result[i]:= StaffNameForScheduleName(AFs[i], ANs[i], APs[i], ATabNums[i], ANeedLongName);
 end;
 
 procedure AccountingPeriodWithMonth(const AMonth, AYear: Word;

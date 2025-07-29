@@ -882,9 +882,9 @@ begin
                        BD, ED, OrderType, IsDescOrder,
                        TabNumIDs, RecrutDates, DismissDates,
                        Families, Names, Patronymics, TabNums, PostNames);
-  StaffLongNames:= StaffNamesForPersonalTiming(Families, Names, Patronymics, TabNums, PostNames, True);
-  StaffShortNames:= StaffNamesForPersonalTiming(Families, Names, Patronymics, TabNums, PostNames, False);
-  ScheduleNames:= StaffNamesForScheduleNames(Families, Names, Patronymics, TabNums, True);
+  StaffLongNames:= StaffFullName(Families, Names, Patronymics, TabNums, PostNames, False{long});
+  StaffShortNames:= StaffFullName(Families, Names, Patronymics, TabNums, PostNames, True{short});
+  ScheduleNames:= StaffFullName(Families, Names, Patronymics, TabNums, False{long});
 
   ExportButton.Enabled:= not VIsNil(TabNumIDs);
   MonthScheduleButton.Enabled:= ExportButton.Enabled;

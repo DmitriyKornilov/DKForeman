@@ -8,7 +8,7 @@ uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, VirtualTrees,
   Buttons, DividerBevel,
   //Project utils
-  UVars, UConst, UTimingUtils, USIZUtils,
+  UVars, UConst, UUtils, USIZUtils,
   //DK packages utils
   DK_VSTCategoryTables, DK_Vector, DK_Matrix, DK_CtrlUtils, DK_Dialogs;
 
@@ -120,7 +120,7 @@ var
   StaffNames: TStrVector;
   DocNames: TStrMatrix;
 begin
-  StaffNames:= StaffNamesForPersonalTiming(Fs, Ns, Ps, TabNums, PostNames);
+  StaffNames:= StaffFullName(Fs, Ns, Ps, TabNums, PostNames, True{short});
   DocNames:= SIZDocFullName(ReceivingDocNames, ReceivingDocNums, ReceivingDates);
 
   SIZList.Visible:= False;

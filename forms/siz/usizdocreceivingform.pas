@@ -8,7 +8,7 @@ uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, VirtualTrees,
   Buttons, DividerBevel,
   //Project utils
-  UVars, UConst, UTimingUtils,
+  UVars, UConst, UUtils,
   //DK packages utils
   DK_VSTCategoryTables, DK_Vector, DK_Matrix, DK_CtrlUtils, DK_Dialogs;
 
@@ -143,7 +143,7 @@ procedure TSIZDocReceivingForm.SIZListShow;
 var
   StaffNames: TStrVector;
 begin
-  StaffNames:= StaffNamesForPersonalTiming(Fs, Ns, Ps, TabNums, PostNames);
+  StaffNames:= StaffFullName(Fs, Ns, Ps, TabNums, PostNames, True{short});
 
   SIZList.Visible:= False;
   try

@@ -11,7 +11,7 @@ uses
   DK_Vector, DK_Matrix, DK_VSTTables, DK_VSTCategoryTables, DK_Zoom, DK_Progress,
   DK_DateUtils, DK_ColorLegend, DK_CtrlUtils,
   //Project utils
-  UVars, UConst, UTimingUtils, UScheduleSheet, UCalendar, USchedule,
+  UVars, UConst, UUtils, UTimingUtils, UScheduleSheet, UCalendar, USchedule,
   //Forms
   UVacationPlanEditForm;
 
@@ -636,7 +636,7 @@ var
 begin
   i:= Sheet.SelectedIndex;
 
-  S:= StaffNameForVacationPlanning(StaffNames[i], TabNums[i]);
+  S:= StaffFullName(StaffNames[i], TabNums[i]);
   if VacationPlanEditFormShow(S, YearSpinEdit.Value, TabNumIDs[i],
                           Plan1Dates[i], Plan2Dates[i],
                           Plan1Counts[i], Plan1AddCounts[i],

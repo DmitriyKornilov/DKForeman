@@ -350,7 +350,7 @@ begin
   i:= StaffList.SelectedIndex;
   TabNumID:= TabNumIDs[i];
 
-  S:= StaffNameForVacationPlanning(SNameShort(Families[i], Names[i], Patronymics[i]), TabNums[i]);
+  S:= StaffFullName(Families[i], Names[i], Patronymics[i], TabNums[i], True{short});
   if VacationPlanEditFormShow(S, YearSpinEdit.Value, TabNumID,
                           Part1FirstDates[i], Part2FirstDates[i],
                           Part1Counts[i], Part1AddCounts[i],

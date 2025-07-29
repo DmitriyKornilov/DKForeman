@@ -7,7 +7,7 @@ object VacationPlanningForm: TVacationPlanningForm
   ClientHeight = 502
   ClientWidth = 1100
   DesignTimePPI = 120
-  LCLVersion = '4.0.0.4'
+  LCLVersion = '4.2.0.0'
   WindowState = wsMaximized
   OnCreate = FormCreate
   OnDestroy = FormDestroy
