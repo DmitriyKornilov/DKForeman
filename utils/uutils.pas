@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, DateUtils,
   //DK packages utils
-  DK_Vector, DK_Matrix, DK_Const, DK_VSTTables, DK_SheetTables;
+  DK_Vector, DK_Matrix, DK_Const, DK_StrUtils, DK_VSTTables, DK_SheetTables;
 
 
   //ID for reselect
@@ -24,7 +24,9 @@ uses
   function VPeriodToStr(const ABeginDates, AEndDates: TDateVector): TStrVector;
   function MPeriodToStr(const ABeginDates, AEndDates: TDateMatrix): TStrMatrix;
 
-
+  //Staff
+  function StaffNameAndTabNum(const AFamily, AName, APatronymic, ATabNum: String;
+                              const AIsShortName: Boolean): String;
 
 implementation
 
@@ -81,6 +83,18 @@ begin
   Result:= nil;
   for i:= 0 to High(ABeginDates) do
     MAppend(Result, VPeriodToStr(ABeginDates[i], AEndDates[i]));
+end;
+
+function StaffNameAndTabNum(const AFamily, AName, APatronymic, ATabNum: String;
+                            const AIsShortName: Boolean): String;
+begin
+  Result:= EmptyStr;
+  if AIsShortName then
+    Result:= SNameShort(AFamily, AName, APatronymic)
+  else
+    Result:= SNameLong(AFamily, AName, APatronymic);
+  if SEmpty(Result) or SEmpty(ATabNum) then Exit;
+  Result:= Result + ' [таб.№ ' + ATabNum + ']';
 end;
 
 end.

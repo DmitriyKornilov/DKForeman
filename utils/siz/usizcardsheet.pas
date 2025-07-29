@@ -369,7 +369,8 @@ begin
   Writer.WriteText(R, 9, R, 9, SHOES[FPersonSizes.Shoes], cbtBottom);
 
   R:= R + 1;
-  Writer.WriteDate(R, 4, R, 6, FCardBD, cbtBottom);
+  if (FCardBD>0) then
+    Writer.WriteDate(R, 4, R, 6, FCardBD, cbtBottom);
   Writer.WriteText(R, 9, R, 9, HEADDRESS[FPersonSizes.Head], cbtBottom);
 
   R:= R + 1;
@@ -392,7 +393,7 @@ begin
   end;
 
   R:= R + 1;
-  if not SameDate(FCardED, INFDATE) then
+  if (FCardED>0) and (not SameDate(FCardED, INFDATE)) then
     Writer.WriteDate(R, 4, R, 6, FCardED, cbtBottom);
   Writer.WriteText(R, 9, R, 9, HANDS[FPersonSizes.Hand], cbtBottom);
 end;

@@ -103,6 +103,7 @@ type
     function StaffMainLoad(const AStaffID: Integer;
                           out AFamily, AName, APatronymic: String;
                           out ABornDate: TDate; out AGender: Byte): Boolean;
+
     {Удаление данных человека: True - ОК, False - ошибка}
     function StaffMainDelete(const AStaffID: Integer): Boolean;
     {Получение списка людей: True - ОК, False - список пуст
@@ -808,6 +809,13 @@ type
                  out ACardIDs, AItemIDs, AItemPostIDs: TIntVector;
                  out ACardNums, APostNames, ANormNames: TStrVector;
                  out ACardBDs, ACardEDs: TDateVector): Boolean;
+    {Получение данных личной карточки для табельного номера ATabNumID
+     на дату ADate: True - ОК, False - пусто}
+    function SIZPersonalCardForDateLoad(const ATabNumID: Integer;
+                 const ADate: TDate;
+                 out ACardID, AItemID, AItemPostID: Integer;
+                 out ACardNum, APostName, ANormName: String;
+                 out ACardBD, ACardED: TDate): Boolean;
 
     {Получение СИЗ из личной карточки: True - ОК, False - пусто
      Если ACardID>0 - СИЗ для конкретной карточки (ATabNumID может быть =0),
@@ -7209,7 +7217,6 @@ var
   CardNums, PostNames, NormNames, NormNotes: TStrVector;
   TabNumBDs, TabNumEDs, NormBDs, NormEDs: TDateVector;
   i: Integer;
-
 begin
   Result:= False;
 
@@ -7268,6 +7275,47 @@ begin
     end;
     i:= i-1;
   end;
+end;
+
+function TDataBase.SIZPersonalCardForDateLoad(const ATabNumID: Integer;
+                 const ADate: TDate;
+                 out ACardID, AItemID, AItemPostID: Integer;
+                 out ACardNum, APostName, ANormName: String;
+                 out ACardBD, ACardED: TDate): Boolean;
+var
+  N: Integer;
+  CardIDs, ItemIDs, ItemPostIDs: TIntVector;
+  CardNums, PostNames, NormNames: TStrVector;
+  CardBDs, CardEDs: TDateVector;
+begin
+  Result:= False;
+
+  ACardID:= 0;
+  AItemID:= 0;
+  AItemPostID:= 0;
+  ACardNum:= EmptyStr;
+  APostName:= EmptyStr;
+  ANormName:= EmptyStr;
+  ACardBD:= 0;
+  ACardED:= 0;
+
+  if not SIZPersonalCardListLoad(ATabNumID, CardIDs, ItemIDs, ItemPostIDs,
+                                 CardNums, PostNames, NormNames,
+                                 CardBDs, CardEDs) then Exit;
+
+  N:= VIndexOfDate(CardBDs, CardEDs, ADate);
+  if N<0 then Exit;
+
+  ACardID:= CardIDs[N];
+  AItemID:= ItemIDs[N];
+  AItemPostID:= ItemPostIDs[N];
+  ACardNum:= CardNums[N];
+  APostName:= PostNames[N];
+  ANormName:= NormNames[N];
+  ACardBD:= CardBDs[N];
+  ACardED:= CardEDs[N];
+
+  Result:= True;
 end;
 
 function TDataBase.SIZPrevCardListLoad(const ATabNumID: Integer;
@@ -7526,6 +7574,8 @@ begin
   AWriteoffDocNames:= nil;
   AReceivingSizNames:= nil;
   ASizCounts:= nil;
+
+  if (ATabNumID=0) and (ACardID=0) then Exit;
 
   if not SIZPersonalCardDataLoad(ATabNumID, ACardID, LogIDs,
                                  ReceivingDates, ReturningDates,

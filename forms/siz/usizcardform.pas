@@ -9,10 +9,10 @@ uses
   Buttons, DividerBevel, StdCtrls, ComCtrls, fpspreadsheetgrid,
   //Project utils
   UVars, UConst, UTypes, UUtils, UTimingUtils, ColorSpeedButton, USIZSizes,
-  USIZNormTypes, USIZCardTypes,
+  USIZNormTypes, USIZCardTypes, USIZCardSheet,
   //DK packages utils
   DK_VSTTables, DK_VSTParamList, DK_Vector, DK_Filter, DK_CtrlUtils, DK_Color,
-  DK_StrUtils, DK_SheetExporter, DK_Progress, DK_Dialogs,
+  DK_StrUtils, DK_SheetExporter, DK_Progress, DK_Dialogs, DK_Matrix,
   //Forms
   USIZCardFrontForm, USIZCardBackForm, USIZCardStatusForm, USIZCardEditForm,
   USIZStaffHistoryForm, UChooseForm;
@@ -119,19 +119,23 @@ type
     procedure CategorySelect(const ACategory: Byte);
     procedure CardSettingsSave;
 
-    procedure CardFrontData(out ACardID: Integer;
-                            out ACardNum, AFamily, APersonName, APatronymic,
-                                AGender, ATabNum, APostName: String;
-                            out ACardBD, ACardED: TDate);
     procedure CardFrontUpdate;
     procedure CardBackUpdate;
     procedure CardStatusUpdate;
     procedure CardDataUpdate;
-
     procedure CardViewUpdate;
 
-    procedure SelectedCardExport;
-    procedure ActualCardExport;
+    procedure CardFrontExport(const ACardNum, AF, AN, AP, AGender,
+                                    ATabNum, APostName: String;
+                        const ACardBD, ACardED: TDate;
+                        const APersonSizes: TSIZStaffSizeIndexes;
+                        const ASubItems: TNormSubItems;
+                        const AWorksheet: TsWorksheet;
+                        out ACardFileName: String);
+    procedure CardBackExport(const ACardID: Integer;
+                        const AWorksheet: TsWorksheet);
+
+    procedure CardExport(const ASelected: Boolean); //true-выбранная, false - актуальная
     procedure StatusExport;
     procedure PersonCardsExport;
     procedure AllCardsExport;
@@ -364,6 +368,8 @@ begin
   finally
     StaffList.Visible:= True;
   end;
+
+  ExportButton.Enabled:= not VIsNil(StaffIDs);
 end;
 
 procedure TSIZCardForm.StaffListSelect;
@@ -528,48 +534,36 @@ begin
   CardList.Select(CardIndex);
 end;
 
-procedure TSIZCardForm.CardFrontData(out ACardID: Integer;
-                                     out ACardNum, AFamily, APersonName,
-                                         APatronymic, AGender, ATabNum, APostName: String;
-                                     out ACardBD, ACardED: TDate);
-begin
-  if CardList.IsSelected then
-  begin
-    ACardID:= CardIDs[CardList.SelectedIndex];
-    ACardNum:= CardNums[CardList.SelectedIndex];
-    ACardBD:= CardBDs[CardList.SelectedIndex];
-    ACardED:= CardEDs[CardList.SelectedIndex];
-    APostName:= CardPostNames[CardList.SelectedIndex];
-
-    AFamily:= Families[StaffList.SelectedIndex];
-    APersonName:= Names[StaffList.SelectedIndex];
-    APatronymic:= Patronymics[StaffList.SelectedIndex];
-    AGender:= Genders[StaffList.SelectedIndex];
-    ATabNum:= TabNums[StaffList.SelectedIndex];
-  end
-  else begin
-    ACardID:= 0;
-    ACardNum:= EmptyStr;
-    ACardBD:= 0;
-    ACardED:= 0;
-    APostName:= EmptyStr;
-
-    AFamily:= EmptyStr;
-    APersonName:= EmptyStr;
-    APatronymic:= EmptyStr;
-    AGender:= EmptyStr;
-    ATabNum:= EmptyStr;
-  end;
-end;
-
 procedure TSIZCardForm.CardFrontUpdate;
 var
-  CardID: Integer;
   CardNum, Family, PersonName, Patronymic, Gender, TabNum, PostName: String;
   CardBD, CardED: TDate;
 begin
-  CardFrontData(CardID, CardNum, Family, PersonName, Patronymic, Gender,
-                TabNum, PostName, CardBD, CardED);
+  if CardList.IsSelected then
+  begin
+    CardNum:= CardNums[CardList.SelectedIndex];
+    CardBD:= CardBDs[CardList.SelectedIndex];
+    CardED:= CardEDs[CardList.SelectedIndex];
+    PostName:= CardPostNames[CardList.SelectedIndex];
+
+    Family:= Families[StaffList.SelectedIndex];
+    PersonName:= Names[StaffList.SelectedIndex];
+    Patronymic:= Patronymics[StaffList.SelectedIndex];
+    Gender:= Genders[StaffList.SelectedIndex];
+    TabNum:= TabNums[StaffList.SelectedIndex];
+  end
+  else begin
+    CardNum:= EmptyStr;
+    CardBD:= 0;
+    CardED:= 0;
+    PostName:= EmptyStr;
+
+    Family:= EmptyStr;
+    PersonName:= EmptyStr;
+    Patronymic:= EmptyStr;
+    Gender:= EmptyStr;
+    TabNum:= EmptyStr;
+  end;
 
   (CategoryForm as TSIZCardFrontForm).DataUpdate(CardNum,
         Family, PersonName, Patronymic, Gender, TabNum, PostName,
@@ -664,7 +658,71 @@ begin
     (CategoryForm as TSIZCardStatusForm).ViewUpdate(ModeType);
 end;
 
-procedure TSIZCardForm.SelectedCardExport;
+procedure TSIZCardForm.CardFrontExport(const ACardNum, AF, AN, AP, AGender,
+                                             ATabNum, APostName: String;
+                        const ACardBD, ACardED: TDate;
+                        const APersonSizes: TSIZStaffSizeIndexes;
+                        const ASubItems: TNormSubItems;
+                        const AWorksheet: TsWorksheet;
+                        out ACardFileName: String);
+var
+  ExpSheet: TSIZCardFrontSheet;
+begin
+  ExpSheet:= TSIZCardFrontSheet.Create(AWorksheet, nil, GridFont);
+  try
+    ExpSheet.Draw(ACardNum, AF, AN, AP, AGender, ATabNum, APostName,
+                  Department, ACardBD, ACardED, APersonSizes, ASubItems);
+  finally
+    FreeAndNil(ExpSheet);
+  end;
+
+  ACardFileName:= StaffNameAndTabNum(AF, AN, AP, ATabNum, True{short}) +
+                  ' (' + PeriodToStr(ACardBD, ACardED) + ')';
+end;
+
+procedure TSIZCardForm.CardBackExport(const ACardID: Integer; const AWorksheet: TsWorksheet);
+var
+  ExpSheet: TSIZCardBackSheet;
+  ExpLogIDs: TInt64Vector;
+  ExpReceivingDates, ExpReturningDates: TDateVector;
+  ExpNormSIZTypes: TIntVector;
+  ExpNormSizNames: TStrVector;
+  ExpReceivingDocNames, ExpReturningDocNames: TStrVector;
+  ExpReceivingSizNames, ExpWriteoffDocNames: TStrMatrix;
+  ExpSizCounts, ExpSizeTypes: TIntMatrix;
+begin
+  ExpSheet:= TSIZCardBackSheet.Create(AWorksheet, nil, GridFont);
+  try
+    //при ACardID=0 - очищение векторов, вывод пустой таблицы (ничего не выдавалось)
+    DataBase.SIZPersonalCardSIZLoad(0, ACardID,
+                              ExpLogIDs, ExpReceivingDates, ExpReturningDates,
+                              ExpNormSIZTypes, ExpNormSizNames, ExpReceivingDocNames,
+                              ExpReturningDocNames, ExpReceivingSizNames,
+                              ExpWriteoffDocNames, ExpSizCounts, ExpSizeTypes);
+    ExpSheet.Draw(True{NeedDraw}, ExpReceivingDates, ExpReturningDates, ExpNormSizNames,
+             ExpReceivingDocNames, ExpReturningDocNames,
+             ExpReceivingSizNames, ExpWriteoffDocNames, ExpSizCounts, ExpSizeTypes);
+  finally
+    FreeAndNil(ExpSheet);
+  end;
+end;
+
+procedure TSIZCardForm.CardExport(const ASelected: Boolean); //true-выбранная, false - актуальная;
+var
+  Exporter: TSheetsExporter;
+  Worksheet: TsWorksheet;
+  CardFileName: String;
+
+  ExpSubItems: TNormSubItems;
+  ExpSizes: TSIZStaffSizeIndexes;
+
+
+  ExpDate: TDate;
+  ExpCardID, ExpItemID, ExpItemPostID: Integer;
+  ExpCardNum, ExpPostName, ExpNormName: String;
+  ExpCardBD, ExpCardED: TDate;
+
+
 begin
   if not CardList.IsSelected  then
   begin
@@ -672,11 +730,47 @@ begin
     Exit;
   end;
 
+  if ASelected then
+    ExpDate:= CardBDs[CardList.SelectedIndex]
+  else
+    ExpDate:= Date;
+  if not DataBase.SIZPersonalCardForDateLoad(TabNumIDs[StaffList.SelectedIndex],
+                  ExpDate, ExpCardID, ExpItemID, ExpItemPostID,
+                  ExpCardNum, ExpPostName, ExpNormName,
+                  ExpCardBD, ExpCardED) then
+  begin
+    Inform('Нет личной карточки на ' + DateToStr(ExpDate) + '!');
+    Exit;
+  end;
 
-end;
+  //размеры
+  SIZStaffSizeIndexesClear(ExpSizes{%H-});
+  DataBase.SIZStaffSizeLoad(StaffIDs[StaffList.SelectedIndex], ExpSizes);
+  //нормы
+  NormSubItemsClear(ExpSubItems{%H-});
+  DataBase.SIZNormSubItemsLoad(ExpItemID, ExpSubItems);
 
-procedure TSIZCardForm.ActualCardExport;
-begin
+  Exporter:= TSheetsExporter.Create;
+  try
+    Worksheet:= Exporter.AddWorksheet('Лицевая сторона');
+    CardFrontExport(ExpCardNum,
+                    Families[StaffList.SelectedIndex],
+                    Names[StaffList.SelectedIndex],
+                    Patronymics[StaffList.SelectedIndex],
+                    Genders[StaffList.SelectedIndex],
+                    TabNums[StaffList.SelectedIndex],
+                    ExpPostName, ExpCardBD, ExpCardED, ExpSizes, ExpSubItems,
+                    Worksheet, CardFileName);
+    Exporter.PageSettings(spoPortrait);
+
+    Worksheet:= Exporter.AddWorksheet('Оборотная сторона');
+    CardBackExport(ExpCardID, Worksheet);
+    Exporter.PageSettings(spoLandscape);
+
+    Exporter.Save('Выполнено!', CardFileName);
+  finally
+    FreeAndNil(Exporter);
+  end;
 
 end;
 
@@ -691,8 +785,77 @@ begin
 end;
 
 procedure TSIZCardForm.AllCardsExport;
-begin
+var
+  i: Integer;
+  Exporter: TBooksExporter;
+  Worksheet: TsWorksheet;
+  Progress: TProgress;
 
+  S, CardFileName: String;
+
+  ExpSubItems: TNormSubItems;
+  ExpSizes: TSIZStaffSizeIndexes;
+  ExpCardID, ExpItemID, ExpItemPostID: Integer;
+  ExpCardNum, ExpPostName, ExpNormName: String;
+  ExpCardBD, ExpCardED: TDate;
+begin
+  if VIsNil(TabNumIDs) then
+  begin
+    Inform('Нет данных для экспорта!');
+    Exit;
+  end;
+
+  Exporter:= TBooksExporter.Create;
+  if not Exporter.BeginExport then
+  begin
+    FreeAndNil(Exporter);
+    Exit;
+  end;
+
+  try
+    Progress:= TProgress.Create(nil);
+    try
+      Progress.WriteLine1('Экспорт личных карточек учета СИЗ');
+      Progress.WriteLine2(EmptyStr);
+      Progress.Show;
+      for i:=0 to High(TabNumIDs) do
+      begin
+        S:= StaffNameAndTabNum(Families[i], Names[i], Patronymics[i],
+                               TabNums[i], False{long});
+        Progress.WriteLine2(S);
+        //данные
+        if not DataBase.SIZPersonalCardForDateLoad(TabNumIDs[i], Date,
+                  ExpCardID, ExpItemID, ExpItemPostID,
+                  ExpCardNum, ExpPostName, ExpNormName,
+                  ExpCardBD, ExpCardED) then continue;
+        //размеры
+        SIZStaffSizeIndexesClear(ExpSizes{%H-});
+        DataBase.SIZStaffSizeLoad(StaffIDs[i], ExpSizes);
+        //нормы
+        NormSubItemsClear(ExpSubItems{%H-});
+        DataBase.SIZNormSubItemsLoad(ExpItemID, ExpSubItems);
+
+        Worksheet:= Exporter.AddWorksheet('Лицевая сторона', True {новая книга});
+        CardFrontExport(ExpCardNum, Families[i], Names[i], Patronymics[i],
+                    Genders[i], TabNums[i],
+                    ExpPostName, ExpCardBD, ExpCardED, ExpSizes, ExpSubItems,
+                    Worksheet, CardFileName);
+        Exporter.PageSettings(spoPortrait);
+
+        Worksheet:= Exporter.AddWorksheet('Оборотная сторона', False{старая книга});
+        CardBackExport(ExpCardID, Worksheet);
+        Exporter.PageSettings(spoLandscape);
+
+        Exporter.Save(CardFileName);
+      end;
+
+    finally
+      FreeAndNil(Progress);
+    end;
+    Exporter.EndExport('Выполнено!');
+  finally
+    FreeAndNil(Exporter);
+  end;
 end;
 
 procedure TSIZCardForm.AllStatusesExport;
@@ -708,10 +871,11 @@ var
 begin
   if not StaffList.IsSelected then Exit;
 
-  PersonName:= SNameLong(Families[StaffList.SelectedIndex],
-                         Names[StaffList.SelectedIndex],
-                         Patronymics[StaffList.SelectedIndex]) +
-               ' [таб.№ ' + TabNums[StaffList.SelectedIndex] + ']';
+  PersonName:= StaffNameAndTabNum(Families[StaffList.SelectedIndex],
+                                  Names[StaffList.SelectedIndex],
+                                  Patronymics[StaffList.SelectedIndex],
+                                  TabNums[StaffList.SelectedIndex],
+                                  False{long});
 
   S:= 'Сохранить в файл:';
   V:= VCreateStr([
@@ -722,11 +886,11 @@ begin
     'Актуальные личные карточки всех сотрудников',
     'Статус выдачи СИЗ всем сотрудникам'
   ]);
-  if not Choose(S, V, ChooseIndex, 700) then Exit;
+  if not Choose(S, V, ChooseIndex, 800) then Exit;
 
   case ChooseIndex of
-    0: SelectedCardExport;
-    1: ActualCardExport;
+    0: CardExport(True);
+    1: CardExport(False);
     2: StatusExport;
     3: PersonCardsExport;
     4: AllCardsExport;
