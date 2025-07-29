@@ -716,13 +716,10 @@ var
   ExpSubItems: TNormSubItems;
   ExpSizes: TSIZStaffSizeIndexes;
 
-
   ExpDate: TDate;
   ExpCardID, ExpItemID, ExpItemPostID: Integer;
   ExpCardNum, ExpPostName, ExpNormName: String;
   ExpCardBD, ExpCardED: TDate;
-
-
 begin
   if not CardList.IsSelected  then
   begin
@@ -771,7 +768,6 @@ begin
   finally
     FreeAndNil(Exporter);
   end;
-
 end;
 
 procedure TSIZCardForm.StatusExport;
@@ -780,8 +776,72 @@ begin
 end;
 
 procedure TSIZCardForm.PersonCardsExport;
-begin
+var
+  i: Integer;
+  Exporter: TBooksExporter;
+  Worksheet: TsWorksheet;
+  Progress: TProgress;
 
+  ExpSubItems: TNormSubItems;
+  ExpSizes: TSIZStaffSizeIndexes;
+  S, CardFileName: String;
+begin
+  if not CardList.IsSelected  then
+  begin
+    Inform('Нет данных для экспорта!');
+    Exit;
+  end;
+
+  Exporter:= TBooksExporter.Create;
+  if not Exporter.BeginExport then
+  begin
+    FreeAndNil(Exporter);
+    Exit;
+  end;
+
+  try
+    Progress:= TProgress.Create(nil);
+    try
+      Progress.WriteLine1('Экспорт личных карточек учета выдачи СИЗ');
+      Progress.WriteLine2(EmptyStr);
+      Progress.Show;
+      for i:=0 to High(CardIDs) do
+      begin
+        S:= PeriodToStr(CardBDs[i], CardEDs[i]);
+        Progress.WriteLine2(S);
+        //размеры
+        SIZStaffSizeIndexesClear(ExpSizes{%H-});
+        DataBase.SIZStaffSizeLoad(StaffIDs[StaffList.SelectedIndex], ExpSizes);
+        //нормы
+        NormSubItemsClear(ExpSubItems{%H-});
+        DataBase.SIZNormSubItemsLoad(CardItemIDs[i], ExpSubItems);
+
+        Worksheet:= Exporter.AddWorksheet('Лицевая сторона', True {новая книга});
+        CardFrontExport(CardNums[i],
+                    Families[StaffList.SelectedIndex],
+                    Names[StaffList.SelectedIndex],
+                    Patronymics[StaffList.SelectedIndex],
+                    Genders[StaffList.SelectedIndex],
+                    TabNums[StaffList.SelectedIndex],
+                    CardPostNames[i], CardBDs[i], CardEDs[i],
+                    ExpSizes, ExpSubItems,
+                    Worksheet, CardFileName);
+        Exporter.PageSettings(spoPortrait);
+
+        Worksheet:= Exporter.AddWorksheet('Оборотная сторона', False{старая книга});
+        CardBackExport(CardIDs[i], Worksheet);
+        Exporter.PageSettings(spoLandscape);
+
+        Exporter.Save(CardFileName);
+      end;
+
+    finally
+      FreeAndNil(Progress);
+    end;
+    Exporter.EndExport('Выполнено!');
+  finally
+    FreeAndNil(Exporter);
+  end;
 end;
 
 procedure TSIZCardForm.AllCardsExport;
