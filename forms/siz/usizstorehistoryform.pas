@@ -8,9 +8,9 @@ uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, VirtualTrees,
   Buttons, DividerBevel,
   //Project utils
-  UVars, UConst, UTypes,
+  UVars, UConst, USIZStoreTypes,
   //DK packages utils
-  DK_VSTTables, DK_Vector, DK_CtrlUtils;
+  DK_Vector, DK_Matrix, DK_CtrlUtils, DK_Filter;
 
 type
 
@@ -20,20 +20,34 @@ type
     CloseButton: TSpeedButton;
     DividerBevel1: TDividerBevel;
     DividerBevel2: TDividerBevel;
-    CheckAllButton: TSpeedButton;
     CollapseAllButton: TSpeedButton;
+    DividerBevel3: TDividerBevel;
+    DividerBevel4: TDividerBevel;
     ExpandAllButton: TSpeedButton;
-    UncheckAllButton: TSpeedButton;
-    DocViewButtonPanel: TPanel;
+    FilterSizNamePanel: TPanel;
+    FilterNomNumPanel: TPanel;
     VT: TVirtualStringTree;
+    DocViewButtonPanel: TPanel;
     ExportButton: TSpeedButton;
     ToolPanel: TPanel;
     procedure CloseButtonClick(Sender: TObject);
+    procedure CollapseAllButtonClick(Sender: TObject);
+    procedure ExpandAllButtonClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
   private
+    FilterSizName, FilterNomNum: String;
+    HistoryList: TSIZStoreHistoryTable;
 
+    NomNums, SizNames: TStrVector;
+    Infos: TStrMatrix;
+    Counts: TIntMatrix;
+
+    procedure HistoryCreate;
+    procedure HistoryLoad;
+    procedure HistorySizNameFilter(const AFilterString: String);
+    procedure HistoryNomNumFilter(const AFilterString: String);
   public
 
   end;
@@ -50,11 +64,14 @@ implementation
 procedure TSIZStoreHistoryForm.FormCreate(Sender: TObject);
 begin
   Caption:= MAIN_CAPTION + OTHER_DESCRIPTION[11];
+  HistoryCreate;
+  DKFilterCreate('Поиск по наименованию:', FilterSizNamePanel, @HistorySizNameFilter, 300);
+  DKFilterCreate('Поиск по номенклатурному номеру:', FilterNomNumPanel, @HistoryNomNumFilter, 300);
 end;
 
 procedure TSIZStoreHistoryForm.FormDestroy(Sender: TObject);
 begin
-
+  FreeAndNil(HistoryList);
 end;
 
 procedure TSIZStoreHistoryForm.FormShow(Sender: TObject);
@@ -65,19 +82,85 @@ begin
 
   SetToolButtons([
     CloseButton,
-    ExpandAllButton, CollapseAllButton, CheckAllButton, UncheckAllButton
+    ExpandAllButton, CollapseAllButton
   ]);
 
   Images.ToButtons([
     ExportButton,
     CloseButton,
-    ExpandAllButton, CollapseAllButton, CheckAllButton, UncheckAllButton
+    ExpandAllButton, CollapseAllButton
   ]);
+
+  FilterNomNumPanel.Width:= ToolPanel.Width div 3;
+  FilterSizNamePanel.Width:= FilterNomNumPanel.Width;
+
+  HistoryLoad;
+end;
+
+procedure TSIZStoreHistoryForm.HistoryCreate;
+begin
+  HistoryList:= TSIZStoreHistoryTable.Create(VT);
+  HistoryList.TreeLinesVisible:= False;
+  HistoryList.HeaderVisible:= False;
+  HistoryList.SetSingleFont(GridFont);
+  HistoryList.CategoryFont.Style:= [fsBold];
+  HistoryList.HistoryItemFont.Style:= [fsBold];
+  HistoryList.HistoryItems:= VCreateStr(['Получено', 'Выдано', 'Возвращено', 'Списано', 'Остаток']);
+  HistoryList.AddColumn('Инфо', 700);
+  HistoryList.AddColumn('Количество', 100);
+  HistoryList.AutosizeColumnDisable;
+  HistoryList.Draw;
+end;
+
+procedure TSIZStoreHistoryForm.HistoryLoad;
+var
+  CategoryNames: TStrMatrix;
+begin
+  DataBase.SIZStoreHistoryLoad(FilterSizName, FilterNomNum,
+                               NomNums, SizNames, Infos, Counts);
+
+  MDim(CategoryNames{%H-}, Length(NomNums), 2, 'Количество');
+  MRowSet(CategoryNames, 0, VSum(VSum(NomNums, ' - '), SizNames));
+
+  HistoryList.Visible:= False;
+  try
+    HistoryList.ValuesClear;
+    HistoryList.SetCategories(CategoryNames);
+    HistoryList.SetColumn('Инфо', Infos, taLeftJustify);
+    HistoryList.SetColumn('Количество', MIntToStr(Counts));
+    HistoryList.Draw;
+    HistoryList.ExpandAll(True);
+    HistoryList.ShowFirst;
+  finally
+    HistoryList.Visible:= True;
+  end;
+end;
+
+procedure TSIZStoreHistoryForm.HistorySizNameFilter(const AFilterString: String);
+begin
+  FilterSizName:= AFilterString;
+  HistoryLoad;
+end;
+
+procedure TSIZStoreHistoryForm.HistoryNomNumFilter(const AFilterString: String);
+begin
+  FilterNomNum:= AFilterString;
+  HistoryLoad;
 end;
 
 procedure TSIZStoreHistoryForm.CloseButtonClick(Sender: TObject);
 begin
   Close;
+end;
+
+procedure TSIZStoreHistoryForm.CollapseAllButtonClick(Sender: TObject);
+begin
+  HistoryList.ExpandAll(False);
+end;
+
+procedure TSIZStoreHistoryForm.ExpandAllButtonClick(Sender: TObject);
+begin
+  HistoryList.ExpandAll(True);
 end;
 
 end.

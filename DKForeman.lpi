@@ -619,6 +619,11 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="USIZStoreSheet"/>
       </Unit>
+      <Unit>
+        <Filename Value="utils\siz\usizstoretypes.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="USIZStoreTypes"/>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

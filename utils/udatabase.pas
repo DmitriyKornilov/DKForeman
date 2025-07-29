@@ -8,10 +8,10 @@ uses
   Classes, SysUtils, DateUtils,
   //Project utils
   UCalendar, UConst, USchedule, UTimetable, UWorkHours,
-  USIZNormTypes, USIZSizes, USIZUtils, USIZCardTypes,
+  USIZNormTypes, USIZSizes, USIZUtils, USIZCardTypes, UUtils,
   //DK packages utils
   DK_SQLite3, DK_SQLUtils, DK_Vector, DK_Matrix, DK_StrUtils, DK_Const,
-  DK_DateUtils, DK_VSTDropDown, DK_Dialogs;
+  DK_DateUtils, DK_VSTDropDown, DK_Dialogs, DK_DBUtils;
 
 type
 
@@ -782,6 +782,30 @@ type
     {Отмена списания (передачи) со склада: True - ОК, False - пусто}
     function SIZStoreWriteoffCancel(const AStoreIDs: TInt64Vector;
                                  const ACommit: Boolean = True): Boolean;
+    {История движения СИЗ по складу: True - ОК, False - пусто}
+    function SIZStoreHistorySizListLoad(const AMatchSizName, AFilterNomNum: String;
+                                 out ANomNums, ASizNames: TStrVector;
+                                 out ANameIDs: TIntVector): Boolean;
+    function SIZStoreHistoryEntryLoad(const ANomNum: String;
+                                 const ANameID, ASpacesCount: Integer;
+                                 out AInfos: TStrVector;
+                                 out ACounts: TIntVector): Boolean;
+    function SIZStoreHistoryReceivingLoad(const ANomNum: String;
+                                 const ANameID, ASpacesCount: Integer;
+                                 out AInfos: TStrVector;
+                                 out ACounts: TIntVector): Boolean;
+    function SIZStoreHistoryReturningLoad(const ANomNum: String;
+                                 const ANameID, ASpacesCount: Integer;
+                                 out AInfos: TStrVector;
+                                 out ACounts: TIntVector): Boolean;
+    function SIZStoreHistoryWriteoffLoad(const ANomNum: String;
+                                 const ANameID, ASpacesCount: Integer;
+                                 out AInfos: TStrVector;
+                                 out ACounts: TIntVector): Boolean;
+    function SIZStoreHistoryLoad(const AMatchSizName, AFilterNomNum: String;
+                                 out ANomNums, ASizNames: TStrVector;
+                                 out AInfos: TStrMatrix;
+                                 out ACounts: TIntMatrix): Boolean;
 
     (**************************************************************************
                                 ЛИЧНЫЕ КАРТОЧКИ СИЗ
@@ -8685,6 +8709,335 @@ begin
   except
     if ACommit then QRollback;
   end;
+end;
+
+function TDataBase.SIZStoreHistorySizListLoad(const AMatchSizName, AFilterNomNum: String;
+                                 out ANomNums, ASizNames: TStrVector;
+                                 out ANameIDs: TIntVector): Boolean;
+var
+  WhereStr, MatchStr: String;
+begin
+  Result:= False;
+
+  ANomNums:= nil;
+  ASizNames:= nil;
+  ANameIDs:= nil;
+
+  MatchStr:= PrepareMatchStr(AMatchSizName);
+
+  if not SEmpty(MatchStr) then
+  begin
+    ExecuteScript([
+      'CREATE VIRTUAL TABLE STOREHISTORY_FTS USING FTS5(NomNum, NameID, SizName);',
+      'INSERT INTO STOREHISTORY_FTS ' +
+        'SELECT DISTINCT t1.NomNum, t1.NameID, t2.SizName ' +
+        'FROM SIZSTOREENTRY t1 ' +
+        'INNER JOIN SIZNAME t2 ON (t1.NameID=t2.NameID) ' +
+        'ORDER BY t2.SizName;'
+    ]);
+  end;
+
+  QSetQuery(FQuery);
+  if SEmpty(MatchStr) then
+  begin
+    if SEmpty(AFilterNomNum) then
+      WhereStr:= EmptyStr
+    else
+      WhereStr:= 'WHERE (t1.NomNum LIKE :FilterNomNum) ';
+    QSetSQL(
+      'SELECT DISTINCT t1.NomNum, t1.NameID, t2.SizName ' +
+      'FROM SIZSTOREENTRY t1 ' +
+      'INNER JOIN SIZNAME t2 ON (t1.NameID=t2.NameID) ' +
+      WhereStr +
+      'ORDER BY t2.SizName'
+    );
+  end
+  else begin
+    WhereStr:= 'WHERE (STOREHISTORY_FTS MATCH :MatchStr) ';
+    if not SEmpty(AFilterNomNum) then
+      WhereStr:= WhereStr + 'AND (NomNum LIKE :FilterNomNum) ';
+    QSetSQL(
+      'SELECT NomNum, NameID, SizName ' +
+      'FROM STOREHISTORY_FTS ' +
+      WhereStr
+    );
+    QParamStr('MatchStr', MatchStr + '*');
+  end;
+  QParamStr('FilterNomNum', '%'+AFilterNomNum+'%');
+  QOpen;
+  if not QIsEmpty then
+  begin
+    QFirst;
+    while not QEOF do
+    begin
+      VAppend(ANomNums, QFieldStr('NomNum'));
+      VAppend(ASizNames, QFieldStr('SizName'));
+      VAppend(ANameIDs, QFieldInt('NameID'));
+      QNext;
+    end;
+    Result:= True;
+  end;
+  QClose;
+
+  if not SEmpty(MatchStr) then
+    ExecuteScript([
+      'DROP TABLE IF EXISTS STOREHISTORY_FTS;'
+    ]);
+end;
+
+function TDataBase.SIZStoreHistoryEntryLoad(const ANomNum: String;
+                                 const ANameID, ASpacesCount: Integer;
+                                 out AInfos: TStrVector;
+                                 out ACounts: TIntVector): Boolean;
+begin
+  Result:= False;
+
+  AInfos:= nil;
+  ACounts:= nil;
+
+  QSetQuery(FQuery);
+  QSetSQL(
+    'SELECT SUM(t1.EntryCount) AS SizCount, t2.DocName, t2.DocDate, t2.DocNum ' +
+    'FROM SIZSTOREENTRY t1 ' +
+    'INNER JOIN SIZDOC t2 ON (t1.DocID=t2.DocID) ' +
+    'WHERE (t1.NomNum = :NomNum) AND (t1.NameID = :NameID) ' +
+    'GROUP BY t2.DocName, t2.DocDate, t2.DocNum ' +
+    'ORDER BY t2.DocDate, t2.DocName, t2.DocNum ');
+  QParamStr('NomNum', ANomNum);
+  QParamInt('NameID', ANameID);
+  QOpen;
+  if not QIsEmpty then
+  begin
+    QFirst;
+    while not QEOF do
+    begin
+      VAppend(AInfos, SRepeat(ASpacesCount, SYMBOL_SPACE) +
+                      SIZDocFullName(QFieldStr('DocName'),
+                                     QFieldStr('DocNum'),
+                                     QFieldDT('DocDate')));
+      VAppend(ACounts, QFieldInt('SizCount'));
+      QNext;
+    end;
+    Result:= True;
+  end;
+  QClose;
+end;
+
+function TDataBase.SIZStoreHistoryReceivingLoad(const ANomNum: String;
+                                 const ANameID, ASpacesCount: Integer;
+                                 out AInfos: TStrVector;
+                                 out ACounts: TIntVector): Boolean;
+begin
+  Result:= False;
+
+  AInfos:= nil;
+  ACounts:= nil;
+
+  QSetQuery(FQuery);
+  QSetSQL(
+    'SELECT COUNT(*) AS SizCount, t4.TabNum, ' +
+           't5.Name, t5.Family, t5.Patronymic, ' +
+           't6.DocName, t6.DocDate, t6.DocNum ' +
+    'FROM SIZCARDPERSONALLOGINFO t1 ' +
+    'INNER JOIN SIZCARDPERSONALLOG t2 ON (t1.LogID=t2.LogID) ' +
+    'INNER JOIN SIZCARDPERSONAL t3 ON (t2.CardID=t3.CardID) ' +
+    'INNER JOIN STAFFTABNUM t4 ON (t3.TabNumID=t4.TabNumID) ' +
+    'INNER JOIN STAFFMAIN t5 ON (t4.StaffID=t5.StaffID) ' +
+    'INNER JOIN SIZDOC t6 ON (t2.DocID=t6.DocID) ' +
+    'INNER JOIN SIZSTORELOG t7 ON (t1.StoreID=t7.StoreID) ' +
+    'INNER JOIN SIZSTOREENTRY t8 ON (t7.EntryID=t8.EntryID) ' +
+    'WHERE (t8.NomNum = :NomNum) AND (t8.NameID = :NameID) AND (t2.ReceivingInfoID=t2.NowInfoID) ' +
+    'GROUP BY t4.TabNum, t5.Name, t5.Family, t5.Patronymic, t6.DocName, t6.DocDate, t6.DocNum ' +
+    'ORDER BY t6.DocDate, t6.DocName, t6.DocNum ');
+  QParamStr('NomNum', ANomNum);
+  QParamInt('NameID', ANameID);
+  QOpen;
+  if not QIsEmpty then
+  begin
+    QFirst;
+    while not QEOF do
+    begin
+      VAppend(AInfos, SRepeat(ASpacesCount, SYMBOL_SPACE) +
+                      SIZDocFullName(QFieldStr('DocName'),
+                                     QFieldStr('DocNum'),
+                                     QFieldDT('DocDate')) + ' - ' +
+                      StaffFullName(QFieldStr('Family'),
+                                    QFieldStr('Name'),
+                                    QFieldStr('Patronymic'),
+                                    QFieldStr('TabNum'), True{short}));
+      VAppend(ACounts, QFieldInt('SizCount'));
+      QNext;
+    end;
+    Result:= True;
+  end;
+  QClose;
+end;
+
+function TDataBase.SIZStoreHistoryReturningLoad(const ANomNum: String;
+                                 const ANameID, ASpacesCount: Integer;
+                                 out AInfos: TStrVector;
+                                 out ACounts: TIntVector): Boolean;
+begin
+  Result:= False;
+
+  AInfos:= nil;
+  ACounts:= nil;
+
+  QSetQuery(FQuery);
+  QSetSQL(
+    'SELECT COUNT(*) AS SizCount, t4.TabNum, ' +
+           't5.Name, t5.Family, t5.Patronymic, ' +
+           't6.DocName, t6.DocDate, t6.DocNum ' +
+    'FROM SIZSTAFFRETURN t0 ' +
+    'INNER JOIN SIZCARDPERSONALLOGINFO t1 ON (t0.StoreID=t1.StoreID) ' +
+    'INNER JOIN SIZCARDPERSONALLOG t2 ON (t1.LogID=t2.LogID) ' +
+    'INNER JOIN SIZCARDPERSONAL t3 ON (t2.CardID=t3.CardID) ' +
+    'INNER JOIN STAFFTABNUM t4 ON (t3.TabNumID=t4.TabNumID) ' +
+    'INNER JOIN STAFFMAIN t5 ON (t4.StaffID=t5.StaffID) ' +
+    'INNER JOIN SIZDOC t6 ON (t0.DocID=t6.DocID) ' +
+    'INNER JOIN SIZSTORELOG t7 ON (t1.StoreID=t7.StoreID) ' +
+    'INNER JOIN SIZSTOREENTRY t8 ON (t7.EntryID=t8.EntryID) ' +
+    'WHERE (t8.NomNum = :NomNum) AND (t8.NameID = :NameID) AND (t2.ReceivingInfoID=t2.NowInfoID) ' +
+    'GROUP BY t4.TabNum, t5.Name, t5.Family, t5.Patronymic, t6.DocName, t6.DocDate, t6.DocNum ' +
+    'ORDER BY t6.DocDate, t6.DocName, t6.DocNum ');
+  QParamStr('NomNum', ANomNum);
+  QParamInt('NameID', ANameID);
+  QOpen;
+  if not QIsEmpty then
+  begin
+    QFirst;
+    while not QEOF do
+    begin
+      VAppend(AInfos, SRepeat(ASpacesCount, SYMBOL_SPACE) +
+                      SIZDocFullName(QFieldStr('DocName'),
+                                     QFieldStr('DocNum'),
+                                     QFieldDT('DocDate')) + ' - ' +
+                      StaffFullName(QFieldStr('Family'),
+                                    QFieldStr('Name'),
+                                    QFieldStr('Patronymic'),
+                                    QFieldStr('TabNum'), True{short}));
+      VAppend(ACounts, QFieldInt('SizCount'));
+      QNext;
+    end;
+    Result:= True;
+  end;
+  QClose;
+end;
+
+function TDataBase.SIZStoreHistoryWriteoffLoad(const ANomNum: String;
+                                 const ANameID, ASpacesCount: Integer;
+                                 out AInfos: TStrVector;
+                                 out ACounts: TIntVector): Boolean;
+begin
+  Result:= False;
+
+  AInfos:= nil;
+  ACounts:= nil;
+
+  QSetQuery(FQuery);
+  QSetSQL(
+    'SELECT COUNT(*) AS SizCount, t2.DocName, t2.DocDate, t2.DocNum ' +
+    'FROM SIZSTOREWRITEOFF t1 ' +
+    'INNER JOIN SIZDOC t2 ON (t1.DocID=t2.DocID) ' +
+    'INNER JOIN SIZSTORELOG t3 ON (t1.StoreID=t3.StoreID) ' +
+    'INNER JOIN SIZSTOREENTRY t4 ON (t3.EntryID=t4.EntryID) ' +
+    'WHERE (t4.NomNum = :NomNum) AND (t4.NameID = :NameID) ' +
+    'GROUP BY t2.DocName, t2.DocDate, t2.DocNum ' +
+    'ORDER BY t2.DocDate, t2.DocName, t2.DocNum ');
+  QParamStr('NomNum', ANomNum);
+  QParamInt('NameID', ANameID);
+  QOpen;
+  if not QIsEmpty then
+  begin
+    QFirst;
+    while not QEOF do
+    begin
+      VAppend(AInfos, SRepeat(ASpacesCount, SYMBOL_SPACE) +
+                      SIZDocFullName(QFieldStr('DocName'),
+                                     QFieldStr('DocNum'),
+                                     QFieldDT('DocDate')));
+      VAppend(ACounts, QFieldInt('SizCount'));
+      QNext;
+    end;
+    Result:= True;
+  end;
+  QClose;
+end;
+
+function TDataBase.SIZStoreHistoryLoad(const AMatchSizName, AFilterNomNum: String;
+                                  out ANomNums, ASizNames: TStrVector;
+                                  out AInfos: TStrMatrix;
+                                  out ACounts: TIntMatrix): Boolean;
+const
+  SPACES_COUNT = 10;
+var
+  i, EntryCount, ReceivingCount, ReturningCount, WriteoffCount: Integer;
+  NameIDs, Counts, TmpCounts: TIntVector;
+  Infos, TmpInfos: TStrVector;
+begin
+  AInfos:= nil;
+  ACounts:= nil;
+
+  //получаем список СИЗ
+  Result:= SIZStoreHistorySizListLoad(AMatchSizName, AFilterNomNum,
+                                      ANomNums, ASizNames, NameIDs);
+  if not Result then Exit;
+
+  //получаем данные для каждого СИЗ
+  for i:= 0 to High(ANomNums) do
+  begin
+    ReceivingCount:= 0;
+    ReturningCount:= 0;
+    WriteoffCount:= 0;
+
+    //приход на склад
+    SIZStoreHistoryEntryLoad(ANomNums[i], NameIDs[i], SPACES_COUNT,
+                             Infos, Counts);
+    EntryCount:= VSum(Counts);
+    VIns(Infos, 0, 'Получено');
+    VIns(Counts, 0, EntryCount);
+
+    //выдача
+    if SIZStoreHistoryReceivingLoad(ANomNums[i], NameIDs[i], SPACES_COUNT,
+                                   TmpInfos, TmpCounts) then
+    begin
+      ReceivingCount:= VSum(TmpCounts);
+      VIns(TmpInfos, 0, 'Выдано');
+      VIns(TmpCounts, 0, ReceivingCount);
+      Infos:= VAdd(Infos, TmpInfos);
+      Counts:= VAdd(Counts, TmpCounts);
+
+      //возврат
+      if SIZStoreHistoryReturningLoad(ANomNums[i], NameIDs[i], SPACES_COUNT,
+                                   TmpInfos, TmpCounts) then
+      begin
+        ReturningCount:= VSum(TmpCounts);
+        VIns(TmpInfos, 0, 'Возвращено');
+        VIns(TmpCounts, 0, ReturningCount);
+        Infos:= VAdd(Infos, TmpInfos);
+        Counts:= VAdd(Counts, TmpCounts);
+      end;
+    end;
+
+    //списание
+    if SIZStoreHistoryWriteoffLoad(ANomNums[i], NameIDs[i], SPACES_COUNT,
+                                   TmpInfos, TmpCounts) then
+    begin
+      WriteoffCount:= VSum(TmpCounts);
+      VIns(TmpInfos, 0, 'Списано');
+      VIns(TmpCounts, 0, WriteoffCount);
+      Infos:= VAdd(Infos, TmpInfos);
+      Counts:= VAdd(Counts, TmpCounts);
+    end;
+
+    //остаток
+    VAppend(Infos, 'Остаток');
+    VAppend(Counts, EntryCount - ReceivingCount + ReturningCount - WriteoffCount);
+
+    MAppend(AInfos, Infos);
+    MAppend(ACounts, Counts);
+  end;
+
 end;
 
 end.
