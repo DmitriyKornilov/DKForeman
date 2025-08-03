@@ -112,7 +112,7 @@ object SIZStoreHistoryForm: TSIZStoreHistoryForm
       end
     end
     object DividerBevel2: TDividerBevel
-      Left = 210
+      Left = 395
       Height = 36
       Top = 0
       Width = 21
@@ -124,17 +124,17 @@ object SIZStoreHistoryForm: TSIZStoreHistoryForm
       ParentFont = False
     end
     object FilterSizNamePanel: TPanel
-      Left = 702
+      Left = 887
       Height = 36
       Top = 0
-      Width = 429
+      Width = 244
       Align = alClient
       BevelOuter = bvNone
       Caption = 'FilterSizNamePanel'
       TabOrder = 1
     end
     object DividerBevel3: TDividerBevel
-      Left = 681
+      Left = 866
       Height = 36
       Top = 0
       Width = 21
@@ -146,7 +146,7 @@ object SIZStoreHistoryForm: TSIZStoreHistoryForm
       ParentFont = False
     end
     object FilterNomNumPanel: TPanel
-      Left = 231
+      Left = 416
       Height = 36
       Top = 0
       Width = 450
@@ -161,6 +161,42 @@ object SIZStoreHistoryForm: TSIZStoreHistoryForm
       Top = 0
       Width = 21
       Caption = 'DividerBevel4'
+      Align = alLeft
+      BevelWidth = 2
+      Font.Style = [fsBold]
+      Orientation = trVertical
+      ParentFont = False
+    end
+    object CheckPanel: TPanel
+      Left = 231
+      Height = 36
+      Top = 0
+      Width = 164
+      Align = alLeft
+      AutoSize = True
+      BevelOuter = bvNone
+      ClientHeight = 36
+      ClientWidth = 164
+      TabOrder = 3
+      object ReturningCheckBox: TCheckBox
+        AnchorSideLeft.Control = CheckPanel
+        AnchorSideTop.Control = CheckPanel
+        AnchorSideTop.Side = asrCenter
+        Left = 0
+        Height = 24
+        Top = 6
+        Width = 164
+        Caption = 'Учитывать возвраты'
+        TabOrder = 0
+        OnChange = ReturningCheckBoxChange
+      end
+    end
+    object DividerBevel5: TDividerBevel
+      Left = 210
+      Height = 36
+      Top = 0
+      Width = 21
+      Caption = 'DividerBevel5'
       Align = alLeft
       BevelWidth = 2
       Font.Style = [fsBold]

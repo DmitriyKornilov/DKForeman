@@ -116,6 +116,23 @@ type
                           out AFamilies, ANames, APatronymics: TStrVector;
                           out ABornDates: TDateVector): Boolean;
 
+    {StaffBirthdaysLoad - загрузка списка ДР на месяц AMonth текущего года,
+     если AMonth=0 - весь год, AIncludeDismissed=True - включать уволенных,
+     AIsDateOrder=True - сорировка по дате, иначе - по ФИО: True - ОК, False - пусто}
+    function StaffBirthdaysLoad(const AMonth: Word;
+                              const AIncludeDismissed, AIsDateOrder: Boolean;
+                              out AFamilies, ANames, APatronymics: TStrVector;
+                              out ABornDates: TDateVector): Boolean;
+    {StaffVacationsLoad - загрузка списка отпуско на месяц AMonth года AYear,
+     если AMonth=0 - весь год,
+     AIsDateOrder=True - сорировка по дате, иначе - по ФИО: True - ОК, False - пусто}
+    function StaffVacationsLoad(const AMonth, AYear: Word;
+                              const AIsDateOrder: Boolean;
+                              out AFamilies, ANames, APatronymics,
+                                  ATabNums, APostNames: TStrVector;
+                              out ACounts: TIntVector;
+                              out ADates: TDateVector): Boolean;
+
     {Список табельных номеров по ID человека: True - ОК, False - список пуст}
     function StaffTabNumListLoad(const AStaffID: Integer;
                           out ATabNumIDs, APostIDs: TIntVector;
@@ -788,10 +805,12 @@ type
                                  out ANameIDs: TIntVector): Boolean;
     function SIZStoreHistoryEntryLoad(const ANomNum: String;
                                  const ANameID, ASpacesCount: Integer;
+                                 const AIsNeedReturning: Boolean;
                                  out AInfos: TStrVector;
                                  out ACounts: TIntVector): Boolean;
     function SIZStoreHistoryReceivingLoad(const ANomNum: String;
                                  const ANameID, ASpacesCount: Integer;
+                                 const AIsNeedReturning: Boolean;
                                  out AInfos: TStrVector;
                                  out ACounts: TIntVector): Boolean;
     function SIZStoreHistoryReturningLoad(const ANomNum: String;
@@ -800,9 +819,11 @@ type
                                  out ACounts: TIntVector): Boolean;
     function SIZStoreHistoryWriteoffLoad(const ANomNum: String;
                                  const ANameID, ASpacesCount: Integer;
+                                 const AIsNeedReturning: Boolean;
                                  out AInfos: TStrVector;
                                  out ACounts: TIntVector): Boolean;
     function SIZStoreHistoryLoad(const AMatchSizName, AFilterNomNum: String;
+                                 const AIsNeedReturning: Boolean;
                                  out ANomNums, ASizNames: TStrVector;
                                  out AInfos: TStrMatrix;
                                  out ACounts: TIntMatrix): Boolean;
@@ -1617,6 +1638,166 @@ begin
   QClose;
 end;
 
+function TDataBase.StaffBirthdaysLoad(const AMonth: Word;
+                              const AIncludeDismissed, AIsDateOrder: Boolean;
+                              out AFamilies, ANames, APatronymics: TStrVector;
+                              out ABornDates: TDateVector): Boolean;
+var
+  SQLStr: String;
+begin
+  Result:= False;
+
+  AFamilies:= nil;
+  ANames:= nil;
+  APatronymics:= nil;
+  ABornDates:= nil;
+
+  if AIncludeDismissed then //весь список, вместе с уволенными
+  begin
+    SQLStr:=
+      'SELECT Family, Name, Patronymic, BornDate, '+
+             'STRFTIME(''%m'', BornDate) AS BornMonth, ' +
+             'STRFTIME(''%d'', BornDate) AS BornDay ' +
+      'FROM STAFFMAIN ';
+    if (AMonth>=1) and (AMonth<=12) then
+      SQLStr:= SQLStr + 'WHERE BornMonth = ' + QuotedStr(Format('%.2d', [AMonth])) + ' ';
+  end
+  else begin
+    SQLStr:=
+      'SELECT DISTINCT t1.StaffID, t2.Family, t2.Name, t2.Patronymic, t2.BornDate, '+
+             'STRFTIME(''%m'', t2.BornDate) AS BornMonth, ' +
+             'STRFTIME(''%d'', t2.BornDate) AS BornDay ' +
+      'FROM STAFFTABNUM t1 ' +
+      'INNER JOIN STAFFMAIN t2 ON (t1.StaffID=t2.StaffID) ' +
+      'WHERE (t1.DismissDate=:DismissDate) ';
+    if (AMonth>=1) and (AMonth<=12) then
+      SQLStr:= SQLStr + 'AND (BornMonth = ' + QuotedStr(Format('%.2d', [AMonth])) + ') ';
+  end;
+
+  if AIsDateOrder then
+    SQLStr:= SQLStr + 'ORDER BY BornMonth, BornDay'
+  else
+    SQLStr:= SQLStr + 'ORDER BY Family, Name, Patronymic, BornMonth, BornDay';
+
+  QSetQuery(FQuery);
+  QSetSQL(SQLStr);
+  QParamDT('DismissDate', INFDATE);
+  QOpen;
+  if not QIsEmpty then
+  begin
+    QFirst;
+    while not QEOF do
+    begin
+      VAppend(AFamilies, QFieldStr('Family'));
+      VAppend(ANames, QFieldStr('Name'));
+      VAppend(APatronymics, QFieldStr('Patronymic'));
+      VAppend(ABornDates, QFieldDT('BornDate'));
+      QNext;
+    end;
+    Result:= True;
+  end;
+  QClose;
+end;
+
+function TDataBase.StaffVacationsLoad(const AMonth, AYear: Word;
+                              const AIsDateOrder: Boolean;
+                              out AFamilies, ANames, APatronymics,
+                                  ATabNums, APostNames: TStrVector;
+                              out ACounts: TIntVector;
+                              out ADates: TDateVector): Boolean;
+var
+  PostName, Rank: String;
+  i, PostID: Integer;
+  BD, ED: TDate;
+  TabNumIDs, Indexes: TIntVector;
+begin
+  Result:= False;
+
+  AFamilies:= nil;
+  ANames:= nil;
+  APatronymics:= nil;
+  ATabNums:= nil;
+  APostNames:= nil;
+  ACounts:= nil;
+  ADates:= nil;
+
+  TabNumIDs:= nil;
+
+  if (AMonth>=1) and (AMonth<=12) then
+    FirstLastDayInMonth(AMonth, AYear, BD, ED)
+  else
+    FirstLastDayInYear(AYear, BD, ED);
+
+  QSetQuery(FQuery);
+  QSetSQL(
+    'SELECT t1.TabNum, t1.TabNumID, ' +
+           't2.Family, t2.Name, t2.Patronymic, ' +
+           't3.Fact1Date, t3.Fact1Count, t3.Fact1CountAdd, ' +
+           't3.Fact2Date, t3.Fact2Count, t3.Fact2CountAdd ' +
+    'FROM STAFFTABNUM t1 ' +
+    'INNER JOIN STAFFMAIN t2 ON (t1.StaffID=t2.StaffID) ' +
+    'INNER JOIN STAFFVACATION t3 ON (t1.TabNumID=t3.TabNumID) ' +
+    'WHERE (t1.DismissDate>=:BD) AND (t1.RecrutDate<=:ED) AND (' +
+          '(t3.Fact1Date BETWEEN :BD AND :ED) OR (t3.Fact2Date BETWEEN :BD AND :ED))' +
+    'ORDER BY t2.Family, t2.Name, t2.Patronymic '
+  );
+  QParamDT('BD', BD);
+  QParamDT('ED', ED);
+  QOpen;
+  if not QIsEmpty then
+  begin
+    QFirst;
+    while not QEOF do
+    begin
+      if IsDateInPeriod(QFieldDT('Fact1Date'), BD, ED) then
+      begin
+        VAppend(AFamilies, QFieldStr('Family'));
+        VAppend(ANames, QFieldStr('Name'));
+        VAppend(APatronymics, QFieldStr('Patronymic'));
+        VAppend(ATabNums, QFieldStr('TabNum'));
+        VAppend(ADates, QFieldDT('Fact1Date'));
+        VAppend(ACounts, QFieldInt('Fact1Count')+QFieldInt('Fact1CountAdd'));
+        VAppend(TabNumIDs, QFieldInt('TabNumID'));
+      end;
+      if IsDateInPeriod(QFieldDT('Fact2Date'), BD, ED) then
+      begin
+        VAppend(AFamilies, QFieldStr('Family'));
+        VAppend(ANames, QFieldStr('Name'));
+        VAppend(APatronymics, QFieldStr('Patronymic'));
+        VAppend(ATabNums, QFieldStr('TabNum'));
+        VAppend(ADates, QFieldDT('Fact2Date'));
+        VAppend(ACounts, QFieldInt('Fact2Count')+QFieldInt('Fact2CountAdd'));
+        VAppend(TabNumIDs, QFieldInt('TabNumID'));
+      end;
+      QNext;
+    end;
+    Result:= True;
+  end;
+  QClose;
+
+  if not Result then Exit;
+
+  //сортировка по дате начала отпуска
+  if AIsDateOrder then
+  begin
+    VSortDate(ADates, Indexes);
+    AFamilies:= VReplace(AFamilies, Indexes);
+    ANames:= VReplace(ANames, Indexes);
+    APatronymics:= VReplace(APatronymics, Indexes);
+    ATabNums:= VReplace(ATabNums, Indexes);
+    ADates:= VReplace(ADates, Indexes);
+    ACounts:= VReplace(ACounts, Indexes);
+    TabNumIDs:= VReplace(TabNumIDs, Indexes);
+  end;
+
+  //актуальные должности на дату начала отпуска
+  for i:= 0 to High(TabNumIDs) do
+  begin
+    StaffPostForDate(TabNumIDs[i], ADates[i], PostID, PostName, Rank);
+    VAppend(APostNames, PostName);
+  end;
+end;
+
 function TDataBase.StaffTabNumListLoad(const AStaffID: Integer;
                           out ATabNumIDs, APostIDs: TIntVector;
                           out ATabNums, APostNames, ARanks: TStrVector;
@@ -1661,6 +1842,7 @@ begin
   QClose;
 
   if not Result then Exit;
+
   //актуальные должности и разряды на текущую дату
   for i:= 0 to High(ATabNumIDs) do
   begin
@@ -8787,22 +8969,38 @@ end;
 
 function TDataBase.SIZStoreHistoryEntryLoad(const ANomNum: String;
                                  const ANameID, ASpacesCount: Integer;
+                                 const AIsNeedReturning: Boolean;
                                  out AInfos: TStrVector;
                                  out ACounts: TIntVector): Boolean;
+var
+  SQLStr: String;
 begin
   Result:= False;
 
   AInfos:= nil;
   ACounts:= nil;
 
+  SQLStr:=
+    'SELECT COUNT(*) AS SizCount, t3.DocName, t3.DocDate, t3.DocNum ' +
+    'FROM SIZSTORELOG t1 ' +
+    'INNER JOIN SIZSTOREENTRY t2 ON (t1.EntryID=t2.EntryID) ' +
+    'INNER JOIN SIZDOC t3 ON (t2.DocID=t3.DocID) ';
+  if not AIsNeedReturning then
+    SQLStr:= SQLStr +
+      'LEFT OUTER JOIN SIZSTAFFRETURN t4 ON (t1.StoreID=t4.ReturnStoreID) ';
+
+  SQLStr:= SQLStr +
+    'WHERE (t2.NomNum = :NomNum) AND (t2.NameID = :NameID) ';
+  if not AIsNeedReturning then
+    SQLStr:= SQLStr +
+    'AND (t4.ReturnStoreID IS NULL) ';
+
+  SQLStr:= SQLStr +
+    'GROUP BY t3.DocName, t3.DocDate, t3.DocNum ' +
+    'ORDER BY t3.DocDate, t3.DocName, t3.DocNum ';
+
   QSetQuery(FQuery);
-  QSetSQL(
-    'SELECT SUM(t1.EntryCount) AS SizCount, t2.DocName, t2.DocDate, t2.DocNum ' +
-    'FROM SIZSTOREENTRY t1 ' +
-    'INNER JOIN SIZDOC t2 ON (t1.DocID=t2.DocID) ' +
-    'WHERE (t1.NomNum = :NomNum) AND (t1.NameID = :NameID) ' +
-    'GROUP BY t2.DocName, t2.DocDate, t2.DocNum ' +
-    'ORDER BY t2.DocDate, t2.DocName, t2.DocNum ');
+  QSetSQL(SQLStr);
   QParamStr('NomNum', ANomNum);
   QParamInt('NameID', ANameID);
   QOpen;
@@ -8825,16 +9023,18 @@ end;
 
 function TDataBase.SIZStoreHistoryReceivingLoad(const ANomNum: String;
                                  const ANameID, ASpacesCount: Integer;
+                                 const AIsNeedReturning: Boolean;
                                  out AInfos: TStrVector;
                                  out ACounts: TIntVector): Boolean;
+var
+  SQLStr: String;
 begin
   Result:= False;
 
   AInfos:= nil;
   ACounts:= nil;
 
-  QSetQuery(FQuery);
-  QSetSQL(
+  SQLStr:=
     'SELECT COUNT(*) AS SizCount, t4.TabNum, ' +
            't5.Name, t5.Family, t5.Patronymic, ' +
            't6.DocName, t6.DocDate, t6.DocNum ' +
@@ -8845,10 +9045,21 @@ begin
     'INNER JOIN STAFFMAIN t5 ON (t4.StaffID=t5.StaffID) ' +
     'INNER JOIN SIZDOC t6 ON (t2.DocID=t6.DocID) ' +
     'INNER JOIN SIZSTORELOG t7 ON (t1.StoreID=t7.StoreID) ' +
-    'INNER JOIN SIZSTOREENTRY t8 ON (t7.EntryID=t8.EntryID) ' +
-    'WHERE (t8.NomNum = :NomNum) AND (t8.NameID = :NameID) AND (t2.ReceivingInfoID=t2.NowInfoID) ' +
+    'INNER JOIN SIZSTOREENTRY t8 ON (t7.EntryID=t8.EntryID) ';
+  if not AIsNeedReturning then
+    SQLStr:= SQLStr +
+      'LEFT OUTER JOIN SIZSTAFFRETURN t9 ON (t1.StoreID=t9.ReturnStoreID) ';
+  SQLStr:= SQLStr +
+    'WHERE (t8.NomNum = :NomNum) AND (t8.NameID = :NameID) AND (t2.ReceivingInfoID=t2.NowInfoID) ';
+  if not AIsNeedReturning then
+    SQLStr:= SQLStr +
+      'AND (t9.ReturnStoreID IS NULL) ';
+  SQLStr:= SQLStr +
     'GROUP BY t4.TabNum, t5.Name, t5.Family, t5.Patronymic, t6.DocName, t6.DocDate, t6.DocNum ' +
-    'ORDER BY t6.DocDate, t6.DocName, t6.DocNum ');
+    'ORDER BY t6.DocDate, t6.DocName, t6.DocNum ';
+
+  QSetQuery(FQuery);
+  QSetSQL(SQLStr);
   QParamStr('NomNum', ANomNum);
   QParamInt('NameID', ANameID);
   QOpen;
@@ -8926,24 +9137,39 @@ end;
 
 function TDataBase.SIZStoreHistoryWriteoffLoad(const ANomNum: String;
                                  const ANameID, ASpacesCount: Integer;
+                                 const AIsNeedReturning: Boolean;
                                  out AInfos: TStrVector;
                                  out ACounts: TIntVector): Boolean;
+var
+  SQLStr: String;
 begin
   Result:= False;
 
   AInfos:= nil;
   ACounts:= nil;
 
-  QSetQuery(FQuery);
-  QSetSQL(
+  SQLStr:=
     'SELECT COUNT(*) AS SizCount, t2.DocName, t2.DocDate, t2.DocNum ' +
     'FROM SIZSTOREWRITEOFF t1 ' +
     'INNER JOIN SIZDOC t2 ON (t1.DocID=t2.DocID) ' +
     'INNER JOIN SIZSTORELOG t3 ON (t1.StoreID=t3.StoreID) ' +
-    'INNER JOIN SIZSTOREENTRY t4 ON (t3.EntryID=t4.EntryID) ' +
-    'WHERE (t4.NomNum = :NomNum) AND (t4.NameID = :NameID) ' +
+    'INNER JOIN SIZSTOREENTRY t4 ON (t3.EntryID=t4.EntryID) ';
+  if not AIsNeedReturning then
+    SQLStr:= SQLStr +
+      'LEFT OUTER JOIN SIZSTAFFRETURN t5 ON (t1.StoreID=t5.ReturnStoreID) ';
+
+  SQLStr:= SQLStr +
+    'WHERE (t4.NomNum = :NomNum) AND (t4.NameID = :NameID) ';
+  if not AIsNeedReturning then
+    SQLStr:= SQLStr +
+    'AND (t5.ReturnStoreID IS NULL) ';
+
+  SQLStr:= SQLStr +
     'GROUP BY t2.DocName, t2.DocDate, t2.DocNum ' +
-    'ORDER BY t2.DocDate, t2.DocName, t2.DocNum ');
+    'ORDER BY t2.DocDate, t2.DocName, t2.DocNum ';
+
+  QSetQuery(FQuery);
+  QSetSQL(SQLStr);
   QParamStr('NomNum', ANomNum);
   QParamInt('NameID', ANameID);
   QOpen;
@@ -8965,6 +9191,7 @@ begin
 end;
 
 function TDataBase.SIZStoreHistoryLoad(const AMatchSizName, AFilterNomNum: String;
+                                  const AIsNeedReturning: Boolean;
                                   out ANomNums, ASizNames: TStrVector;
                                   out AInfos: TStrMatrix;
                                   out ACounts: TIntMatrix): Boolean;
@@ -8992,14 +9219,16 @@ begin
 
     //приход на склад
     SIZStoreHistoryEntryLoad(ANomNums[i], NameIDs[i], SPACES_COUNT,
-                             Infos, Counts);
+                             False{AIsNeedReturning - всегда без учета возврата,
+                             т.к. возвраты записываются в отдельную строку}
+                             , Infos, Counts);
     EntryCount:= VSum(Counts);
     VIns(Infos, 0, 'Получено');
     VIns(Counts, 0, EntryCount);
 
     //выдача
     if SIZStoreHistoryReceivingLoad(ANomNums[i], NameIDs[i], SPACES_COUNT,
-                                   TmpInfos, TmpCounts) then
+                                    AIsNeedReturning, TmpInfos, TmpCounts) then
     begin
       ReceivingCount:= VSum(TmpCounts);
       VIns(TmpInfos, 0, 'Выдано');
@@ -9008,8 +9237,9 @@ begin
       Counts:= VAdd(Counts, TmpCounts);
 
       //возврат
-      if SIZStoreHistoryReturningLoad(ANomNums[i], NameIDs[i], SPACES_COUNT,
-                                   TmpInfos, TmpCounts) then
+      if AIsNeedReturning and
+         SIZStoreHistoryReturningLoad(ANomNums[i], NameIDs[i], SPACES_COUNT,
+                                     TmpInfos, TmpCounts) then
       begin
         ReturningCount:= VSum(TmpCounts);
         VIns(TmpInfos, 0, 'Возвращено');
@@ -9021,7 +9251,7 @@ begin
 
     //списание
     if SIZStoreHistoryWriteoffLoad(ANomNums[i], NameIDs[i], SPACES_COUNT,
-                                   TmpInfos, TmpCounts) then
+                                   AIsNeedReturning, TmpInfos, TmpCounts) then
     begin
       WriteoffCount:= VSum(TmpCounts);
       VIns(TmpInfos, 0, 'Списано');

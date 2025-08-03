@@ -624,6 +624,13 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="USIZStoreTypes"/>
       </Unit>
+      <Unit>
+        <Filename Value="forms\uinfoform.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="InfoForm"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="UInfoForm"/>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

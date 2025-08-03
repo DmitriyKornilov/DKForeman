@@ -12,6 +12,7 @@ uses
   //Project utils
   UVars, UConst, UTypes,
   //Forms
+  UInfoForm,
   UParamForm,
   UStaffForm,
   UCalendarForm, UScheduleShiftForm, UVacationPlanForm,
@@ -88,7 +89,7 @@ type
     procedure TimingButtonClick(Sender: TObject);
     procedure VacationPlaneMenuItemClick(Sender: TObject);
   private
-    Category: Byte;
+    Category: Integer;
 
     procedure DBConnect;
 
@@ -98,8 +99,8 @@ type
 
   public
     CategoryForm: TForm;
-    procedure CategorySelect(const ACategory: Byte);
-    procedure DictionarySelect(const ADictionary: Byte);
+    procedure CategorySelect(const ACategory: Integer);
+    procedure DictionarySelect(const ADictionary: Integer);
   end;
 
 var
@@ -109,38 +110,13 @@ implementation
 
 {$R *.lfm}
 
-{TODO учесть замену в таблице SHIFTCOLORS индекса остальных смен с 101 на -1}
-{TODO учесть замену в таблице STAFFTABNUM типа TABNUM с INTEGER на TEXT, введен PK TABNUMID INTEGER,
-      проверка на незанятость табельного номера для периода}
-{TODO учесть замену в таблице STAFFTABNUM типа RANK с INTEGER на TEXT}
-{TODO учесть замену в таблице STAFFPOSTLOG TABNUM -> TABNUMID,
-      проверка на отсутствие пересечений по периодам}
-{TODO учесть замену в таблице STAFFPOSTLOG типа RANK с INTEGER на TEXT}
-{TODO учесть замену в таблице TIMETABLELOG TABNUM -> TABNUMID}
-{TODO учесть замену в таблице PERSONALCORRECT TABNUM -> TABNUMID}
-{TODO учесть замену в таблице STAFFSCHEDULE TABNUM -> TABNUMID,
-      проверка на отсутствие пересечений по периодам}
-{TODO учесть замену в таблице STAFFVACATION TABNUM -> TABNUMID}
-{TODO учесть в STAFFVACATION
-      замена PLANDATE->PLAN1DATE, PLANCOUNT->PLAN1COUNT, PLANCOUNTADD->PLAN1COUNTADD,
-      добавлено PLAN2DATE, PLAN2COUNT, PLAN2COUNTADD,
-      добавлен YEARNUM}
-{TODO учесть замену в таблице SIZENTRY типа NOMNUM с INTEGER на TEXT}
-{TODO учесть в таблице SIZSTAFFLOGINFO поле SINGLECOMPLECT - пока удалено}
-
-{TODO проверить TDataBase.SIZNormSubItemInfoDelete на соответствие изменениям в БД}
-
-{SQLITE_CONSTRAINT_UNIQUE!!!!!!!!!!!!!!!}
-
-
-
-
 { TMainForm }
 
 procedure TMainForm.FormCreate(Sender: TObject);
 begin
   HeapTraceOutputFile('trace.trc');
   Caption:= MAIN_CAPTION;
+  Category:= -1;
   DBConnect;
   GlobalVarInit;
 end;
@@ -169,7 +145,7 @@ begin
   SafetyMenu.Images:= TimingMenu.Images;
   DictionaryMenu.Images:= TimingMenu.Images;
 
-  //CategorySelect(0);
+  CategorySelect(0);
 end;
 
 procedure TMainForm.DBConnect;
@@ -205,7 +181,7 @@ begin
     ModeType:= mtView;
 
   case Category of
-    0: ;
+    //0: TInfoForm - no modes;
     1: (CategoryForm as TStaffForm).ViewUpdate(ModeType);
     2: (CategoryForm as TCalendarForm).ViewUpdate(ModeType);
     3: (CategoryForm as TScheduleShiftForm).ViewUpdate(ModeType);
@@ -218,7 +194,6 @@ begin
     10: (CategoryForm as TSIZSizeForm).ViewUpdate(ModeType);
     11: (CategoryForm as TSIZCardForm).ViewUpdate(ModeType);
   end;
-
 end;
 
 procedure TMainForm.DataUpdate;
@@ -226,7 +201,7 @@ begin
   if not Assigned(CategoryForm) then Exit;
 
   case Category of
-    //0: ;
+    0: (CategoryForm as TInfoForm).DataUpdate;
     1: (CategoryForm as TStaffForm).DataUpdate;
     2: (CategoryForm as TCalendarForm).DataUpdate;
     3: (CategoryForm as TScheduleShiftForm).DataUpdate;
@@ -246,7 +221,7 @@ begin
   if not Assigned(CategoryForm) then Exit;
 
   case Category of
-    0: ;
+    //0: TInfoForm - no settings
     1: (CategoryForm as TStaffForm).SettingsSave;
     2: (CategoryForm as TCalendarForm).SettingsSave;
     3: (CategoryForm as TScheduleShiftForm).SettingsSave;
@@ -261,7 +236,7 @@ begin
   end;
 end;
 
-procedure TMainForm.CategorySelect(const ACategory: Byte);
+procedure TMainForm.CategorySelect(const ACategory: Integer);
 begin
   if ACategory=Category then Exit;
 
@@ -271,11 +246,12 @@ begin
     SettingsSave;
     Category:= ACategory;
     Caption:= MAIN_CAPTION + MAIN_DESCRIPTION[ACategory];
-    SettingButton.Enabled:= not (Category in [2, 7, 8]);
+    SettingButton.Enabled:= not (Category in [0, 2, 7, 8]);
+    EditingButton.Enabled:= Category>0;
 
     if Assigned(CategoryForm) then FreeAndNil(CategoryForm);
     case Category of
-      0: ;
+      0: CategoryForm:= FormOnPanelCreate(TInfoForm, MainPanel);
       1: CategoryForm:= FormOnPanelCreate(TStaffForm, MainPanel);
       2: CategoryForm:= FormOnPanelCreate(TCalendarForm, MainPanel);
       3: CategoryForm:= FormOnPanelCreate(TScheduleShiftForm, MainPanel);
@@ -284,7 +260,7 @@ begin
       6: CategoryForm:= FormOnPanelCreate(TTimetableForm, MainPanel);
       7: CategoryForm:= FormOnPanelCreate(TSIZNormForm, MainPanel);
       8: CategoryForm:= FormOnPanelCreate(TSIZStoreForm, MainPanel);
-      //9: CategoryForm:= FormOnPanelCreate(TSIZReaquestForm, MainPanel);
+      //9: CategoryForm:= FormOnPanelCreate(TSIZRequestForm, MainPanel);
       10: CategoryForm:= FormOnPanelCreate(TSIZSizeForm, MainPanel);
       11: CategoryForm:= FormOnPanelCreate(TSIZCardForm, MainPanel);
     end;
@@ -300,7 +276,7 @@ begin
   end;
 end;
 
-procedure TMainForm.DictionarySelect(const ADictionary: Byte);
+procedure TMainForm.DictionarySelect(const ADictionary: Integer);
 var
   IsOK: Boolean;
 begin
@@ -326,7 +302,7 @@ begin
     4: IsOK:= DataBase.EditTable('Единицы измерения средств индивидуальной защиты',
                           'SIZUNIT', 'UnitID',
                           ['UnitName',     'UnitDigitalCode', 'UnitStringCode'      ],
-                          ['Наименование', 'Код',             'Условное обозначение'],
+                          ['Наименование', 'Код ОКЕИ',        'Условное обозначение'],
                           [ ctString,       ctInteger,         ctString             ],
                           [ True,           True,              True                 ],
                           [ 300,            100,               200                  ],

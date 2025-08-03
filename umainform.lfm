@@ -6,7 +6,6 @@ object MainForm: TMainForm
   ClientHeight = 326
   ClientWidth = 1020
   DesignTimePPI = 120
-  LCLVersion = '4.0.0.4'
   WindowState = wsMaximized
   OnCreate = FormCreate
   OnDestroy = FormDestroy
@@ -22,8 +21,8 @@ object MainForm: TMainForm
     BorderSpacing.Right = 2
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 40
-    ClientWidth = 1016
+    ClientHeight = 36
+    ClientWidth = 1012
     ParentFont = False
     TabOrder = 0
     object AboutButton: TSpeedButton
@@ -277,7 +276,7 @@ object MainForm: TMainForm
       Caption = '-'
     end
     object StudyMenuItem: TMenuItem
-      Caption = 'Инструктажи, аттестация и обучение'
+      Caption = 'Инструктажи, аттестация, обучение'
       ImageIndex = 35
       OnClick = StudyMenuItemClick
     end

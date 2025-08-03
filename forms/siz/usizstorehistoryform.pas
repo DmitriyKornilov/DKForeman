@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, VirtualTrees,
-  Buttons, DividerBevel,
+  Buttons, StdCtrls, DividerBevel,
   //Project utils
   UVars, UConst, USIZStoreTypes, USIZStoreSheet,
   //DK packages utils
@@ -17,12 +17,14 @@ type
   { TSIZStoreHistoryForm }
 
   TSIZStoreHistoryForm = class(TForm)
+    CheckPanel: TPanel;
     CloseButton: TSpeedButton;
     DividerBevel1: TDividerBevel;
     DividerBevel2: TDividerBevel;
     CollapseAllButton: TSpeedButton;
     DividerBevel3: TDividerBevel;
     DividerBevel4: TDividerBevel;
+    DividerBevel5: TDividerBevel;
     ExpandAllButton: TSpeedButton;
     FilterSizNamePanel: TPanel;
     FilterNomNumPanel: TPanel;
@@ -30,6 +32,7 @@ type
     DocViewButtonPanel: TPanel;
     ExportButton: TSpeedButton;
     ToolPanel: TPanel;
+    ReturningCheckBox: TCheckBox;
     procedure CloseButtonClick(Sender: TObject);
     procedure CollapseAllButtonClick(Sender: TObject);
     procedure ExpandAllButtonClick(Sender: TObject);
@@ -37,6 +40,7 @@ type
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure ReturningCheckBoxChange(Sender: TObject);
   private
     FilterSizName, FilterNomNum: String;
     HistoryList: TSIZStoreHistoryTable;
@@ -96,6 +100,11 @@ begin
   HistoryLoad;
 end;
 
+procedure TSIZStoreHistoryForm.ReturningCheckBoxChange(Sender: TObject);
+begin
+  HistoryLoad;
+end;
+
 procedure TSIZStoreHistoryForm.HistoryCreate;
 begin
   HistoryList:= TSIZStoreHistoryTable.Create(VT);
@@ -116,7 +125,7 @@ procedure TSIZStoreHistoryForm.HistoryLoad;
 var
   CategoryNames: TStrVector;
 begin
-  DataBase.SIZStoreHistoryLoad(FilterSizName, FilterNomNum,
+  DataBase.SIZStoreHistoryLoad(FilterSizName, FilterNomNum, ReturningCheckBox.Checked,
                                NomNums, SizNames, Infos, Counts);
 
   CategoryNames:= VSum(VSum(NomNums, ' - '), SizNames);
