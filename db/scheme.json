@@ -1040,7 +1040,8 @@
         "SIZCARDFORM.LISTTYPE",
         "SIZCARDFORM.WRITEOFFTYPE",
         "SIZDOCMB7FORM.ZOOM",
-        "SIZSTAFFHISTORYFORM.ZOOM"
+        "SIZSTAFFHISTORYFORM.ZOOM",
+        "SIZREQUESTFORM.ZOOM"
       ],
       "ReferenceTo" : {
         "TableName" : "",
@@ -1166,6 +1167,7 @@
         "50",
         "1",
         "1",
+        "100",
         "100",
         "100"
       ],

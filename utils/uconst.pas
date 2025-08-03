@@ -168,7 +168,6 @@ const
   TIMETABLE_CORRECTION_COLUMN_WIDTHS: array of Integer =
     (70,     110,       150,                70       );
 
-
   SIZSIZE_STAFFLIST_COLUMN_NAMES: array of String  =
     ('№ п/п', 'Ф.И.О', 'Одежда', 'Обувь', 'Головной убор', 'СИЗ рук', 'Противогаз', 'Респиратор');
   SIZSIZE_STAFFLIST_COLUMN_WIDTHS: array of Integer =
@@ -404,6 +403,10 @@ const
 
   SETTING_NAMES_SIZSTAFFHISTORYFORM: array of String  =  (
     'SIZSTAFFHISTORYFORM.ZOOM'
+  );
+
+  SETTING_NAMES_SIZREQUESTFORM: array of String  =  (
+    'SIZREQUESTFORM.ZOOM'
   );
 
 

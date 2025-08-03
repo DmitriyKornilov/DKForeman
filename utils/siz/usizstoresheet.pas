@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, Graphics,
   //Project utils
-  USIZUtils,
+  UConst, UUtils, USIZUtils,
   //DK packages utils
   DK_SheetTypes, DK_Vector, DK_Matrix, DK_StrUtils;
 
@@ -149,6 +149,29 @@ type
                    const ASizCounts: TIntMatrix);
   end;
 
+  { TSIZStoreRequestSheet }
+
+  TSIZStoreRequestSheet = class(TCustomSheet)
+  protected
+    function SetWidths: TIntVector; override;
+  private
+    const
+      COLWIDTHS: array of Integer = (
+        {01} 400,  //наименование сиз
+        {02} 50,   //пол
+        {03} 100,  //размер
+        {04} 100,  //количество
+        {05} 600   //кому выдавать
+      );
+  public
+    procedure Draw(const ATitle: String;
+                   const ASizNames: TStrVector;
+                   const AGenders: TIntVector;
+                   const ASizSizes: TStrMatrix;
+                   const AFamilies, ANames, APatronymics, ATabNums: TStrMatrix3D;
+                   const ASizCounts: TIntMatrix3D);
+  end;
+
 
 implementation
 
@@ -166,6 +189,7 @@ var
 
   procedure CaptionDraw;
   begin
+    R:= 1;
     Writer.SetBackgroundDefault;
     Writer.SetFont(Font.Name, Font.Size, [fsBold], clBlack);
     Writer.SetAlignment(haCenter, vaCenter);
@@ -197,7 +221,6 @@ var
 begin
   Writer.BeginEdit;
 
-  R:= 1;
   CaptionDraw;
   for i:= 0 to High(ANomNums) do
     for j:= 0 to High(ANomNums[i]) do
@@ -220,6 +243,7 @@ var
 
   procedure CaptionDraw;
   begin
+    R:= 1;
     Writer.SetBackgroundDefault;
     Writer.SetFont(Font.Name, Font.Size, [fsBold], clBlack);
     Writer.SetAlignment(haCenter, vaCenter);
@@ -254,7 +278,6 @@ var
 begin
   Writer.BeginEdit;
 
-  R:= 1;
   CaptionDraw;
   for i:= 0 to High(ANomNums) do
     for j:= 0 to High(ANomNums[i]) do
@@ -278,6 +301,7 @@ var
 
   procedure CaptionDraw;
   begin
+    R:= 1;
     Writer.SetBackgroundDefault;
     Writer.SetFont(Font.Name, Font.Size, [fsBold], clBlack);
     Writer.SetAlignment(haCenter, vaCenter);
@@ -311,7 +335,6 @@ var
 begin
   Writer.BeginEdit;
 
-  R:= 1;
   CaptionDraw;
   for i:= 0 to High(ANomNums) do
     for j:= 0 to High(ANomNums[i]) do
@@ -336,6 +359,7 @@ var
 
   procedure CaptionDraw;
   begin
+    R:= 1;
     Writer.SetBackgroundDefault;
     Writer.SetFont(Font.Name, Font.Size, [fsBold], clBlack);
     Writer.SetAlignment(haCenter, vaCenter);
@@ -376,7 +400,6 @@ var
 begin
   Writer.BeginEdit;
 
-  R:= 1;
   CaptionDraw;
   for i:= 0 to High(ANomNums) do
     for j:= 0 to High(ANomNums[i]) do
@@ -402,6 +425,7 @@ var
 
   procedure CaptionDraw;
   begin
+    R:= 1;
     Writer.SetBackgroundDefault;
     Writer.SetFont(Font.Name, Font.Size, [fsBold], clBlack);
     Writer.SetAlignment(haCenter, vaCenter);
@@ -446,7 +470,6 @@ var
 begin
   Writer.BeginEdit;
 
-  R:= 1;
   CaptionDraw;
   for i:= 0 to High(ANomNums) do
     for j:= 0 to High(ANomNums[i]) do
@@ -472,6 +495,7 @@ var
   var
     S: String;
   begin
+    R:= 1;
     Writer.SetBackgroundDefault;
     Writer.SetFont(Font.Name, Font.Size, [fsBold], clBlack);
     Writer.SetAlignment(haCenter, vaCenter);
@@ -516,9 +540,97 @@ var
 begin
   Writer.BeginEdit;
 
-  R:= 1;
   CaptionDraw;
   for i:= 0 to High(ANomNums) do
+    LineDraw(i);
+
+  Writer.EndEdit;
+end;
+
+{ TSIZStoreRequestSheet }
+
+function TSIZStoreRequestSheet.SetWidths: TIntVector;
+begin
+  Result:= VCreateInt(COLWIDTHS);
+end;
+
+procedure TSIZStoreRequestSheet.Draw(const ATitle: String;
+                   const ASizNames: TStrVector;
+                   const AGenders: TIntVector;
+                   const ASizSizes: TStrMatrix;
+                   const AFamilies, ANames, APatronymics, ATabNums: TStrMatrix3D;
+                   const ASizCounts: TIntMatrix3D);
+var
+  i, R: Integer;
+
+  procedure CaptionDraw;
+  begin
+    R:= 1;
+    Writer.SetBackgroundDefault;
+    Writer.SetAlignment(haCenter, vaCenter);
+
+    if not SEmpty(ATitle) then
+    begin
+      Writer.SetFont(Font.Name, Font.Size+2, [fsBold], clBlack);
+      Writer.WriteText(R, 1, R, Writer.ColCount, ATitle, cbtNone, True, True);
+      R:= R + 1;
+    end;
+
+    Writer.SetFont(Font.Name, Font.Size, [fsBold], clBlack);
+    Writer.WriteText(R, 1, 'Наименование СИЗ', cbtOuter, True, True);
+    Writer.WriteText(R, 2, 'Пол', cbtOuter);
+    Writer.WriteText(R, 3, 'Размер', cbtOuter);
+    Writer.WriteText(R, 4, 'Количество', cbtOuter);
+    Writer.WriteText(R, 5, 'Примечание', cbtOuter);
+  end;
+
+  function InfoLoad(const AInd1, AInd2, AInd3: Integer): String;
+  begin
+    Result:= StaffFullName(AFamilies[AInd1, AInd2, AInd3],
+                           ANames[AInd1, AInd2, AInd3],
+                           APatronymics[AInd1, AInd2, AInd3],
+                           ATabNums[AInd1, AInd2, AInd3],
+                           True{short)}) +
+            ' = ' + IntToStr(ASizCounts[AInd1, AInd2, AInd3]);
+  end;
+
+  procedure LineDraw(const AInd: Integer);
+  var
+    m, n, R1, R2: Integer;
+    S: String;
+  begin
+    R1:= R + 1;
+    R2:= R1 + High(ASizSizes[AInd]);
+
+    Writer.SetBackgroundDefault;
+    Writer.SetFont(Font.Name, Font.Size, [], clBlack);
+
+    Writer.SetAlignment(haLeft, vaTop);
+    Writer.WriteText(R1, 1, R2, 1, ASizNames[AInd], cbtOuter, True, True);
+    Writer.SetAlignment(haCenter, vaTop);
+    Writer.WriteText(R1, 2, R2, 2, GENDER_PICKS[AGenders[AInd]], cbtOuter);
+
+    for m:= 0 to High(ASizSizes[AInd]) do
+    begin
+      R:= R + 1;
+      Writer.SetAlignment(haCenter, vaTop);
+      Writer.WriteText(R, 3, ASizSizes[AInd, m], cbtOuter);
+      Writer.WriteNumber(R, 4, VSum(ASizCounts[AInd, m]), cbtOuter);
+      S:= InfoLoad(AInd, m, 0);
+      for n:= 1 to High(AFamilies[AInd, m]) do
+        S:= S + '; ' + InfoLoad(AInd, m, n);
+      Writer.SetAlignment(haLeft, vaTop);
+      Writer.WriteText(R, 5, S, cbtOuter, True, True);
+    end;
+
+    Writer.DrawBorders(R1, 1, R2, Writer.ColCount, cbtAll);
+  end;
+
+begin
+  Writer.BeginEdit;
+
+  CaptionDraw;
+  for i:= 0 to High(ASizNames) do
     LineDraw(i);
 
   Writer.EndEdit;

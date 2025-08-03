@@ -261,6 +261,7 @@ object MainForm: TMainForm
     object SIZRequestMenuItem: TMenuItem
       Caption = 'Заявка на поступление средств индивидуальной защиты'
       ImageIndex = 56
+      OnClick = SIZRequestMenuItemClick
     end
     object SIZSizesMenuItem: TMenuItem
       Caption = 'Размеры средств индивидуальной защиты сотрудников'

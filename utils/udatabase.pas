@@ -91,6 +91,11 @@ type
                    out ATabNumIDs: TIntVector;
                    out AFamilies, ANames, APatronymics, ATabNums, APostNames, AScheduleNames: TStrVector): Boolean;
 
+    {Получение списка не уволенных на дату AReportDate: True - ОК, False - пусто}
+    function StaffListForDateLoad(const AReportDate: TDate;
+                          out ATabNumIDs, AGenders: TIntVector;
+                          out AFamilies, ANames, APatronymics, ATabNums: TStrVector): Boolean;
+
     {Добавление данных нового человека: True - ОК, False - ошибка}
     function StaffMainAdd(out AStaffID: Integer;
                           const AFamily, AName, APatronymic: String;
@@ -132,7 +137,6 @@ type
                                   ATabNums, APostNames: TStrVector;
                               out ACounts: TIntVector;
                               out ADates: TDateVector): Boolean;
-
     {Список табельных номеров по ID человека: True - ОК, False - список пуст}
     function StaffTabNumListLoad(const AStaffID: Integer;
                           out ATabNumIDs, APostIDs: TIntVector;
@@ -828,6 +832,19 @@ type
                                  out AInfos: TStrMatrix;
                                  out ACounts: TIntMatrix): Boolean;
 
+    {Загрузка заявки СИЗ на дату AReportDate: True - OK, False - пусто
+     (Без дерматологических СИЗ)
+     AWriteoffType - расчет даты следующей выдачи:
+     0 - по нормам на момент выдачи,
+     1 - по текущим нормам}
+    function SIZStoreRequestLoad(const AReportDate: TDate;
+                          const AWriteoffType: Byte;
+                          out ASizNames: TStrVector;
+                          out AGenders: TIntVector;
+                          out ASIZSizes: TStrMatrix;
+                          out AFamilies, ANames, APatronymics, ATabNums: TStrMatrix3D;
+                          out ASizCounts: TIntMatrix3D): Boolean;
+
     (**************************************************************************
                                 ЛИЧНЫЕ КАРТОЧКИ СИЗ
     **************************************************************************)
@@ -1489,6 +1506,47 @@ begin
   ANames:= VReplace(ANames, Indexes);
   APatronymics:= VReplace(APatronymics, Indexes);
   AScheduleNames:= VReplace(AScheduleNames, Indexes);
+end;
+
+function TDataBase.StaffListForDateLoad(const AReportDate: TDate;
+                          out ATabNumIDs, AGenders: TIntVector;
+                          out AFamilies, ANames, APatronymics, ATabNums: TStrVector): Boolean;
+begin
+  Result:= False;
+  ATabNumIDs:= nil;
+  AGenders:= nil;
+  AFamilies:= nil;
+  ANames:= nil;
+  APatronymics:= nil;
+  ATabNums:= nil;
+
+  QSetQuery(FQuery);
+  QSetSQL(
+    'SELECT t1.TabNum, t1.TabNumID, ' +
+           't2.Family, t2.Name, t2.Patronymic, t2.Gender ' +
+    'FROM STAFFTABNUM t1 ' +
+    'INNER JOIN STAFFMAIN t2 ON (t1.StaffID=t2.StaffID) ' +
+    'WHERE (:ReportDate BETWEEN t1.RecrutDate AND t1.DismissDate) ' +
+    'ORDER BY t2.Gender, t2.Family, t2.Name, t2.Patronymic'
+  );
+  QParamDT('ReportDate', AReportDate);
+  QOpen;
+  if not QIsEmpty then
+  begin
+    QFirst;
+    while not QEOF do
+    begin
+      VAppend(ATabNumIDs, QFieldInt('TabNumID'));
+      VAppend(AGenders, QFieldInt('Gender'));
+      VAppend(ATabNums, QFieldStr('TabNum'));
+      VAppend(AFamilies, QFieldStr('Family'));
+      VAppend(ANames, QFieldStr('Name'));
+      VAppend(APatronymics, QFieldStr('Patronymic'));
+      QNext;
+    end;
+    Result:= True;
+  end;
+  QClose;
 end;
 
 function TDataBase.StaffMainAdd(out AStaffID: Integer;
@@ -9268,6 +9326,128 @@ begin
     MAppend(ACounts, Counts);
   end;
 
+end;
+
+function TDataBase.SIZStoreRequestLoad(const AReportDate: TDate;
+                          const AWriteoffType: Byte;
+                          out ASizNames: TStrVector;
+                          out AGenders: TIntVector;
+                          out ASIZSizes: TStrMatrix;
+                          out AFamilies, ANames, APatronymics, ATabNums: TStrMatrix3D;
+                          out ASizCounts: TIntMatrix3D): Boolean;
+var
+  i, j: Integer;
+  TabNumIDs, Genders: TIntVector;
+  Families, Names, Patronymics, TabNums: TStrVector;
+
+  CardID, ItemID, ItemPostID: Integer;
+  CardNum, PostName, NormName: String;
+  CardBD, CardED: TDate;
+
+  NormSubItems: TNormSubItems;
+  StatusSubItems: TStatusSubItems;
+
+  function IndexOfName(const ASIZName: String; const AGender: Integer): Integer;
+  var
+    k: Integer;
+  begin
+    Result:= -1;
+    for k:= 0 to High(ASizNames) do
+      if SSame(ASizNames[k], ASIZName) and (AGenders[k]=AGender) then
+      begin
+        Result:= k;
+        break;
+      end;
+  end;
+
+  procedure AddData(const AInd1, AInd2: Integer);
+  var
+    S: String;
+    m, n: Integer;
+  begin
+    //S:= VVectorToStr(NormSubItems[AInd2].Info.Names, ' или ');
+    S:= VFirst(NormSubItems[AInd2].Info.Names);
+    n:= IndexOfName(S, Genders[AInd1]);
+    if n<0 then
+    begin
+      VAppend(ASizNames, S);
+      VAppend(AGenders, Genders[AInd1]);
+      n:= High(ASizNames);
+
+      MAppend(ASIZSizes, nil);
+      MAppend(AFamilies, nil);
+      MAppend(ANames, nil);
+      MAppend(APatronymics, nil);
+      MAppend(ATabNums, nil);
+      MAppend(ASizCounts, nil);
+    end;
+
+    S:= SIZFullSize(VFirst(NormSubItems[AInd2].Info.SizeTypes),
+                    VFirst(StatusSubItems[AInd2].SizeIDs),
+                    VFirst(StatusSubItems[AInd2].HeightIDs));
+    m:= VIndexOf(ASIZSizes[n], S);
+    if m<0 then
+    begin
+      VAppend(ASIZSizes[n], S);
+      m:= High(ASIZSizes[n]);
+
+      MAppend(AFamilies[n], nil);
+      MAppend(ANames[n], nil);
+      MAppend(APatronymics[n], nil);
+      MAppend(ATabNums[n], nil);
+      MAppend(ASizCounts[n], nil);
+    end;
+
+    VAppend(AFamilies[n, m], Families[AInd1]);
+    VAppend(ANames[n, m], Names[AInd1]);
+    VAppend(APatronymics[n, m], Patronymics[AInd1]);
+    VAppend(ATabNums[n, m], TabNums[AInd1]);
+    VAppend(ASizCounts[n, m], VFirst(NormSubItems[AInd2].Info.Nums));
+  end;
+
+begin
+  Result:= False;
+
+  ASizNames:= nil;
+  AGenders:= nil;
+  ASIZSizes:= nil;
+  AFamilies:= nil;
+  ANames:= nil;
+  APatronymics:= nil;
+  ATabNums:= nil;
+  ASizCounts:= nil;
+
+  //получаем список не уволенных на отчетную дату
+  if not StaffListForDateLoad(AReportDate, TabNumIDs, Genders,
+                              Families, Names, Patronymics, TabNums) then Exit;
+
+  for i:=0 to High(TabNumIDs) do
+  begin
+    //актуальная личная карточка учета СИЗ на отчетную дату
+    if not SIZPersonalCardForDateLoad(TabNumIDs[i], AReportDate,
+                             CardID, ItemID, ItemPostID, CardNum,
+                             PostName, NormName, CardBD, CardED) then continue;
+    //нормы выдачи по актуальной личной карточке
+    NormSubItemsClear(NormSubItems{%H-});
+    SIZNormSubItemsLoad(ItemID, NormSubItems);
+    if Length(NormSubItems)=0 then continue;
+    //статус выданного
+    StatusSubItemsClear(StatusSubItems{%H-});
+    SIZStatusLoad(TabNumIDs[i], CardID, AWriteoffType, AReportDate,
+                  NormSubItems, StatusSubItems);
+
+    //пробегаем по строкам пункта норм
+    for j:= 0 to High(StatusSubItems) do
+    begin
+      //пропускаем дерматологические СИЗ и непросроченные СИЗ
+      if (VFirst(NormSubItems[j].Info.SIZTypes)=0) or
+         StatusSubItems[j].IsFreshExists then continue;
+      //заполняем список
+      AddData(i, j);
+    end;
+  end;
+
+  Result:= not VIsNil(ASizNames);
 end;
 
 end.

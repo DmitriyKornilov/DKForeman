@@ -18,7 +18,7 @@ uses
   UCalendarForm, UScheduleShiftForm, UVacationPlanForm,
   USchedulePersonalForm, UTimetableForm,
   USIZNameEditForm, USIZNormForm, USIZSizeForm, USIZCardForm, USIZStoreForm,
-  UStudyForm;
+  USIZRequestForm, UStudyForm;
 
 type
 
@@ -76,6 +76,7 @@ type
     procedure SettingButtonClick(Sender: TObject);
     procedure ShiftScheduleMenuItemClick(Sender: TObject);
     procedure SIZListMenuItemClick(Sender: TObject);
+    procedure SIZRequestMenuItemClick(Sender: TObject);
     procedure SIZStaffMenuItemClick(Sender: TObject);
     procedure SIZNormsMenuItemClick(Sender: TObject);
     procedure SIZReasonMenuItemClick(Sender: TObject);
@@ -260,7 +261,7 @@ begin
       6: CategoryForm:= FormOnPanelCreate(TTimetableForm, MainPanel);
       7: CategoryForm:= FormOnPanelCreate(TSIZNormForm, MainPanel);
       8: CategoryForm:= FormOnPanelCreate(TSIZStoreForm, MainPanel);
-      //9: CategoryForm:= FormOnPanelCreate(TSIZRequestForm, MainPanel);
+      9: CategoryForm:= FormOnPanelCreate(TSIZRequestForm, MainPanel);
       10: CategoryForm:= FormOnPanelCreate(TSIZSizeForm, MainPanel);
       11: CategoryForm:= FormOnPanelCreate(TSIZCardForm, MainPanel);
     end;
@@ -384,9 +385,9 @@ begin
   CategorySelect(8);
 end;
 
-procedure TMainForm.StudyMenuItemClick(Sender: TObject);
+procedure TMainForm.SIZRequestMenuItemClick(Sender: TObject);
 begin
-  //CategorySelect(9);
+  CategorySelect(9);
 end;
 
 procedure TMainForm.SIZSizesMenuItemClick(Sender: TObject);
@@ -397,6 +398,11 @@ end;
 procedure TMainForm.SIZStaffMenuItemClick(Sender: TObject);
 begin
   CategorySelect(11);
+end;
+
+procedure TMainForm.StudyMenuItemClick(Sender: TObject);
+begin
+  //CategorySelect(12);
 end;
 
 procedure TMainForm.RefreshButtonClick(Sender: TObject);

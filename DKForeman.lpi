@@ -628,8 +628,17 @@
         <Filename Value="forms\uinfoform.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="InfoForm"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UInfoForm"/>
+      </Unit>
+      <Unit>
+        <Filename Value="forms\siz\usizrequestform.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="SIZRequestForm"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="USIZRequestForm"/>
       </Unit>
     </Units>
   </ProjectOptions>
