@@ -130,6 +130,25 @@ type
                    const AReceivingDates: TDateMatrix);
   end;
 
+  { TSIZStoreHistorySheet }
+
+  TSIZStoreHistorySheet = class(TCustomSheet)
+  protected
+    function SetWidths: TIntVector; override;
+  private
+    const //710
+      COLWIDTHS: array of Integer = (
+        {01} 30,  //наименование/инфо 1
+        {02} 30,  //наименование/инфо 2
+        {03} 550, //наименование/инфо 3
+        {04} 100  //количество
+      );
+  public
+    procedure Draw(const ANomNums, ASizNames, AHistoryItems: TStrVector;
+                   const AInfos: TStrMatrix;
+                   const ASizCounts: TIntMatrix);
+  end;
+
 
 implementation
 
@@ -432,6 +451,75 @@ begin
   for i:= 0 to High(ANomNums) do
     for j:= 0 to High(ANomNums[i]) do
       LineDraw(i, j);
+
+  Writer.EndEdit;
+end;
+
+{ TSIZStoreHistorySheet }
+
+function TSIZStoreHistorySheet.SetWidths: TIntVector;
+begin
+  Result:= VCreateInt(COLWIDTHS);
+end;
+
+procedure TSIZStoreHistorySheet.Draw(const ANomNums, ASizNames, AHistoryItems: TStrVector;
+                   const AInfos: TStrMatrix;
+                   const ASizCounts: TIntMatrix);
+var
+  i, R: Integer;
+
+  procedure CaptionDraw;
+  var
+    S: String;
+  begin
+    Writer.SetBackgroundDefault;
+    Writer.SetFont(Font.Name, Font.Size, [fsBold], clBlack);
+    Writer.SetAlignment(haCenter, vaCenter);
+    S:= 'Номенклатурный номер и наименование СИЗ / информация о движении СИЗ';
+    Writer.WriteText(R, 1, R, Writer.ColCount-1, S, cbtOuter, True, True);
+    Writer.WriteText(R, Writer.ColCount, 'Количество', cbtOuter);
+  end;
+
+  procedure LineDraw(const AInd: Integer);
+  var
+    S: String;
+    k: Integer;
+  begin
+    R:= R + 1;
+
+    Writer.SetBackgroundDefault;
+    Writer.SetFont(Font.Name, Font.Size, [fsBold], clBlack);
+    Writer.SetAlignment(haLeft, vaCenter);
+    S:= ANomNums[AInd] + ' - ' + ASizNames[AInd];
+    Writer.WriteText(R, 1, R, Writer.ColCount, S, cbtOuter, True, True);
+
+    for k:= 0 to High(AInfos[AInd]) do
+    begin
+      R:= R + 1;
+      if VIndexOf(AHistoryItems, AInfos[AInd, k])>=0 then
+      begin
+        Writer.SetFont(Font.Name, Font.Size, [fsBold], clBlack);
+        Writer.SetAlignment(haLeft, vaCenter);
+        Writer.WriteText(R, 2, R, 3, AInfos[AInd, k], cbtNone, True, True);
+      end
+      else begin
+        Writer.SetFont(Font.Name, Font.Size, [], clBlack);
+        Writer.SetAlignment(haLeft, vaCenter);
+        Writer.WriteText(R, 3, AInfos[AInd, k], cbtNone, True, True);
+      end;
+      Writer.SetAlignment(haCenter, vaCenter);
+      Writer.WriteNumber(R, 4, ASizCounts[AInd, k], cbtOuter);
+      Writer.DrawBorders(R, 1, R, 3, cbtOuter);
+    end;
+  end;
+
+begin
+  Writer.BeginEdit;
+
+  R:= 1;
+  CaptionDraw;
+  for i:= 0 to High(ANomNums) do
+    LineDraw(i);
 
   Writer.EndEdit;
 end;

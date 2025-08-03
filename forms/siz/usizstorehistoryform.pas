@@ -8,9 +8,9 @@ uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, VirtualTrees,
   Buttons, DividerBevel,
   //Project utils
-  UVars, UConst, USIZStoreTypes,
+  UVars, UConst, USIZStoreTypes, USIZStoreSheet,
   //DK packages utils
-  DK_Vector, DK_Matrix, DK_CtrlUtils, DK_Filter;
+  DK_Vector, DK_Matrix, DK_CtrlUtils, DK_Filter, DK_SheetExporter;
 
 type
 
@@ -33,6 +33,7 @@ type
     procedure CloseButtonClick(Sender: TObject);
     procedure CollapseAllButtonClick(Sender: TObject);
     procedure ExpandAllButtonClick(Sender: TObject);
+    procedure ExportButtonClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -48,6 +49,7 @@ type
     procedure HistoryLoad;
     procedure HistorySizNameFilter(const AFilterString: String);
     procedure HistoryNomNumFilter(const AFilterString: String);
+    procedure HistoryExport;
   public
 
   end;
@@ -65,7 +67,7 @@ procedure TSIZStoreHistoryForm.FormCreate(Sender: TObject);
 begin
   Caption:= MAIN_CAPTION + OTHER_DESCRIPTION[11];
   HistoryCreate;
-  DKFilterCreate('Поиск по наименованию:', FilterSizNamePanel, @HistorySizNameFilter, 300);
+  DKFilterCreate('Поиск по наименованию СИЗ:', FilterSizNamePanel, @HistorySizNameFilter, 300);
   DKFilterCreate('Поиск по номенклатурному номеру:', FilterNomNumPanel, @HistoryNomNumFilter, 300);
 end;
 
@@ -91,9 +93,6 @@ begin
     ExpandAllButton, CollapseAllButton
   ]);
 
-  FilterNomNumPanel.Width:= ToolPanel.Width div 3;
-  FilterSizNamePanel.Width:= FilterNomNumPanel.Width;
-
   HistoryLoad;
 end;
 
@@ -101,12 +100,13 @@ procedure TSIZStoreHistoryForm.HistoryCreate;
 begin
   HistoryList:= TSIZStoreHistoryTable.Create(VT);
   HistoryList.TreeLinesVisible:= False;
-  HistoryList.HeaderVisible:= False;
+  HistoryList.Span:= True;
   HistoryList.SetSingleFont(GridFont);
+  HistoryList.HeaderFont.Style:= [fsBold];
   HistoryList.CategoryFont.Style:= [fsBold];
   HistoryList.HistoryItemFont.Style:= [fsBold];
   HistoryList.HistoryItems:= VCreateStr(['Получено', 'Выдано', 'Возвращено', 'Списано', 'Остаток']);
-  HistoryList.AddColumn('Инфо', 700);
+  HistoryList.AddColumn('Номенклатурный номер и наименование СИЗ / информация о движении СИЗ', 700);
   HistoryList.AddColumn('Количество', 100);
   HistoryList.AutosizeColumnDisable;
   HistoryList.Draw;
@@ -114,26 +114,27 @@ end;
 
 procedure TSIZStoreHistoryForm.HistoryLoad;
 var
-  CategoryNames: TStrMatrix;
+  CategoryNames: TStrVector;
 begin
   DataBase.SIZStoreHistoryLoad(FilterSizName, FilterNomNum,
                                NomNums, SizNames, Infos, Counts);
 
-  MDim(CategoryNames{%H-}, Length(NomNums), 2, 'Количество');
-  MRowSet(CategoryNames, 0, VSum(VSum(NomNums, ' - '), SizNames));
+  CategoryNames:= VSum(VSum(NomNums, ' - '), SizNames);
 
   HistoryList.Visible:= False;
   try
     HistoryList.ValuesClear;
     HistoryList.SetCategories(CategoryNames);
-    HistoryList.SetColumn('Инфо', Infos, taLeftJustify);
-    HistoryList.SetColumn('Количество', MIntToStr(Counts));
+    HistoryList.SetColumn(0, Infos, taLeftJustify);
+    HistoryList.SetColumn(1, MIntToStr(Counts));
     HistoryList.Draw;
     HistoryList.ExpandAll(True);
     HistoryList.ShowFirst;
   finally
     HistoryList.Visible:= True;
   end;
+
+  ExportButton.Enabled:= not VIsNil(NomNums);
 end;
 
 procedure TSIZStoreHistoryForm.HistorySizNameFilter(const AFilterString: String);
@@ -146,6 +147,27 @@ procedure TSIZStoreHistoryForm.HistoryNomNumFilter(const AFilterString: String);
 begin
   FilterNomNum:= AFilterString;
   HistoryLoad;
+end;
+
+procedure TSIZStoreHistoryForm.HistoryExport;
+var
+  Exporter: TSheetsExporter;
+  Worksheet: TsWorksheet;
+  ExpSheet: TSIZStoreHistorySheet;
+begin
+  Exporter:= TSheetsExporter.Create;
+  try
+    Worksheet:= Exporter.AddWorksheet('Лист1');
+    ExpSheet:= TSIZStoreHistorySheet.Create(Worksheet, nil, GridFont);
+    try
+      ExpSheet.Draw(NomNums, SizNames, HistoryList.HistoryItems, Infos, Counts);
+    finally
+      FreeAndNil(ExpSheet);
+    end;
+    Exporter.Save('Выполнено!', 'История движения СИЗ по складу на ' + DateToStr(Date));
+  finally
+    FreeAndNil(Exporter);
+  end;
 end;
 
 procedure TSIZStoreHistoryForm.CloseButtonClick(Sender: TObject);
@@ -161,6 +183,11 @@ end;
 procedure TSIZStoreHistoryForm.ExpandAllButtonClick(Sender: TObject);
 begin
   HistoryList.ExpandAll(True);
+end;
+
+procedure TSIZStoreHistoryForm.ExportButtonClick(Sender: TObject);
+begin
+  HistoryExport;
 end;
 
 end.
