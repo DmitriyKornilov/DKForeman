@@ -20,6 +20,7 @@ type
   private
     FDropDown: TVSTDropDown;
     function GetMonth: Byte;
+    function GetNextMonth: Byte;
     function GetText: String;
     procedure SetMonth(const AValue: Byte);
   public
@@ -28,6 +29,7 @@ type
     procedure AutoWidth;
     procedure MonthFromDate(const ADate: TDate);
     property Month: Byte read GetMonth write SetMonth;
+    property NextMonth: Byte read GetNextMonth;
     property Text: String read GetText;
   end;
 
@@ -38,6 +40,15 @@ implementation
 function TMonthDropDown.GetMonth: Byte;
 begin
   Result:= FDropDown.ItemIndex + 1;
+end;
+
+function TMonthDropDown.GetNextMonth: Byte;
+begin
+  Result:= Month;
+  if Result=12 then
+    Result:= 1
+  else
+    Result:= Result + 1;
 end;
 
 function TMonthDropDown.GetText: String;

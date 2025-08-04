@@ -8,7 +8,7 @@ uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, Buttons,
   BCButton, DividerBevel, Spin, StdCtrls, VirtualTrees, DateUtils,
   //DK packages utils
-  DK_Vector, DK_Const, DK_CtrlUtils, DK_DateUtils, DK_VSTTables,
+  DK_Vector, DK_Matrix, DK_Const, DK_CtrlUtils, DK_DateUtils, DK_VSTTables,
   //Project utils
   UVars, UConst, UTypes, UUtils;
 
@@ -17,13 +17,11 @@ type
   { TInfoForm }
 
   TInfoForm = class(TForm)
+    VacationOrderCheckBox: TCheckBox;
     BirthdayVT: TVirtualStringTree;
     DismissCheckBox: TCheckBox;
-    DividerBevel4: TDividerBevel;
-    OrderLabel: TLabel;
-    OrderPanel: TPanel;
-    DateRadioButton: TRadioButton;
-    NameRadioButton: TRadioButton;
+    BirthdayOrderCheckBox: TCheckBox;
+    SIZOrderCheckBox: TCheckBox;
     YearCheckBox: TCheckBox;
     CheckPanel: TPanel;
     DividerBevel3: TDividerBevel;
@@ -49,12 +47,13 @@ type
     LeftHorSplitter: TSplitter;
     YearPanel: TPanel;
     YearSpinEdit: TSpinEdit;
-    procedure DateRadioButtonClick(Sender: TObject);
+    procedure BirthdayOrderCheckBoxChange(Sender: TObject);
     procedure DismissCheckBoxChange(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
-    procedure NameRadioButtonClick(Sender: TObject);
+    procedure SIZOrderCheckBoxChange(Sender: TObject);
+    procedure VacationOrderCheckBoxChange(Sender: TObject);
     procedure YearCheckBoxChange(Sender: TObject);
     procedure YearSpinEditChange(Sender: TObject);
   private
@@ -128,6 +127,16 @@ begin
   DataUpdate;
 end;
 
+procedure TInfoForm.SIZOrderCheckBoxChange(Sender: TObject);
+begin
+  SIZListLoad;
+end;
+
+procedure TInfoForm.VacationOrderCheckBoxChange(Sender: TObject);
+begin
+  VacationListLoad;
+end;
+
 procedure TInfoForm.YearCheckBoxChange(Sender: TObject);
 begin
   MonthBCButton.Enabled:= not YearCheckBox.Checked;
@@ -139,14 +148,9 @@ begin
   BirthdayListLoad;
 end;
 
-procedure TInfoForm.DateRadioButtonClick(Sender: TObject);
+procedure TInfoForm.BirthdayOrderCheckBoxChange(Sender: TObject);
 begin
-  DataUpdate;
-end;
-
-procedure TInfoForm.NameRadioButtonClick(Sender: TObject);
-begin
-  DataUpdate;
+  BirthdayListLoad;
 end;
 
 procedure TInfoForm.YearSpinEditChange(Sender: TObject);
@@ -178,8 +182,11 @@ begin
     M:= 0
   else
     M:= MonthDropDown.Month;
-  DataBase.StaffBirthdaysLoad(M, DismissCheckBox.Checked, DateRadioButton.Checked,
-                              Families, Names, Patronymics, BornDates);
+
+  BirthdayList.ValuesClear;
+  if not DataBase.StaffBirthdaysLoad(M, DismissCheckBox.Checked,
+                              not BirthdayOrderCheckBox.Checked,
+                              Families, Names, Patronymics, BornDates) then Exit;
 
   BirthdayList.Visible:= False;
   try
@@ -228,9 +235,12 @@ begin
     M:= 0
   else
     M:= MonthDropDown.Month;
-  DataBase.StaffVacationsLoad(M, YearSpinEdit.Value, DateRadioButton.Checked,
+
+  VacationList.ValuesClear;
+  if not DataBase.StaffVacationsLoad(M, YearSpinEdit.Value,
+                              not VacationOrderCheckBox.Checked,
                               Families, Names, Patronymics, TabNums, PostNames,
-                              Counts, Dates);
+                              Counts, Dates) then Exit;
 
   VacationList.Visible:= False;
   try
@@ -253,12 +263,69 @@ end;
 
 procedure TInfoForm.SIZListCreate;
 begin
-
+  SIZList:= TVSTTable.Create(SIZVT);
+  SIZList.SetSingleFont(GridFont);
+  SIZList.HeaderFont.Style:= [fsBold];
+  SIZList.AddColumn('Ф.И.О.', 200);
+  SIZList.AddColumn('Наименование СИЗ', 150);
+  SIZList.AutosizeColumnEnable('Наименование СИЗ');
+  SIZList.Draw;
 end;
 
 procedure TInfoForm.SIZListLoad;
-begin
+var
+  i, j, k: Integer;
+  D: TDate;
+  S: String;
+  V1, V2: TStrVector;
+  Indexes: TIntVector;
+  WriteoffType: Byte;
 
+  SIZNames: TStrVector;
+  Genders: TIntVector;
+  SIZSizes: TStrMatrix;
+  Families, Names, Patronymics, TabNums: TStrMatrix3D;
+  SIZCounts: TIntMatrix3D;
+begin
+  if YearCheckBox.Checked then
+    D:= LastDayInYear(YearSpinEdit.Value)
+  else
+    D:= LastDayInMonth(MonthDropDown.Month, YearSpinEdit.Value);
+
+  WriteoffType:= DataBase.SettingLoad('SIZCARDFORM.WRITEOFFTYPE');
+
+  SIZList.ValuesClear;
+  if not DataBase.SIZStoreRequestLoad(D, WriteoffType,
+                    SIZNames, Genders, SIZSizes,
+                    Families, Names, Patronymics, TabNums, SIZCounts) then Exit;
+
+  V1:= nil;
+  V2:= nil;
+  for i:= 0 to High(Families) do
+    for j:= 0 to High(Families[i]) do
+      for k:= 0 to High(Families[i, j]) do
+        begin
+          S:= StaffFullName(Families[i, j, k], Names[i, j, k],
+                            Patronymics[i, j, k], TabNums[i, j, k], True{short});
+          VAppend(V1, S);
+          VAppend(V2, SIZNames[i]);
+        end;
+
+  if SIZOrderCheckBox.Checked then
+  begin
+    VSort(V1, Indexes);
+    V1:= VReplace(V1, Indexes);
+    V2:= VReplace(V2, Indexes);
+  end;
+
+  SIZList.Visible:= False;
+  try
+    SIZList.SetColumn('Ф.И.О.', V1, taLeftJustify);
+    SIZList.SetColumn('Наименование СИЗ', V2, taLeftJustify);
+    SIZList.Draw;
+  finally
+    SIZList.Visible:= True;
+  end;
 end;
 
 procedure TInfoForm.StudyListCreate;

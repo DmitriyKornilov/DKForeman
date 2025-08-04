@@ -91,8 +91,11 @@ begin
 end;
 
 procedure TSIZRequestForm.RequestLoad;
+var
+  WriteoffType: Byte;
 begin
-  DataBase.SIZStoreRequestLoad(DatePicker.Date, 0 {WriteoffType},
+  WriteoffType:= DataBase.SettingLoad('SIZCARDFORM.WRITEOFFTYPE');
+  DataBase.SIZStoreRequestLoad(DatePicker.Date, WriteoffType,
                           SIZNames, Genders, SIZSizes,
                           Families, Names, Patronymics, TabNums, SIZCounts);
 end;
