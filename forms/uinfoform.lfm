@@ -177,7 +177,7 @@ object InfoForm: TInfoForm
     end
     object ExportButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 550
+      Left = 793
       Height = 36
       Hint = 'Экспорт в формат электронной таблицы XLSX или ODS'
       Top = 0
@@ -196,12 +196,12 @@ object InfoForm: TInfoForm
       Left = 290
       Height = 36
       Top = 0
-      Width = 239
+      Width = 482
       Align = alLeft
       AutoSize = True
       BevelOuter = bvNone
       ClientHeight = 36
-      ClientWidth = 239
+      ClientWidth = 482
       TabOrder = 1
       object YearCheckBox: TCheckBox
         AnchorSideLeft.Control = CheckPanel
@@ -215,9 +215,27 @@ object InfoForm: TInfoForm
         TabOrder = 0
         OnChange = YearCheckBoxChange
       end
+      object NameOrderCheckBox: TCheckBox
+        AnchorSideLeft.Control = YearCheckBox
+        AnchorSideLeft.Side = asrBottom
+        AnchorSideTop.Control = CheckPanel
+        AnchorSideTop.Side = asrCenter
+        AnchorSideRight.Side = asrBottom
+        Left = 251
+        Height = 24
+        Top = 6
+        Width = 231
+        BorderSpacing.Left = 12
+        Caption = 'Сортировать списки по Ф.И.О.'
+        Checked = True
+        ParentFont = False
+        State = cbChecked
+        TabOrder = 1
+        OnChange = NameOrderCheckBoxChange
+      end
     end
     object DividerBevel3: TDividerBevel
-      Left = 529
+      Left = 772
       Height = 36
       Top = 0
       Width = 21
@@ -276,8 +294,9 @@ object InfoForm: TInfoForm
           AnchorSideLeft.Side = asrBottom
           AnchorSideTop.Control = BirthdayCaptionPanel
           AnchorSideTop.Side = asrCenter
-          AnchorSideRight.Control = BirthdayOrderCheckBox
-          Left = 163
+          AnchorSideRight.Control = BirthdayCaptionPanel
+          AnchorSideRight.Side = asrBottom
+          Left = 354
           Height = 24
           Top = 1
           Width = 184
@@ -288,25 +307,6 @@ object InfoForm: TInfoForm
           ParentFont = False
           TabOrder = 0
           OnChange = DismissCheckBoxChange
-        end
-        object BirthdayOrderCheckBox: TCheckBox
-          AnchorSideLeft.Control = YearCheckBox
-          AnchorSideLeft.Side = asrBottom
-          AnchorSideTop.Control = BirthdayCaptionPanel
-          AnchorSideTop.Side = asrCenter
-          AnchorSideRight.Control = BirthdayCaptionPanel
-          AnchorSideRight.Side = asrBottom
-          Left = 359
-          Height = 24
-          Top = 1
-          Width = 179
-          Anchors = [akTop, akRight]
-          BorderSpacing.Left = 12
-          BorderSpacing.Right = 8
-          Caption = 'Сортировать по Ф.И.О.'
-          ParentFont = False
-          TabOrder = 1
-          OnChange = BirthdayOrderCheckBoxChange
         end
       end
       object BirthdayVT: TVirtualStringTree
@@ -354,35 +354,12 @@ object InfoForm: TInfoForm
         BevelOuter = bvNone
         BorderStyle = bsSingle
         Caption = '  Выдача СИЗ'
-        ClientHeight = 26
-        ClientWidth = 546
         Color = clBtnFace
         Font.Style = [fsBold]
         ParentBackground = False
         ParentColor = False
         ParentFont = False
         TabOrder = 0
-        object SIZOrderCheckBox: TCheckBox
-          AnchorSideLeft.Control = YearCheckBox
-          AnchorSideLeft.Side = asrBottom
-          AnchorSideTop.Control = SIZCaptionPanel
-          AnchorSideTop.Side = asrCenter
-          AnchorSideRight.Control = SIZCaptionPanel
-          AnchorSideRight.Side = asrBottom
-          Left = 359
-          Height = 24
-          Top = 1
-          Width = 179
-          Anchors = [akTop, akRight]
-          BorderSpacing.Left = 12
-          BorderSpacing.Right = 8
-          Caption = 'Сортировать по Ф.И.О.'
-          Checked = True
-          ParentFont = False
-          State = cbChecked
-          TabOrder = 0
-          OnChange = SIZOrderCheckBoxChange
-        end
       end
       object SIZVT: TVirtualStringTree
         Left = 0
@@ -440,33 +417,12 @@ object InfoForm: TInfoForm
         BevelOuter = bvNone
         BorderStyle = bsSingle
         Caption = '  Отпуска'
-        ClientHeight = 26
-        ClientWidth = 419
         Color = clBtnFace
         Font.Style = [fsBold]
         ParentBackground = False
         ParentColor = False
         ParentFont = False
         TabOrder = 0
-        object VacationOrderCheckBox: TCheckBox
-          AnchorSideLeft.Control = YearCheckBox
-          AnchorSideLeft.Side = asrBottom
-          AnchorSideTop.Control = VacationCaptionPanel
-          AnchorSideTop.Side = asrCenter
-          AnchorSideRight.Control = VacationCaptionPanel
-          AnchorSideRight.Side = asrBottom
-          Left = 232
-          Height = 24
-          Top = 1
-          Width = 179
-          Anchors = [akTop, akRight]
-          BorderSpacing.Left = 12
-          BorderSpacing.Right = 8
-          Caption = 'Сортировать по Ф.И.О.'
-          ParentFont = False
-          TabOrder = 0
-          OnChange = VacationOrderCheckBoxChange
-        end
       end
       object VacationVT: TVirtualStringTree
         Left = 0

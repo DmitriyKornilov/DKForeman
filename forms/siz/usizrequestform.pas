@@ -44,6 +44,7 @@ type
     SIZSizes: TStrMatrix;
     Families, Names, Patronymics, TabNums: TStrMatrix3D;
     SIZCounts: TIntMatrix3D;
+    WriteoffDates: TDateMatrix3D;
 
     procedure RequestLoad;
     procedure RequestDraw(const AZoomPercent: Integer);
@@ -97,7 +98,8 @@ begin
   WriteoffType:= DataBase.SettingLoad('SIZCARDFORM.WRITEOFFTYPE');
   DataBase.SIZStoreRequestLoad(DatePicker.Date, WriteoffType,
                           SIZNames, Genders, SIZSizes,
-                          Families, Names, Patronymics, TabNums, SIZCounts);
+                          Families, Names, Patronymics, TabNums,
+                          SIZCounts, WriteoffDates);
 end;
 
 procedure TSIZRequestForm.RequestDraw(const AZoomPercent: Integer);

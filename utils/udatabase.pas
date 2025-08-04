@@ -843,7 +843,8 @@ type
                           out AGenders: TIntVector;
                           out ASIZSizes: TStrMatrix;
                           out AFamilies, ANames, APatronymics, ATabNums: TStrMatrix3D;
-                          out ASizCounts: TIntMatrix3D): Boolean;
+                          out ASizCounts: TIntMatrix3D;
+                          out AWriteoffDates: TDateMatrix3D): Boolean;
 
     (**************************************************************************
                                 ЛИЧНЫЕ КАРТОЧКИ СИЗ
@@ -9334,7 +9335,8 @@ function TDataBase.SIZStoreRequestLoad(const AReportDate: TDate;
                           out AGenders: TIntVector;
                           out ASIZSizes: TStrMatrix;
                           out AFamilies, ANames, APatronymics, ATabNums: TStrMatrix3D;
-                          out ASizCounts: TIntMatrix3D): Boolean;
+                          out ASizCounts: TIntMatrix3D;
+                          out AWriteoffDates: TDateMatrix3D): Boolean;
 var
   i, j: Integer;
   TabNumIDs, Genders: TIntVector;
@@ -9363,7 +9365,7 @@ var
   procedure AddData(const AInd1, AInd2: Integer);
   var
     S: String;
-    m, n: Integer;
+    m, n, k: Integer;
   begin
     //S:= VVectorToStr(NormSubItems[AInd2].Info.Names, ' или ');
     S:= VFirst(NormSubItems[AInd2].Info.Names);
@@ -9380,6 +9382,7 @@ var
       MAppend(APatronymics, nil);
       MAppend(ATabNums, nil);
       MAppend(ASizCounts, nil);
+      MAppend(AWriteoffDates, nil);
     end;
 
     S:= SIZFullSize(VFirst(NormSubItems[AInd2].Info.SizeTypes),
@@ -9396,6 +9399,7 @@ var
       MAppend(APatronymics[n], nil);
       MAppend(ATabNums[n], nil);
       MAppend(ASizCounts[n], nil);
+      MAppend(AWriteoffDates[n], nil);
     end;
 
     VAppend(AFamilies[n, m], Families[AInd1]);
@@ -9403,6 +9407,7 @@ var
     VAppend(APatronymics[n, m], Patronymics[AInd1]);
     VAppend(ATabNums[n, m], TabNums[AInd1]);
     VAppend(ASizCounts[n, m], VFirst(NormSubItems[AInd2].Info.Nums));
+    VAppend(AWriteoffDates[n, m], MMaxDate(StatusSubItems[AInd2].Info.WriteoffDates));
   end;
 
 begin
@@ -9416,6 +9421,7 @@ begin
   APatronymics:= nil;
   ATabNums:= nil;
   ASizCounts:= nil;
+  AWriteoffDates:= nil;
 
   //получаем список не уволенных на отчетную дату
   if not StaffListForDateLoad(AReportDate, TabNumIDs, Genders,

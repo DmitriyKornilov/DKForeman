@@ -17,11 +17,9 @@ type
   { TInfoForm }
 
   TInfoForm = class(TForm)
-    VacationOrderCheckBox: TCheckBox;
+    NameOrderCheckBox: TCheckBox;
     BirthdayVT: TVirtualStringTree;
     DismissCheckBox: TCheckBox;
-    BirthdayOrderCheckBox: TCheckBox;
-    SIZOrderCheckBox: TCheckBox;
     YearCheckBox: TCheckBox;
     CheckPanel: TPanel;
     DividerBevel3: TDividerBevel;
@@ -47,13 +45,11 @@ type
     LeftHorSplitter: TSplitter;
     YearPanel: TPanel;
     YearSpinEdit: TSpinEdit;
-    procedure BirthdayOrderCheckBoxChange(Sender: TObject);
     procedure DismissCheckBoxChange(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
-    procedure SIZOrderCheckBoxChange(Sender: TObject);
-    procedure VacationOrderCheckBoxChange(Sender: TObject);
+    procedure NameOrderCheckBoxChange(Sender: TObject);
     procedure YearCheckBoxChange(Sender: TObject);
     procedure YearSpinEditChange(Sender: TObject);
   private
@@ -127,14 +123,9 @@ begin
   DataUpdate;
 end;
 
-procedure TInfoForm.SIZOrderCheckBoxChange(Sender: TObject);
+procedure TInfoForm.NameOrderCheckBoxChange(Sender: TObject);
 begin
-  SIZListLoad;
-end;
-
-procedure TInfoForm.VacationOrderCheckBoxChange(Sender: TObject);
-begin
-  VacationListLoad;
+  DataUpdate;
 end;
 
 procedure TInfoForm.YearCheckBoxChange(Sender: TObject);
@@ -144,11 +135,6 @@ begin
 end;
 
 procedure TInfoForm.DismissCheckBoxChange(Sender: TObject);
-begin
-  BirthdayListLoad;
-end;
-
-procedure TInfoForm.BirthdayOrderCheckBoxChange(Sender: TObject);
 begin
   BirthdayListLoad;
 end;
@@ -185,7 +171,7 @@ begin
 
   BirthdayList.ValuesClear;
   if not DataBase.StaffBirthdaysLoad(M, DismissCheckBox.Checked,
-                              not BirthdayOrderCheckBox.Checked,
+                              not NameOrderCheckBox.Checked,
                               Families, Names, Patronymics, BornDates) then Exit;
 
   BirthdayList.Visible:= False;
@@ -238,7 +224,7 @@ begin
 
   VacationList.ValuesClear;
   if not DataBase.StaffVacationsLoad(M, YearSpinEdit.Value,
-                              not VacationOrderCheckBox.Checked,
+                              not NameOrderCheckBox.Checked,
                               Families, Names, Patronymics, TabNums, PostNames,
                               Counts, Dates) then Exit;
 
@@ -267,8 +253,9 @@ begin
   SIZList.SetSingleFont(GridFont);
   SIZList.HeaderFont.Style:= [fsBold];
   SIZList.AddColumn('Ф.И.О.', 200);
-  SIZList.AddColumn('Наименование СИЗ', 150);
-  SIZList.AutosizeColumnEnable('Наименование СИЗ');
+  SIZList.AddColumn('Дата', 100);
+  SIZList.AddColumn('Наименование', 150);
+  SIZList.AutosizeColumnEnable('Наименование');
   SIZList.Draw;
 end;
 
@@ -277,7 +264,7 @@ var
   i, j, k: Integer;
   D: TDate;
   S: String;
-  V1, V2: TStrVector;
+  V1, V2, V3: TStrVector;
   Indexes: TIntVector;
   WriteoffType: Byte;
 
@@ -286,6 +273,7 @@ var
   SIZSizes: TStrMatrix;
   Families, Names, Patronymics, TabNums: TStrMatrix3D;
   SIZCounts: TIntMatrix3D;
+  WriteoffDates: TDateMatrix3D;
 begin
   if YearCheckBox.Checked then
     D:= LastDayInYear(YearSpinEdit.Value)
@@ -296,11 +284,13 @@ begin
 
   SIZList.ValuesClear;
   if not DataBase.SIZStoreRequestLoad(D, WriteoffType,
-                    SIZNames, Genders, SIZSizes,
-                    Families, Names, Patronymics, TabNums, SIZCounts) then Exit;
+                                      SIZNames, Genders, SIZSizes,
+                                      Families, Names, Patronymics, TabNums,
+                                      SIZCounts, WriteoffDates) then Exit;
 
   V1:= nil;
   V2:= nil;
+  V3:= nil;
   for i:= 0 to High(Families) do
     for j:= 0 to High(Families[i]) do
       for k:= 0 to High(Families[i, j]) do
@@ -309,19 +299,25 @@ begin
                             Patronymics[i, j, k], TabNums[i, j, k], True{short});
           VAppend(V1, S);
           VAppend(V2, SIZNames[i]);
+          if WriteoffDates[i, j, k]=0 then
+            VAppend(V3, EMPTY_MARK)
+          else
+            VAppend(V3, FormatDateTime('dd.mm.yyyy', WriteoffDates[i, j, k]));
         end;
 
-  if SIZOrderCheckBox.Checked then
+  if NameOrderCheckBox.Checked then
   begin
     VSort(V1, Indexes);
     V1:= VReplace(V1, Indexes);
     V2:= VReplace(V2, Indexes);
+    V3:= VReplace(V3, Indexes);
   end;
 
   SIZList.Visible:= False;
   try
     SIZList.SetColumn('Ф.И.О.', V1, taLeftJustify);
-    SIZList.SetColumn('Наименование СИЗ', V2, taLeftJustify);
+    SIZList.SetColumn('Дата', V3);
+    SIZList.SetColumn('Наименование', V2, taLeftJustify);
     SIZList.Draw;
   finally
     SIZList.Visible:= True;
@@ -330,7 +326,14 @@ end;
 
 procedure TInfoForm.StudyListCreate;
 begin
-
+  StudyList:= TVSTTable.Create(StudyVT);
+  StudyList.SetSingleFont(GridFont);
+  StudyList.HeaderFont.Style:= [fsBold];
+  StudyList.AddColumn('Ф.И.О.', 200);
+  StudyList.AddColumn('Дата', 100);
+  StudyList.AddColumn('Наименование', 150);
+  StudyList.AutosizeColumnEnable('Наименование');
+  StudyList.Draw;
 end;
 
 procedure TInfoForm.StudyListLoad;
