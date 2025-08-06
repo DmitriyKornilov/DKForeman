@@ -147,6 +147,7 @@ begin
   NormItemSheet.OnSelect:= @NormItemSelect;
   NormItemSheet.OnDelKeyDown:= @NormItemDelete;
   NormItemSheet.OnReturnKeyDown:= @NormItemEdit;
+  NormItemSheet.CanSelect:= True;
   NormItemSheet.CanUnselect:= False;
 
   NormSubItemSheet:= TSIZNormSubItemsSheet.Create(SubItemGrid.Worksheet, SubItemGrid, GridFont);
@@ -433,7 +434,6 @@ procedure TSIZNormForm.NormSubItemListLoad(const ASelectedID: Integer);
 var
   SelectedIndex: Integer;
 begin
-
   NormSubItemSheet.Clear;
   if not NormItemSheet.IsSelected then Exit;
 
@@ -661,10 +661,10 @@ begin
   if ModeType=mtEditing then
   begin
     if Length(NormSubItems)>0 then
-      NormSubItemSheet.Select(0);
+      NormSubItemSheet.SelectByIndex(0);
   end
   else
-    NormSubItemSheet.DelSelection;
+    NormSubItemSheet.Unselect;
 end;
 
 procedure TSIZNormForm.DataUpdate;
@@ -679,10 +679,10 @@ begin
     NormListLoad;
 
     if SelectedItemIndex>=0 then
-      NormItemSheet.Select(SelectedItemIndex);
+      NormItemSheet.SelectByIndex(SelectedItemIndex);
 
     if (ModeType=mtEditing) and (SelectedSubItemIndex>0) then
-      NormSubItemSheet.Select(SelectedSubItemIndex);
+      NormSubItemSheet.SelectByIndex(SelectedSubItemIndex);
 
   finally
     MainPanel.Visible:= True;

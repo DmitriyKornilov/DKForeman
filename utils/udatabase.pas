@@ -9365,7 +9365,7 @@ var
   procedure AddData(const AInd1, AInd2: Integer);
   var
     S: String;
-    m, n, k: Integer;
+    m, n: Integer;
   begin
     //S:= VVectorToStr(NormSubItems[AInd2].Info.Names, ' или ');
     S:= VFirst(NormSubItems[AInd2].Info.Names);

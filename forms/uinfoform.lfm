@@ -353,7 +353,7 @@ object InfoForm: TInfoForm
         BorderSpacing.Bottom = 2
         BevelOuter = bvNone
         BorderStyle = bsSingle
-        Caption = '  Выдача СИЗ'
+        Caption = '  Выдача средств индивидуальной защиты'
         Color = clBtnFace
         Font.Style = [fsBold]
         ParentBackground = False
@@ -468,7 +468,7 @@ object InfoForm: TInfoForm
         BorderSpacing.Bottom = 2
         BevelOuter = bvNone
         BorderStyle = bsSingle
-        Caption = '  Инструктажи, аттестация, обучение'
+        Caption = '  Инструктажи, аттестации, обучение'
         Color = clBtnFace
         Font.Style = [fsBold]
         ParentBackground = False

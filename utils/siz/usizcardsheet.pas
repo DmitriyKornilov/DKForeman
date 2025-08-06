@@ -62,7 +62,7 @@ type
 
   { TSIZCardBackSheet }
 
-  TSIZCardBackSheet = class(TCustomSheet)
+  TSIZCardBackSheet = class(TSingleSelectableSheet)
   protected
     function SetWidths: TIntVector; override;
   private
@@ -80,10 +80,6 @@ type
         {10} 100
       );
     var
-      FOnSelect: TSheetEvent;
-      FCanSelect: Boolean;
-      FSelectedIndex: Integer;
-
       FReceivingDates, FReturningDates: TDateVector;
       FNormSizNames: TStrVector;
       FReceivingDocNames, FReturningDocNames: TStrVector;
@@ -92,30 +88,12 @@ type
       FIsAllHistory: Boolean;
       FTitle: String;
 
-      FFirstRows: TIntVector;
-      FLastRows: TIntVector;
-
     procedure TitleDraw(var ARow: Integer);
     procedure CaptionDraw(var ARow: Integer);
     procedure LogDraw(var ARow: Integer; const AIndex: Integer);
     procedure GridDraw(var ARow: Integer);
     procedure NoteDraw(var ARow: Integer);
-
-    procedure MouseDown(Sender: TObject; Button: TMouseButton; {%H-}Shift: TShiftState; X, Y: Integer);
-
-    function IsCellSelectable(const ARow, ACol: Integer): Boolean;
-    procedure SetSelection(const ARow, ACol: Integer; const ADoEvent: Boolean = True);
-    procedure DelSelection(const ADoEvent: Boolean = True);
-    procedure Select(const ARow: Integer);
-    procedure Unselect;
-
-    procedure SetCanSelect(const AValue: Boolean);
-    function GetIsSelected: Boolean;
   public
-    constructor Create(const AWorksheet: TsWorksheet;
-                       const AGrid: TsWorksheetGrid;
-                       const AFont: TFont;
-                       const ARowHeightDefault: Integer = ROW_HEIGHT_DEFAULT);
     procedure Draw(const ANeedDraw: Boolean;
                    const AReceivingDates, AReturningDates: TDateVector;
                    const ANormSizNames, AReceivingDocNames, AReturningDocNames: TStrVector;
@@ -123,18 +101,18 @@ type
                    const ASizCounts, ASizeTypes: TIntMatrix;
                    const AIsAllHistory: Boolean = False;
                    const ATitle: String = '');
-
-    property CanSelect: Boolean read FCanSelect write SetCanSelect;
-    property IsSelected: Boolean read GetIsSelected;
-    property SelectedIndex: Integer read FSelectedIndex;
-    property OnSelect: TSheetEvent read FOnSelect write FOnSelect;
   end;
 
   { TSIZCardStatusSheet }
 
-  TSIZCardStatusSheet = class(TCustomSheet)
+  TSIZCardStatusSheet = class(TCustomSelectableSheet)
   protected
     function SetWidths: TIntVector; override;
+    function IsCellSelectable(const ARow, ACol: Integer): Boolean; override;
+    procedure SetSelection(const ARow, ACol: Integer); override;
+    procedure DelSelection; override;
+    function GetIsSelected: Boolean; override;
+    procedure SelectionMove(const ADelta: Integer); override;
   private
     const //1035
       COLWIDTHS: array of Integer = (
@@ -148,8 +126,6 @@ type
         {08} 80   //дата следующей выдачи
       );
     var
-      FOnSelect: TSheetEvent;
-      FCanSelect: Boolean;
       FSelectedSubItemIndex: Integer;
       FSelectedInfoIndex: Integer;
       FSelectedSubInfoIndex: Integer;
@@ -159,7 +135,7 @@ type
       FWarnDaysCount: Integer;
 
       FSubInfoFirstRows: TIntVector; //первая строка StatusSubItem.Info.LogID
-      FSubInfoLastRows: TIntVector;  //последняя строка tatusSubItem.Info.LogID
+      FSubInfoLastRows: TIntVector;  //последняя строка StatusSubItem.Info.LogID
       FInfoFirstRows: TIntVector; //первая строка NormSubItem.Info.InfoID
       FInfoLastRows: TIntVector;  //последняя строка NormSubItem.Info.InfoID
 
@@ -178,16 +154,6 @@ type
     procedure ReasonDraw(const ARow: Integer; const ASubItemIndex: Integer);
     procedure SubItemDraw(var ARow: Integer; const ASubItemIndex: Integer);
 
-    procedure MouseDown(Sender: TObject; Button: TMouseButton; {%H-}Shift: TShiftState; X, Y: Integer);
-
-    function IsCellSelectable(const ARow, ACol: Integer): Boolean;
-    procedure SetSelection(const ARow, ACol: Integer; const ADoEvent: Boolean = True);
-    procedure DelSelection(const ADoEvent: Boolean = True);
-    procedure Select(const ARow, ACol: Integer);
-    procedure Unselect;
-
-    procedure SetCanSelect(const AValue: Boolean);
-    function GetIsSelected: Boolean;
     function GetIsNormInfoSelected: Boolean;
     function GetIsStatusSubInfoSelected: Boolean;
   public
@@ -209,16 +175,12 @@ type
                    const AWarnDaysCount: Integer;
                    const ATitle: String = '');
 
-    property CanSelect: Boolean read FCanSelect write SetCanSelect;
-    property IsSelected: Boolean read GetIsSelected;
     property IsNormInfoSelected: Boolean read GetIsNormInfoSelected;
     property IsStatusSubInfoSelected: Boolean read GetIsStatusSubInfoSelected;
 
     property SelectedSubItemIndex: Integer read FSelectedSubItemIndex;
     property SelectedInfoIndex: Integer read FSelectedInfoIndex;
     property SelectedSubInfoIndex: Integer read FSelectedSubInfoIndex;
-
-    property OnSelect: TSheetEvent read FOnSelect write FOnSelect;
   end;
 
 implementation
@@ -706,8 +668,6 @@ begin
       Writer.WriteText(R1+i, 9, EmptyStr, cbtOuter);
       Writer.WriteText(R1+i, 10, EmptyStr, cbtOuter);
     end;
-
-
   end;
 
   ARow:= R2;
@@ -761,87 +721,6 @@ begin
   ARow:= R;
 end;
 
-procedure TSIZCardBackSheet.MouseDown(Sender: TObject; Button: TMouseButton;
-  Shift: TShiftState; X, Y: Integer);
-var
-  R, C: Integer;
-begin
-  if Button=mbLeft then
-  begin
-    (Sender as TsWorksheetGrid).MouseToCell(X, Y, C, R);
-    SetSelection(R, C);
-  end
-  else if Button=mbRight then
-  begin
-    DelSelection;
-  end;
-end;
-
-function TSIZCardBackSheet.IsCellSelectable(const ARow, ACol: Integer): Boolean;
-begin
-  Result:= ((ACol>=1) and (ACol<=Writer.ColCount)) and
-           (VIndexOf(FFirstRows, FLastRows, ARow)>=0);
-end;
-
-procedure TSIZCardBackSheet.SetSelection(const ARow, ACol: Integer;
-  const ADoEvent: Boolean);
-begin
-  if not CanSelect then Exit;
-  if not IsCellSelectable(ARow, ACol) then Exit;
-
-  if IsSelected then Unselect;
-  Select(ARow);
-  if ADoEvent and Assigned(FOnSelect) then FOnSelect;
-end;
-
-procedure TSIZCardBackSheet.DelSelection(const ADoEvent: Boolean);
-begin
-  if not IsSelected then Exit;
-  Unselect;
-  if ADoEvent and Assigned(FOnSelect) then FOnSelect;
-end;
-
-procedure TSIZCardBackSheet.Select(const ARow: Integer);
-var
-  i, j, k: Integer;
-begin
-  k:= VIndexOf(FFirstRows, FLastRows, ARow);
-  FSelectedIndex:= k;
-  for i:= FFirstRows[k] to FLastRows[k] do
-    for j:= 1 to Writer.ColCount do
-      SelectionAddCell(i, j);
-end;
-
-procedure TSIZCardBackSheet.Unselect;
-begin
-  FSelectedIndex:= -1;
-  SelectionClear;
-end;
-
-procedure TSIZCardBackSheet.SetCanSelect(const AValue: Boolean);
-begin
-  if FCanSelect=AValue then Exit;
-  if not AValue then Unselect;
-  FCanSelect:=AValue;
-end;
-
-function TSIZCardBackSheet.GetIsSelected: Boolean;
-begin
-  Result:= FSelectedIndex>=0;
-end;
-
-constructor TSIZCardBackSheet.Create(const AWorksheet: TsWorksheet;
-                       const AGrid: TsWorksheetGrid;
-                       const AFont: TFont;
-                       const ARowHeightDefault: Integer = ROW_HEIGHT_DEFAULT);
-begin
-  inherited Create(AWorksheet, AGrid, AFont, ARowHeightDefault);
-  if Assigned(AGrid) then
-    Writer.Grid.OnMouseDown:= @MouseDown;
-  FCanSelect:= False;
-  FSelectedIndex:= -1;
-end;
-
 procedure TSIZCardBackSheet.Draw(const ANeedDraw: Boolean;
                    const AReceivingDates, AReturningDates: TDateVector;
                    const ANormSizNames, AReceivingDocNames, AReturningDocNames: TStrVector;
@@ -852,7 +731,7 @@ procedure TSIZCardBackSheet.Draw(const ANeedDraw: Boolean;
 var
   R, CaptionRowCount: Integer;
 begin
-  DelSelection;
+  Unselect;
 
   if not ANeedDraw then
   begin
@@ -946,6 +825,11 @@ end;
 function TSIZCardStatusSheet.GetIsSelected: Boolean;
 begin
   Result:= IsNormInfoSelected;
+end;
+
+procedure TSIZCardStatusSheet.SelectionMove(const ADelta: Integer);
+begin
+  //no actions
 end;
 
 function TSIZCardStatusSheet.GetIsStatusSubInfoSelected: Boolean;
@@ -1121,54 +1005,13 @@ begin
   ARow:= R;
 end;
 
-procedure TSIZCardStatusSheet.SetCanSelect(const AValue: Boolean);
-begin
-  if FCanSelect=AValue then Exit;
-  if not AValue then Unselect;
-  FCanSelect:=AValue;
-end;
-
-procedure TSIZCardStatusSheet.MouseDown(Sender: TObject; Button: TMouseButton;
-  Shift: TShiftState; X, Y: Integer);
-var
-  R, C: Integer;
-begin
-  if Button=mbLeft then
-  begin
-    (Sender as TsWorksheetGrid).MouseToCell(X, Y, C, R);
-    SetSelection(R, C);
-  end
-  else if Button=mbRight then
-  begin
-    DelSelection;
-  end;
-end;
-
 function TSIZCardStatusSheet.IsCellSelectable(const ARow, ACol: Integer): Boolean;
 begin
-  Result:= ((ACol>=1) and (ACol<=Writer.ColCount)) and
+  Result:= inherited IsCellSelectable(ARow, ACol) and
            (VIndexOf(FSubInfoFirstRows, FSubInfoLastRows, ARow)>=0);
 end;
 
-procedure TSIZCardStatusSheet.SetSelection(const ARow, ACol: Integer;
-  const ADoEvent: Boolean);
-begin
-  if not CanSelect then Exit;
-  if not IsCellSelectable(ARow, ACol) then Exit;
-
-  if IsSelected then Unselect;
-  Select(ARow, ACol);
-  if ADoEvent and Assigned(FOnSelect) then FOnSelect;
-end;
-
-procedure TSIZCardStatusSheet.DelSelection(const ADoEvent: Boolean);
-begin
-  if not IsSelected then Exit;
-  Unselect;
-  if ADoEvent and Assigned(FOnSelect) then FOnSelect;
-end;
-
-procedure TSIZCardStatusSheet.Select(const ARow, ACol: Integer);
+procedure TSIZCardStatusSheet.SetSelection(const ARow, ACol: Integer);
 var
   i, j, k: Integer;
 begin
@@ -1188,7 +1031,7 @@ begin
   end;
 end;
 
-procedure TSIZCardStatusSheet.Unselect;
+procedure TSIZCardStatusSheet.DelSelection;
 begin
   FSelectedSubItemIndex:= -1;
   FSelectedInfoIndex:= -1;
@@ -1203,9 +1046,6 @@ constructor TSIZCardStatusSheet.Create(const AWorksheet: TsWorksheet;
                        const ARowHeightDefault: Integer = ROW_HEIGHT_DEFAULT);
 begin
   inherited Create(AWorksheet, AGrid, AFont, ARowHeightDefault);
-  if Assigned(AGrid) then
-    Writer.Grid.OnMouseDown:= @MouseDown;
-  FCanSelect:= False;
   FSelectedSubItemIndex:= -1;
   FSelectedInfoIndex:= -1;
   FSelectedSubInfoIndex:= -1;
@@ -1231,7 +1071,7 @@ var
   i, R: Integer;
   S: String;
 begin
-  DelSelection;
+  Unselect;
 
   if Length(ANormSubItems)=0 then
   begin

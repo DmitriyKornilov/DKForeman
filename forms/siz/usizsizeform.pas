@@ -23,11 +23,12 @@ type
     CloseButton: TSpeedButton;
     DividerBevel1: TDividerBevel;
     DividerBevel2: TDividerBevel;
+    EditButton: TSpeedButton;
     ExportButton: TSpeedButton;
     FilterPanel: TPanel;
     LeftSplitter: TSplitter;
     MainPanel: TPanel;
-    EditButton: TSpeedButton;
+    ButtonPanel: TPanel;
     SettingCaptionPanel: TPanel;
     SettingClientPanel: TPanel;
     SettingPanel: TPanel;

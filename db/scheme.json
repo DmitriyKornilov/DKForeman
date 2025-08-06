@@ -1,5 +1,9 @@
 {
   "TablesList" : [
+    "BRIEFINGLOG",
+    "BRIEFINGMAIN",
+    "BRIEFINGPOST",
+    "BRIEFINGTABNUM",
     "CALENDAR",
     "COLORS",
     "PERSONALCORRECT",
@@ -36,6 +40,551 @@
     "TIMETABLELOG",
     "TIMETABLEMARK"
   ],
+  "BRIEFINGLOG" : {
+    "Description" : "ЖУРНАЛ ПРОВЕДЕНИЯ ИНСТРУКТАЖЕЙ",
+    "Notes" : [
+    ],
+    "FieldsList" : [
+      "LOGID",
+      "BRIEFID",
+      "TABNUMID",
+      "BRIEFDATE",
+      "NEXTDATE",
+      "NOTE"
+    ],
+    "LOGID" : {
+      "FieldType" : "INTEGER",
+      "PrimaryKey" : true,
+      "Status" : true,
+      "NotNull" : true,
+      "DefaultValue" : "",
+      "Description" : [
+      ],
+      "ExistingValues" : [
+      ],
+      "ReferenceTo" : {
+        "TableName" : "",
+        "FieldName" : "",
+        "OnDelete" : 4,
+        "OnUpdate" : 4
+      },
+      "ReferenceFrom" : {
+        "TableNames" : [
+        ],
+        "FieldNames" : [
+        ]
+      }
+    },
+    "BRIEFID" : {
+      "FieldType" : "INTEGER",
+      "PrimaryKey" : false,
+      "Status" : false,
+      "NotNull" : true,
+      "DefaultValue" : "",
+      "Description" : [
+        "ID инструктажа"
+      ],
+      "ExistingValues" : [
+      ],
+      "ReferenceTo" : {
+        "TableName" : "BRIEFINGMAIN",
+        "FieldName" : "BRIEFID",
+        "OnDelete" : 0,
+        "OnUpdate" : 0
+      },
+      "ReferenceFrom" : {
+        "TableNames" : [
+        ],
+        "FieldNames" : [
+        ]
+      }
+    },
+    "TABNUMID" : {
+      "FieldType" : "INTEGER",
+      "PrimaryKey" : false,
+      "Status" : false,
+      "NotNull" : true,
+      "DefaultValue" : "",
+      "Description" : [
+        "ID табельного номера"
+      ],
+      "ExistingValues" : [
+      ],
+      "ReferenceTo" : {
+        "TableName" : "STAFFTABNUM",
+        "FieldName" : "TABNUMID",
+        "OnDelete" : 0,
+        "OnUpdate" : 0
+      },
+      "ReferenceFrom" : {
+        "TableNames" : [
+        ],
+        "FieldNames" : [
+        ]
+      }
+    },
+    "BRIEFDATE" : {
+      "FieldType" : "DATETIME",
+      "PrimaryKey" : false,
+      "Status" : false,
+      "NotNull" : true,
+      "DefaultValue" : "",
+      "Description" : [
+        "дата проведения инструктажа"
+      ],
+      "ExistingValues" : [
+      ],
+      "ReferenceTo" : {
+        "TableName" : "",
+        "FieldName" : "",
+        "OnDelete" : 4,
+        "OnUpdate" : 4
+      },
+      "ReferenceFrom" : {
+        "TableNames" : [
+        ],
+        "FieldNames" : [
+        ]
+      }
+    },
+    "NEXTDATE" : {
+      "FieldType" : "DATETIME",
+      "PrimaryKey" : false,
+      "Status" : false,
+      "NotNull" : true,
+      "DefaultValue" : "0",
+      "Description" : [
+        "дата следующего инструктажа, 0 для разового"
+      ],
+      "ExistingValues" : [
+      ],
+      "ReferenceTo" : {
+        "TableName" : "",
+        "FieldName" : "",
+        "OnDelete" : 4,
+        "OnUpdate" : 4
+      },
+      "ReferenceFrom" : {
+        "TableNames" : [
+        ],
+        "FieldNames" : [
+        ]
+      }
+    },
+    "NOTE" : {
+      "FieldType" : "TEXT",
+      "PrimaryKey" : false,
+      "Status" : false,
+      "NotNull" : true,
+      "DefaultValue" : "",
+      "Description" : [
+        "примечание"
+      ],
+      "ExistingValues" : [
+      ],
+      "ReferenceTo" : {
+        "TableName" : "",
+        "FieldName" : "",
+        "OnDelete" : 4,
+        "OnUpdate" : 4
+      },
+      "ReferenceFrom" : {
+        "TableNames" : [
+        ],
+        "FieldNames" : [
+        ]
+      }
+    },
+    "IndexesList" : [
+    ]
+  },
+  "BRIEFINGMAIN" : {
+    "Description" : "ИНСТРУКТАЖИ, АТТЕСТАЦИЯ, ОБУЧЕНИЕ",
+    "Notes" : [
+    ],
+    "FieldsList" : [
+      "BRIEFID",
+      "BEGINDATE",
+      "ENDDATE",
+      "OBJECT",
+      "PERIOD",
+      "NUM",
+      "LASTDATE",
+      "NOTE"
+    ],
+    "BRIEFID" : {
+      "FieldType" : "INTEGER",
+      "PrimaryKey" : true,
+      "Status" : true,
+      "NotNull" : true,
+      "DefaultValue" : "",
+      "Description" : [
+      ],
+      "ExistingValues" : [
+      ],
+      "ReferenceTo" : {
+        "TableName" : "",
+        "FieldName" : "",
+        "OnDelete" : 4,
+        "OnUpdate" : 4
+      },
+      "ReferenceFrom" : {
+        "TableNames" : [
+          "BRIEFINGPOST",
+          "BRIEFINGTABNUM",
+          "BRIEFINGLOG"
+        ],
+        "FieldNames" : [
+          "BRIEFID",
+          "BRIEFID",
+          "BRIEFID"
+        ]
+      }
+    },
+    "BEGINDATE" : {
+      "FieldType" : "DATETIME",
+      "PrimaryKey" : false,
+      "Status" : false,
+      "NotNull" : true,
+      "DefaultValue" : "",
+      "Description" : [
+        "дата начала действия"
+      ],
+      "ExistingValues" : [
+      ],
+      "ReferenceTo" : {
+        "TableName" : "",
+        "FieldName" : "",
+        "OnDelete" : 4,
+        "OnUpdate" : 4
+      },
+      "ReferenceFrom" : {
+        "TableNames" : [
+        ],
+        "FieldNames" : [
+        ]
+      }
+    },
+    "ENDDATE" : {
+      "FieldType" : "DATETIME",
+      "PrimaryKey" : false,
+      "Status" : false,
+      "NotNull" : true,
+      "DefaultValue" : "",
+      "Description" : [
+        "дата окончания действия"
+      ],
+      "ExistingValues" : [
+      ],
+      "ReferenceTo" : {
+        "TableName" : "",
+        "FieldName" : "",
+        "OnDelete" : 4,
+        "OnUpdate" : 4
+      },
+      "ReferenceFrom" : {
+        "TableNames" : [
+        ],
+        "FieldNames" : [
+        ]
+      }
+    },
+    "OBJECT" : {
+      "FieldType" : "INTEGER",
+      "PrimaryKey" : false,
+      "Status" : false,
+      "NotNull" : true,
+      "DefaultValue" : "",
+      "Description" : [
+        "кому проводится:",
+        "0 - всем,",
+        "1 - для должности,",
+        "2 - для таб номера"
+      ],
+      "ExistingValues" : [
+      ],
+      "ReferenceTo" : {
+        "TableName" : "",
+        "FieldName" : "",
+        "OnDelete" : 4,
+        "OnUpdate" : 4
+      },
+      "ReferenceFrom" : {
+        "TableNames" : [
+        ],
+        "FieldNames" : [
+        ]
+      }
+    },
+    "PERIOD" : {
+      "FieldType" : "INTEGER",
+      "PrimaryKey" : false,
+      "Status" : false,
+      "NotNull" : true,
+      "DefaultValue" : "",
+      "Description" : [
+        "периодичность проведения:",
+        "0 - разовое,",
+        "1 - Num дней,",
+        "2 - Num месяцев,",
+        "3 - Num лет"
+      ],
+      "ExistingValues" : [
+      ],
+      "ReferenceTo" : {
+        "TableName" : "",
+        "FieldName" : "",
+        "OnDelete" : 4,
+        "OnUpdate" : 4
+      },
+      "ReferenceFrom" : {
+        "TableNames" : [
+        ],
+        "FieldNames" : [
+        ]
+      }
+    },
+    "NUM" : {
+      "FieldType" : "INTEGER",
+      "PrimaryKey" : false,
+      "Status" : false,
+      "NotNull" : true,
+      "DefaultValue" : "0",
+      "Description" : [
+        "количество дней/месяцев/лет периодичности проведения, 0 - для разового инструктажа"
+      ],
+      "ExistingValues" : [
+      ],
+      "ReferenceTo" : {
+        "TableName" : "",
+        "FieldName" : "",
+        "OnDelete" : 4,
+        "OnUpdate" : 4
+      },
+      "ReferenceFrom" : {
+        "TableNames" : [
+        ],
+        "FieldNames" : [
+        ]
+      }
+    },
+    "LASTDATE" : {
+      "FieldType" : "DATETIME",
+      "PrimaryKey" : false,
+      "Status" : false,
+      "NotNull" : true,
+      "DefaultValue" : "0",
+      "Description" : [
+        "дата, до которой нужно провести"
+      ],
+      "ExistingValues" : [
+      ],
+      "ReferenceTo" : {
+        "TableName" : "",
+        "FieldName" : "",
+        "OnDelete" : 4,
+        "OnUpdate" : 4
+      },
+      "ReferenceFrom" : {
+        "TableNames" : [
+        ],
+        "FieldNames" : [
+        ]
+      }
+    },
+    "NOTE" : {
+      "FieldType" : "TEXT",
+      "PrimaryKey" : false,
+      "Status" : false,
+      "NotNull" : true,
+      "DefaultValue" : "",
+      "Description" : [
+        "примечание"
+      ],
+      "ExistingValues" : [
+      ],
+      "ReferenceTo" : {
+        "TableName" : "",
+        "FieldName" : "",
+        "OnDelete" : 4,
+        "OnUpdate" : 4
+      },
+      "ReferenceFrom" : {
+        "TableNames" : [
+        ],
+        "FieldNames" : [
+        ]
+      }
+    },
+    "IndexesList" : [
+    ]
+  },
+  "BRIEFINGPOST" : {
+    "Description" : "ДОЛЖНОСТИ, ДЛЯ КОТОРЫХ ПРОВОДИТСЯ ИНСТРУКТАЖ",
+    "Notes" : [
+    ],
+    "FieldsList" : [
+      "ID",
+      "BRIEFID",
+      "POSTID"
+    ],
+    "ID" : {
+      "FieldType" : "INTEGER",
+      "PrimaryKey" : true,
+      "Status" : true,
+      "NotNull" : true,
+      "DefaultValue" : "",
+      "Description" : [
+      ],
+      "ExistingValues" : [
+      ],
+      "ReferenceTo" : {
+        "TableName" : "",
+        "FieldName" : "",
+        "OnDelete" : 4,
+        "OnUpdate" : 4
+      },
+      "ReferenceFrom" : {
+        "TableNames" : [
+        ],
+        "FieldNames" : [
+        ]
+      }
+    },
+    "BRIEFID" : {
+      "FieldType" : "INTEGER",
+      "PrimaryKey" : false,
+      "Status" : false,
+      "NotNull" : true,
+      "DefaultValue" : "",
+      "Description" : [
+        "ID инструктажа "
+      ],
+      "ExistingValues" : [
+      ],
+      "ReferenceTo" : {
+        "TableName" : "BRIEFINGMAIN",
+        "FieldName" : "BRIEFID",
+        "OnDelete" : 0,
+        "OnUpdate" : 0
+      },
+      "ReferenceFrom" : {
+        "TableNames" : [
+        ],
+        "FieldNames" : [
+        ]
+      }
+    },
+    "POSTID" : {
+      "FieldType" : "INTEGER",
+      "PrimaryKey" : false,
+      "Status" : false,
+      "NotNull" : true,
+      "DefaultValue" : "",
+      "Description" : [
+        "ID должности"
+      ],
+      "ExistingValues" : [
+      ],
+      "ReferenceTo" : {
+        "TableName" : "STAFFPOST",
+        "FieldName" : "POSTID",
+        "OnDelete" : 0,
+        "OnUpdate" : 0
+      },
+      "ReferenceFrom" : {
+        "TableNames" : [
+        ],
+        "FieldNames" : [
+        ]
+      }
+    },
+    "IndexesList" : [
+    ]
+  },
+  "BRIEFINGTABNUM" : {
+    "Description" : "ТАБЕЛЬНЫЕ НОМЕРА, ДЛЯ КОТОРЫХ ПРОВОДИТСЯ ИНСТРУКТАЖ",
+    "Notes" : [
+    ],
+    "FieldsList" : [
+      "ID",
+      "BRIEFID",
+      "TABNUMID"
+    ],
+    "ID" : {
+      "FieldType" : "INTEGER",
+      "PrimaryKey" : true,
+      "Status" : true,
+      "NotNull" : true,
+      "DefaultValue" : "",
+      "Description" : [
+      ],
+      "ExistingValues" : [
+      ],
+      "ReferenceTo" : {
+        "TableName" : "",
+        "FieldName" : "",
+        "OnDelete" : 4,
+        "OnUpdate" : 4
+      },
+      "ReferenceFrom" : {
+        "TableNames" : [
+        ],
+        "FieldNames" : [
+        ]
+      }
+    },
+    "BRIEFID" : {
+      "FieldType" : "INTEGER",
+      "PrimaryKey" : false,
+      "Status" : false,
+      "NotNull" : true,
+      "DefaultValue" : "",
+      "Description" : [
+        "ID инструктажа "
+      ],
+      "ExistingValues" : [
+      ],
+      "ReferenceTo" : {
+        "TableName" : "BRIEFINGMAIN",
+        "FieldName" : "BRIEFID",
+        "OnDelete" : 0,
+        "OnUpdate" : 0
+      },
+      "ReferenceFrom" : {
+        "TableNames" : [
+        ],
+        "FieldNames" : [
+        ]
+      }
+    },
+    "TABNUMID" : {
+      "FieldType" : "INTEGER",
+      "PrimaryKey" : false,
+      "Status" : false,
+      "NotNull" : true,
+      "DefaultValue" : "",
+      "Description" : [
+        "ID табельного номера"
+      ],
+      "ExistingValues" : [
+      ],
+      "ReferenceTo" : {
+        "TableName" : "STAFFTABNUM",
+        "FieldName" : "TABNUMID",
+        "OnDelete" : 0,
+        "OnUpdate" : 0
+      },
+      "ReferenceFrom" : {
+        "TableNames" : [
+        ],
+        "FieldNames" : [
+        ]
+      }
+    },
+    "IndexesList" : [
+    ]
+  },
   "CALENDAR" : {
     "Description" : "КОРРЕКТИРОВКИ ПРОИЗВОДСТВЕННОГО КАЛЕНДАРЯ",
     "Notes" : [
@@ -1041,7 +1590,8 @@
         "SIZCARDFORM.WRITEOFFTYPE",
         "SIZDOCMB7FORM.ZOOM",
         "SIZSTAFFHISTORYFORM.ZOOM",
-        "SIZREQUESTFORM.ZOOM"
+        "SIZREQUESTFORM.ZOOM",
+        "BRIEFINGFORM.ZOOM"
       ],
       "ReferenceTo" : {
         "TableName" : "",
@@ -1167,6 +1717,7 @@
         "50",
         "1",
         "1",
+        "100",
         "100",
         "100",
         "100"
@@ -3833,9 +4384,11 @@
       "ReferenceFrom" : {
         "TableNames" : [
           "STAFFPOSTLOG",
-          "SIZNORMITEMPOST"
+          "SIZNORMITEMPOST",
+          "BRIEFINGPOST"
         ],
         "FieldNames" : [
+          "POSTID",
           "POSTID",
           "POSTID"
         ]
@@ -4223,9 +4776,13 @@
           "STAFFSCHEDULE",
           "STAFFVACATION",
           "SIZSTAFFSPECSIZE",
-          "SIZCARDPERSONAL"
+          "SIZCARDPERSONAL",
+          "BRIEFINGTABNUM",
+          "BRIEFINGLOG"
         ],
         "FieldNames" : [
+          "TABNUMID",
+          "TABNUMID",
           "TABNUMID",
           "TABNUMID",
           "TABNUMID",

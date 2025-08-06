@@ -9,7 +9,6 @@ object SIZSizeForm: TSIZSizeForm
   ClientHeight = 411
   ClientWidth = 902
   DesignTimePPI = 120
-  LCLVersion = '4.0.0.4'
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
@@ -24,8 +23,8 @@ object SIZSizeForm: TSIZSizeForm
     BorderSpacing.Right = 2
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 40
-    ClientWidth = 898
+    ClientHeight = 36
+    ClientWidth = 894
     ParentFont = False
     TabOrder = 0
     object CloseButton: TSpeedButton
@@ -54,25 +53,9 @@ object SIZSizeForm: TSIZSizeForm
       Orientation = trVertical
       ParentFont = False
     end
-    object ExportButton: TSpeedButton
-      Cursor = crHandPoint
-      Left = 511
-      Height = 36
-      Hint = 'Экспорт в формат электронной таблицы XLSX или ODS'
-      Top = 0
-      Width = 109
-      Align = alLeft
-      AutoSize = True
-      Caption = ' Экспорт '
-      Images = Images.PX24
-      ImageIndex = 22
-      Margin = 5
-      Spacing = 5
-      ShowHint = True
-      ParentShowHint = False
-      OnClick = ExportButtonClick
-    end
     object DividerBevel2: TDividerBevel
+      AnchorSideLeft.Control = FilterPanel
+      AnchorSideLeft.Side = asrBottom
       Left = 450
       Height = 36
       Top = 0
@@ -84,20 +67,6 @@ object SIZSizeForm: TSIZSizeForm
       Orientation = trVertical
       ParentFont = False
     end
-    object EditButton: TSpeedButton
-      Cursor = crHandPoint
-      Left = 471
-      Height = 36
-      Hint = 'Редактировать'
-      Top = 0
-      Width = 40
-      Align = alLeft
-      Images = Images.PX24
-      ImageIndex = 6
-      ShowHint = True
-      ParentShowHint = False
-      OnClick = EditButtonClick
-    end
     object FilterPanel: TPanel
       Left = 0
       Height = 36
@@ -108,6 +77,50 @@ object SIZSizeForm: TSIZSizeForm
       Caption = 'FilterPanel'
       ParentBackground = False
       TabOrder = 0
+    end
+    object ButtonPanel: TPanel
+      Left = 471
+      Height = 36
+      Top = 0
+      Width = 149
+      Align = alLeft
+      AutoSize = True
+      BevelOuter = bvNone
+      ClientHeight = 36
+      ClientWidth = 149
+      TabOrder = 1
+      object EditButton: TSpeedButton
+        Cursor = crHandPoint
+        Left = 0
+        Height = 36
+        Hint = 'Редактировать'
+        Top = 0
+        Width = 40
+        Align = alLeft
+        Images = Images.PX24
+        ImageIndex = 6
+        ShowHint = True
+        ParentShowHint = False
+        OnClick = EditButtonClick
+      end
+      object ExportButton: TSpeedButton
+        Cursor = crHandPoint
+        Left = 40
+        Height = 36
+        Hint = 'Экспорт в формат электронной таблицы XLSX или ODS'
+        Top = 0
+        Width = 109
+        Align = alLeft
+        AutoSize = True
+        Caption = ' Экспорт '
+        Images = Images.PX24
+        ImageIndex = 22
+        Margin = 5
+        Spacing = 5
+        ShowHint = True
+        ParentShowHint = False
+        OnClick = ExportButtonClick
+      end
     end
   end
   object SettingPanel: TPanel

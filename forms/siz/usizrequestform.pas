@@ -51,9 +51,8 @@ type
     procedure RequestExport;
 
     procedure SettingsLoad;
-    procedure SettingsSave;
   public
-
+    procedure SettingsSave;
     procedure DataUpdate;
   end;
 
