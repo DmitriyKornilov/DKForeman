@@ -133,7 +133,8 @@ begin
   Sheet:= TShiftMonthScheduleSheet.Create(ViewGrid.Worksheet, ViewGrid, GridFont, ResumeType);
 
   DataBase.ScheduleMainListLoad(ScheduleIDs, WeekHours, CycleCounts, ScheduleNames);
-  ScheduleList:= TVSTCheckList.Create(VT, EmptyStr, ScheduleNames, @ScheduleReDraw);
+  ScheduleList:= TVSTCheckList.Create(VT, EmptyStr, @ScheduleReDraw);
+  ScheduleList.Update(ScheduleNames);
   ScheduleList.StopSelectEventWhileCheckAll:= True;
 
   CanDraw:= True;

@@ -8,7 +8,7 @@ object ScheduleShiftMonthForm: TScheduleShiftMonthForm
   ClientHeight = 311
   ClientWidth = 780
   DesignTimePPI = 120
-  LCLVersion = '4.0.0.4'
+  LCLVersion = '4.2.0.0'
   WindowState = wsMaximized
   OnClose = FormClose
   OnCreate = FormCreate

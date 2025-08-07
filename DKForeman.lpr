@@ -30,7 +30,7 @@ USIZDocStoreWriteoffForm, USIZCardTypes, USIZSizeSpecEditForm,
 USIZStatusNewEditForm, USIZStatusCopyEditForm, USIZCardReturnEditForm, 
 USIZDocReceivingForm, USIZDocReturningForm, USIZDocSheet, USIZDocMB7Form, 
 USIZStaffHistoryForm, USIZStoreSheet, USIZStoreTypes, UInfoForm, 
-USIZRequestForm, UBriefingLogForm, UBriefingSheet;
+USIZRequestForm, UBriefingLogForm, UBriefingSheet, UBriefingEditForm;
 
 {$R *.res}
 

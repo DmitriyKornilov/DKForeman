@@ -204,6 +204,7 @@
     ],
     "FieldsList" : [
       "BRIEFID",
+      "BRIEFNAME",
       "BEGINDATE",
       "ENDDATE",
       "OBJECT",
@@ -238,6 +239,30 @@
           "BRIEFID",
           "BRIEFID",
           "BRIEFID"
+        ]
+      }
+    },
+    "BRIEFNAME" : {
+      "FieldType" : "TEXT",
+      "PrimaryKey" : false,
+      "Status" : false,
+      "NotNull" : true,
+      "DefaultValue" : "",
+      "Description" : [
+        "наименование"
+      ],
+      "ExistingValues" : [
+      ],
+      "ReferenceTo" : {
+        "TableName" : "",
+        "FieldName" : "",
+        "OnDelete" : 4,
+        "OnUpdate" : 4
+      },
+      "ReferenceFrom" : {
+        "TableNames" : [
+        ],
+        "FieldNames" : [
         ]
       }
     },

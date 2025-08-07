@@ -10,7 +10,6 @@ object SIZNormEditForm: TSIZNormEditForm
   ClientWidth = 727
   DesignTimePPI = 120
   Position = poScreenCenter
-  LCLVersion = '4.0.0.4'
   OnCreate = FormCreate
   OnShow = FormShow
   object ButtonPanel: TPanel
@@ -238,10 +237,10 @@ object SIZNormEditForm: TSIZNormEditForm
     Left = 388
     Height = 24
     Top = 158
-    Width = 89
+    Width = 185
     BorderSpacing.Left = 8
     BorderSpacing.Right = 8
-    Caption = 'без срока'
+    Caption = 'без ограничения срока'
     TabOrder = 5
     OnChange = InfEndDateCheckBoxChange
   end

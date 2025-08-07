@@ -72,11 +72,11 @@ object BriefingForm: TBriefingForm
         Top = 0
         Width = 40
         Align = alLeft
-        Enabled = False
         Images = Images.PX24
         ImageIndex = 4
         ShowHint = True
         ParentShowHint = False
+        OnClick = AddButtonClick
       end
       object DelButton: TSpeedButton
         Cursor = crHandPoint
@@ -105,6 +105,7 @@ object BriefingForm: TBriefingForm
         ImageIndex = 6
         ShowHint = True
         ParentShowHint = False
+        OnClick = EditButtonClick
       end
       object CopyButton: TSpeedButton
         Cursor = crHandPoint
@@ -119,6 +120,7 @@ object BriefingForm: TBriefingForm
         ImageIndex = 9
         ShowHint = True
         ParentShowHint = False
+        OnClick = CopyButtonClick
       end
       object DividerBevel2: TDividerBevel
         Left = 160

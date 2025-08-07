@@ -103,7 +103,20 @@ const
   SIZ_DOCFORM_PICKS: array of String =
     ('<нет>');
 
+  BRIEFTYPE_KEYS: array of Integer =
+    (0,   1  );
+  BRIEFTYPE_PICKS: array of String  =
+    ('разово', 'периодически');
 
+  BRIEFPERIOD_KEYS: array of Integer =
+    (1,      2 ,       3  );
+  BRIEFPERIOD_PICKS: array of String  =
+    ('дней', 'месяцев', 'лет');
+
+  BRIEFOBJECT_KEYS: array of Integer =
+    (0,      1 ,       2  );
+  BRIEFOBJECT_PICKS: array of String  =
+    ('всем сотрудникам', 'отдельным должностям (профессиям)', 'отдельным сотрудникам персонально');
 
   (**************************************************************************
                    ЗАГОЛОВКИ И ШИРИНА СТОЛБЦОВ ТАБЛИЦ

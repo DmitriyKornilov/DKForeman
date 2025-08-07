@@ -110,7 +110,7 @@ begin
   IsOK:= False;
 
   NormName:= STrim(NormNameEdit.Text);
-  if NormName=EmptyStr then
+  if SEmpty(NormName) then
   begin
     Inform('Не указано наименование норм выдачи СИЗ!');
     Exit;

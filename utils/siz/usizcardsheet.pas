@@ -112,7 +112,7 @@ type
     procedure SetSelection(const ARow, ACol: Integer); override;
     procedure DelSelection; override;
     function GetIsSelected: Boolean; override;
-    procedure SelectionMove(const ADelta: Integer); override;
+    procedure SelectionMove(const {%H-}ADelta: Integer); override;
   private
     const //1035
       COLWIDTHS: array of Integer = (

@@ -299,7 +299,8 @@ begin
 
   //отображаем список должностей
   if Assigned(PostList) then FreeAndNil(PostList);
-  PostList:= TVSTCheckList.Create(PostVT, EmptyStr, EditablePostNames, nil);
+  PostList:= TVSTCheckList.Create(PostVT, EmptyStr, nil);
+  PostList.Update(EditablePostNames);
   PostList.Selected:= EditablePostChecks;
 end;
 
