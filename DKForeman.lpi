@@ -657,6 +657,7 @@
         <Filename Value="utils\briefing\ubriefingeditform.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="BriefingEditForm"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UBriefingEditForm"/>
       </Unit>

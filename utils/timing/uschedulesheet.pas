@@ -2340,7 +2340,8 @@ var
 begin
   W:= Max(DAY_COLUMN_WIDTH, SWidth('00.00.00', Font.Name, Font.Size, [fsBold]));
   VDim(Result{%H-}, 11, W);
-  W:= VMaxWidth(FNames, Font.Name, Font.Size, [fsBold], NAME_COLUMN_WIDTH);
+  W:= VMaxWidth(FNames, Font.Name, Font.Size, [fsBold],
+                NAME_COLUMN_WIDTH, False{не менее NAME_COLUMN_WIDTH});
   Result[0]:= W;
 end;
 

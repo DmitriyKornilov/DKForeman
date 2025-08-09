@@ -841,13 +841,16 @@ begin
   FNormHours:= ANormHours;
 
   Writer.BeginEdit;
-  W:= VMaxWidth(FStaffNames, Font.Name, Font.Size+1, [], STAFFNAME_COLUMN_WIDTH);
+  W:= VMaxWidth(FStaffNames, Font.Name, Font.Size+1, [],
+                STAFFNAME_COLUMN_WIDTH, False{не менее STAFFNAME_COLUMN_WIDTH});
 
   X:= 1+Ord(FExtraColumns[0]); //FExtraColumns: 0 - Порядковый номер
   Writer.SetColWidth(X, W);
   if FExtraColumns[2] then //FExtraColumns: 2 - Табельный номер
   begin
-    W:= VMaxWidth(FTabNums, Font.Name, Font.Size+1, [], TABNUM_COLUMN_WIDTH);
+    W:= VMaxWidth(FTabNums, Font.Name, Font.Size+1, [],
+                  TABNUM_COLUMN_WIDTH, False{не менее TABNUM_COLUMN_WIDTH});
+
     X:= 2+Ord(FExtraColumns[0])+Ord(FExtraColumns[1]); //FExtraColumns: 0 - Порядковый номер, 1 - Должность (профессия)
     Writer.SetColWidth(X, W);
   end;
