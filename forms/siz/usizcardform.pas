@@ -424,7 +424,7 @@ begin
   try
     CardList.ValuesClear;
     CardList.SetColumn('Номер', ViewCardNums);
-    CardList.SetColumn('Период действия', VPeriodToStr(CardBDs, CardEDs){, taLeftJustify});
+    CardList.SetColumn('Период действия', PeriodToStr(CardBDs, CardEDs){, taLeftJustify});
     CardList.SetColumn('Должность (профессия)', CardPostNames, taLeftJustify);
     CardList.SetColumn('Нормы выдачи СИЗ', CardNormNames, taLeftJustify);
     CardList.Draw;

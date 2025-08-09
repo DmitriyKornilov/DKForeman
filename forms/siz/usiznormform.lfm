@@ -1,21 +1,20 @@
 object SIZNormForm: TSIZNormForm
   Left = 515
-  Height = 577
+  Height = 462
   Top = 198
-  Width = 1000
+  Width = 800
   Align = alClient
   BorderStyle = bsNone
   Caption = 'SIZNormForm'
-  ClientHeight = 577
-  ClientWidth = 1000
-  DesignTimePPI = 120
+  ClientHeight = 462
+  ClientWidth = 800
   LCLVersion = '4.2.0.0'
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
   object ToolPanel: TPanel
     Left = 2
-    Height = 40
+    Height = 32
     Top = 2
     Width = 996
     Align = alTop
@@ -24,17 +23,17 @@ object SIZNormForm: TSIZNormForm
     BorderSpacing.Right = 2
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 40
+    ClientHeight = 32
     ClientWidth = 996
     ParentFont = False
     TabOrder = 0
     object CloseButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 952
+      Left = 960
       Height = 36
       Hint = 'Закрыть'
       Top = 0
-      Width = 40
+      Width = 32
       Align = alRight
       Images = Images.PX24
       ImageIndex = 3
@@ -85,7 +84,7 @@ object SIZNormForm: TSIZNormForm
     TabOrder = 1
     object NormPanel: TPanel
       Left = 2
-      Height = 250
+      Height = 200
       Top = 2
       Width = 996
       Align = alTop
@@ -93,20 +92,20 @@ object SIZNormForm: TSIZNormForm
       BorderSpacing.Top = 2
       BorderSpacing.Right = 2
       BevelOuter = bvNone
-      ClientHeight = 250
+      ClientHeight = 200
       ClientWidth = 996
       TabOrder = 0
       object NormToolPanel: TPanel
         Left = 0
-        Height = 40
+        Height = 32
         Top = 32
         Width = 996
         Align = alTop
         BorderSpacing.Bottom = 2
         BevelOuter = bvNone
         BorderStyle = bsSingle
-        ClientHeight = 40
-        ClientWidth = 996
+        ClientHeight = 28
+        ClientWidth = 992
         ParentBackground = False
         ParentColor = False
         ParentFont = False
@@ -118,7 +117,7 @@ object SIZNormForm: TSIZNormForm
           Height = 36
           Hint = 'Добавить'
           Top = 0
-          Width = 40
+          Width = 32
           Align = alLeft
           Images = Images.PX24
           ImageIndex = 4
@@ -132,7 +131,7 @@ object SIZNormForm: TSIZNormForm
           Height = 36
           Hint = 'Удалить'
           Top = 0
-          Width = 40
+          Width = 32
           Align = alLeft
           Enabled = False
           Images = Images.PX24
@@ -147,7 +146,7 @@ object SIZNormForm: TSIZNormForm
           Height = 36
           Hint = 'Редактировать'
           Top = 0
-          Width = 40
+          Width = 32
           Align = alLeft
           Enabled = False
           Images = Images.PX24
@@ -163,7 +162,7 @@ object SIZNormForm: TSIZNormForm
         Top = 74
         Width = 996
         Align = alClient
-        DefaultNodeHeight = 25
+        DefaultNodeHeight = 20
         DefaultText = 'Node'
         Header.AutoSizeIndex = 0
         Header.Columns = <>
@@ -173,7 +172,7 @@ object SIZNormForm: TSIZNormForm
       end
       object NormCaptionPanel: TPanel
         Left = 0
-        Height = 30
+        Height = 24
         Top = 0
         Width = 996
         Align = alTop
@@ -193,7 +192,7 @@ object SIZNormForm: TSIZNormForm
     object Splitter1: TSplitter
       Cursor = crVSplit
       Left = 0
-      Height = 6
+      Height = 5
       Top = 252
       Width = 1000
       Align = alTop
@@ -217,24 +216,24 @@ object SIZNormForm: TSIZNormForm
         Left = 0
         Height = 241
         Top = 32
-        Width = 500
+        Width = 400
         Align = alLeft
         BorderSpacing.Bottom = 2
         BevelOuter = bvNone
         ClientHeight = 241
-        ClientWidth = 500
+        ClientWidth = 400
         TabOrder = 0
         object ItemToolPanel: TPanel
           Left = 0
-          Height = 40
+          Height = 32
           Top = 0
           Width = 500
           Align = alTop
           BorderSpacing.Bottom = 2
           BevelOuter = bvNone
           BorderStyle = bsSingle
-          ClientHeight = 40
-          ClientWidth = 500
+          ClientHeight = 28
+          ClientWidth = 496
           ParentFont = False
           TabOrder = 0
           object ItemAddButton: TSpeedButton
@@ -243,7 +242,7 @@ object SIZNormForm: TSIZNormForm
             Height = 36
             Hint = 'Добавить'
             Top = 0
-            Width = 40
+            Width = 32
             Align = alLeft
             Enabled = False
             Images = Images.PX24
@@ -258,7 +257,7 @@ object SIZNormForm: TSIZNormForm
             Height = 36
             Hint = 'Удалить'
             Top = 0
-            Width = 40
+            Width = 32
             Align = alLeft
             Enabled = False
             Images = Images.PX24
@@ -273,7 +272,7 @@ object SIZNormForm: TSIZNormForm
             Height = 36
             Hint = 'Редактировать'
             Top = 0
-            Width = 40
+            Width = 32
             Align = alLeft
             Enabled = False
             Images = Images.PX24
@@ -288,7 +287,7 @@ object SIZNormForm: TSIZNormForm
             Height = 36
             Hint = 'Копировать'
             Top = 0
-            Width = 40
+            Width = 32
             Align = alLeft
             Enabled = False
             Images = Images.PX24
@@ -303,7 +302,7 @@ object SIZNormForm: TSIZNormForm
             Height = 36
             Hint = 'Переместить строку вверх'
             Top = 0
-            Width = 40
+            Width = 32
             Align = alLeft
             Enabled = False
             Images = Images.PX24
@@ -318,7 +317,7 @@ object SIZNormForm: TSIZNormForm
             Height = 36
             Hint = 'Переместить строку вниз'
             Top = 0
-            Width = 40
+            Width = 32
             Align = alLeft
             Enabled = False
             Images = Images.PX24
@@ -336,8 +335,8 @@ object SIZNormForm: TSIZNormForm
           Align = alClient
           BevelOuter = bvNone
           BorderStyle = bsSingle
-          ClientHeight = 199
-          ClientWidth = 500
+          ClientHeight = 195
+          ClientWidth = 496
           TabOrder = 1
           OnChangeBounds = ItemSheetPanelChangeBounds
           object ItemGrid: TsWorksheetGrid
@@ -383,7 +382,7 @@ object SIZNormForm: TSIZNormForm
         Left = 500
         Height = 243
         Top = 32
-        Width = 6
+        Width = 5
         ResizeStyle = rsLine
       end
       object SubItemPanel: TPanel
@@ -398,15 +397,15 @@ object SIZNormForm: TSIZNormForm
         TabOrder = 2
         object SubItemToolPanel: TPanel
           Left = 0
-          Height = 40
+          Height = 32
           Top = 0
           Width = 490
           Align = alTop
           BorderSpacing.Bottom = 2
           BevelOuter = bvNone
           BorderStyle = bsSingle
-          ClientHeight = 40
-          ClientWidth = 490
+          ClientHeight = 28
+          ClientWidth = 486
           ParentFont = False
           TabOrder = 0
           object SubItemAddButton: TSpeedButton
@@ -415,7 +414,7 @@ object SIZNormForm: TSIZNormForm
             Height = 36
             Hint = 'Добавить'
             Top = 0
-            Width = 40
+            Width = 32
             Align = alLeft
             Enabled = False
             Images = Images.PX24
@@ -430,7 +429,7 @@ object SIZNormForm: TSIZNormForm
             Height = 36
             Hint = 'Удалить'
             Top = 0
-            Width = 40
+            Width = 32
             Align = alLeft
             Enabled = False
             Images = Images.PX24
@@ -445,7 +444,7 @@ object SIZNormForm: TSIZNormForm
             Height = 36
             Hint = 'Редактировать'
             Top = 0
-            Width = 40
+            Width = 32
             Align = alLeft
             Enabled = False
             Images = Images.PX24
@@ -460,7 +459,7 @@ object SIZNormForm: TSIZNormForm
             Height = 36
             Hint = 'Переместить строку вверх'
             Top = 0
-            Width = 40
+            Width = 32
             Align = alLeft
             Enabled = False
             Images = Images.PX24
@@ -475,7 +474,7 @@ object SIZNormForm: TSIZNormForm
             Height = 36
             Hint = 'Переместить строку вниз'
             Top = 0
-            Width = 40
+            Width = 32
             Align = alLeft
             Enabled = False
             Images = Images.PX24
@@ -493,8 +492,8 @@ object SIZNormForm: TSIZNormForm
           Align = alClient
           BevelOuter = bvNone
           BorderStyle = bsSingle
-          ClientHeight = 201
-          ClientWidth = 490
+          ClientHeight = 197
+          ClientWidth = 486
           TabOrder = 1
           object SubItemGrid: TsWorksheetGrid
             Left = 0
@@ -536,7 +535,7 @@ object SIZNormForm: TSIZNormForm
       end
       object ItemCaptionPanel: TPanel
         Left = 0
-        Height = 30
+        Height = 24
         Top = 0
         Width = 996
         Align = alTop

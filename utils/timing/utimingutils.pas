@@ -10,19 +10,19 @@ uses
   DK_Color, DK_Vector, DK_Matrix, DK_DateUtils, DK_Const, DK_Fonts, DK_VSTEdit,
   DK_VSTTables, DK_VSTCore,
   //Project utils
-  UVars, UConst, UWorkHours, UCalendar, USchedule, UTimetable;
+  UVars, UConst, UUtils, UWorkHours, UCalendar, USchedule, UTimetable;
 
   {----Staff list--------------------------------------------------------------}
 
   function GetStaffListForCommonTiming(const AYear, AMonth, AOrderType: Word;
                          out ATabNumIDs: TIntVector;
-                         out AStaffNames, ATabNums, APostNames, AScheduleNames: TStrVector;
+                         out AStaffNames, ATabNums, APostNames, ARanks, AScheduleNames: TStrVector;
                          out ARecrutDates, ADismissDates, APostBDs, APostEDs, AScheduleBDs, AScheduleEDs: TDateVector;
                          const ANeedLongName: Boolean = False): Boolean;
   function GetStaffListForCommonTiming(const AYear, AMonth, AOrderType: Word;
                          out ACategoryNames: TStrVector;
                          out ATabNumIDs: TIntMatrix;
-                         out AStaffNames, ATabNums, APostNames, AScheduleNames: TStrMatrix;
+                         out AStaffNames, ATabNums, APostNames, ARanks, AScheduleNames: TStrMatrix;
                          out ARecrutDates, ADismissDates, APostBDs, APostEDs, AScheduleBDs, AScheduleEDs: TDateMatrix;
                          const ANeedLongName: Boolean = False): Boolean;
 
@@ -157,7 +157,7 @@ implementation
 
 function GetStaffListForCommonTiming(const AYear, AMonth, AOrderType: Word;
            out ATabNumIDs: TIntVector;
-           out AStaffNames, ATabNums, APostNames, AScheduleNames: TStrVector;
+           out AStaffNames, ATabNums, APostNames, ARanks, AScheduleNames: TStrVector;
            out ARecrutDates, ADismissDates, APostBDs, APostEDs, AScheduleBDs, AScheduleEDs: TDateVector;
            const ANeedLongName: Boolean = False): Boolean;
 
@@ -168,7 +168,7 @@ begin
   FirstLastDayInMonth(AMonth, AYear, BD, ED);
   Result:= DataBase.StaffListForCommonTimingLoad(BD, ED, AOrderType, ATabNumIDs,
          ARecrutDates, ADismissDates, APostBDs, APostEDs, AScheduleBDs, AScheduleEDs,
-         Fs, Ns, Ps, ATabNums, APostNames, AScheduleNames);
+         Fs, Ns, Ps, ATabNums, APostNames, ARanks, AScheduleNames);
   if ANeedLongName then
     AStaffNames:= VNameLong(Fs, Ns, Ps)
   else
@@ -178,12 +178,12 @@ end;
 function GetStaffListForCommonTiming(const AYear, AMonth, AOrderType: Word;
                          out ACategoryNames: TStrVector;
                          out ATabNumIDs: TIntMatrix;
-                         out AStaffNames, ATabNums, APostNames, AScheduleNames: TStrMatrix;
+                         out AStaffNames, ATabNums, APostNames, ARanks, AScheduleNames: TStrMatrix;
                          out ARecrutDates, ADismissDates, APostBDs, APostEDs, AScheduleBDs, AScheduleEDs: TDateMatrix;
                          const ANeedLongName: Boolean = False): Boolean;
 var
   TabNumIDs: TIntVector;
-  StaffNames, TabNums, PostNames, ScheduleNames: TStrVector;
+  StaffNames, TabNums, PostNames, Ranks, ScheduleNames: TStrVector;
   RecrutDates, DismissDates, PostBDs, PostEDs, ScheduleBDs, ScheduleEDs: TDateVector;
   i, N1, N2: Integer;
   S: String;
@@ -195,6 +195,7 @@ var
     MAppend(AStaffNames, VCut(StaffNames, AIndex1, AIndex2));
     MAppend(ATabNums, VCut(TabNums, AIndex1, AIndex2));
     MAppend(APostNames, VCut(PostNames, AIndex1, AIndex2));
+    MAppend(ARanks, VCut(Ranks, AIndex1, AIndex2));
     MAppend(AScheduleNames, VCut(ScheduleNames, AIndex1, AIndex2));
 
     MAppend(ARecrutDates, VCut(RecrutDates, AIndex1, AIndex2));
@@ -211,6 +212,7 @@ begin
   AStaffNames:= nil;
   ATabNums:= nil;
   APostNames:= nil;
+  ARanks:= nil;
   AScheduleNames:= nil;
   ARecrutDates:= nil;
   ADismissDates:= nil;
@@ -220,7 +222,7 @@ begin
   AScheduleEDs:= nil;
 
   Result:= GetStaffListForCommonTiming(AYear, AMonth, AOrderType,
-           TabNumIDs, StaffNames, TabNums, PostNames, ScheduleNames,
+           TabNumIDs, StaffNames, TabNums, PostNames, Ranks, ScheduleNames,
            RecrutDates, DismissDates, PostBDs, PostEDs, ScheduleBDs, ScheduleEDs,
            ANeedLongName);
 
@@ -229,7 +231,7 @@ begin
   if AOrderType=0 then
     V:= ScheduleNames
   else
-    V:= PostNames;
+    V:= PostNameWithRank(PostNames, Ranks); //PostNames;
 
   S:= V[0];
   N1:= 0;

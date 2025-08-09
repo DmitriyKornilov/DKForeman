@@ -207,8 +207,6 @@ begin
   ]);
 
   EditingPanel.Width:= Round(ClientWidth*2/3);
-
-  DataUpdate;
 end;
 
 procedure TStaffForm.CloseButtonClick(Sender: TObject);
@@ -451,6 +449,7 @@ end;
 
 procedure TStaffForm.ColumnsListSelect;
 begin
+  if not CanLoadStaffList then Exit;
   StaffList.ColumnVisibles:= ParamList.Checkeds['ColumnsList'];
 end;
 
@@ -539,7 +538,8 @@ begin
                        StaffIDs, Genders, Families, Names, Patronymics, BornDates);
   end
   else
-    DataBase.StaffListLoad(ParamList.Selected['OrderType'],
+    DataBase.StaffListLoad(Date,
+                           ParamList.Selected['OrderType'],
                            ParamList.Selected['ListType'],
                            StaffIDs, TabNumIDs, Genders,
                            BornDates, RecrutDates, DismissDates,
@@ -885,6 +885,7 @@ begin
     ListToolPanel.Visible:= ModeType=mtEditing;
     ListOrderToolPanel.Visible:= ModeType=mtEditing;
 
+    StaffListUpdate;
     if ModeType=mtEditing then
     begin
       if not VIsNil(StaffIDs) then

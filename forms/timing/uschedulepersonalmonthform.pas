@@ -111,16 +111,16 @@ type
     MStaffList: TVSTCategoryCheckTable;
 
     VTabNumIDs: TIntVector;
-    VStaffNames, VTabNums, VPostNames, VScheduleNames: TStrVector;
+    VStaffNames, VTabNums, VPostNames, VRanks, VScheduleNames: TStrVector;
     VRecrutDates, VDismissDates, VPostBDs, VPostEDs, VScheduleBDs, VScheduleEDs: TDateVector;
 
     CategoryNames: TStrVector;
     MTabNumIDs: TIntMatrix;
-    MStaffNames, MTabNums, MPostNames, MScheduleNames: TStrMatrix;
+    MStaffNames, MTabNums, MPostNames, MRanks, MScheduleNames: TStrMatrix;
     MRecrutDates, MDismissDates, MPostBDs, MPostEDs, MScheduleBDs, MScheduleEDs: TDateMatrix;
 
     TabNumIDs, NormHours: TIntVector;
-    StaffNames, TabNums, PostNames: TStrVector;
+    StaffNames, TabNums, PostNames, Ranks: TStrVector;
     RecrutDates, DismissDates, PostBDs, PostEDs, ScheduleBDs, ScheduleEDs: TDateVector;
 
     procedure ParamListCreate;
@@ -281,7 +281,8 @@ begin
     'отображать строку ночных часов',
     'учитывать корректировки графика',
     'коды табеля для нерабочих дней',
-    'учитывать отпуск'
+    'учитывать отпуск',
+    'разряд в наименовании должности'
   ]);
   ParamList.AddCheckList('ViewParams', S, V, @ScheduleRedraw);
 
@@ -527,16 +528,16 @@ procedure TSchedulePersonalMonthForm.StaffListLoad;
   begin
     GetStaffListForCommonTiming(YearSpinEdit.Value, MonthDropDown.Month,
                      OrderType, CategoryNames, MTabNumIDs,
-                     MStaffNames, MTabNums, MPostNames, MScheduleNames,
+                     MStaffNames, MTabNums, MPostNames, MRanks, MScheduleNames,
                      MRecrutDates, MDismissDates, MPostBDs, MPostEDs, MScheduleBDs, MScheduleEDs,
                      False{short names});
     MStaffList.SetCategories(CategoryNames);
     MStaffList.SetColumn(TIMING_MONTH_STAFFLIST_COLUMN_NAMES[0], MStaffNames, taLeftJustify);
     MStaffList.SetColumn(TIMING_MONTH_STAFFLIST_COLUMN_NAMES[1], MTabNums);
-    MStaffList.SetColumn(TIMING_MONTH_STAFFLIST_COLUMN_NAMES[2], MPostNames, taLeftJustify);
-    MStaffList.SetColumn(TIMING_MONTH_STAFFLIST_COLUMN_NAMES[3], MPeriodToStr(MPostBDs, MPostEDs), taLeftJustify);
+    MStaffList.SetColumn(TIMING_MONTH_STAFFLIST_COLUMN_NAMES[2], PostNameWithRank(MPostNames, MRanks), taLeftJustify);
+    MStaffList.SetColumn(TIMING_MONTH_STAFFLIST_COLUMN_NAMES[3], PeriodToStr(MPostBDs, MPostEDs), taLeftJustify);
     MStaffList.SetColumn(TIMING_MONTH_STAFFLIST_COLUMN_NAMES[4], MScheduleNames, taLeftJustify);
-    MStaffList.SetColumn(TIMING_MONTH_STAFFLIST_COLUMN_NAMES[5], MPeriodToStr(MScheduleBDs, MScheduleEDs), taLeftJustify);
+    MStaffList.SetColumn(TIMING_MONTH_STAFFLIST_COLUMN_NAMES[5], PeriodToStr(MScheduleBDs, MScheduleEDs), taLeftJustify);
     MStaffList.Draw;
     MStaffList.ExpandAll(True);
     MStaffList.CheckAll(True);
@@ -547,15 +548,15 @@ procedure TSchedulePersonalMonthForm.StaffListLoad;
   begin
     GetStaffListForCommonTiming(YearSpinEdit.Value, MonthDropDown.Month,
                      OrderType, VTabNumIDs,
-                     VStaffNames, VTabNums, VPostNames, VScheduleNames,
+                     VStaffNames, VTabNums, VPostNames, VRanks, VScheduleNames,
                      VRecrutDates, VDismissDates, VPostBDs, VPostEDs, VScheduleBDs, VScheduleEDs,
                      False{short names});
     VStaffList.SetColumn(TIMING_MONTH_STAFFLIST_COLUMN_NAMES[0], VStaffNames, taLeftJustify);
     VStaffList.SetColumn(TIMING_MONTH_STAFFLIST_COLUMN_NAMES[1], VTabNums);
-    VStaffList.SetColumn(TIMING_MONTH_STAFFLIST_COLUMN_NAMES[2], VPostNames, taLeftJustify);
-    VStaffList.SetColumn(TIMING_MONTH_STAFFLIST_COLUMN_NAMES[3], VPeriodToStr(VPostBDs, VPostEDs), taLeftJustify);
+    VStaffList.SetColumn(TIMING_MONTH_STAFFLIST_COLUMN_NAMES[2], PostNameWithRank(VPostNames, VRanks), taLeftJustify);
+    VStaffList.SetColumn(TIMING_MONTH_STAFFLIST_COLUMN_NAMES[3], PeriodToStr(VPostBDs, VPostEDs), taLeftJustify);
     VStaffList.SetColumn(TIMING_MONTH_STAFFLIST_COLUMN_NAMES[4], VScheduleNames, taLeftJustify);
-    VStaffList.SetColumn(TIMING_MONTH_STAFFLIST_COLUMN_NAMES[5], VPeriodToStr(VScheduleBDs, VScheduleEDs), taLeftJustify);
+    VStaffList.SetColumn(TIMING_MONTH_STAFFLIST_COLUMN_NAMES[5], PeriodToStr(VScheduleBDs, VScheduleEDs), taLeftJustify);
     VStaffList.Draw;
     VStaffList.CheckAll(True);
   end;
@@ -639,6 +640,7 @@ var
     TabNumIDs:= MToVector(MTabNumIDs, Flags);
     StaffNames:= MToVector(MStaffNames, Flags);
     PostNames:= MToVector(MPostNames, Flags);
+    Ranks:= MToVector(MRanks, Flags);
     TabNums:= MToVector(MTabNums, Flags);
     RecrutDates:= MToVector(MRecrutDates, Flags);
     DismissDates:= MToVector(MDismissDates, Flags);
@@ -656,6 +658,7 @@ var
     TabNumIDs:= VCut(VTabNumIDs, Flags);
     StaffNames:= VCut(VStaffNames, Flags);
     PostNames:= VCut(VPostNames, Flags);
+    Ranks:= VCut(VRanks, Flags);
     TabNums:= VCut(VTabNums, Flags);
     RecrutDates:= VCut(VRecrutDates, Flags);
     DismissDates:= VCut(VDismissDates, Flags);
@@ -734,7 +737,7 @@ begin
     ZoomPercent:= AZoomPercent;
     Sheet.Zoom(ZoomPercent);
     Sheet.Draw(MonthCalendar,
-               StaffNames, TabNums, PostNames, NormHours,
+               StaffNames, TabNums, PostNames, Ranks, NormHours,
                ParamList.Checkeds['ViewParams'],
                ParamList.Checkeds['ExportParams'],
                Schedules, BeforeSchedules);
@@ -786,7 +789,7 @@ begin
                                ParamList.Checkeds['ExtraColumns']);
     try
       ExpSheet.Draw(MonthCalendar,
-               StaffNames, TabNums, PostNames, NormHours,
+               StaffNames, TabNums, PostNames, Ranks, NormHours,
                ParamList.Checkeds['ViewParams'],
                ParamList.Checkeds['ExportParams'],
                Schedules, BeforeSchedules);

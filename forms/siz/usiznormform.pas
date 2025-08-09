@@ -322,7 +322,7 @@ begin
 
   NormList.Visible:= False;
   try
-    NormList.SetColumn('Период действия', VPeriodToStr(BeginDates, EndDates), taLeftJustify);
+    NormList.SetColumn('Период действия', PeriodToStr(BeginDates, EndDates), taLeftJustify);
     NormList.SetColumn('Нормы выдачи СИЗ', NormNames, taLeftJustify);
     NormList.SetColumn('Примечание', Notes, taLeftJustify);
     NormList.Draw;

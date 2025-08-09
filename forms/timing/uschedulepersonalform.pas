@@ -163,7 +163,7 @@ type
     TabNumIDs: TIntVector;
     StaffLongNames, StaffShortNames, ScheduleNames: TStrVector;
     RecrutDates, DismissDates, Holidays: TDateVector;
-    Families, Names, Patronymics, TabNums, PostNames: TStrVector;
+    Families, Names, Patronymics, TabNums, PostNames, Ranks: TStrVector;
 
     SelectedHoursTotal, SelectedHoursNight, SelectedDigMark, SelectedShiftNum: Integer;
     SelectedStrMark: String;
@@ -881,9 +881,9 @@ begin
   DataBase.StaffListForPersonalTimingLoad(STrimLeft(FilterString),
                        BD, ED, OrderType, IsDescOrder,
                        TabNumIDs, RecrutDates, DismissDates,
-                       Families, Names, Patronymics, TabNums, PostNames);
-  StaffLongNames:= StaffFullName(Families, Names, Patronymics, TabNums, PostNames, False{long});
-  StaffShortNames:= StaffFullName(Families, Names, Patronymics, TabNums, PostNames, True{short});
+                       Families, Names, Patronymics, TabNums, PostNames, Ranks);
+  StaffLongNames:= StaffFullName(Families, Names, Patronymics, TabNums, PostNames, {Ranks,} False{long});
+  StaffShortNames:= StaffFullName(Families, Names, Patronymics, TabNums, PostNames, {Ranks,} True{short});
   ScheduleNames:= StaffFullName(Families, Names, Patronymics, TabNums, False{long});
 
   ExportButton.Enabled:= not VIsNil(TabNumIDs);

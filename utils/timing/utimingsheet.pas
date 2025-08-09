@@ -45,7 +45,7 @@ type
 
   TMonthCustomSheet = class(TCustomSheet)
   protected
-    FStaffNames, FTabNums, FPostNames: TStrVector;
+    FStaffNames, FTabNums, FPostNames, FRanks: TStrVector;
 
     FSelectedRowIndex1: Integer;
     FSelectedRowIndex2: Integer;
@@ -152,7 +152,7 @@ type
                        const AExtraColumns: TBoolVector);
 
     procedure DrawCustom(const ACalendar: TCalendar;
-                   const AStaffNames, ATabNums, APostNames: TStrVector;
+                   const AStaffNames, ATabNums, APostNames, ARanks: TStrVector;
                    const ANormHours: TIntVector;
                    const AViewParams: TBoolVector;
                    const AExportParams: TBoolVector
@@ -171,6 +171,7 @@ type
     FYear, FMonth: Word;
     FHalfMonth: Boolean;
     FNeedTopBottom: Boolean;
+    FNeedRanks: Boolean;
     FBorderStyle: Byte;
 
     procedure TopDraw; virtual; abstract;
@@ -184,8 +185,8 @@ type
     procedure Draw(const ACompany, ADepartment: String;
                    const ACalendar: TCalendar;
                    const ATimetables: TTimetableVector;
-                   const AStaffNames, ATabNums, APostNames: TStrVector;
-                   const ANeedTopBottom, AHalfMonth: Boolean;
+                   const AStaffNames, ATabNums, APostNames, ARanks: TStrVector;
+                   const ANeedRanks, ANeedTopBottom, AHalfMonth: Boolean;
                    const AExportParams: TBoolVector;
                     //AExportParams:
                     //0 - заголовок таблицы на каждой странице
@@ -821,7 +822,7 @@ begin
 end;
 
 procedure TMonthSheet.DrawCustom(const ACalendar: TCalendar;
-                   const AStaffNames, ATabNums, APostNames: TStrVector;
+                   const AStaffNames, ATabNums, APostNames, ARanks: TStrVector;
                    const ANormHours: TIntVector;
                    const AViewParams: TBoolVector;
                    const AExportParams: TBoolVector
@@ -838,6 +839,7 @@ begin
   FStaffNames:= AStaffNames;
   FTabNums:= ATabNums;
   FPostNames:= APostNames;
+  FRanks:= ARanks;
   FNormHours:= ANormHours;
 
   Writer.BeginEdit;
@@ -1000,8 +1002,8 @@ end;
 procedure TMonthFormSheet.Draw(const ACompany, ADepartment: String;
                    const ACalendar: TCalendar;
                    const ATimetables: TTimetableVector;
-                   const AStaffNames, ATabNums, APostNames: TStrVector;
-                   const ANeedTopBottom, AHalfMonth: Boolean;
+                   const AStaffNames, ATabNums, APostNames, ARanks: TStrVector;
+                   const ANeedRanks, ANeedTopBottom, AHalfMonth: Boolean;
                    const AExportParams: TBoolVector;
                     //AExportParams:
                     //0 - заголовок таблицы на каждой странице
@@ -1018,11 +1020,13 @@ begin
   FCalendar:= ACalendar;
   FYear:= YearOfDate(ACalendar.BeginDate);
   FMonth:= MonthOfDate(ACalendar.BeginDate);
+  FNeedRanks:= ANeedRanks;
   FNeedTopBottom:= ANeedTopBottom;
   FHalfMonth:= AHalfMonth;
   FStaffNames:= AStaffNames;
   FTabNums:= ATabNums;
   FPostNames:= APostNames;
+  FRanks:= ARanks;
   FBorderStyle:= ABorderStyle;
 
   Writer.BeginEdit;

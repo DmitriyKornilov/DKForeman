@@ -117,6 +117,9 @@ end;
 
 procedure TBriefingEditForm.FormShow(Sender: TObject);
 begin
+  Images.ToButtons([SaveButton, CancelButton]);
+  SetEventButtons([SaveButton, CancelButton]);
+
   BriefTypeDropDown.AutoWidth;
   PeriodDropDown.AutoWidth;
 

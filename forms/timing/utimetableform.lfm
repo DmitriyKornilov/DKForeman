@@ -1,19 +1,18 @@
 object TimetableForm: TTimetableForm
   Left = 15
-  Height = 678
+  Height = 542
   Top = 159
-  Width = 1814
+  Width = 1451
   Caption = 'TimetableForm'
-  ClientHeight = 678
-  ClientWidth = 1814
-  DesignTimePPI = 120
+  ClientHeight = 542
+  ClientWidth = 1451
   LCLVersion = '4.2.0.0'
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
   object ToolPanel: TPanel
     Left = 2
-    Height = 40
+    Height = 32
     Top = 2
     Width = 1810
     Align = alTop
@@ -22,7 +21,7 @@ object TimetableForm: TTimetableForm
     BorderSpacing.Right = 2
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 40
+    ClientHeight = 32
     ClientWidth = 1810
     ParentFont = False
     TabOrder = 0
@@ -70,11 +69,11 @@ object TimetableForm: TTimetableForm
     end
     object CloseButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 1766
+      Left = 1774
       Height = 36
       Hint = 'Закрыть'
       Top = 0
-      Width = 40
+      Width = 32
       Align = alRight
       Images = Images.PX24
       ImageIndex = 3
@@ -147,14 +146,14 @@ object TimetableForm: TTimetableForm
     Left = 2
     Height = 600
     Top = 76
-    Width = 580
+    Width = 464
     Align = alLeft
     BorderSpacing.Left = 2
     BorderSpacing.Top = 2
     BorderSpacing.Bottom = 2
     BevelOuter = bvNone
     ClientHeight = 600
-    ClientWidth = 580
+    ClientWidth = 464
     TabOrder = 1
     object StaffListVT: TVirtualStringTree
       Left = 0
@@ -166,20 +165,20 @@ object TimetableForm: TTimetableForm
       Header.AutoSizeIndex = 0
       Header.Columns = <>
       Header.MainColumn = -1
-      Margin = 50
+      Margin = 40
       TabOrder = 0
     end
     object ListFilterToolPanel: TPanel
       Left = 0
-      Height = 40
+      Height = 32
       Top = 32
       Width = 580
       Align = alTop
       BorderSpacing.Bottom = 2
       BevelOuter = bvNone
       BorderStyle = bsSingle
-      ClientHeight = 40
-      ClientWidth = 580
+      ClientHeight = 28
+      ClientWidth = 576
       ParentBackground = False
       ParentColor = False
       ParentFont = False
@@ -200,24 +199,24 @@ object TimetableForm: TTimetableForm
     end
     object ListOrderToolPanel: TPanel
       Left = 0
-      Height = 40
-      Top = 560
+      Height = 32
+      Top = 568
       Width = 580
       Align = alBottom
       BorderSpacing.Top = 2
       BevelOuter = bvNone
       BorderStyle = bsSingle
-      ClientHeight = 40
-      ClientWidth = 580
+      ClientHeight = 28
+      ClientWidth = 576
       TabOrder = 2
       object OrderLabel: TLabel
         AnchorSideLeft.Control = OrderButtonPanel
         AnchorSideLeft.Side = asrBottom
         AnchorSideTop.Control = ListOrderToolPanel
         AnchorSideTop.Side = asrCenter
-        Left = 101
+        Left = 81
         Height = 20
-        Top = 8
+        Top = 6
         Width = 115
         Caption = 'Сортировать по:'
         ParentColor = False
@@ -227,11 +226,11 @@ object TimetableForm: TTimetableForm
         AnchorSideLeft.Side = asrBottom
         AnchorSideTop.Control = ListOrderToolPanel
         AnchorSideTop.Side = asrCenter
-        Left = 222
+        Left = 178
         Height = 24
-        Top = 6
+        Top = 5
         Width = 63
-        BorderSpacing.Left = 6
+        BorderSpacing.Left = 5
         Caption = 'Ф.И.О.'
         Checked = True
         TabOrder = 1
@@ -243,11 +242,11 @@ object TimetableForm: TTimetableForm
         AnchorSideLeft.Side = asrBottom
         AnchorSideTop.Control = ListOrderToolPanel
         AnchorSideTop.Side = asrCenter
-        Left = 291
+        Left = 233
         Height = 24
-        Top = 6
+        Top = 5
         Width = 97
-        BorderSpacing.Left = 6
+        BorderSpacing.Left = 5
         Caption = 'должности'
         TabOrder = 0
         OnClick = PostRadioButtonClick
@@ -257,11 +256,11 @@ object TimetableForm: TTimetableForm
         AnchorSideLeft.Side = asrBottom
         AnchorSideTop.Control = ListOrderToolPanel
         AnchorSideTop.Side = asrCenter
-        Left = 394
+        Left = 315
         Height = 24
-        Top = 6
+        Top = 5
         Width = 161
-        BorderSpacing.Left = 6
+        BorderSpacing.Left = 5
         Caption = 'табельному номеру'
         TabOrder = 2
         OnChange = TabNumRadioButtonChange
@@ -283,7 +282,7 @@ object TimetableForm: TTimetableForm
           Height = 36
           Hint = 'Изменить порядок сортировки'
           Top = 0
-          Width = 40
+          Width = 32
           Align = alLeft
           Images = Images.PX24
           ImageIndex = 15
@@ -297,7 +296,7 @@ object TimetableForm: TTimetableForm
           Height = 36
           Hint = 'Изменить порядок сортировки'
           Top = 0
-          Width = 40
+          Width = 32
           Align = alLeft
           Images = Images.PX24
           ImageIndex = 16
@@ -320,7 +319,7 @@ object TimetableForm: TTimetableForm
     end
     object ListCaptionPanel: TPanel
       Left = 0
-      Height = 30
+      Height = 24
       Top = 0
       Width = 580
       Align = alTop
@@ -339,14 +338,14 @@ object TimetableForm: TTimetableForm
     Left = 584
     Height = 600
     Top = 76
-    Width = 350
+    Width = 280
     Align = alLeft
     BorderSpacing.Left = 2
     BorderSpacing.Top = 2
     BorderSpacing.Bottom = 2
     BevelOuter = bvNone
     ClientHeight = 600
-    ClientWidth = 350
+    ClientWidth = 280
     Color = clWindow
     ParentBackground = False
     ParentColor = False
@@ -365,7 +364,7 @@ object TimetableForm: TTimetableForm
     end
     object SettingCaptionPanel: TPanel
       Left = 0
-      Height = 30
+      Height = 24
       Top = 0
       Width = 350
       Align = alTop
@@ -386,14 +385,14 @@ object TimetableForm: TTimetableForm
     Left = 936
     Height = 600
     Top = 76
-    Width = 600
+    Width = 480
     Align = alLeft
     BorderSpacing.Left = 2
     BorderSpacing.Top = 2
     BorderSpacing.Bottom = 2
     BevelOuter = bvNone
     ClientHeight = 600
-    ClientWidth = 600
+    ClientWidth = 480
     TabOrder = 3
     Visible = False
     object DayPanel: TPanel
@@ -408,14 +407,14 @@ object TimetableForm: TTimetableForm
       TabOrder = 0
       object DayToolPanel: TPanel
         Left = 0
-        Height = 40
+        Height = 32
         Top = 0
         Width = 600
         Align = alTop
         BevelOuter = bvNone
         BorderStyle = bsSingle
-        ClientHeight = 40
-        ClientWidth = 600
+        ClientHeight = 28
+        ClientWidth = 596
         ParentFont = False
         TabOrder = 0
         object MonthPanel: TPanel
@@ -435,9 +434,9 @@ object TimetableForm: TTimetableForm
             AnchorSideRight.Side = asrBottom
             AnchorSideBottom.Side = asrBottom
             Left = 2
-            Height = 28
-            Top = 4
-            Width = 200
+            Height = 30
+            Top = 3
+            Width = 160
             Anchors = [akTop, akLeft, akBottom]
             StateClicked.Background.Gradient1.StartColor = 8404992
             StateClicked.Background.Gradient1.EndColor = 4194304
@@ -541,7 +540,7 @@ object TimetableForm: TTimetableForm
           Height = 36
           Hint = 'Заполнить месяц по персональному графику'
           Top = 0
-          Width = 40
+          Width = 32
           Align = alLeft
           Images = Images.PX24
           ImageIndex = 29
@@ -555,7 +554,7 @@ object TimetableForm: TTimetableForm
           Height = 36
           Hint = 'Очистить месяц'
           Top = 0
-          Width = 40
+          Width = 32
           Align = alLeft
           Images = Images.PX24
           ImageIndex = 10
@@ -569,7 +568,7 @@ object TimetableForm: TTimetableForm
           Height = 36
           Hint = 'Редактировать день'
           Top = 0
-          Width = 40
+          Width = 32
           Align = alLeft
           Images = Images.PX24
           ImageIndex = 6
@@ -583,7 +582,7 @@ object TimetableForm: TTimetableForm
           Height = 36
           Hint = 'Копировать день'
           Top = 0
-          Width = 40
+          Width = 32
           Align = alLeft
           Images = Images.PX24
           ImageIndex = 9
@@ -615,32 +614,32 @@ object TimetableForm: TTimetableForm
         Header.AutoSizeIndex = 0
         Header.Columns = <>
         Header.MainColumn = -1
-        Margin = 50
+        Margin = 40
         TabOrder = 1
         OnDblClick = DayVTDblClick
       end
     end
     object CopyPanel: TPanel
       Left = 0
-      Height = 100
-      Top = 500
+      Height = 80
+      Top = 520
       Width = 600
       Align = alBottom
       BevelOuter = bvNone
-      ClientHeight = 100
+      ClientHeight = 80
       ClientWidth = 600
       TabOrder = 1
       Visible = False
       object CopyToolPanel: TPanel
         Left = 0
-        Height = 40
+        Height = 32
         Top = 0
         Width = 600
         Align = alTop
         BevelOuter = bvNone
         BorderStyle = bsSingle
-        ClientHeight = 40
-        ClientWidth = 600
+        ClientHeight = 28
+        ClientWidth = 596
         ParentFont = False
         TabOrder = 0
         object CopySaveButton: TSpeedButton
@@ -649,7 +648,7 @@ object TimetableForm: TTimetableForm
           Height = 36
           Hint = 'Сохранить'
           Top = 0
-          Width = 40
+          Width = 32
           Align = alLeft
           Enabled = False
           Images = Images.PX24
@@ -664,7 +663,7 @@ object TimetableForm: TTimetableForm
           Height = 36
           Hint = 'Удалить'
           Top = 0
-          Width = 40
+          Width = 32
           Align = alLeft
           Enabled = False
           Images = Images.PX24
@@ -679,7 +678,7 @@ object TimetableForm: TTimetableForm
           Height = 36
           Hint = 'Отменить'
           Top = 0
-          Width = 40
+          Width = 32
           Align = alLeft
           Images = Images.PX24
           ImageIndex = 8
@@ -695,18 +694,18 @@ object TimetableForm: TTimetableForm
         Width = 600
         Align = alClient
         BorderSpacing.Top = 2
-        DefaultNodeHeight = 31
+        DefaultNodeHeight = 25
         DefaultText = 'Node'
         Header.AutoSizeIndex = 0
         Header.Columns = <>
-        Header.Height = 20
+        Header.Height = 16
         Header.MainColumn = -1
         TabOrder = 1
       end
     end
     object EditingCaptionPanel: TPanel
       Left = 0
-      Height = 30
+      Height = 24
       Top = 0
       Width = 600
       Align = alTop
@@ -727,7 +726,7 @@ object TimetableForm: TTimetableForm
     Left = 1536
     Height = 602
     Top = 76
-    Width = 6
+    Width = 5
     ResizeStyle = rsLine
   end
   object ViewPanel: TPanel
@@ -807,7 +806,7 @@ object TimetableForm: TTimetableForm
         ClientHeight = 22
         ClientWidth = 266
         Color = clWhite
-        Constraints.MinHeight = 22
+        Constraints.MinHeight = 18
         ParentBackground = False
         ParentColor = False
         TabOrder = 1
@@ -815,7 +814,7 @@ object TimetableForm: TTimetableForm
           Left = 0
           Height = 21
           Top = 1
-          Width = 109
+          Width = 87
           Align = alLeft
           BorderSpacing.Top = 1
           BevelOuter = bvNone
@@ -824,10 +823,10 @@ object TimetableForm: TTimetableForm
           TabOrder = 0
         end
         object ZoomPanel: TPanel
-          Left = 152
+          Left = 175
           Height = 22
           Top = 0
-          Width = 114
+          Width = 91
           Align = alRight
           BevelOuter = bvNone
           Caption = 'ZoomPanel'
@@ -847,7 +846,7 @@ object TimetableForm: TTimetableForm
     end
     object ViewCaptionPanel: TPanel
       Left = 0
-      Height = 30
+      Height = 24
       Top = 0
       Width = 270
       Align = alTop
@@ -867,7 +866,7 @@ object TimetableForm: TTimetableForm
   end
   object StaffCaptionPanel: TPanel
     Left = 0
-    Height = 30
+    Height = 24
     Top = 44
     Width = 1814
     Align = alTop

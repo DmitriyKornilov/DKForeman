@@ -49,11 +49,12 @@ type
                                          ШТАТ
     **************************************************************************)
 
-    {Cписок людей: True - ОК, False - список пуст;
+    {Cписок людей на дату ADate: True - ОК, False - список пуст;
      AOrderType - сортировка: 0-ФИО, 1-табельный номер, 2-должность, 3-дата рождения,
                               4-дата приема, 5-дата увольнения, 6-разряд;
      AListType - включить в список: 0-всех, 1-работающих, 2-уволенных, 3-без таб.№}
-    function StaffListLoad(const AOrderType, AListType: Byte;
+    function StaffListLoad(const ADate: TDate;
+                           const AOrderType, AListType: Byte;
                            out AStaffIDs, ATabNumIDs, AGenders: TIntVector;
                            out ABornDates, ARecrutDates, ADismissDates: TDateVector;
                            out AFs, ANs, APs, ATabNums, APostNames, ARanks: TStrVector): Boolean;
@@ -70,7 +71,7 @@ type
                              const AIsDescOrder: Boolean;
                              out ATabNumIDs: TIntVector;
                              out ARecrutDates, ADismissDates: TDateVector;
-                             out AFs, ANs, APs, ATabNums, APostNames: TStrVector): Boolean;
+                             out AFs, ANs, APs, ATabNums, APostNames, ARanks: TStrVector): Boolean;
 
     {Cписок сотрудников для общих графиков и табелей
      ABeginDate, AEndDate - отчетный период
@@ -80,7 +81,7 @@ type
                    const AOrderType: Byte;
                    out ATabNumIDs: TIntVector;
                    out ARecrutDates, ADismissDates, APostBDs, APostEDs, AScheduleBDs, AScheduleEDs: TDateVector;
-                   out AFs, ANs, APs, ATabNums, APostNames, AScheduleNames: TStrVector): Boolean;
+                   out AFs, ANs, APs, ATabNums, APostNames, ARanks, AScheduleNames: TStrVector): Boolean;
 
     {Cписок сотрудников для планирования отпусков на год
      AYear - отчетный период
@@ -1138,7 +1139,8 @@ begin
   ADropDown.KeyPick(Items, ADigMarks, ASelectDigMark);
 end;
 
-function TDataBase.StaffListLoad(const AOrderType, AListType: Byte;
+function TDataBase.StaffListLoad(const ADate: TDate;
+                               const AOrderType, AListType: Byte;
                                out AStaffIDs, ATabNumIDs, AGenders: TIntVector;
                                out ABornDates, ARecrutDates, ADismissDates: TDateVector;
                                out AFs, ANs, APs, ATabNums, APostNames, ARanks: TStrVector): Boolean;
@@ -1193,7 +1195,7 @@ begin
 
   QSetQuery(FQuery);
   QSetSQL(SQLStr);
-  QParamDT('ADate', Date);
+  QParamDT('ADate', ADate);
   QOpen;
   if not QIsEmpty then
   begin
@@ -1250,7 +1252,7 @@ function TDataBase.StaffListForPersonalTimingLoad(const AFilterValue: String;
                              const AIsDescOrder: Boolean;
                              out ATabNumIDs: TIntVector;
                              out ARecrutDates, ADismissDates: TDateVector;
-                             out AFs, ANs, APs, ATabNums, APostNames: TStrVector): Boolean;
+                             out AFs, ANs, APs, ATabNums, APostNames, ARanks: TStrVector): Boolean;
 var
   SQLStr: String;
   i, PostID: Integer;
@@ -1267,6 +1269,7 @@ begin
   APs:= nil;
   ATabNums:= nil;
   APostNames:= nil;
+  ARanks:= nil;
 
   SQLStr:=
     'SELECT t1.TabNumID, t1.TabNum, t1.RecrutDate, t1.DismissDate, ' +
@@ -1319,7 +1322,7 @@ begin
   begin
     StaffPostForDate(ATabNumIDs[i], Date, PostID, PostName, Rank);
     VAppend(APostNames, PostName);
-    //VAppend(ARanks, Rank);
+    VAppend(ARanks, Rank);
   end;
 
   //сортировка по наименованию должности
@@ -1338,14 +1341,14 @@ begin
   APs:= VReplace(APs, Indexes);
   ATabNums:= VReplace(ATabNums, Indexes);
   APostNames:= VReplace(APostNames, Indexes);
-  //ARanks:= VReplace(ARanks, Indexes);
+  ARanks:= VReplace(ARanks, Indexes);
 end;
 
 function TDataBase.StaffListForCommonTimingLoad(const ABeginDate, AEndDate: TDate;
                    const AOrderType: Byte;
                    out ATabNumIDs: TIntVector;
                    out ARecrutDates, ADismissDates, APostBDs, APostEDs, AScheduleBDs, AScheduleEDs: TDateVector;
-                   out AFs, ANs, APs, ATabNums, APostNames, AScheduleNames: TStrVector): Boolean;
+                   out AFs, ANs, APs, ATabNums, APostNames, ARanks, AScheduleNames: TStrVector): Boolean;
 var
   SQLStr: String;
   BD, ED, RecrutDate, DismissDate: TDate;
@@ -1364,13 +1367,14 @@ begin
   APs:= nil;
   ATabNums:= nil;
   APostNames:= nil;
+  ARanks:= nil;
   AScheduleNames:= nil;
 
   SQLStr:=
     'SELECT t1.Family, t1.Name, t1.Patronymic, '+
            't2.TabNumID, t2.TabNum, t2.RecrutDate, t2.DismissDate, ' +
            't3.ScheduleID, t3.BeginDate AS ScheduleBD, t3.EndDate AS ScheduleED, '+
-           't4.FirstDate AS PostBD, t4.LastDate AS PostED, '+
+           't4.Rank, t4.FirstDate AS PostBD, t4.LastDate AS PostED, '+
            't5.PostName, ' +
            't6.ScheduleName ' +
            //'t6.ScheduleName, t6.WeekHours, t6.CycleCount ' +
@@ -1407,6 +1411,7 @@ begin
       VAppend(APs, QFieldStr('Patronymic'));
       VAppend(ATabNums, QFieldStr('TabNum'));
       VAppend(APostNames, QFieldStr('PostName'));
+      VAppend(ARanks, QFieldStr('Rank'));
       VAppend(AScheduleNames, QFieldStr('ScheduleName'));
 
       RecrutDate:= QFieldDT('RecrutDate');

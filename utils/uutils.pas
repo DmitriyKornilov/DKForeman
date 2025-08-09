@@ -21,22 +21,35 @@ uses
 
   //Periods
   function PeriodToStr(const ABeginDate, AEndDate: TDate): String;
-  function VPeriodToStr(const ABeginDates, AEndDates: TDateVector): TStrVector;
-  function MPeriodToStr(const ABeginDates, AEndDates: TDateMatrix): TStrMatrix;
+  function PeriodToStr(const ABeginDates, AEndDates: TDateVector): TStrVector;
+  function PeriodToStr(const ABeginDates, AEndDates: TDateMatrix): TStrMatrix;
+
+  //Post
+  function PostNameWithRank(const APostName, ARank: String): String;
+  function PostNameWithRank(const APostNames, ARanks: TStrVector): TStrVector;
+  function PostNameWithRank(const APostNames, ARanks: TStrMatrix): TStrMatrix;
 
   //Staff
   function StaffFullName(const AFamily, AName, APatronymic: String;
                          const AIsShortName: Boolean): String;
   function StaffFullName(const AFamilies, ANames, APatronymics: TStrVector;
                          const AIsShortName: Boolean): TStrVector;
+
   function StaffFullName(const AStaffName, ATabNum: String): String;
+
   function StaffFullName(const AFamily, AName, APatronymic, ATabNum: String;
                          const AIsShortName: Boolean): String;
   function StaffFullName(const AFamilies, ANames, APatronymics, ATabNums: TStrVector;
                          const AIsShortName: Boolean): TStrVector;
+
   function StaffFullName(const AFamily, AName, APatronymic, ATabNum, APostName: String;
                          const AIsShortName: Boolean): String;
   function StaffFullName(const AFamilies, ANames, APatronymics, ATabNums, APostNames: TStrVector;
+                         const AIsShortName: Boolean): TStrVector;
+
+  function StaffFullName(const AFamily, AName, APatronymic, ATabNum, APostName, ARank: String;
+                         const AIsShortName: Boolean): String;
+  function StaffFullName(const AFamilies, ANames, APatronymics, ATabNums, APostNames, ARanks: TStrVector;
                          const AIsShortName: Boolean): TStrVector;
 
 implementation
@@ -78,7 +91,7 @@ begin
     Result:= Result + FormatDateTime('dd.mm.yyyy', AEndDate);
 end;
 
-function VPeriodToStr(const ABeginDates, AEndDates: TDateVector): TStrVector;
+function PeriodToStr(const ABeginDates, AEndDates: TDateVector): TStrVector;
 var
   i: Integer;
 begin
@@ -87,13 +100,39 @@ begin
     VAppend(Result, PeriodToStr(ABeginDates[i], AEndDates[i]));
 end;
 
-function MPeriodToStr(const ABeginDates, AEndDates: TDateMatrix): TStrMatrix;
+function PeriodToStr(const ABeginDates, AEndDates: TDateMatrix): TStrMatrix;
 var
   i: Integer;
 begin
   Result:= nil;
   for i:= 0 to High(ABeginDates) do
-    MAppend(Result, VPeriodToStr(ABeginDates[i], AEndDates[i]));
+    MAppend(Result, PeriodToStr(ABeginDates[i], AEndDates[i]));
+end;
+
+function PostNameWithRank(const APostName, ARank: String): String;
+begin
+  Result:= APostName;
+  if not SEmpty(ARank) then
+    Result:= Result + ' (' + ARank + ' разряд)';
+end;
+
+function PostNameWithRank(const APostNames, ARanks: TStrVector): TStrVector;
+var
+  i: Integer;
+begin
+  Result:= nil;
+  if VIsNil(APostNames) then Exit;
+  for i:= 0 to High(APostNames) do
+    VAppend(Result, PostNameWithRank(APostNames[i], ARanks[i]));
+end;
+
+function PostNameWithRank(const APostNames, ARanks: TStrMatrix): TStrMatrix;
+var
+  i: Integer;
+begin
+  Result:= nil;
+  for i:= 0 to High(APostNames) do
+    MAppend(Result, PostNameWithRank(APostNames[i], ARanks[i]));
 end;
 
 function StaffFullName(const AFamily, AName, APatronymic: String;
@@ -168,6 +207,27 @@ begin
   for i:= 0 to High(AFamilies) do
     VAppend(Result, StaffFullName(AFamilies[i], ANames[i], APatronymics[i],
                                   ATabNums[i], APostNames[i], AIsShortName));
+end;
+
+function StaffFullName(const AFamily, AName, APatronymic, ATabNum, APostName, ARank: String;
+                       const AIsShortName: Boolean): String;
+var
+  PostName: String;
+begin
+  PostName:= PostNameWithRank(APostName, ARank);
+  Result:= StaffFullName(AFamily, AName, APatronymic, ATabNum, PostName, AIsShortName);
+end;
+
+function StaffFullName(const AFamilies, ANames, APatronymics, ATabNums, APostNames, ARanks: TStrVector;
+                       const AIsShortName: Boolean): TStrVector;
+var
+  i: Integer;
+begin
+  Result:= nil;
+  if VIsNil(AFamilies) then Exit;
+  for i:= 0 to High(AFamilies) do
+    VAppend(Result, StaffFullName(AFamilies[i], ANames[i], APatronymics[i],
+                                  ATabNums[i], APostNames[i], ARanks[i], AIsShortName));
 end;
 
 end.

@@ -8,7 +8,7 @@ uses
   Classes, SysUtils, Graphics, fpspreadsheetgrid, fpspreadsheet, fpstypes,
   LCLType, Controls, DateUtils, Grids,
   //Project utils
-  UTimingUtils, UConst, UTypes, UCalendar, UWorkHours, USchedule, UTimingSheet,
+  UTimingUtils, UConst, UUtils, UTypes, UCalendar, UWorkHours, USchedule, UTimingSheet,
   //DK packages utils
   DK_SheetWriter, DK_Vector, DK_Const, DK_DateUtils, DK_StrUtils, DK_SheetTypes,
   DK_SheetConst, DK_Math, DK_Color;
@@ -279,7 +279,7 @@ type
                        );
 
     procedure Draw(const ACalendar: TCalendar;
-                   const AStaffNames, ATabNums, APostNames: TStrVector;
+                   const AStaffNames, ATabNums, APostNames, ARanks: TStrVector;
                    const ANormHours: TIntVector;
                    const AViewParams: TBoolVector;
                     //AViewParams:
@@ -287,6 +287,7 @@ type
                     //1 - Учитывать корректировки графика
                     //2 - Коды табеля для нерабочих дней
                     //3 - Учитывать отпуск
+                    //4 - Разряд в наименовании должности
                    const AExportParams: TBoolVector;
                     //AExportParams:
                     //0 - заголовок таблицы на каждой странице
@@ -487,7 +488,10 @@ begin
   begin
     Writer.SetAlignment(haLeft, vaCenter);
     C:= C + 1;
-    Writer.WriteText(R, C, R+n, C, FPostNames[AIndex], cbtOuter);
+    if FViewParams[4] then  //4 - Разряд в наименовании должности
+      Writer.WriteText(R, C, R+n, C, PostNameWithRank(FPostNames[AIndex], FRanks[AIndex]), cbtOuter)
+    else
+      Writer.WriteText(R, C, R+n, C, FPostNames[AIndex], cbtOuter);
   end;
 
   if FExtraColumns[2] then //2 - Табельный номер
@@ -623,7 +627,7 @@ end;
 
 procedure TPersonalMonthScheduleSheet.Draw(
                        const ACalendar: TCalendar;
-                   const AStaffNames, ATabNums, APostNames: TStrVector;
+                   const AStaffNames, ATabNums, APostNames, ARanks: TStrVector;
                    const ANormHours: TIntVector;
                    const AViewParams: TBoolVector;
                     //AViewParams:
@@ -631,6 +635,7 @@ procedure TPersonalMonthScheduleSheet.Draw(
                     //1 - Учитывать корректировки графика
                     //2 - Коды табеля для нерабочих дней
                     //3 - Учитывать отпуск
+                    //4 - Разряд в наименовании должности
                    const AExportParams: TBoolVector;
                     //AExportParams:
                     //0 - заголовок таблицы на каждой странице
@@ -643,7 +648,7 @@ begin
   FSchedules:= ASchedules;
   FBeforeSchedules:= ABeforeSchedules;
 
-  DrawCustom(ACalendar, AStaffNames, ATabNums, APostNames,
+  DrawCustom(ACalendar, AStaffNames, ATabNums, APostNames, ARanks,
                  ANormHours, AViewParams, AExportParams);
 
   if FSignatureType=2 then //2-список ознакомления под таблицей

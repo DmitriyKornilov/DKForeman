@@ -1616,7 +1616,9 @@
         "SIZDOCMB7FORM.ZOOM",
         "SIZSTAFFHISTORYFORM.ZOOM",
         "SIZREQUESTFORM.ZOOM",
-        "BRIEFINGFORM.ZOOM"
+        "BRIEFINGFORM.ZOOM",
+        "SCHEDULEPERSONALMONTHFORM.NEEDRANKS",
+        "TIMETABLEMONTHFORM.NEEDRANKS"
       ],
       "ReferenceTo" : {
         "TableName" : "",
@@ -1745,7 +1747,9 @@
         "100",
         "100",
         "100",
-        "100"
+        "100",
+        "1",
+        "1"
       ],
       "ReferenceTo" : {
         "TableName" : "",

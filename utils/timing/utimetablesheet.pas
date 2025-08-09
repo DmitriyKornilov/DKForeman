@@ -8,7 +8,7 @@ uses
   Classes, SysUtils, Graphics, fpspreadsheetgrid, fpspreadsheet, fpstypes,
   DateUtils,
   //Project utils
-  {UUtils,  UTypes,  UWorkHours,} UConst, UCalendar, UTimetable, UTimingSheet,
+  UUtils,  {UTypes,  UWorkHours,} UConst, UCalendar, UTimetable, UTimingSheet,
   //DK packages utils
   DK_SheetWriter, DK_Vector, DK_Const, DK_DateUtils, DK_StrUtils, DK_SheetTypes,
   DK_Math, DK_Color;
@@ -113,12 +113,13 @@ type
                        );
 
     procedure Draw(const ACalendar: TCalendar;
-                   const AStaffNames, ATabNums, APostNames: TStrVector;
+                   const AStaffNames, ATabNums, APostNames, ARanks: TStrVector;
                    const ANormHours: TIntVector;
                    const AViewParams: TBoolVector;
                     //AViewParams:
                     //0 - Отображать строку ночных часов
                     //1 - Коды табеля для нерабочих дней
+                    //2 - Разряд в наименовании должности
                    const AExportParams: TBoolVector;
                     //AExportParams:
                     //0 - заголовок таблицы на каждой странице
@@ -853,12 +854,13 @@ begin
 end;
 
 procedure TMonthTimetableSheet.Draw(const ACalendar: TCalendar;
-                   const AStaffNames, ATabNums, APostNames: TStrVector;
+                   const AStaffNames, ATabNums, APostNames, ARanks: TStrVector;
                    const ANormHours: TIntVector;
                    const AViewParams: TBoolVector;
                     //AViewParams:
                     //0 - Отображать строку ночных часов
                     //1 - Коды табеля для нерабочих дней
+                    //2 - Разряд в наименовании должности
                    const AExportParams: TBoolVector;
                     //AExportParams:
                     //0 - заголовок таблицы на каждой странице
@@ -873,7 +875,7 @@ begin
   FBeforeTotalHours:= ABeforeTotalHours;
   FBeforeNightHours:= ABeforeNightHours;
   FHalfMonth:= AHalfMonth;
-  DrawCustom(ACalendar, AStaffNames, ATabNums, APostNames,
+  DrawCustom(ACalendar, AStaffNames, ATabNums, APostNames, ARanks,
                  ANormHours, AViewParams, AExportParams);
 end;
 
@@ -954,7 +956,10 @@ begin
   begin
     Writer.SetAlignment(haLeft, vaCenter);
     C:= C + 1;
-    Writer.WriteText(R, C, R+n, C, FPostNames[AIndex], cbtOuter);
+    if FViewParams[2] then  //2 - Разряд в наименовании должности
+      Writer.WriteText(R, C, R+n, C, PostNameWithRank(FPostNames[AIndex], FRanks[AIndex]), cbtOuter)
+    else
+      Writer.WriteText(R, C, R+n, C, FPostNames[AIndex], cbtOuter);
   end;
 
   if FExtraColumns[2] then //2 - Табельный номер
@@ -1495,8 +1500,12 @@ begin
   Writer.WriteNumber(R, C, R+1, C, AIndex+1, cbtOuter);
   C:= C+1;
   Writer.SetAlignment(haLeft, vaCenter);
-  Writer.WriteText(R, C, R+1, C, FStaffNames[AIndex] + ',' + SYMBOL_BREAK +
-                              FPostNames[AIndex], cbtOuter);
+  if FNeedRanks then
+    Writer.WriteText(R, C, R+1, C, FStaffNames[AIndex] + ',' + SYMBOL_BREAK +
+                     PostNameWithRank(FPostNames[AIndex], FRanks[AIndex]), cbtOuter)
+  else
+    Writer.WriteText(R, C, R+1, C, FStaffNames[AIndex] + ',' + SYMBOL_BREAK +
+                     FPostNames[AIndex], cbtOuter);
   C:= C+1;
   Writer.SetAlignment(haCenter, vaCenter);
   Writer.WriteText(R,C,R+1,C, FTabNums[AIndex], cbtOuter);
@@ -2020,8 +2029,13 @@ begin
   Writer.WriteNumber(R,C,R+3,C, AIndex+1, cbtOuter);
   C:= C+1;
   Writer.SetAlignment(haLeft, vaCenter);
-  Writer.WriteText(R,C,R+3,C, FStaffNames[AIndex] + ',' +
-                   SYMBOL_BREAK + FPostNames[AIndex], cbtOuter);
+  if FNeedRanks then
+    Writer.WriteText(R, C, R+3, C, FStaffNames[AIndex] + ',' + SYMBOL_BREAK +
+                     PostNameWithRank(FPostNames[AIndex], FRanks[AIndex]), cbtOuter)
+  else
+    Writer.WriteText(R, C, R+3, C, FStaffNames[AIndex] + ',' + SYMBOL_BREAK +
+                     FPostNames[AIndex], cbtOuter);
+
   C:= C+1;
   Writer.SetAlignment(haCenter, vaCenter);
   Writer.WriteText(R,C,R+3,C, FTabNums[AIndex], cbtOuter);
