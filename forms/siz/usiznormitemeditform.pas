@@ -179,7 +179,7 @@ begin
 
   if IsCollision then Exit;
 
-  CheckedPostIDs:= VCut(EditablePostIDs, PostList.Selected);
+  CheckedPostIDs:= VCut(EditablePostIDs, PostList.Checkeds);
   if EditingType=etEdit then //редактирование
   begin
     if not UpdateValuesLoad then Exit;
@@ -300,8 +300,7 @@ begin
   //отображаем список должностей
   if Assigned(PostList) then FreeAndNil(PostList);
   PostList:= TVSTCheckList.Create(PostVT, EmptyStr, nil);
-  PostList.Update(EditablePostNames);
-  PostList.Selected:= EditablePostChecks;
+  PostList.Update(EditablePostNames, EditablePostChecks);
 end;
 
 end.

@@ -361,10 +361,11 @@ end;
 procedure TTimetableMonthForm.ParamListVisibles;
 begin
   SettingClientPanel.Visible:= False;
+
   if ParamList.Selected['TimetableType']=0 then
   begin
     ParamList.Visibles['ViewType']:= False;
-    ParamList.Visibles['ViewParams']:= True;
+    ParamList.ItemVisibles['ViewParams']:= VCreateBool([True, True, True]);
     ParamList.Visibles['PeriodType']:= True;
     ParamList.Visibles['CountType']:= True;
     ParamList.Visibles['ExtraColumns']:= True;
@@ -372,12 +373,13 @@ begin
   end else
   begin
     ParamList.Visibles['ViewType']:= True;
-    ParamList.Visibles['ViewParams']:= False;
+    ParamList.ItemVisibles['ViewParams']:= VCreateBool([False, False, True]);
     ParamList.Visibles['PeriodType']:= False;
     ParamList.Visibles['CountType']:= False;
     ParamList.Visibles['ExtraColumns']:= False;
     ParamList.Visibles['LineType']:= True;
   end;
+
   SettingClientPanel.Visible:= True;
 end;
 
@@ -703,7 +705,7 @@ var
   var
     Flags: TBoolVector;
   begin
-    Flags:= VStaffList.Selected;
+    Flags:= VStaffList.Checkeds;
     TabNumIDs:= VCut(VTabNumIDs, Flags);
     StaffNames:= VCut(VStaffNames, Flags);
     PostNames:= VCut(VPostNames, Flags);

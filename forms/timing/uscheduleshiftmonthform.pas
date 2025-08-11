@@ -134,8 +134,8 @@ begin
 
   DataBase.ScheduleMainListLoad(ScheduleIDs, WeekHours, CycleCounts, ScheduleNames);
   ScheduleList:= TVSTCheckList.Create(VT, EmptyStr, @ScheduleReDraw);
-  ScheduleList.Update(ScheduleNames);
   ScheduleList.StopSelectEventWhileCheckAll:= True;
+  ScheduleList.Update(ScheduleNames, VCreateBool(Length(ScheduleNames), True));
 
   CanDraw:= True;
 end;
@@ -224,7 +224,7 @@ begin
 
     Sheet.Draw(Calendar, Schedules, ScheduleNames,
                NeedNight, NeedCorrect, NeedMarks, ScheduleNotWorkColor,
-               ScheduleList.Selected);
+               ScheduleList.Checkeds);
     if not VIsNil(Colors) then
       Sheet.ColorsUpdate(Colors);
   finally
@@ -261,7 +261,7 @@ var
     try
       ExpSheet.Draw(ACalendar, ASchedules, ScheduleNames,
              NeedNight, NeedCorrect, NeedMarks, ScheduleNotWorkColor,
-             ScheduleList.Selected);
+             ScheduleList.Checkeds);
       if not VIsNil(Colors) then
       ExpSheet.ColorsUpdate(Colors)
     finally

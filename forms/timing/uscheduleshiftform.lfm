@@ -7,7 +7,7 @@ object ScheduleShiftForm: TScheduleShiftForm
   ClientHeight = 802
   ClientWidth = 1251
   DesignTimePPI = 120
-  LCLVersion = '4.0.0.4'
+  LCLVersion = '4.2.0.0'
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow

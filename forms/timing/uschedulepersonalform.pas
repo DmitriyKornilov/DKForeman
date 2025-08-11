@@ -317,7 +317,7 @@ begin
 
   H:= Round(0.6*(ClientHeight - ToolPanel.Height - StaffCaptionPanel.Height));
   BottomEditingPanel.Height:= H;
-  H:= VacationCaptionPanel.Height + VacationToolPanel.Height + VacationEdit.TotalHeight + 10;
+  H:= VacationCaptionPanel.Height + VacationToolPanel.Height + VacationEdit.AutoHeightValue + 10;
   VacationPanel.Height:= H;
 
   DataUpdate;

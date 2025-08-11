@@ -193,7 +193,7 @@ begin
 
       end;
   end;
-  ObjectList.Update(ObjectItems, 0);
+  ObjectList.Update(ObjectItems);
 end;
 
 procedure TBriefingEditForm.BriefTypeChange;

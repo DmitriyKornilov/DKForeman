@@ -425,7 +425,7 @@ var
   var
     Flags: TBoolVector;
   begin
-    Flags:= VStaffList.Selected;
+    Flags:= VStaffList.Checkeds;
     TabNumIDs:= VCut(VTabNumIDs, Flags);
     StaffNames:= VCut(VStaffNames, Flags);
     PostNames:= VCut(VPostNames, Flags);
