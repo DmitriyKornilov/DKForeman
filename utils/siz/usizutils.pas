@@ -23,7 +23,6 @@ function SIZNumForPeriod(const ANum, ALife: Integer): String;
 function SIZUnitCommaNumForPeriod(const AUnit: String; const ANum, ALife: Integer): String;
 function SIZUnitCycle(const AUnit: String; const ALife: Integer; const ANeedBreak: Boolean): String;
 
-//function SIZLifeInMonthsFromDates(const AReceivingDate, AWritingDate: TDate): Extended;
 function SIZLifeInMonths(const AReceivingCount, ANum, ALife: Integer): Extended;
 function SIZWriteoffDate(const AReceivingDate, AReturnDate: TDate;
                          const AReceivingCount, ANum, ALife: Integer): TDate;
@@ -52,7 +51,7 @@ implementation
 
 function SIZLifeInYears(const AMonths: Extended): String;
 var
-  X, Y, M: Integer;
+  M: Integer;
 begin
   Result:= EmptyStr;
   if AMonths<12 then Exit;
@@ -60,20 +59,7 @@ begin
   if M=AMonths then  //целое кол-во месяцев
   begin
     if (M mod 12) = 0 then //целое кол-во лет
-    begin
-      Y:= M div 12;
-      Result:= IntToStr(Y);
-      if (Y>=11) and (Y<=14) then
-        Result:= Result + ' лет'
-      else begin
-        X:= SDigit(Result, SLength(Result));
-        case X of
-        0, 5..9: Result:= Result + ' лет';
-        1: Result:= Result + ' год';
-        2..4: Result:= Result + ' года';
-        end;
-      end;
-    end
+      Result:= SYears(IntToStr(M div 12))
     else begin
       if ((2*M) mod 12) = 0 then //кол-во лет кратное половине года
         Result:= Format('%.1f года', [M/12])
@@ -81,30 +67,17 @@ begin
         Result:= Format('%.2f года', [M/12]);
     end;
   end
-  else begin
+  else
     Result:= Format('%.2f года', [AMonths/12]);
-  end;
 end;
 
 function SIZLifeInMonths(const AMonths: Extended): String;
 var
-  X, M: Integer;
+  M: Integer;
 begin
   M:= Trunc(AMonths);
   if M=AMonths then  //целое кол-во месяцев
-  begin
-    Result:= IntToStr(M);
-    if (M>=11) and (M<=14) then
-      Result:= Result + ' месяцев'
-    else begin
-      X:= SDigit(Result, SLength(Result));
-      case X of
-      1: Result:= Result + ' месяц';
-      2..4: Result:= Result + ' месяца';
-      0, 5..9: Result:= Result + ' месяцев';
-      end;
-    end;
-  end
+    Result:= SMonths(IntToStr(M))
   else begin
     if Trunc(2*AMonths) = 2*AMonths then //кол-во кратное половине месяца
       Result:= Format('%.1f месяца', [AMonths])
@@ -145,9 +118,6 @@ begin
 end;
 
 function SIZPeriod(const ALife: Integer; const ANeedLifeCountIfSingle: Boolean = True): String;
-var
-  PeriodStr: String;
-  X: Integer;
 begin
   if ALife<=0 then //особый срок службы
     Result:= SIZ_LIFE_PICKS[ALife]
@@ -166,25 +136,11 @@ begin
       Result:= 'год';
   end
   else begin
-    PeriodStr:= IntToStr(ALife);
     if ALife<12 then //меньше года
-    begin
-      Result:= PeriodStr + 'месяц';
-      if (ALife>=2) and (ALife<=4) then
-        Result:= Result + 'а'
-      else
-        Result:= Result + 'ев';
-    end
+      Result:= SMonths(IntToStr(ALife))
     else begin //больше года
       if (ALife mod 12) = 0 then //целое кол-во лет
-      begin
-        X:= ALife div 12;
-        Result:= IntToStr(X);
-        if (X>=2) and (X<=4) then
-          Result:= Result + ' года'
-        else
-          Result:= Result + ' лет';
-      end
+        Result:= SYears(IntToStr(ALife div 12))
       else begin
         if ((2*ALife) mod 12) = 0 then //кол-во лет кратное половине года
           Result:= Format('%.1f года', [ALife/12])
@@ -225,31 +181,6 @@ begin
     Result:= AUnit + ', ' + Result;
   end;
 end;
-
-//function SIZLifeInMonthsFromDates(const AReceivingDate, AWritingDate: TDate): Extended;
-//var
-//  D: TDate;
-//  IntMonths: Integer;
-//  FracMonths: Extended;
-//begin
-//  D:= AReceivingDate;
-//  IntMonths:= 0;
-//  while CompareDate(D, AWritingDate)<=0 do
-//  begin
-//    IntMonths:= IntMonths + 1;
-//    D:= IncMonth(AReceivingDate, IntMonths);
-//  end;
-//  if SameDate(D, AWritingDate) then
-//  begin
-//    Result:= IntMonths;
-//  end
-//  else begin
-//    IntMonths:= IntMonths - 1;
-//    D:= IncMonth(AReceivingDate, IntMonths);
-//    FracMonths:= DaysBetweenDates(D, AWritingDate)/30;
-//    Result:= IntMonths + FracMonths;
-//  end;
-//end;
 
 function SIZLifeInMonths(const AReceivingCount, ANum, ALife: Integer): Extended;
 begin

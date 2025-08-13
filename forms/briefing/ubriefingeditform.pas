@@ -11,27 +11,30 @@ uses
   DK_StrUtils, DK_Dialogs, DK_VSTDropDown, DK_CtrlUtils, DK_Const, DK_Vector,
   DK_VSTTableTools,
   //Project utils
-  UTypes, UConst, UVars;
+  UTypes, UConst, UVars, UUtils;
 
 type
 
   { TBriefingEditForm }
 
   TBriefingEditForm = class(TForm)
-    BeginDateLabel: TLabel;
+    PeriodDatesLabel: TLabel;
     BeginDatePicker: TDateTimePicker;
+    EndDateLabel: TLabel;
+    EndDatePicker: TDateTimePicker;
+    InfEndDateCheckBox: TCheckBox;
+    LastDateLabel: TLabel;
+    LastDateCheckBox: TCheckBox;
     ObjectBCButton: TBCButton;
     ObjectLabel: TLabel;
     LastDatePicker: TDateTimePicker;
-    LastDateCheckBox: TCheckBox;
+    LastDatePanel: TPanel;
+    PeriodPanel: TPanel;
     PeriodBCButton: TBCButton;
     ButtonPanel: TPanel;
     ButtonPanelBevel: TBevel;
     CancelButton: TSpeedButton;
-    EndDateLabel: TLabel;
-    EndDatePicker: TDateTimePicker;
     BriefTypeBCButton: TBCButton;
-    InfEndDateCheckBox: TCheckBox;
     BriefNameEdit: TEdit;
     BriefNameLabel: TLabel;
     PeriodLabel: TLabel;
@@ -56,18 +59,20 @@ type
     ObjectDropDown: TVSTDropDown;
 
     ObjectList: TVSTCheckList;
-    ObjectItems: TStrVector;
+    ObjectNames: TStrVector;
     ObjectIDs: TIntVector;
 
     procedure ObjectListLoad;
-    procedure ObjectListCheck;
 
     procedure BriefTypeChange;
     procedure BriefObjectChange;
 
+    procedure OldDataLoad;
   public
     EditingType: TEditingType;
-    BriefID: Integer;
+    BriefID, OldObject, OldPeriod: Integer;
+    OldObjectIDs: TIntVector;
+    OldObjectNames: TStrVector;
   end;
 
 var
@@ -82,9 +87,11 @@ implementation
 procedure TBriefingEditForm.FormCreate(Sender: TObject);
 begin
   BriefID:= -1;
+  OldPeriod:= 1;
+  OldObject:= 1;
+  OldObjectIDs:=nil;
 
-  ObjectList:= TVSTCheckList.Create(VT, EmptyStr, @ObjectListCheck);
-
+  ObjectList:= TVSTCheckList.Create(VT, EmptyStr, nil);
 
   BriefTypeDropDown:= TVSTDropDown.Create(BriefTypeBCButton);
   BriefTypeDropDown.OnChange:= @BriefTypeChange;
@@ -125,6 +132,7 @@ begin
 
   FormKeepMinSize(Self);
   ObjectListLoad;
+  OldDataLoad;
   BriefNameEdit.SetFocus;
 end;
 
@@ -150,7 +158,10 @@ end;
 procedure TBriefingEditForm.SaveButtonClick(Sender: TObject);
 var
   IsOK: Boolean;
+  Period, Num: Integer;
+  SelectedObjectIDs: TIntVector;
   BriefName, Note: String;
+  BeginDate, EndDate, LastDate: TDate;
 begin
   IsOK:= False;
 
@@ -163,15 +174,40 @@ begin
 
   Note:= STrim(NoteEdit.Text);
 
+  SelectedObjectIDs:= nil;
+  if ObjectDropDown.ItemIndex>0 then
+    SelectedObjectIDs:= VCut(ObjectIDs, ObjectList.Checkeds);
+
+  if BriefTypeDropDown.ItemIndex=0 then //разово
+  begin
+    LastDate:= LastDatePicker.Date;
+    BeginDate:= LastDate;
+    EndDate:= LastDate;
+    Period:= 0;
+    Num:= 0;
+  end
+  else begin //периодически
+    BeginDate:= BeginDatePicker.Date;
+    EndDate:= EndDatePicker.Date;
+    LastDate:= 0;
+    if LastDateCheckBox.Checked then
+      LastDate:= LastDatePicker.Date;
+    Period:= PeriodDropDown.ItemIndex + 1;
+    Num:= NumSpinEdit.Value;
+  end;
+
   case EditingType of
-    etAdd:
-      IsOK:= False;
-        //DataBase.SIZNormAdd(NormID, NormName, Note,
-        //                         BeginDatePicker.Date, EndDatePicker.Date);
+    etAdd, etCustom:
+      IsOK:= DataBase.BriefingAdd(BriefID, BriefName, Note,
+                                  BeginDate, EndDate, LastDate,
+                                  ObjectDropDown.ItemIndex, Period, Num,
+                                  SelectedObjectIDs);
+
     etEdit:
-      IsOK:= False;
-        //DataBase.SIZNormUpdate(NormID, NormName, Note,
-        //                         BeginDatePicker.Date, EndDatePicker.Date);
+      IsOK:= DataBase.BriefingUpdate(BriefID, BriefName, Note,
+                                  BeginDate, EndDate, LastDate,
+                                  OldObject, ObjectDropDown.ItemIndex, Period, Num,
+                                  SelectedObjectIDs);
   end;
 
   if not IsOK then Exit;
@@ -179,21 +215,25 @@ begin
 end;
 
 procedure TBriefingEditForm.ObjectListLoad;
+var
+  Fs, Ns, Ps, TabNums: TStrVector;
 begin
   case ObjectDropDown.ItemIndex of
-    0: ObjectItems:= nil;//ObjectList.ValuesClear;
+    0: ObjectNames:= nil;
     1:
       begin
         DataBase.KeyPickList('STAFFPOST', 'PostID', 'PostName', ObjectIDs,
-                             ObjectItems, True{ID>0}, 'PostName');
+                             ObjectNames, True{ID>0}, 'PostName');
 
       end;
     2:
       begin
-
+        DataBase.StaffListLoad(BeginDatePicker.Date, 0{сорт по ФИО}, 1{работающие}, ObjectIDs,
+                               Fs, Ns, Ps, TabNums);
+        ObjectNames:= StaffFullName(Fs, Ns, Ps, TabNums, False{long});
       end;
   end;
-  ObjectList.Update(ObjectItems);
+  ObjectList.Update(ObjectNames);
 end;
 
 procedure TBriefingEditForm.BriefTypeChange;
@@ -201,16 +241,44 @@ begin
   PeriodLabel.Visible:= BriefTypeDropDown.ItemIndex=1;
   NumSpinEdit.Visible:= PeriodLabel.Visible;
   PeriodBCButton.Visible:= PeriodLabel.Visible;
+  LastDateCheckBox.Visible:= BriefTypeDropDown.ItemIndex=1;
+  LastDateLabel.Visible:= BriefTypeDropDown.ItemIndex=0;
+  PeriodPanel.Visible:= BriefTypeDropDown.ItemIndex=1;
+  LastDatePicker.Enabled:= (BriefTypeDropDown.ItemIndex=0) or
+                           ((BriefTypeDropDown.ItemIndex=1) and LastDateCheckBox.Checked);
 end;
 
 procedure TBriefingEditForm.BriefObjectChange;
 begin
+  VTPanel.Visible:= ObjectDropDown.ItemIndex>0;
   ObjectListLoad;
 end;
 
-procedure TBriefingEditForm.ObjectListCheck;
+procedure TBriefingEditForm.OldDataLoad;
+var
+  i, n: Integer;
 begin
+  if EditingType=etAdd then Exit;
 
+  BriefTypeDropDown.ItemIndex:= Ord(OldPeriod>0);
+  if OldPeriod>0 then
+    PeriodDropDown.ItemIndex:= OldPeriod - 1;
+  ObjectDropDown.ItemIndex:= OldObject;
+
+  if (OldObject=0) or VIsNil(OldObjectIDs) then Exit;
+
+  for i:= 0 to High(OldObjectIDs) do
+  begin
+    n:= VIndexOf(ObjectIDs, OldObjectIDs[i]);
+    if n<0 then
+    begin
+      n:= VIndexOfAsc(ObjectNames, OldObjectNames[i]);
+      VIns(ObjectNames, n, OldObjectNames[i]);
+      VIns(ObjectIDs, n, OldObjectIDs[i]);
+    end;
+
+    ObjectList.Checked[n]:= True;
+  end;
 end;
 
 procedure TBriefingEditForm.CancelButtonClick(Sender: TObject);

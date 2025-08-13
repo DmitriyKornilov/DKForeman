@@ -91,6 +91,7 @@ object BriefingForm: TBriefingForm
         ImageIndex = 5
         ShowHint = True
         ParentShowHint = False
+        OnClick = DelButtonClick
       end
       object EditButton: TSpeedButton
         Cursor = crHandPoint
@@ -151,6 +152,7 @@ object BriefingForm: TBriefingForm
       Spacing = 5
       ShowHint = True
       ParentShowHint = False
+      OnClick = ExportButtonClick
     end
   end
   object SheetPanel: TPanel
@@ -205,6 +207,7 @@ object BriefingForm: TBriefingForm
       TabOrder = 0
       TabStop = False
       TitleFont.Style = [fsBold]
+      OnDblClick = ViewGridDblClick
     end
     object ZoomPanel: TPanel
       Left = 0

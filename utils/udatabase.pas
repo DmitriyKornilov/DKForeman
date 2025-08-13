@@ -19,9 +19,11 @@ type
 
   TDataBase = class (TSQLite3)
   public
+
     (**************************************************************************
                                       ПАРАМЕТРЫ
     **************************************************************************)
+
     function ColorShiftUpdate(const AColorValue, AColorIndex: Integer): Boolean;
     function ColorsShiftUpdate(const AColorValues: TIntVector = nil;
                                const AColorIndexes: TIntVector = nil): Boolean;
@@ -36,6 +38,7 @@ type
     (**************************************************************************
                                      СПРАВОЧНИКИ
     **************************************************************************)
+
     procedure PostDictionaryLoad(const ADropDown: TVSTDropDown;
                                  out APostIDs: TIntVector;
                                  const ASelectPostID: Integer = -1;
@@ -58,6 +61,10 @@ type
                            out AStaffIDs, ATabNumIDs, AGenders: TIntVector;
                            out ABornDates, ARecrutDates, ADismissDates: TDateVector;
                            out AFs, ANs, APs, ATabNums, APostNames, ARanks: TStrVector): Boolean;
+    function StaffListLoad(const ADate: TDate;
+                           const AOrderType, AListType: Byte;
+                           out ATabNumIDs: TIntVector;
+                           out AFs, ANs, APs, ATabNums: TStrVector): Boolean;
 
     {Cписок сотрудников для персональных графиков и табелей
      ABeginDate, AEndDate - отчетный период
@@ -92,8 +99,9 @@ type
                    out ATabNumIDs: TIntVector;
                    out AFamilies, ANames, APatronymics, ATabNums, APostNames, AScheduleNames: TStrVector): Boolean;
 
-    {Получение списка не уволенных на дату AReportDate: True - ОК, False - пусто}
-    function StaffListForDateLoad(const AReportDate: TDate;
+    {Получение списка не уволенных на дату AReportDate
+    для заявки СИЗ (снчала М, потом Ж): True - ОК, False - пусто}
+    function StaffListForSIZRequestLoad(const AReportDate: TDate;
                           out ATabNumIDs, AGenders: TIntVector;
                           out AFamilies, ANames, APatronymics, ATabNums: TStrVector): Boolean;
 
@@ -241,6 +249,7 @@ type
     (**************************************************************************
                                     КАЛЕНДАРЬ
     **************************************************************************)
+
     {Календарь за период с учетом корректировок}
     procedure CalendarLoad(const ABeginDate, AEndDate: TDate; var ACalendar: TCalendar);
     {Список корректировок календаря: True - ОК, False - список пуст}
@@ -259,6 +268,7 @@ type
     (**************************************************************************
                                      ГРАФИКИ
     **************************************************************************)
+
     {Список графиков сменности: True - ОК, False - список пуст}
     function ScheduleMainListLoad(out AScheduleIDs, AWeekHours, ACycleCounts: TIntVector;
                                   out AScheduleNames: TStrVector): Boolean;
@@ -320,6 +330,7 @@ type
     (**************************************************************************
                                       ОТПУСКА
     **************************************************************************)
+
     {Информация по отпускам на год для редактирования: True - ОК, False - пусто}
     function VacationsEditingLoad(const ATabNumID, AYear: Integer;
                                   out ADates: TDateVector;
@@ -372,6 +383,7 @@ type
     (**************************************************************************
                                       ТАБЕЛИ
     **************************************************************************)
+
     //коды табеля -------------------------------------------------------------
     {Список кодов табеля: True - ОК, False - пусто}
     function TimetableMarkListLoad(out ADigMarks: TIntVector;
@@ -474,6 +486,7 @@ type
     (**************************************************************************
                                 НОРМЫ ВЫДАЧИ СИЗ
     **************************************************************************)
+
     {Загрузка из базы списка типовых норм: True - ОК, False - пусто}
     function SIZNormsLoad(out ANormIDs: TIntVector;
                              out ANormNames, ANotes: TStrVector;
@@ -604,10 +617,10 @@ type
                               out ASIZNames, AUnits: TStrMatrix;
                               out ANameIDs, ASizeTypes: TIntMatrix): Boolean;
 
-
     (**************************************************************************
                                 РАЗМЕРЫ СИЗ
     **************************************************************************)
+
     function SIZStaffSizeLoad(const AFilterValue: String;
                           const AOrderType, AListType: Byte;
                           out AStaffIDs, AClothes, AHeights, AShoes, AHeads,
@@ -645,6 +658,7 @@ type
     (**************************************************************************
                                 ДОКУМЕНТЫ СИЗ
     **************************************************************************)
+
     {Проверка наличия документа: True - есть, False - нет}
     function SIZDocExists(const ADocID: Integer;
                           const ADocName, ADocNum: String;
@@ -688,6 +702,7 @@ type
     (**************************************************************************
                                 СКЛАД СИЗ
     **************************************************************************)
+
     {Загрузка документа поступления СИЗ на склад: True - ОК, False - пусто}
     function SIZStoreEntryLoad(const ADocID: Integer;
                          out AEntryIDs: TInt64Vector;
@@ -993,6 +1008,42 @@ type
     {Удаление информации о возврате СИЗ (отмена возврата): True - ОК, False - ошибка}
     function SIZReturningCancel(const ALogID: Int64; const ACommit: Boolean = True): Boolean;
 
+    (**************************************************************************
+                                    ИНСТРУКТАЖИ
+    **************************************************************************)
+
+    {Получение списка инcтруктажей : True - ОК, False - пусто}
+    function BriefingListLoad(out ABriefIDs, AObjects, APeriods, ANums: TIntVector;
+                              out ABriefNames, ANotes: TStrVector;
+                              out ABeginDates, AEndDates, ALastDates: TDateVector): Boolean;
+
+    function BriefingPostObjectsLoad(const ABriefID: Integer;
+                                   out APostIDs: TIntVector;
+                                   out APostNames: TStrVector): Boolean;
+    function BriefingTabNumObjectsLoad(const ABriefID: Integer;
+                                   out ATabNumIDs: TIntVector;
+                                   out AFs, ANs, APs, ATabNums: TStrVector): Boolean;
+
+    procedure BriefingListObjectNamesLoad(const ABriefIDs, AObjects: TIntVector;
+                                   out AObjectIDs: TIntMatrix;
+                                   out AObjectNames: TStrMatrix);
+
+    {Запись ID должностей или таб номеров для инструктажа: True - ОК, False - ошибка}
+    function BriefingIDsWrite(const ABriefID, AObject: Integer;
+                              const AObjectIDs: TIntVector;
+                              const ACommit: Boolean = True): Boolean;
+    {Добавление инструктажа: True - ОК, False - ошибка}
+    function BriefingAdd(out ABriefID: Integer;
+                         const ABriefName, ANote: String;
+                         const ABeginDate, AEndDate, ALastDate: TDate;
+                         const AObject, APeriod, ANum: Integer;
+                         const AObjectIDs: TIntVector): Boolean;
+    {Обновление инструктажа: True - ОК, False - ошибка}
+    function BriefingUpdate(const ABriefID: Integer;
+                         const ABriefName, ANote: String;
+                         const ABeginDate, AEndDate, ALastDate: TDate;
+                         const AOldObject, AObject, APeriod, ANum: Integer;
+                         const AObjectIDs: TIntVector): Boolean;
   end;
 
 implementation
@@ -1244,6 +1295,20 @@ begin
   ATabNums:= VReplace(ATabNums, Indexes);
   APostNames:= VReplace(APostNames, Indexes);
   ARanks:= VReplace(ARanks, Indexes);
+end;
+
+function TDataBase.StaffListLoad(const ADate: TDate;
+                           const AOrderType, AListType: Byte;
+                           out ATabNumIDs: TIntVector;
+                           out AFs, ANs, APs, ATabNums: TStrVector): Boolean;
+var
+  StaffIDs, Genders: TIntVector;
+  PostNames, Ranks: TStrVector;
+  BornDates, RecrutDates, DismissDates: TDateVector;
+begin
+  Result:= StaffListLoad(ADate, AOrderType, AListType, StaffIDs, ATabNumIDs, Genders,
+                         BornDates, RecrutDates, DismissDates,
+                         AFs, ANs, APs, ATabNums, PostNames, Ranks);
 end;
 
 function TDataBase.StaffListForPersonalTimingLoad(const AFilterValue: String;
@@ -1514,7 +1579,7 @@ begin
   AScheduleNames:= VReplace(AScheduleNames, Indexes);
 end;
 
-function TDataBase.StaffListForDateLoad(const AReportDate: TDate;
+function TDataBase.StaffListForSIZRequestLoad(const AReportDate: TDate;
                           out ATabNumIDs, AGenders: TIntVector;
                           out AFamilies, ANames, APatronymics, ATabNums: TStrVector): Boolean;
 begin
@@ -9429,7 +9494,7 @@ begin
   AWriteoffDates:= nil;
 
   //получаем список не уволенных на отчетную дату
-  if not StaffListForDateLoad(AReportDate, TabNumIDs, Genders,
+  if not StaffListForSIZRequestLoad(AReportDate, TabNumIDs, Genders,
                               Families, Names, Patronymics, TabNums) then Exit;
 
   for i:=0 to High(TabNumIDs) do
@@ -9459,6 +9524,301 @@ begin
   end;
 
   Result:= not VIsNil(ASizNames);
+end;
+
+function TDataBase.BriefingListLoad(out ABriefIDs, AObjects, APeriods, ANums: TIntVector;
+                              out ABriefNames, ANotes: TStrVector;
+                              out ABeginDates, AEndDates, ALastDates: TDateVector): Boolean;
+begin
+  Result:= False;
+
+  ABriefIDs:= nil;
+  AObjects:= nil;
+  APeriods:= nil;
+  ANums:= nil;
+  ABriefNames:= nil;
+  ANotes:= nil;
+  ABeginDates:= nil;
+  AEndDates:= nil;
+  ALastDates:= nil;
+
+  QSetQuery(FQuery);
+  QSetSQL(
+    'SELECT BriefID, Object, Period, Num, BriefName, Note, ' +
+           'BeginDate, EndDate, LastDate ' +
+    'FROM BRIEFINGMAIN ' +
+    'ORDER BY BeginDate DESC'
+   );
+  QOpen;
+  if not QIsEmpty then
+  begin
+    QFirst;
+    while not QEOF do
+    begin
+      VAppend(ABriefIDs, QFieldInt('BriefID'));
+      VAppend(AObjects, QFieldInt('Object'));
+      VAppend(APeriods, QFieldInt('Period'));
+      VAppend(ANums, QFieldInt('Num'));
+
+      VAppend(ABriefNames, QFieldStr('BriefName'));
+      VAppend(ANotes, QFieldStr('Note'));
+
+      VAppend(ABeginDates, QFieldDT('BeginDate'));
+      VAppend(AEndDates, QFieldDT('EndDate'));
+      VAppend(ALastDates, QFieldDT('LastDate'));
+
+      QNext;
+    end;
+    Result:= True;
+  end;
+  QClose;
+end;
+
+function TDataBase.BriefingPostObjectsLoad(const ABriefID: Integer;
+                                           out APostIDs: TIntVector;
+                                           out APostNames: TStrVector): Boolean;
+begin
+  Result:= False;
+
+  APostIDs:= nil;
+  APostNames:= nil;
+
+  QSetQuery(FQuery);
+  QSetSQL(
+    'SELECT t1.PostID, t2.PostName ' +
+    'FROM BRIEFINGPOST t1 ' +
+    'INNER JOIN STAFFPOST t2 ON (t1.PostID=t2.PostID) ' +
+    'WHERE t1.BriefID = :BriefID ' +
+    'ORDER BY t2.PostName'
+   );
+  QParamInt('BriefID', ABriefID);
+  QOpen;
+  if not QIsEmpty then
+  begin
+    QFirst;
+    while not QEOF do
+    begin
+      VAppend(APostIDs, QFieldInt('PostID'));
+      VAppend(APostNames, QFieldStr('PostName'));
+      QNext;
+    end;
+    Result:= True;
+  end;
+  QClose;
+end;
+
+function TDataBase.BriefingTabNumObjectsLoad(const ABriefID: Integer;
+                                   out ATabNumIDs: TIntVector;
+                                   out AFs, ANs, APs, ATabNums: TStrVector): Boolean;
+begin
+  Result:= False;
+
+  ATabNumIDs:= nil;
+  AFs:= nil;
+  ANs:= nil;
+  APs:= nil;
+  ATabNums:= nil;
+
+  QSetQuery(FQuery);
+  QSetSQL(
+    'SELECT t1.TabNumID, t2.TabNum, t3.Family, t3.Name, t3.Patronymic  ' +
+    'FROM BRIEFINGTABNUM t1 ' +
+    'INNER JOIN STAFFTABNUM t2 ON (t1.TabNumID=t2.TabNumID) ' +
+    'INNER JOIN STAFFMAIN t3 ON (t2.StaffID=t3.StaffID) ' +
+    'WHERE t1.BriefID = :BriefID ' +
+    'ORDER BY t3.Family, t3.Name, t3.Patronymic'
+   );
+  QParamInt('BriefID', ABriefID);
+  QOpen;
+  if not QIsEmpty then
+  begin
+    QFirst;
+    while not QEOF do
+    begin
+      VAppend(ATabNumIDs, QFieldInt('TabNumID'));
+      VAppend(AFs, QFieldStr('Family'));
+      VAppend(ANs, QFieldStr('Name'));
+      VAppend(APs, QFieldStr('Patronymic'));
+      VAppend(ATabNums, QFieldStr('TabNum'));
+      QNext;
+    end;
+    Result:= True;
+  end;
+  QClose;
+end;
+
+procedure TDataBase.BriefingListObjectNamesLoad(const ABriefIDs, AObjects: TIntVector;
+                                   out AObjectIDs: TIntMatrix;
+                                   out AObjectNames: TStrMatrix);
+var
+  i: Integer;
+
+  procedure AllStaffObjectsLoad(const AIndex: Integer;
+                            var AIDs: TIntVector;
+                            var ANames: TStrVector);
+  begin
+    AIDs:= VCreateInt([0]);
+    ANames:= VCreateStr([SUpper(BRIEFOBJECT_PICKS[AObjects[AIndex]])]);
+  end;
+
+  procedure PostObjectsLoad(const AIndex: Integer;
+                            var AIDs: TIntVector;
+                            var ANames: TStrVector);
+  begin
+    BriefingPostObjectsLoad(ABriefIDs[AIndex], AIDs, ANames);
+  end;
+
+  procedure TabNumObjectsLoad(const AIndex: Integer;
+                            var AIDs: TIntVector;
+                            var ANames: TStrVector);
+  var
+    Fs, Ns, Ps, TabNums: TStrVector;
+  begin
+    AIDs:= nil;
+    ANames:= nil;
+    if not BriefingTabNumObjectsLoad(ABriefIDs[AIndex], AIDs, Fs, Ns, Ps, TabNums) then Exit;
+    ANames:= StaffFullName(Fs, Ns, Ps, TabNums, False{long});
+  end;
+
+begin
+  AObjectNames:= nil;
+  AObjectIDs:= nil;
+  if VIsNil(ABriefIDs) then Exit;
+
+  MDim(AObjectNames, Length(ABriefIDs));
+  MDim(AObjectIDs, Length(ABriefIDs));
+  for i:= 0 to High(ABriefIDs) do
+  begin
+    case AObjects[i] of
+      0: AllStaffObjectsLoad(i, AObjectIDs[i], AObjectNames[i]);
+      1: PostObjectsLoad(i, AObjectIDs[i], AObjectNames[i]);
+      2: TabNumObjectsLoad(i, AObjectIDs[i], AObjectNames[i]);
+    end;
+  end;
+end;
+
+function TDataBase.BriefingIDsWrite(const ABriefID, AObject: Integer;
+                                    const AObjectIDs: TIntVector;
+                                    const ACommit: Boolean = True): Boolean;
+var
+  i: Integer;
+  IDFieldName, TableName: String;
+begin
+  Result:= False;
+  if (AObject=0) or VIsNil(AObjectIDs) then Exit;
+
+  case AObject of
+    1:
+      begin
+        IDFieldName:= 'PostID';
+        TableName:= 'BRIEFINGPOST';
+      end;
+    2:
+      begin
+        IDFieldName:= 'TabNumID';
+        TableName:= 'BRIEFINGTABNUM';
+      end;
+  end;
+
+  QSetQuery(FQuery);
+  try
+    QSetSQL(
+      sqlINSERT(TableName, ['BriefID', IDFieldName])
+    );
+    QParamInt('BriefID', ABriefID);
+    for i:= 0 to High(AObjectIDs) do
+    begin
+      QParamInt(IDFieldName, AObjectIDs[i]);
+      QExec;
+    end;
+
+    if ACommit then QCommit;
+    Result:= True;
+  except
+    if ACommit then QRollback;
+  end;
+end;
+
+function TDataBase.BriefingAdd(out ABriefID: Integer;
+                         const ABriefName, ANote: String;
+                         const ABeginDate, AEndDate, ALastDate: TDate;
+                         const AObject, APeriod, ANum: Integer;
+                         const AObjectIDs: TIntVector): Boolean;
+begin
+  Result:= False;
+  QSetQuery(FQuery);
+  try
+    //запись основных данных
+    QSetSQL(
+      sqlINSERT('BRIEFINGMAIN', ['BriefName', 'Note', 'BeginDate', 'EndDate', 'LastDate',
+                                 'Object', 'Period', 'Num'])
+    );
+    QParamStr('BriefName', ABriefName);
+    QParamStr('Note', ANote);
+    QParamDT('BeginDate', ABeginDate);
+    QParamDT('EndDate', AEndDate);
+    QParamDT('LastDate', ALastDate);
+    QParamInt('Object', AObject);
+    QParamInt('Period', APeriod);
+    QParamInt('Num', ANum);
+    QExec;
+
+    //получение ID сделанной записи
+    ABriefID:= LastWritedInt32ID('BRIEFINGMAIN');
+
+    //запись ID должностей или таб номеров
+    BriefingIDsWrite(ABriefID, AObject, AObjectIDs, False{no commit});
+
+    QCommit;
+    Result:= True;
+  except
+    QRollback;
+  end;
+end;
+
+function TDataBase.BriefingUpdate(const ABriefID: Integer;
+                         const ABriefName, ANote: String;
+                         const ABeginDate, AEndDate, ALastDate: TDate;
+                         const AOldObject, AObject, APeriod, ANum: Integer;
+                         const AObjectIDs: TIntVector): Boolean;
+begin
+  Result:= False;
+  QSetQuery(FQuery);
+  try
+    //обновление основных данных
+    QSetSQL(
+      sqlUPDATE('BRIEFINGMAIN', ['BriefName', 'Note', 'BeginDate', 'EndDate', 'LastDate',
+                                 'Object', 'Period', 'Num']) +
+      'WHERE BriefID = :BriefID'
+    );
+    QParamInt('BriefID', ABriefID);
+    QParamStr('BriefName', ABriefName);
+    QParamStr('Note', ANote);
+    QParamDT('BeginDate', ABeginDate);
+    QParamDT('EndDate', AEndDate);
+    QParamDT('LastDate', ALastDate);
+    QParamInt('Object', AObject);
+    QParamInt('Period', APeriod);
+    QParamInt('Num', ANum);
+    QExec;
+
+    //удаляем старые ID должностей или таб номеров
+    if AOldObject>0 then
+    begin
+      case AObject of
+        1: Delete('BRIEFINGPOST', 'BriefID', ABriefID, False{no commit});
+        2: Delete('BRIEFINGTABNUM', 'BriefID', ABriefID, False{no commit});
+      end;
+    end;
+
+    //записываем новые ID должностей или таб номеров
+    BriefingIDsWrite(ABriefID, AObject, AObjectIDs, False{no commit});
+
+    QCommit;
+    Result:= True;
+  except
+    QRollback;
+  end;
 end;
 
 end.
