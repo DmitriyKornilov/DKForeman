@@ -8,7 +8,7 @@ uses
   Classes, SysUtils, Graphics,
   fpspreadsheetgrid, fpstypes,
   //Project utils
-  UConst, UUtils, UBriefingUtils,
+  UConst, UUtils,
   //DK packages utils
   DK_SheetTypes, DK_Vector, DK_Matrix, DK_StrUtils, DK_Const, DK_SheetWriter,
   DK_SheetConst, DK_DateUtils, DK_Color;
@@ -45,6 +45,17 @@ type
                    const AObjectNames: TStrMatrix);
   end;
 
+  { TBriefingListSheet }
+
+  TBriefingListSheet = class(TSingleSelectableSheet)
+  protected
+    function SetWidths: TIntVector; override;
+  private
+    FBriefNames, FNotes: TStrVector;
+  public
+    procedure Draw(const ABriefNames, ANotes: TStrVector);
+  end;
+
 implementation
 
 { TBriefingMainListSheet }
@@ -64,7 +75,7 @@ begin
   Writer.SetAlignment(haCenter, vaCenter);
 
   Writer.WriteText(R, 1, 'Период действия', cbtOuter);
-  Writer.WriteText(R, 2, 'Наименование', cbtOuter);
+  Writer.WriteText(R, 2, 'Наименование мероприятия', cbtOuter);
   Writer.WriteText(R, 3, 'Кому проводится', cbtOuter);
   Writer.WriteText(R, 4, 'Периодичность', cbtOuter);
   Writer.WriteText(R, 5, 'Провести до', cbtOuter);
@@ -98,9 +109,9 @@ begin
 
   S:= '1 раз';
   case FPeriods[AIndex] of
-    1: S:= S + ' в ' + SDays(IntToStr(FNums[AIndex]));
-    2: S:= S + ' в ' + SMonths(IntToStr(FNums[AIndex]));
-    3: S:= S + ' в ' + SYears(IntToStr(FNums[AIndex]));
+    1: S:= S + ' в ' + SDays(IntToStr(FNums[AIndex]), True, False);
+    2: S:= S + ' в ' + SMonths(IntToStr(FNums[AIndex]), True, False);
+    3: S:= S + ' в ' + SYears(IntToStr(FNums[AIndex]), True, False);
   end;
   Writer.WriteText(R1, 4, R2, 4, S, cbtOuter, True, True);
 
@@ -171,6 +182,45 @@ begin
   R:= R + 1;
   for i:= 1 to Writer.ColCount do
     Writer.DrawBorders(R, i, cbtTop);
+
+  Writer.EndEdit;
+end;
+
+{ TBriefingListSheet }
+
+function TBriefingListSheet.SetWidths: TIntVector;
+begin
+  Result:= VCreateInt([100]);
+end;
+
+procedure TBriefingListSheet.Draw(const ABriefNames, ANotes: TStrVector);
+var
+  i, R: Integer;
+  S: String;
+begin
+  Unselect;
+
+  FFirstRows:= nil;
+  FLastRows:= nil;
+
+  Writer.BeginEdit;
+
+  Writer.SetBackgroundDefault;
+  Writer.SetFont(Font.Name, Font.Size, [], clBlack);
+  Writer.SetAlignment(haLeft, vaCenter);
+
+  R:= 0;
+  for i:= 0 to High(ABriefNames) do
+  begin
+    R:= R + 1;
+    VAppend(FFirstRows, R);
+    VAppend(FLastRows, R);
+    S:= ABriefNames[i];
+    if not SEmpty(ANotes[i]) then
+      S:= S + ' (' + ANotes[i] + ')';
+    Writer.WriteText(R, 1,  S, cbtOuter, True, True);
+  end;
+
 
   Writer.EndEdit;
 end;

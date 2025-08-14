@@ -1012,8 +1012,10 @@ type
                                     ИНСТРУКТАЖИ
     **************************************************************************)
 
-    {Получение списка инcтруктажей : True - ОК, False - пусто}
-    function BriefingListLoad(out ABriefIDs, AObjects, APeriods, ANums: TIntVector;
+    {Получение основного (полного) списка инcтруктажей : True - ОК, False - пусто
+     AListType=0 - все, =1 - действующие, =2 - завершенные}
+    function BriefingListLoad(const AListType: Byte;
+                              out ABriefIDs, AObjects, APeriods, ANums: TIntVector;
                               out ABriefNames, ANotes: TStrVector;
                               out ABeginDates, AEndDates, ALastDates: TDateVector): Boolean;
 
@@ -1023,7 +1025,6 @@ type
     function BriefingTabNumObjectsLoad(const ABriefID: Integer;
                                    out ATabNumIDs: TIntVector;
                                    out AFs, ANs, APs, ATabNums: TStrVector): Boolean;
-
     procedure BriefingListObjectNamesLoad(const ABriefIDs, AObjects: TIntVector;
                                    out AObjectIDs: TIntMatrix;
                                    out AObjectNames: TStrMatrix);
@@ -9526,9 +9527,12 @@ begin
   Result:= not VIsNil(ASizNames);
 end;
 
-function TDataBase.BriefingListLoad(out ABriefIDs, AObjects, APeriods, ANums: TIntVector;
+function TDataBase.BriefingListLoad(const AListType: Byte;
+                              out ABriefIDs, AObjects, APeriods, ANums: TIntVector;
                               out ABriefNames, ANotes: TStrVector;
                               out ABeginDates, AEndDates, ALastDates: TDateVector): Boolean;
+var
+  SQLStr: String;
 begin
   Result:= False;
 
@@ -9542,13 +9546,19 @@ begin
   AEndDates:= nil;
   ALastDates:= nil;
 
-  QSetQuery(FQuery);
-  QSetSQL(
+  SQLStr:=
     'SELECT BriefID, Object, Period, Num, BriefName, Note, ' +
            'BeginDate, EndDate, LastDate ' +
-    'FROM BRIEFINGMAIN ' +
-    'ORDER BY BeginDate DESC'
-   );
+    'FROM BRIEFINGMAIN ';
+  case AListType of
+    1: SQLStr:= SQLStr + 'WHERE (EndDate >= :DateValue) ';
+    2: SQLStr:= SQLStr + 'WHERE (EndDate < :DateValue) ';
+  end;
+  SQLStr:= SQLStr + 'ORDER BY BeginDate DESC';
+
+  QSetQuery(FQuery);
+  QSetSQL(SQLStr);
+  QParamDT('DateValue', Date);
   QOpen;
   if not QIsEmpty then
   begin

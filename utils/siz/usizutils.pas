@@ -121,26 +121,12 @@ function SIZPeriod(const ALife: Integer; const ANeedLifeCountIfSingle: Boolean =
 begin
   if ALife<=0 then //особый срок службы
     Result:= SIZ_LIFE_PICKS[ALife]
-  else if ALife=1 then //ровно 1 месяц
-  begin
-    if ANeedLifeCountIfSingle then
-      Result:= '1 месяц'
-    else
-      Result:= 'месяц';
-  end
-  else if ALife=12 then //ровно 1 год
-  begin
-    if ANeedLifeCountIfSingle then
-      Result:= '1 год'
-    else
-      Result:= 'год';
-  end
   else begin
     if ALife<12 then //меньше года
-      Result:= SMonths(IntToStr(ALife))
+      Result:= SMonths(IntToStr(ALife), True, ANeedLifeCountIfSingle)
     else begin //больше года
       if (ALife mod 12) = 0 then //целое кол-во лет
-        Result:= SYears(IntToStr(ALife div 12))
+        Result:= SYears(IntToStr(ALife div 12), True, ANeedLifeCountIfSingle)
       else begin
         if ((2*ALife) mod 12) = 0 then //кол-во лет кратное половине года
           Result:= Format('%.1f года', [ALife/12])

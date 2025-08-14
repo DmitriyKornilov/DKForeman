@@ -428,6 +428,10 @@ const
     'BRIEFINGFORM.ZOOM'
   );
 
+  SETTING_NAMES_BRIEFINGLOGFORM: array of String  =  (
+    'BRIEFINGLOGFORM.LISTTYPE'
+  );
+
 
 implementation
 

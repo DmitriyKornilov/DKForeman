@@ -1,11 +1,11 @@
 object BriefingLogForm: TBriefingLogForm
   Left = 381
-  Height = 240
+  Height = 571
   Top = 250
-  Width = 619
+  Width = 1008
   Caption = 'BriefingLogForm'
-  ClientHeight = 240
-  ClientWidth = 619
+  ClientHeight = 571
+  ClientWidth = 1008
   DesignTimePPI = 120
   OnCreate = FormCreate
   OnDestroy = FormDestroy
@@ -14,7 +14,7 @@ object BriefingLogForm: TBriefingLogForm
     Left = 2
     Height = 40
     Top = 2
-    Width = 615
+    Width = 1004
     Align = alTop
     BorderSpacing.Left = 2
     BorderSpacing.Top = 2
@@ -22,12 +22,12 @@ object BriefingLogForm: TBriefingLogForm
     BevelOuter = bvNone
     BorderStyle = bsSingle
     ClientHeight = 36
-    ClientWidth = 611
+    ClientWidth = 1000
     ParentFont = False
     TabOrder = 0
     object CloseButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 571
+      Left = 960
       Height = 36
       Hint = 'Закрыть'
       Top = 0
@@ -40,7 +40,7 @@ object BriefingLogForm: TBriefingLogForm
       OnClick = CloseButtonClick
     end
     object DividerBevel1: TDividerBevel
-      Left = 550
+      Left = 939
       Height = 36
       Top = 0
       Width = 21
@@ -50,6 +50,204 @@ object BriefingLogForm: TBriefingLogForm
       Font.Style = [fsBold]
       Orientation = trVertical
       ParentFont = False
+    end
+  end
+  object SettingSplitter: TSplitter
+    Left = 302
+    Height = 529
+    Top = 42
+    Width = 6
+    ResizeStyle = rsLine
+    Visible = False
+  end
+  object SettingPanel: TPanel
+    Left = 2
+    Height = 525
+    Top = 44
+    Width = 300
+    Align = alLeft
+    BorderSpacing.Left = 2
+    BorderSpacing.Top = 2
+    BorderSpacing.Bottom = 2
+    BevelOuter = bvNone
+    ClientHeight = 525
+    ClientWidth = 300
+    Color = clWindow
+    ParentBackground = False
+    ParentColor = False
+    TabOrder = 2
+    Visible = False
+    object SettingCaptionPanel: TPanel
+      Left = 0
+      Height = 30
+      Top = 0
+      Width = 300
+      Align = alTop
+      Alignment = taLeftJustify
+      BorderSpacing.Bottom = 2
+      BevelOuter = bvNone
+      BorderStyle = bsSingle
+      Caption = '  Параметры'
+      Color = clBtnFace
+      Font.Style = [fsBold]
+      ParentBackground = False
+      ParentColor = False
+      ParentFont = False
+      TabOrder = 0
+    end
+    object SettingClientPanel: TPanel
+      Left = 0
+      Height = 493
+      Top = 32
+      Width = 300
+      Align = alClient
+      BevelOuter = bvNone
+      BorderStyle = bsSingle
+      ParentBackground = False
+      TabOrder = 1
+    end
+  end
+  object MainPanel: TPanel
+    Left = 308
+    Height = 529
+    Top = 42
+    Width = 700
+    Align = alClient
+    BevelOuter = bvNone
+    ClientHeight = 529
+    ClientWidth = 700
+    TabOrder = 3
+    object ListPanel: TPanel
+      Left = 0
+      Height = 525
+      Top = 2
+      Width = 500
+      Align = alLeft
+      BorderSpacing.Top = 2
+      BorderSpacing.Bottom = 2
+      BevelOuter = bvNone
+      ClientHeight = 525
+      ClientWidth = 500
+      TabOrder = 0
+      object ListCaptionPanel: TPanel
+        Left = 0
+        Height = 30
+        Top = 0
+        Width = 500
+        Align = alTop
+        Alignment = taLeftJustify
+        BorderSpacing.Bottom = 2
+        BevelOuter = bvNone
+        BorderStyle = bsSingle
+        Caption = '  Список мероприятий'
+        Font.Style = [fsBold]
+        ParentFont = False
+        TabOrder = 0
+      end
+      object SheetPanel: TPanel
+        Left = 0
+        Height = 493
+        Top = 32
+        Width = 500
+        Align = alClient
+        BevelOuter = bvNone
+        BorderStyle = bsSingle
+        ClientHeight = 489
+        ClientWidth = 496
+        Color = clWhite
+        ParentBackground = False
+        ParentColor = False
+        TabOrder = 1
+        object ViewGrid: TsWorksheetGrid
+          Left = 0
+          Height = 489
+          Top = 0
+          Width = 496
+          AutoExpand = []
+          DisplayFixedColRow = False
+          FrozenBorderPen.Style = psClear
+          FrozenCols = 0
+          FrozenRows = 0
+          PageBreakPen.Color = clBlue
+          PageBreakPen.Style = psDash
+          ReadFormulas = False
+          SelectionPen.Color = clWindow
+          SelectionPen.Style = psClear
+          SelectionPen.Width = 0
+          ShowGridLines = False
+          ShowHeaders = False
+          WorkbookSource = ViewGrid.internal
+          Align = alClient
+          AutoAdvance = aaNone
+          AutoEdit = False
+          BorderStyle = bsNone
+          Color = clWhite
+          DefaultColWidth = 40
+          DefaultRowHeight = 20
+          ExtendedSelect = False
+          Flat = True
+          MouseWheelOption = mwGrid
+          Options = [goFixedVertLine, goFixedHorzLine, goSmoothScroll]
+          ParentFont = False
+          TabOrder = 0
+          TabStop = False
+          TitleFont.Style = [fsBold]
+        end
+      end
+    end
+    object ViewPanel: TPanel
+      Left = 506
+      Height = 527
+      Top = 2
+      Width = 194
+      Align = alClient
+      BorderSpacing.Top = 2
+      BevelOuter = bvNone
+      Caption = 'ViewPanel'
+      ClientHeight = 527
+      ClientWidth = 194
+      TabOrder = 1
+      object ViewCaptionPanel: TPanel
+        Left = 0
+        Height = 30
+        Top = 0
+        Width = 192
+        Align = alTop
+        Alignment = taLeftJustify
+        BorderSpacing.Right = 2
+        BorderSpacing.Bottom = 2
+        BevelOuter = bvNone
+        BorderStyle = bsSingle
+        Caption = '  Мероприятие'
+        Color = clBtnFace
+        Font.Style = [fsBold]
+        ParentBackground = False
+        ParentColor = False
+        ParentFont = False
+        TabOrder = 0
+      end
+      object VT: TVirtualStringTree
+        Left = 0
+        Height = 493
+        Top = 32
+        Width = 192
+        Align = alClient
+        BorderSpacing.Right = 2
+        BorderSpacing.Bottom = 2
+        DefaultText = 'Node'
+        Header.AutoSizeIndex = 0
+        Header.Columns = <>
+        Header.MainColumn = -1
+        Margin = 50
+        TabOrder = 1
+      end
+    end
+    object ListSplitter: TSplitter
+      Left = 500
+      Height = 529
+      Top = 0
+      Width = 6
+      ResizeStyle = rsLine
     end
   end
 end

@@ -54,6 +54,7 @@ type
     ObjectNames: TStrMatrix;
     ObjectIDs: TIntMatrix;
 
+    procedure BriefingListCreate;
     procedure BriefingListLoad(const ASelectedID: Integer = -1);
     procedure BriefingListDraw(const AZoomPercent: Integer);
     procedure BriefingListSelect;
@@ -85,12 +86,7 @@ begin
   ModeType:= mtView;
   SettingsLoad; //load ZoomPercent
   CreateZoomControls(50, 150, ZoomPercent, ZoomPanel, @BriefingListDraw, True);
-
-  BriefingList:= TBriefingMainListSheet.Create(ViewGrid.Worksheet, ViewGrid, GridFont);
-  BriefingList.CanUnselect:= False;
-  BriefingList.OnSelect:= @BriefingListSelect;
-  BriefingList.OnReturnKeyDown:= @BriefingListEditItem;
-  BriefingList.OnDelKeyDown:= @BriefingListDelItem;
+  BriefingListCreate;
 end;
 
 procedure TBriefingForm.FormDestroy(Sender: TObject);
@@ -117,6 +113,15 @@ begin
   BriefingListEditItem;
 end;
 
+procedure TBriefingForm.BriefingListCreate;
+begin
+  BriefingList:= TBriefingMainListSheet.Create(ViewGrid.Worksheet, ViewGrid, GridFont);
+  BriefingList.CanUnselect:= False;
+  BriefingList.OnSelect:= @BriefingListSelect;
+  BriefingList.OnReturnKeyDown:= @BriefingListEditItem;
+  BriefingList.OnDelKeyDown:= @BriefingListDelItem;
+end;
+
 procedure TBriefingForm.BriefingListLoad(const ASelectedID: Integer = -1);
 var
   SelectedID: Integer;
@@ -124,7 +129,7 @@ begin
   if ModeType=mtEditing then
     SelectedID:= GetSelectedID(BriefingList, BriefIDs, ASelectedID);
 
-  DataBase.BriefingListLoad(BriefIDs, Objects, Periods, Nums, BriefNames, Notes,
+  DataBase.BriefingListLoad(0{все}, BriefIDs, Objects, Periods, Nums, BriefNames, Notes,
                             BeginDates, EndDates, LastDates);
   DataBase.BriefingListObjectNamesLoad(BriefIDs, Objects, ObjectIDs, ObjectNames);
 

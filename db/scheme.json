@@ -1618,7 +1618,8 @@
         "SIZREQUESTFORM.ZOOM",
         "BRIEFINGFORM.ZOOM",
         "SCHEDULEPERSONALMONTHFORM.NEEDRANKS",
-        "TIMETABLEMONTHFORM.NEEDRANKS"
+        "TIMETABLEMONTHFORM.NEEDRANKS",
+        "BRIEFINGLOGFORM.LISTTYPE"
       ],
       "ReferenceTo" : {
         "TableName" : "",
@@ -1748,6 +1749,7 @@
         "100",
         "100",
         "100",
+        "1",
         "1",
         "1"
       ],

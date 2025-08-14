@@ -242,7 +242,7 @@ begin
     10: (CategoryForm as TSIZSizeForm).SettingsSave;
     11: (CategoryForm as TSIZCardForm).SettingsSave;
     12: (CategoryForm as TBriefingForm).SettingsSave;
-    13: ;//(CategoryForm as TBriefingLogForm).SettingsSave; !!!
+    13: (CategoryForm as TBriefingLogForm).SettingsSave;
   end;
 end;
 
@@ -256,7 +256,7 @@ begin
     SettingsSave;
     Category:= ACategory;
     Caption:= MAIN_CAPTION + MAIN_DESCRIPTION[ACategory];
-    SettingButton.Enabled:= not (Category in [0, 2, 7, 8, 9]);
+    SettingButton.Enabled:= not (Category in [0, 2, 7, 8, 9, 12]);
     EditingButton.Enabled:= not (Category in [0, 9]);
 
     if Assigned(CategoryForm) then FreeAndNil(CategoryForm);
