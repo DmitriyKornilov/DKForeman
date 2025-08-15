@@ -12,7 +12,7 @@ uses
   Interfaces, // this includes the LCL widgetset
   Forms, UMainForm, UCalendarForm, lazcontrols, datetimectrls, UDataBase,
   UStaffForm, UScheduleShiftForm, UVacationPlanForm, USchedulePersonalForm,
-  UTimetableForm, USIZStoreForm, UBriefingForm, UConst, UTypes,
+  UTimetableForm, USIZStoreForm, UConst, UTypes,
   UStaffMainEditForm, UUtils, UCalendar, UWorkHours, UStaffTabNumEditForm,
   UStaffPostLogEditForm, UCalendarSheet, UTimingSheet, UScheduleSheet,
   UTimetable, UCalendarEditForm, UScheduleCorrectionEditForm,
@@ -30,7 +30,7 @@ USIZDocStoreWriteoffForm, USIZCardTypes, USIZSizeSpecEditForm,
 USIZStatusNewEditForm, USIZStatusCopyEditForm, USIZCardReturnEditForm, 
 USIZDocReceivingForm, USIZDocReturningForm, USIZDocSheet, USIZDocMB7Form, 
 USIZStaffHistoryForm, USIZStoreSheet, USIZStoreTypes, UInfoForm, 
-USIZRequestForm, UBriefingLogForm, UBriefingSheet, UBriefingEditForm;
+USIZRequestForm;
 
 {$R *.res}
 

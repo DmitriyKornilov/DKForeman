@@ -11,7 +11,6 @@ object SIZNormItemEditForm: TSIZNormItemEditForm
   Constraints.MinWidth = 600
   DesignTimePPI = 120
   Position = poScreenCenter
-  LCLVersion = '4.2.0.0'
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
@@ -94,12 +93,12 @@ object SIZNormItemEditForm: TSIZNormItemEditForm
   end
   object PostLabel: TLabel
     AnchorSideLeft.Control = Owner
-    AnchorSideTop.Control = NormNameBCButton
+    AnchorSideTop.Control = OrderNameEdit
     AnchorSideTop.Side = asrBottom
     AnchorSideRight.Side = asrBottom
     Left = 8
     Height = 20
-    Top = 81
+    Top = 149
     Width = 370
     BorderSpacing.Left = 8
     BorderSpacing.Top = 12
@@ -114,8 +113,8 @@ object SIZNormItemEditForm: TSIZNormItemEditForm
     AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Control = ButtonPanel
     Left = 8
-    Height = 317
-    Top = 109
+    Height = 249
+    Top = 177
     Width = 584
     Anchors = [akTop, akLeft, akRight, akBottom]
     BorderSpacing.Left = 8
@@ -123,12 +122,12 @@ object SIZNormItemEditForm: TSIZNormItemEditForm
     BorderSpacing.Right = 8
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 317
-    ClientWidth = 584
+    ClientHeight = 245
+    ClientWidth = 580
     TabOrder = 1
     object PostVT: TVirtualStringTree
       Left = 0
-      Height = 313
+      Height = 245
       Top = 0
       Width = 580
       Align = alClient
@@ -250,5 +249,35 @@ object SIZNormItemEditForm: TSIZNormItemEditForm
     TextApplyGlobalOpacity = False
     DropDownStyle = bdsCommon
     MemoryUsage = bmuHigh
+  end
+  object OrderNameLabel: TLabel
+    AnchorSideLeft.Control = Owner
+    AnchorSideTop.Control = NormNameBCButton
+    AnchorSideTop.Side = asrBottom
+    Left = 8
+    Height = 20
+    Top = 81
+    Width = 391
+    BorderSpacing.Left = 8
+    BorderSpacing.Top = 12
+    BorderSpacing.Bottom = 8
+    Caption = 'Номер пункта (по умолчанию будет проставлен № п/п)'
+    ParentColor = False
+  end
+  object OrderNameEdit: TEdit
+    AnchorSideLeft.Control = Owner
+    AnchorSideTop.Control = OrderNameLabel
+    AnchorSideTop.Side = asrBottom
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
+    Left = 8
+    Height = 28
+    Top = 109
+    Width = 584
+    Anchors = [akTop, akLeft, akRight]
+    BorderSpacing.Left = 8
+    BorderSpacing.Top = 8
+    BorderSpacing.Right = 8
+    TabOrder = 2
   end
 end

@@ -23,9 +23,7 @@ const
     {08} ' - [СКЛАД СРЕДСТВ ИНДИВИДУАЛЬНОЙ ЗАЩИТЫ]',
     {09} ' - [ЗАЯВКА НА ПОСТУПЛЕНИЕ СРЕДСТВ ИНДИВИДУАЛЬНОЙ ЗАЩИТЫ]',
     {10} ' - [РАЗМЕРЫ СРЕДСТВ ИНДИВИДУАЛЬНОЙ ЗАЩИТЫ СОТРУДНИКОВ]',
-    {11} ' - [УЧЕТ ВЫДАЧИ СРЕДСТВ ИНДИВИДУАЛЬНОЙ ЗАЩИТЫ]',
-    {12} ' - [ПЕРЕЧЕНЬ ИНСТРУКТАЖЕЙ, АТТЕСТАЦИЙ, ТЕМ ОБУЧЕНИЯ]',
-    {13} ' - [УЧЕТ ПРОВЕДЕНИЯ ИНСТРУКТАЖЕЙ, АТТЕСТАЦИЙ, ОБУЧЕНИЯ]'
+    {11} ' - [УЧЕТ ВЫДАЧИ СРЕДСТВ ИНДИВИДУАЛЬНОЙ ЗАЩИТЫ]'
   );
 
   OTHER_DESCRIPTION: array of String = (
@@ -102,21 +100,6 @@ const
     (0      );
   SIZ_DOCFORM_PICKS: array of String =
     ('<нет>');
-
-  BRIEFTYPE_KEYS: array of Integer =
-    (0,   1  );
-  BRIEFTYPE_PICKS: array of String  =
-    ('разово', 'периодически');
-
-  BRIEFPERIOD_KEYS: array of Integer =
-    (1,      2 ,       3  );
-  BRIEFPERIOD_PICKS: array of String  =
-    ('дней', 'месяцев', 'лет');
-
-  BRIEFOBJECT_KEYS: array of Integer =
-    (0,      1 ,       2  );
-  BRIEFOBJECT_PICKS: array of String  =
-    ('всем сотрудникам', 'отдельным должностям (профессиям)', 'отдельным сотрудникам персонально');
 
   (**************************************************************************
                    ЗАГОЛОВКИ И ШИРИНА СТОЛБЦОВ ТАБЛИЦ
@@ -423,15 +406,6 @@ const
   SETTING_NAMES_SIZREQUESTFORM: array of String  =  (
     'SIZREQUESTFORM.ZOOM'
   );
-
-  SETTING_NAMES_BRIEFINGFORM: array of String  =  (
-    'BRIEFINGFORM.ZOOM'
-  );
-
-  SETTING_NAMES_BRIEFINGLOGFORM: array of String  =  (
-    'BRIEFINGLOGFORM.LISTTYPE'
-  );
-
 
 implementation
 

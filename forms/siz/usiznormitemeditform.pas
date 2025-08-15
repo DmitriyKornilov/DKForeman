@@ -21,6 +21,8 @@ type
     ButtonPanel: TPanel;
     ButtonPanelBevel: TBevel;
     CancelButton: TSpeedButton;
+    OrderNameEdit: TEdit;
+    OrderNameLabel: TLabel;
     NormNameBCButton: TBCButton;
     PostPanel: TPanel;
     PostLabel: TLabel;
@@ -41,6 +43,7 @@ type
     EditablePostChecks: TBoolVector;
 
     OldPostItemIDs, OldPostIDs: TIntVector;
+    OldOrderName: String;
 
     NormIDs: TIntVector;
     NormNames: TStrVector;
@@ -90,6 +93,8 @@ begin
     Exit;
   end;
 
+  OldOrderName:= OrderNameEdit.Text;
+
   EditablePostListLoad(NormID);
   NormsLoad;
 end;
@@ -103,6 +108,7 @@ procedure TSIZNormItemEditForm.SaveButtonClick(Sender: TObject);
 var
   IsOK: Boolean;
   CheckedPostIDs, AddPostIDs, DelItemPostIDs: TIntVector;
+  OrderName: String;
 
   function IsCollision: Boolean;
   var
@@ -156,7 +162,9 @@ var
       if VIndexOf(CheckedPostIDs, OldPostIDs[i])<0 then
         VAppend(DelItemPostIDs, OldPostItemIDs[i]);
 
-    Result:= (not VIsNil(AddPostIDs)) or (not VIsNil(DelItemPostIDs));
+    Result:= (not VIsNil(AddPostIDs)) or
+             (not VIsNil(DelItemPostIDs)) or
+             (not SSame(OrderName, OldOrderName));
     if not Result then
       Inform('Не внесено никаких изменений!');
 
@@ -170,7 +178,6 @@ var
   end;
 
 begin
-
   if PostList.IsAllUnchecked then
   begin
     Inform('Не выбрано ни одной должности (профессии)!');
@@ -180,16 +187,17 @@ begin
   if IsCollision then Exit;
 
   CheckedPostIDs:= VCut(EditablePostIDs, PostList.Checkeds);
+  OrderName:= STrim(OrderNameEdit.Text);
   if EditingType=etEdit then //редактирование
   begin
     if not UpdateValuesLoad then Exit;
-    IsOK:= DataBase.SIZNormItemUpdate(NormID, ItemID, AddPostIDs, DelItemPostIDs);
+    IsOK:= DataBase.SIZNormItemUpdate(NormID, ItemID, OrderName, AddPostIDs, DelItemPostIDs);
   end
   else if EditingType=etAdd then //новый пункт
-    IsOK:= DataBase.SIZNormItemAdd(NormID, ItemID, CheckedPostIDs)
+    IsOK:= DataBase.SIZNormItemAdd(NormID, ItemID, OrderName, CheckedPostIDs)
   else //копирование в другие типовые нормы
-    IsOK:= DataBase.SIZNormItemCopy(NormIDs[NormNameDropDown.ItemIndex],
-                                      ItemID, CheckedPostIDs);
+    IsOK:= DataBase.SIZNormItemCopy(NormIDs[NormNameDropDown.ItemIndex], ItemID,
+                                   OrderName, CheckedPostIDs);
 
   if not IsOK then Exit;
   ModalResult:= mrOK;

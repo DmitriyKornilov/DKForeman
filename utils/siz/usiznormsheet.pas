@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, Graphics, fpstypes,
   //DK packages utils
-  DK_SheetTables, DK_SheetTypes, DK_Vector, DK_Matrix, DK_Const,
+  DK_SheetTables, DK_SheetTypes, DK_Vector, DK_Matrix, DK_Const, DK_StrUtils,
   DK_SheetWriter,
   //Project utils
   USIZNormTypes, USIZUtils, UConst;
@@ -34,6 +34,7 @@ type
     var
       FPostNames: TStrMatrix;
       FOrderNums: TIntVector;
+      FOrderNames: TStrVector;
       //начальный и конечный индексы пункта в входящих списках
       FFirstItemIndexes, FLastItemIndexes: TIntVector;
 
@@ -44,6 +45,7 @@ type
     procedure LineDraw(const AIndex: Integer);
   public
     procedure Draw(const AOrderNums: TIntVector;
+                   const AOrderNames: TStrVector;
                    const APostNames: TStrMatrix;
                    const ASelectedIndex: Integer);
     procedure SelectByIndex(const ASelectedIndex: Integer);
@@ -223,12 +225,14 @@ begin
 end;
 
 procedure TSIZNormItemSheet.Draw(const AOrderNums: TIntVector;
+                   const AOrderNames: TStrVector;
                    const APostNames: TStrMatrix;
                    const ASelectedIndex: Integer);
 var
   i: Integer;
 begin
   FOrderNums:= AOrderNums;
+  FOrderNames:= AOrderNames;
   FPostNames:= APostNames;
 
   if VIsNil(AOrderNums) then
@@ -300,7 +304,10 @@ begin
      Writer.WriteText(R, 2, S, cbtNone, True, True);
   end;
   Writer.SetAlignment(haCenter, vaTop);
-  Writer.WriteNumber(RR, 1, R, 1, FOrderNums[AIndex]+1);
+  if SEmpty(FOrderNames[AIndex]) then
+    Writer.WriteNumber(RR, 1, R, 1, FOrderNums[AIndex]+1)
+  else
+    Writer.WriteText(RR, 1, R, 1, FOrderNames[AIndex]);
   Writer.SetBackgroundDefault;
   Writer.DrawBorders(RR, 1, R, 1, cbtOuter);
   Writer.DrawBorders(RR, 2, R, 2, cbtOuter);

@@ -511,9 +511,10 @@ type
     {Загрузка из базы списка пунктов типовых норм: True - ОК, False - пусто}
     function SIZNormItemsLoad(const ANormID: Integer;
                               out AItemIDs, APostIDs, AOrderNums: TIntVector;
-                              out APostNames: TStrVector): Boolean;
+                              out AOrderNames, APostNames: TStrVector): Boolean;
     function SIZNormItemsLoad(const ANormID: Integer;
                               out AItemIDs, AOrderNums: TIntVector;
+                              out AOrderNames: TStrVector;
                               out APostIDs: TIntMatrix;
                               out APostNames: TStrMatrix): Boolean;
     function SIZNormItemLoad(const AItemID: Integer; out AItem: TNormItem): Boolean;
@@ -540,21 +541,26 @@ type
     {Запись нового пункта нормы: True - ОК, False - ошибка}
     function SIZNormItemWrite(const ANormID: Integer; out AItemID: Integer;
                               const AOrderNum: Integer;
+                              const AOrderName: String;
                               const ACommit: Boolean = True): Boolean;
     {Добавление полностью нового пункта нормы: True - ОК, False - ошибка}
     function SIZNormItemAdd(const ANormID: Integer; out AItemID: Integer;
+                            const AOrderName: String;
                             const APostIDs: TIntVector): Boolean;
     {Обновление пункта нормы: True - ОК, False - ошибка}
     function SIZNormItemUpdate(const ANormID, AItemID: Integer;
+                            const AOrderName: String;
                             const AAddPostIDs, ADelItemPostIDs: TIntVector): Boolean;
     {Копирование пункта в другие нормы: True - ОК, False - ошибка}
     function SIZNormItemDataCopy(const ANormID, ASourceItemID: Integer;
                             out ADestItemID: Integer;
+                            const AOrderName: String;
                             const ACommit: Boolean = True): Boolean;
     function SIZNormItemPartCopy(const ANormID, ASourceItemID: Integer;
                             const AItemPostIDs: TIntVector;
                             const ACommit: Boolean = True): Boolean;
     function SIZNormItemCopy(const ANormID, AItemID: Integer;
+                            const AOrderName: String;
                             const APostIDs: TIntVector): Boolean;
 
     {Перестановка местами пунктов: True - ОК, False - ошибка}
@@ -1008,43 +1014,6 @@ type
     {Удаление информации о возврате СИЗ (отмена возврата): True - ОК, False - ошибка}
     function SIZReturningCancel(const ALogID: Int64; const ACommit: Boolean = True): Boolean;
 
-    (**************************************************************************
-                                    ИНСТРУКТАЖИ
-    **************************************************************************)
-
-    {Получение основного (полного) списка инcтруктажей : True - ОК, False - пусто
-     AListType=0 - все, =1 - действующие, =2 - завершенные}
-    function BriefingListLoad(const AListType: Byte;
-                              out ABriefIDs, AObjects, APeriods, ANums: TIntVector;
-                              out ABriefNames, ANotes: TStrVector;
-                              out ABeginDates, AEndDates, ALastDates: TDateVector): Boolean;
-
-    function BriefingPostObjectsLoad(const ABriefID: Integer;
-                                   out APostIDs: TIntVector;
-                                   out APostNames: TStrVector): Boolean;
-    function BriefingTabNumObjectsLoad(const ABriefID: Integer;
-                                   out ATabNumIDs: TIntVector;
-                                   out AFs, ANs, APs, ATabNums: TStrVector): Boolean;
-    procedure BriefingListObjectNamesLoad(const ABriefIDs, AObjects: TIntVector;
-                                   out AObjectIDs: TIntMatrix;
-                                   out AObjectNames: TStrMatrix);
-
-    {Запись ID должностей или таб номеров для инструктажа: True - ОК, False - ошибка}
-    function BriefingIDsWrite(const ABriefID, AObject: Integer;
-                              const AObjectIDs: TIntVector;
-                              const ACommit: Boolean = True): Boolean;
-    {Добавление инструктажа: True - ОК, False - ошибка}
-    function BriefingAdd(out ABriefID: Integer;
-                         const ABriefName, ANote: String;
-                         const ABeginDate, AEndDate, ALastDate: TDate;
-                         const AObject, APeriod, ANum: Integer;
-                         const AObjectIDs: TIntVector): Boolean;
-    {Обновление инструктажа: True - ОК, False - ошибка}
-    function BriefingUpdate(const ABriefID: Integer;
-                         const ABriefName, ANote: String;
-                         const ABeginDate, AEndDate, ALastDate: TDate;
-                         const AOldObject, AObject, APeriod, ANum: Integer;
-                         const AObjectIDs: TIntVector): Boolean;
   end;
 
 implementation
@@ -4281,18 +4250,19 @@ end;
 
 function TDataBase.SIZNormItemsLoad(const ANormID: Integer;
                               out AItemIDs, APostIDs, AOrderNums: TIntVector;
-                              out APostNames: TStrVector): Boolean;
+                              out AOrderNames, APostNames: TStrVector): Boolean;
 begin
   Result:= False;
 
   AItemIDs:= nil;
   APostIDs:= nil;
+  AOrderNames:= nil;
   AOrderNums:= nil;
   APostNames:= nil;
 
   QSetQuery(FQuery);
   QSetSQL(
-    'SELECT t1.ItemID, t1.PostID, t2.OrderNum, t3.PostName ' +
+    'SELECT t1.ItemID, t1.PostID, t2.OrderNum, t2.OrderName, t3.PostName ' +
     'FROM SIZNORMITEMPOST t1 ' +
     'INNER JOIN SIZNORMITEM t2 ON (t1.ItemID=t2.ItemID) ' +
     'INNER JOIN STAFFPOST t3 ON (t1.PostID=t3.PostID) ' +
@@ -4309,6 +4279,7 @@ begin
       VAppend(AItemIDs, QFieldInt('ItemID'));
       VAppend(APostIDs, QFieldInt('PostID'));
       VAppend(AOrderNums, QFieldInt('OrderNum'));
+      VAppend(AOrderNames, QFieldStr('OrderName'));
       VAppend(APostNames, QFieldStr('PostName'));
       QNext;
     end;
@@ -4319,19 +4290,21 @@ end;
 
 function TDataBase.SIZNormItemsLoad(const ANormID: Integer;
                               out AItemIDs, AOrderNums: TIntVector;
+                              out AOrderNames: TStrVector;
                               out APostIDs: TIntMatrix;
                               out APostNames: TStrMatrix): Boolean;
 var
   i, I1, I2, ItemID: Integer;
   ItemIDs, PostIDs, OrderNums: TIntVector;
-  PostNames: TStrVector;
+  OrderNames, PostNames: TStrVector;
 begin
   AItemIDs:= nil;
   AOrderNums:= nil;
+  AOrderNames:= nil;
   APostIDs:= nil;
   APostNames:= nil;
 
-  Result:= SIZNormItemsLoad(ANormID, ItemIDs, PostIDs, OrderNums, PostNames);
+  Result:= SIZNormItemsLoad(ANormID, ItemIDs, PostIDs, OrderNums, OrderNames, PostNames);
   if not Result then Exit;
 
   I1:= 0;
@@ -4342,6 +4315,7 @@ begin
 
     VAppend(AItemIDs, ItemIDs[i-1]);
     VAppend(AOrderNums, OrderNums[i-1]);
+    VAppend(AOrderNames, OrderNames[i-1]);
 
     I2:= i-1;
     MAppend(APostIDs, VCut(PostIDs, I1, I2));
@@ -4353,6 +4327,7 @@ begin
 
   VAppend(AItemIDs, VLast(ItemIDs));
   VAppend(AOrderNums, VLast(OrderNums));
+  VAppend(AOrderNames, VLast(OrderNames));
   I2:= High(ItemIDs);
   MAppend(APostIDs, VCut(PostIDs, I1, I2));
   MAppend(APostNames, VCut(PostNames, I1, I2));
@@ -4463,17 +4438,20 @@ end;
 
 function TDataBase.SIZNormItemWrite(const ANormID: Integer; out AItemID: Integer;
                               const AOrderNum: Integer;
+                              const AOrderName: String;
                               const ACommit: Boolean = True): Boolean;
 begin
   Result:= False;
+
   QSetQuery(FQuery);
   try
     //запись пункта нормы
     QSetSQL(
-      sqlINSERT('SIZNORMITEM', ['OrderNum', 'NormID'])
+      sqlINSERT('SIZNORMITEM', ['OrderNum', 'NormID', 'OrderName'])
     );
     QParamInt('NormID', ANormID);
     QParamInt('OrderNum', AOrderNum);
+    QParamStr('OrderName', AOrderName);
     QExec;
     //получение ID сделанной записи
     AItemID:= LastWritedInt32ID('SIZNORMITEM');
@@ -4485,6 +4463,7 @@ begin
 end;
 
 function TDataBase.SIZNormItemAdd(const ANormID: Integer; out AItemID: Integer;
+                                  const AOrderName: String;
                                   const APostIDs: TIntVector): Boolean;
 var
   OrderNum: Integer;
@@ -4495,7 +4474,7 @@ begin
     //Определяем свободный порядковый номер
     OrderNum:= SIZNormItemOrderNumFreeLoad(ANormID);
     //записываем пункт нормы в SIZNORMITEM
-    SIZNormItemWrite(ANormID, AItemID, OrderNum, False{no commit});
+    SIZNormItemWrite(ANormID, AItemID, OrderNum, AOrderName, False{no commit});
     //записываем все выбранные должности для пункта в SIZNORMITEMPOST
     SIZItemsAndPostsAccordanceAdd(AItemID, APostIDs, False{no commit});
     QCommit;
@@ -4506,10 +4485,14 @@ begin
 end;
 
 function TDataBase.SIZNormItemUpdate(const ANormID, AItemID: Integer;
+                                     const AOrderName: String;
                                      const AAddPostIDs, ADelItemPostIDs: TIntVector): Boolean;
 begin
   Result:= False;
   try
+    //изменяем номер пункта
+    UpdateByInt32ID('SIZNORMITEM', 'OrderName', 'ItemID', AItemID, AOrderName, False{no commit});
+
     //переносим удалямые записи в новый пункт
     if not VIsNil(ADelItemPostIDs) then
       SIZNormItemPartCopy(ANormID, AItemID, ADelItemPostIDs, False{no commit});
@@ -4527,6 +4510,7 @@ end;
 
 function TDataBase.SIZNormItemDataCopy(const ANormID, ASourceItemID: Integer;
                                        out ADestItemID: Integer;
+                                       const AOrderName: String;
                                        const ACommit: Boolean): Boolean;
 var
   i, DestSubItemID, ItemOrderNum: Integer;
@@ -4568,7 +4552,7 @@ begin
     //Определяем свободный порядковый номер
     ItemOrderNum:= SIZNormItemOrderNumFreeLoad(ANormID);
     //записываем пункт
-    SIZNormItemWrite(ANormID, ADestItemID, ItemOrderNum, False{no commit});
+    SIZNormItemWrite(ANormID, ADestItemID, ItemOrderNum, AOrderName, False{no commit});
 
     //достаем список строк пункта-источника
     SourceItemLoad(ASourceItemID, SourceSubItemIDs, ReasonIDs, SubItemOrderNums);
@@ -4601,7 +4585,7 @@ var
 begin
   Result:= False;
   try
-    if SIZNormItemDataCopy(ANormID, ASourceItemID, DestItemID, False{no commit}) then
+    if SIZNormItemDataCopy(ANormID, ASourceItemID, DestItemID, EmptyStr, False{no commit}) then
     begin
       //переносим все выбранные должности для пункта в SIZNORMITEMPOST
       SIZItemsAndPostsAccordanceMove(DestItemID, AItemPostIDs, False{no commit});
@@ -4614,13 +4598,14 @@ begin
 end;
 
 function TDataBase.SIZNormItemCopy(const ANormID, AItemID: Integer;
+                                   const AOrderName: String;
                                    const APostIDs: TIntVector): Boolean;
 var
   DestItemID: Integer;
 begin
   Result:= False;
   try
-    if SIZNormItemDataCopy(ANormID, AItemID, DestItemID, False{no commit}) then
+    if SIZNormItemDataCopy(ANormID, AItemID, DestItemID, AOrderName, False{no commit}) then
     begin
       //записываем все выбранные должности для пункта в SIZNORMITEMPOST
       SIZItemsAndPostsAccordanceAdd(DestItemID, APostIDs, False{no commit});
@@ -9525,310 +9510,6 @@ begin
   end;
 
   Result:= not VIsNil(ASizNames);
-end;
-
-function TDataBase.BriefingListLoad(const AListType: Byte;
-                              out ABriefIDs, AObjects, APeriods, ANums: TIntVector;
-                              out ABriefNames, ANotes: TStrVector;
-                              out ABeginDates, AEndDates, ALastDates: TDateVector): Boolean;
-var
-  SQLStr: String;
-begin
-  Result:= False;
-
-  ABriefIDs:= nil;
-  AObjects:= nil;
-  APeriods:= nil;
-  ANums:= nil;
-  ABriefNames:= nil;
-  ANotes:= nil;
-  ABeginDates:= nil;
-  AEndDates:= nil;
-  ALastDates:= nil;
-
-  SQLStr:=
-    'SELECT BriefID, Object, Period, Num, BriefName, Note, ' +
-           'BeginDate, EndDate, LastDate ' +
-    'FROM BRIEFINGMAIN ';
-  case AListType of
-    1: SQLStr:= SQLStr + 'WHERE (EndDate >= :DateValue) ';
-    2: SQLStr:= SQLStr + 'WHERE (EndDate < :DateValue) ';
-  end;
-  SQLStr:= SQLStr + 'ORDER BY BeginDate DESC';
-
-  QSetQuery(FQuery);
-  QSetSQL(SQLStr);
-  QParamDT('DateValue', Date);
-  QOpen;
-  if not QIsEmpty then
-  begin
-    QFirst;
-    while not QEOF do
-    begin
-      VAppend(ABriefIDs, QFieldInt('BriefID'));
-      VAppend(AObjects, QFieldInt('Object'));
-      VAppend(APeriods, QFieldInt('Period'));
-      VAppend(ANums, QFieldInt('Num'));
-
-      VAppend(ABriefNames, QFieldStr('BriefName'));
-      VAppend(ANotes, QFieldStr('Note'));
-
-      VAppend(ABeginDates, QFieldDT('BeginDate'));
-      VAppend(AEndDates, QFieldDT('EndDate'));
-      VAppend(ALastDates, QFieldDT('LastDate'));
-
-      QNext;
-    end;
-    Result:= True;
-  end;
-  QClose;
-end;
-
-function TDataBase.BriefingPostObjectsLoad(const ABriefID: Integer;
-                                           out APostIDs: TIntVector;
-                                           out APostNames: TStrVector): Boolean;
-begin
-  Result:= False;
-
-  APostIDs:= nil;
-  APostNames:= nil;
-
-  QSetQuery(FQuery);
-  QSetSQL(
-    'SELECT t1.PostID, t2.PostName ' +
-    'FROM BRIEFINGPOST t1 ' +
-    'INNER JOIN STAFFPOST t2 ON (t1.PostID=t2.PostID) ' +
-    'WHERE t1.BriefID = :BriefID ' +
-    'ORDER BY t2.PostName'
-   );
-  QParamInt('BriefID', ABriefID);
-  QOpen;
-  if not QIsEmpty then
-  begin
-    QFirst;
-    while not QEOF do
-    begin
-      VAppend(APostIDs, QFieldInt('PostID'));
-      VAppend(APostNames, QFieldStr('PostName'));
-      QNext;
-    end;
-    Result:= True;
-  end;
-  QClose;
-end;
-
-function TDataBase.BriefingTabNumObjectsLoad(const ABriefID: Integer;
-                                   out ATabNumIDs: TIntVector;
-                                   out AFs, ANs, APs, ATabNums: TStrVector): Boolean;
-begin
-  Result:= False;
-
-  ATabNumIDs:= nil;
-  AFs:= nil;
-  ANs:= nil;
-  APs:= nil;
-  ATabNums:= nil;
-
-  QSetQuery(FQuery);
-  QSetSQL(
-    'SELECT t1.TabNumID, t2.TabNum, t3.Family, t3.Name, t3.Patronymic  ' +
-    'FROM BRIEFINGTABNUM t1 ' +
-    'INNER JOIN STAFFTABNUM t2 ON (t1.TabNumID=t2.TabNumID) ' +
-    'INNER JOIN STAFFMAIN t3 ON (t2.StaffID=t3.StaffID) ' +
-    'WHERE t1.BriefID = :BriefID ' +
-    'ORDER BY t3.Family, t3.Name, t3.Patronymic'
-   );
-  QParamInt('BriefID', ABriefID);
-  QOpen;
-  if not QIsEmpty then
-  begin
-    QFirst;
-    while not QEOF do
-    begin
-      VAppend(ATabNumIDs, QFieldInt('TabNumID'));
-      VAppend(AFs, QFieldStr('Family'));
-      VAppend(ANs, QFieldStr('Name'));
-      VAppend(APs, QFieldStr('Patronymic'));
-      VAppend(ATabNums, QFieldStr('TabNum'));
-      QNext;
-    end;
-    Result:= True;
-  end;
-  QClose;
-end;
-
-procedure TDataBase.BriefingListObjectNamesLoad(const ABriefIDs, AObjects: TIntVector;
-                                   out AObjectIDs: TIntMatrix;
-                                   out AObjectNames: TStrMatrix);
-var
-  i: Integer;
-
-  procedure AllStaffObjectsLoad(const AIndex: Integer;
-                            var AIDs: TIntVector;
-                            var ANames: TStrVector);
-  begin
-    AIDs:= VCreateInt([0]);
-    ANames:= VCreateStr([SUpper(BRIEFOBJECT_PICKS[AObjects[AIndex]])]);
-  end;
-
-  procedure PostObjectsLoad(const AIndex: Integer;
-                            var AIDs: TIntVector;
-                            var ANames: TStrVector);
-  begin
-    BriefingPostObjectsLoad(ABriefIDs[AIndex], AIDs, ANames);
-  end;
-
-  procedure TabNumObjectsLoad(const AIndex: Integer;
-                            var AIDs: TIntVector;
-                            var ANames: TStrVector);
-  var
-    Fs, Ns, Ps, TabNums: TStrVector;
-  begin
-    AIDs:= nil;
-    ANames:= nil;
-    if not BriefingTabNumObjectsLoad(ABriefIDs[AIndex], AIDs, Fs, Ns, Ps, TabNums) then Exit;
-    ANames:= StaffFullName(Fs, Ns, Ps, TabNums, False{long});
-  end;
-
-begin
-  AObjectNames:= nil;
-  AObjectIDs:= nil;
-  if VIsNil(ABriefIDs) then Exit;
-
-  MDim(AObjectNames, Length(ABriefIDs));
-  MDim(AObjectIDs, Length(ABriefIDs));
-  for i:= 0 to High(ABriefIDs) do
-  begin
-    case AObjects[i] of
-      0: AllStaffObjectsLoad(i, AObjectIDs[i], AObjectNames[i]);
-      1: PostObjectsLoad(i, AObjectIDs[i], AObjectNames[i]);
-      2: TabNumObjectsLoad(i, AObjectIDs[i], AObjectNames[i]);
-    end;
-  end;
-end;
-
-function TDataBase.BriefingIDsWrite(const ABriefID, AObject: Integer;
-                                    const AObjectIDs: TIntVector;
-                                    const ACommit: Boolean = True): Boolean;
-var
-  i: Integer;
-  IDFieldName, TableName: String;
-begin
-  Result:= False;
-  if (AObject=0) or VIsNil(AObjectIDs) then Exit;
-
-  case AObject of
-    1:
-      begin
-        IDFieldName:= 'PostID';
-        TableName:= 'BRIEFINGPOST';
-      end;
-    2:
-      begin
-        IDFieldName:= 'TabNumID';
-        TableName:= 'BRIEFINGTABNUM';
-      end;
-  end;
-
-  QSetQuery(FQuery);
-  try
-    QSetSQL(
-      sqlINSERT(TableName, ['BriefID', IDFieldName])
-    );
-    QParamInt('BriefID', ABriefID);
-    for i:= 0 to High(AObjectIDs) do
-    begin
-      QParamInt(IDFieldName, AObjectIDs[i]);
-      QExec;
-    end;
-
-    if ACommit then QCommit;
-    Result:= True;
-  except
-    if ACommit then QRollback;
-  end;
-end;
-
-function TDataBase.BriefingAdd(out ABriefID: Integer;
-                         const ABriefName, ANote: String;
-                         const ABeginDate, AEndDate, ALastDate: TDate;
-                         const AObject, APeriod, ANum: Integer;
-                         const AObjectIDs: TIntVector): Boolean;
-begin
-  Result:= False;
-  QSetQuery(FQuery);
-  try
-    //запись основных данных
-    QSetSQL(
-      sqlINSERT('BRIEFINGMAIN', ['BriefName', 'Note', 'BeginDate', 'EndDate', 'LastDate',
-                                 'Object', 'Period', 'Num'])
-    );
-    QParamStr('BriefName', ABriefName);
-    QParamStr('Note', ANote);
-    QParamDT('BeginDate', ABeginDate);
-    QParamDT('EndDate', AEndDate);
-    QParamDT('LastDate', ALastDate);
-    QParamInt('Object', AObject);
-    QParamInt('Period', APeriod);
-    QParamInt('Num', ANum);
-    QExec;
-
-    //получение ID сделанной записи
-    ABriefID:= LastWritedInt32ID('BRIEFINGMAIN');
-
-    //запись ID должностей или таб номеров
-    BriefingIDsWrite(ABriefID, AObject, AObjectIDs, False{no commit});
-
-    QCommit;
-    Result:= True;
-  except
-    QRollback;
-  end;
-end;
-
-function TDataBase.BriefingUpdate(const ABriefID: Integer;
-                         const ABriefName, ANote: String;
-                         const ABeginDate, AEndDate, ALastDate: TDate;
-                         const AOldObject, AObject, APeriod, ANum: Integer;
-                         const AObjectIDs: TIntVector): Boolean;
-begin
-  Result:= False;
-  QSetQuery(FQuery);
-  try
-    //обновление основных данных
-    QSetSQL(
-      sqlUPDATE('BRIEFINGMAIN', ['BriefName', 'Note', 'BeginDate', 'EndDate', 'LastDate',
-                                 'Object', 'Period', 'Num']) +
-      'WHERE BriefID = :BriefID'
-    );
-    QParamInt('BriefID', ABriefID);
-    QParamStr('BriefName', ABriefName);
-    QParamStr('Note', ANote);
-    QParamDT('BeginDate', ABeginDate);
-    QParamDT('EndDate', AEndDate);
-    QParamDT('LastDate', ALastDate);
-    QParamInt('Object', AObject);
-    QParamInt('Period', APeriod);
-    QParamInt('Num', ANum);
-    QExec;
-
-    //удаляем старые ID должностей или таб номеров
-    if AOldObject>0 then
-    begin
-      case AObject of
-        1: Delete('BRIEFINGPOST', 'BriefID', ABriefID, False{no commit});
-        2: Delete('BRIEFINGTABNUM', 'BriefID', ABriefID, False{no commit});
-      end;
-    end;
-
-    //записываем новые ID должностей или таб номеров
-    BriefingIDsWrite(ABriefID, AObject, AObjectIDs, False{no commit});
-
-    QCommit;
-    Result:= True;
-  except
-    QRollback;
-  end;
 end;
 
 end.

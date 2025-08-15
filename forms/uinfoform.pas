@@ -20,22 +20,17 @@ type
     NameOrderCheckBox: TCheckBox;
     BirthdayVT: TVirtualStringTree;
     DismissCheckBox: TCheckBox;
+    SIZCaptionPanel: TPanel;
+    SIZVT: TVirtualStringTree;
+    VacationCaptionPanel: TPanel;
+    VacationVT: TVirtualStringTree;
     YearCheckBox: TCheckBox;
     CheckPanel: TPanel;
     DividerBevel3: TDividerBevel;
-    SIZVT: TVirtualStringTree;
-    StudyVT: TVirtualStringTree;
-    VacationVT: TVirtualStringTree;
-    SIZCaptionPanel: TPanel;
-    StudyCaptionPanel: TPanel;
-    VacationCaptionPanel: TPanel;
     DividerBevel2: TDividerBevel;
     ExportButton: TSpeedButton;
     LeftBottomPanel: TPanel;
-    RightBottomPanel: TPanel;
-    RightHorSplitter: TSplitter;
     LeftTopPanel: TPanel;
-    RightTopPanel: TPanel;
     RightPanel: TPanel;
     BirthdayCaptionPanel: TPanel;
     VertSplitter: TSplitter;
@@ -59,7 +54,6 @@ type
     BirthdayList: TVSTTable;
     VacationList: TVSTTable;
     SIZList: TVSTTable;
-    StudyList: TVSTTable;
 
     procedure BirthdayListCreate;
     procedure BirthdayListLoad;
@@ -69,9 +63,6 @@ type
 
     procedure SIZListCreate;
     procedure SIZListLoad;
-
-    procedure StudyListCreate;
-    procedure StudyListLoad;
   public
     procedure DataUpdate;
   end;
@@ -93,7 +84,6 @@ begin
   BirthdayListCreate;
   VacationListCreate;
   SIZListCreate;
-  StudyListCreate;
   CanUpdate:= True;
 end;
 
@@ -103,7 +93,6 @@ begin
   FreeAndNil(BirthdayList);
   FreeAndNil(VacationList);
   FreeAndNil(SIZList);
-  FreeAndNil(StudyList);
 end;
 
 procedure TInfoForm.FormShow(Sender: TObject);
@@ -111,14 +100,13 @@ begin
   SetToolPanels([ToolPanel]);
   Images.ToButtons([ExportButton]);
   SetCaptionPanels([
-    BirthdayCaptionPanel, VacationCaptionPanel, SIZCaptionPanel, StudyCaptionPanel
+    BirthdayCaptionPanel, VacationCaptionPanel, SIZCaptionPanel
   ]);
 
   MonthDropDown.AutoWidth;
 
   LeftPanel.Width:= (ClientWidth - VertSplitter.Width - 4) div 2;
   LeftTopPanel.Height:= (ClientHeight - ToolPanel.Height - 6) div 2;
-  RightTopPanel.Height:= LeftTopPanel.Height;
 
   DataUpdate;
 end;
@@ -324,23 +312,6 @@ begin
   end;
 end;
 
-procedure TInfoForm.StudyListCreate;
-begin
-  StudyList:= TVSTTable.Create(StudyVT);
-  StudyList.SetSingleFont(GridFont);
-  StudyList.HeaderFont.Style:= [fsBold];
-  StudyList.AddColumn('Ф.И.О.', 200);
-  StudyList.AddColumn('Дата', 100);
-  StudyList.AddColumn('Наименование', 150);
-  StudyList.AutosizeColumnEnable('Наименование');
-  StudyList.Draw;
-end;
-
-procedure TInfoForm.StudyListLoad;
-begin
-
-end;
-
 procedure TInfoForm.DataUpdate;
 begin
   if not CanUpdate then Exit;
@@ -348,7 +319,6 @@ begin
   BirthdayListLoad;
   VacationListLoad;
   SIZListLoad;
-  StudyListLoad;
 end;
 
 end.

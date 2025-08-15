@@ -87,6 +87,7 @@ type
     NormNames, Notes: TStrVector;
 
     ItemIDs, ItemOrderNums: TIntVector;
+    ItemOrderNames: TStrVector;
     PostIDs: TIntMatrix;
     PostNames: TStrMatrix;
     NormItemSheet: TSIZNormItemSheet;
@@ -228,7 +229,7 @@ end;
 
 procedure TSIZNormForm.ItemSheetPanelChangeBounds(Sender: TObject);
 begin
-  NormItemSheet.Draw(ItemOrderNums, PostNames, NormItemSheet.SelectedIndex);
+  NormItemSheet.Draw(ItemOrderNums, ItemOrderNames, PostNames, NormItemSheet.SelectedIndex);
 end;
 
 procedure TSIZNormForm.ItemUpButtonClick(Sender: TObject);
@@ -337,7 +338,7 @@ begin
   NormSubItemButtonsEnabled;
 
   if not VIsNil(NormIDs) then Exit;
-  NormItemSheet.Draw(nil, nil, 0);
+  NormItemSheet.Draw(nil, nil, nil, 0);
   NormSubItemSheet.Draw(nil, 0);
 end;
 
@@ -380,13 +381,13 @@ begin
   SelectedID:= GetSelectedID(NormItemSheet, ItemIDs, ASelectedID);
 
   DataBase.SIZNormItemsLoad(NormIDs[NormList.SelectedIndex],
-                            ItemIDs, ItemOrderNums, PostIDs, PostNames);
+                            ItemIDs, ItemOrderNums, ItemOrderNames, PostIDs, PostNames);
 
   ExportButton.Enabled:= not VIsNil(ItemIDs);
 
   SelectedIndex:= VIndexOf(ItemIDs, SelectedID);
   if SelectedIndex<0 then SelectedIndex:= 0;
-  NormItemSheet.Draw(ItemOrderNums, PostNames, SelectedIndex);
+  NormItemSheet.Draw(ItemOrderNums, ItemOrderNames, PostNames, SelectedIndex);
 
   NormItemButtonsEnabled;
   NormSubItemButtonsEnabled;
@@ -423,11 +424,12 @@ begin
                                   ItemIDs[AIndex2], ItemOrderNums[AIndex2]) then Exit;
 
   VSwap(ItemIDs, AIndex1, AIndex2);
+  VSwap(ItemOrderNames, AIndex1, AIndex2);
   MSwap(PostIDs, AIndex1, AIndex2);
   MSwap(PostNames, AIndex1, AIndex2);
   NormItemSheet.Swap(AIndex1, AIndex2);
 
-  NormItemSheet.Draw(ItemOrderNums, PostNames, AIndex2);
+  NormItemSheet.Draw(ItemOrderNums, ItemOrderNames, PostNames, AIndex2);
 end;
 
 procedure TSIZNormForm.NormSubItemListLoad(const ASelectedID: Integer);
@@ -546,7 +548,10 @@ begin
     SIZNormItemEditForm.NormID:= NormIDs[NormList.SelectedIndex];
 
     if AEditingType<>etAdd then
+    begin
       SIZNormItemEditForm.ItemID:= ItemIDs[NormItemSheet.SelectedIndex];
+      SIZNormItemEditForm.OrderNameEdit.Text:= ItemOrderNames[NormItemSheet.SelectedIndex];
+    end;
 
     if SIZNormItemEditForm.ShowModal=mrOK then
       NormItemListLoad(SIZNormItemEditForm.ItemID);

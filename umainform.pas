@@ -18,8 +18,7 @@ uses
   UCalendarForm, UScheduleShiftForm, UVacationPlanForm,
   USchedulePersonalForm, UTimetableForm,
   USIZNameEditForm, USIZNormForm, USIZSizeForm, USIZCardForm, USIZStoreForm,
-  USIZRequestForm,
-  UBriefingForm, UBriefingLogForm;
+  USIZRequestForm;
 
 type
 
@@ -33,13 +32,11 @@ type
     DividerBevel3: TDividerBevel;
     DictionaryButton: TSpeedButton;
     DepartmentMenuItem: TMenuItem;
-    BriefingLogMenuItem: TMenuItem;
     SIZRequestMenuItem: TMenuItem;
     SIZStorageMenuItem: TMenuItem;
     SIZSizesMenuItem: TMenuItem;
     StaffButton: TSpeedButton;
     SIZNormsMenuItem: TMenuItem;
-    Separator3: TMenuItem;
     TimingButton: TSpeedButton;
     TimetableMarkMenuItem: TMenuItem;
     SIZListMenuItem: TMenuItem;
@@ -51,7 +48,6 @@ type
     PersonalScheduleMenuItem: TMenuItem;
     TimetableMenuItem: TMenuItem;
     SIZStaffMenuItem: TMenuItem;
-    BriefingsMenuItem: TMenuItem;
     DictionaryMenu: TPopupMenu;
     PostListMenuItem: TMenuItem;
     MainPanel: TPanel;
@@ -63,7 +59,6 @@ type
     ExitButton: TSpeedButton;
     EditingButton: TSpeedButton;
     ToolPanel: TPanel;
-    procedure BriefingLogMenuItemClick(Sender: TObject);
     procedure CalendarMenuItemClick(Sender: TObject);
     procedure DepartmentMenuItemClick(Sender: TObject);
     procedure DictionaryButtonClick(Sender: TObject);
@@ -87,7 +82,6 @@ type
     procedure SIZStorageMenuItemClick(Sender: TObject);
     procedure SIZUnitMenuItemClick(Sender: TObject);
     procedure StaffButtonClick(Sender: TObject);
-    procedure BriefingsMenuItemClick(Sender: TObject);
     procedure TimetableMarkMenuItemClick(Sender: TObject);
     procedure TimetableMenuItemClick(Sender: TObject);
     procedure TimingButtonClick(Sender: TObject);
@@ -197,8 +191,6 @@ begin
     //9: TSIZRequestFrom - no modes
     10: (CategoryForm as TSIZSizeForm).ViewUpdate(ModeType);
     11: (CategoryForm as TSIZCardForm).ViewUpdate(ModeType);
-    12: (CategoryForm as TBriefingForm).ViewUpdate(ModeType);
-    13: (CategoryForm as TBriefingLogForm).ViewUpdate(ModeType);
   end;
 end;
 
@@ -219,8 +211,6 @@ begin
     9: (CategoryForm as TSIZRequestForm).DataUpdate;
     10: (CategoryForm as TSIZSizeForm).DataUpdate;
     11: (CategoryForm as TSIZCardForm).DataUpdate;
-    12: (CategoryForm as TBriefingForm).DataUpdate;
-    13: (CategoryForm as TBriefingLogForm).DataUpdate;
   end;
 end;
 
@@ -241,8 +231,6 @@ begin
     9: (CategoryForm as TSIZRequestForm).SettingsSave;
     10: (CategoryForm as TSIZSizeForm).SettingsSave;
     11: (CategoryForm as TSIZCardForm).SettingsSave;
-    12: (CategoryForm as TBriefingForm).SettingsSave;
-    13: (CategoryForm as TBriefingLogForm).SettingsSave;
   end;
 end;
 
@@ -256,7 +244,7 @@ begin
     SettingsSave;
     Category:= ACategory;
     Caption:= MAIN_CAPTION + MAIN_DESCRIPTION[ACategory];
-    SettingButton.Enabled:= not (Category in [0, 2, 7, 8, 9, 12]);
+    SettingButton.Enabled:= not (Category in [0, 2, 7, 8, 9]);
     EditingButton.Enabled:= not (Category in [0, 9]);
 
     if Assigned(CategoryForm) then FreeAndNil(CategoryForm);
@@ -273,8 +261,6 @@ begin
       9: CategoryForm:= FormOnPanelCreate(TSIZRequestForm, MainPanel);
       10: CategoryForm:= FormOnPanelCreate(TSIZSizeForm, MainPanel);
       11: CategoryForm:= FormOnPanelCreate(TSIZCardForm, MainPanel);
-      12: CategoryForm:= FormOnPanelCreate(TBriefingForm, MainPanel);
-      13: CategoryForm:= FormOnPanelCreate(TBriefingLogForm, MainPanel);
     end;
     if Assigned(CategoryForm) then
     begin
@@ -409,16 +395,6 @@ end;
 procedure TMainForm.SIZStaffMenuItemClick(Sender: TObject);
 begin
   CategorySelect(11);
-end;
-
-procedure TMainForm.BriefingsMenuItemClick(Sender: TObject);
-begin
-  CategorySelect(12);
-end;
-
-procedure TMainForm.BriefingLogMenuItemClick(Sender: TObject);
-begin
-  CategorySelect(13);
 end;
 
 procedure TMainForm.RefreshButtonClick(Sender: TObject);

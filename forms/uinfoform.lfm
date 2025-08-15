@@ -343,7 +343,7 @@ object InfoForm: TInfoForm
       ClientHeight = 189
       ClientWidth = 550
       TabOrder = 2
-      object SIZCaptionPanel: TPanel
+      object VacationCaptionPanel: TPanel
         Left = 0
         Height = 30
         Top = 0
@@ -353,7 +353,7 @@ object InfoForm: TInfoForm
         BorderSpacing.Bottom = 2
         BevelOuter = bvNone
         BorderStyle = bsSingle
-        Caption = '  Выдача средств индивидуальной защиты'
+        Caption = '  Отпуска'
         Color = clBtnFace
         Font.Style = [fsBold]
         ParentBackground = False
@@ -361,7 +361,7 @@ object InfoForm: TInfoForm
         ParentFont = False
         TabOrder = 0
       end
-      object SIZVT: TVirtualStringTree
+      object VacationVT: TVirtualStringTree
         Left = 0
         Height = 157
         Top = 32
@@ -396,99 +396,36 @@ object InfoForm: TInfoForm
     ClientHeight = 322
     ClientWidth = 423
     TabOrder = 3
-    object RightTopPanel: TPanel
+    object SIZCaptionPanel: TPanel
       Left = 0
-      Height = 127
+      Height = 30
       Top = 0
       Width = 423
       Align = alTop
+      Alignment = taLeftJustify
+      BorderSpacing.Bottom = 2
       BevelOuter = bvNone
-      ClientHeight = 127
-      ClientWidth = 423
+      BorderStyle = bsSingle
+      Caption = '  Выдача средств индивидуальной защиты'
+      Color = clBtnFace
+      Font.Style = [fsBold]
+      ParentBackground = False
+      ParentColor = False
+      ParentFont = False
       TabOrder = 0
-      object VacationCaptionPanel: TPanel
-        Left = 0
-        Height = 30
-        Top = 0
-        Width = 423
-        Align = alTop
-        Alignment = taLeftJustify
-        BorderSpacing.Bottom = 2
-        BevelOuter = bvNone
-        BorderStyle = bsSingle
-        Caption = '  Отпуска'
-        Color = clBtnFace
-        Font.Style = [fsBold]
-        ParentBackground = False
-        ParentColor = False
-        ParentFont = False
-        TabOrder = 0
-      end
-      object VacationVT: TVirtualStringTree
-        Left = 0
-        Height = 95
-        Top = 32
-        Width = 423
-        Align = alClient
-        DefaultText = 'Node'
-        Header.AutoSizeIndex = 0
-        Header.Columns = <>
-        Header.MainColumn = -1
-        Margin = 50
-        TabOrder = 1
-      end
     end
-    object RightHorSplitter: TSplitter
-      Cursor = crVSplit
+    object SIZVT: TVirtualStringTree
       Left = 0
-      Height = 6
-      Top = 127
-      Width = 423
-      Align = alTop
-      ResizeAnchor = akTop
-      ResizeStyle = rsLine
-    end
-    object RightBottomPanel: TPanel
-      Left = 0
-      Height = 189
-      Top = 133
+      Height = 290
+      Top = 32
       Width = 423
       Align = alClient
-      BevelOuter = bvNone
-      ClientHeight = 189
-      ClientWidth = 423
-      TabOrder = 2
-      object StudyCaptionPanel: TPanel
-        Left = 0
-        Height = 30
-        Top = 0
-        Width = 423
-        Align = alTop
-        Alignment = taLeftJustify
-        BorderSpacing.Bottom = 2
-        BevelOuter = bvNone
-        BorderStyle = bsSingle
-        Caption = '  Инструктажи, аттестации, обучение'
-        Color = clBtnFace
-        Font.Style = [fsBold]
-        ParentBackground = False
-        ParentColor = False
-        ParentFont = False
-        TabOrder = 0
-      end
-      object StudyVT: TVirtualStringTree
-        Left = 0
-        Height = 157
-        Top = 32
-        Width = 423
-        Align = alClient
-        DefaultText = 'Node'
-        Header.AutoSizeIndex = 0
-        Header.Columns = <>
-        Header.MainColumn = -1
-        Margin = 50
-        TabOrder = 1
-      end
+      DefaultText = 'Node'
+      Header.AutoSizeIndex = 0
+      Header.Columns = <>
+      Header.MainColumn = -1
+      Margin = 50
+      TabOrder = 1
     end
   end
 end

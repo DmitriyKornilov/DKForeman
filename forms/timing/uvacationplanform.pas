@@ -252,6 +252,7 @@ end;
 
 procedure TVacationPlanForm.ColumnsListSelect;
 begin
+  if not CanLoadStaffList then Exit;
   StaffList.ColumnVisibles:= ParamList.Checkeds['ColumnsList'];
 end;
 

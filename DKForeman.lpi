@@ -147,14 +147,6 @@
         <UnitName Value="USIZStoreForm"/>
       </Unit>
       <Unit>
-        <Filename Value="forms\briefing\ubriefingform.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="BriefingForm"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-        <UnitName Value="UBriefingForm"/>
-      </Unit>
-      <Unit>
         <Filename Value="utils\uconst.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="UConst"/>
@@ -640,27 +632,6 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="USIZRequestForm"/>
       </Unit>
-      <Unit>
-        <Filename Value="forms\briefing\ubriefinglogform.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="BriefingLogForm"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-        <UnitName Value="UBriefingLogForm"/>
-      </Unit>
-      <Unit>
-        <Filename Value="utils\briefing\ubriefingsheet.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="UBriefingSheet"/>
-      </Unit>
-      <Unit>
-        <Filename Value="forms\briefing\ubriefingeditform.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="BriefingEditForm"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-        <UnitName Value="UBriefingEditForm"/>
-      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -671,7 +642,7 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
-      <OtherUnitFiles Value="forms\calendar;utils;forms\staff;forms\timing;forms\siz;forms\study;utils\timing;forms;utils\siz;forms\briefing;utils\briefing"/>
+      <OtherUnitFiles Value="forms\calendar;utils;forms\staff;forms\timing;forms\siz;forms\study;utils\timing;forms;utils\siz"/>
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <Linking>
