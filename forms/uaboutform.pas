@@ -26,7 +26,11 @@ type
     CompilerURLLabel: TLabel;
     CompilerVerLabel: TLabel;
     LazarusVerLabel: TLabel;
+    PNGURLAdd2Label: TLabel;
+    PNGURLAdd3Label: TLabel;
+    PNGURLAdd4Label: TLabel;
     PNGURLLabel: TLabel;
+    PNGURLAdd1Label: TLabel;
     UsedLabel: TLabel;
     AutorNameLabel: TLabel;
     AutorMailEndLabel: TLabel;
@@ -69,8 +73,14 @@ const
   LAZARUS_URL  = 'www.lazarus-ide.org';
 
   PNG_INFO     = 'PNG-файлы получены с ' +
-                 'www.flaticon.com и www.freepik.com';
+                 'www.flaticon.com и www.freepik.com' +
+                 ':';
   PNG_URL      = 'www.github.com/DmitriyKornilov/DKForeman/blob/main/images/Icons_info.pdf';
+
+  PNG_URL_ADD1 = 'www.github.com/DmitriyKornilov/DKUIUtils/blob/main/source/png/icons_info.txt';
+  PNG_URL_ADD2 = 'www.github.com/DmitriyKornilov/DKDatabase/blob/main/source/png/icons_info.txt';
+  PNG_URL_ADD3 = 'www.github.com/DmitriyKornilov/DKDialogs/blob/main/source/png/icons_info.txt';
+  PNG_URL_ADD4 = 'www.github.com/DmitriyKornilov/DKSpreadSheet/blob/main/source/png/icons_info.txt';
 
 { TAboutForm }
 
@@ -112,6 +122,10 @@ begin
 
   SetLabel(PNGInfoLabel, PNG_INFO);
   SetLabel(PNGURLLabel, PNG_URL, @DoOpenURL);
+  SetLabel(PNGURLAdd1Label, PNG_URL_ADD1, @DoOpenURL);
+  SetLabel(PNGURLAdd2Label, PNG_URL_ADD2, @DoOpenURL);
+  SetLabel(PNGURLAdd3Label, PNG_URL_ADD3, @DoOpenURL);
+  SetLabel(PNGURLAdd4Label, PNG_URL_ADD4, @DoOpenURL);
 
   FormKeepMinSize(Self);
 end;

@@ -1,15 +1,15 @@
 object AboutForm: TAboutForm
   Left = 550
-  Height = 350
+  Height = 429
   Top = 245
-  Width = 800
+  Width = 850
   AutoSize = True
   BorderIcons = [biSystemMenu]
   Caption = 'О программе'
-  ClientHeight = 350
-  ClientWidth = 800
+  ClientHeight = 429
+  ClientWidth = 850
   Constraints.MinHeight = 300
-  Constraints.MinWidth = 800
+  Constraints.MinWidth = 850
   DesignTimePPI = 120
   Position = poScreenCenter
   OnShow = FormShow
@@ -464,7 +464,7 @@ object AboutForm: TAboutForm
     Left = 201
     Height = 20
     Top = 8
-    Width = 591
+    Width = 641
     Alignment = taCenter
     Anchors = [akTop, akLeft, akRight]
     BorderSpacing.Left = 12
@@ -484,7 +484,7 @@ object AboutForm: TAboutForm
     Left = 201
     Height = 20
     Top = 40
-    Width = 591
+    Width = 641
     Anchors = [akTop, akLeft, akRight]
     BorderSpacing.Top = 12
     Caption = 'Project Note'
@@ -499,7 +499,7 @@ object AboutForm: TAboutForm
     Left = 201
     Height = 20
     Top = 72
-    Width = 591
+    Width = 641
     Anchors = [akTop, akLeft, akRight]
     BorderSpacing.Top = 12
     Caption = 'Проект:'
@@ -515,7 +515,7 @@ object AboutForm: TAboutForm
     Left = 221
     Height = 20
     Top = 96
-    Width = 571
+    Width = 621
     Anchors = [akTop, akLeft, akRight]
     BorderSpacing.Left = 20
     BorderSpacing.Top = 4
@@ -534,7 +534,7 @@ object AboutForm: TAboutForm
     Left = 201
     Height = 20
     Top = 128
-    Width = 591
+    Width = 641
     Anchors = [akTop, akLeft, akRight]
     BorderSpacing.Top = 12
     Caption = 'Разработчик:'
@@ -612,7 +612,7 @@ object AboutForm: TAboutForm
     Left = 201
     Height = 20
     Top = 184
-    Width = 591
+    Width = 641
     Anchors = [akTop, akLeft, akRight]
     BorderSpacing.Top = 12
     Caption = 'Применено:'
@@ -753,7 +753,7 @@ object AboutForm: TAboutForm
     Left = 201
     Height = 20
     Top = 264
-    Width = 591
+    Width = 641
     Anchors = [akTop, akLeft, akRight]
     BorderSpacing.Top = 12
     Caption = 'PNG Info'
@@ -769,9 +769,81 @@ object AboutForm: TAboutForm
     Left = 221
     Height = 20
     Top = 288
-    Width = 571
+    Width = 621
     Anchors = [akTop, akLeft, akRight]
     BorderSpacing.Top = 4
+    Caption = 'link'
+    Font.Color = clNavy
+    Font.Style = [fsUnderline]
+    ParentFont = False
+    WordWrap = True
+  end
+  object PNGURLAdd1Label: TLabel
+    AnchorSideLeft.Control = ProjectURLLabel
+    AnchorSideTop.Control = PNGURLLabel
+    AnchorSideTop.Side = asrBottom
+    AnchorSideRight.Control = AppNameLabel
+    AnchorSideRight.Side = asrBottom
+    Cursor = crHandPoint
+    Left = 221
+    Height = 20
+    Top = 308
+    Width = 621
+    Anchors = [akTop, akLeft, akRight]
+    Caption = 'link'
+    Font.Color = clNavy
+    Font.Style = [fsUnderline]
+    ParentFont = False
+    WordWrap = True
+  end
+  object PNGURLAdd2Label: TLabel
+    AnchorSideLeft.Control = ProjectURLLabel
+    AnchorSideTop.Control = PNGURLAdd1Label
+    AnchorSideTop.Side = asrBottom
+    AnchorSideRight.Control = AppNameLabel
+    AnchorSideRight.Side = asrBottom
+    Cursor = crHandPoint
+    Left = 221
+    Height = 20
+    Top = 328
+    Width = 621
+    Anchors = [akTop, akLeft, akRight]
+    Caption = 'link'
+    Font.Color = clNavy
+    Font.Style = [fsUnderline]
+    ParentFont = False
+    WordWrap = True
+  end
+  object PNGURLAdd3Label: TLabel
+    AnchorSideLeft.Control = ProjectURLLabel
+    AnchorSideTop.Control = PNGURLAdd2Label
+    AnchorSideTop.Side = asrBottom
+    AnchorSideRight.Control = AppNameLabel
+    AnchorSideRight.Side = asrBottom
+    Cursor = crHandPoint
+    Left = 221
+    Height = 20
+    Top = 348
+    Width = 621
+    Anchors = [akTop, akLeft, akRight]
+    Caption = 'link'
+    Font.Color = clNavy
+    Font.Style = [fsUnderline]
+    ParentFont = False
+    WordWrap = True
+  end
+  object PNGURLAdd4Label: TLabel
+    AnchorSideLeft.Control = ProjectURLLabel
+    AnchorSideTop.Control = PNGURLAdd3Label
+    AnchorSideTop.Side = asrBottom
+    AnchorSideRight.Control = AppNameLabel
+    AnchorSideRight.Side = asrBottom
+    Cursor = crHandPoint
+    Left = 221
+    Height = 20
+    Top = 368
+    Width = 621
+    Anchors = [akTop, akLeft, akRight]
     BorderSpacing.Bottom = 20
     Caption = 'link'
     Font.Color = clNavy
