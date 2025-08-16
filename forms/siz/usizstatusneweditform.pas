@@ -166,7 +166,7 @@ begin
   SIZList.HeaderFont.Style:= [fsBold];
   SIZList.CategoryFont.Style:= [fsBold];
   SIZList.AddColumn('Номенклатурный номер', 200);
-  SIZList.AddColumn('Наименование', 300);
+  SIZList.AddColumn('Наименование', 400);
   SIZList.AddColumn('Единица измерения', 150);
   SIZList.AddColumn('Размер/объём/вес', 130);
   SIZList.AddColumn('Документ поступления', 300);

@@ -2,14 +2,13 @@ object SIZStatusNewEditForm: TSIZStatusNewEditForm
   Left = 377
   Height = 550
   Top = 250
-  Width = 1200
+  Width = 1400
   BorderIcons = [biSystemMenu, biMaximize]
   Caption = 'Выдача новых СИЗ'
   ClientHeight = 550
-  ClientWidth = 1200
+  ClientWidth = 1400
   DesignTimePPI = 120
   Position = poScreenCenter
-  LCLVersion = '4.0.0.4'
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
@@ -18,7 +17,7 @@ object SIZStatusNewEditForm: TSIZStatusNewEditForm
     AnchorSideRight.Control = Owner
     AnchorSideRight.Side = asrBottom
     Cursor = crHandPoint
-    Left = 1152
+    Left = 1352
     Height = 36
     Hint = 'Создать новый документ'
     Top = 8
@@ -58,7 +57,7 @@ object SIZStatusNewEditForm: TSIZStatusNewEditForm
     Left = 8
     Height = 29
     Top = 52
-    Width = 1184
+    Width = 1384
     Anchors = [akTop, akLeft, akRight]
     StateClicked.Background.Gradient1.StartColor = 8404992
     StateClicked.Background.Gradient1.EndColor = 4194304
@@ -162,7 +161,7 @@ object SIZStatusNewEditForm: TSIZStatusNewEditForm
     Left = 2
     Height = 48
     Top = 496
-    Width = 1196
+    Width = 1396
     Align = alBottom
     AutoSize = True
     BorderSpacing.Left = 2
@@ -171,7 +170,7 @@ object SIZStatusNewEditForm: TSIZStatusNewEditForm
     BorderSpacing.Bottom = 6
     BevelOuter = bvNone
     ClientHeight = 48
-    ClientWidth = 1196
+    ClientWidth = 1396
     TabOrder = 0
     object CancelButton: TSpeedButton
       AnchorSideTop.Control = ButtonPanelBevel
@@ -179,7 +178,7 @@ object SIZStatusNewEditForm: TSIZStatusNewEditForm
       AnchorSideRight.Control = ButtonPanel
       AnchorSideRight.Side = asrBottom
       Cursor = crHandPoint
-      Left = 1069
+      Left = 1269
       Height = 40
       Top = 8
       Width = 121
@@ -199,7 +198,7 @@ object SIZStatusNewEditForm: TSIZStatusNewEditForm
       AnchorSideTop.Side = asrCenter
       AnchorSideRight.Control = CancelButton
       Cursor = crHandPoint
-      Left = 942
+      Left = 1142
       Height = 40
       Top = 8
       Width = 127
@@ -217,7 +216,7 @@ object SIZStatusNewEditForm: TSIZStatusNewEditForm
       Left = 0
       Height = 8
       Top = 0
-      Width = 1196
+      Width = 1396
       Align = alTop
       Shape = bsTopLine
     end
@@ -263,7 +262,7 @@ object SIZStatusNewEditForm: TSIZStatusNewEditForm
     Left = 8
     Height = 215
     Top = 229
-    Width = 1184
+    Width = 1384
     Anchors = [akTop, akLeft, akRight, akBottom]
     BorderSpacing.Left = 8
     BorderSpacing.Top = 8
@@ -271,14 +270,14 @@ object SIZStatusNewEditForm: TSIZStatusNewEditForm
     BorderSpacing.Bottom = 12
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 215
-    ClientWidth = 1184
+    ClientHeight = 211
+    ClientWidth = 1380
     TabOrder = 1
     object VT: TVirtualStringTree
       Left = 0
       Height = 211
       Top = 0
-      Width = 1180
+      Width = 1380
       Align = alClient
       Anchors = [akBottom]
       BorderStyle = bsNone
@@ -314,7 +313,7 @@ object SIZStatusNewEditForm: TSIZStatusNewEditForm
     Left = 130
     Height = 20
     Top = 101
-    Width = 1062
+    Width = 1262
     Anchors = [akTop, akLeft, akRight]
     BorderSpacing.Left = 20
     BorderSpacing.Top = 20
@@ -353,7 +352,7 @@ object SIZStatusNewEditForm: TSIZStatusNewEditForm
     Left = 130
     Height = 20
     Top = 129
-    Width = 1062
+    Width = 1262
     Anchors = [akTop, akLeft, akRight]
     BorderSpacing.Left = 20
     BorderSpacing.Top = 8
@@ -392,7 +391,7 @@ object SIZStatusNewEditForm: TSIZStatusNewEditForm
     Left = 130
     Height = 20
     Top = 157
-    Width = 1062
+    Width = 1262
     Anchors = [akTop, akLeft, akRight]
     BorderSpacing.Left = 20
     BorderSpacing.Top = 8
@@ -411,7 +410,7 @@ object SIZStatusNewEditForm: TSIZStatusNewEditForm
     AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Control = SIZPanel
     Cursor = crHandPoint
-    Left = 1152
+    Left = 1352
     Height = 36
     Hint = 'Снять выбор со всех СИЗ'
     Top = 185
@@ -430,7 +429,7 @@ object SIZStatusNewEditForm: TSIZStatusNewEditForm
     AnchorSideTop.Control = UncheckAllButton
     AnchorSideRight.Control = UncheckAllButton
     Cursor = crHandPoint
-    Left = 1112
+    Left = 1312
     Height = 36
     Hint = 'Выбрать все СИЗ'
     Top = 185
@@ -446,7 +445,7 @@ object SIZStatusNewEditForm: TSIZStatusNewEditForm
     AnchorSideTop.Control = CheckAllButton
     AnchorSideRight.Control = CheckAllButton
     Cursor = crHandPoint
-    Left = 1072
+    Left = 1272
     Height = 36
     Hint = 'Свернуть всё'
     Top = 185
@@ -462,7 +461,7 @@ object SIZStatusNewEditForm: TSIZStatusNewEditForm
     AnchorSideTop.Control = CollapseAllButton
     AnchorSideRight.Control = CollapseAllButton
     Cursor = crHandPoint
-    Left = 1032
+    Left = 1232
     Height = 36
     Hint = 'Развернуть всё'
     Top = 185

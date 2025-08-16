@@ -147,7 +147,7 @@ begin
   SIZList.SetSingleFont(GridFont);
   SIZList.HeaderFont.Style:= [fsBold];
   SIZList.CategoryFont.Style:= [fsBold];
-  SIZList.AddColumn('Наименование', 300);
+  SIZList.AddColumn('Наименование', 400);
   SIZList.AddColumn('Количество', 150);
   SIZList.AddColumn('Дата выдачи', 130);
   SIZList.AddColumn('Дата списания', 130);

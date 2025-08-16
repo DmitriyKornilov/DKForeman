@@ -1,17 +1,19 @@
 object SIZStoreForm: TSIZStoreForm
   Left = 408
-  Height = 192
+  Height = 240
   Top = 250
-  Width = 850
+  Width = 1062
   Caption = 'SIZStoreForm'
-  ClientHeight = 192
-  ClientWidth = 850
+  ClientHeight = 240
+  ClientWidth = 1062
+  DesignTimePPI = 120
+  LCLVersion = '4.2.0.0'
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
   object ToolPanel: TPanel
     Left = 2
-    Height = 32
+    Height = 40
     Top = 2
     Width = 846
     Align = alTop
@@ -20,17 +22,17 @@ object SIZStoreForm: TSIZStoreForm
     BorderSpacing.Right = 2
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 28
-    ClientWidth = 842
+    ClientHeight = 40
+    ClientWidth = 846
     ParentFont = False
     TabOrder = 0
     object CloseButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 810
+      Left = 802
       Height = 28
       Hint = 'Закрыть'
       Top = 0
-      Width = 32
+      Width = 40
       Align = alRight
       Images = Images.PX24
       ImageIndex = 3
@@ -173,7 +175,7 @@ object SIZStoreForm: TSIZStoreForm
   end
   object CaptionPanel: TPanel
     Left = 2
-    Height = 24
+    Height = 30
     Top = 36
     Width = 846
     Align = alTop
@@ -196,7 +198,7 @@ object SIZStoreForm: TSIZStoreForm
     Width = 846
     Align = alClient
     BorderSpacing.Around = 2
-    DefaultNodeHeight = 20
+    DefaultNodeHeight = 25
     DefaultText = 'Node'
     Header.AutoSizeIndex = 0
     Header.Columns = <>
@@ -205,7 +207,7 @@ object SIZStoreForm: TSIZStoreForm
   end
   object SIZToolPanel: TPanel
     Left = 0
-    Height = 32
+    Height = 40
     Top = 62
     Width = 848
     Align = alTop
@@ -213,8 +215,8 @@ object SIZStoreForm: TSIZStoreForm
     BorderSpacing.Right = 2
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 28
-    ClientWidth = 844
+    ClientHeight = 40
+    ClientWidth = 848
     ParentBackground = False
     ParentColor = False
     ParentFont = False
@@ -223,11 +225,11 @@ object SIZStoreForm: TSIZStoreForm
       Left = 178
       Height = 28
       Top = 0
-      Width = 640
+      Width = 800
       Align = alLeft
       BevelOuter = bvNone
       ClientHeight = 28
-      ClientWidth = 640
+      ClientWidth = 800
       TabOrder = 0
       object DividerBevel4: TDividerBevel
         Left = 0
@@ -280,7 +282,7 @@ object SIZStoreForm: TSIZStoreForm
           Height = 28
           Hint = 'Свернуть всё'
           Top = 0
-          Width = 32
+          Width = 40
           Align = alLeft
           Enabled = False
           Images = Images.PX24
@@ -295,7 +297,7 @@ object SIZStoreForm: TSIZStoreForm
           Height = 28
           Hint = 'Развернуть всё'
           Top = 0
-          Width = 32
+          Width = 40
           Align = alLeft
           Enabled = False
           Images = Images.PX24
@@ -336,7 +338,7 @@ object SIZStoreForm: TSIZStoreForm
           Height = 28
           Hint = 'Списать или передать СИЗ со склада'
           Top = 0
-          Width = 32
+          Width = 40
           Align = alLeft
           Enabled = False
           Images = Images.PX24
@@ -351,7 +353,7 @@ object SIZStoreForm: TSIZStoreForm
           Height = 28
           Hint = 'Выбрать все СИЗ'
           Top = 0
-          Width = 32
+          Width = 40
           Align = alLeft
           Enabled = False
           Images = Images.PX24
@@ -366,7 +368,7 @@ object SIZStoreForm: TSIZStoreForm
           Height = 28
           Hint = 'Снять выбор со всех СИЗ'
           Top = 0
-          Width = 32
+          Width = 40
           Align = alLeft
           Enabled = False
           Images = Images.PX24

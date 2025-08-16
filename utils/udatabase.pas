@@ -7002,6 +7002,7 @@ var
     VSizCounts:= nil;
     VSizSTRUnits:= nil;
     VSizDIGUnits:= nil;
+    VReceivingDates:= nil;
 
     LogID:= LogIDs[AInd1];
     N1:= AInd1;

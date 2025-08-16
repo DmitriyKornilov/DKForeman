@@ -2,14 +2,13 @@ object SIZStatusCopyEditForm: TSIZStatusCopyEditForm
   Left = 377
   Height = 550
   Top = 250
-  Width = 1125
+  Width = 1400
   BorderIcons = [biSystemMenu, biMaximize]
   Caption = 'Копирование ранее выданных СИЗ'
   ClientHeight = 550
-  ClientWidth = 1125
+  ClientWidth = 1400
   DesignTimePPI = 120
   Position = poScreenCenter
-  LCLVersion = '4.0.0.4'
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
@@ -18,7 +17,7 @@ object SIZStatusCopyEditForm: TSIZStatusCopyEditForm
     Left = 2
     Height = 48
     Top = 496
-    Width = 1121
+    Width = 1396
     Align = alBottom
     AutoSize = True
     BorderSpacing.Left = 2
@@ -27,7 +26,7 @@ object SIZStatusCopyEditForm: TSIZStatusCopyEditForm
     BorderSpacing.Bottom = 6
     BevelOuter = bvNone
     ClientHeight = 48
-    ClientWidth = 1121
+    ClientWidth = 1396
     TabOrder = 0
     object CancelButton: TSpeedButton
       AnchorSideTop.Control = ButtonPanelBevel
@@ -35,7 +34,7 @@ object SIZStatusCopyEditForm: TSIZStatusCopyEditForm
       AnchorSideRight.Control = ButtonPanel
       AnchorSideRight.Side = asrBottom
       Cursor = crHandPoint
-      Left = 994
+      Left = 1269
       Height = 40
       Top = 8
       Width = 121
@@ -55,7 +54,7 @@ object SIZStatusCopyEditForm: TSIZStatusCopyEditForm
       AnchorSideTop.Side = asrCenter
       AnchorSideRight.Control = CancelButton
       Cursor = crHandPoint
-      Left = 867
+      Left = 1142
       Height = 40
       Top = 8
       Width = 127
@@ -73,7 +72,7 @@ object SIZStatusCopyEditForm: TSIZStatusCopyEditForm
       Left = 0
       Height = 8
       Top = 0
-      Width = 1121
+      Width = 1396
       Align = alTop
       Shape = bsTopLine
     end
@@ -101,7 +100,7 @@ object SIZStatusCopyEditForm: TSIZStatusCopyEditForm
     Left = 130
     Height = 20
     Top = 12
-    Width = 987
+    Width = 1262
     Anchors = [akTop, akLeft, akRight]
     BorderSpacing.Left = 20
     BorderSpacing.Top = 12
@@ -140,7 +139,7 @@ object SIZStatusCopyEditForm: TSIZStatusCopyEditForm
     Left = 130
     Height = 20
     Top = 40
-    Width = 987
+    Width = 1262
     Anchors = [akTop, akLeft, akRight]
     BorderSpacing.Left = 20
     BorderSpacing.Top = 8
@@ -179,7 +178,7 @@ object SIZStatusCopyEditForm: TSIZStatusCopyEditForm
     Left = 130
     Height = 20
     Top = 68
-    Width = 987
+    Width = 1262
     Anchors = [akTop, akLeft, akRight]
     BorderSpacing.Left = 20
     BorderSpacing.Top = 8
@@ -216,7 +215,7 @@ object SIZStatusCopyEditForm: TSIZStatusCopyEditForm
     Left = 8
     Height = 29
     Top = 136
-    Width = 1109
+    Width = 1384
     Anchors = [akTop, akLeft, akRight]
     StateClicked.Background.Gradient1.StartColor = 8404992
     StateClicked.Background.Gradient1.EndColor = 4194304
@@ -341,7 +340,7 @@ object SIZStatusCopyEditForm: TSIZStatusCopyEditForm
     Left = 8
     Height = 259
     Top = 217
-    Width = 1109
+    Width = 1384
     Anchors = [akTop, akLeft, akRight, akBottom]
     BorderSpacing.Left = 8
     BorderSpacing.Top = 8
@@ -349,14 +348,14 @@ object SIZStatusCopyEditForm: TSIZStatusCopyEditForm
     BorderSpacing.Bottom = 12
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 259
-    ClientWidth = 1109
+    ClientHeight = 255
+    ClientWidth = 1380
     TabOrder = 1
     object VT: TVirtualStringTree
       Left = 0
       Height = 255
       Top = 0
-      Width = 1105
+      Width = 1380
       Align = alClient
       Anchors = [akBottom]
       BorderStyle = bsNone
@@ -375,7 +374,7 @@ object SIZStatusCopyEditForm: TSIZStatusCopyEditForm
     AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Control = SIZPanel
     Cursor = crHandPoint
-    Left = 1077
+    Left = 1352
     Height = 36
     Hint = 'Снять выбор со всех СИЗ'
     Top = 173
@@ -394,7 +393,7 @@ object SIZStatusCopyEditForm: TSIZStatusCopyEditForm
     AnchorSideTop.Control = UncheckAllButton
     AnchorSideRight.Control = UncheckAllButton
     Cursor = crHandPoint
-    Left = 1037
+    Left = 1312
     Height = 36
     Hint = 'Выбрать все СИЗ'
     Top = 173
@@ -410,7 +409,7 @@ object SIZStatusCopyEditForm: TSIZStatusCopyEditForm
     AnchorSideTop.Control = CheckAllButton
     AnchorSideRight.Control = CheckAllButton
     Cursor = crHandPoint
-    Left = 997
+    Left = 1272
     Height = 36
     Hint = 'Свернуть всё'
     Top = 173
@@ -426,7 +425,7 @@ object SIZStatusCopyEditForm: TSIZStatusCopyEditForm
     AnchorSideTop.Control = CollapseAllButton
     AnchorSideRight.Control = CollapseAllButton
     Cursor = crHandPoint
-    Left = 957
+    Left = 1232
     Height = 36
     Hint = 'Развернуть всё'
     Top = 173
