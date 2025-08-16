@@ -758,11 +758,11 @@ begin
                     TabNums[StaffList.SelectedIndex],
                     ExpPostName, ExpCardBD, ExpCardED, ExpSizes, ExpSubItems,
                     Worksheet, FileName);
-    Exporter.PageSettings(spoPortrait);
+    Exporter.PageSettings(spoPortrait, pfWidth, False, False);
 
     Worksheet:= Exporter.AddWorksheet('Оборотная сторона');
     CardBackExport(ExpCardID, Worksheet);
-    Exporter.PageSettings(spoLandscape);
+    Exporter.PageSettings(spoLandscape, pfWidth, False, False);
 
     Exporter.Save('Выполнено!', FileName);
   finally
