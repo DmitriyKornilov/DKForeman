@@ -73,6 +73,7 @@ type
   TNormItem = record
     ItemID   : Integer;
     OrderNum : Integer;
+    OrderName: String;
     PostIDs  : TIntVector;
     PostNames: TStrVector;
     SubItems : TNormSubItems;
@@ -291,6 +292,7 @@ procedure NormItemClear(var AItem: TNormItem);
 begin
   AItem.ItemID:= -1;
   AItem.OrderNum:= -1;
+  AItem.OrderName:= EmptyStr;
   AItem.PostIDs:= nil;
   AItem.PostNames:= nil;
   NormSubItemsClear(AItem.SubItems);
@@ -300,6 +302,7 @@ procedure NormItemCopy(const ASourceItem: TNormItem; var ADestItem: TNormItem);
 begin
   ADestItem.ItemID:= ASourceItem.ItemID;
   ADestItem.OrderNum:= ASourceItem.OrderNum;
+  ADestItem.OrderName:= ASourceItem.OrderName;
   ADestItem.PostIDs:= VCut(ASourceItem.PostIDs);
   ADestItem.PostNames:= VCut(ASourceItem.PostNames);
   NormSubItemsCopy(ASourceItem.SubItems, ADestItem.SubItems);

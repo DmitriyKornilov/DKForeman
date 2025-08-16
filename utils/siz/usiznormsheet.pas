@@ -475,6 +475,8 @@ begin
   for i:=0 to N do
     V[i]:= SIZ_TYPE_PICKS[FSubItems[AIndex].Info.SIZTypes[i]];
   VectorDraw(Writer, V, ARow, 1, EmptyStr, True, haCenter, vaTop);
+
+
   //Наименование СИЗ
   V:= FSubItems[AIndex].Info.Names;
   VectorDraw(Writer, V, ARow, 2, 'или', False, haLeft, vaTop);
@@ -657,7 +659,7 @@ begin
     if i<N then
     begin
       R:= R + 1;
-      AWriter.SetAlignment(haLeft, vaCenter);
+      AWriter.SetAlignment(haLeft, AVertAlignment);
       AWriter.WriteText(R, ACol1, R, ACol2, AMiddleStr, cbtNone, True, True);
     end;
   end;
@@ -741,7 +743,10 @@ begin
   Writer.SetBackgroundDefault;
   Writer.SetFont(Font.Name, Font.Size, [{fsBold}], clBlack);
   Writer.SetAlignment(haCenter, vaTop);
-  Writer.WriteNumber(R1, 1, R2, 1, AItem.OrderNum+1, cbtOuter);
+  if SEmpty(AItem.OrderName) then
+    Writer.WriteNumber(R1, 1, R2, 1, AItem.OrderNum+1, cbtOuter)
+  else
+    Writer.WriteText(R1, 1, R2, 1, AItem.OrderName, cbtOuter);
   Writer.SetAlignment(haLeft, vaTop);
   S:= EmptyStr;
   if not VIsNil(AItem.PostNames) then

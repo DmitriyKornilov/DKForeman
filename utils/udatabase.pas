@@ -4342,7 +4342,7 @@ begin
 
   QSetQuery(FQuery);
   QSetSQL(
-    'SELECT t1.ItemID, t1.PostID, t2.OrderNum, t3.PostName ' +
+    'SELECT t1.ItemID, t1.PostID, t2.OrderNum, t2.OrderName, t3.PostName ' +
     'FROM SIZNORMITEMPOST t1 ' +
     'INNER JOIN SIZNORMITEM t2 ON (t1.ItemID=t2.ItemID) ' +
     'INNER JOIN STAFFPOST t3 ON (t1.PostID=t3.PostID) ' +
@@ -4354,6 +4354,7 @@ begin
   begin
     QFirst;
     AItem.OrderNum:= QFieldInt('OrderNum');
+    AItem.OrderName:= QFieldStr('OrderName');
     while not QEOF do
     begin
       VAppend(AItem.PostIDs, QFieldInt('PostID'));
