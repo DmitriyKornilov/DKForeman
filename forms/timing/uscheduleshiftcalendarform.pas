@@ -364,8 +364,26 @@ begin
 end;
 
 procedure TScheduleShiftCalendarForm.ExportButtonClick(Sender: TObject);
+var
+  Exporter: TSheetsExporter;
+  Worksheet: TsWorksheet;
+  ExpSheet: TShiftCalendarScheduleSheet;
 begin
-  SheetFromGridSave(Sheet, ZoomPercent, @ScheduleDraw, YearSpinEdit.Text);
+  Exporter:= TSheetsExporter.Create;
+  try
+    Worksheet:= Exporter.AddWorksheet(YearSpinEdit.Text);
+    ExpSheet:= TShiftCalendarScheduleSheet.Create(Worksheet, nil, GridFont);
+    try
+      ExpSheet.Draw(Calendar, Schedule, PrevShiftNumber, ScheduleName,
+               NeedCorrectionsCheckBox.Checked, FirstShiftDayColorOnlyCheckBox.Checked);
+      ExpSheet.ColorsUpdate(Colors);
+    finally
+      FreeAndNil(ExpSheet);
+    end;
+    Exporter.Save('Выполнено!');
+  finally
+    FreeAndNil(Exporter);
+  end;
 end;
 
 end.

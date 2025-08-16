@@ -10,7 +10,7 @@ uses
   //Project utils
   UConst, UTypes, UVars, UTimingUtils, UCalendar, UCalendarSheet,
   //DK packages utils
-  DK_DateUtils, DK_VSTTables, DK_Vector, DK_Zoom, DK_Color, DK_Const,
+  DK_DateUtils, DK_VSTTables, DK_Vector, DK_Zoom, DK_Color, DK_Const, DK_SheetExporter,
   DK_CtrlUtils, DK_SheetTypes,
   //Forms
   UCalendarEditForm;
@@ -265,9 +265,26 @@ begin
 end;
 
 procedure TCalendarForm.ExportButtonClick(Sender: TObject);
+var
+  Exporter: TSheetsExporter;
+  Worksheet: TsWorksheet;
+  ExpSheet: TCalendarSheet;
 begin
-  SheetFromGridSave(CalendarSheet, ZoomPercent, @CalendarDraw,
-                    YearSpinEdit.Text, 'Выполнено!', True);
+  Exporter:= TSheetsExporter.Create;
+  try
+    Worksheet:= Exporter.AddWorksheet(YearSpinEdit.Text);
+    ExpSheet:= TCalendarSheet.Create(Worksheet, nil, GridFont);
+    try
+      ExpSheet.Draw(Calendar);
+      ExpSheet.ColorsUpdate(Colors);
+    finally
+      FreeAndNil(ExpSheet);
+    end;
+    Exporter.PageSettings(spoLandscape);
+    Exporter.Save('Выполнено!');
+  finally
+    FreeAndNil(Exporter);
+  end;
 end;
 
 procedure TCalendarForm.YearSpinEditChange(Sender: TObject);

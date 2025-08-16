@@ -12,6 +12,7 @@ uses
   //Project utils
   UVars, UConst, UTypes,
   //Forms
+  UAboutForm,
   UInfoForm,
   UParamForm,
   UStaffForm,
@@ -59,6 +60,7 @@ type
     ExitButton: TSpeedButton;
     EditingButton: TSpeedButton;
     ToolPanel: TPanel;
+    procedure AboutButtonClick(Sender: TObject);
     procedure CalendarMenuItemClick(Sender: TObject);
     procedure DepartmentMenuItemClick(Sender: TObject);
     procedure DictionaryButtonClick(Sender: TObject);
@@ -340,6 +342,11 @@ end;
 procedure TMainForm.SettingButtonClick(Sender: TObject);
 begin
   ViewUpdate;
+end;
+
+procedure TMainForm.AboutButtonClick(Sender: TObject);
+begin
+  FormModalShow(TAboutForm);
 end;
 
 procedure TMainForm.StaffButtonClick(Sender: TObject);

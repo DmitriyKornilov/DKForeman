@@ -7,7 +7,6 @@ object StaffForm: TStaffForm
   ClientHeight = 458
   ClientWidth = 1140
   DesignTimePPI = 120
-  LCLVersion = '4.2.0.0'
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
@@ -22,8 +21,8 @@ object StaffForm: TStaffForm
     BorderSpacing.Right = 2
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 40
-    ClientWidth = 1136
+    ClientHeight = 36
+    ClientWidth = 1132
     ParentFont = False
     TabOrder = 0
     object CloseButton: TSpeedButton
@@ -73,7 +72,7 @@ object StaffForm: TStaffForm
   end
   object SettingPanel: TPanel
     Left = 2
-    Height = 411
+    Height = 412
     Top = 44
     Width = 300
     Align = alLeft
@@ -81,7 +80,7 @@ object StaffForm: TStaffForm
     BorderSpacing.Top = 2
     BorderSpacing.Bottom = 2
     BevelOuter = bvNone
-    ClientHeight = 411
+    ClientHeight = 412
     ClientWidth = 300
     Color = clWindow
     ParentBackground = False
@@ -90,7 +89,7 @@ object StaffForm: TStaffForm
     Visible = False
     object SettingClientPanel: TPanel
       Left = 0
-      Height = 379
+      Height = 380
       Top = 32
       Width = 300
       Align = alClient
@@ -120,7 +119,7 @@ object StaffForm: TStaffForm
   end
   object LeftSplitter: TSplitter
     Left = 302
-    Height = 415
+    Height = 416
     Top = 42
     Width = 6
     ResizeStyle = rsLine
@@ -128,31 +127,31 @@ object StaffForm: TStaffForm
   end
   object MainPanel: TPanel
     Left = 308
-    Height = 415
+    Height = 416
     Top = 42
     Width = 832
     Align = alClient
     BevelOuter = bvNone
-    ClientHeight = 415
+    ClientHeight = 416
     ClientWidth = 832
     TabOrder = 3
     object ListPanel: TPanel
       Left = 0
-      Height = 411
+      Height = 412
       Top = 2
       Width = 612
       Align = alClient
       BorderSpacing.Top = 2
       BorderSpacing.Bottom = 2
       BevelOuter = bvNone
-      ClientHeight = 411
+      ClientHeight = 412
       ClientWidth = 612
       ParentBackground = False
       ParentColor = False
       TabOrder = 0
       object StaffVT: TVirtualStringTree
         Left = 0
-        Height = 295
+        Height = 296
         Top = 74
         Width = 612
         Align = alClient
@@ -252,7 +251,7 @@ object StaffForm: TStaffForm
       object ListOrderToolPanel: TPanel
         Left = 0
         Height = 40
-        Top = 371
+        Top = 372
         Width = 612
         Align = alBottom
         BorderSpacing.Top = 2
@@ -375,7 +374,7 @@ object StaffForm: TStaffForm
     end
     object EditingPanel: TPanel
       Left = 618
-      Height = 411
+      Height = 412
       Top = 2
       Width = 212
       Align = alRight
@@ -383,7 +382,7 @@ object StaffForm: TStaffForm
       BorderSpacing.Right = 2
       BorderSpacing.Bottom = 2
       BevelOuter = bvNone
-      ClientHeight = 411
+      ClientHeight = 412
       ClientWidth = 212
       TabOrder = 1
       Visible = False
@@ -531,12 +530,12 @@ object StaffForm: TStaffForm
       end
       object PostLogEditingPanel: TPanel
         Left = 0
-        Height = 225
+        Height = 226
         Top = 186
         Width = 212
         Align = alClient
         BevelOuter = bvNone
-        ClientHeight = 225
+        ClientHeight = 226
         ClientWidth = 212
         TabOrder = 2
         object PostLogToolPanel: TPanel
@@ -599,7 +598,7 @@ object StaffForm: TStaffForm
         end
         object PostLogVT: TVirtualStringTree
           Left = 0
-          Height = 151
+          Height = 152
           Top = 74
           Width = 212
           Align = alClient
@@ -634,7 +633,7 @@ object StaffForm: TStaffForm
     end
     object EditingSplitter: TSplitter
       Left = 612
-      Height = 415
+      Height = 416
       Top = 0
       Width = 6
       Align = alRight

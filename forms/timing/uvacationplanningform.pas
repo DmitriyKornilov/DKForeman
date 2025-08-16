@@ -597,7 +597,7 @@ end;
 
 procedure TVacationPlanningForm.PlanExport;
 var
-  i,j: Integer;
+  i, j: Integer;
 begin
   i:= 0;
   j:= 0;

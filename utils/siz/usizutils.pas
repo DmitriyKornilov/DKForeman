@@ -107,7 +107,7 @@ var
   Months: Extended;
 begin
   if ALife<=0 then //особый срок службы
-    Result:= SIZ_LIFE_PICKS[ALife]
+    Result:= SIZ_LIFE_PICKS[VIndexOf(SIZ_LIFE_KEYS, ALife)]
   else begin
     Months:= SIZLifeInMonths(AReceivingCount, ANum, ALife);
     if Months<12 then
@@ -120,7 +120,7 @@ end;
 function SIZPeriod(const ALife: Integer; const ANeedLifeCountIfSingle: Boolean = True): String;
 begin
   if ALife<=0 then //особый срок службы
-    Result:= SIZ_LIFE_PICKS[ALife]
+    Result:= SIZ_LIFE_PICKS[VIndexOf(SIZ_LIFE_KEYS, ALife)]
   else begin
     if ALife<12 then //меньше года
       Result:= SMonths(IntToStr(ALife), True, ANeedLifeCountIfSingle)
@@ -156,7 +156,7 @@ function SIZUnitCycle(const AUnit: String; const ALife: Integer;
                       const ANeedBreak: Boolean): String;
 begin
   if ALife<=0 then //особый срок службы
-    Result:= SIZ_LIFE_PICKS[ALife]
+    Result:= SIZ_LIFE_PICKS[VIndexOf(SIZ_LIFE_KEYS, ALife)]
   else begin
     Result:= '1 раз в ' + SIZPeriod(ALife, False{не выводить 1 перед месяц/год, когда Life=1/12});
   end;

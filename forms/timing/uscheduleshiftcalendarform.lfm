@@ -8,7 +8,7 @@ object ScheduleShiftCalendarForm: TScheduleShiftCalendarForm
   ClientHeight = 338
   ClientWidth = 941
   DesignTimePPI = 120
-  LCLVersion = '4.0.0.4'
+  LCLVersion = '4.2.0.0'
   WindowState = wsMaximized
   OnCreate = FormCreate
   OnDestroy = FormDestroy

@@ -1467,6 +1467,10 @@ constructor TVacationPlanSheet.Create(const ACalendar: TCalendar;
 begin
   FCalendar:= ACalendar;
   inherited Create(AWorksheet, AGrid, AFont);
+
+  FSelectedCol:= 0;
+  FSelectedRowIndex:= -1;
+
   if not Writer.HasGrid then Exit;
   Writer.Grid.Options:= Writer.Grid.Options - [goRangeSelect] + [goThumbTracking];
   Writer.Grid.OnDrawCell:= @DrawCell;

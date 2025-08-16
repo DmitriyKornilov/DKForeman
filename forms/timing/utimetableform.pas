@@ -771,7 +771,7 @@ begin
   ASheet.Draw(ATimetables, ATimetableTotals, YearSpinEdit.Value,
               ACaption, ARecrutDate, ADismissDate, ParamList.Selected['CountType']);
   if ParamList.Checked['ViewParams', 0] then
-    Sheet.ColorsUpdate(Colors);
+    ASheet.ColorsUpdate(Colors);
 end;
 
 procedure TTimetableForm.TimetableDraw(const AZoomPercent: Integer);
@@ -872,9 +872,13 @@ var
 
           Worksheet:= Exporter.AddWorksheet(YearSpinEdit.Text);
           ExpSheet:= TYearTimetableSheet.Create(Worksheet, nil, GridFont);
-          Progress.Go;
-          TimetableToSheet(ExpSheet, TmpTimetables, TmpTimetableTotals,
-                           RecrutDates[i], DismissDates[i], TimetableNames[i]);
+          try
+            Progress.Go;
+            TimetableToSheet(ExpSheet, TmpTimetables, TmpTimetableTotals,
+                             RecrutDates[i], DismissDates[i], TimetableNames[i]);
+          finally
+            FreeAndNil(ExpSheet);
+          end;
           Progress.Go;
           Exporter.PageSettings();
           Exporter.Save(TimetableNames[i]);

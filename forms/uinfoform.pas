@@ -26,9 +26,7 @@ type
     VacationVT: TVirtualStringTree;
     YearCheckBox: TCheckBox;
     CheckPanel: TPanel;
-    DividerBevel3: TDividerBevel;
     DividerBevel2: TDividerBevel;
-    ExportButton: TSpeedButton;
     LeftBottomPanel: TPanel;
     LeftTopPanel: TPanel;
     RightPanel: TPanel;
@@ -98,7 +96,6 @@ end;
 procedure TInfoForm.FormShow(Sender: TObject);
 begin
   SetToolPanels([ToolPanel]);
-  Images.ToButtons([ExportButton]);
   SetCaptionPanels([
     BirthdayCaptionPanel, VacationCaptionPanel, SIZCaptionPanel
   ]);

@@ -632,6 +632,14 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="USIZRequestForm"/>
       </Unit>
+      <Unit>
+        <Filename Value="forms\uaboutform.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="AboutForm"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="UAboutForm"/>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

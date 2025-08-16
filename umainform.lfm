@@ -39,6 +39,7 @@ object MainForm: TMainForm
       ImageIndex = 1
       ShowHint = True
       ParentShowHint = False
+      OnClick = AboutButtonClick
     end
     object ExitButton: TSpeedButton
       Cursor = crHandPoint

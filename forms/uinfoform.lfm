@@ -175,23 +175,6 @@ object InfoForm: TInfoForm
       Orientation = trVertical
       ParentFont = False
     end
-    object ExportButton: TSpeedButton
-      Cursor = crHandPoint
-      Left = 793
-      Height = 36
-      Hint = 'Экспорт в формат электронной таблицы XLSX или ODS'
-      Top = 0
-      Width = 109
-      Align = alLeft
-      AutoSize = True
-      Caption = ' Экспорт '
-      Images = Images.PX24
-      ImageIndex = 22
-      Margin = 5
-      Spacing = 5
-      ShowHint = True
-      ParentShowHint = False
-    end
     object CheckPanel: TPanel
       Left = 290
       Height = 36
@@ -233,18 +216,6 @@ object InfoForm: TInfoForm
         TabOrder = 1
         OnChange = NameOrderCheckBoxChange
       end
-    end
-    object DividerBevel3: TDividerBevel
-      Left = 772
-      Height = 36
-      Top = 0
-      Width = 21
-      Caption = 'DividerBevel3'
-      Align = alLeft
-      BevelWidth = 2
-      Font.Style = [fsBold]
-      Orientation = trVertical
-      ParentFont = False
     end
   end
   object LeftPanel: TPanel

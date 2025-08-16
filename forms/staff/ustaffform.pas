@@ -549,7 +549,7 @@ begin
   StrDismissDates:= VDateToStr(DismissDates, True);
   VChangeIf(StrDismissDates, EmptyStr, EMPTY_MARK);
 
-  ExportButton.Enabled:= not VIsNil(StaffIDs);
+  ExportButton.Enabled:= (ModeType<>mtEditing) and (not VIsNil(StaffIDs));
 
   StaffList.Visible:= False;
   try
@@ -855,7 +855,7 @@ begin
   MainPanel.Visible:= False;
   try
     ModeType:= AModeType;
-    ExportButton.Visible:= ModeType<>mtEditing;
+    ExportButton.Enabled:= (ModeType<>mtEditing) and (not VIsNil(StaffIDs));
 
     if ModeType=mtSetting then
     begin

@@ -295,7 +295,11 @@ begin
   Writer.SetFont(Font.Name, Font.Size, [{fsBold}], clBlack);
   RR:= IndexToRow(FFirstItemIndexes[AIndex]);
   R:= RR - 1;
-  Writer.SetAlignment(haLeft, vaTop);
+
+  if Length(FPostNames[AIndex])=1 then
+    Writer.SetAlignment(haLeft, vaCenter)
+  else
+    Writer.SetAlignment(haLeft, vaTop);
   for i:= FFirstItemIndexes[AIndex] to FLastItemIndexes[AIndex] do
   begin
      R:= R + 1;
@@ -303,11 +307,16 @@ begin
      if i<FLastItemIndexes[AIndex] then S:= S + ',';
      Writer.WriteText(R, 2, S, cbtNone, True, True);
   end;
-  Writer.SetAlignment(haCenter, vaTop);
+
+  if Length(FPostNames[AIndex])=1 then
+    Writer.SetAlignment(haCenter, vaCenter)
+  else
+    Writer.SetAlignment(haCenter, vaTop);
   if SEmpty(FOrderNames[AIndex]) then
     Writer.WriteNumber(RR, 1, R, 1, FOrderNums[AIndex]+1)
   else
     Writer.WriteText(RR, 1, R, 1, FOrderNames[AIndex]);
+
   Writer.SetBackgroundDefault;
   Writer.DrawBorders(RR, 1, R, 1, cbtOuter);
   Writer.DrawBorders(RR, 2, R, 2, cbtOuter);
