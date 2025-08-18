@@ -7,7 +7,6 @@ object SIZRequestForm: TSIZRequestForm
   ClientHeight = 240
   ClientWidth = 763
   DesignTimePPI = 120
-  LCLVersion = '4.2.0.0'
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
@@ -22,8 +21,8 @@ object SIZRequestForm: TSIZRequestForm
     BorderSpacing.Right = 2
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 40
-    ClientWidth = 759
+    ClientHeight = 36
+    ClientWidth = 755
     ParentFont = False
     TabOrder = 0
     object CloseButton: TSpeedButton
@@ -147,8 +146,8 @@ object SIZRequestForm: TSIZRequestForm
     BorderSpacing.Bottom = 2
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 194
-    ClientWidth = 759
+    ClientHeight = 190
+    ClientWidth = 755
     Color = clWhite
     ParentBackground = False
     ParentColor = False

@@ -11,7 +11,7 @@ uses
   USIZNormTypes, USIZSizes, USIZUtils, USIZCardTypes, UUtils,
   //DK packages utils
   DK_SQLite3, DK_SQLUtils, DK_Vector, DK_Matrix, DK_StrUtils, DK_Const,
-  DK_DateUtils, DK_VSTDropDown, DK_Dialogs, DK_DBUtils;
+  DK_DateUtils, DK_VSTDropDown, DK_Dialogs, DK_DBUtils, DK_Progress;
 
 type
 
@@ -9396,6 +9396,8 @@ function TDataBase.SIZStoreRequestLoad(const AReportDate: TDate;
                           out ASizCounts: TIntMatrix3D;
                           out AWriteoffDates: TDateMatrix3D): Boolean;
 var
+  Progress: TProgress;
+
   i, j: Integer;
   TabNumIDs, Genders: TIntVector;
   Families, Names, Patronymics, TabNums: TStrVector;
@@ -9423,7 +9425,8 @@ var
   procedure AddData(const AInd1, AInd2: Integer);
   var
     S: String;
-    m, n: Integer;
+    m, n, Num, Life: Integer;
+    D: TDate;
   begin
     //S:= VVectorToStr(NormSubItems[AInd2].Info.Names, ' или ');
     S:= VFirst(NormSubItems[AInd2].Info.Names);
@@ -9464,8 +9467,17 @@ var
     VAppend(ANames[n, m], Names[AInd1]);
     VAppend(APatronymics[n, m], Patronymics[AInd1]);
     VAppend(ATabNums[n, m], TabNums[AInd1]);
-    VAppend(ASizCounts[n, m], VFirst(NormSubItems[AInd2].Info.Nums));
     VAppend(AWriteoffDates[n, m], MMaxDate(StatusSubItems[AInd2].Info.WriteoffDates));
+
+    //расчет кол-ва СИЗ с учетом кол-ва сроков службы до отчетной даты
+    Num:= VFirst(NormSubItems[AInd2].Info.Nums);
+    Life:= VFirst(NormSubItems[AInd2].Info.Lifes);
+    if Life>0 then
+    begin
+      D:= MaxDate(TDate(AWriteoffDates[n, m]), Date);
+      Num:= Num * (1 + (MonthsBetween(D, AReportDate) div Life));
+    end;
+    VAppend(ASizCounts[n, m], Num);
   end;
 
 begin
@@ -9481,37 +9493,58 @@ begin
   ASizCounts:= nil;
   AWriteoffDates:= nil;
 
-  //получаем список не уволенных на отчетную дату
-  if not StaffListForSIZRequestLoad(AReportDate, TabNumIDs, Genders,
-                              Families, Names, Patronymics, TabNums) then Exit;
+  Progress:= TProgress.Create(nil);
+  try
+    Progress.WriteLine1('Расчет потребности СИЗ');
+    Progress.WriteLine2(EmptyStr);
+    Progress.Show;
 
-  for i:=0 to High(TabNumIDs) do
-  begin
-    //актуальная личная карточка учета СИЗ на отчетную дату
-    if not SIZPersonalCardForDateLoad(TabNumIDs[i], AReportDate,
-                             CardID, ItemID, ItemPostID, CardNum,
-                             PostName, NormName, CardBD, CardED) then continue;
-    //нормы выдачи по актуальной личной карточке
-    NormSubItemsClear(NormSubItems{%H-});
-    SIZNormSubItemsLoad(ItemID, NormSubItems);
-    if Length(NormSubItems)=0 then continue;
-    //статус выданного
-    StatusSubItemsClear(StatusSubItems{%H-});
-    SIZStatusLoad(TabNumIDs[i], CardID, AWriteoffType, AReportDate,
-                  NormSubItems, StatusSubItems);
+    //получаем список не уволенных на отчетную дату
+    if not StaffListForSIZRequestLoad(AReportDate, TabNumIDs, Genders,
+                                Families, Names, Patronymics, TabNums) then Exit;
 
-    //пробегаем по строкам пункта норм
-    for j:= 0 to High(StatusSubItems) do
+    for i:=0 to High(TabNumIDs) do
     begin
-      //пропускаем дерматологические СИЗ и непросроченные СИЗ
-      if (VFirst(NormSubItems[j].Info.SIZTypes)=0) or
-         StatusSubItems[j].IsFreshExists then continue;
-      //заполняем список
-      AddData(i, j);
-    end;
-  end;
+      Progress.WriteLine2(StaffFullName(Families[i], Names[i],
+                                        Patronymics[i], TabNums[i], False{long}));
 
-  Result:= not VIsNil(ASizNames);
+      //актуальная личная карточка учета СИЗ на отчетную дату
+      if not SIZPersonalCardForDateLoad(TabNumIDs[i], AReportDate,
+                               CardID, ItemID, ItemPostID, CardNum,
+                               PostName, NormName, CardBD, CardED) then continue;
+
+      Progress.Go;
+
+      //нормы выдачи по актуальной личной карточке
+      NormSubItemsClear(NormSubItems{%H-});
+      SIZNormSubItemsLoad(ItemID, NormSubItems);
+
+      if Length(NormSubItems)=0 then continue;
+
+      Progress.Go;
+
+      //статус выданного
+      StatusSubItemsClear(StatusSubItems{%H-});
+      SIZStatusLoad(TabNumIDs[i], CardID, AWriteoffType, AReportDate,
+                    NormSubItems, StatusSubItems);
+      //пробегаем по строкам пункта норм
+      for j:= 0 to High(StatusSubItems) do
+      begin
+        Progress.Go;
+
+        //пропускаем дерматологические СИЗ и непросроченные СИЗ
+        if (VFirst(NormSubItems[j].Info.SIZTypes)=0) or
+           StatusSubItems[j].IsFreshExists then continue;
+        //заполняем список
+        AddData(i, j);
+      end;
+    end;
+
+    Result:= not VIsNil(ASizNames);
+
+  finally
+    FreeAndNil(Progress);
+  end;
 end;
 
 end.

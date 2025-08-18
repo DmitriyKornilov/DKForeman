@@ -68,10 +68,7 @@ type
   private
     ModeType: TModeType;
     ZoomPercent: Integer;
-
-    //Items: TStrVector;
     Colors: TColorVector;
-    //ColorList: TVSTColorList;
 
     VSTDays: TVSTTable;
     VSTCopy: TVSTTable;
@@ -124,21 +121,7 @@ begin
   ModeType:= mtView;
 
   ColorsLoad;
-
-  //Items:= VCreateStr([
-  //  'Нерабочий праздничный день',
-  //  'Нерабочий выходной день',
-  //  'Рабочий предпраздничный (сокращенный) день',
-  //  'Рабочий день'
-  //]);
-  //Colors:= VCreateColor([
-  //  $0097CBFF,
-  //  $00CCE3CC,
-  //  $00FFCACA,
-  //  $00FFFFFF]);
-  //ColorList:= TVSTColorList.Create(DayVT);
-
-  SettingsLoad; //load ZoomPercent
+  SettingsLoad;
   CreateZoomControls(50, 150, ZoomPercent, ZoomPanel, @CalendarDraw, True);
 
   CalendarSheet:= TCalendarSheet.Create(ViewGrid.Worksheet, ViewGrid, GridFont);
@@ -150,7 +133,6 @@ end;
 
 procedure TCalendarForm.FormDestroy(Sender: TObject);
 begin
-  //FreeAndNil(ColorList);
   FreeAndNil(VSTDays);
   FreeAndNil(VSTCopy);
   FreeAndNil(CalendarSheet);

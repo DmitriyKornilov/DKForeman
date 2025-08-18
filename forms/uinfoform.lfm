@@ -2,10 +2,10 @@ object InfoForm: TInfoForm
   Left = 381
   Height = 368
   Top = 250
-  Width = 983
+  Width = 1070
   Caption = 'InfoForm'
   ClientHeight = 368
-  ClientWidth = 983
+  ClientWidth = 1070
   DesignTimePPI = 120
   OnCreate = FormCreate
   OnDestroy = FormDestroy
@@ -14,7 +14,7 @@ object InfoForm: TInfoForm
     Left = 2
     Height = 40
     Top = 2
-    Width = 979
+    Width = 1066
     Align = alTop
     BorderSpacing.Left = 2
     BorderSpacing.Top = 2
@@ -22,7 +22,7 @@ object InfoForm: TInfoForm
     BevelOuter = bvNone
     BorderStyle = bsSingle
     ClientHeight = 36
-    ClientWidth = 975
+    ClientWidth = 1062
     ParentFont = False
     TabOrder = 0
     object YearPanel: TPanel
@@ -267,14 +267,14 @@ object InfoForm: TInfoForm
           AnchorSideTop.Side = asrCenter
           AnchorSideRight.Control = BirthdayCaptionPanel
           AnchorSideRight.Side = asrBottom
-          Left = 354
+          Left = 371
           Height = 24
           Top = 1
-          Width = 184
+          Width = 167
           Anchors = [akTop, akRight]
           BorderSpacing.Left = 8
           BorderSpacing.Right = 8
-          Caption = 'Показывать уволенных'
+          Caption = 'Включать уволенных'
           ParentFont = False
           TabOrder = 0
           OnChange = DismissCheckBoxChange
@@ -358,38 +358,59 @@ object InfoForm: TInfoForm
     Left = 558
     Height = 322
     Top = 44
-    Width = 423
+    Width = 510
     Align = alClient
     BorderSpacing.Top = 2
     BorderSpacing.Right = 2
     BorderSpacing.Bottom = 2
     BevelOuter = bvNone
     ClientHeight = 322
-    ClientWidth = 423
+    ClientWidth = 510
     TabOrder = 3
     object SIZCaptionPanel: TPanel
       Left = 0
       Height = 30
       Top = 0
-      Width = 423
+      Width = 510
       Align = alTop
       Alignment = taLeftJustify
       BorderSpacing.Bottom = 2
       BevelOuter = bvNone
       BorderStyle = bsSingle
       Caption = '  Выдача средств индивидуальной защиты'
+      ClientHeight = 26
+      ClientWidth = 506
       Color = clBtnFace
       Font.Style = [fsBold]
       ParentBackground = False
       ParentColor = False
       ParentFont = False
       TabOrder = 0
+      object SIZCheckBox: TCheckBox
+        AnchorSideLeft.Control = YearCheckBox
+        AnchorSideLeft.Side = asrBottom
+        AnchorSideTop.Control = SIZCaptionPanel
+        AnchorSideTop.Side = asrCenter
+        AnchorSideRight.Control = SIZCaptionPanel
+        AnchorSideRight.Side = asrBottom
+        Left = 392
+        Height = 24
+        Top = 1
+        Width = 106
+        Anchors = [akTop, akRight]
+        BorderSpacing.Left = 8
+        BorderSpacing.Right = 8
+        Caption = 'Отображать'
+        ParentFont = False
+        TabOrder = 0
+        OnChange = SIZCheckBoxChange
+      end
     end
     object SIZVT: TVirtualStringTree
       Left = 0
       Height = 290
       Top = 32
-      Width = 423
+      Width = 510
       Align = alClient
       DefaultText = 'Node'
       Header.AutoSizeIndex = 0

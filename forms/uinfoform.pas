@@ -17,6 +17,7 @@ type
   { TInfoForm }
 
   TInfoForm = class(TForm)
+    SIZCheckBox: TCheckBox;
     NameOrderCheckBox: TCheckBox;
     BirthdayVT: TVirtualStringTree;
     DismissCheckBox: TCheckBox;
@@ -43,6 +44,7 @@ type
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure NameOrderCheckBoxChange(Sender: TObject);
+    procedure SIZCheckBoxChange(Sender: TObject);
     procedure YearCheckBoxChange(Sender: TObject);
     procedure YearSpinEditChange(Sender: TObject);
   private
@@ -111,6 +113,11 @@ end;
 procedure TInfoForm.NameOrderCheckBoxChange(Sender: TObject);
 begin
   DataUpdate;
+end;
+
+procedure TInfoForm.SIZCheckBoxChange(Sender: TObject);
+begin
+  SIZListLoad;
 end;
 
 procedure TInfoForm.YearCheckBoxChange(Sender: TObject);
@@ -260,59 +267,70 @@ var
   SIZCounts: TIntMatrix3D;
   WriteoffDates: TDateMatrix3D;
 begin
-  if YearCheckBox.Checked then
-    D:= LastDayInYear(YearSpinEdit.Value)
-  else
-    D:= LastDayInMonth(MonthDropDown.Month, YearSpinEdit.Value);
-
-  WriteoffType:= DataBase.SettingLoad('SIZCARDFORM.WRITEOFFTYPE');
-
   SIZList.ValuesClear;
-  if not DataBase.SIZStoreRequestLoad(D, WriteoffType,
-                                      SIZNames, Genders, SIZSizes,
-                                      Families, Names, Patronymics, TabNums,
-                                      SIZCounts, WriteoffDates) then Exit;
+  if not SIZCheckBox.Checked then Exit;
 
-  V1:= nil;
-  V2:= nil;
-  V3:= nil;
-  for i:= 0 to High(Families) do
-    for j:= 0 to High(Families[i]) do
-      for k:= 0 to High(Families[i, j]) do
-        begin
-          S:= StaffFullName(Families[i, j, k], Names[i, j, k],
-                            Patronymics[i, j, k], TabNums[i, j, k], True{short});
-          VAppend(V1, S);
-          VAppend(V2, SIZNames[i]);
-          if WriteoffDates[i, j, k]=0 then
-            VAppend(V3, EMPTY_MARK)
-          else
-            VAppend(V3, FormatDateTime('dd.mm.yyyy', WriteoffDates[i, j, k]));
-        end;
-
-  if NameOrderCheckBox.Checked then
-  begin
-    VSort(V1, Indexes);
-    V1:= VReplace(V1, Indexes);
-    V2:= VReplace(V2, Indexes);
-    V3:= VReplace(V3, Indexes);
-  end;
-
-  SIZList.Visible:= False;
+  Screen.Cursor:= crHourGlass;
   try
-    SIZList.SetColumn('Ф.И.О.', V1, taLeftJustify);
-    SIZList.SetColumn('Дата', V3);
-    SIZList.SetColumn('Наименование', V2, taLeftJustify);
-    SIZList.Draw;
+
+
+
+    if YearCheckBox.Checked then
+      D:= LastDayInYear(YearSpinEdit.Value)
+    else
+      D:= LastDayInMonth(MonthDropDown.Month, YearSpinEdit.Value);
+
+    WriteoffType:= DataBase.SettingLoad('SIZCARDFORM.WRITEOFFTYPE');
+
+
+    if not DataBase.SIZStoreRequestLoad(D, WriteoffType,
+                                        SIZNames, Genders, SIZSizes,
+                                        Families, Names, Patronymics, TabNums,
+                                        SIZCounts, WriteoffDates) then Exit;
+
+    V1:= nil;
+    V2:= nil;
+    V3:= nil;
+    for i:= 0 to High(Families) do
+      for j:= 0 to High(Families[i]) do
+        for k:= 0 to High(Families[i, j]) do
+          begin
+            S:= StaffFullName(Families[i, j, k], Names[i, j, k],
+                              Patronymics[i, j, k], TabNums[i, j, k], True{short});
+            VAppend(V1, S);
+            VAppend(V2, SIZNames[i]);
+            if WriteoffDates[i, j, k]=0 then
+              VAppend(V3, EMPTY_MARK)
+            else
+              VAppend(V3, FormatDateTime('dd.mm.yyyy', WriteoffDates[i, j, k]));
+          end;
+
+    if NameOrderCheckBox.Checked then
+    begin
+      VSort(V1, Indexes);
+      V1:= VReplace(V1, Indexes);
+      V2:= VReplace(V2, Indexes);
+      V3:= VReplace(V3, Indexes);
+    end;
+
+    SIZList.Visible:= False;
+    try
+      SIZList.SetColumn('Ф.И.О.', V1, taLeftJustify);
+      SIZList.SetColumn('Дата', V3);
+      SIZList.SetColumn('Наименование', V2, taLeftJustify);
+      SIZList.Draw;
+    finally
+      SIZList.Visible:= True;
+    end;
+
   finally
-    SIZList.Visible:= True;
+    Screen.Cursor:= crDefault;
   end;
 end;
 
 procedure TInfoForm.DataUpdate;
 begin
   if not CanUpdate then Exit;
-
   BirthdayListLoad;
   VacationListLoad;
   SIZListLoad;

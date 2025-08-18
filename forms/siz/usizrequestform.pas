@@ -39,6 +39,8 @@ type
     ZoomPercent: Integer;
     Sheet: TSIZStoreRequestSheet;
 
+    WriteoffType: Byte;
+
     SIZNames: TStrVector;
     Genders: TIntVector;
     SIZSizes: TStrMatrix;
@@ -91,19 +93,20 @@ begin
 end;
 
 procedure TSIZRequestForm.RequestLoad;
-var
-  WriteoffType: Byte;
 begin
-  WriteoffType:= DataBase.SettingLoad('SIZCARDFORM.WRITEOFFTYPE');
-  DataBase.SIZStoreRequestLoad(DatePicker.Date, WriteoffType,
-                          SIZNames, Genders, SIZSizes,
-                          Families, Names, Patronymics, TabNums,
-                          SIZCounts, WriteoffDates);
+  Screen.Cursor:= crHourGlass;
+  try
+    DataBase.SIZStoreRequestLoad(DatePicker.Date, WriteoffType,
+                            SIZNames, Genders, SIZSizes,
+                            Families, Names, Patronymics, TabNums,
+                            SIZCounts, WriteoffDates);
+  finally
+    Screen.Cursor:= crDefault;
+  end;
 end;
 
 procedure TSIZRequestForm.RequestDraw(const AZoomPercent: Integer);
 begin
-  ViewGrid.Visible:= False;
   Screen.Cursor:= crHourGlass;
   try
     ZoomPercent:= AZoomPercent;
@@ -111,7 +114,6 @@ begin
     Sheet.Draw(EmptyStr, SIZNames, Genders, SIZSizes, Families, Names, Patronymics,
                TabNums, SIZCounts);
   finally
-    ViewGrid.Visible:= True;
     Screen.Cursor:= crDefault;
   end;
 end;
@@ -121,23 +123,24 @@ var
   Exporter: TSheetsExporter;
   Worksheet: TsWorksheet;
   ExpSheet: TSIZStoreRequestSheet;
-  S: String;
+  D, S: String;
 begin
-  S:= DateToStr(DatePicker.Date);
+  D:= FormatDateTime('dd.mm.yyyy', DatePicker.Date);
 
   Exporter:= TSheetsExporter.Create;
   try
-    Worksheet:= Exporter.AddWorksheet(S);
+    Worksheet:= Exporter.AddWorksheet(D);
     ExpSheet:= TSIZStoreRequestSheet.Create(Worksheet, nil, GridFont);
     try
-      S:= 'Список средств индивидуальной защиты, требующихся на ' + S;
+      S:= 'Список средств индивидуальной защиты, требующихся с '+
+          FormatDateTime('dd.mm.yyyy', Date) + ' по ' + D;
       ExpSheet.Draw(S, SIZNames, Genders, SIZSizes, Families, Names, Patronymics,
                     TabNums, SIZCounts);
     finally
       FreeAndNil(ExpSheet);
     end;
     Exporter.PageSettings(spoLandscape);
-    Exporter.Save('Выполнено!');
+    Exporter.Save('Выполнено!', 'Заявка на ' + D);
   finally
     FreeAndNil(Exporter);
   end;
@@ -149,6 +152,8 @@ var
 begin
   SettingValues:= DataBase.SettingsLoad(SETTING_NAMES_SIZREQUESTFORM);
   ZoomPercent:= SettingValues[0];
+
+  WriteoffType:= DataBase.SettingLoad('SIZCARDFORM.WRITEOFFTYPE');
 end;
 
 procedure TSIZRequestForm.SettingsSave;
