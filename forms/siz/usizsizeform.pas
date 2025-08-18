@@ -231,6 +231,7 @@ end;
 
 procedure TSIZSizeForm.ColumnsListSelect;
 begin
+  if not CanLoadSizeList then Exit;
   SizeList.ColumnVisibles:= ParamList.Checkeds['ColumnsList'];
 end;
 
@@ -335,8 +336,6 @@ begin
     EditButton.Visible:= ModeType=mtEditing;
 
     MainPanel.BorderSpacing.Left:= 2*Ord(ModeType<>mtSetting);
-
-
 
   finally
     MainPanel.Visible:= True;
