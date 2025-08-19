@@ -1,38 +1,39 @@
 object SIZDocForm: TSIZDocForm
   Left = 377
-  Height = 341
+  Height = 426
   Top = 250
-  Width = 777
+  Width = 971
   BorderIcons = [biSystemMenu, biMaximize]
   Caption = 'SIZDocForm'
-  ClientHeight = 341
-  ClientWidth = 777
+  ClientHeight = 426
+  ClientWidth = 971
+  DesignTimePPI = 120
   WindowState = wsMaximized
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
   object ToolPanel: TPanel
     Left = 2
-    Height = 32
+    Height = 40
     Top = 2
-    Width = 773
+    Width = 967
     Align = alTop
     BorderSpacing.Left = 2
     BorderSpacing.Top = 2
     BorderSpacing.Right = 2
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 28
-    ClientWidth = 769
+    ClientHeight = 36
+    ClientWidth = 963
     ParentFont = False
     TabOrder = 0
     object CloseButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 737
-      Height = 28
+      Left = 923
+      Height = 36
       Hint = 'Закрыть'
       Top = 0
-      Width = 32
+      Width = 40
       Align = alRight
       Images = Images.PX24
       ImageIndex = 3
@@ -41,10 +42,10 @@ object SIZDocForm: TSIZDocForm
       OnClick = CloseButtonClick
     end
     object DividerBevel1: TDividerBevel
-      Left = 719
-      Height = 28
+      Left = 902
+      Height = 36
       Top = 0
-      Width = 18
+      Width = 21
       Caption = 'DividerBevel1'
       Align = alRight
       BevelWidth = 2
@@ -56,11 +57,11 @@ object SIZDocForm: TSIZDocForm
       AnchorSideLeft.Control = DocFormPanel
       AnchorSideLeft.Side = asrBottom
       Cursor = crHandPoint
-      Left = 206
-      Height = 28
+      Left = 244
+      Height = 36
       Hint = 'Экспорт в формат электронной таблицы XLSX или ODS'
       Top = 0
-      Width = 96
+      Width = 109
       Align = alLeft
       AutoSize = True
       Caption = ' Экспорт '
@@ -74,11 +75,11 @@ object SIZDocForm: TSIZDocForm
     end
     object EditingButton: TSpeedButton
       Cursor = crHandPoint
-      Left = 687
-      Height = 28
+      Left = 862
+      Height = 36
       Hint = 'Редактирование'
       Top = 0
-      Width = 32
+      Width = 40
       Align = alRight
       AllowAllUp = True
       GroupIndex = 2
@@ -90,22 +91,22 @@ object SIZDocForm: TSIZDocForm
     end
     object YearPanel: TPanel
       Left = 0
-      Height = 28
+      Height = 36
       Top = 0
-      Width = 52
+      Width = 65
       Align = alLeft
       AutoSize = True
       BevelOuter = bvNone
-      ClientHeight = 28
-      ClientWidth = 52
+      ClientHeight = 36
+      ClientWidth = 65
       TabOrder = 0
       object YearSpinEdit: TSpinEdit
         AnchorSideTop.Control = YearPanel
         AnchorSideTop.Side = asrCenter
         Left = 2
-        Height = 23
-        Top = 3
-        Width = 50
+        Height = 28
+        Top = 4
+        Width = 63
         Align = alCustom
         Alignment = taCenter
         BorderSpacing.Left = 2
@@ -119,10 +120,10 @@ object SIZDocForm: TSIZDocForm
       end
     end
     object DividerBevel4: TDividerBevel
-      Left = 52
-      Height = 28
+      Left = 65
+      Height = 36
       Top = 0
-      Width = 18
+      Width = 21
       Caption = 'DividerBevel4'
       Align = alLeft
       BevelWidth = 2
@@ -133,24 +134,24 @@ object SIZDocForm: TSIZDocForm
     object DocFormPanel: TPanel
       AnchorSideLeft.Control = DividerBevel4
       AnchorSideLeft.Side = asrBottom
-      Left = 70
-      Height = 28
+      Left = 86
+      Height = 36
       Top = 0
-      Width = 136
+      Width = 158
       Align = alLeft
       AutoSize = True
       BevelOuter = bvNone
-      ClientHeight = 28
-      ClientWidth = 136
+      ClientHeight = 36
+      ClientWidth = 158
       TabOrder = 1
       Visible = False
       object DocFormButton: TSpeedButton
         Cursor = crHandPoint
         Left = 0
-        Height = 28
+        Height = 36
         Hint = 'Общий табель учета рабочего времени на месяц'
         Top = 0
-        Width = 118
+        Width = 137
         Align = alLeft
         AutoSize = True
         Caption = 'Форма МБ-7 '
@@ -163,10 +164,10 @@ object SIZDocForm: TSIZDocForm
         OnClick = DocFormButtonClick
       end
       object DividerBevel2: TDividerBevel
-        Left = 118
-        Height = 28
+        Left = 137
+        Height = 36
         Top = 0
-        Width = 18
+        Width = 21
         Caption = 'DividerBevel2'
         Align = alLeft
         BevelWidth = 2
@@ -178,20 +179,20 @@ object SIZDocForm: TSIZDocForm
   end
   object DocPanel: TPanel
     Left = 0
-    Height = 307
-    Top = 34
-    Width = 280
+    Height = 384
+    Top = 42
+    Width = 350
     Align = alLeft
     BevelOuter = bvNone
-    ClientHeight = 307
-    ClientWidth = 280
-    Constraints.MinWidth = 240
+    ClientHeight = 384
+    ClientWidth = 350
+    Constraints.MinWidth = 300
     TabOrder = 1
     object DocCaptionPanel: TPanel
       Left = 2
-      Height = 24
+      Height = 30
       Top = 2
-      Width = 278
+      Width = 348
       Align = alTop
       Alignment = taLeftJustify
       BorderSpacing.Left = 2
@@ -208,14 +209,14 @@ object SIZDocForm: TSIZDocForm
     end
     object DocVT: TVirtualStringTree
       Left = 2
-      Height = 243
-      Top = 62
-      Width = 278
+      Height = 306
+      Top = 76
+      Width = 348
       Align = alClient
       BorderSpacing.Left = 2
       BorderSpacing.Top = 2
       BorderSpacing.Bottom = 2
-      DefaultNodeHeight = 20
+      DefaultNodeHeight = 25
       DefaultText = 'Node'
       Header.AutoSizeIndex = 0
       Header.Columns = <>
@@ -225,103 +226,167 @@ object SIZDocForm: TSIZDocForm
     end
     object DocToolPanel: TPanel
       Left = 2
-      Height = 32
-      Top = 28
-      Width = 278
+      Height = 40
+      Top = 34
+      Width = 348
       Align = alTop
       BorderSpacing.Left = 2
       BorderSpacing.Top = 2
       BevelOuter = bvNone
       BorderStyle = bsSingle
-      ClientHeight = 28
-      ClientWidth = 274
+      ClientHeight = 36
+      ClientWidth = 344
       ParentBackground = False
       ParentColor = False
       ParentFont = False
       TabOrder = 2
-      Visible = False
-      object DocAddButton: TSpeedButton
-        Cursor = crHandPoint
+      object EditButtonPanel: TPanel
+        Left = 80
+        Height = 36
+        Top = 0
+        Width = 264
+        Align = alClient
+        BevelOuter = bvNone
+        ClientHeight = 36
+        ClientWidth = 264
+        TabOrder = 0
+        Visible = False
+        object DocAddButton: TSpeedButton
+          Cursor = crHandPoint
+          Left = 21
+          Height = 36
+          Hint = 'Добавить'
+          Top = 0
+          Width = 40
+          Align = alLeft
+          Images = Images.PX24
+          ImageIndex = 4
+          ShowHint = True
+          ParentShowHint = False
+          OnClick = DocAddButtonClick
+        end
+        object DocDelButton: TSpeedButton
+          Cursor = crHandPoint
+          Left = 61
+          Height = 36
+          Hint = 'Удалить'
+          Top = 0
+          Width = 40
+          Align = alLeft
+          Enabled = False
+          Images = Images.PX24
+          ImageIndex = 5
+          ShowHint = True
+          ParentShowHint = False
+          OnClick = DocDelButtonClick
+        end
+        object DocEditButton: TSpeedButton
+          Cursor = crHandPoint
+          Left = 101
+          Height = 36
+          Hint = 'Редактировать'
+          Top = 0
+          Width = 40
+          Align = alLeft
+          Enabled = False
+          Images = Images.PX24
+          ImageIndex = 6
+          ShowHint = True
+          ParentShowHint = False
+          OnClick = DocEditButtonClick
+        end
+        object DocEraseButton: TSpeedButton
+          Cursor = crHandPoint
+          Left = 141
+          Height = 36
+          Hint = 'Удалить пустые документы'
+          Top = 0
+          Width = 40
+          Align = alLeft
+          Images = Images.PX24
+          ImageIndex = 10
+          ShowHint = True
+          ParentShowHint = False
+          OnClick = DocEraseButtonClick
+        end
+        object DividerBevel5: TDividerBevel
+          Left = 0
+          Height = 36
+          Top = 0
+          Width = 21
+          Caption = 'DividerBevel4'
+          Align = alLeft
+          BevelWidth = 2
+          Font.Style = [fsBold]
+          Orientation = trVertical
+          ParentFont = False
+        end
+      end
+      object OrderButtonPanel: TPanel
         Left = 0
-        Height = 28
-        Hint = 'Добавить'
+        Height = 36
         Top = 0
-        Width = 32
+        Width = 80
         Align = alLeft
-        Images = Images.PX24
-        ImageIndex = 4
-        ShowHint = True
-        ParentShowHint = False
-        OnClick = DocAddButtonClick
-      end
-      object DocDelButton: TSpeedButton
-        Cursor = crHandPoint
-        Left = 32
-        Height = 28
-        Hint = 'Удалить'
-        Top = 0
-        Width = 32
-        Align = alLeft
-        Enabled = False
-        Images = Images.PX24
-        ImageIndex = 5
-        ShowHint = True
-        ParentShowHint = False
-        OnClick = DocDelButtonClick
-      end
-      object DocEditButton: TSpeedButton
-        Cursor = crHandPoint
-        Left = 64
-        Height = 28
-        Hint = 'Редактировать'
-        Top = 0
-        Width = 32
-        Align = alLeft
-        Enabled = False
-        Images = Images.PX24
-        ImageIndex = 6
-        ShowHint = True
-        ParentShowHint = False
-        OnClick = DocEditButtonClick
-      end
-      object DocEraseButton: TSpeedButton
-        Cursor = crHandPoint
-        Left = 96
-        Height = 28
-        Hint = 'Удалить пустые документы'
-        Top = 0
-        Width = 32
-        Align = alLeft
-        Images = Images.PX24
-        ImageIndex = 10
-        ShowHint = True
-        ParentShowHint = False
-        OnClick = DocEraseButtonClick
+        AutoSize = True
+        BevelOuter = bvNone
+        ClientHeight = 36
+        ClientWidth = 80
+        TabOrder = 1
+        object AscendingButton: TSpeedButton
+          Cursor = crHandPoint
+          Left = 0
+          Height = 36
+          Hint = 'Изменить порядок сортировки'
+          Top = 0
+          Width = 40
+          Align = alLeft
+          Images = Images.PX24
+          ImageIndex = 15
+          ShowHint = True
+          ParentShowHint = False
+          OnClick = AscendingButtonClick
+        end
+        object DescendingButton: TSpeedButton
+          Cursor = crHandPoint
+          Left = 40
+          Height = 36
+          Hint = 'Изменить порядок сортировки'
+          Top = 0
+          Width = 40
+          Align = alLeft
+          Images = Images.PX24
+          ImageIndex = 16
+          Visible = False
+          ShowHint = True
+          ParentShowHint = False
+          OnClick = DescendingButtonClick
+        end
       end
     end
   end
   object Splitter: TSplitter
-    Left = 280
-    Height = 307
-    Top = 34
-    Width = 5
+    Left = 350
+    Height = 384
+    Top = 42
+    Width = 6
     ResizeStyle = rsLine
   end
   object SIZPanel: TPanel
-    Left = 285
-    Height = 307
-    Top = 34
-    Width = 492
+    Left = 356
+    Height = 384
+    Top = 42
+    Width = 615
     Align = alClient
     BevelOuter = bvNone
-    ClientHeight = 307
-    ClientWidth = 492
+    ClientHeight = 384
+    ClientWidth = 615
     TabOrder = 3
     object SIZCaptionPanel: TPanel
       Left = 0
-      Height = 24
+      Height = 30
       Top = 2
-      Width = 490
+      Width = 613
       Align = alTop
       Alignment = taLeftJustify
       BorderSpacing.Top = 2
@@ -338,9 +403,9 @@ object SIZDocForm: TSIZDocForm
     end
     object SIZFormPanel: TPanel
       Left = 0
-      Height = 281
-      Top = 26
-      Width = 492
+      Height = 352
+      Top = 32
+      Width = 615
       Align = alClient
       BevelOuter = bvNone
       TabOrder = 1

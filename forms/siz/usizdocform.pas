@@ -21,19 +21,24 @@ type
   { TSIZDocForm }
 
   TSIZDocForm = class(TForm)
+    AscendingButton: TSpeedButton;
+    DescendingButton: TSpeedButton;
     DividerBevel2: TDividerBevel;
     DividerBevel4: TDividerBevel;
+    DividerBevel5: TDividerBevel;
     DocAddButton: TSpeedButton;
-    DocDelButton: TSpeedButton;
-    DocEditButton: TSpeedButton;
-    DocEraseButton: TSpeedButton;
     DocCaptionPanel: TPanel;
     CloseButton: TSpeedButton;
     DividerBevel1: TDividerBevel;
+    DocDelButton: TSpeedButton;
+    DocEditButton: TSpeedButton;
+    DocEraseButton: TSpeedButton;
     EditingButton: TSpeedButton;
     ExportButton: TSpeedButton;
     DocFormButton: TSpeedButton;
     DocFormPanel: TPanel;
+    EditButtonPanel: TPanel;
+    OrderButtonPanel: TPanel;
     SIZFormPanel: TPanel;
     SIZCaptionPanel: TPanel;
     DocPanel: TPanel;
@@ -44,7 +49,9 @@ type
     DocVT: TVirtualStringTree;
     YearPanel: TPanel;
     YearSpinEdit: TSpinEdit;
+    procedure AscendingButtonClick(Sender: TObject);
     procedure CloseButtonClick(Sender: TObject);
+    procedure DescendingButtonClick(Sender: TObject);
     procedure DocAddButtonClick(Sender: TObject);
     procedure DocDelButtonClick(Sender: TObject);
     procedure DocEditButtonClick(Sender: TObject);
@@ -187,10 +194,13 @@ end;
 procedure TSIZDocForm.DocListLoad(const ASelectedID: Integer);
 var
   SelectedID: Integer;
+  IsDescOrder: Boolean;
 begin
   SelectedID:= GetSelectedID(DocList, DocIDs, ASelectedID);
 
-  DataBase.SIZDocListLoad(YearSpinEdit.Value, DocType, DocIDs, DocForms,
+  IsDescOrder:= not DescendingButton.Visible;
+
+  DataBase.SIZDocListLoad(YearSpinEdit.Value, DocType, IsDescOrder, DocIDs, DocForms,
                           DocNames, DocNums, DocDates);
 
   DocList.Visible:= False;
@@ -213,6 +223,20 @@ end;
 procedure TSIZDocForm.CloseButtonClick(Sender: TObject);
 begin
   Close;
+end;
+
+procedure TSIZDocForm.AscendingButtonClick(Sender: TObject);
+begin
+  AscendingButton.Visible:= False;
+  DescendingButton.Visible:= True;
+  DocListLoad;
+end;
+
+procedure TSIZDocForm.DescendingButtonClick(Sender: TObject);
+begin
+  DescendingButton.Visible:= False;
+  AscendingButton.Visible:= True;
+  DocListLoad;
 end;
 
 procedure TSIZDocForm.DocEdit(const AEditingType: TEditingType);
@@ -714,7 +738,7 @@ end;
 
 procedure TSIZDocForm.ViewUpdate;
 begin
-  DocToolPanel.Visible:= EditingButton.Down;
+  EditButtonPanel.Visible:= EditingButton.Down;
   SIZFormViewUpdate;
 end;
 

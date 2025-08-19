@@ -105,7 +105,7 @@ var
   SelectedIndex: Integer;
   V: TIntVector;
 begin
-  if not DataBase.SIZDocListLoad(0{все время}, 4{возврат СИЗ на склад}, DocIDs,
+  if not DataBase.SIZDocListLoad(0{все время}, 4{возврат СИЗ на склад}, True{desc}, DocIDs,
                                  V, DocNames, DocNums, DocDates) then Exit;
   DocDropDown.Items:= SIZDocFullName(DocNames, DocNums, DocDates);
 

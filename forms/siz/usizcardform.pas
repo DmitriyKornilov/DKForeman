@@ -247,13 +247,6 @@ begin
   SIZStaffHistoryFormOpen(TabNumIDs[i], StaffName, TabNums[i]);
 end;
 
-procedure TSIZCardForm.DescendingButtonClick(Sender: TObject);
-begin
-  DescendingButton.Visible:= False;
-  AscendingButton.Visible:= True;
-  StaffListLoad;
-end;
-
 procedure TSIZCardForm.ExportButtonClick(Sender: TObject);
 begin
   DataExport;
@@ -278,6 +271,13 @@ procedure TSIZCardForm.AscendingButtonClick(Sender: TObject);
 begin
   AscendingButton.Visible:= False;
   DescendingButton.Visible:= True;
+  StaffListLoad;
+end;
+
+procedure TSIZCardForm.DescendingButtonClick(Sender: TObject);
+begin
+  DescendingButton.Visible:= False;
+  AscendingButton.Visible:= True;
   StaffListLoad;
 end;
 

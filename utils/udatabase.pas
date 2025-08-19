@@ -673,6 +673,7 @@ type
      при AYear=0 - документы за все время,
      при ADocType=0 - документы всех типов}
     function SIZDocListLoad(const AYear, ADocType: Integer;
+                          const AIsDescOrder: Boolean;
                           out ADocIDs, ADocForms: TIntVector;
                           out ADocNames, ADocNums: TStrVector;
                           out ADocDates: TDateVector): Boolean;
@@ -5868,6 +5869,7 @@ begin
 end;
 
 function TDataBase.SIZDocListLoad(const AYear, ADocType: Integer;
+                          const AIsDescOrder: Boolean;
                           out ADocIDs, ADocForms: TIntVector;
                           out ADocNames, ADocNums: TStrVector;
                           out ADocDates: TDateVector): Boolean;
@@ -5893,7 +5895,10 @@ begin
   if ADocType>0 then
     SQLStr:= SQLStr + 'AND (DocType = :DocType) ';
 
-  SQLStr:= SQLStr + 'ORDER BY DocDate DESC, DocName DESC, DocNum DESC';
+  if AIsDescOrder then
+    SQLStr:= SQLStr + 'ORDER BY DocDate DESC, DocName DESC, DocNum DESC'
+  else
+    SQLStr:= SQLStr + 'ORDER BY DocDate, DocName, DocNum';
 
   QSetQuery(FQuery);
   QSetSQL(SQLStr);
