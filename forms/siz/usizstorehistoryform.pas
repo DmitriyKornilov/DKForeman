@@ -71,8 +71,8 @@ procedure TSIZStoreHistoryForm.FormCreate(Sender: TObject);
 begin
   Caption:= MAIN_CAPTION + OTHER_DESCRIPTION[11];
   HistoryCreate;
-  DKFilterCreate('Поиск по наименованию СИЗ:', FilterSizNamePanel, @HistorySizNameFilter, 300);
-  DKFilterCreate('Поиск по номенклатурному номеру:', FilterNomNumPanel, @HistoryNomNumFilter, 300);
+  DKFilterCreate('Фильтр по наименованию СИЗ:', FilterSizNamePanel, @HistorySizNameFilter, 300);
+  DKFilterCreate('Фильтр по номенклатурному номеру:', FilterNomNumPanel, @HistoryNomNumFilter, 300);
 end;
 
 procedure TSIZStoreHistoryForm.FormDestroy(Sender: TObject);
