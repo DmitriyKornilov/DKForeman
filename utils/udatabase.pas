@@ -9323,73 +9323,93 @@ var
   i, EntryCount, ReceivingCount, ReturningCount, WriteoffCount: Integer;
   NameIDs, Counts, TmpCounts: TIntVector;
   Infos, TmpInfos: TStrVector;
+
+  Progress: TProgress;
 begin
   AInfos:= nil;
   ACounts:= nil;
 
-  //получаем список СИЗ
-  Result:= SIZStoreHistorySizListLoad(AMatchSizName, AFilterNomNum,
-                                      ANomNums, ASizNames, NameIDs);
-  if not Result then Exit;
+  Progress:= TProgress.Create(nil);
+  try
+    Progress.WriteLine1('Загрузка истории движения СИЗ по складу');
+    Progress.WriteLine2(EmptyStr);
+    Progress.Show;
 
-  //получаем данные для каждого СИЗ
-  for i:= 0 to High(ANomNums) do
-  begin
-    ReceivingCount:= 0;
-    ReturningCount:= 0;
-    WriteoffCount:= 0;
+    //получаем список СИЗ
+    Result:= SIZStoreHistorySizListLoad(AMatchSizName, AFilterNomNum,
+                                        ANomNums, ASizNames, NameIDs);
 
-    //приход на склад
-    SIZStoreHistoryEntryLoad(ANomNums[i], NameIDs[i], SPACES_COUNT,
-                             False{AIsNeedReturning - всегда без учета возврата,
-                             т.к. возвраты записываются в отдельную строку}
-                             , Infos, Counts);
-    EntryCount:= VSum(Counts);
-    VIns(Infos, 0, 'Получено');
-    VIns(Counts, 0, EntryCount);
-
-    //выдача
-    if SIZStoreHistoryReceivingLoad(ANomNums[i], NameIDs[i], SPACES_COUNT,
-                                    AIsNeedReturning, TmpInfos, TmpCounts) then
+    //получаем данные для каждого СИЗ
+    for i:= 0 to High(ANomNums) do
     begin
-      ReceivingCount:= VSum(TmpCounts);
-      VIns(TmpInfos, 0, 'Выдано');
-      VIns(TmpCounts, 0, ReceivingCount);
-      Infos:= VAdd(Infos, TmpInfos);
-      Counts:= VAdd(Counts, TmpCounts);
+      Progress.WriteLine2(ANomNums[i] + ' - ' + ASizNames[i]);
 
-      //возврат
-      if AIsNeedReturning and
-         SIZStoreHistoryReturningLoad(ANomNums[i], NameIDs[i], SPACES_COUNT,
-                                     TmpInfos, TmpCounts) then
+      ReceivingCount:= 0;
+      ReturningCount:= 0;
+      WriteoffCount:= 0;
+
+      //приход на склад
+      SIZStoreHistoryEntryLoad(ANomNums[i], NameIDs[i], SPACES_COUNT,
+                               False{AIsNeedReturning - всегда без учета возврата,
+                               т.к. возвраты записываются в отдельную строку}
+                               , Infos, Counts);
+      EntryCount:= VSum(Counts);
+      VIns(Infos, 0, 'Получено');
+      VIns(Counts, 0, EntryCount);
+
+      Progress.Go;
+
+      //выдача
+      if SIZStoreHistoryReceivingLoad(ANomNums[i], NameIDs[i], SPACES_COUNT,
+                                      AIsNeedReturning, TmpInfos, TmpCounts) then
       begin
-        ReturningCount:= VSum(TmpCounts);
-        VIns(TmpInfos, 0, 'Возвращено');
-        VIns(TmpCounts, 0, ReturningCount);
+        ReceivingCount:= VSum(TmpCounts);
+        VIns(TmpInfos, 0, 'Выдано');
+        VIns(TmpCounts, 0, ReceivingCount);
+        Infos:= VAdd(Infos, TmpInfos);
+        Counts:= VAdd(Counts, TmpCounts);
+
+        Progress.Go;
+
+        //возврат
+        if AIsNeedReturning and
+           SIZStoreHistoryReturningLoad(ANomNums[i], NameIDs[i], SPACES_COUNT,
+                                       TmpInfos, TmpCounts) then
+        begin
+          ReturningCount:= VSum(TmpCounts);
+          VIns(TmpInfos, 0, 'Возвращено');
+          VIns(TmpCounts, 0, ReturningCount);
+          Infos:= VAdd(Infos, TmpInfos);
+          Counts:= VAdd(Counts, TmpCounts);
+
+          Progress.Go;
+        end;
+      end;
+
+      //списание
+      if SIZStoreHistoryWriteoffLoad(ANomNums[i], NameIDs[i], SPACES_COUNT,
+                                     AIsNeedReturning, TmpInfos, TmpCounts) then
+      begin
+        WriteoffCount:= VSum(TmpCounts);
+        VIns(TmpInfos, 0, 'Списано');
+        VIns(TmpCounts, 0, WriteoffCount);
         Infos:= VAdd(Infos, TmpInfos);
         Counts:= VAdd(Counts, TmpCounts);
       end;
+
+      Progress.Go;
+
+      //остаток
+      VAppend(Infos, 'Остаток');
+      VAppend(Counts, EntryCount - ReceivingCount + ReturningCount - WriteoffCount);
+
+      MAppend(AInfos, Infos);
+      MAppend(ACounts, Counts);
     end;
 
-    //списание
-    if SIZStoreHistoryWriteoffLoad(ANomNums[i], NameIDs[i], SPACES_COUNT,
-                                   AIsNeedReturning, TmpInfos, TmpCounts) then
-    begin
-      WriteoffCount:= VSum(TmpCounts);
-      VIns(TmpInfos, 0, 'Списано');
-      VIns(TmpCounts, 0, WriteoffCount);
-      Infos:= VAdd(Infos, TmpInfos);
-      Counts:= VAdd(Counts, TmpCounts);
-    end;
-
-    //остаток
-    VAppend(Infos, 'Остаток');
-    VAppend(Counts, EntryCount - ReceivingCount + ReturningCount - WriteoffCount);
-
-    MAppend(AInfos, Infos);
-    MAppend(ACounts, Counts);
+  finally
+    FreeAndNil(Progress);
   end;
-
 end;
 
 function TDataBase.SIZStoreRequestLoad(const AReportDate: TDate;
