@@ -12,187 +12,23 @@ object SIZDocForm: TSIZDocForm
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
-  object ToolPanel: TPanel
-    Left = 2
-    Height = 40
-    Top = 2
-    Width = 967
-    Align = alTop
-    BorderSpacing.Left = 2
-    BorderSpacing.Top = 2
-    BorderSpacing.Right = 2
-    BevelOuter = bvNone
-    BorderStyle = bsSingle
-    ClientHeight = 36
-    ClientWidth = 963
-    ParentFont = False
-    TabOrder = 0
-    object CloseButton: TSpeedButton
-      Cursor = crHandPoint
-      Left = 923
-      Height = 36
-      Hint = 'Закрыть'
-      Top = 0
-      Width = 40
-      Align = alRight
-      Images = Images.PX24
-      ImageIndex = 3
-      ShowHint = True
-      ParentShowHint = False
-      OnClick = CloseButtonClick
-    end
-    object DividerBevel1: TDividerBevel
-      Left = 902
-      Height = 36
-      Top = 0
-      Width = 21
-      Caption = 'DividerBevel1'
-      Align = alRight
-      BevelWidth = 2
-      Font.Style = [fsBold]
-      Orientation = trVertical
-      ParentFont = False
-    end
-    object ExportButton: TSpeedButton
-      AnchorSideLeft.Control = DocFormPanel
-      AnchorSideLeft.Side = asrBottom
-      Cursor = crHandPoint
-      Left = 244
-      Height = 36
-      Hint = 'Экспорт в формат электронной таблицы XLSX или ODS'
-      Top = 0
-      Width = 109
-      Align = alLeft
-      AutoSize = True
-      Caption = ' Экспорт '
-      Images = Images.PX24
-      ImageIndex = 22
-      Margin = 5
-      Spacing = 5
-      ShowHint = True
-      ParentShowHint = False
-      OnClick = ExportButtonClick
-    end
-    object EditingButton: TSpeedButton
-      Cursor = crHandPoint
-      Left = 862
-      Height = 36
-      Hint = 'Редактирование'
-      Top = 0
-      Width = 40
-      Align = alRight
-      AllowAllUp = True
-      GroupIndex = 2
-      Images = Images.PX24
-      ImageIndex = 23
-      ShowHint = True
-      ParentShowHint = False
-      OnClick = EditingButtonClick
-    end
-    object YearPanel: TPanel
-      Left = 0
-      Height = 36
-      Top = 0
-      Width = 65
-      Align = alLeft
-      AutoSize = True
-      BevelOuter = bvNone
-      ClientHeight = 36
-      ClientWidth = 65
-      TabOrder = 0
-      object YearSpinEdit: TSpinEdit
-        AnchorSideTop.Control = YearPanel
-        AnchorSideTop.Side = asrCenter
-        Left = 2
-        Height = 28
-        Top = 4
-        Width = 63
-        Align = alCustom
-        Alignment = taCenter
-        BorderSpacing.Left = 2
-        BorderSpacing.Top = 2
-        BorderSpacing.Bottom = 2
-        MinValue = 2010
-        TabStop = False
-        TabOrder = 0
-        Value = 2022
-        OnChange = YearSpinEditChange
-      end
-    end
-    object DividerBevel4: TDividerBevel
-      Left = 65
-      Height = 36
-      Top = 0
-      Width = 21
-      Caption = 'DividerBevel4'
-      Align = alLeft
-      BevelWidth = 2
-      Font.Style = [fsBold]
-      Orientation = trVertical
-      ParentFont = False
-    end
-    object DocFormPanel: TPanel
-      AnchorSideLeft.Control = DividerBevel4
-      AnchorSideLeft.Side = asrBottom
-      Left = 86
-      Height = 36
-      Top = 0
-      Width = 158
-      Align = alLeft
-      AutoSize = True
-      BevelOuter = bvNone
-      ClientHeight = 36
-      ClientWidth = 158
-      TabOrder = 1
-      Visible = False
-      object DocFormButton: TSpeedButton
-        Cursor = crHandPoint
-        Left = 0
-        Height = 36
-        Hint = 'Общий табель учета рабочего времени на месяц'
-        Top = 0
-        Width = 137
-        Align = alLeft
-        AutoSize = True
-        Caption = 'Форма МБ-7 '
-        Images = Images.PX24
-        ImageIndex = 43
-        Margin = 5
-        Spacing = 5
-        ShowHint = True
-        ParentShowHint = False
-        OnClick = DocFormButtonClick
-      end
-      object DividerBevel2: TDividerBevel
-        Left = 137
-        Height = 36
-        Top = 0
-        Width = 21
-        Caption = 'DividerBevel2'
-        Align = alLeft
-        BevelWidth = 2
-        Font.Style = [fsBold]
-        Orientation = trVertical
-        ParentFont = False
-      end
-    end
-  end
+  OnWindowStateChange = FormWindowStateChange
   object DocPanel: TPanel
     Left = 0
-    Height = 384
-    Top = 42
-    Width = 350
+    Height = 426
+    Top = 0
+    Width = 400
     Align = alLeft
     BevelOuter = bvNone
-    ClientHeight = 384
-    ClientWidth = 350
-    Constraints.MinWidth = 300
-    TabOrder = 1
+    ClientHeight = 426
+    ClientWidth = 400
+    Constraints.MinWidth = 350
+    TabOrder = 0
     object DocCaptionPanel: TPanel
       Left = 2
       Height = 30
       Top = 2
-      Width = 348
+      Width = 398
       Align = alTop
       Alignment = taLeftJustify
       BorderSpacing.Left = 2
@@ -209,9 +45,9 @@ object SIZDocForm: TSIZDocForm
     end
     object DocVT: TVirtualStringTree
       Left = 2
-      Height = 306
+      Height = 348
       Top = 76
-      Width = 348
+      Width = 398
       Align = alClient
       BorderSpacing.Left = 2
       BorderSpacing.Top = 2
@@ -228,27 +64,28 @@ object SIZDocForm: TSIZDocForm
       Left = 2
       Height = 40
       Top = 34
-      Width = 348
+      Width = 398
       Align = alTop
       BorderSpacing.Left = 2
       BorderSpacing.Top = 2
       BevelOuter = bvNone
       BorderStyle = bsSingle
       ClientHeight = 36
-      ClientWidth = 344
+      ClientWidth = 394
       ParentBackground = False
       ParentColor = False
       ParentFont = False
       TabOrder = 2
       object EditButtonPanel: TPanel
-        Left = 80
+        Left = 166
         Height = 36
         Top = 0
-        Width = 264
+        Width = 228
         Align = alClient
+        AutoSize = True
         BevelOuter = bvNone
         ClientHeight = 36
-        ClientWidth = 264
+        ClientWidth = 228
         TabOrder = 0
         Visible = False
         object DocAddButton: TSpeedButton
@@ -323,7 +160,7 @@ object SIZDocForm: TSIZDocForm
         end
       end
       object OrderButtonPanel: TPanel
-        Left = 0
+        Left = 86
         Height = 36
         Top = 0
         Width = 80
@@ -341,6 +178,7 @@ object SIZDocForm: TSIZDocForm
           Top = 0
           Width = 40
           Align = alLeft
+          Enabled = False
           Images = Images.PX24
           ImageIndex = 15
           ShowHint = True
@@ -355,6 +193,7 @@ object SIZDocForm: TSIZDocForm
           Top = 0
           Width = 40
           Align = alLeft
+          Enabled = False
           Images = Images.PX24
           ImageIndex = 16
           Visible = False
@@ -363,30 +202,72 @@ object SIZDocForm: TSIZDocForm
           OnClick = DescendingButtonClick
         end
       end
+      object YearPanel: TPanel
+        Left = 0
+        Height = 36
+        Top = 0
+        Width = 65
+        Align = alLeft
+        AutoSize = True
+        BevelOuter = bvNone
+        ClientHeight = 36
+        ClientWidth = 65
+        TabOrder = 2
+        object YearSpinEdit: TSpinEdit
+          AnchorSideTop.Control = YearPanel
+          AnchorSideTop.Side = asrCenter
+          Left = 2
+          Height = 28
+          Top = 4
+          Width = 63
+          Align = alCustom
+          Alignment = taCenter
+          BorderSpacing.Left = 2
+          BorderSpacing.Top = 2
+          BorderSpacing.Bottom = 2
+          MinValue = 2010
+          TabStop = False
+          TabOrder = 0
+          Value = 2022
+          OnChange = YearSpinEditChange
+        end
+      end
+      object DividerBevel3: TDividerBevel
+        Left = 65
+        Height = 36
+        Top = 0
+        Width = 21
+        Caption = 'DividerBevel3'
+        Align = alLeft
+        BevelWidth = 2
+        Font.Style = [fsBold]
+        Orientation = trVertical
+        ParentFont = False
+      end
     end
   end
   object Splitter: TSplitter
-    Left = 350
-    Height = 384
-    Top = 42
+    Left = 400
+    Height = 426
+    Top = 0
     Width = 6
     ResizeStyle = rsLine
   end
   object SIZPanel: TPanel
-    Left = 356
-    Height = 384
-    Top = 42
-    Width = 615
+    Left = 406
+    Height = 426
+    Top = 0
+    Width = 565
     Align = alClient
     BevelOuter = bvNone
-    ClientHeight = 384
-    ClientWidth = 615
-    TabOrder = 3
+    ClientHeight = 426
+    ClientWidth = 565
+    TabOrder = 2
     object SIZCaptionPanel: TPanel
       Left = 0
       Height = 30
       Top = 2
-      Width = 613
+      Width = 563
       Align = alTop
       Alignment = taLeftJustify
       BorderSpacing.Top = 2
@@ -403,9 +284,9 @@ object SIZDocForm: TSIZDocForm
     end
     object SIZFormPanel: TPanel
       Left = 0
-      Height = 352
+      Height = 394
       Top = 32
-      Width = 615
+      Width = 565
       Align = alClient
       BevelOuter = bvNone
       TabOrder = 1

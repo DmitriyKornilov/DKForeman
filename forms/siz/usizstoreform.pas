@@ -6,87 +6,50 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, Buttons,
-  VirtualTrees, DividerBevel,
+  VirtualTrees, ColorSpeedButton, DividerBevel,
   //Project utils
-  UVars, UConst, UTypes, USIZStoreSheet,
+  UVars, UConst, UTypes,
   //DK packages utils
-  DK_CtrlUtils, DK_VSTCategoryTables, DK_Vector, DK_Matrix, DK_StrUtils,
-  DK_DropFilter, DK_SheetExporter,
+  DK_CtrlUtils,
   //Forms
-  USIZDocForm, USIZStoreHistoryForm, USIZStoreWriteoffEditForm;
+  USIZDocForm, USIZStoreHistoryForm, USIZStoreAvaliabilityForm;
 
 type
 
   { TSIZStoreForm }
 
   TSIZStoreForm = class(TForm)
-    DividerBevel3: TDividerBevel;
-    DividerBevel4: TDividerBevel;
-    FilterPanel: TPanel;
-    ToolFilterPanel: TPanel;
+    EntryTabButton: TColorSpeedButton;
     CloseButton: TSpeedButton;
     DividerBevel1: TDividerBevel;
-    CaptionPanel: TPanel;
     DividerBevel2: TDividerBevel;
+    AvaliabilityTabButton: TColorSpeedButton;
     HistoryButton: TSpeedButton;
-    OutButton: TSpeedButton;
     ExportButton: TSpeedButton;
-    EntryButton: TSpeedButton;
-    ToolButtonPanel: TPanel;
-    SIZCheckAllButton: TSpeedButton;
-    SIZCollapseAllButton: TSpeedButton;
-    SIZEditButtonPanel: TPanel;
-    SIZExpandAllButton: TSpeedButton;
-    SIZToolPanel: TPanel;
-    SIZUncheckAllButton: TSpeedButton;
-    SIZViewButtonPanel: TPanel;
-    SIZWriteoffButton: TSpeedButton;
-    WriteoffButton: TSpeedButton;
+    FormPanel: TPanel;
+    ReturningTabButton: TColorSpeedButton;
+    WriteoffTabButton: TColorSpeedButton;
+    ViewButtonPanel: TPanel;
     ToolPanel: TPanel;
-    VT: TVirtualStringTree;
-    BackButton: TSpeedButton;
-    procedure BackButtonClick(Sender: TObject);
+    ReceivingTabButton: TColorSpeedButton;
+
+    procedure AvaliabilityTabButtonClick(Sender: TObject);
+    procedure EntryTabButtonClick(Sender: TObject);
+    procedure ReceivingTabButtonClick(Sender: TObject);
+    procedure ReturningTabButtonClick(Sender: TObject);
+    procedure WriteoffTabButtonClick(Sender: TObject);
+
     procedure CloseButtonClick(Sender: TObject);
-    procedure EntryButtonClick(Sender: TObject);
     procedure ExportButtonClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure HistoryButtonClick(Sender: TObject);
-    procedure OutButtonClick(Sender: TObject);
-    procedure SIZCheckAllButtonClick(Sender: TObject);
-    procedure SIZCollapseAllButtonClick(Sender: TObject);
-    procedure SIZExpandAllButtonClick(Sender: TObject);
-    procedure SIZUncheckAllButtonClick(Sender: TObject);
-    procedure SIZWriteoffButtonClick(Sender: TObject);
-    procedure WriteoffButtonClick(Sender: TObject);
   private
     ModeType: TModeType;
-
-    DropFilter: TDKDropFilter;
-    SIZList: TVSTCategoryCheckTable;
-
-    CategoryNames: TStrMatrix;
-    StoreIDs: TInt64Matrix;
-    SizCounts: TIntMatrix;
-    NomNums, SizNames, SizUnits, SizSizes, DocNames: TStrMatrix;
-
-    ShowCategoryNames: TStrMatrix;
-    ShowStoreIDs: TInt64Matrix;
-    ShowNomNums, ShowSizNames, ShowSizUnits, ShowSizSizes, ShowDocNames: TStrMatrix;
-    ShowSizCounts: TIntMatrix;
-
-    FilterDocNames: TStrVector;
-    FilterIndex: Integer;
-
-    procedure FilterChange(const AFilterIndex: Integer);
-
-    procedure SIZListCreate;
-    procedure SIZListLoad;
-    procedure SIZListShow;
-    procedure SIZListCalc;
-    procedure SIZListSelect;
-
+    Category: Integer;
+    CategoryForm: TForm;
+    procedure CategorySelect(const ACategory: Integer);
     procedure DataExport;
   public
     procedure ViewUpdate(const AModeType: TModeType);
@@ -111,17 +74,13 @@ end;
 
 procedure TSIZStoreForm.FormCreate(Sender: TObject);
 begin
+  Category:= -1;
   ModeType:= mtView;
-
-  SIZListCreate;
-
-  FilterIndex:= -1;
-  DropFilter:= DKDropFilterCreate('Фильтр по документу:', ToolFilterPanel, @FilterChange);
 end;
 
 procedure TSIZStoreForm.FormDestroy(Sender: TObject);
 begin
-  FreeAndNil(SIZList);
+  if Assigned(CategoryForm) then FreeAndNil(CategoryForm);
 end;
 
 procedure TSIZStoreForm.FormShow(Sender: TObject);
@@ -129,29 +88,22 @@ begin
   SetToolPanels([
     ToolPanel
   ]);
-  SetCaptionPanels([
-    CaptionPanel
-  ]);
+
   SetToolButtons([
-    CloseButton,
-    SIZExpandAllButton, SIZCollapseAllButton,
-    SIZCheckAllButton, SIZUncheckAllButton, SIZWriteoffButton
+    CloseButton
   ]);
 
   Images.ToButtons([
-    ExportButton, EntryButton, OutButton, BackButton, WriteoffButton, HistoryButton,
-    CloseButton,
-    SIZExpandAllButton, SIZCollapseAllButton,
-    SIZCheckAllButton, SIZUncheckAllButton, SIZWriteoffButton
+    ExportButton, HistoryButton,
+    CloseButton
   ]);
 
-  DataUpdate;
-end;
+  AvaliabilityTabButton.Width:= EntryTabButton.Width;
+  WriteoffTabButton.Width:= EntryTabButton.Width;
+  ReceivingTabButton.Width:= EntryTabButton.Width;
+  ReturningTabButton.Width:= EntryTabButton.Width;
 
-procedure TSIZStoreForm.FilterChange(const AFilterIndex: Integer);
-begin
-  FilterIndex:= AFilterIndex;
-  SIZListShow;
+  CategorySelect(0);
 end;
 
 procedure TSIZStoreForm.HistoryButtonClick(Sender: TObject);
@@ -159,297 +111,92 @@ begin
   FormModalShow(TSIZStoreHistoryForm);
 end;
 
-procedure TSIZStoreForm.SIZListCreate;
-begin
-  SIZList:= TVSTCategoryCheckTable.Create(VT);
-  SIZList.OnSelect:= @SIZListSelect;
-  SIZList.TreeLinesVisible:= False;
-  SIZList.CheckKind:= chkNone;
-  SIZList.SetSingleFont(GridFont);
-  SIZList.HeaderFont.Style:= [fsBold];
-  SIZList.CategoryFont.Style:= [fsBold];
-  SIZList.AddColumn('Номенклатурный номер', 200);
-  SIZList.AddColumn('Наименование', 500);
-  SIZList.AddColumn('Единица измерения', 150);
-  SIZList.AddColumn('Количество', 100);
-  SIZList.AddColumn('Размер/объём/вес', 130);
-  SIZList.AddColumn('Документ поступления', 300);
-  SIZList.Draw;
-end;
-
-procedure TSIZStoreForm.SIZListLoad;
-begin
-  DataBase.SIZStoreLoad(-1{все типы}, CategoryNames, StoreIDs, SizCounts, NomNums,
-                        SizNames, SizUnits, SizSizes, DocNames);
-
-  FilterDocNames:= VAdd(['ВСЕ ДОКУМЕНТЫ'], VUnique(MToVector(DocNames)));
-  DropFilter.SetItems(FilterDocNames);
-
-  SIZExpandAllButton.Enabled:= not MIsNil(StoreIDs);
-  SIZCollapseAllButton.Enabled:= SIZExpandAllButton.Enabled;
-  SIZCheckAllButton.Enabled:= SIZExpandAllButton.Enabled;
-  SIZUncheckAllButton.Enabled:= SIZExpandAllButton.Enabled;
-end;
-
-procedure TSIZStoreForm.SIZListShow;
-begin
-  SIZListCalc;
-
-  SIZList.Visible:= False;
-  try
-    SIZList.ValuesClear;
-    SIZList.SetCategories(ShowCategoryNames);
-    SIZList.SetColumn('Номенклатурный номер', ShowNomNums, taLeftJustify);
-    SIZList.SetColumn('Наименование', ShowSizNames, taLeftJustify);
-    SIZList.SetColumn('Единица измерения', ShowSizUnits);
-    SIZList.SetColumn('Количество', MIntToStr(ShowSizCounts));
-    SIZList.SetColumn('Размер/объём/вес', ShowSizSizes);
-    SIZList.SetColumn('Документ поступления', ShowDocNames, taLeftJustify);
-    SIZList.Draw;
-    SIZList.ExpandAll(True);
-    SIZList.ShowFirst;
-  finally
-    SIZList.Visible:= True;
-  end;
-end;
-
-procedure TSIZStoreForm.SIZListCalc;
-var
-  TmpNomNums, TmpSizNames, TmpSizUnits, TmpSizSizes, TmpDocNames: TStrMatrix;
-  TmpSizCounts: TIntMatrix;
-
-  procedure FilterVectorsLoad;
-  var
-    i, j, N: Integer;
-    Indexes: TIntVector;
-  begin
-    if FilterIndex=0 then
-    begin //все документы - нет фильтра - исходные вектора
-      ShowStoreIDs:= StoreIDs;
-      ShowCategoryNames:= CategoryNames;
-      TmpNomNums:= NomNums;
-      TmpSizNames:= SizNames;
-      TmpSizUnits:= SizUnits;
-      TmpSizSizes:= SizSizes;
-      TmpDocNames:= DocNames;
-      TmpSizCounts:= SizCounts;
-    end
-    else begin  //есть фильтр по документу
-      //отбираем категории, где встречается этот документ и запоминаем индексы
-      ShowCategoryNames:= nil;
-      Indexes:= nil;
-      for i:= 0 to High(CategoryNames) do
-      begin
-        if VIndexOf(DocNames[i], FilterDocNames[FilterIndex])>=0 then
-        begin
-          MAppend(ShowCategoryNames, CategoryNames[i]);
-          VAppend(Indexes, i);
-        end;
-      end;
-      //отбираем данные
-      N:= Length(ShowCategoryNames);
-      MDim(ShowStoreIDs, N);
-      MDim(TmpNomNums, N);
-      MDim(TmpSizNames, N);
-      MDim(TmpSizUnits, N);
-      MDim(TmpSizSizes, N);
-      MDim(TmpDocNames, N);
-      MDim(TmpSizCounts, N);
-      for i:= 0 to High(Indexes) do
-      begin
-        for j:= 0 to High(NomNums[Indexes[i]]) do
-        begin
-          if DocNames[Indexes[i], j]<>FilterDocNames[FilterIndex] then continue;
-          VAppend(ShowStoreIDs[i], StoreIDs[Indexes[i], j]);
-          VAppend(TmpNomNums[i], NomNums[Indexes[i], j]);
-          VAppend(TmpSizNames[i], SizNames[Indexes[i], j]);
-          VAppend(TmpSizUnits[i], SizUnits[Indexes[i], j]);
-          VAppend(TmpSizSizes[i], SizSizes[Indexes[i], j]);
-          VAppend(TmpDocNames[i], DocNames[Indexes[i], j]);
-          VAppend(TmpSizCounts[i], SizCounts[Indexes[i], j]);
-        end;
-        //кол-во отфильтрованных СИЗ в категории
-        ShowCategoryNames[i, 3]:= IntToStr(VSum(TmpSizCounts[i]));
-      end;
-    end;
-  end;
-
-  procedure AddToVector(const AInd, AInd1, AInd2: Integer);
-  begin
-    VAppend(ShowNomNums[AInd], TmpNomNums[AInd, 0]);
-    VAppend(ShowSizNames[AInd], TmpSizNames[AInd, 0]);
-    VAppend(ShowSizUnits[AInd], TmpSizUnits[AInd, 0]);
-    VAppend(ShowSizSizes[AInd], TmpSizSizes[AInd, AInd1]);
-    VAppend(ShowDocNames[AInd], TmpDocNames[AInd, AInd1]);
-    VAppend(ShowSizCounts[AInd], VSum(TmpSizCounts[AInd], AInd1, AInd2));
-  end;
-
-  procedure ShowVectorsLoad;
-  var
-    i, j, N, N1, N2: Integer;
-    SizSize, DocName: String;
-  begin
-    //если рекдактирование - оставляем записи СИЗ по 1 экземпляру
-    if ModeType=mtEditing then
-    begin
-      ShowNomNums:= TmpNomNums;
-      ShowSizNames:= TmpSizNames;
-      ShowSizUnits:= TmpSizUnits;
-      ShowSizSizes:= TmpSizSizes;
-      ShowDocNames:= TmpDocNames;
-      ShowSizCounts:= TmpSizCounts;
-      Exit;
-    end;
-    //для простого отображения - группируем внутри категории СИЗ по размеру
-    //и документу прихода
-    N:= Length(ShowCategoryNames);
-    MDim(ShowNomNums, N);
-    MDim(ShowSizNames, N);
-    MDim(ShowSizUnits, N);
-    MDim(ShowSizSizes, N);
-    MDim(ShowDocNames, N);
-    MDim(ShowSizCounts, N);
-    for i:= 0 to N-1 do
-    begin
-      SizSize:= TmpSizSizes[i, 0];
-      DocName:= TmpDocNames[i, 0];
-      N1:= 0;
-      for j:= 1 to High(TmpDocNames[i]) do
-      begin
-        if not (SSame(TmpDocNames[i, j], DocName) and SSame(TmpSizSizes[i, j], SizSize)) then
-        begin
-          N2:= j - 1;
-          AddToVector(i, N1, N2);
-          N1:= j;
-          SizSize:= TmpSizSizes[i, j];
-          DocName:= TmpDocNames[i, j];
-        end;
-      end;
-      N2:= High(TmpDocNames[i]);
-      AddToVector(i, N1, N2);
-    end;
-  end;
-
-begin
-  FilterVectorsLoad;
-  ShowVectorsLoad;
-end;
-
-procedure TSIZStoreForm.SIZListSelect;
-begin
-  SIZWriteoffButton.Enabled:= SIZList.IsSelected;
-end;
-
 procedure TSIZStoreForm.DataExport;
-var
-  Exporter: TSheetsExporter;
-  ExpSheet: TSIZStoreSheet;
-  Worksheet: TsWorksheet;
 begin
-  Exporter:= TSheetsExporter.Create;
-  try
-    Worksheet:= Exporter.AddWorksheet('Лист1');
-    ExpSheet:= TSIZStoreSheet.Create(Worksheet, nil, GridFont);
-    try
-      ExpSheet.Draw(ShowNomNums, ShowSizNames, ShowSizUnits, ShowSizSizes,
-                    ShowDocNames, ShowSizCounts);
-    finally
-      FreeAndNil(ExpSheet);
-    end;
-    Exporter.PageSettings(spoLandscape);
-    Exporter.Save('Выполнено!', FormatDateTime('Склад на dd.mm.yyyy', Date));
-  finally
-    FreeAndNil(Exporter);
-  end;
+  if Category=0 then
+    (CategoryForm as TSIZStoreAvaliabilityForm).DataExport
+  else if Category in [1..4] then
+    (CategoryForm as TSIZDocForm).DataExport;
 end;
 
 procedure TSIZStoreForm.ViewUpdate(const AModeType: TModeType);
 begin
   ModeType:= AModeType;
-  SIZEditButtonPanel.Visible:= ModeType=mtEditing;
-  if ModeType=mtEditing then
-    SIZList.CheckKind:= chkAll
-  else
-    SIZList.CheckKind:= chkNone;
-  SIZListShow;
+  if Category=0 then
+    (CategoryForm as TSIZStoreAvaliabilityForm).ViewUpdate(AModeType)
+  else if Category in [1..4] then
+    (CategoryForm as TSIZDocForm).ViewUpdate(AModeType);
 end;
 
 procedure TSIZStoreForm.DataUpdate;
 begin
-  SIZListLoad;
+  if Category=0 then
+    (CategoryForm as TSIZStoreAvaliabilityForm).DataUpdate
+  else if Category in [1..4] then
+    (CategoryForm as TSIZDocForm).DataUpdate;
 end;
 
-procedure TSIZStoreForm.EntryButtonClick(Sender: TObject);
+procedure TSIZStoreForm.AvaliabilityTabButtonClick(Sender: TObject);
 begin
-  SIZDocFormOpen(1);
-  SIZListLoad;
+  CategorySelect(0);
 end;
 
-procedure TSIZStoreForm.OutButtonClick(Sender: TObject);
+procedure TSIZStoreForm.EntryTabButtonClick(Sender: TObject);
 begin
-  SIZDocFormOpen(2);
-  SIZListLoad;
+  CategorySelect(1);
 end;
 
-procedure TSIZStoreForm.WriteoffButtonClick(Sender: TObject);
+procedure TSIZStoreForm.ReceivingTabButtonClick(Sender: TObject);
 begin
-  SIZDocFormOpen(3);
-  SIZListLoad;
+  CategorySelect(2);
 end;
 
-procedure TSIZStoreForm.BackButtonClick(Sender: TObject);
+procedure TSIZStoreForm.WriteoffTabButtonClick(Sender: TObject);
 begin
-  SIZDocFormOpen(4);
-  SIZListLoad;
+  CategorySelect(3);
+end;
+
+procedure TSIZStoreForm.ReturningTabButtonClick(Sender: TObject);
+begin
+  CategorySelect(4);
+end;
+
+procedure TSIZStoreForm.CategorySelect(const ACategory: Integer);
+begin
+  if ACategory=Category then Exit;
+
+  Screen.Cursor:= crHourGlass;
+  FormPanel.Visible:= False;
+  try
+    Category:= ACategory;
+
+    if Assigned(CategoryForm) then FreeAndNil(CategoryForm);
+    if Category=0 then
+    begin
+      CategoryForm:= FormOnPanelCreate(TSIZStoreAvaliabilityForm, FormPanel);
+      MainForm.Caption:= MAIN_CAPTION + MAIN_DESCRIPTION[8] + OTHER_DESCRIPTION[14];
+    end
+    else if Category in [1..4] then
+    begin
+      CategoryForm:= SIZDocFormCreate(Category, FormPanel);
+      MainForm.Caption:= MAIN_CAPTION + MAIN_DESCRIPTION[8] + OTHER_DESCRIPTION[Category+6];
+    end;
+
+    if Assigned(CategoryForm) then
+    begin
+      CategoryForm.Show;
+      ViewUpdate(ModeType);
+    end;
+
+  finally
+    Screen.Cursor:= crDefault;
+    FormPanel.Visible:= True;
+  end;
 end;
 
 procedure TSIZStoreForm.ExportButtonClick(Sender: TObject);
 begin
   DataExport;
-end;
-
-procedure TSIZStoreForm.SIZExpandAllButtonClick(Sender: TObject);
-begin
-  SIZList.ExpandAll(True);
-  SIZList.ShowFirst;
-end;
-
-procedure TSIZStoreForm.SIZCollapseAllButtonClick(Sender: TObject);
-begin
-  SIZList.ExpandAll(False);
-end;
-
-procedure TSIZStoreForm.SIZCheckAllButtonClick(Sender: TObject);
-begin
-  SIZList.CheckAll(True);
-end;
-
-procedure TSIZStoreForm.SIZUncheckAllButtonClick(Sender: TObject);
-begin
-  SIZList.CheckAll(False);
-end;
-
-procedure TSIZStoreForm.SIZWriteoffButtonClick(Sender: TObject);
-var
-  SIZStoreWriteoffEditForm: TSIZStoreWriteoffEditForm;
-  MUsed: TBoolMatrix;
-begin
-  MUsed:= SIZList.Selected;
-
-  SIZStoreWriteoffEditForm:= TSIZStoreWriteoffEditForm.Create(nil);
-  try
-    SIZStoreWriteoffEditForm.StoreIDs:= MToVector(ShowStoreIDs, MUsed);
-    SIZStoreWriteoffEditForm.NomNums:= MToVector(ShowNomNums, MUsed);
-    SIZStoreWriteoffEditForm.SizNames:= MToVector(ShowSizNames, MUsed);
-    SIZStoreWriteoffEditForm.SizUnits:= MToVector(ShowSizUnits, MUsed);
-    SIZStoreWriteoffEditForm.SizSizes:= MToVector(ShowSizSizes, MUsed);
-    SIZStoreWriteoffEditForm.EntryDocNames:= MToVector(ShowDocNames, MUsed);
-
-    if SIZStoreWriteoffEditForm.ShowModal=mrOK then
-      SIZListLoad;
-  finally
-    FreeAndNil(SIZStoreWriteoffEditForm);
-  end;
 end;
 
 end.

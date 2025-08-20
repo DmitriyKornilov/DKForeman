@@ -640,6 +640,14 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UAboutForm"/>
       </Unit>
+      <Unit>
+        <Filename Value="forms\siz\usizstoreavaliabilityform.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="SIZStoreAvaliabilityForm"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="USIZStoreAvaliabilityForm"/>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

@@ -484,9 +484,8 @@ begin
     begin
       CategoryForm.Show;
       CardDataUpdate;
+      CardViewUpdate;
     end;
-
-    CardViewUpdate;
 
   finally
     Screen.Cursor:= crDefault;

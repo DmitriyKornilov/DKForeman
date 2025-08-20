@@ -7,7 +7,6 @@ object SIZDocReturningForm: TSIZDocReturningForm
   ClientHeight = 200
   ClientWidth = 500
   DesignTimePPI = 120
-  LCLVersion = '4.2.0.0'
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
@@ -21,8 +20,8 @@ object SIZDocReturningForm: TSIZDocReturningForm
     BorderSpacing.Right = 2
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 40
-    ClientWidth = 498
+    ClientHeight = 36
+    ClientWidth = 494
     ParentBackground = False
     ParentColor = False
     ParentFont = False
@@ -126,7 +125,7 @@ object SIZDocReturningForm: TSIZDocReturningForm
       end
     end
     object EditButtonPanel: TPanel
-      Left = 160
+      Left = 318
       Height = 36
       Top = 0
       Width = 61
@@ -164,6 +163,37 @@ object SIZDocReturningForm: TSIZDocReturningForm
         ParentShowHint = False
         OnClick = DelButtonClick
       end
+    end
+    object MB7Button: TSpeedButton
+      Cursor = crHandPoint
+      Left = 181
+      Height = 36
+      Hint = 'Ведомость формы МБ-7'
+      Top = 0
+      Width = 137
+      Align = alLeft
+      AutoSize = True
+      Caption = 'Форма МБ-7 '
+      Enabled = False
+      Images = Images.PX24
+      ImageIndex = 43
+      Margin = 5
+      Spacing = 5
+      ShowHint = True
+      ParentShowHint = False
+      OnClick = MB7ButtonClick
+    end
+    object DividerBevel4: TDividerBevel
+      Left = 160
+      Height = 36
+      Top = 0
+      Width = 21
+      Caption = 'DividerBevel2'
+      Align = alLeft
+      BevelWidth = 2
+      Font.Style = [fsBold]
+      Orientation = trVertical
+      ParentFont = False
     end
   end
   object VT: TVirtualStringTree

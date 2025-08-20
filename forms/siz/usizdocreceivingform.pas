@@ -10,7 +10,9 @@ uses
   //Project utils
   UVars, UConst, UUtils,
   //DK packages utils
-  DK_VSTCategoryTables, DK_Vector, DK_Matrix, DK_CtrlUtils, DK_Dialogs;
+  DK_VSTCategoryTables, DK_Vector, DK_Matrix, DK_CtrlUtils, DK_Dialogs,
+  //Forms
+  USIZDocMB7Form;
 
 type
 
@@ -22,6 +24,8 @@ type
     CollapseAllButton: TSpeedButton;
     DelButton: TSpeedButton;
     DividerBevel3: TDividerBevel;
+    DividerBevel4: TDividerBevel;
+    MB7Button: TSpeedButton;
     EditButtonPanel: TPanel;
     ExpandAllButton: TSpeedButton;
     ToolButtonPanel: TPanel;
@@ -36,6 +40,7 @@ type
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure MB7ButtonClick(Sender: TObject);
     procedure UncheckAllButtonClick(Sender: TObject);
   private
     DocID: Integer;
@@ -52,6 +57,8 @@ type
     procedure SIZListLoad;
     procedure SIZListShow;
     procedure SIZListSelect;
+
+    procedure SetButtonsEnabled(const AEnabled: Boolean);
 
   public
     procedure ViewUpdate(const AIsEditing: Boolean);
@@ -90,8 +97,14 @@ begin
   ]);
 
   Images.ToButtons([
+    MB7Button,
     ExpandAllButton, CollapseAllButton, CheckAllButton, UncheckAllButton, DelButton
   ]);
+end;
+
+procedure TSIZDocReceivingForm.MB7ButtonClick(Sender: TObject);
+begin
+  SIZDocMB7FormOpen(DocID, False{выдача});
 end;
 
 procedure TSIZDocReceivingForm.SIZListCreate;
@@ -119,10 +132,7 @@ begin
   if DocID<=0 then
   begin
     SIZList.ValuesClear;
-    ExpandAllButton.Enabled:= False;
-    CollapseAllButton.Enabled:= False;
-    CheckAllButton.Enabled:= False;
-    UncheckAllButton.Enabled:= False;
+    SetButtonsEnabled(False);
     Exit;
   end;
 
@@ -130,13 +140,8 @@ begin
                                  StoreIDs, SizCounts, SizDigUnits,
                                  NomNums, SizNames, SizStrUnits, SizLifes,
                                  ReceivingDates);
-
   SIZListShow;
-
-  ExpandAllButton.Enabled:= not MIsNil(StoreIDs);
-  CollapseAllButton.Enabled:= ExpandAllButton.Enabled;
-  CheckAllButton.Enabled:= ExpandAllButton.Enabled;
-  UncheckAllButton.Enabled:= ExpandAllButton.Enabled;
+  SetButtonsEnabled(not MIsNil(StoreIDs));
 end;
 
 procedure TSIZDocReceivingForm.SIZListShow;
@@ -166,6 +171,15 @@ end;
 procedure TSIZDocReceivingForm.SIZListSelect;
 begin
   DelButton.Enabled:= SIZList.IsSelected;
+end;
+
+procedure TSIZDocReceivingForm.SetButtonsEnabled(const AEnabled: Boolean);
+begin
+  ExpandAllButton.Enabled:= AEnabled;
+  CollapseAllButton.Enabled:= AEnabled;
+  CheckAllButton.Enabled:= AEnabled;
+  UncheckAllButton.Enabled:= AEnabled;
+  MB7Button.Enabled:= AEnabled;
 end;
 
 procedure TSIZDocReceivingForm.ViewUpdate(const AIsEditing: Boolean);

@@ -14,7 +14,7 @@ uses
   DK_SheetExporter, DK_Matrix,
   //Forms
   USIZDocEditForm, USIZDocStoreEntryForm, USIZDocStoreWriteoffForm,
-  USIZDocReturningForm, USIZDocReceivingForm, USIZDocMB7Form, UChooseForm;
+  USIZDocReturningForm, USIZDocReceivingForm, UChooseForm;
 
 type
 
@@ -23,20 +23,13 @@ type
   TSIZDocForm = class(TForm)
     AscendingButton: TSpeedButton;
     DescendingButton: TSpeedButton;
-    DividerBevel2: TDividerBevel;
-    DividerBevel4: TDividerBevel;
+    DividerBevel3: TDividerBevel;
     DividerBevel5: TDividerBevel;
     DocAddButton: TSpeedButton;
     DocCaptionPanel: TPanel;
-    CloseButton: TSpeedButton;
-    DividerBevel1: TDividerBevel;
     DocDelButton: TSpeedButton;
     DocEditButton: TSpeedButton;
     DocEraseButton: TSpeedButton;
-    EditingButton: TSpeedButton;
-    ExportButton: TSpeedButton;
-    DocFormButton: TSpeedButton;
-    DocFormPanel: TPanel;
     EditButtonPanel: TPanel;
     OrderButtonPanel: TPanel;
     SIZFormPanel: TPanel;
@@ -45,26 +38,24 @@ type
     Splitter: TSplitter;
     DocToolPanel: TPanel;
     SIZPanel: TPanel;
-    ToolPanel: TPanel;
     DocVT: TVirtualStringTree;
     YearPanel: TPanel;
     YearSpinEdit: TSpinEdit;
     procedure AscendingButtonClick(Sender: TObject);
-    procedure CloseButtonClick(Sender: TObject);
     procedure DescendingButtonClick(Sender: TObject);
     procedure DocAddButtonClick(Sender: TObject);
     procedure DocDelButtonClick(Sender: TObject);
     procedure DocEditButtonClick(Sender: TObject);
     procedure DocEraseButtonClick(Sender: TObject);
-    procedure DocFormButtonClick(Sender: TObject);
     procedure DocVTDblClick(Sender: TObject);
-    procedure EditingButtonClick(Sender: TObject);
-    procedure ExportButtonClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure FormWindowStateChange(Sender: TObject);
     procedure YearSpinEditChange(Sender: TObject);
   private
+    ModeType: TModeType;
+
     SIZForm: TForm;
     DocList: TVSTTable;
 
@@ -77,49 +68,51 @@ type
     procedure DocListLoad(const ASelectedID: Integer = -1);
 
     procedure DocEdit(const AEditingType: TEditingType);
-    procedure DocChange;
 
     procedure DocStoreEntryExport(const AIsAllDocs: Boolean);
     procedure DocReceivingExport(const AIsAllDocs: Boolean);
     procedure DocStoreWriteoffExport(const AIsAllDocs: Boolean);
     procedure DocReturningExport(const AIsAllDocs: Boolean);
-    procedure DocExport;
 
     procedure SIZFormShow;
     procedure SIZFormViewUpdate;
 
-    procedure ViewUpdate;
+    procedure SetExportButtonEnabled;
   public
     DocType: Integer;
+    procedure ViewUpdate(const AModeType: TModeType);
+    procedure DataUpdate;
+    procedure DataExport;
   end;
 
 var
   SIZDocForm: TSIZDocForm;
 
-  procedure SIZDocFormOpen(const ADocType: Integer);
+  function SIZDocFormCreate(const ADocType: Integer; const APanel: TPanel): TForm;
 
 implementation
 
-procedure SIZDocFormOpen(const ADocType: Integer);
-var
-  Form: TSIZDocForm;
-begin
-  Form:= TSIZDocForm.Create(nil);
-  try
-    Form.DocType:= ADocType;
-    Form.ShowModal;
-  finally
-    FreeAndNil(Form);
-  end;
-end;
-
 {$R *.lfm}
+
+uses USIZStoreForm;
+
+function SIZDocFormCreate(const ADocType: Integer; const APanel: TPanel): TForm;
+begin
+  Result:= TSIZDocForm.Create(APanel);
+  (Result as TSIZDocForm).DocType:= ADocType;
+  Result.BorderStyle:= bsNone;
+  Result.Parent:= APanel;
+  Result.Left:= 0;
+  Result.Top:= 0;
+  Result.Align:= alClient;
+  Result.MakeFullyVisible();
+end;
 
 { TSIZDocForm }
 
 procedure TSIZDocForm.FormCreate(Sender: TObject);
 begin
-  Caption:= MAIN_CAPTION;
+  ModeType:= mtView;
   DocType:= 0;
   DocListCreate;
 end;
@@ -132,30 +125,29 @@ end;
 procedure TSIZDocForm.FormShow(Sender: TObject);
 begin
   SetToolPanels([
-    ToolPanel, DocToolPanel
+    DocToolPanel
   ]);
   SetCaptionPanels([
     DocCaptionPanel, SIZCaptionPanel
   ]);
   SetToolButtons([
-    CloseButton,
-    EditingButton,
+    AscendingButton, DescendingButton,
     DocAddButton, DocDelButton, DocEditButton, DocEraseButton
   ]);
 
   Images.ToButtons([
-    ExportButton,
-    CloseButton,
-    EditingButton,
+    AscendingButton, DescendingButton,
     DocAddButton, DocDelButton, DocEditButton, DocEraseButton
   ]);
-
-  Caption:= MAIN_CAPTION + OTHER_DESCRIPTION[DocType+6];
-  DocFormPanel.Visible:= DocType in [2, 4];
 
   SIZFormShow;
 
   YearSpinEdit.Value:= YearOfDate(Date);
+end;
+
+procedure TSIZDocForm.FormWindowStateChange(Sender: TObject);
+begin
+  Show;
 end;
 
 procedure TSIZDocForm.YearSpinEditChange(Sender: TObject);
@@ -182,13 +174,15 @@ procedure TSIZDocForm.DocListSelect;
 begin
   DocDelButton.Enabled:= DocList.IsSelected;
   DocEditButton.Enabled:= DocDelButton.Enabled;
+  AscendingButton.Enabled:= DocDelButton.Enabled;
+  DescendingButton.Enabled:= DocDelButton.Enabled;
 
   SIZCaptionPanel.Caption:= '  Документ: ';
   if DocList.IsSelected then
     SIZCaptionPanel.Caption:= SIZCaptionPanel.Caption +
                               DocFullNames[DocList.SelectedIndex];
 
-  DocChange;
+  DataUpdate;
 end;
 
 procedure TSIZDocForm.DocListLoad(const ASelectedID: Integer);
@@ -215,14 +209,8 @@ begin
     DocList.Visible:= True;
   end;
 
-  ExportButton.Enabled:= not VIsNil(DocIDs);
-  DocFormButton.Enabled:= ExportButton.Enabled;
-  DocEraseButton.Enabled:= ExportButton.Enabled;
-end;
-
-procedure TSIZDocForm.CloseButtonClick(Sender: TObject);
-begin
-  Close;
+  DocEraseButton.Enabled:= not VIsNil(DocIDs);
+  SetExportButtonEnabled;
 end;
 
 procedure TSIZDocForm.AscendingButtonClick(Sender: TObject);
@@ -300,16 +288,6 @@ begin
   if NeedReload then DocListLoad;
 end;
 
-procedure TSIZDocForm.DocFormButtonClick(Sender: TObject);
-begin
-  if not DocList.IsSelected then Exit;
-
-  case DocType of
-    2: SIZDocMB7FormOpen(DocIDs[DocList.SelectedIndex], False{выдача});
-    4: SIZDocMB7FormOpen(DocIDs[DocList.SelectedIndex], True{возврат});
-  end;
-end;
-
 procedure TSIZDocForm.SIZFormShow;
 begin
   case DocType of
@@ -328,15 +306,21 @@ end;
 
 procedure TSIZDocForm.SIZFormViewUpdate;
 begin
+  if not Assigned(SIZForm) then Exit;
   case DocType of
-    1: (SIZForm as TSIZDocStoreEntryForm).ViewUpdate(EditingButton.Down);
-    2: (SIZForm as TSIZDocReceivingForm).ViewUpdate(EditingButton.Down);
-    3: (SIZForm as TSIZDocStoreWriteoffForm).ViewUpdate(EditingButton.Down);
-    4: (SIZForm as TSIZDocReturningForm).ViewUpdate(EditingButton.Down);
+    1: (SIZForm as TSIZDocStoreEntryForm).ViewUpdate(ModeType=mtEditing);
+    2: (SIZForm as TSIZDocReceivingForm).ViewUpdate(ModeType=mtEditing);
+    3: (SIZForm as TSIZDocStoreWriteoffForm).ViewUpdate(ModeType=mtEditing);
+    4: (SIZForm as TSIZDocReturningForm).ViewUpdate(ModeType=mtEditing);
   end;
 end;
 
-procedure TSIZDocForm.DocChange;
+procedure TSIZDocForm.SetExportButtonEnabled;
+begin
+  (Self.Parent.Parent as TSIZStoreForm).ExportButton.Enabled:= not VIsNil(DocIDs);
+end;
+
+procedure TSIZDocForm.DataUpdate;
 var
   DocID: Integer;
 begin
@@ -713,7 +697,7 @@ begin
     ExportSingleDoc;
 end;
 
-procedure TSIZDocForm.DocExport;
+procedure TSIZDocForm.DataExport;
 var
   V: TStrVector;
   S: String;
@@ -736,25 +720,16 @@ begin
   end;
 end;
 
-procedure TSIZDocForm.ViewUpdate;
+procedure TSIZDocForm.ViewUpdate(const AModeType: TModeType);
 begin
-  EditButtonPanel.Visible:= EditingButton.Down;
+  ModeType:= AModeType;
+  EditButtonPanel.Visible:= ModeType=mtEditing;
   SIZFormViewUpdate;
 end;
 
 procedure TSIZDocForm.DocVTDblClick(Sender: TObject);
 begin
   DocEdit(etEdit);
-end;
-
-procedure TSIZDocForm.EditingButtonClick(Sender: TObject);
-begin
-  ViewUpdate;
-end;
-
-procedure TSIZDocForm.ExportButtonClick(Sender: TObject);
-begin
-  DocExport;
 end;
 
 end.
