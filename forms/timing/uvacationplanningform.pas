@@ -577,8 +577,10 @@ begin
     begin
       ViewGrid.Visible:= False;
       try
-        ViewGrid.Col:= 369;
+        ViewGrid.Col:= ViewGrid.ColCount-2;
+        ViewGrid.Row:= ViewGrid.RowCount-2;
         ViewGrid.Col:= 4 + DayNumberInYear(D);
+        ViewGrid.Row:= Sheet.IndexToRow(Sheet.SelectedIndex);
       finally
         ViewGrid.Visible:= True;
       end;
