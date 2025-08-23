@@ -208,6 +208,8 @@ begin
     FrontEditButton
   ]);
 
+  ParamList.AutoHeight;
+
   ControlHeight(ViewButtonPanel, Round(TOOL_PANEL_HEIGHT_DEFAULT*0.65));
 
   FrontTabButton.Width:= BackTabButton.Width;

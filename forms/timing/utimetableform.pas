@@ -253,6 +253,7 @@ begin
     CopySaveButton, CopyDelButton, CopyCancelButton
   ]);
 
+  ParamList.AutoHeight;
   MonthDropDown.AutoWidth;
 
   DataUpdate;

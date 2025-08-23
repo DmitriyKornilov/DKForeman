@@ -228,6 +228,7 @@ begin
     DayEditButton, RowUpButton, RowDownButton, RowMergeButton
   ]);
 
+  ParamList.AutoHeight;
   MonthDropDown.AutoWidth;
   OrderType:= 0;
   StaffListLoad;

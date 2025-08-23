@@ -206,6 +206,7 @@ begin
     PostLogAddButton, PostLogDelButton, PostLogEditButton
   ]);
 
+  ParamList.AutoHeight;
   EditingPanel.Width:= Round(ClientWidth*2/3);
 end;
 

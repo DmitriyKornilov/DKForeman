@@ -247,6 +247,8 @@ begin
     CopySaveButton, CopyDelButton, CopyCancelButton
   ]);
 
+  ParamList.AutoHeight;
+
   H:= MainPanel.Height div 3;
   EditingPanel.Height:= 2*H;
   CorrectionsPanel.Height:= H;

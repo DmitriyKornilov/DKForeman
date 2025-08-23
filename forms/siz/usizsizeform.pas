@@ -116,6 +116,8 @@ begin
     CloseButton, EditButton
   ]);
 
+  ParamList.AutoHeight;
+
   DataUpdate;
 end;
 

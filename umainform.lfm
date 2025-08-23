@@ -6,6 +6,7 @@ object MainForm: TMainForm
   ClientHeight = 326
   ClientWidth = 1020
   DesignTimePPI = 120
+  LCLVersion = '4.2.0.0'
   WindowState = wsMaximized
   OnCreate = FormCreate
   OnDestroy = FormDestroy
@@ -21,8 +22,8 @@ object MainForm: TMainForm
     BorderSpacing.Right = 2
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 36
-    ClientWidth = 1012
+    ClientHeight = 40
+    ClientWidth = 1016
     ParentFont = False
     TabOrder = 0
     object AboutButton: TSpeedButton

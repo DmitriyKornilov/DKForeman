@@ -315,6 +315,8 @@ begin
     CopySaveButton, CopyDelButton, CopyCancelButton
   ]);
 
+  ParamList.AutoHeight;
+
   H:= Round(0.6*(ClientHeight - ToolPanel.Height - StaffCaptionPanel.Height));
   BottomEditingPanel.Height:= H;
   H:= VacationCaptionPanel.Height + VacationToolPanel.Height + VacationEdit.AutoHeightValue + 10;

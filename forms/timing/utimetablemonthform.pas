@@ -234,9 +234,11 @@ begin
     DayEditButton, RowUpButton, RowDownButton, RowMergeButton
   ]);
 
-  ParamListVisibles; //ParamList.Show;
+  ParamList.AutoHeight;
   MonthDropDown.AutoWidth;
+
   OrderType:= 0;
+  ParamListVisibles;
   StaffListLoad;
 end;
 
