@@ -2,19 +2,24 @@ unit UMainForm;
 
 {$mode objfpc}{$H+}
 
+{$DEFINE DEBUG}
+
 interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, Buttons,
   Menus, LCLType, DividerBevel,
   //DK packages utils
-  DK_HeapTrace, DK_Const, DK_LCLStrRus, DK_CtrlUtils, DK_VSTTypes,
+  {$IFDEF DEBUG}
+  DK_HeapTrace,
+  {$ENDIF}
+  DK_Const, DK_LCLStrRus, DK_CtrlUtils, DK_VSTTypes,
   //Project utils
   UVars, UConst, UTypes,
   //Forms
   UAboutForm,
   UInfoForm,
-  UParamForm,
+  UParamForm, SQLDB,
   UStaffForm,
   UCalendarForm, UScheduleShiftForm, UVacationPlanForm,
   USchedulePersonalForm, UTimetableForm,
@@ -36,6 +41,7 @@ type
     SIZRequestMenuItem: TMenuItem;
     SIZStorageMenuItem: TMenuItem;
     SIZSizesMenuItem: TMenuItem;
+    BaseDDLScript: TSQLScript;
     StaffButton: TSpeedButton;
     SIZNormsMenuItem: TMenuItem;
     TimingButton: TSpeedButton;
@@ -114,7 +120,9 @@ implementation
 
 procedure TMainForm.FormCreate(Sender: TObject);
 begin
+  {$IFDEF DEBUG}
   HeapTraceOutputFile('trace.trc');
+  {$ENDIF}
   Caption:= MAIN_CAPTION;
   Category:= -1;
   DBConnect;
@@ -150,16 +158,17 @@ end;
 
 procedure TMainForm.DBConnect;
 var
-  DBPath, DBName, DDLName: String;
+  DBPath, DBName{, DDLName}: String;
   IsDBFileExists: Boolean;
 begin
   DBPath:= ExtractFilePath(Application.ExeName) + DirectorySeparator + 'db' + DirectorySeparator;
   DBName:= DBPath + 'base.db';
-  DDLName:= DBPath + 'ddl.sql';
+  //DDLName:= DBPath + 'ddl.sql';
   IsDBFileExists:= FileExists(DBName);
 
   DataBase.Connect(DBName);
-  DataBase.ExecuteScript(DDLName);
+  //DataBase.ExecuteScript(DDLName);
+  DataBase.ExecuteScript(BaseDDLScript);
   if not IsDBFileExists then
   begin
     DataBase.ColorsShiftUpdate;

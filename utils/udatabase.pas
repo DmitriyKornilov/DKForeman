@@ -413,7 +413,7 @@ type
     {Удаление дней из табеля: True - ОК, False - ошибка}
     function TimetableDaysDelete(const ATabNumID: Integer;
                                  const ABeginDate, AEndDate: TDate;
-                                 const ANeedCommit: Boolean = True): Boolean;
+                                 const ACommit: Boolean = True): Boolean;
     {Запись дня табеля}
     procedure TimetableDayAdd(const ATabNumID: Integer; const ADate: TDate;
                               const ATimetableDay: TTimetableDay);
@@ -3715,7 +3715,7 @@ end;
 
 function TDataBase.TimetableDaysDelete(const ATabNumID: Integer;
                                        const ABeginDate, AEndDate: TDate;
-                                       const ANeedCommit: Boolean = True): Boolean;
+                                       const ACommit: Boolean = True): Boolean;
 begin
   Result:= False;
   QSetQuery(FQuery);
@@ -3728,10 +3728,10 @@ begin
   QParamDT('EndDate', AEndDate);
   try
     QExec;
-    if ANeedCommit then QCommit;
+    if ACommit then QCommit;
     Result:= True;
   except
-    if ANeedCommit then QRollback;
+    QRollback;
   end;
 end;
 
@@ -4425,7 +4425,7 @@ begin
     if ACommit then QCommit;
     Result:= True;
   except
-    if ACommit then QRollback;
+    QRollback;
   end;
 end;
 
@@ -4460,7 +4460,7 @@ begin
     if ACommit then QCommit;
     Result:= True;
   except
-    if ACommit then QRollback;
+    QRollback;
   end;
 end;
 
@@ -4576,7 +4576,7 @@ begin
     if ACommit then QCommit;
     Result:= True;
   except
-    if ACommit then QRollback;
+    QRollback;
   end;
 end;
 
@@ -4595,7 +4595,7 @@ begin
       Result:= True;
     end;
   except
-    if ACommit then QRollback;
+    QRollback;
   end;
 end;
 
@@ -4892,7 +4892,7 @@ begin
     if ACommit then QCommit;
     Result:= True;
   except
-    if ACommit then QRollback;
+    QRollback;
   end;
 end;
 
@@ -4960,7 +4960,7 @@ begin
     if ACommit then QCommit;
     Result:= True;
   except
-    if ACommit then QRollback;
+    QRollback;
   end;
 end;
 
@@ -5338,7 +5338,7 @@ begin
     if ACommit then QCommit;
     Result:= True;
   except
-    if ACommit then QRollback;
+    QRollback;
   end;
 end;
 
@@ -5367,7 +5367,7 @@ begin
     if ACommit then QCommit;
     Result:= True;
   except
-    if ACommit then QRollback;
+    QRollback;
   end;
 end;
 
@@ -5394,7 +5394,7 @@ begin
     if ACommit then QCommit;
     Result:= True;
   except
-    if ACommit then QRollback;
+    QRollback;
   end;
 end;
 
@@ -5422,7 +5422,7 @@ begin
     if ACommit then QCommit;
     Result:= True;
   except
-    if ACommit then QRollback;
+    QRollback;
   end;
 end;
 
@@ -5708,7 +5708,7 @@ begin
     if ACommit then QCommit;
     Result:= True;
   except
-    if ACommit then QRollback;
+    QRollback;
   end;
 end;
 
@@ -5736,7 +5736,7 @@ begin
     if ACommit then QCommit;
     Result:= True;
   except
-    if ACommit then QRollback;
+    QRollback;
   end;
 end;
 
@@ -5806,7 +5806,7 @@ begin
     if ACommit then QCommit;
     Result:= True;
   except
-    if ACommit then QRollback;
+    QRollback;
   end;
 end;
 
@@ -6430,7 +6430,7 @@ begin
     if ACommit then QCommit;
     Result:= True;
   except
-    if ACommit then QRollback;
+    QRollback;
   end;
 end;
 
@@ -8221,7 +8221,7 @@ begin
     if ACommit then QCommit;
     Result:= True;
   except
-    if ACommit then QRollback;
+    QRollback;
   end;
 end;
 
@@ -8905,7 +8905,7 @@ begin
     if ACommit then QCommit;
     Result:= True;
   except
-    if ACommit then QRollback;
+    QRollback;
   end;
 end;
 
@@ -8956,7 +8956,7 @@ begin
     if ACommit then QCommit;
     Result:= True;
   except
-    if ACommit then QRollback;
+    QRollback;
   end;
 end;
 
@@ -8985,7 +8985,7 @@ begin
     if ACommit then QCommit;
     Result:= True;
   except
-    if ACommit then QRollback;
+    QRollback;
   end;
 end;
 
@@ -9011,7 +9011,7 @@ begin
     if ACommit then QCommit;
     Result:= True;
   except
-    if ACommit then QRollback;
+    QRollback;
   end;
 end;
 
