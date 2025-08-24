@@ -101,12 +101,14 @@ type
     procedure NormListDelItem;
     procedure NormListEditItem;
 
+    procedure NormItemListCreate;
     procedure NormItemListLoad(const ASelectedID: Integer = -1);
     procedure NormItemSelect;
     procedure NormItemDelete;
     procedure NormItemEdit;
     procedure NormItemSwap(const AIndex1, AIndex2: Integer);
 
+    procedure NormSubItemListCreate;
     procedure NormSubItemListLoad(const ASelectedID: Integer = -1);
     procedure NormSubItemSelect;
     procedure NormSubItemDelete;
@@ -143,20 +145,8 @@ begin
   ModeType:= mtView;
 
   NormListCreate;
-
-  NormItemSheet:= TSIZNormItemSheet.Create(ItemGrid.Worksheet, ItemGrid, GridFont);
-  NormItemSheet.OnSelect:= @NormItemSelect;
-  NormItemSheet.OnDelKeyDown:= @NormItemDelete;
-  NormItemSheet.OnReturnKeyDown:= @NormItemEdit;
-  NormItemSheet.CanSelect:= True;
-  NormItemSheet.CanUnselect:= False;
-
-  NormSubItemSheet:= TSIZNormSubItemsSheet.Create(SubItemGrid.Worksheet, SubItemGrid, GridFont);
-  NormSubItemSheet.OnSelect:= @NormSubItemSelect;
-  NormSubItemSheet.OnDelKeyDown:= @NormSubItemDelete;
-  NormSubItemSheet.OnReturnKeyDown:= @NormSubItemEdit;
-  NormSubItemSheet.CanUnselect:= False;
-  NormSubItemSheet.AutosizeColumnDisable;
+  NormItemListCreate;
+  NormSubItemListCreate;
 end;
 
 procedure TSIZNormForm.FormDestroy(Sender: TObject);
@@ -370,6 +360,16 @@ begin
   SIZNormEditFormOpen(etEdit);
 end;
 
+procedure TSIZNormForm.NormItemListCreate;
+begin
+  NormItemSheet:= TSIZNormItemSheet.Create(ItemGrid.Worksheet, ItemGrid, GridFont);
+  NormItemSheet.OnSelect:= @NormItemSelect;
+  NormItemSheet.OnDelKeyDown:= @NormItemDelete;
+  NormItemSheet.OnReturnKeyDown:= @NormItemEdit;
+  NormItemSheet.CanSelect:= True;
+  NormItemSheet.CanUnselect:= False;
+end;
+
 procedure TSIZNormForm.NormItemListLoad(const ASelectedID: Integer);
 var
   SelectedID, SelectedIndex: Integer;
@@ -432,6 +432,17 @@ begin
   NormItemSheet.Draw(ItemOrderNums, ItemOrderNames, PostNames, AIndex2);
 end;
 
+procedure TSIZNormForm.NormSubItemListCreate;
+begin
+  NormSubItemSheet:= TSIZNormSubItemsSheet.Create(SubItemGrid.Worksheet, SubItemGrid, GridFont);
+  NormSubItemSheet.CanSelect:= False;
+  NormSubItemSheet.CanUnselect:= False;
+  NormSubItemSheet.OnSelect:= @NormSubItemSelect;
+  NormSubItemSheet.OnDelKeyDown:= @NormSubItemDelete;
+  NormSubItemSheet.OnReturnKeyDown:= @NormSubItemEdit;
+  NormSubItemSheet.AutosizeColumnDisable;
+end;
+
 procedure TSIZNormForm.NormSubItemListLoad(const ASelectedID: Integer);
 var
   SelectedIndex: Integer;
@@ -442,11 +453,15 @@ begin
   NormSubItemsDel(NormSubItems, 0, High(NormSubItems));
   DataBase.SIZNormSubItemsLoad(ItemIDs[NormItemSheet.SelectedIndex], NormSubItems);
 
-  if ASelectedID>0 then
-    SelectedIndex:= NormSubItemsIndexOf(NormSubItems, ASelectedID)
-  else
-    SelectedIndex:= NormSubItemSheet.SelectedIndex;
-  if SelectedIndex<0 then SelectedIndex:= 0;
+  SelectedIndex:= -1;
+  if ModeType=mtEditing then
+  begin
+    if ASelectedID>0 then
+      SelectedIndex:= NormSubItemsIndexOf(NormSubItems, ASelectedID)
+    else
+      SelectedIndex:= NormSubItemSheet.SelectedIndex;
+    if SelectedIndex<0 then SelectedIndex:= 0;
+  end;
 
   NormSubItemSheet.Draw(NormSubItems, SelectedIndex);
 end;
