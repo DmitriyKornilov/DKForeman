@@ -27,7 +27,7 @@ type
     VacationVT: TVirtualStringTree;
     YearCheckBox: TCheckBox;
     CheckPanel: TPanel;
-    DividerBevel2: TDividerBevel;
+    DividerBevel1: TDividerBevel;
     LeftBottomPanel: TPanel;
     LeftTopPanel: TPanel;
     RightPanel: TPanel;

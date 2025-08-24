@@ -27,13 +27,18 @@ object MainForm: TMainForm
     ParentFont = False
     TabOrder = 0
     object AboutButton: TSpeedButton
+      AnchorSideTop.Control = ToolPanel
+      AnchorSideRight.Control = DividerBevel1
+      AnchorSideBottom.Control = ToolPanel
+      AnchorSideBottom.Side = asrBottom
       Cursor = crHandPoint
       Left = 911
       Height = 36
       Hint = 'О программе'
       Top = 0
       Width = 40
-      Align = alRight
+      Align = alCustom
+      Anchors = [akTop, akRight, akBottom]
       Constraints.MaxWidth = 40
       Constraints.MinWidth = 40
       Images = Images.PX24
@@ -43,13 +48,19 @@ object MainForm: TMainForm
       OnClick = AboutButtonClick
     end
     object ExitButton: TSpeedButton
+      AnchorSideTop.Control = ToolPanel
+      AnchorSideRight.Control = ToolPanel
+      AnchorSideRight.Side = asrBottom
+      AnchorSideBottom.Control = ToolPanel
+      AnchorSideBottom.Side = asrBottom
       Cursor = crHandPoint
       Left = 972
       Height = 36
       Hint = 'Выход'
       Top = 0
       Width = 40
-      Align = alRight
+      Align = alCustom
+      Anchors = [akTop, akRight, akBottom]
       Constraints.MaxWidth = 40
       Constraints.MinWidth = 40
       Images = Images.PX24
@@ -59,14 +70,19 @@ object MainForm: TMainForm
       OnClick = ExitButtonClick
     end
     object SettingButton: TSpeedButton
+      AnchorSideTop.Control = ToolPanel
+      AnchorSideRight.Control = DividerBevel2
+      AnchorSideBottom.Control = ToolPanel
+      AnchorSideBottom.Side = asrBottom
       Cursor = crHandPoint
       Left = 810
       Height = 36
       Hint = 'Параметры'
       Top = 0
       Width = 40
-      Align = alRight
+      Align = alCustom
       AllowAllUp = True
+      Anchors = [akTop, akRight, akBottom]
       Constraints.MaxWidth = 40
       Constraints.MinWidth = 40
       GroupIndex = 2
@@ -77,14 +93,19 @@ object MainForm: TMainForm
       OnClick = SettingButtonClick
     end
     object EditingButton: TSpeedButton
+      AnchorSideTop.Control = ToolPanel
+      AnchorSideRight.Control = SettingButton
+      AnchorSideBottom.Control = ToolPanel
+      AnchorSideBottom.Side = asrBottom
       Cursor = crHandPoint
       Left = 770
       Height = 36
       Hint = 'Редактирование'
       Top = 0
       Width = 40
-      Align = alRight
+      Align = alCustom
       AllowAllUp = True
+      Anchors = [akTop, akRight, akBottom]
       Constraints.MaxWidth = 40
       Constraints.MinWidth = 40
       GroupIndex = 2
@@ -95,13 +116,18 @@ object MainForm: TMainForm
       OnClick = EditingButtonClick
     end
     object RefreshButton: TSpeedButton
+      AnchorSideTop.Control = ToolPanel
+      AnchorSideRight.Control = AboutButton
+      AnchorSideBottom.Control = ToolPanel
+      AnchorSideBottom.Side = asrBottom
       Cursor = crHandPoint
       Left = 871
       Height = 36
       Hint = 'Обновить'
       Top = 0
       Width = 40
-      Align = alRight
+      Align = alCustom
+      Anchors = [akTop, akRight, akBottom]
       Constraints.MaxWidth = 40
       Constraints.MinWidth = 40
       Images = Images.PX24
@@ -111,48 +137,69 @@ object MainForm: TMainForm
       OnClick = RefreshButtonClick
     end
     object DividerBevel1: TDividerBevel
+      AnchorSideTop.Control = ToolPanel
+      AnchorSideRight.Control = ExitButton
+      AnchorSideBottom.Control = ToolPanel
+      AnchorSideBottom.Side = asrBottom
       Left = 951
       Height = 36
       Top = 0
       Width = 21
       Caption = 'DividerBevel1'
-      Align = alRight
+      Align = alCustom
+      Anchors = [akTop, akRight, akBottom]
       BevelWidth = 2
       Font.Style = [fsBold]
       Orientation = trVertical
       ParentFont = False
     end
     object DividerBevel2: TDividerBevel
+      AnchorSideTop.Control = ToolPanel
+      AnchorSideRight.Control = RefreshButton
+      AnchorSideBottom.Control = ToolPanel
+      AnchorSideBottom.Side = asrBottom
       Left = 850
       Height = 36
       Top = 0
       Width = 21
       Caption = 'DividerBevel2'
-      Align = alRight
+      Align = alCustom
+      Anchors = [akTop, akRight, akBottom]
       BevelWidth = 2
       Font.Style = [fsBold]
       Orientation = trVertical
       ParentFont = False
     end
     object DividerBevel3: TDividerBevel
+      AnchorSideLeft.Control = SafetyButton
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = ToolPanel
+      AnchorSideBottom.Control = ToolPanel
+      AnchorSideBottom.Side = asrBottom
       Left = 496
       Height = 36
       Top = 0
       Width = 21
       Caption = 'DividerBevel3'
-      Align = alLeft
+      Align = alCustom
+      Anchors = [akTop, akLeft, akBottom]
       BevelWidth = 2
       Font.Style = [fsBold]
       Orientation = trVertical
       ParentFont = False
     end
     object StaffButton: TSpeedButton
+      AnchorSideLeft.Control = ToolPanel
+      AnchorSideTop.Control = ToolPanel
+      AnchorSideBottom.Control = ToolPanel
+      AnchorSideBottom.Side = asrBottom
       Cursor = crHandPoint
       Left = 0
       Height = 36
       Top = 0
       Width = 87
-      Align = alLeft
+      Align = alCustom
+      Anchors = [akTop, akLeft, akBottom]
       AutoSize = True
       Caption = ' Штат '
       Images = Images.PX24
@@ -162,12 +209,18 @@ object MainForm: TMainForm
       OnClick = StaffButtonClick
     end
     object TimingButton: TSpeedButton
+      AnchorSideLeft.Control = StaffButton
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = ToolPanel
+      AnchorSideBottom.Control = ToolPanel
+      AnchorSideBottom.Side = asrBottom
       Cursor = crHandPoint
       Left = 87
       Height = 36
       Top = 0
       Width = 241
-      Align = alLeft
+      Align = alCustom
+      Anchors = [akTop, akLeft, akBottom]
       AutoSize = True
       Caption = '  Учет рабочего времени ▼ '
       Images = Images.PX24
@@ -177,12 +230,18 @@ object MainForm: TMainForm
       OnClick = TimingButtonClick
     end
     object SafetyButton: TSpeedButton
+      AnchorSideLeft.Control = TimingButton
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = ToolPanel
+      AnchorSideBottom.Control = ToolPanel
+      AnchorSideBottom.Side = asrBottom
       Cursor = crHandPoint
       Left = 328
       Height = 36
       Top = 0
       Width = 168
-      Align = alLeft
+      Align = alCustom
+      Anchors = [akTop, akLeft, akBottom]
       AutoSize = True
       Caption = '  Охрана труда ▼ '
       Images = Images.PX24
@@ -192,12 +251,18 @@ object MainForm: TMainForm
       OnClick = SafetyButtonClick
     end
     object DictionaryButton: TSpeedButton
+      AnchorSideLeft.Control = DividerBevel3
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = ToolPanel
+      AnchorSideBottom.Control = ToolPanel
+      AnchorSideBottom.Side = asrBottom
       Cursor = crHandPoint
       Left = 517
       Height = 36
       Top = 0
       Width = 168
-      Align = alLeft
+      Align = alCustom
+      Anchors = [akTop, akLeft, akBottom]
       AutoSize = True
       Caption = '  Справочники ▼ '
       Images = Images.PX24
@@ -886,7 +951,7 @@ object MainForm: TMainForm
     UseSetTerm = True
     UseCommit = True
     UseDefines = True
-    Left = 192
+    Left = 193
     Top = 48
   end
 end

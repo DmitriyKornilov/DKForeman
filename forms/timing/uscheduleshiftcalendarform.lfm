@@ -8,7 +8,6 @@ object ScheduleShiftCalendarForm: TScheduleShiftCalendarForm
   ClientHeight = 338
   ClientWidth = 941
   DesignTimePPI = 120
-  LCLVersion = '4.2.0.0'
   WindowState = wsMaximized
   OnCreate = FormCreate
   OnDestroy = FormDestroy
@@ -50,8 +49,8 @@ object ScheduleShiftCalendarForm: TScheduleShiftCalendarForm
       BorderSpacing.Bottom = 2
       BevelOuter = bvNone
       BorderStyle = bsSingle
-      ClientHeight = 40
-      ClientWidth = 350
+      ClientHeight = 36
+      ClientWidth = 346
       ParentFont = False
       TabOrder = 1
       object AddButton: TSpeedButton
@@ -134,8 +133,8 @@ object ScheduleShiftCalendarForm: TScheduleShiftCalendarForm
     BorderSpacing.Bottom = 2
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 292
-    ClientWidth = 581
+    ClientHeight = 288
+    ClientWidth = 577
     Color = clWhite
     ParentBackground = False
     ParentColor = False
@@ -223,15 +222,20 @@ object ScheduleShiftCalendarForm: TScheduleShiftCalendarForm
     BorderSpacing.Right = 2
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 40
-    ClientWidth = 937
+    ClientHeight = 36
+    ClientWidth = 933
     TabOrder = 3
     object YearPanel: TPanel
+      AnchorSideLeft.Control = ToolPanel
+      AnchorSideTop.Control = ToolPanel
+      AnchorSideBottom.Control = ToolPanel
+      AnchorSideBottom.Side = asrBottom
       Left = 0
       Height = 36
       Top = 0
       Width = 65
-      Align = alLeft
+      Align = alCustom
+      Anchors = [akTop, akLeft, akBottom]
       AutoSize = True
       BevelOuter = bvNone
       ClientHeight = 36
@@ -257,11 +261,17 @@ object ScheduleShiftCalendarForm: TScheduleShiftCalendarForm
       end
     end
     object NeedCorrectionsCheckBox: TCheckBox
+      AnchorSideLeft.Control = DividerBevel2
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = ToolPanel
+      AnchorSideBottom.Control = ToolPanel
+      AnchorSideBottom.Side = asrBottom
       Left = 86
       Height = 36
       Top = 0
       Width = 265
-      Align = alLeft
+      Align = alCustom
+      Anchors = [akTop, akLeft, akBottom]
       BorderSpacing.Right = 6
       Caption = 'Учитывать корректировки графика'
       Checked = True
@@ -270,11 +280,17 @@ object ScheduleShiftCalendarForm: TScheduleShiftCalendarForm
       OnChange = NeedCorrectionsCheckBoxChange
     end
     object FirstShiftDayColorOnlyCheckBox: TCheckBox
+      AnchorSideLeft.Control = NeedCorrectionsCheckBox
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = ToolPanel
+      AnchorSideBottom.Control = ToolPanel
+      AnchorSideBottom.Side = asrBottom
       Left = 357
       Height = 36
       Top = 0
       Width = 305
-      Align = alLeft
+      Align = alCustom
+      Anchors = [akTop, akLeft, akBottom]
       BorderSpacing.Left = 6
       Caption = 'Не выделять цветом второй день смены'
       Checked = True
@@ -283,14 +299,19 @@ object ScheduleShiftCalendarForm: TScheduleShiftCalendarForm
       OnChange = FirstShiftDayColorOnlyCheckBoxChange
     end
     object SettingButton: TSpeedButton
+      AnchorSideTop.Control = ToolPanel
+      AnchorSideRight.Control = DividerBevel1
+      AnchorSideBottom.Control = ToolPanel
+      AnchorSideBottom.Side = asrBottom
       Cursor = crHandPoint
       Left = 832
       Height = 36
       Hint = 'Параметры'
       Top = 0
       Width = 40
-      Align = alRight
+      Align = alCustom
       AllowAllUp = True
+      Anchors = [akTop, akRight, akBottom]
       GroupIndex = 2
       Images = Images.PX24
       ImageIndex = 24
@@ -299,25 +320,36 @@ object ScheduleShiftCalendarForm: TScheduleShiftCalendarForm
       OnClick = SettingButtonClick
     end
     object DividerBevel1: TDividerBevel
+      AnchorSideTop.Control = ToolPanel
+      AnchorSideRight.Control = CloseButton
+      AnchorSideBottom.Control = ToolPanel
+      AnchorSideBottom.Side = asrBottom
       Left = 872
       Height = 36
       Top = 0
       Width = 21
       Caption = 'DividerBevel1'
-      Align = alRight
+      Align = alCustom
+      Anchors = [akTop, akRight, akBottom]
       BevelWidth = 2
       Font.Style = [fsBold]
       Orientation = trVertical
       ParentFont = False
     end
     object CloseButton: TSpeedButton
+      AnchorSideTop.Control = ToolPanel
+      AnchorSideRight.Control = ToolPanel
+      AnchorSideRight.Side = asrBottom
+      AnchorSideBottom.Control = ToolPanel
+      AnchorSideBottom.Side = asrBottom
       Cursor = crHandPoint
       Left = 893
       Height = 36
       Hint = 'Закрыть'
       Top = 0
       Width = 40
-      Align = alRight
+      Align = alCustom
+      Anchors = [akTop, akRight, akBottom]
       Images = Images.PX24
       ImageIndex = 3
       ShowHint = True
@@ -325,37 +357,55 @@ object ScheduleShiftCalendarForm: TScheduleShiftCalendarForm
       OnClick = CloseButtonClick
     end
     object DividerBevel2: TDividerBevel
+      AnchorSideLeft.Control = YearPanel
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = ToolPanel
+      AnchorSideBottom.Control = ToolPanel
+      AnchorSideBottom.Side = asrBottom
       Left = 65
       Height = 36
       Top = 0
       Width = 21
       Caption = 'DividerBevel2'
-      Align = alLeft
+      Align = alCustom
+      Anchors = [akTop, akLeft, akBottom]
       BevelWidth = 2
       Font.Style = [fsBold]
       Orientation = trVertical
       ParentFont = False
     end
     object DividerBevel3: TDividerBevel
+      AnchorSideLeft.Control = FirstShiftDayColorOnlyCheckBox
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = ToolPanel
+      AnchorSideBottom.Control = ToolPanel
+      AnchorSideBottom.Side = asrBottom
       Left = 662
       Height = 36
       Top = 0
       Width = 21
       Caption = 'DividerBevel3'
-      Align = alLeft
+      Align = alCustom
+      Anchors = [akTop, akLeft, akBottom]
       BevelWidth = 2
       Font.Style = [fsBold]
       Orientation = trVertical
       ParentFont = False
     end
     object ExportButton: TSpeedButton
+      AnchorSideLeft.Control = DividerBevel3
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = ToolPanel
+      AnchorSideBottom.Control = ToolPanel
+      AnchorSideBottom.Side = asrBottom
       Cursor = crHandPoint
       Left = 683
       Height = 36
       Hint = 'Экспорт в формат электронной таблицы XLSX или ODS'
       Top = 0
       Width = 109
-      Align = alLeft
+      Align = alCustom
+      Anchors = [akTop, akLeft, akBottom]
       AutoSize = True
       Caption = ' Экспорт '
       Images = Images.PX24

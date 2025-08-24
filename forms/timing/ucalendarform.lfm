@@ -7,7 +7,6 @@ object CalendarForm: TCalendarForm
   ClientHeight = 359
   ClientWidth = 740
   DesignTimePPI = 120
-  LCLVersion = '4.2.0.0'
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
@@ -22,16 +21,21 @@ object CalendarForm: TCalendarForm
     BorderSpacing.Right = 2
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 40
-    ClientWidth = 736
+    ClientHeight = 36
+    ClientWidth = 732
     ParentFont = False
     TabOrder = 0
     object YearPanel: TPanel
+      AnchorSideLeft.Control = ToolPanel
+      AnchorSideTop.Control = ToolPanel
+      AnchorSideBottom.Control = ToolPanel
+      AnchorSideBottom.Side = asrBottom
       Left = 0
       Height = 36
       Top = 0
       Width = 65
-      Align = alLeft
+      Align = alCustom
+      Anchors = [akTop, akLeft, akBottom]
       AutoSize = True
       BevelOuter = bvNone
       ClientHeight = 36
@@ -56,25 +60,36 @@ object CalendarForm: TCalendarForm
       end
     end
     object DividerBevel1: TDividerBevel
+      AnchorSideTop.Control = ToolPanel
+      AnchorSideRight.Control = CloseButton
+      AnchorSideBottom.Control = ToolPanel
+      AnchorSideBottom.Side = asrBottom
       Left = 671
       Height = 36
       Top = 0
       Width = 21
       Caption = 'DividerBevel1'
-      Align = alRight
+      Align = alCustom
+      Anchors = [akTop, akRight, akBottom]
       BevelWidth = 2
       Font.Style = [fsBold]
       Orientation = trVertical
       ParentFont = False
     end
     object CloseButton: TSpeedButton
+      AnchorSideTop.Control = ToolPanel
+      AnchorSideRight.Control = ToolPanel
+      AnchorSideRight.Side = asrBottom
+      AnchorSideBottom.Control = ToolPanel
+      AnchorSideBottom.Side = asrBottom
       Cursor = crHandPoint
       Left = 692
       Height = 36
       Hint = 'Закрыть'
       Top = 0
       Width = 40
-      Align = alRight
+      Align = alCustom
+      Anchors = [akTop, akRight, akBottom]
       Images = Images.PX24
       ImageIndex = 3
       ShowHint = True
@@ -82,25 +97,37 @@ object CalendarForm: TCalendarForm
       OnClick = CloseButtonClick
     end
     object DividerBevel2: TDividerBevel
+      AnchorSideLeft.Control = YearPanel
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = ToolPanel
+      AnchorSideBottom.Control = ToolPanel
+      AnchorSideBottom.Side = asrBottom
       Left = 65
       Height = 36
       Top = 0
       Width = 21
       Caption = 'DividerBevel2'
-      Align = alLeft
+      Align = alCustom
+      Anchors = [akTop, akLeft, akBottom]
       BevelWidth = 2
       Font.Style = [fsBold]
       Orientation = trVertical
       ParentFont = False
     end
     object ExportButton: TSpeedButton
+      AnchorSideLeft.Control = DividerBevel2
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = ToolPanel
+      AnchorSideBottom.Control = ToolPanel
+      AnchorSideBottom.Side = asrBottom
       Cursor = crHandPoint
       Left = 86
       Height = 36
       Hint = 'Экспорт в формат электронной таблицы XLSX или ODS'
       Top = 0
       Width = 109
-      Align = alLeft
+      Align = alCustom
+      Anchors = [akTop, akLeft, akBottom]
       AutoSize = True
       Caption = ' Экспорт '
       Images = Images.PX24
@@ -146,8 +173,8 @@ object CalendarForm: TCalendarForm
         Align = alTop
         BevelOuter = bvNone
         BorderStyle = bsSingle
-        ClientHeight = 40
-        ClientWidth = 400
+        ClientHeight = 36
+        ClientWidth = 396
         ParentFont = False
         TabOrder = 0
         object DayAddButton: TSpeedButton
@@ -246,8 +273,8 @@ object CalendarForm: TCalendarForm
         Align = alTop
         BevelOuter = bvNone
         BorderStyle = bsSingle
-        ClientHeight = 40
-        ClientWidth = 400
+        ClientHeight = 36
+        ClientWidth = 396
         ParentFont = False
         TabOrder = 0
         object CopySaveButton: TSpeedButton
@@ -347,8 +374,8 @@ object CalendarForm: TCalendarForm
     BorderSpacing.Bottom = 2
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 313
-    ClientWidth = 328
+    ClientHeight = 309
+    ClientWidth = 324
     Color = clWhite
     ParentBackground = False
     ParentColor = False

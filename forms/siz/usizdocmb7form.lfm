@@ -8,7 +8,6 @@ object SIZDocMB7Form: TSIZDocMB7Form
   ClientHeight = 200
   ClientWidth = 500
   DesignTimePPI = 120
-  LCLVersion = '4.0.0.4'
   WindowState = wsMaximized
   OnCreate = FormCreate
   OnDestroy = FormDestroy
@@ -24,30 +23,41 @@ object SIZDocMB7Form: TSIZDocMB7Form
     BorderSpacing.Right = 2
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 40
-    ClientWidth = 496
+    ClientHeight = 36
+    ClientWidth = 492
     ParentFont = False
     TabOrder = 0
     object DividerBevel1: TDividerBevel
+      AnchorSideTop.Control = ToolPanel
+      AnchorSideRight.Control = CloseButton
+      AnchorSideBottom.Control = ToolPanel
+      AnchorSideBottom.Side = asrBottom
       Left = 431
       Height = 36
       Top = 0
       Width = 21
       Caption = 'DividerBevel1'
-      Align = alRight
+      Align = alCustom
+      Anchors = [akTop, akRight, akBottom]
       BevelWidth = 2
       Font.Style = [fsBold]
       Orientation = trVertical
       ParentFont = False
     end
     object CloseButton: TSpeedButton
+      AnchorSideTop.Control = ToolPanel
+      AnchorSideRight.Control = ToolPanel
+      AnchorSideRight.Side = asrBottom
+      AnchorSideBottom.Control = ToolPanel
+      AnchorSideBottom.Side = asrBottom
       Cursor = crHandPoint
       Left = 452
       Height = 36
       Hint = 'Закрыть'
       Top = 0
       Width = 40
-      Align = alRight
+      Align = alCustom
+      Anchors = [akTop, akRight, akBottom]
       Images = Images.PX24
       ImageIndex = 3
       ShowHint = True
@@ -55,13 +65,18 @@ object SIZDocMB7Form: TSIZDocMB7Form
       OnClick = CloseButtonClick
     end
     object ExportButton: TSpeedButton
+      AnchorSideLeft.Control = ToolPanel
+      AnchorSideTop.Control = ToolPanel
+      AnchorSideBottom.Control = ToolPanel
+      AnchorSideBottom.Side = asrBottom
       Cursor = crHandPoint
       Left = 0
       Height = 36
       Hint = 'Экспорт в формат электронной таблицы XLSX или ODS'
       Top = 0
       Width = 109
-      Align = alLeft
+      Align = alCustom
+      Anchors = [akTop, akLeft, akBottom]
       AutoSize = True
       Caption = ' Экспорт '
       Images = Images.PX24
@@ -85,8 +100,8 @@ object SIZDocMB7Form: TSIZDocMB7Form
     BorderSpacing.Bottom = 2
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 154
-    ClientWidth = 496
+    ClientHeight = 150
+    ClientWidth = 492
     Color = clWhite
     ParentBackground = False
     ParentColor = False

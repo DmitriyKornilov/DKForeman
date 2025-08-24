@@ -7,7 +7,6 @@ object SIZCardStatusForm: TSIZCardStatusForm
   ClientHeight = 400
   ClientWidth = 700
   DesignTimePPI = 120
-  LCLVersion = '4.2.0.0'
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
@@ -20,8 +19,8 @@ object SIZCardStatusForm: TSIZCardStatusForm
     BorderSpacing.Top = 2
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 356
-    ClientWidth = 700
+    ClientHeight = 352
+    ClientWidth = 696
     Color = clWhite
     ParentBackground = False
     ParentColor = False
@@ -107,19 +106,24 @@ object SIZCardStatusForm: TSIZCardStatusForm
     BorderSpacing.Top = 2
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 40
-    ClientWidth = 700
+    ClientHeight = 36
+    ClientWidth = 696
     ParentFont = False
     TabOrder = 1
     Visible = False
     object AddButton: TSpeedButton
+      AnchorSideLeft.Control = ToolPanel
+      AnchorSideTop.Control = ToolPanel
+      AnchorSideBottom.Control = ToolPanel
+      AnchorSideBottom.Side = asrBottom
       Cursor = crHandPoint
       Left = 0
       Height = 36
       Hint = 'Выдать новое'
       Top = 0
       Width = 40
-      Align = alLeft
+      Align = alCustom
+      Anchors = [akTop, akLeft, akBottom]
       Enabled = False
       Images = Images.PX24
       ImageIndex = 4
@@ -128,13 +132,19 @@ object SIZCardStatusForm: TSIZCardStatusForm
       OnClick = AddButtonClick
     end
     object DelButton: TSpeedButton
+      AnchorSideLeft.Control = CopyButton
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = ToolPanel
+      AnchorSideBottom.Control = ToolPanel
+      AnchorSideBottom.Side = asrBottom
       Cursor = crHandPoint
       Left = 80
       Height = 36
       Hint = 'Отменить выдачу'
       Top = 0
       Width = 40
-      Align = alLeft
+      Align = alCustom
+      Anchors = [akTop, akLeft, akBottom]
       Enabled = False
       Images = Images.PX24
       ImageIndex = 5
@@ -143,13 +153,19 @@ object SIZCardStatusForm: TSIZCardStatusForm
       OnClick = DelButtonClick
     end
     object SizeButton: TSpeedButton
+      AnchorSideLeft.Control = DelButton
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = ToolPanel
+      AnchorSideBottom.Control = ToolPanel
+      AnchorSideBottom.Side = asrBottom
       Cursor = crHandPoint
       Left = 120
       Height = 36
       Hint = 'Указать особый размер'
       Top = 0
       Width = 40
-      Align = alLeft
+      Align = alCustom
+      Anchors = [akTop, akLeft, akBottom]
       Enabled = False
       Images = Images.PX24
       ImageIndex = 38
@@ -158,12 +174,18 @@ object SIZCardStatusForm: TSIZCardStatusForm
       OnClick = SizeButtonClick
     end
     object DividerBevel1: TDividerBevel
+      AnchorSideLeft.Control = SizeButton
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = ToolPanel
+      AnchorSideBottom.Control = ToolPanel
+      AnchorSideBottom.Side = asrBottom
       Left = 160
       Height = 36
       Top = 0
       Width = 21
       Caption = 'DividerBevel1'
-      Align = alLeft
+      Align = alCustom
+      Anchors = [akTop, akLeft, akBottom]
       BevelWidth = 2
       Font.Style = [fsBold]
       Orientation = trVertical
@@ -208,13 +230,19 @@ object SIZCardStatusForm: TSIZCardStatusForm
       Caption = 'дней'
     end
     object CopyButton: TSpeedButton
+      AnchorSideLeft.Control = AddButton
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = ToolPanel
+      AnchorSideBottom.Control = ToolPanel
+      AnchorSideBottom.Side = asrBottom
       Cursor = crHandPoint
       Left = 40
       Height = 36
       Hint = 'Учесть ранее выданное'
       Top = 0
       Width = 40
-      Align = alLeft
+      Align = alCustom
+      Anchors = [akTop, akLeft, akBottom]
       Enabled = False
       Images = Images.PX24
       ImageIndex = 9

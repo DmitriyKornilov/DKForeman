@@ -26,11 +26,16 @@ object InfoForm: TInfoForm
     ParentFont = False
     TabOrder = 0
     object YearPanel: TPanel
+      AnchorSideLeft.Control = ToolPanel
+      AnchorSideTop.Control = ToolPanel
+      AnchorSideBottom.Control = ToolPanel
+      AnchorSideBottom.Side = asrBottom
       Left = 0
       Height = 36
       Top = 0
       Width = 269
-      Align = alLeft
+      Align = alCustom
+      Anchors = [akTop, akLeft, akBottom]
       AutoSize = True
       BevelOuter = bvNone
       ClientHeight = 36
@@ -163,24 +168,36 @@ object InfoForm: TInfoForm
         MemoryUsage = bmuHigh
       end
     end
-    object DividerBevel2: TDividerBevel
+    object DividerBevel1: TDividerBevel
+      AnchorSideLeft.Control = YearPanel
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = ToolPanel
+      AnchorSideBottom.Control = ToolPanel
+      AnchorSideBottom.Side = asrBottom
       Left = 269
       Height = 36
       Top = 0
       Width = 21
-      Caption = 'DividerBevel2'
-      Align = alLeft
+      Caption = 'DividerBevel1'
+      Align = alCustom
+      Anchors = [akTop, akLeft, akBottom]
       BevelWidth = 2
       Font.Style = [fsBold]
       Orientation = trVertical
       ParentFont = False
     end
     object CheckPanel: TPanel
+      AnchorSideLeft.Control = DividerBevel1
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = ToolPanel
+      AnchorSideBottom.Control = ToolPanel
+      AnchorSideBottom.Side = asrBottom
       Left = 290
       Height = 36
       Top = 0
       Width = 482
-      Align = alLeft
+      Align = alCustom
+      Anchors = [akTop, akLeft, akBottom]
       AutoSize = True
       BevelOuter = bvNone
       ClientHeight = 36

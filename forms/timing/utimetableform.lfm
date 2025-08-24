@@ -7,7 +7,6 @@ object TimetableForm: TTimetableForm
   ClientHeight = 678
   ClientWidth = 1814
   DesignTimePPI = 120
-  LCLVersion = '4.2.0.0'
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
@@ -22,16 +21,21 @@ object TimetableForm: TTimetableForm
     BorderSpacing.Right = 2
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 40
-    ClientWidth = 1810
+    ClientHeight = 36
+    ClientWidth = 1806
     ParentFont = False
     TabOrder = 0
     object YearPanel: TPanel
+      AnchorSideLeft.Control = ToolPanel
+      AnchorSideTop.Control = ToolPanel
+      AnchorSideBottom.Control = ToolPanel
+      AnchorSideBottom.Side = asrBottom
       Left = 0
       Height = 36
       Top = 0
       Width = 65
-      Align = alLeft
+      Align = alCustom
+      Anchors = [akTop, akLeft, akBottom]
       AutoSize = True
       BevelOuter = bvNone
       ClientHeight = 36
@@ -57,25 +61,36 @@ object TimetableForm: TTimetableForm
       end
     end
     object DividerBevel1: TDividerBevel
+      AnchorSideTop.Control = ToolPanel
+      AnchorSideRight.Control = CloseButton
+      AnchorSideBottom.Control = ToolPanel
+      AnchorSideBottom.Side = asrBottom
       Left = 1745
       Height = 36
       Top = 0
       Width = 21
       Caption = 'DividerBevel1'
-      Align = alRight
+      Align = alCustom
+      Anchors = [akTop, akRight, akBottom]
       BevelWidth = 2
       Font.Style = [fsBold]
       Orientation = trVertical
       ParentFont = False
     end
     object CloseButton: TSpeedButton
+      AnchorSideTop.Control = ToolPanel
+      AnchorSideRight.Control = ToolPanel
+      AnchorSideRight.Side = asrBottom
+      AnchorSideBottom.Control = ToolPanel
+      AnchorSideBottom.Side = asrBottom
       Cursor = crHandPoint
       Left = 1766
       Height = 36
       Hint = 'Закрыть'
       Top = 0
       Width = 40
-      Align = alRight
+      Align = alCustom
+      Anchors = [akTop, akRight, akBottom]
       Images = Images.PX24
       ImageIndex = 3
       ShowHint = True
@@ -83,37 +98,55 @@ object TimetableForm: TTimetableForm
       OnClick = CloseButtonClick
     end
     object DividerBevel2: TDividerBevel
+      AnchorSideLeft.Control = YearPanel
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = ToolPanel
+      AnchorSideBottom.Control = ToolPanel
+      AnchorSideBottom.Side = asrBottom
       Left = 65
       Height = 36
       Top = 0
       Width = 21
       Caption = 'DividerBevel2'
-      Align = alLeft
+      Align = alCustom
+      Anchors = [akTop, akLeft, akBottom]
       BevelWidth = 2
       Font.Style = [fsBold]
       Orientation = trVertical
       ParentFont = False
     end
     object DividerBevel3: TDividerBevel
+      AnchorSideLeft.Control = MonthTimetableButton
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = ToolPanel
+      AnchorSideBottom.Control = ToolPanel
+      AnchorSideBottom.Side = asrBottom
       Left = 308
       Height = 36
       Top = 0
       Width = 21
       Caption = 'DividerBevel3'
-      Align = alLeft
+      Align = alCustom
+      Anchors = [akTop, akLeft, akBottom]
       BevelWidth = 2
       Font.Style = [fsBold]
       Orientation = trVertical
       ParentFont = False
     end
     object ExportButton: TSpeedButton
+      AnchorSideLeft.Control = DividerBevel3
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = ToolPanel
+      AnchorSideBottom.Control = ToolPanel
+      AnchorSideBottom.Side = asrBottom
       Cursor = crHandPoint
       Left = 329
       Height = 36
       Hint = 'Экспорт в формат электронной таблицы XLSX или ODS'
       Top = 0
       Width = 109
-      Align = alLeft
+      Align = alCustom
+      Anchors = [akTop, akLeft, akBottom]
       AutoSize = True
       Caption = ' Экспорт '
       Images = Images.PX24
@@ -125,13 +158,19 @@ object TimetableForm: TTimetableForm
       OnClick = ExportButtonClick
     end
     object MonthTimetableButton: TSpeedButton
+      AnchorSideLeft.Control = DividerBevel2
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = ToolPanel
+      AnchorSideBottom.Control = ToolPanel
+      AnchorSideBottom.Side = asrBottom
       Cursor = crHandPoint
       Left = 86
       Height = 36
       Hint = 'Общий табель учета рабочего времени на месяц'
       Top = 0
       Width = 222
-      Align = alLeft
+      Align = alCustom
+      Anchors = [akTop, akLeft, akBottom]
       AutoSize = True
       Caption = ' Общий табель на месяц '
       Images = Images.PX24
@@ -178,8 +217,8 @@ object TimetableForm: TTimetableForm
       BorderSpacing.Bottom = 2
       BevelOuter = bvNone
       BorderStyle = bsSingle
-      ClientHeight = 40
-      ClientWidth = 580
+      ClientHeight = 36
+      ClientWidth = 576
       ParentBackground = False
       ParentColor = False
       ParentFont = False
@@ -207,8 +246,8 @@ object TimetableForm: TTimetableForm
       BorderSpacing.Top = 2
       BevelOuter = bvNone
       BorderStyle = bsSingle
-      ClientHeight = 40
-      ClientWidth = 580
+      ClientHeight = 36
+      ClientWidth = 576
       TabOrder = 2
       object OrderLabel: TLabel
         AnchorSideLeft.Control = OrderButtonPanel
@@ -414,8 +453,8 @@ object TimetableForm: TTimetableForm
         Align = alTop
         BevelOuter = bvNone
         BorderStyle = bsSingle
-        ClientHeight = 40
-        ClientWidth = 600
+        ClientHeight = 36
+        ClientWidth = 596
         ParentFont = False
         TabOrder = 0
         object MonthPanel: TPanel
@@ -639,8 +678,8 @@ object TimetableForm: TTimetableForm
         Align = alTop
         BevelOuter = bvNone
         BorderStyle = bsSingle
-        ClientHeight = 40
-        ClientWidth = 600
+        ClientHeight = 36
+        ClientWidth = 596
         ParentFont = False
         TabOrder = 0
         object CopySaveButton: TSpeedButton
@@ -753,8 +792,8 @@ object TimetableForm: TTimetableForm
       BorderSpacing.Bottom = 2
       BevelOuter = bvNone
       BorderStyle = bsSingle
-      ClientHeight = 568
-      ClientWidth = 270
+      ClientHeight = 564
+      ClientWidth = 266
       Color = clWhite
       ParentBackground = False
       ParentColor = False

@@ -9,7 +9,6 @@ object SIZNormForm: TSIZNormForm
   ClientHeight = 578
   ClientWidth = 1000
   DesignTimePPI = 120
-  LCLVersion = '4.2.0.0'
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
@@ -24,18 +23,24 @@ object SIZNormForm: TSIZNormForm
     BorderSpacing.Right = 2
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 40
-    ClientWidth = 996
+    ClientHeight = 36
+    ClientWidth = 992
     ParentFont = False
     TabOrder = 0
     object CloseButton: TSpeedButton
+      AnchorSideTop.Control = ToolPanel
+      AnchorSideRight.Control = ToolPanel
+      AnchorSideRight.Side = asrBottom
+      AnchorSideBottom.Control = ToolPanel
+      AnchorSideBottom.Side = asrBottom
       Cursor = crHandPoint
       Left = 952
       Height = 36
       Hint = 'Закрыть'
       Top = 0
       Width = 40
-      Align = alRight
+      Align = alCustom
+      Anchors = [akTop, akRight, akBottom]
       Images = Images.PX24
       ImageIndex = 3
       ShowHint = True
@@ -43,25 +48,36 @@ object SIZNormForm: TSIZNormForm
       OnClick = CloseButtonClick
     end
     object DividerBevel1: TDividerBevel
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = ToolPanel
+      AnchorSideRight.Control = CloseButton
+      AnchorSideBottom.Control = ToolPanel
+      AnchorSideBottom.Side = asrBottom
       Left = 931
       Height = 36
       Top = 0
       Width = 21
       Caption = 'DividerBevel1'
-      Align = alRight
+      Align = alCustom
+      Anchors = [akTop, akRight, akBottom]
       BevelWidth = 2
       Font.Style = [fsBold]
       Orientation = trVertical
       ParentFont = False
     end
     object ExportButton: TSpeedButton
+      AnchorSideLeft.Control = ToolPanel
+      AnchorSideTop.Control = ToolPanel
+      AnchorSideBottom.Control = ToolPanel
+      AnchorSideBottom.Side = asrBottom
       Cursor = crHandPoint
       Left = 0
       Height = 36
       Hint = 'Экспорт в формат электронной таблицы XLSX или ODS'
       Top = 0
       Width = 109
-      Align = alLeft
+      Align = alCustom
+      Anchors = [akTop, akLeft, akBottom]
       AutoSize = True
       Caption = ' Экспорт '
       Images = Images.PX24
@@ -105,8 +121,8 @@ object SIZNormForm: TSIZNormForm
         BorderSpacing.Bottom = 2
         BevelOuter = bvNone
         BorderStyle = bsSingle
-        ClientHeight = 40
-        ClientWidth = 996
+        ClientHeight = 36
+        ClientWidth = 992
         ParentBackground = False
         ParentColor = False
         ParentFont = False
@@ -233,8 +249,8 @@ object SIZNormForm: TSIZNormForm
           BorderSpacing.Bottom = 2
           BevelOuter = bvNone
           BorderStyle = bsSingle
-          ClientHeight = 40
-          ClientWidth = 500
+          ClientHeight = 36
+          ClientWidth = 496
           ParentFont = False
           TabOrder = 0
           object ItemAddButton: TSpeedButton
@@ -336,8 +352,8 @@ object SIZNormForm: TSIZNormForm
           Align = alClient
           BevelOuter = bvNone
           BorderStyle = bsSingle
-          ClientHeight = 200
-          ClientWidth = 500
+          ClientHeight = 196
+          ClientWidth = 496
           TabOrder = 1
           OnChangeBounds = ItemSheetPanelChangeBounds
           object ItemGrid: TsWorksheetGrid
@@ -405,8 +421,8 @@ object SIZNormForm: TSIZNormForm
           BorderSpacing.Bottom = 2
           BevelOuter = bvNone
           BorderStyle = bsSingle
-          ClientHeight = 40
-          ClientWidth = 490
+          ClientHeight = 36
+          ClientWidth = 486
           ParentFont = False
           TabOrder = 0
           object SubItemAddButton: TSpeedButton
@@ -493,8 +509,8 @@ object SIZNormForm: TSIZNormForm
           Align = alClient
           BevelOuter = bvNone
           BorderStyle = bsSingle
-          ClientHeight = 202
-          ClientWidth = 490
+          ClientHeight = 198
+          ClientWidth = 486
           TabOrder = 1
           object SubItemGrid: TsWorksheetGrid
             Left = 0

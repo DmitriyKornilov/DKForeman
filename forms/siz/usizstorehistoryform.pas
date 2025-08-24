@@ -29,7 +29,7 @@ type
     FilterSizNamePanel: TPanel;
     FilterNomNumPanel: TPanel;
     VT: TVirtualStringTree;
-    DocViewButtonPanel: TPanel;
+    ViewButtonPanel: TPanel;
     ExportButton: TSpeedButton;
     ToolPanel: TPanel;
     ReturningCheckBox: TCheckBox;

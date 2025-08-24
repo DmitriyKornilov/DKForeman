@@ -8,7 +8,6 @@ object ScheduleShiftMonthForm: TScheduleShiftMonthForm
   ClientHeight = 311
   ClientWidth = 780
   DesignTimePPI = 120
-  LCLVersion = '4.2.0.0'
   WindowState = wsMaximized
   OnClose = FormClose
   OnCreate = FormCreate
@@ -25,16 +24,21 @@ object ScheduleShiftMonthForm: TScheduleShiftMonthForm
     BorderSpacing.Right = 2
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 40
-    ClientWidth = 776
+    ClientHeight = 36
+    ClientWidth = 772
     ParentFont = False
     TabOrder = 0
     object YearPanel: TPanel
+      AnchorSideLeft.Control = ToolPanel
+      AnchorSideTop.Control = ToolPanel
+      AnchorSideBottom.Control = ToolPanel
+      AnchorSideBottom.Side = asrBottom
       Left = 0
       Height = 36
       Top = 0
       Width = 269
-      Align = alLeft
+      Align = alCustom
+      Anchors = [akTop, akLeft, akBottom]
       AutoSize = True
       BevelOuter = bvNone
       ClientHeight = 36
@@ -168,13 +172,19 @@ object ScheduleShiftMonthForm: TScheduleShiftMonthForm
       end
     end
     object CheckAllButton: TSpeedButton
+      AnchorSideLeft.Control = DividerBevel2
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = ToolPanel
+      AnchorSideBottom.Control = ToolPanel
+      AnchorSideBottom.Side = asrBottom
       Cursor = crHandPoint
-      Left = 289
+      Left = 290
       Height = 36
       Hint = 'Выбрать все графики'
       Top = 0
       Width = 40
-      Align = alLeft
+      Align = alCustom
+      Anchors = [akTop, akLeft, akBottom]
       Images = Images.PX24
       ImageIndex = 12
       ShowHint = True
@@ -182,13 +192,19 @@ object ScheduleShiftMonthForm: TScheduleShiftMonthForm
       OnClick = CheckAllButtonClick
     end
     object UncheckAllButton: TSpeedButton
+      AnchorSideLeft.Control = CheckAllButton
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = ToolPanel
+      AnchorSideBottom.Control = ToolPanel
+      AnchorSideBottom.Side = asrBottom
       Cursor = crHandPoint
-      Left = 329
+      Left = 330
       Height = 36
       Hint = 'Снять выбор со всех графиков'
       Top = 0
       Width = 40
-      Align = alLeft
+      Align = alCustom
+      Anchors = [akTop, akLeft, akBottom]
       Images = Images.PX24
       ImageIndex = 13
       ShowHint = True
@@ -196,25 +212,36 @@ object ScheduleShiftMonthForm: TScheduleShiftMonthForm
       OnClick = UncheckAllButtonClick
     end
     object DividerBevel1: TDividerBevel
-      Left = 712
+      AnchorSideTop.Control = ToolPanel
+      AnchorSideRight.Control = CloseButton
+      AnchorSideBottom.Control = ToolPanel
+      AnchorSideBottom.Side = asrBottom
+      Left = 711
       Height = 36
       Top = 0
-      Width = 20
+      Width = 21
       Caption = 'DividerBevel1'
-      Align = alRight
+      Align = alCustom
+      Anchors = [akTop, akRight, akBottom]
       BevelWidth = 2
       Font.Style = [fsBold]
       Orientation = trVertical
       ParentFont = False
     end
     object CloseButton: TSpeedButton
+      AnchorSideTop.Control = ToolPanel
+      AnchorSideRight.Control = ToolPanel
+      AnchorSideRight.Side = asrBottom
+      AnchorSideBottom.Control = ToolPanel
+      AnchorSideBottom.Side = asrBottom
       Cursor = crHandPoint
       Left = 732
       Height = 36
       Hint = 'Закрыть'
       Top = 0
       Width = 40
-      Align = alRight
+      Align = alCustom
+      Anchors = [akTop, akRight, akBottom]
       Images = Images.PX24
       ImageIndex = 3
       ShowHint = True
@@ -222,37 +249,55 @@ object ScheduleShiftMonthForm: TScheduleShiftMonthForm
       OnClick = CloseButtonClick
     end
     object DividerBevel2: TDividerBevel
+      AnchorSideLeft.Control = YearPanel
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = ToolPanel
+      AnchorSideBottom.Control = ToolPanel
+      AnchorSideBottom.Side = asrBottom
       Left = 269
       Height = 36
       Top = 0
-      Width = 20
+      Width = 21
       Caption = 'DividerBevel2'
-      Align = alLeft
+      Align = alCustom
+      Anchors = [akTop, akLeft, akBottom]
       BevelWidth = 2
       Font.Style = [fsBold]
       Orientation = trVertical
       ParentFont = False
     end
     object DividerBevel3: TDividerBevel
-      Left = 369
+      AnchorSideLeft.Control = UncheckAllButton
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = ToolPanel
+      AnchorSideBottom.Control = ToolPanel
+      AnchorSideBottom.Side = asrBottom
+      Left = 370
       Height = 36
       Top = 0
-      Width = 20
+      Width = 21
       Caption = 'DividerBevel3'
-      Align = alLeft
+      Align = alCustom
+      Anchors = [akTop, akLeft, akBottom]
       BevelWidth = 2
       Font.Style = [fsBold]
       Orientation = trVertical
       ParentFont = False
     end
     object ExportButton: TSpeedButton
+      AnchorSideLeft.Control = DividerBevel3
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = ToolPanel
+      AnchorSideBottom.Control = ToolPanel
+      AnchorSideBottom.Side = asrBottom
       Cursor = crHandPoint
-      Left = 389
+      Left = 391
       Height = 36
       Hint = 'Экспорт в формат электронной таблицы XLSX или ODS'
       Top = 0
-      Width = 103
-      Align = alLeft
+      Width = 109
+      Align = alCustom
+      Anchors = [akTop, akLeft, akBottom]
       AutoSize = True
       Caption = ' Экспорт '
       Images = Images.PX24
@@ -275,8 +320,8 @@ object ScheduleShiftMonthForm: TScheduleShiftMonthForm
     BorderSpacing.Bottom = 2
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 265
-    ClientWidth = 350
+    ClientHeight = 261
+    ClientWidth = 346
     TabOrder = 1
     object VT: TVirtualStringTree
       Left = 0
@@ -310,8 +355,8 @@ object ScheduleShiftMonthForm: TScheduleShiftMonthForm
     BorderSpacing.Bottom = 2
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 265
-    ClientWidth = 420
+    ClientHeight = 261
+    ClientWidth = 416
     Color = clWhite
     ParentBackground = False
     ParentColor = False
