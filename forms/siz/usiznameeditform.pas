@@ -24,6 +24,7 @@ type
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
+    procedure FormShow(Sender: TObject);
   private
     SIZTypeTable: TVSTTable;
     SIZNameTable: TDBTable;
@@ -63,6 +64,10 @@ begin
   SIZTypeTable.HeaderVisible:= False;
   SIZTypeTable.AddColumn(EmptyStr);
   SIZTypeTable.SetColumn(0, SIZ_TYPE_PICKS, taLeftJustify);
+end;
+
+procedure TSIZNameEditForm.FormShow(Sender: TObject);
+begin
   SIZTypeTable.Draw;
   SIZTypeTable.Select(0);
 end;
