@@ -2,12 +2,12 @@ object SIZCardForm: TSIZCardForm
   Left = 377
   Height = 478
   Top = 250
-  Width = 1300
+  Width = 1348
   Align = alClient
   BorderStyle = bsNone
   Caption = 'SIZCardForm'
   ClientHeight = 478
-  ClientWidth = 1300
+  ClientWidth = 1348
   DesignTimePPI = 120
   OnCreate = FormCreate
   OnDestroy = FormDestroy
@@ -16,7 +16,7 @@ object SIZCardForm: TSIZCardForm
     Left = 2
     Height = 40
     Top = 2
-    Width = 1296
+    Width = 1344
     Align = alTop
     BorderSpacing.Left = 2
     BorderSpacing.Top = 2
@@ -24,7 +24,7 @@ object SIZCardForm: TSIZCardForm
     BevelOuter = bvNone
     BorderStyle = bsSingle
     ClientHeight = 36
-    ClientWidth = 1292
+    ClientWidth = 1340
     ParentFont = False
     TabOrder = 0
     object CloseButton: TSpeedButton
@@ -34,7 +34,7 @@ object SIZCardForm: TSIZCardForm
       AnchorSideBottom.Control = ToolPanel
       AnchorSideBottom.Side = asrBottom
       Cursor = crHandPoint
-      Left = 1252
+      Left = 1300
       Height = 36
       Hint = 'Закрыть'
       Top = 0
@@ -52,7 +52,7 @@ object SIZCardForm: TSIZCardForm
       AnchorSideRight.Control = CloseButton
       AnchorSideBottom.Control = ToolPanel
       AnchorSideBottom.Side = asrBottom
-      Left = 1231
+      Left = 1279
       Height = 36
       Top = 0
       Width = 21
@@ -190,29 +190,29 @@ object SIZCardForm: TSIZCardForm
     Left = 308
     Height = 436
     Top = 42
-    Width = 992
+    Width = 1040
     Align = alClient
     BevelOuter = bvNone
     ClientHeight = 436
-    ClientWidth = 992
+    ClientWidth = 1040
     TabOrder = 3
     object StaffPanel: TPanel
       Left = 0
       Height = 432
       Top = 2
-      Width = 580
+      Width = 650
       Align = alLeft
       BorderSpacing.Top = 2
       BorderSpacing.Bottom = 2
       BevelOuter = bvNone
       ClientHeight = 432
-      ClientWidth = 580
+      ClientWidth = 650
       TabOrder = 0
       object StaffListVT: TVirtualStringTree
         Left = 0
         Height = 316
         Top = 74
-        Width = 580
+        Width = 650
         Align = alClient
         DefaultText = 'Node'
         Header.AutoSizeIndex = 0
@@ -225,13 +225,13 @@ object SIZCardForm: TSIZCardForm
         Left = 0
         Height = 40
         Top = 32
-        Width = 580
+        Width = 650
         Align = alTop
         BorderSpacing.Bottom = 2
         BevelOuter = bvNone
         BorderStyle = bsSingle
         ClientHeight = 36
-        ClientWidth = 576
+        ClientWidth = 646
         ParentBackground = False
         ParentColor = False
         ParentFont = False
@@ -240,7 +240,7 @@ object SIZCardForm: TSIZCardForm
           Left = 2
           Height = 36
           Top = 0
-          Width = 574
+          Width = 644
           Align = alClient
           AutoSize = True
           BorderSpacing.Left = 2
@@ -254,13 +254,13 @@ object SIZCardForm: TSIZCardForm
         Left = 0
         Height = 40
         Top = 392
-        Width = 580
+        Width = 650
         Align = alBottom
         BorderSpacing.Top = 2
         BevelOuter = bvNone
         BorderStyle = bsSingle
         ClientHeight = 36
-        ClientWidth = 576
+        ClientWidth = 646
         TabOrder = 2
         object OrderLabel: TLabel
           AnchorSideLeft.Control = OrderButtonPanel
@@ -376,7 +376,7 @@ object SIZCardForm: TSIZCardForm
         Left = 0
         Height = 30
         Top = 0
-        Width = 580
+        Width = 650
         Align = alTop
         Alignment = taLeftJustify
         BorderSpacing.Bottom = 2
@@ -389,41 +389,41 @@ object SIZCardForm: TSIZCardForm
       end
     end
     object StaffSplitter: TSplitter
-      Left = 580
+      Left = 650
       Height = 436
       Top = 0
       Width = 6
       ResizeStyle = rsLine
     end
     object CardPanel: TPanel
-      Left = 586
+      Left = 656
       Height = 432
       Top = 2
-      Width = 404
+      Width = 382
       Align = alClient
       BorderSpacing.Top = 2
       BorderSpacing.Right = 2
       BorderSpacing.Bottom = 2
       BevelOuter = bvNone
       ClientHeight = 432
-      ClientWidth = 404
+      ClientWidth = 382
       TabOrder = 2
       object CardListPanel: TPanel
         Left = 0
         Height = 240
         Top = 0
-        Width = 404
+        Width = 382
         Align = alTop
         BevelOuter = bvNone
         Caption = 'CardListPanel'
         ClientHeight = 240
-        ClientWidth = 404
+        ClientWidth = 382
         TabOrder = 0
         object CardListCaptionPanel: TPanel
           Left = 0
           Height = 30
           Top = 0
-          Width = 404
+          Width = 382
           Align = alTop
           Alignment = taLeftJustify
           BorderSpacing.Bottom = 2
@@ -438,7 +438,7 @@ object SIZCardForm: TSIZCardForm
           Left = 0
           Height = 208
           Top = 32
-          Width = 404
+          Width = 382
           Align = alClient
           DefaultText = 'Node'
           Header.AutoSizeIndex = 0
@@ -453,7 +453,7 @@ object SIZCardForm: TSIZCardForm
         Left = 0
         Height = 6
         Top = 240
-        Width = 404
+        Width = 382
         Align = alTop
         ResizeAnchor = akTop
         ResizeStyle = rsLine
@@ -462,17 +462,17 @@ object SIZCardForm: TSIZCardForm
         Left = 0
         Height = 186
         Top = 246
-        Width = 404
+        Width = 382
         Align = alClient
         BevelOuter = bvNone
         ClientHeight = 186
-        ClientWidth = 404
+        ClientWidth = 382
         TabOrder = 2
         object ViewCaptionPanel: TPanel
           Left = 0
           Height = 30
           Top = 0
-          Width = 404
+          Width = 382
           Align = alTop
           Alignment = taLeftJustify
           BorderSpacing.Bottom = 2
@@ -487,11 +487,11 @@ object SIZCardForm: TSIZCardForm
           Left = 0
           Height = 30
           Top = 32
-          Width = 404
+          Width = 382
           Align = alTop
           BevelOuter = bvNone
           ClientHeight = 30
-          ClientWidth = 404
+          ClientWidth = 382
           TabOrder = 1
           object FrontTabButton: TColorSpeedButton
             Cursor = crHandPoint
@@ -589,7 +589,7 @@ object SIZCardForm: TSIZCardForm
           Left = 0
           Height = 82
           Top = 104
-          Width = 404
+          Width = 382
           Align = alClient
           BevelOuter = bvNone
           Caption = 'FormPanel'
@@ -599,13 +599,13 @@ object SIZCardForm: TSIZCardForm
           Left = 0
           Height = 40
           Top = 64
-          Width = 404
+          Width = 382
           Align = alTop
           BorderSpacing.Top = 2
           BevelOuter = bvNone
           BorderStyle = bsSingle
           ClientHeight = 36
-          ClientWidth = 400
+          ClientWidth = 378
           ParentFont = False
           TabOrder = 3
           object FrontEditButton: TSpeedButton
