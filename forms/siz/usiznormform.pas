@@ -659,7 +659,7 @@ begin
     Sheet:= TSIZNormSheet.Create(Worksheet, nil, GridFont);
     try
       Sheet.Draw(Norm);
-      Exporter.PageSettings(spoPortrait, pfWidth, False, False, 10, 20, 10, 10, 0, 0);
+      Exporter.PageSettings(spoPortrait, pfWidth, True, False, 10, 20, 10, 10, 0, 0);
       Exporter.Save('Выполнено!', NormNames[NormList.SelectedIndex]);
     finally
       FreeAndNil(Sheet);

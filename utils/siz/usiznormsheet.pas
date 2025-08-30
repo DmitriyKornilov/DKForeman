@@ -774,6 +774,10 @@ begin
     ItemDraw(R, ANorm.Items[i]);
   end;
 
+  R:= R + 1;
+  for i:=1 to Writer.ColCount do
+    Writer.DrawBorders(R, i, cbtTop);
+
   Writer.EndEdit;
 end;
 

@@ -1589,6 +1589,9 @@ begin
   Writer.SetFont(Font.Name, Font.Size, [], clBlack);
   Writer.SetAlignment(haCenter, vaCenter);
   Writer.WriteText(R, 26, R, 28, 'Код', cbtOuter);
+  if not Writer.HasGrid then
+    Writer.DrawBorders(R, 26, R, 28, cbtAll);
+
   R:= R + 1;
   Writer.SetAlignment(haRight, vaCenter);
   Writer.WriteText(R, 23, R, 25, 'Форма по ОКУД');
@@ -1752,6 +1755,8 @@ begin
   Writer.WriteText(R, 24, R, 26, '', cbtOuter);
   Writer.SetAlignment(haLeft, vaCenter);
   Writer.WriteText(R, 27, R, 28, '', cbtOuter);
+
+  BordersDraw(R, R, 1, 28);
 
   ARow:= R + 1;
 end;
@@ -2272,8 +2277,7 @@ begin
   C:= MONTH_FIRST_COLS[AMonth];
   Writer.WriteText(R, C, R, C+6, SUpper(MONTHSNOM[AMonth]), cbtOuter);
   Writer.AddCellBGColorIndex(R, C, MONTHNAME_COLOR_INDEX);
-  if Writer.HasGrid then
-    Writer.DrawBorders(R, C+7, cbtLeft);
+
   R:= R+1;
   for i:= 0 to 6 do
   begin
@@ -2285,6 +2289,7 @@ begin
   for i:= MONTH_FIRST_ROWS[AMonth] + 2 to MONTH_FIRST_ROWS[AMonth] + 7 do
     for j:= MONTH_FIRST_COLS[AMonth] to MONTH_FIRST_COLS[AMonth] + 6 do
       Writer.WriteText(i, j, EmptyStr, cbtOuter);
+
   FirstLastDayinMonth(AMonth, FYear, BD, ED);
   MonthCalendar:= TCalendar.Create;
   try
@@ -2321,6 +2326,10 @@ begin
   finally
     FreeAndNil(MonthCalendar);
   end;
+
+  R:= MONTH_FIRST_ROWS[AMonth];
+  C:= MONTH_FIRST_COLS[AMonth];
+  BordersDraw(R, R+7, C, C+6);
 end;
 
 procedure TShiftCalendarScheduleSheet.Draw(const ACalendar: TCalendar;
