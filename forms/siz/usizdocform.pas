@@ -141,8 +141,8 @@ begin
   ]);
 
   SIZFormShow;
-
   YearSpinEdit.Value:= YearOfDate(Date);
+  DocListLoad;
 end;
 
 procedure TSIZDocForm.FormWindowStateChange(Sender: TObject);
