@@ -147,6 +147,9 @@ begin
   SetCaptionPanels([
     CaptionPanel
   ]);
+  SetSpinEdits([
+    YearSpinEdit
+  ]);
   SetToolButtons([
     CloseButton,
     DayAddButton, DayDelButton, DayEditButton, DayCopyButton,

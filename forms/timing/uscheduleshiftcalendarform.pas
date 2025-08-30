@@ -155,6 +155,9 @@ begin
   SetCaptionPanels([
     ColorCaptionPanel
   ]);
+  SetSpinEdits([
+    YearSpinEdit
+  ]);
   SetToolButtons([
     CloseButton, SettingButton, AddButton, DelButton, EditButton
   ]);

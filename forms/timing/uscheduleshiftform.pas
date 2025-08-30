@@ -233,6 +233,9 @@ begin
     SettingCaptionPanel, ListCaptionPanel, StructureCaptionPanel, CorrectionsCaptionPanel,
     SheetCaptionPanel
   ]);
+  SetSpinEdits([
+    YearSpinEdit
+  ]);
   SetToolButtons([
     CloseButton,
     ScheduleAddButton, ScheduleDelButton, ScheduleEditButton,

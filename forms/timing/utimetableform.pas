@@ -243,6 +243,9 @@ begin
     StaffCaptionPanel, SettingCaptionPanel, ListCaptionPanel, EditingCaptionPanel,
     ViewCaptionPanel
   ]);
+  SetSpinEdits([
+    YearSpinEdit
+  ]);
   SetToolButtons([
     CloseButton, AscendingButton, DescendingButton,
     WriteButton, EraseButton, EditButton, CopyButton,

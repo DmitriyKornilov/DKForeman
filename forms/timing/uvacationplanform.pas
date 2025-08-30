@@ -125,6 +125,9 @@ begin
   SetCaptionPanels([
     SettingCaptionPanel, ListCaptionPanel
   ]);
+  SetSpinEdits([
+    YearSpinEdit
+  ]);
   SetToolButtons([
     CloseButton, EditButton
   ]);

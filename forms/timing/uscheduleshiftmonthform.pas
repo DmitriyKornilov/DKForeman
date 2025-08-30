@@ -155,6 +155,9 @@ begin
   SetToolPanels([
     ToolPanel
   ]);
+  SetSpinEdits([
+    YearSpinEdit
+  ]);
   SetToolButtons([
     CloseButton, CheckAllButton, UncheckAllButton
   ]);

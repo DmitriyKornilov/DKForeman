@@ -130,6 +130,9 @@ begin
   SetCaptionPanels([
     DocCaptionPanel, SIZCaptionPanel
   ]);
+  SetSpinEdits([
+    YearSpinEdit
+  ]);
   SetToolButtons([
     AscendingButton, DescendingButton,
     DocAddButton, DocDelButton, DocEditButton, DocEraseButton

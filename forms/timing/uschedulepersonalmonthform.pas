@@ -213,6 +213,9 @@ begin
   SetCaptionPanels([
     ListCaptionPanel, SettingCaptionPanel, ScheduleCaptionPanel
   ]);
+  SetSpinEdits([
+    YearSpinEdit
+  ]);
   SetToolButtons([
     CloseButton,
     ExpandAllButton, CollapseAllButton, CheckAllButton, UncheckAllButton,

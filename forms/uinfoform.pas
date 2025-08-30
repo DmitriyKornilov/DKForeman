@@ -101,6 +101,9 @@ begin
   SetCaptionPanels([
     BirthdayCaptionPanel, VacationCaptionPanel, SIZCaptionPanel
   ]);
+  SetSpinEdits([
+    YearSpinEdit
+  ]);
 
   MonthDropDown.AutoWidth;
 

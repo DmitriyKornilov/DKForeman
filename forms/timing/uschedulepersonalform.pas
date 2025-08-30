@@ -301,6 +301,9 @@ begin
     StaffCaptionPanel, SettingCaptionPanel, ListCaptionPanel, HistoryCaptionPanel,
     VacationCaptionPanel, CorrectionsCaptionPanel, ViewCaptionPanel
   ]);
+  SetSpinEdits([
+    YearSpinEdit
+  ]);
   SetToolButtons([
     CloseButton, AscendingButton, DescendingButton,
     HistoryAddButton, HistoryDelButton, HistoryEditButton,
