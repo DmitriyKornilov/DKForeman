@@ -99,7 +99,7 @@ type
     procedure WriteButtonClick(Sender: TObject);
     procedure YearSpinEditChange(Sender: TObject);
   private
-    CanDraw: Boolean;
+    CanDataUpdate: Boolean;
     ZoomPercent: Integer;
     FilterString: String;
     ModeType: TModeType;
@@ -144,6 +144,8 @@ type
     procedure StaffListCreate;
     procedure StaffListSelect;
     procedure StaffListLoad(const SelectedID: Integer = -1);
+
+    procedure YearChange;
 
     procedure EditingTablesCreate;
     procedure MonthTimetableLoad;
@@ -196,7 +198,7 @@ begin
   ViewYear:= 0;
   ViewTabNumID:=0;
 
-  CanDraw:= False;
+  CanDataUpdate:= False;
 
   ParamListCreate;
   StaffListCreate;
@@ -205,6 +207,7 @@ begin
   VTCreate(Timetables, 12);
   Sheet:= TYearTimetableSheet.Create(ViewGrid.Worksheet, ViewGrid, GridFont);
   YearSpinEdit.Value:= YearOfDate(Date);
+  if not Calendar.IsCalculated then YearChange;
   MonthDropDown:= TMonthDropDown.Create(MonthBCButton, @MonthTimetableLoad);
 
   IsCopyDates:= False;
@@ -214,7 +217,7 @@ begin
   CreateZoomControls(50, 150, ZoomPercent, ZoomPanel, @TimetableDraw, True);
   DKFilterCreate('Фильтр по Ф.И.О.:', FilterPanel, @StaffListFilter, 1000 {1c});
 
-  CanDraw:= True;
+  CanDataUpdate:= True;
 end;
 
 procedure TTimetableForm.FormDestroy(Sender: TObject);
@@ -335,7 +338,6 @@ var
 begin
   if ModeType<>mtEditing then Exit;
   if not Sheet.GridToDate(ViewGrid.Row, ViewGrid.Col, DayDate) then Exit;
-  //VSTDays.ReSelect(MonthDates, DayDate, False);
   TimetableEditFormOpen(DayDate);
 end;
 
@@ -367,12 +369,17 @@ begin
   end;
 end;
 
+procedure TTimetableForm.YearChange;
+begin
+  CalendarForYear(YearSpinEdit.Value, Calendar);
+  Holidays:= DataBase.HolidaysLoad(YearSpinEdit.Value);
+end;
+
 procedure TTimetableForm.YearSpinEditChange(Sender: TObject);
 var
   SelectedTabNumID: Integer;
 begin
-  CalendarForYear(YearSpinEdit.Value, Calendar);
-  Holidays:= DataBase.HolidaysLoad(YearSpinEdit.Value);
+  YearChange;
 
   SelectedTabNumID:= -1;
   if StaffList.IsSelected then
@@ -490,8 +497,9 @@ end;
 
 procedure TTimetableForm.StaffListSelect;
 begin
-  TimetableChange;
   WriteButton.Enabled:= StaffList.IsSelected;
+  ViewTabNumID:= 0;
+  TimetableChange;
 end;
 
 procedure TTimetableForm.StaffListLoad(const SelectedID: Integer);
@@ -501,6 +509,8 @@ var
   OrderType: Byte;
   IsDescOrder: Boolean;
 begin
+  if not CanDataUpdate then Exit;
+
   SelectedTabNumID:= GetSelectedID(StaffList, TabNumIDs, SelectedID);
   FirstLastDayInYear(YearSpinEdit.Value, BD, ED);
 
@@ -570,7 +580,7 @@ procedure TTimetableForm.MonthTimetableLoad;
 var
   Dates, ShiftNums: TStrVector;
 begin
-  if not CanDraw then Exit;
+  if not CanDataUpdate then Exit;
   VSTDays.ValuesClear;
   if not StaffList.IsSelected then Exit;
 
@@ -744,7 +754,7 @@ end;
 
 procedure TTimetableForm.TimetableChange;
 begin
-  if not CanDraw then Exit;
+  if not CanDataUpdate then Exit;
   if not StaffList.IsSelected then Exit;
 
   if (TabNumIDs[StaffList.SelectedIndex]=ViewTabNumID) and
@@ -777,7 +787,7 @@ end;
 
 procedure TTimetableForm.TimetableDraw(const AZoomPercent: Integer);
 begin
-  if not CanDraw then Exit;
+  if not CanDataUpdate then Exit;
 
   ViewGrid.Visible:= False;
   Screen.Cursor:= crHourGlass;
@@ -1033,8 +1043,6 @@ end;
 procedure TTimetableForm.DataUpdate;
 begin
   StaffListLoad;
-  ViewTabNumID:= 0;
-  TimetableChange;
 end;
 
 end.

@@ -127,7 +127,7 @@ type
       {%H-}Shift: TShiftState; X, Y: Integer);
     procedure YearSpinEditChange(Sender: TObject);
   private
-    CanDraw: Boolean;
+    CanDataUpdate: Boolean;
     ZoomPercent: Integer;
     FilterString: String;
     ModeType: TModeType;
@@ -187,6 +187,8 @@ type
     procedure StaffListCreate;
     procedure StaffListSelect;
     procedure StaffListLoad(const ASelectedID: Integer = -1);
+
+    procedure YearChange;
 
     procedure ScheduleLoad;
     procedure ScheduleUpdate;
@@ -250,7 +252,7 @@ begin
   ViewYear:= 0;
   ViewTabNumID:= 0;
 
-  CanDraw:= False;
+  CanDataUpdate:= False;
 
   VacationEditCreate;
   HistoryCreate;
@@ -258,6 +260,7 @@ begin
   ParamListCreate;
   EditingTablesCreate;
   YearSpinEdit.Value:= YearOfDate(Date);
+  if not Calendar.IsCalculated then YearChange;
 
   IsCopyDates:= False;
 
@@ -267,7 +270,7 @@ begin
   CreateZoomControls(50, 150, ZoomPercent, ZoomPanel, @ScheduleDraw, True);
   DKFilterCreate('Фильтр по Ф.И.О.:', FilterPanel, @StaffListFilter, 300);
 
-  CanDraw:= True;
+  CanDataUpdate:= True;
 end;
 
 procedure TSchedulePersonalForm.FormDestroy(Sender: TObject);
@@ -599,21 +602,26 @@ begin
   end;
 end;
 
-procedure TSchedulePersonalForm.YearSpinEditChange(Sender: TObject);
+procedure TSchedulePersonalForm.YearChange;
 var
-  SelectedTabNumID: Integer;
   BD, ED: TDate;
 begin
   CalendarForYear(YearSpinEdit.Value, Calendar);
   Holidays:= DataBase.HolidaysLoad(YearSpinEdit.Value);
+  FirstLastDayInYear(YearSpinEdit.Value, BD, ED);
+  VacationEdit.SetColumnMinMaxDate(VACATION_EDIT_COLUMN_NAMES[1], BD, ED);
+end;
+
+procedure TSchedulePersonalForm.YearSpinEditChange(Sender: TObject);
+var
+  SelectedTabNumID: Integer;
+begin
+  YearChange;
 
   SelectedTabNumID:= -1;
   if StaffList.IsSelected then
     SelectedTabNumID:= TabNumIDs[StaffList.SelectedIndex];
   StaffListLoad(SelectedTabNumID);
-
-  FirstLastDayInYear(YearSpinEdit.Value, BD, ED);
-  VacationEdit.SetColumnMinMaxDate(VACATION_EDIT_COLUMN_NAMES[1], BD, ED);
 end;
 
 procedure TSchedulePersonalForm.CopyBegin;
@@ -858,6 +866,7 @@ end;
 procedure TSchedulePersonalForm.StaffListSelect;
 begin
   DayAddButton.Enabled:= StaffList.IsSelected;
+  ViewTabNumID:= 0;
   ScheduleChange;
 end;
 
@@ -868,6 +877,8 @@ var
   OrderType: Byte;
   IsDescOrder: Boolean;
 begin
+  if not CanDataUpdate then Exit;
+
   SelectedID:= GetSelectedID(StaffList, TabNumIDs, ASelectedID);
   FirstLastDayInYear(YearSpinEdit.Value, BD, ED);
 
@@ -926,7 +937,7 @@ end;
 
 procedure TSchedulePersonalForm.ScheduleChange;
 begin
-  if not CanDraw then Exit;
+  if not CanDataUpdate then Exit;
   if not StaffList.IsSelected then Exit;
 
   if (TabNumIDs[StaffList.SelectedIndex]=ViewTabNumID) and
@@ -1396,8 +1407,6 @@ end;
 procedure TSchedulePersonalForm.DataUpdate;
 begin
   StaffListLoad;
-  ViewTabNumID:= 0;
-  ScheduleChange;
 end;
 
 end.

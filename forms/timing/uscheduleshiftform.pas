@@ -197,6 +197,7 @@ begin
   ParamListCreate;
   EditingTablesCreate;
   YearSpinEdit.Value:= YearOfDate(Date);
+  if not Calendar.IsCalculated then YearChange;
   IsCopyDates:= False;
 
   ColorsLoad;
