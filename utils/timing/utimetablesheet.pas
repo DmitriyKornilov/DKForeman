@@ -1220,17 +1220,16 @@ begin
   Writer.SetAlignment(haCenter, vaBottom);
   Writer.WriteText(R, C1, R, C2, FDepartment, cbtBottom, True, True);
 
+  C1:= Writer.ColCount-1-EMPTYCOLCOUNT;
+  C2:= Writer.ColCount-EMPTYCOLCOUNT;
   if not Writer.HasGrid then
-  begin
-    C1:= Writer.ColCount-1-EMPTYCOLCOUNT;
-    C2:= Writer.ColCount-EMPTYCOLCOUNT;
     Writer.SetBorders(BOLD_LINE_STYLE, clBlack, BORDER_STYLE_DEFAULT, clBlack);
-    Writer.DrawBorders(R-3, C1, R, C2, cbtAll);
-    if EMPTYCOLCOUNT>0 then //fix ODS borders
-      Writer.DrawBorders(R-3, Writer.ColCount, R, Writer.ColCount, cbtLeft);
-    Writer.DrawBorders(R+1, C1, R+1, C2, cbtTop);
+  Writer.DrawBorders(R-3, C1, R, C2, cbtAll);
+  if EMPTYCOLCOUNT>0 then //fix ODS borders
+    Writer.DrawBorders(R-3, Writer.ColCount, R, Writer.ColCount, cbtLeft);
+  Writer.DrawBorders(R+1, C1, R+1, C2, cbtTop);
+  if not Writer.HasGrid then
     Writer.SetBordersDefault;
-  end;
 
   R:= R + 1;
   Writer.SetFont(Font.Name, Font.Size-1, [{fsBold}], clBlack);
@@ -1263,14 +1262,13 @@ begin
   Writer.WriteText(R, Writer.ColCount-7-EMPTYCOLCOUNT, R, Writer.ColCount-6-EMPTYCOLCOUNT, EndDateStr, cbtOuter);
 
   if not Writer.HasGrid then
-  begin
     Writer.SetBorders(BOLD_LINE_STYLE, clBlack, BORDER_STYLE_DEFAULT, clBlack);
-    Writer.DrawBorders(R, Writer.ColCount-17-EMPTYCOLCOUNT, R, Writer.ColCount-11-EMPTYCOLCOUNT, cbtAll);
-    Writer.DrawBorders(R, Writer.ColCount-9-EMPTYCOLCOUNT, R, Writer.ColCount-6-EMPTYCOLCOUNT, cbtAll);
-    Writer.DrawBorders(R, Writer.ColCount-10-EMPTYCOLCOUNT, cbtLeft);
-    Writer.DrawBorders(R, Writer.ColCount-5-EMPTYCOLCOUNT, cbtLeft);
+  Writer.DrawBorders(R, Writer.ColCount-17-EMPTYCOLCOUNT, R, Writer.ColCount-11-EMPTYCOLCOUNT, cbtAll);
+  Writer.DrawBorders(R, Writer.ColCount-9-EMPTYCOLCOUNT, R, Writer.ColCount-6-EMPTYCOLCOUNT, cbtAll);
+  Writer.DrawBorders(R, Writer.ColCount-10-EMPTYCOLCOUNT, cbtLeft);
+  Writer.DrawBorders(R, Writer.ColCount-5-EMPTYCOLCOUNT, cbtLeft);
+  if not Writer.HasGrid then
     Writer.SetBordersDefault;
-  end;
 
   Writer.SetFont(Font.Name, Font.Size+6, [fsBold], clBlack);
   Writer.WriteText(R, 20, R, 25, 'ТАБЕЛЬ');
@@ -1769,17 +1767,16 @@ begin
   Writer.SetAlignment(haCenter, vaBottom);
   Writer.WriteText(R, C1, R, C2, FDepartment, cbtBottom, True, True);
 
+  C1:= Writer.ColCount-1-EMPTYCOLCOUNT;
+  C2:= Writer.ColCount-EMPTYCOLCOUNT;
   if not Writer.HasGrid then
-  begin
-    C1:= Writer.ColCount-1-EMPTYCOLCOUNT;
-    C2:= Writer.ColCount-EMPTYCOLCOUNT;
     Writer.SetBorders(BOLD_LINE_STYLE, clBlack, BORDER_STYLE_DEFAULT, clBlack);
-    Writer.DrawBorders(R-3, C1, R, C2, cbtAll);
-    if EMPTYCOLCOUNT>0 then //fix ODS borders
-      Writer.DrawBorders(R-3, Writer.ColCount, R, Writer.ColCount, cbtLeft);
-    Writer.DrawBorders(R+1, C1, R+1, C2, cbtTop);
+  Writer.DrawBorders(R-3, C1, R, C2, cbtAll);
+  if EMPTYCOLCOUNT>0 then //fix ODS borders
+    Writer.DrawBorders(R-3, Writer.ColCount, R, Writer.ColCount, cbtLeft);
+  Writer.DrawBorders(R+1, C1, R+1, C2, cbtTop);
+  if not Writer.HasGrid then
     Writer.SetBordersDefault;
-  end;
 
   R:= R + 1;
   Writer.SetFont(Font.Name, Font.Size-1, [{fsBold}], clBlack);
@@ -1810,14 +1807,13 @@ begin
   Writer.WriteText(R, Writer.ColCount-5-EMPTYCOLCOUNT, R, Writer.ColCount-4-EMPTYCOLCOUNT, EndDateStr , cbtOuter);
 
   if not Writer.HasGrid then
-  begin
     Writer.SetBorders(BOLD_LINE_STYLE, clBlack, BORDER_STYLE_DEFAULT, clBlack);
-    Writer.DrawBorders(R, Writer.ColCount-13-EMPTYCOLCOUNT, R, Writer.ColCount-8-EMPTYCOLCOUNT, cbtAll);
-    Writer.DrawBorders(R, Writer.ColCount-6-EMPTYCOLCOUNT, R, Writer.ColCount-4-EMPTYCOLCOUNT, cbtAll);
-    Writer.DrawBorders(R, Writer.ColCount-7-EMPTYCOLCOUNT, cbtLeft);
-    Writer.DrawBorders(R, Writer.ColCount-3-EMPTYCOLCOUNT, cbtLeft);
+  Writer.DrawBorders(R, Writer.ColCount-13-EMPTYCOLCOUNT, R, Writer.ColCount-8-EMPTYCOLCOUNT, cbtAll);
+  Writer.DrawBorders(R, Writer.ColCount-6-EMPTYCOLCOUNT, R, Writer.ColCount-4-EMPTYCOLCOUNT, cbtAll);
+  Writer.DrawBorders(R, Writer.ColCount-7-EMPTYCOLCOUNT, cbtLeft);
+  Writer.DrawBorders(R, Writer.ColCount-3-EMPTYCOLCOUNT, cbtLeft);
+  if not Writer.HasGrid then
     Writer.SetBordersDefault;
-  end;
 
   Writer.SetFont(Font.Name, Font.Size+6, [fsBold], clBlack);
   Writer.WriteText(R, 16, R, 18, 'ТАБЕЛЬ');
@@ -1971,11 +1967,10 @@ begin
   Writer.SetRowHeight(FirstRow+5, ROW6_HEIGHT);
   Writer.SetRowHeight(FirstRow+6, ROW7_HEIGHT);
   Writer.SetRowHeight(FirstRow+7, ROW8_HEIGHT);
-  if (not Writer.HasGrid) then
-  begin
-    if (FBorderStyle>1) then CaptionBordersDraw(FirstRow);
-    if ANeedRepeatTitle then Writer.SetRepeatedRows(FirstRow, FirstRow+7);
-  end;
+
+  CaptionBordersDraw(FirstRow);
+  if (not Writer.HasGrid) and ANeedRepeatTitle then
+    Writer.SetRepeatedRows(FirstRow, FirstRow+7);
 end;
 
 procedure TTimetableSheetT13.CaptionBordersDraw(const AFirstRow: Integer);
