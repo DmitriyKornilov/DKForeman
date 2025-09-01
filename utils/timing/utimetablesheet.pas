@@ -159,6 +159,7 @@ type
     ROW4_HEIGHT = 65;
     ROW5_HEIGHT = 20;
     LINE_ROW_HEIGHT = 30;
+    EMPTYCOLCOUNT = 1;
   protected
     function SetWidths: TIntVector; override;
     procedure SelectDate(const ADate: TDate); override;
@@ -213,6 +214,7 @@ type
     ROW7_HEIGHT = 40;
     ROW8_HEIGHT = 20;
     LINE_ROW_HEIGHT = 20;
+    EMPTYCOLCOUNT = 1;
   protected
     function SetWidths: TIntVector; override;
     procedure SelectDate(const ADate: TDate); override;
@@ -1089,6 +1091,7 @@ begin
   VAppend(Result, RESUME8_COLUMN_WITH);
   VAppend(Result, RESUME9_COLUMN_WITH);
   VAppend(Result, RESUME10_COLUMN_WITH);
+  VAppend(Result, 1); //empty
 end;
 
 procedure TTimetableSheetT12.SelectDate(const ADate: TDate);
@@ -1141,7 +1144,7 @@ end;
 
 procedure TTimetableSheetT12.TopDraw;
 var
-  R, C, i: Integer;
+  R, C1, C2, i: Integer;
   EndDateStr, BeginDateStr: String;
 const
   BIGROWHEIGHT = 25;
@@ -1156,94 +1159,124 @@ begin
 
   Writer.SetBackgroundDefault;
 
-  C:= 1;
   R:= 1;
   Writer.SetAlignment(haLeft, vaCenter);
   Writer.SetFont(Font.Name, Font.Size-1, [{fsBold}], clBlack);
-  Writer.WriteText(R, Writer.ColCount-5, R, Writer.ColCount, 'Унифицированная форма № Т-12');
-  Writer.WriteText(R+1, Writer.ColCount-5, R+1, Writer.ColCount, 'Утверждена Постановлением Госкомстата');
-  Writer.WriteText(R+2, Writer.ColCount-5, R+2, Writer.ColCount, 'России от 5 января 2004 г. № 1');
+  C1:= Writer.ColCount-5-EMPTYCOLCOUNT;
+  C2:= Writer.ColCount-EMPTYCOLCOUNT;
+  Writer.WriteText(R, C1, R, C2, 'Унифицированная форма № Т-12');
+  Writer.WriteText(R+1, C1, R+1, C2, 'Утверждена Постановлением Госкомстата');
+  Writer.WriteText(R+2, C1, R+2, C2, 'России от 5 января 2004 г. № 1');
   for i:= 0 to 2 do
     Writer.SetRowHeight(R+i, SMALLROWHEIGHT);
+
   R:= R + 4;
   Writer.SetFont(Font.Name, Font.Size+1, [{fsBold}], clBlack);
   Writer.SetAlignment(haCenter, vaCenter);
-  Writer.WriteText(R, Writer.ColCount-1, R, Writer.ColCount, 'Код', cbtOuter);
+  C1:= Writer.ColCount-1-EMPTYCOLCOUNT;
+  C2:= Writer.ColCount-EMPTYCOLCOUNT;
+  Writer.WriteText(R, C1, R, C2, 'Код', cbtOuter);
+  if EMPTYCOLCOUNT>0 then //fix ODS borders
+    Writer.DrawBorders(R, Writer.ColCount, cbtLeft);
+
   R:= R + 1;
   Writer.SetAlignment(haRight, vaCenter);
-  Writer.WriteText(R, Writer.ColCount-5, R, Writer.ColCount-2, 'Форма по ОКУД');
+  C1:= Writer.ColCount-5-EMPTYCOLCOUNT;
+  C2:= Writer.ColCount-2-EMPTYCOLCOUNT;
+  Writer.WriteText(R, C1, R, C2, 'Форма по ОКУД');
   Writer.SetAlignment(haCenter, vaCenter);
-  Writer.WriteText(R, Writer.ColCount-1, R, Writer.ColCount, '0301007', cbtOuter);
+  C1:= Writer.ColCount-1-EMPTYCOLCOUNT;
+  C2:= Writer.ColCount-EMPTYCOLCOUNT;
+  Writer.WriteText(R, C1, R, C2, '0301007', cbtOuter);
   R:= R + 1;
   Writer.SetAlignment(haRight, vaCenter);
-  Writer.WriteText(R, Writer.ColCount-4, R, Writer.ColCount-2, 'по ОКПО');
+  C1:= Writer.ColCount-4-EMPTYCOLCOUNT;
+  C2:= Writer.ColCount-2-EMPTYCOLCOUNT;
+  Writer.WriteText(R, C1, R, C2, 'по ОКПО');
   Writer.SetAlignment(haCenter, vaCenter);
-  Writer.WriteText(R, Writer.ColCount-1, R, Writer.ColCount, '', cbtOuter);
+  C1:= Writer.ColCount-1-EMPTYCOLCOUNT;
+  C2:= Writer.ColCount-EMPTYCOLCOUNT;
+  Writer.WriteText(R, C1, R, C2, '', cbtOuter);
 
   Writer.SetFont(Font.Name, Font.Size+3, [{fsBold}], clBlack);
   Writer.SetAlignment(haCenter, vaBottom);
-  Writer.WriteText(R, C, R, Writer.ColCount-5, FCompany, cbtBottom, True, True);
+  C1:= 1;
+  C2:= Writer.ColCount-5-EMPTYCOLCOUNT;
+  Writer.WriteText(R, C1, R, C2, FCompany, cbtBottom, True, True);
   R:= R + 1;
   Writer.SetFont(Font.Name, Font.Size+1, [{fsBold}], clBlack);
-  Writer.WriteText(R, Writer.ColCount-1, R+1, Writer.ColCount, EmptyStr, cbtOuter);
-  if Writer.HasGrid then
-    Writer.WriteText(R+2, Writer.ColCount-1, R+2, Writer.ColCount, EmptyStr, cbtTop);
+  C1:= Writer.ColCount-1-EMPTYCOLCOUNT;
+  C2:= Writer.ColCount-EMPTYCOLCOUNT;
+  Writer.WriteText(R, C1, R+1, C2, EmptyStr, cbtOuter);
+  Writer.WriteText(R+2, C1, R+2, C2, EmptyStr, cbtTop);
 
   Writer.SetFont(Font.Name, Font.Size-1, [{fsBold}], clBlack);
   Writer.SetAlignment(haCenter, vaTop);
-  Writer.WriteText(R, C, R, Writer.ColCount-5, '(наименование организации)');
+  C1:= 1;
+  C2:= Writer.ColCount-5-EMPTYCOLCOUNT;
+  Writer.WriteText(R, C1, R, C2, '(наименование организации)');
   R:= R + 1;
   Writer.SetFont(Font.Name, Font.Size+3, [{fsBold}], clBlack);
   Writer.SetAlignment(haCenter, vaBottom);
-  Writer.WriteText(R, C, R, Writer.ColCount-5, FDepartment, cbtBottom, True, True);
+  Writer.WriteText(R, C1, R, C2, FDepartment, cbtBottom, True, True);
 
   if not Writer.HasGrid then
   begin
+    C1:= Writer.ColCount-1-EMPTYCOLCOUNT;
+    C2:= Writer.ColCount-EMPTYCOLCOUNT;
     Writer.SetBorders(BOLD_LINE_STYLE, clBlack, BORDER_STYLE_DEFAULT, clBlack);
-    Writer.DrawBorders(R-3, Writer.ColCount-1, R, Writer.ColCount, cbtAll);
+    Writer.DrawBorders(R-3, C1, R, C2, cbtAll);
+    if EMPTYCOLCOUNT>0 then //fix ODS borders
+      Writer.DrawBorders(R-3, Writer.ColCount, R, Writer.ColCount, cbtLeft);
+    Writer.DrawBorders(R+1, C1, R+1, C2, cbtTop);
     Writer.SetBordersDefault;
   end;
 
   R:= R + 1;
   Writer.SetFont(Font.Name, Font.Size-1, [{fsBold}], clBlack);
   Writer.SetAlignment(haCenter, vaTop);
-  Writer.WriteText(R, C, R, Writer.ColCount-5, '(структурное подразделение)');
+  C1:= 1;
+  C2:= Writer.ColCount-5-EMPTYCOLCOUNT;
+  Writer.WriteText(R, C1, R, C2, '(структурное подразделение)');
   R:= R + 1;
   Writer.SetAlignment(haCenter, vaCenter);
   Writer.SetFont(Font.Name, Font.Size+1, [{fsBold}], clBlack);
-  Writer.WriteText(R, Writer.ColCount-17, R+1, Writer.ColCount-14, 'Номер документа', cbtOuter);
-  Writer.WriteText(R, Writer.ColCount-13, R+1, Writer.ColCount-11, 'Дата составления', cbtOuter);
-  Writer.WriteText(R, Writer.ColCount-9, R, Writer.ColCount-6, 'Отчетный период', cbtOuter);
-  Writer.WriteText(R+1, Writer.ColCount-9, R+1, Writer.ColCount-8, 'с', cbtOuter);
-  Writer.WriteText(R+1, Writer.ColCount-7, R+1, Writer.ColCount-6, 'по', cbtOuter);
-  if Writer.HasGrid then
+  C1:= Writer.ColCount-17-EMPTYCOLCOUNT;
+  C2:= Writer.ColCount-14-EMPTYCOLCOUNT;
+  Writer.WriteText(R, Writer.ColCount-17-EMPTYCOLCOUNT, R+1, Writer.ColCount-14-EMPTYCOLCOUNT, 'Номер документа', cbtOuter);
+  Writer.WriteText(R, Writer.ColCount-13-EMPTYCOLCOUNT, R+1, Writer.ColCount-11-EMPTYCOLCOUNT, 'Дата составления', cbtOuter);
+  Writer.WriteText(R, Writer.ColCount-9-EMPTYCOLCOUNT, R, Writer.ColCount-6-EMPTYCOLCOUNT, 'Отчетный период', cbtOuter);
+  Writer.WriteText(R+1, Writer.ColCount-9-EMPTYCOLCOUNT, R+1, Writer.ColCount-8-EMPTYCOLCOUNT, 'с', cbtOuter);
+  Writer.WriteText(R+1, Writer.ColCount-7-EMPTYCOLCOUNT, R+1, Writer.ColCount-6-EMPTYCOLCOUNT, 'по', cbtOuter);
+
+  for i:= 0 to 2 do
   begin
-    for i:= 0 to 2 do
-    begin
-      Writer.WriteText(R+i, Writer.ColCount-10, EmptyStr, cbtLeft);
-      Writer.WriteText(R+i, Writer.ColCount-5, EmptyStr, cbtLeft);
-    end;
+    Writer.WriteText(R+i, Writer.ColCount-10-EMPTYCOLCOUNT, EmptyStr, cbtLeft);
+    Writer.WriteText(R+i, Writer.ColCount-5-EMPTYCOLCOUNT, EmptyStr, cbtLeft);
   end;
+
   R:= R + 2;
   Writer.SetFont(Font.Name, Font.Size+1, [fsBold], clBlack);
-  Writer.WriteText(R, Writer.ColCount-17, R, Writer.ColCount-14, EmptyStr, cbtOuter);
-  Writer.WriteText(R, Writer.ColCount-13, R, Writer.ColCount-11, EndDateStr, cbtOuter);
-  Writer.WriteText(R, Writer.ColCount-9, R, Writer.ColCount-8, BeginDateStr, cbtOuter);
-  Writer.WriteText(R, Writer.ColCount-7, R, Writer.ColCount-6, EndDateStr , cbtOuter);
+  Writer.WriteText(R, Writer.ColCount-17-EMPTYCOLCOUNT, R, Writer.ColCount-14-EMPTYCOLCOUNT, EmptyStr, cbtOuter);
+  Writer.WriteText(R, Writer.ColCount-13-EMPTYCOLCOUNT, R, Writer.ColCount-11-EMPTYCOLCOUNT, EndDateStr, cbtOuter);
+  Writer.WriteText(R, Writer.ColCount-9-EMPTYCOLCOUNT, R, Writer.ColCount-8-EMPTYCOLCOUNT, BeginDateStr, cbtOuter);
+  Writer.WriteText(R, Writer.ColCount-7-EMPTYCOLCOUNT, R, Writer.ColCount-6-EMPTYCOLCOUNT, EndDateStr, cbtOuter);
 
   if not Writer.HasGrid then
   begin
     Writer.SetBorders(BOLD_LINE_STYLE, clBlack, BORDER_STYLE_DEFAULT, clBlack);
-    Writer.DrawBorders(R, Writer.ColCount-17, R, Writer.ColCount-11, cbtAll);
-    Writer.DrawBorders(R, Writer.ColCount-9, R, Writer.ColCount-6, cbtAll);
+    Writer.DrawBorders(R, Writer.ColCount-17-EMPTYCOLCOUNT, R, Writer.ColCount-11-EMPTYCOLCOUNT, cbtAll);
+    Writer.DrawBorders(R, Writer.ColCount-9-EMPTYCOLCOUNT, R, Writer.ColCount-6-EMPTYCOLCOUNT, cbtAll);
+    Writer.DrawBorders(R, Writer.ColCount-10-EMPTYCOLCOUNT, cbtLeft);
+    Writer.DrawBorders(R, Writer.ColCount-5-EMPTYCOLCOUNT, cbtLeft);
     Writer.SetBordersDefault;
   end;
 
   Writer.SetFont(Font.Name, Font.Size+6, [fsBold], clBlack);
-  Writer.WriteText(R, C+19, R, C+24, 'ТАБЕЛЬ');
+  Writer.WriteText(R, 20, R, 25, 'ТАБЕЛЬ');
   Writer.SetRowHeight(R, BIGROWHEIGHT);
   R:= R + 1;
-  Writer.WriteText(R, C, R, Writer.ColCount, 'учета рабочего времени');
+  Writer.WriteText(R, 1, R, Writer.ColCount-EMPTYCOLCOUNT, 'учета рабочего времени');
   Writer.SetRowHeight(R, BIGROWHEIGHT);
 end;
 
@@ -1422,12 +1455,13 @@ begin
   Writer.DrawBorders(R, C+36, R, C+41, cbtAll);
   Writer.DrawBorders(R, C+42, R, C+45, cbtAll);
   Writer.DrawBorders(R, C+46, R, C+46, cbtAll);
+
   Writer.SetBordersDefault;
 end;
 
 procedure TTimetableSheetT12.LineBordersDraw(const AFirstRow: Integer);
 var
-  R, C: Integer;
+  i, R, C: Integer;
 begin
   C:= 1;
   R:= AFirstRow;
@@ -1445,6 +1479,11 @@ begin
   Writer.DrawBorders(R, C+36, R+1, C+41, cbtAll);
   Writer.DrawBorders(R, C+42, R+1, C+45, cbtAll);
   Writer.DrawBorders(R, C+46, R+1, C+46, cbtAll);
+
+  R:= R + 2;
+  for i:= C to C+46 do //fix ODS borders
+     Writer.DrawBorders(R, i, cbtTop);
+
   Writer.SetBordersDefault;
 end;
 
@@ -1604,6 +1643,7 @@ begin
   VAppend(Result, COL13_2_WIDTH);
   for i:= 1 to 3 do
     VAppend(Result, LAST_COLS_WIDTH);
+  VAppend(Result, 1); //empty
 end;
 
 procedure TTimetableSheetT13.SelectDate(const ADate: TDate);
@@ -1655,7 +1695,7 @@ end;
 
 procedure TTimetableSheetT13.TopDraw;
 var
-  R, C, i: Integer;
+  R, C1, C2, i: Integer;
   EndDateStr, BeginDateStr: String;
 const
   BIGROWHEIGHT = 25;
@@ -1670,94 +1710,120 @@ begin
 
   Writer.SetBackgroundDefault;
 
-  C:= 1;
   R:= 1;
   Writer.SetAlignment(haLeft, vaCenter);
   Writer.SetFont(Font.Name, Font.Size-1, [{fsBold}], clBlack);
-  Writer.WriteText(R, Writer.ColCount-4, R, Writer.ColCount, 'Унифицированная форма № Т-13');
-  Writer.WriteText(R+1, Writer.ColCount-4, R+1, Writer.ColCount, 'Утверждена Постановлением Госкомстата');
-  Writer.WriteText(R+2, Writer.ColCount-4, R+2, Writer.ColCount, 'России от 5 января 2004 г. № 1');
+  C1:= Writer.ColCount-5-EMPTYCOLCOUNT;
+  C2:= Writer.ColCount-EMPTYCOLCOUNT;
+  Writer.WriteText(R, C1, R, C2, 'Унифицированная форма № Т-13');
+  Writer.WriteText(R+1, C1, R+1, C2, 'Утверждена Постановлением Госкомстата');
+  Writer.WriteText(R+2, C1, R+2, C2, 'России от 5 января 2004 г. № 1');
   for i:= 0 to 2 do
     Writer.SetRowHeight(R+i, SMALLROWHEIGHT);
   R:= R + 4;
   Writer.SetFont(Font.Name, Font.Size+1, [{fsBold}], clBlack);
   Writer.SetAlignment(haCenter, vaCenter);
-  Writer.WriteText(R, Writer.ColCount-1, R, Writer.ColCount, 'Код', cbtOuter);
+  C1:= Writer.ColCount-1-EMPTYCOLCOUNT;
+  C2:= Writer.ColCount-EMPTYCOLCOUNT;
+  Writer.WriteText(R, C1, R, C2, 'Код', cbtOuter);
+  if EMPTYCOLCOUNT>0 then //fix ODS borders
+    Writer.DrawBorders(R, Writer.ColCount, cbtLeft);
   R:= R + 1;
   Writer.SetAlignment(haRight, vaCenter);
-  Writer.WriteText(R, Writer.ColCount-5, R, Writer.ColCount-2, 'Форма по ОКУД');
+  C1:= Writer.ColCount-5-EMPTYCOLCOUNT;
+  C2:= Writer.ColCount-2-EMPTYCOLCOUNT;
+  Writer.WriteText(R, C1, R, C2, 'Форма по ОКУД');
   Writer.SetAlignment(haCenter, vaCenter);
-  Writer.WriteText(R, Writer.ColCount-1, R, Writer.ColCount, '0301008', cbtOuter);
+  C1:= Writer.ColCount-1-EMPTYCOLCOUNT;
+  C2:= Writer.ColCount-EMPTYCOLCOUNT;
+  Writer.WriteText(R, C1, R, C2, '0301008', cbtOuter);
   R:= R + 1;
   Writer.SetAlignment(haRight, vaCenter);
-  Writer.WriteText(R, Writer.ColCount-3, R, Writer.ColCount-2, 'по ОКПО');
+  C1:= Writer.ColCount-3-EMPTYCOLCOUNT;
+  C2:= Writer.ColCount-2-EMPTYCOLCOUNT;
+  Writer.WriteText(R, C1, R, C2, 'по ОКПО');
   Writer.SetAlignment(haCenter, vaCenter);
-  Writer.WriteText(R, Writer.ColCount-1, R, Writer.ColCount, EmptyStr, cbtOuter);
+  C1:= Writer.ColCount-1-EMPTYCOLCOUNT;
+  C2:= Writer.ColCount-EMPTYCOLCOUNT;
+  Writer.WriteText(R, C1, R, C2, EmptyStr, cbtOuter);
 
   Writer.SetFont(Font.Name, Font.Size+3, [{fsBold}], clBlack);
   Writer.SetAlignment(haCenter, vaBottom);
-  Writer.WriteText(R, C, R, Writer.ColCount-4, FCompany, cbtBottom, True, True);
+  C1:= 1;
+  C2:= Writer.ColCount-4-EMPTYCOLCOUNT;
+  Writer.WriteText(R, C1, R, C2, FCompany, cbtBottom, True, True);
   R:= R + 1;
   Writer.SetFont(Font.Name, Font.Size+1, [{fsBold}], clBlack);
-  Writer.WriteText(R, Writer.ColCount-1, R+1, Writer.ColCount, EmptyStr, cbtOuter);
-  if Writer.HasGrid then
-    Writer.WriteText(R+2, Writer.ColCount-1, R+2, Writer.ColCount, EmptyStr, cbtTop);
+  C1:= Writer.ColCount-1-EMPTYCOLCOUNT;
+  C2:= Writer.ColCount-EMPTYCOLCOUNT;
+  Writer.WriteText(R, C1, R+1, C2, EmptyStr, cbtOuter);
+  Writer.WriteText(R+2, C1, R+2, C2, EmptyStr, cbtTop);
 
   Writer.SetFont(Font.Name, Font.Size-1, [{fsBold}], clBlack);
   Writer.SetAlignment(haCenter, vaTop);
-  Writer.WriteText(R, C, R, Writer.ColCount-4, '(наименование организации)');
+  C1:= 1;
+  C2:= Writer.ColCount-4-EMPTYCOLCOUNT;
+  Writer.WriteText(R, C1, R, C2, '(наименование организации)');
   R:= R + 1;
   Writer.SetFont(Font.Name, Font.Size+3, [{fsBold}], clBlack);
   Writer.SetAlignment(haCenter, vaBottom);
-  Writer.WriteText(R, C, R, Writer.ColCount-4, FDepartment, cbtBottom, True, True);
+  Writer.WriteText(R, C1, R, C2, FDepartment, cbtBottom, True, True);
 
   if not Writer.HasGrid then
   begin
+    C1:= Writer.ColCount-1-EMPTYCOLCOUNT;
+    C2:= Writer.ColCount-EMPTYCOLCOUNT;
     Writer.SetBorders(BOLD_LINE_STYLE, clBlack, BORDER_STYLE_DEFAULT, clBlack);
-    Writer.DrawBorders(R-3, Writer.ColCount-1, R, Writer.ColCount, cbtAll);
+    Writer.DrawBorders(R-3, C1, R, C2, cbtAll);
+    if EMPTYCOLCOUNT>0 then //fix ODS borders
+      Writer.DrawBorders(R-3, Writer.ColCount, R, Writer.ColCount, cbtLeft);
+    Writer.DrawBorders(R+1, C1, R+1, C2, cbtTop);
     Writer.SetBordersDefault;
   end;
 
   R:= R + 1;
   Writer.SetFont(Font.Name, Font.Size-1, [{fsBold}], clBlack);
   Writer.SetAlignment(haCenter, vaTop);
-  Writer.WriteText(R, C, R, Writer.ColCount-4, '(структурное подразделение)');
+  C1:= 1;
+  C2:= Writer.ColCount-4-EMPTYCOLCOUNT;
+  Writer.WriteText(R, C1, R, C2, '(структурное подразделение)');
   R:= R + 1;
   Writer.SetAlignment(haCenter, vaCenter);
   Writer.SetFont(Font.Name, Font.Size+1, [{fsBold}], clBlack);
-  Writer.WriteText(R, Writer.ColCount-13, R+1, Writer.ColCount-11, 'Номер документа', cbtOuter);
-  Writer.WriteText(R, Writer.ColCount-10, R+1, Writer.ColCount-8, 'Дата составления', cbtOuter);
-  Writer.WriteText(R, Writer.ColCount-6, R, Writer.ColCount-4, 'Отчетный период', cbtOuter);
-  Writer.WriteText(R+1, Writer.ColCount-6, 'с', cbtOuter);
-  Writer.WriteText(R+1, Writer.ColCount-5, R+1, Writer.ColCount-4, 'по', cbtOuter);
-  if Writer.HasGrid then
+  Writer.WriteText(R, Writer.ColCount-13-EMPTYCOLCOUNT, R+1, Writer.ColCount-11-EMPTYCOLCOUNT, 'Номер документа', cbtOuter);
+  Writer.WriteText(R, Writer.ColCount-10-EMPTYCOLCOUNT, R+1, Writer.ColCount-8-EMPTYCOLCOUNT, 'Дата составления', cbtOuter);
+  Writer.WriteText(R, Writer.ColCount-6-EMPTYCOLCOUNT, R, Writer.ColCount-4-EMPTYCOLCOUNT, 'Отчетный период', cbtOuter);
+  Writer.WriteText(R+1, Writer.ColCount-6-EMPTYCOLCOUNT, 'с', cbtOuter);
+  Writer.WriteText(R+1, Writer.ColCount-5-EMPTYCOLCOUNT, R+1, Writer.ColCount-4-EMPTYCOLCOUNT, 'по', cbtOuter);
+
+  for i:= 0 to 2 do
   begin
-    for i:= 0 to 2 do
-    begin
-      Writer.WriteText(R+i, Writer.ColCount-7, EmptyStr, cbtLeft);
-      Writer.WriteText(R+i, Writer.ColCount-3, EmptyStr, cbtLeft);
-    end;
+    Writer.WriteText(R+i, Writer.ColCount-7-EMPTYCOLCOUNT, EmptyStr, cbtLeft);
+    Writer.WriteText(R+i, Writer.ColCount-3-EMPTYCOLCOUNT, EmptyStr, cbtLeft);
   end;
+
   R:= R + 2;
   Writer.SetFont(Font.Name, Font.Size+1, [fsBold], clBlack);
-  Writer.WriteText(R, Writer.ColCount-13, R, Writer.ColCount-11, EmptyStr, cbtOuter);
-  Writer.WriteText(R, Writer.ColCount-10, R, Writer.ColCount-8, EndDateStr, cbtOuter);
-  Writer.WriteText(R, Writer.ColCount-6, BeginDateStr, cbtOuter);
-  Writer.WriteText(R, Writer.ColCount-5, R, Writer.ColCount-4, EndDateStr , cbtOuter);
+  Writer.WriteText(R, Writer.ColCount-13-EMPTYCOLCOUNT, R, Writer.ColCount-11-EMPTYCOLCOUNT, EmptyStr, cbtOuter);
+  Writer.WriteText(R, Writer.ColCount-10-EMPTYCOLCOUNT, R, Writer.ColCount-8-EMPTYCOLCOUNT, EndDateStr, cbtOuter);
+  Writer.WriteText(R, Writer.ColCount-6-EMPTYCOLCOUNT, BeginDateStr, cbtOuter);
+  Writer.WriteText(R, Writer.ColCount-5-EMPTYCOLCOUNT, R, Writer.ColCount-4-EMPTYCOLCOUNT, EndDateStr , cbtOuter);
 
   if not Writer.HasGrid then
   begin
     Writer.SetBorders(BOLD_LINE_STYLE, clBlack, BORDER_STYLE_DEFAULT, clBlack);
-    Writer.DrawBorders(R, Writer.ColCount-13, R, Writer.ColCount-8, cbtAll);
-    Writer.DrawBorders(R, Writer.ColCount-6, R, Writer.ColCount-4, cbtAll);
+    Writer.DrawBorders(R, Writer.ColCount-13-EMPTYCOLCOUNT, R, Writer.ColCount-8-EMPTYCOLCOUNT, cbtAll);
+    Writer.DrawBorders(R, Writer.ColCount-6-EMPTYCOLCOUNT, R, Writer.ColCount-4-EMPTYCOLCOUNT, cbtAll);
+    Writer.DrawBorders(R, Writer.ColCount-7-EMPTYCOLCOUNT, cbtLeft);
+    Writer.DrawBorders(R, Writer.ColCount-3-EMPTYCOLCOUNT, cbtLeft);
     Writer.SetBordersDefault;
   end;
 
   Writer.SetFont(Font.Name, Font.Size+6, [fsBold], clBlack);
-  Writer.WriteText(R, C+15, R, C+17, 'ТАБЕЛЬ');
+  Writer.WriteText(R, 16, R, 18, 'ТАБЕЛЬ');
   Writer.SetRowHeight(R, BIGROWHEIGHT);
   R:= R + 1;
-  Writer.WriteText(R, C, R, Writer.ColCount, 'учета рабочего времени');
+  Writer.WriteText(R, 1, R, Writer.ColCount-EMPTYCOLCOUNT, 'учета рабочего времени');
   Writer.SetRowHeight(R, BIGROWHEIGHT);
 end;
 
@@ -1914,7 +1980,7 @@ end;
 
 procedure TTimetableSheetT13.CaptionBordersDraw(const AFirstRow: Integer);
 var
-  R, C: Integer;
+  i, R, C: Integer;
 begin
   C:= 1;
   R:= AFirstRow;
@@ -1937,12 +2003,17 @@ begin
   Writer.DrawBorders(R, C+19, R, C+20, cbtAll);
   Writer.DrawBorders(R, C+21, R, C+29, cbtAll);
   Writer.DrawBorders(R, C+30, R, C+34, cbtAll);
+
+  if EMPTYCOLCOUNT>0 then //fix ODS borders
+    for i:= AFirstRow to AFirstRow+7 do
+      Writer.DrawBorders(i, Writer.ColCount, cbtLeft);
+
   Writer.SetBordersDefault;
 end;
 
 procedure TTimetableSheetT13.LineBordersDraw(const AFirstRow: Integer);
 var
-  R, C: Integer;
+  i, R, C: Integer;
 begin
   C:= 1;
   R:= AFirstRow;
@@ -1957,6 +2028,11 @@ begin
   Writer.DrawBorders(R, C+19, R+3, C+20, cbtAll);
   Writer.DrawBorders(R, C+21, R+3, C+29, cbtAll);
   Writer.DrawBorders(R, C+30, R+3, C+34, cbtAll);
+
+  R:= R + 4;
+  for i:= C to C+34 do //fix ODS borders
+    Writer.DrawBorders(R, i, cbtTop);
+
   Writer.SetBordersDefault;
 end;
 
