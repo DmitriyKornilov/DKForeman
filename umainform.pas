@@ -8,7 +8,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, Buttons,
-  Menus, LCLType, DividerBevel,
+  Menus, LCLType, DividerBevel, SQLDB,
   //DK packages utils
   {$IFDEF DEBUG}
   DK_HeapTrace,
@@ -19,7 +19,7 @@ uses
   //Forms
   UAboutForm,
   UInfoForm,
-  UParamForm, SQLDB,
+  UParamForm,
   UStaffForm,
   UCalendarForm, UScheduleShiftForm, UVacationPlanForm,
   USchedulePersonalForm, UTimetableForm,

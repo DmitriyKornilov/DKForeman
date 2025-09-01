@@ -19,6 +19,7 @@ type
   private
     const
       MINROWS = 1;
+      EMPTYCOLCOUNT = 1;
       COLWIDTHS: array of Integer = (
         {01} 55,  //номер п/п
         {02} 130, //ФИО 1
@@ -39,7 +40,8 @@ type
         {17} 15,  //дата поступления в эксплуатацию 2
         {18} 50,  //срок службы 1
         {19} 30,  //срок службы 2
-        {20} 70   //подпись
+        {20} 70,  //подпись
+        {21} 1    //empty
       );
     var
       FDocNum: String;
@@ -86,7 +88,7 @@ begin
   Writer.SetFont(Font.Name, Font.Size-2, [], clBlack);
 
   C1:= 1;
-  C2:= Writer.ColCount;
+  C2:= Writer.ColCount-EMPTYCOLCOUNT;
 
   R:= ARow;
   Writer.WriteText(R, C1, R, C2, 'Типовая межотраслевая форма № МБ-7');
@@ -110,31 +112,37 @@ begin
   Writer.WriteText(R, C1, R, C2, 'предохранительных приспособлений');
   Writer.SetRowHeight(R, 18);
 
-  C1:= Writer.ColCount-1;
-  C2:= Writer.ColCount;
+  C1:= Writer.ColCount-1-EMPTYCOLCOUNT;
+  C2:= Writer.ColCount-EMPTYCOLCOUNT;
   Writer.SetAlignment(haCenter, vaCenter);
   Writer.SetFont(Font.Name, Font.Size, [], clBlack);
   R:= R + 1;
   Writer.WriteText(R, C1, R, C2, 'Коды', cbtOuter);
+
+  if EMPTYCOLCOUNT>0 then //fix border
+    Writer.DrawBorders(R, Writer.ColCount, cbtLeft);
+
   R:= R + 1;
   Writer.WriteText(R, C1, R, C2, '0320003', cbtOuter);
   R:= R + 1;
   Writer.WriteText(R, C1, R, C2, EmptyStr, cbtOuter);
+
   if not Writer.HasGrid then
-  begin
     Writer.SetBorders(lsMedium, clBlack, lsThin, clBlack);
-    Writer.DrawBorders(R-1, C1, R, C2, cbtAll);
+  Writer.DrawBorders(R-1, C1, R, C2, cbtAll);
+  if EMPTYCOLCOUNT>0 then //fix border
+    Writer.DrawBorders(R-1, Writer.ColCount, R, Writer.ColCount, cbtLeft);
+  if not Writer.HasGrid then
     Writer.SetBordersDefault;
-  end;
 
   R:= R - 1;
   C1:= 1;
-  C2:= Writer.ColCount-2;
+  C2:= Writer.ColCount-2-EMPTYCOLCOUNT;
   Writer.SetAlignment(haRight, vaCenter);
   Writer.WriteText(R, C1, R, C2, 'Форма по ОКУД');
   R:= R + 1;
-  C1:= Writer.ColCount-3;
-  C2:= Writer.ColCount-2;
+  C1:= Writer.ColCount-3-EMPTYCOLCOUNT;
+  C2:= Writer.ColCount-2-EMPTYCOLCOUNT;
   Writer.WriteText(R, C1, R, C2, 'по ОКПО');
 
   Writer.SetAlignment(haLeft, vaBottom);
@@ -142,19 +150,19 @@ begin
   C2:= C1+1;
   Writer.WriteText(R, C1, R, C2, 'Организация:');
   C1:= C2+1;
-  C2:= Writer.ColCount-4;
+  C2:= Writer.ColCount-4-EMPTYCOLCOUNT;
   Writer.WriteText(R, C1, R, C2, FCompany, cbtBottom, True, True);
   R:= R + 1;
   C1:= 1;
   C2:= C1+1;
   Writer.WriteText(R, C1, R, C2, 'Структурное подразделение:');
   C1:= C2+1;
-  C2:= Writer.ColCount-4;
+  C2:= Writer.ColCount-4-EMPTYCOLCOUNT;
   Writer.WriteText(R, C1, R, C2, FDepartment, cbtBottom, True, True);
 
   Writer.SetAlignment(haCenter, vaCenter);
   R:= R + 2;
-  C1:= Writer.ColCount-9;
+  C1:= Writer.ColCount-9-EMPTYCOLCOUNT;
   C2:= C1+1;
   Writer.WriteText(R, C1, R, C2, 'Дата составления', cbtOuter, True, True);
   C1:= C2+1;
@@ -166,8 +174,12 @@ begin
   C1:= C2+1;
   C2:= C1+1;
   Writer.WriteText(R, C1, R, C2, 'Вид деятельности', cbtOuter, True, True);
+
+  if EMPTYCOLCOUNT>0 then //fix border
+    Writer.DrawBorders(R, Writer.ColCount, cbtLeft);
+
   R:= R + 1;
-  C1:= Writer.ColCount-9;
+  C1:= Writer.ColCount-9-EMPTYCOLCOUNT;
   C2:= C1+1;
   Writer.WriteDate(R, C1, R, C2, FDocDate, cbtOuter);
   C1:= C2+1;
@@ -182,14 +194,16 @@ begin
   C1:= C2+1;
   C2:= C1+1;
   Writer.WriteText(R, C1, R, C2, EmptyStr{вид деятельности}, cbtOuter, True, True);
+
   if not Writer.HasGrid then
-  begin
-    C1:= Writer.ColCount-9;
-    C2:= Writer.ColCount;
     Writer.SetBorders(lsMedium, clBlack, lsThin, clBlack);
-    Writer.DrawBorders(R, C1, R, C2, cbtAll);
+  C1:= Writer.ColCount-9-EMPTYCOLCOUNT;
+  C2:= Writer.ColCount-EMPTYCOLCOUNT;
+  Writer.DrawBorders(R, C1, R, C2, cbtAll);
+  if EMPTYCOLCOUNT>0 then //fix border
+    Writer.DrawBorders(R, Writer.ColCount, cbtLeft);
+  if not Writer.HasGrid then
     Writer.SetBordersDefault;
-  end;
 
   ARow:= R;
 end;
@@ -247,7 +261,7 @@ begin
 
   Writer.WriteNumber(R+2, C1, R+2, C2, 11, cbtOuter);
 
-  Writer.DrawBorders(ARow, 1, R+2, Writer.ColCount, cbtAll);
+  Writer.DrawBorders(ARow, 1, R+2, Writer.ColCount-EMPTYCOLCOUNT, cbtAll);
 
   ARow:= R + 2;
 end;
@@ -332,6 +346,11 @@ begin
     Writer.DrawBorders(ARow, 4, RR, 4, cbtAll);
     Writer.DrawBorders(ARow, 9, RR, 11, cbtAll);
     Writer.DrawBorders(ARow, 14, RR, 19, cbtAll);
+    if EMPTYCOLCOUNT>0 then //fix border
+    begin
+      Writer.SetBordersStyle(lsMedium, lsThin, lsThin, lsThin, lsThin);
+      Writer.DrawBorders(ARow, 20, RR, 20, cbtAll);
+    end;
     Writer.SetBordersDefault;
   end;
 
