@@ -77,7 +77,8 @@ type
         {07} 70,
         {08} 60,
         {09} 100,
-        {10} 100
+        {10} 100,
+        {11} 1 //empty
       );
     var
       FReceivingDates, FReturningDates: TDateVector;
@@ -705,15 +706,15 @@ begin
   Writer.SetFont(Font.Name, Font.Size, [], clBlack);
   Writer.SetAlignment(haLeft, vaCenter);
 
-  Writer.WriteText(R, 1, R, Writer.ColCount,
+  Writer.WriteText(R, 1, R, 10,
                    '* - информация указывается только для ' +
                    'дерматологических СИЗ', cbtRight);
   R:= R + 1;
-  Writer.WriteText(R, 1, R, Writer.ColCount,
+  Writer.WriteText(R, 1, R, 10,
                    '** - информация указывается для всех СИЗ, кроме ' +
                    'дерматологических СИЗ и СИЗ однократного применения', cbtRight);
 
-  Writer.DrawBorders(ARow, 1, R, Writer.ColCount, cbtOuter);
+  Writer.DrawBorders(ARow, 1, R, 10, cbtOuter);
 
   for i:= ARow to R do
     Writer.SetRowHeight(i, 16);
@@ -729,7 +730,7 @@ procedure TSIZCardBackSheet.Draw(const ANeedDraw: Boolean;
                    const AIsAllHistory: Boolean = False;
                    const ATitle: String = '');
 var
-  R, CaptionRowCount: Integer;
+  i, R, CaptionRowCount: Integer;
 begin
   Unselect;
 
@@ -771,6 +772,9 @@ begin
     R:= R + 1;
     NoteDraw(R);
   end;
+
+  for i:= 1 to R do //fix ODS borders
+    Writer.DrawBorders(i, 11, cbtLeft);
 
   Writer.SetFrozenRows(CaptionRowCount);
   Writer.SetRepeatedRows(CaptionRowCount-2, CaptionRowCount);
