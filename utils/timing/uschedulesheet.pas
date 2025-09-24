@@ -1437,6 +1437,8 @@ begin
                (SelectedIndex=AIndex) and (SelectedPart=1));
   VacationDraw(APlan2Date, APlan2Count, APlan2AddCount,
                (SelectedIndex=AIndex) and (SelectedPart=2));
+
+  CaptionDraw;
 end;
 
 function TVacationPlanSheet.IsSelected: Boolean;
