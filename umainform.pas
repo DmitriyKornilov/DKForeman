@@ -161,7 +161,7 @@ var
   DBPath, DBName{, DDLName}: String;
   IsDBFileExists: Boolean;
 begin
-  DBPath:= ExtractFilePath(Application.ExeName) + DirectorySeparator + 'db' + DirectorySeparator;
+  DBPath:= ExtractFilePath(Application.ExeName) + 'db' + DirectorySeparator;
   DBName:= DBPath + 'base.db';
   //DDLName:= DBPath + 'ddl.sql';
   IsDBFileExists:= FileExists(DBName);

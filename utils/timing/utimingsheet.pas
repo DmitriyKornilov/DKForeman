@@ -847,14 +847,14 @@ begin
                 STAFFNAME_COLUMN_WIDTH, False{не менее STAFFNAME_COLUMN_WIDTH});
 
   X:= 1+Ord(FExtraColumns[0]); //FExtraColumns: 0 - Порядковый номер
-  Writer.SetColWidth(X, W);
+  Writer.ColWidth[X]:= W;
   if FExtraColumns[2] then //FExtraColumns: 2 - Табельный номер
   begin
     W:= VMaxWidth(FTabNums, Font.Name, Font.Size+1, [],
                   TABNUM_COLUMN_WIDTH, False{не менее TABNUM_COLUMN_WIDTH});
 
     X:= 2+Ord(FExtraColumns[0])+Ord(FExtraColumns[1]); //FExtraColumns: 0 - Порядковый номер, 1 - Должность (профессия)
-    Writer.SetColWidth(X, W);
+    Writer.ColWidth[X]:= W;
   end;
 
   Writer.SetBackgroundDefault;
@@ -994,7 +994,7 @@ begin
     S:= S + SYMBOL_BREAK + 'нормы';
     Writer.WriteText(R, C, R+1, C, S, cbtOuter);
   end;
-  Writer.SetRowHeight(R, 3*SHeight(Font));
+  Writer.RowHeight[R]:= 3*SHeight(Font);
 end;
 
 { TMonthFormSheet }

@@ -600,7 +600,7 @@ begin
   end;
 
   if not FViewParams[0] then //0 - Отображать строку ночных часов
-    Writer.SetRowHeight(R, Trunc(1.6*Writer.RowHeightDefault));
+    Writer.RowHeight[R]:= Trunc(1.6*Writer.RowHeightDefault);
 end;
 
 constructor TPersonalMonthScheduleSheet.Create(const AWorksheet: TsWorksheet;
@@ -848,7 +848,7 @@ begin
 
   BordersDraw(1 + Ord(IsNeedCaption));
   for i:= 2+Ord(IsNeedCaption) to Writer.RowCount do
-    Writer.SetRowHeight(i, ROW_DEFAULT_HEIGHT);
+    Writer.RowHeight[i]:= ROW_DEFAULT_HEIGHT;
 end;
 
 { TCustomYearScheduleSheet }
@@ -1579,13 +1579,13 @@ begin
   Writer.SetFont(Font.Name, Font.Size-2, [], clBlack);
   Writer.SetAlignment(haLeft, vaCenter);
   Writer.WriteText(R, 24, R, 28, 'Унифицированная форма № Т-7');
-  Writer.SetRowHeight(R, 12);
+  Writer.RowHeight[R]:= 12;
   R:= R + 1;
   Writer.WriteText(R, 24, R, 28, 'Утверждена Постановлением Госкомстата');
-  Writer.SetRowHeight(R, 12);
+  Writer.RowHeight[R]:= 12;
   R:= R + 1;
   Writer.WriteText(R, 24, R, 28, 'России от 05.01.2004 № 1');
-  Writer.SetRowHeight(R, 12);
+  Writer.RowHeight[R]:= 12;
 
   R:= R + 2;
   Writer.SetFont(Font.Name, Font.Size, [], clBlack);
@@ -1718,7 +1718,7 @@ begin
   Writer.WriteText(R+2, 24, R+2, 26, 'дата предпо-'+SYMBOL_BREAK+'лагаемого'+
                                      SYMBOL_BREAK+'отпуска', cbtOuter);
   Writer.WriteText(R, 27, R+2, 28, 'Примечание', cbtOuter);
-  Writer.SetRowHeight(R+2, 50);
+  Writer.RowHeight[R+2]:= 50;
 
   R:= R + 3;
   Writer.WriteNumber(R, 1,  R, 4,  1, cbtOuter);
@@ -1919,7 +1919,7 @@ begin
     Writer.AddCellBGColorIndex(R+1, i, TITLE_COLOR_INDEX);
   end;
   i:= 3*SHeight(Font.Name, Font.Size, [fsBold]);
-  Writer.SetRowHeight(R, i);
+  Writer.RowHeight[R]:= i;
 end;
 
 constructor TTableScheduleSheet.Create(const AWorksheet: TsWorksheet;
@@ -2081,7 +2081,7 @@ begin
 
   BordersDraw(1 + Ord(IsNeedCaption));
   for i:= 2+Ord(IsNeedCaption) to Writer.RowCount do
-    Writer.SetRowHeight(i, ROW_DEFAULT_HEIGHT);
+    Writer.RowHeight[i]:= ROW_DEFAULT_HEIGHT;
 end;
 
 function TShiftYearScheduleSheet.GetCaption: String;
@@ -2226,7 +2226,7 @@ begin
   for i:= 0 to High(FSchedules) do
     if FVisible[i] then
       W:= Max(W, SWidth(FNames[i], Font.Name, Font.Size+1));
-  Writer.SetColWidth(1, W);
+  Writer.ColWidth[1]:= W;
   CaptionDraw;
   BlankDraw;
   ScheduleDraw;
@@ -2236,7 +2236,7 @@ begin
 
   BordersDraw(1 + Ord(IsNeedCaption));
   for i:= 2+Ord(IsNeedCaption) to Writer.RowCount do
-    Writer.SetRowHeight(i, ROW_DEFAULT_HEIGHT);
+    Writer.RowHeight[i]:= ROW_DEFAULT_HEIGHT;
 end;
 
 function TShiftMonthScheduleSheet.GridToDate(const ARow, ACol: Integer; out ADate: TDate): Boolean;

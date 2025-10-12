@@ -15,7 +15,7 @@ object MainForm: TMainForm
     Left = 2
     Height = 40
     Top = 2
-    Width = 1016
+    Width = 812
     Align = alTop
     BorderSpacing.Left = 2
     BorderSpacing.Top = 2
@@ -23,7 +23,7 @@ object MainForm: TMainForm
     BevelOuter = bvNone
     BorderStyle = bsSingle
     ClientHeight = 40
-    ClientWidth = 1016
+    ClientWidth = 812
     ParentFont = False
     TabOrder = 0
     object AboutButton: TSpeedButton
@@ -32,8 +32,8 @@ object MainForm: TMainForm
       AnchorSideBottom.Control = ToolPanel
       AnchorSideBottom.Side = asrBottom
       Cursor = crHandPoint
-      Left = 911
-      Height = 36
+      Left = 718
+      Height = 28
       Hint = 'О программе'
       Top = 0
       Width = 40
@@ -54,8 +54,8 @@ object MainForm: TMainForm
       AnchorSideBottom.Control = ToolPanel
       AnchorSideBottom.Side = asrBottom
       Cursor = crHandPoint
-      Left = 972
-      Height = 36
+      Left = 768
+      Height = 28
       Hint = 'Выход'
       Top = 0
       Width = 40
@@ -75,8 +75,8 @@ object MainForm: TMainForm
       AnchorSideBottom.Control = ToolPanel
       AnchorSideBottom.Side = asrBottom
       Cursor = crHandPoint
-      Left = 810
-      Height = 36
+      Left = 636
+      Height = 28
       Hint = 'Параметры'
       Top = 0
       Width = 40
@@ -98,8 +98,8 @@ object MainForm: TMainForm
       AnchorSideBottom.Control = ToolPanel
       AnchorSideBottom.Side = asrBottom
       Cursor = crHandPoint
-      Left = 770
-      Height = 36
+      Left = 604
+      Height = 28
       Hint = 'Редактирование'
       Top = 0
       Width = 40
@@ -121,8 +121,8 @@ object MainForm: TMainForm
       AnchorSideBottom.Control = ToolPanel
       AnchorSideBottom.Side = asrBottom
       Cursor = crHandPoint
-      Left = 871
-      Height = 36
+      Left = 686
+      Height = 28
       Hint = 'Обновить'
       Top = 0
       Width = 40
@@ -141,10 +141,10 @@ object MainForm: TMainForm
       AnchorSideRight.Control = ExitButton
       AnchorSideBottom.Control = ToolPanel
       AnchorSideBottom.Side = asrBottom
-      Left = 951
-      Height = 36
+      Left = 758
+      Height = 28
       Top = 0
-      Width = 21
+      Width = 18
       Caption = 'DividerBevel1'
       Align = alCustom
       Anchors = [akTop, akRight, akBottom]
@@ -158,10 +158,10 @@ object MainForm: TMainForm
       AnchorSideRight.Control = RefreshButton
       AnchorSideBottom.Control = ToolPanel
       AnchorSideBottom.Side = asrBottom
-      Left = 850
-      Height = 36
+      Left = 676
+      Height = 28
       Top = 0
-      Width = 21
+      Width = 18
       Caption = 'DividerBevel2'
       Align = alCustom
       Anchors = [akTop, akRight, akBottom]
@@ -176,10 +176,10 @@ object MainForm: TMainForm
       AnchorSideTop.Control = ToolPanel
       AnchorSideBottom.Control = ToolPanel
       AnchorSideBottom.Side = asrBottom
-      Left = 496
-      Height = 36
+      Left = 417
+      Height = 28
       Top = 0
-      Width = 21
+      Width = 18
       Caption = 'DividerBevel3'
       Align = alCustom
       Anchors = [akTop, akLeft, akBottom]
@@ -195,9 +195,9 @@ object MainForm: TMainForm
       AnchorSideBottom.Side = asrBottom
       Cursor = crHandPoint
       Left = 0
-      Height = 36
+      Height = 28
       Top = 0
-      Width = 87
+      Width = 78
       Align = alCustom
       Anchors = [akTop, akLeft, akBottom]
       AutoSize = True
@@ -215,10 +215,10 @@ object MainForm: TMainForm
       AnchorSideBottom.Control = ToolPanel
       AnchorSideBottom.Side = asrBottom
       Cursor = crHandPoint
-      Left = 87
-      Height = 36
+      Left = 78
+      Height = 28
       Top = 0
-      Width = 241
+      Width = 198
       Align = alCustom
       Anchors = [akTop, akLeft, akBottom]
       AutoSize = True
@@ -236,10 +236,10 @@ object MainForm: TMainForm
       AnchorSideBottom.Control = ToolPanel
       AnchorSideBottom.Side = asrBottom
       Cursor = crHandPoint
-      Left = 328
-      Height = 36
+      Left = 276
+      Height = 28
       Top = 0
-      Width = 168
+      Width = 141
       Align = alCustom
       Anchors = [akTop, akLeft, akBottom]
       AutoSize = True
@@ -257,10 +257,10 @@ object MainForm: TMainForm
       AnchorSideBottom.Control = ToolPanel
       AnchorSideBottom.Side = asrBottom
       Cursor = crHandPoint
-      Left = 517
-      Height = 36
+      Left = 435
+      Height = 28
       Top = 0
-      Width = 168
+      Width = 142
       Align = alCustom
       Anchors = [akTop, akLeft, akBottom]
       AutoSize = True
@@ -274,9 +274,9 @@ object MainForm: TMainForm
   end
   object MainPanel: TPanel
     Left = 0
-    Height = 284
-    Top = 42
-    Width = 1020
+    Height = 227
+    Top = 34
+    Width = 816
     Align = alClient
     BevelOuter = bvNone
     TabOrder = 1

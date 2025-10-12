@@ -221,7 +221,7 @@ begin
   Writer.SetFont(Font.Name, Font.Size, [fsBold], clBlack);
   Writer.WriteText(1, 1, '№ п/п', cbtOuter);
   Writer.WriteText(1, 2, 'Наименование профессии' + SYMBOL_BREAK + '(должности)', cbtOuter);
-  Writer.SetRowHeight(1, TITLE_HEIGHT);
+  Writer.RowHeight[1]:= TITLE_HEIGHT;
 end;
 
 procedure TSIZNormItemSheet.Draw(const AOrderNums: TIntVector;
@@ -447,7 +447,7 @@ begin
   Writer.WriteText(1, 4, 'Основание выдачи СИЗ' + SYMBOL_BREAK +
                          '(пункты Единых типовых норм, ' +
                          'правил по охране труда и иных документов)', cbtOuter);
-  Writer.SetRowHeight(1, TITLE_HEIGHT);
+  Writer.RowHeight[1]:= TITLE_HEIGHT;
 end;
 
 procedure TSIZNormSubItemsSheet.ReasonDraw(var ARow: Integer; const AIndex: Integer);

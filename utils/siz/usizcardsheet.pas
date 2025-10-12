@@ -216,7 +216,7 @@ begin
   Writer.WriteText(R, 8, R, Writer.ColCount, 'от 29 октября 2021 г. № 766н', cbtNone);
 
   for i:= ARow to R do
-    Writer.SetRowHeight(i, 12);
+    Writer.RowHeight[i]:= 12;
 
   ARow:= R;
 end;
@@ -242,7 +242,7 @@ begin
   Writer.WriteText(R, 1, R, Writer.ColCount, 'учета выдачи СИЗ', cbtNone);
 
   for i:= ARow to R do
-    Writer.SetRowHeight(i, 16);
+    Writer.RowHeight[i]:= 16;
 
   ARow:= R;
 end;
@@ -310,7 +310,7 @@ begin
 
 
   for i:= ARow to R do
-    Writer.SetRowHeight(i, 20);
+    Writer.RowHeight[i]:= 20;
 
   ARow:= R;
 end;
@@ -503,7 +503,7 @@ begin
   Writer.WriteText(R, 8, R, 9, '(фамилия, инициалы)', cbtNone);
 
   for i:= ARow to R do
-    Writer.SetRowHeight(i, 16);
+    Writer.RowHeight[i]:= 16;
 
   ARow:= R;
 end;
@@ -717,7 +717,7 @@ begin
   Writer.DrawBorders(ARow, 1, R, 10, cbtOuter);
 
   for i:= ARow to R do
-    Writer.SetRowHeight(i, 16);
+    Writer.RowHeight[i]:= 16;
 
   ARow:= R;
 end;

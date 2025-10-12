@@ -311,10 +311,10 @@ begin
   Writer.WriteText(R, C, R, C+1, 'Из них по причинам', cbtOuter);
   Writer.WriteText(R+1, C, R+3, C, 'код', cbtOuter);
   Writer.WriteText(R+1, C+1, R+3, C+1, 'количество' + SYMBOL_BREAK +'дней (часов)', cbtOuter);
-  Writer.SetRowHeight(R, TITLE_HEIGHT1);
-  Writer.SetRowHeight(R+1,TITLE_HEIGHT2);
-  Writer.SetRowHeight(R+2,TITLE_HEIGHT2);
-  Writer.SetRowHeight(R+3,2*TITLE_HEIGHT2);
+  Writer.RowHeight[R]:= TITLE_HEIGHT1;
+  Writer.RowHeight[R+1]:= TITLE_HEIGHT2;
+  Writer.RowHeight[R+2]:= TITLE_HEIGHT2;
+  Writer.RowHeight[R+3]:= 2*TITLE_HEIGHT2;
   R:= 2 + Ord(IsNeedCaption);
   C:= 1;
   for i:= 1 to 15 do
@@ -1061,7 +1061,7 @@ begin
   end;
 
   if not FViewParams[0] then //0 - Отображать строку ночных часов
-    Writer.SetRowHeight(R, Trunc(1.6*Writer.RowHeightDefault));
+    Writer.RowHeight[R]:= Trunc(1.6*Writer.RowHeightDefault);
 end;
 
 { TTimetableSheetT12 }
@@ -1168,7 +1168,7 @@ begin
   Writer.WriteText(R+1, C1, R+1, C2, 'Утверждена Постановлением Госкомстата');
   Writer.WriteText(R+2, C1, R+2, C2, 'России от 5 января 2004 г. № 1');
   for i:= 0 to 2 do
-    Writer.SetRowHeight(R+i, SMALLROWHEIGHT);
+    Writer.RowHeight[R+i]:= SMALLROWHEIGHT;
 
   R:= R + 4;
   Writer.SetFont(Font.Name, Font.Size+1, [{fsBold}], clBlack);
@@ -1272,10 +1272,10 @@ begin
 
   Writer.SetFont(Font.Name, Font.Size+6, [fsBold], clBlack);
   Writer.WriteText(R, 20, R, 25, 'ТАБЕЛЬ');
-  Writer.SetRowHeight(R, BIGROWHEIGHT);
+  Writer.RowHeight[R]:= BIGROWHEIGHT;
   R:= R + 1;
   Writer.WriteText(R, 1, R, Writer.ColCount-EMPTYCOLCOUNT, 'учета рабочего времени');
-  Writer.SetRowHeight(R, BIGROWHEIGHT);
+  Writer.RowHeight[R]:= BIGROWHEIGHT;
 end;
 
 procedure TTimetableSheetT12.BottomDraw;
@@ -1409,11 +1409,11 @@ begin
   Writer.WriteText(R,C,R+3,C, 'Коли-' + SYMBOL_BREAK + 'чество' + SYMBOL_BREAK +
                           'выход-'+ SYMBOL_BREAK +'ных и'+ SYMBOL_BREAK +
                           'празд-'+ SYMBOL_BREAK +'ничных'+ SYMBOL_BREAK +'дней', cbtOuter);
-  Writer.SetRowHeight(FirstRow, ROW1_HEIGHT);
-  Writer.SetRowHeight(FirstRow+1, ROW2_HEIGHT);
-  Writer.SetRowHeight(FirstRow+2, ROW3_HEIGHT);
-  Writer.SetRowHeight(FirstRow+3, ROW4_HEIGHT);
-  Writer.SetRowHeight(FirstRow+4, ROW5_HEIGHT);
+  Writer.RowHeight[FirstRow]:= ROW1_HEIGHT;
+  Writer.RowHeight[FirstRow+1]:= ROW2_HEIGHT;
+  Writer.RowHeight[FirstRow+2]:= ROW3_HEIGHT;
+  Writer.RowHeight[FirstRow+3]:= ROW4_HEIGHT;
+  Writer.RowHeight[FirstRow+4]:= ROW5_HEIGHT;
   if (not Writer.HasGrid) then
   begin
     if (FBorderStyle>1) then CaptionBordersDraw(FirstRow);
@@ -1608,8 +1608,8 @@ begin
     Writer.SetAlignment(haCenter, vaCenter);
     Writer.WriteNumber(R,C+43, R+1,C+43, FTimetables[AIndex].NotWorkDaysCountHalf1, cbtOuter);
   end;
-  Writer.SetRowHeight(R, LINE_ROW_HEIGHT);
-  Writer.SetRowHeight(R+1, LINE_ROW_HEIGHT);
+  Writer.RowHeight[R]:= LINE_ROW_HEIGHT;
+  Writer.RowHeight[R+1]:= LINE_ROW_HEIGHT;
   if (not Writer.HasGrid) and (FBorderStyle>1) then
     LineBordersDraw(R);
 end;
@@ -1717,7 +1717,7 @@ begin
   Writer.WriteText(R+1, C1, R+1, C2, 'Утверждена Постановлением Госкомстата');
   Writer.WriteText(R+2, C1, R+2, C2, 'России от 5 января 2004 г. № 1');
   for i:= 0 to 2 do
-    Writer.SetRowHeight(R+i, SMALLROWHEIGHT);
+    Writer.RowHeight[R+i]:= SMALLROWHEIGHT;
   R:= R + 4;
   Writer.SetFont(Font.Name, Font.Size+1, [{fsBold}], clBlack);
   Writer.SetAlignment(haCenter, vaCenter);
@@ -1817,10 +1817,10 @@ begin
 
   Writer.SetFont(Font.Name, Font.Size+6, [fsBold], clBlack);
   Writer.WriteText(R, 16, R, 18, 'ТАБЕЛЬ');
-  Writer.SetRowHeight(R, BIGROWHEIGHT);
+  Writer.RowHeight[R]:= BIGROWHEIGHT;
   R:= R + 1;
   Writer.WriteText(R, 1, R, Writer.ColCount-EMPTYCOLCOUNT, 'учета рабочего времени');
-  Writer.SetRowHeight(R, BIGROWHEIGHT);
+  Writer.RowHeight[R]:= BIGROWHEIGHT;
 end;
 
 procedure TTimetableSheetT13.BottomDraw;
@@ -1959,14 +1959,14 @@ begin
   Writer.WriteNumber(R+7, C+2, 14, cbtOuter);
   Writer.WriteNumber(R+7, C+3, 15, cbtOuter);
   Writer.WriteNumber(R+7, C+4, 16, cbtOuter);
-  Writer.SetRowHeight(FirstRow, ROW1_HEIGHT);
-  Writer.SetRowHeight(FirstRow+1, ROW2_HEIGHT);
-  Writer.SetRowHeight(FirstRow+2, ROW3_HEIGHT);
-  Writer.SetRowHeight(FirstRow+3, ROW4_HEIGHT);
-  Writer.SetRowHeight(FirstRow+4, ROW5_HEIGHT);
-  Writer.SetRowHeight(FirstRow+5, ROW6_HEIGHT);
-  Writer.SetRowHeight(FirstRow+6, ROW7_HEIGHT);
-  Writer.SetRowHeight(FirstRow+7, ROW8_HEIGHT);
+  Writer.RowHeight[FirstRow]:= ROW1_HEIGHT;
+  Writer.RowHeight[FirstRow+1]:= ROW2_HEIGHT;
+  Writer.RowHeight[FirstRow+2]:= ROW3_HEIGHT;
+  Writer.RowHeight[FirstRow+3]:= ROW4_HEIGHT;
+  Writer.RowHeight[FirstRow+4]:= ROW5_HEIGHT;
+  Writer.RowHeight[FirstRow+5]:= ROW6_HEIGHT;
+  Writer.RowHeight[FirstRow+6]:= ROW7_HEIGHT;
+  Writer.RowHeight[FirstRow+7]:= ROW8_HEIGHT;
 
   CaptionBordersDraw(FirstRow);
   if (not Writer.HasGrid) and ANeedRepeatTitle then
@@ -2166,7 +2166,7 @@ begin
   end;
   Writer.SetAlignmentDefault;
   for i:= 0 to 3 do
-    Writer.SetRowHeight(R+i, LINE_ROW_HEIGHT);
+    Writer.RowHeight[R+i]:= LINE_ROW_HEIGHT;
   if (not Writer.HasGrid) and (FBorderStyle>1) then
     LineBordersDraw(R);
 end;

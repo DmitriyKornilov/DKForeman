@@ -92,25 +92,25 @@ begin
 
   R:= ARow;
   Writer.WriteText(R, C1, R, C2, 'Типовая межотраслевая форма № МБ-7');
-  Writer.SetRowHeight(R, 12);
+  Writer.RowHeight[R]:= 12;
   R:= R + 1;
   Writer.WriteText(R, C1, R, C2, 'Утверждена постановлением Госкомстата');
-  Writer.SetRowHeight(R, 12);
+  Writer.RowHeight[R]:= 12;
   R:= R + 1;
   Writer.WriteText(R, C1, R, C2, 'России от 30.10.97 № 71а');
-  Writer.SetRowHeight(R, 12);
+  Writer.RowHeight[R]:= 12;
 
   Writer.SetFont(Font.Name, Font.Size+2, [fsBold], clBlack);
   Writer.SetAlignment(haCenter, vaCenter);
   R:= R + 1;
   Writer.WriteText(R, C1, R, C2, 'ВЕДОМОСТЬ № ' + FDocNum);
-  Writer.SetRowHeight(R, 18);
+  Writer.RowHeight[R]:= 18;
   R:= R + 1;
   Writer.WriteText(R, C1, R, C2, 'учета выдачи спецодежды, спецобуви и');
-  Writer.SetRowHeight(R, 18);
+  Writer.RowHeight[R]:= 18;
   R:= R + 1;
   Writer.WriteText(R, C1, R, C2, 'предохранительных приспособлений');
-  Writer.SetRowHeight(R, 18);
+  Writer.RowHeight[R]:= 18;
 
   C1:= Writer.ColCount-1-EMPTYCOLCOUNT;
   C2:= Writer.ColCount-EMPTYCOLCOUNT;
