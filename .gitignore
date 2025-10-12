@@ -9,6 +9,7 @@
 *.dbg
 *.ppu
 *.o
+*.obj
 *.or
 *.a
 
