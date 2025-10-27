@@ -131,7 +131,7 @@ procedure TSIZStoreEntryEditForm.FormShow(Sender: TObject);
 begin
   Images.ToButtons([SaveButton, CancelButton, SearchButton]);
   SetEventButtons([SaveButton, CancelButton]);
-  ControlHeight(SearchButton, TOOL_PANEL_HEIGHT_DEFAULT-2);
+  SetControlHeightScaleToForm(SearchButton, TOOL_PANEL_HEIGHT_DEFAULT-2);
   SetToolButtons([SearchButton]);
   FormKeepMinSize(Self, False);
 

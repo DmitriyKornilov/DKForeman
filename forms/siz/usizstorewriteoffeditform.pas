@@ -82,7 +82,7 @@ procedure TSIZStoreWriteoffEditForm.FormShow(Sender: TObject);
 begin
   Images.ToButtons([SaveButton, CancelButton, NewDocButton]);
   SetEventButtons([SaveButton, CancelButton]);
-  ControlHeight(NewDocButton, TOOL_PANEL_HEIGHT_DEFAULT-2);
+  SetControlHeightScaleToForm(NewDocButton, TOOL_PANEL_HEIGHT_DEFAULT-2);
   SetToolButtons([NewDocButton]);
   FormKeepMinSize(Self, False);
 

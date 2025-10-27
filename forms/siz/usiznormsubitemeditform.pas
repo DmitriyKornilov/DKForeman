@@ -150,8 +150,8 @@ begin
   ]);
   SetEventButtons([SaveButton, CancelButton]);
 
-  ControlHeight(SearchButton, TOOL_PANEL_HEIGHT_DEFAULT-2);
-  ControlHeight(ToolPanel, TOOL_PANEL_HEIGHT_DEFAULT-2);
+  SetControlHeightScaleToForm(SearchButton, TOOL_PANEL_HEIGHT_DEFAULT-2);
+  SetControlHeightScaleToForm(ToolPanel, TOOL_PANEL_HEIGHT_DEFAULT-2);
 
   SetToolButtons([
     SearchButton,

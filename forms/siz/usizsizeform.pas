@@ -209,9 +209,9 @@ begin
     FullNames:= VNameShort(Families, Names, Patronymics)
   else
     FullNames:= VNameLong(Families, Names, Patronymics);
-  FullNames:= VSum(FullNames, ', ');
+  FullNames:= VSumValue(FullNames, ', ');
   FullNames:= VSum(FullNames, VDateToStr(BornDates));
-  FullNames:= VSum(FullNames, ' г.р.');
+  FullNames:= VSumValue(FullNames, ' г.р.');
   SizeList.SetColumn(SIZSIZE_STAFFLIST_COLUMN_NAMES[1], FullNames, taLeftJustify);
   SizeList.Refresh;
 end;
@@ -268,7 +268,7 @@ begin
     SizeList.SetColumn(SIZSIZE_STAFFLIST_COLUMN_NAMES[0], VIntToStr(VOrder(Length(StaffIDs))));
     NameTypeSelect;
     V:= VReplace(USIZSizes.CLOTHES, Clothes);
-    V:= VSum(V, '/');
+    V:= VSumValue(V, '/');
     V:= VSum(V, VReplace(USIZSizes.PERSONHEIGHTS, Heights));
     VChangeIf(V, '/', EmptyStr);
     SizeList.SetColumn(SIZSIZE_STAFFLIST_COLUMN_NAMES[2], V);

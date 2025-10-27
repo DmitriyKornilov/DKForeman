@@ -1181,9 +1181,9 @@ begin
   VacationEdit.AddColumnDate(VACATION_EDIT_COLUMN_NAMES[1],
                              'dd.mm.yyyy',
                              VACATION_EDIT_COLUMN_WIDTHS[1]);
-  VacationEdit.AddColumnInteger(VACATION_EDIT_COLUMN_NAMES[2], 0, 366,
+  VacationEdit.AddColumnIntegerRange(VACATION_EDIT_COLUMN_NAMES[2], 0, 366,
                              VACATION_EDIT_COLUMN_WIDTHS[2]);
-  VacationEdit.AddColumnInteger(VACATION_EDIT_COLUMN_NAMES[3], 0, 366,
+  VacationEdit.AddColumnIntegerRange(VACATION_EDIT_COLUMN_NAMES[3], 0, 366,
                              VACATION_EDIT_COLUMN_WIDTHS[3]);
   VacationEdit.AutosizeColumnRowTitlesEnable;
   VacationEdit.SetColumnRowTitles(VACATION_EDIT_ROW_NAMES, taLeftJustify);

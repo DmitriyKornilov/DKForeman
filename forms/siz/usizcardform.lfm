@@ -9,6 +9,7 @@ object SIZCardForm: TSIZCardForm
   ClientHeight = 478
   ClientWidth = 1348
   DesignTimePPI = 120
+  LCLVersion = '4.2.0.0'
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
@@ -23,8 +24,8 @@ object SIZCardForm: TSIZCardForm
     BorderSpacing.Right = 2
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 36
-    ClientWidth = 1340
+    ClientHeight = 40
+    ClientWidth = 1344
     ParentFont = False
     TabOrder = 0
     object CloseButton: TSpeedButton
@@ -230,8 +231,8 @@ object SIZCardForm: TSIZCardForm
         BorderSpacing.Bottom = 2
         BevelOuter = bvNone
         BorderStyle = bsSingle
-        ClientHeight = 36
-        ClientWidth = 646
+        ClientHeight = 40
+        ClientWidth = 650
         ParentBackground = False
         ParentColor = False
         ParentFont = False
@@ -259,8 +260,8 @@ object SIZCardForm: TSIZCardForm
         BorderSpacing.Top = 2
         BevelOuter = bvNone
         BorderStyle = bsSingle
-        ClientHeight = 36
-        ClientWidth = 646
+        ClientHeight = 40
+        ClientWidth = 650
         TabOrder = 2
         object OrderLabel: TLabel
           AnchorSideLeft.Control = OrderButtonPanel
@@ -604,8 +605,8 @@ object SIZCardForm: TSIZCardForm
           BorderSpacing.Top = 2
           BevelOuter = bvNone
           BorderStyle = bsSingle
-          ClientHeight = 36
-          ClientWidth = 378
+          ClientHeight = 40
+          ClientWidth = 382
           ParentFont = False
           TabOrder = 3
           object FrontEditButton: TSpeedButton

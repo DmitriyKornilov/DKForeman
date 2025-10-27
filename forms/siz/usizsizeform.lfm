@@ -9,6 +9,7 @@ object SIZSizeForm: TSIZSizeForm
   ClientHeight = 411
   ClientWidth = 902
   DesignTimePPI = 120
+  LCLVersion = '4.2.0.0'
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
@@ -23,8 +24,8 @@ object SIZSizeForm: TSIZSizeForm
     BorderSpacing.Right = 2
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 36
-    ClientWidth = 894
+    ClientHeight = 40
+    ClientWidth = 898
     ParentFont = False
     TabOrder = 0
     object CloseButton: TSpeedButton

@@ -72,7 +72,7 @@ begin
   Caption:= MAIN_CAPTION + OTHER_DESCRIPTION[11];
   HistoryCreate;
   DKFilterCreate('Фильтр по наименованию СИЗ:', FilterSizNamePanel, @HistorySizNameFilter, 300);
-  DKFilterCreate('Фильтр по номенклатурному номеру:', FilterNomNumPanel, @HistoryNomNumFilter, 300);
+  DKFilterCreate('Фильтр по номенклатурному номеру:', FilterNomNumPanel, @HistoryNomNumFilter, 500);
 end;
 
 procedure TSIZStoreHistoryForm.FormDestroy(Sender: TObject);
@@ -128,7 +128,7 @@ begin
   DataBase.SIZStoreHistoryLoad(FilterSizName, FilterNomNum, ReturningCheckBox.Checked,
                                NomNums, SizNames, Infos, Counts);
 
-  CategoryNames:= VSum(VSum(NomNums, ' - '), SizNames);
+  CategoryNames:= VSum(VSumValue(NomNums, ' - '), SizNames);
 
   HistoryList.Visible:= False;
   try
