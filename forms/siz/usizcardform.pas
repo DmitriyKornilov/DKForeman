@@ -12,10 +12,10 @@ uses
   USIZCardSheet,
   //DK packages utils
   DK_VSTTables, DK_VSTParamList, DK_Vector, DK_Filter, DK_CtrlUtils, DK_Color,
-  DK_StrUtils, DK_SheetExporter, DK_Progress, DK_Dialogs, DK_Matrix,
+  DK_StrUtils, DK_SheetExporter, DK_Progress, DK_Dialogs, DK_Matrix, DK_Choose,
   //Forms
   USIZCardFrontForm, USIZCardBackForm, USIZCardStatusForm, USIZCardEditForm,
-  USIZStaffHistoryForm, UChooseForm;
+  USIZStaffHistoryForm;
 
 type
 

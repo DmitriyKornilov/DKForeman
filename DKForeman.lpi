@@ -58,6 +58,9 @@
     </RunParams>
     <RequiredPackages>
       <Item>
+        <PackageName Value="DKInputs"/>
+      </Item>
+      <Item>
         <PackageName Value="SQLDBLaz"/>
       </Item>
       <Item>
@@ -307,14 +310,6 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="USchedulePersonalMonthForm"/>
-      </Unit>
-      <Unit>
-        <Filename Value="forms\uchooseform.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="ChooseForm"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-        <UnitName Value="UChooseForm"/>
       </Unit>
       <Unit>
         <Filename Value="uimages.pas"/>

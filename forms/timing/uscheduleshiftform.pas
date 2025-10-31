@@ -13,8 +13,9 @@ uses
   //DK packages utils
   DK_VSTTables, DK_VSTParamList, DK_Vector, DK_Const, DK_Dialogs, DK_CtrlUtils,
   DK_Zoom, DK_DateUtils, DK_Color, DK_SheetExporter, DK_Progress, DK_ColorLegend,
+  DK_Choose,
   //Forms
-  UChooseForm, UScheduleShiftEditForm, UScheduleCorrectionEditForm,
+  UScheduleShiftEditForm, UScheduleCorrectionEditForm,
   UScheduleShiftCalendarForm, UScheduleShiftMonthForm;
 
 type

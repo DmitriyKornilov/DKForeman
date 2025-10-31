@@ -18,7 +18,7 @@ uses
   UTimetable, UCalendarEditForm, UScheduleCorrectionEditForm,
   UScheduleShiftEditForm, UScheduleShiftMonthForm, UScheduleShiftCalendarForm,
   USchedulePersonalEditForm, UVacationScheduleForm, USchedulePersonalMonthForm,
-  UTimetableEditForm, UTimetableMonthForm, UChooseForm, UImages,
+  UTimetableEditForm, UTimetableMonthForm, UImages,
   UTimetableSheet, uschedule, UTimingUtils, UVacationPlanEditForm,
   UVacationPlanningForm, USIZNormForm, USIZNormSheet, USIZSizes, USIZNormTypes,
   USIZUtils, USIZNormEditForm, USIZNormItemEditForm, USIZNormSubItemEditForm,

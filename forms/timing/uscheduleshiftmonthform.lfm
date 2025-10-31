@@ -8,6 +8,7 @@ object ScheduleShiftMonthForm: TScheduleShiftMonthForm
   ClientHeight = 311
   ClientWidth = 780
   DesignTimePPI = 120
+  LCLVersion = '4.2.0.0'
   WindowState = wsMaximized
   OnClose = FormClose
   OnCreate = FormCreate
@@ -24,8 +25,8 @@ object ScheduleShiftMonthForm: TScheduleShiftMonthForm
     BorderSpacing.Right = 2
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 36
-    ClientWidth = 772
+    ClientHeight = 40
+    ClientWidth = 776
     ParentFont = False
     TabOrder = 0
     object YearPanel: TPanel
@@ -320,8 +321,8 @@ object ScheduleShiftMonthForm: TScheduleShiftMonthForm
     BorderSpacing.Bottom = 2
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 261
-    ClientWidth = 346
+    ClientHeight = 265
+    ClientWidth = 350
     TabOrder = 1
     object VT: TVirtualStringTree
       Left = 0
@@ -355,8 +356,8 @@ object ScheduleShiftMonthForm: TScheduleShiftMonthForm
     BorderSpacing.Bottom = 2
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 261
-    ClientWidth = 416
+    ClientHeight = 265
+    ClientWidth = 420
     Color = clWhite
     ParentBackground = False
     ParentColor = False

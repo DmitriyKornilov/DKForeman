@@ -11,10 +11,10 @@ uses
   UVars, UConst, UTypes, UUtils, USIZUtils, USIZStoreSheet,
   //DK packages utils
   DK_VSTTables, DK_Vector, DK_CtrlUtils, DK_DateUtils, DK_Dialogs, DK_Progress,
-  DK_SheetExporter, DK_Matrix,
+  DK_SheetExporter, DK_Matrix, DK_Choose,
   //Forms
   USIZDocEditForm, USIZDocStoreEntryForm, USIZDocStoreWriteoffForm,
-  USIZDocReturningForm, USIZDocReceivingForm, UChooseForm;
+  USIZDocReturningForm, USIZDocReceivingForm;
 
 type
 

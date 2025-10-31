@@ -7,6 +7,7 @@ object ScheduleShiftForm: TScheduleShiftForm
   ClientHeight = 802
   ClientWidth = 1251
   DesignTimePPI = 120
+  LCLVersion = '4.2.0.0'
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
@@ -21,8 +22,8 @@ object ScheduleShiftForm: TScheduleShiftForm
     BorderSpacing.Right = 2
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 36
-    ClientWidth = 1243
+    ClientHeight = 40
+    ClientWidth = 1247
     ParentFont = False
     TabOrder = 0
     object YearPanel: TPanel
@@ -292,8 +293,8 @@ object ScheduleShiftForm: TScheduleShiftForm
         BorderSpacing.Bottom = 2
         BevelOuter = bvNone
         BorderStyle = bsSingle
-        ClientHeight = 36
-        ClientWidth = 508
+        ClientHeight = 40
+        ClientWidth = 512
         ParentFont = False
         TabOrder = 0
         Visible = False
@@ -427,8 +428,8 @@ object ScheduleShiftForm: TScheduleShiftForm
             Align = alTop
             BevelOuter = bvNone
             BorderStyle = bsSingle
-            ClientHeight = 36
-            ClientWidth = 508
+            ClientHeight = 40
+            ClientWidth = 512
             ParentFont = False
             TabOrder = 0
             object DayAddButton: TSpeedButton
@@ -527,8 +528,8 @@ object ScheduleShiftForm: TScheduleShiftForm
             Align = alTop
             BevelOuter = bvNone
             BorderStyle = bsSingle
-            ClientHeight = 36
-            ClientWidth = 508
+            ClientHeight = 40
+            ClientWidth = 512
             ParentFont = False
             TabOrder = 0
             object CopySaveButton: TSpeedButton
@@ -689,8 +690,8 @@ object ScheduleShiftForm: TScheduleShiftForm
       BorderSpacing.Bottom = 2
       BevelOuter = bvNone
       BorderStyle = bsSingle
-      ClientHeight = 720
-      ClientWidth = 373
+      ClientHeight = 724
+      ClientWidth = 377
       Color = clWhite
       ParentBackground = False
       ParentColor = False

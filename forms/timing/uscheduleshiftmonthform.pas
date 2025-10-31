@@ -9,12 +9,10 @@ uses
   Buttons, Spin, DividerBevel, VirtualTrees, fpspreadsheetgrid,
   //DK packages utils
   DK_Vector, DK_Fonts, DK_Const, DK_StrUtils, DK_VSTTableTools, DK_Zoom,
-  DK_SheetExporter, DK_ColorLegend, DK_CtrlUtils,
+  DK_SheetExporter, DK_ColorLegend, DK_CtrlUtils, DK_Choose,
   //Project utils
   UVars, UConst, UTypes, UTimingUtils, UCalendar, USchedule,
-  UScheduleSheet,
-  //Forms
-  UChooseForm;
+  UScheduleSheet;
 
 type
 

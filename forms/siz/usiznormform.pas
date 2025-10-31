@@ -11,9 +11,9 @@ uses
   UVars, UConst, UTypes, UUtils, USIZNormSheet, USIZNormTypes,
   //DK packages utils
   DK_VSTTables, DK_Vector, DK_Matrix, DK_Dialogs, DK_CtrlUtils, DK_Const,
-  DK_SheetExporter,
+  DK_SheetExporter, DK_Choose,
   //Forms
-  USIZNormEditForm, USIZNormItemEditForm, USIZNormSubItemEditForm, UChooseForm;
+  USIZNormEditForm, USIZNormItemEditForm, USIZNormSubItemEditForm;
 
 type
 

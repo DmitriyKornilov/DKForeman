@@ -11,12 +11,12 @@ uses
   //DK packages utils
   DK_Vector, DK_Matrix, DK_Math, DK_Fonts, DK_Const, DK_DateUtils,
   DK_StrUtils, DK_VSTTables, DK_VSTParamList, DK_Zoom, DK_SheetExporter,
-  DK_Progress, DK_CtrlUtils, DK_VSTCategoryTables,
+  DK_Progress, DK_CtrlUtils, DK_VSTCategoryTables, DK_Choose,
   //Project utils
   UConst, UTimingUtils, UVars, UUtils, UCalendar, USchedule, UTimetable,
   UTimetableSheet, UTimingSheet, UTypes,
   //Forms
-  UTimetableEditForm, UChooseForm;
+  UTimetableEditForm;
 
 type
 
