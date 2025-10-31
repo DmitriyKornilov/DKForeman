@@ -713,7 +713,7 @@ begin
     'Документ: "' + DocFullNames[DocList.SelectedIndex] + '"',
     'Все документы за ' + YearSpinEdit.Text + ' год'
   ]);
-  if not Choose(S, V, ChooseIndex) then Exit;
+  if not Choose('Выбор', S, V, ChooseIndex) then Exit;
 
   case DocType of
     1: DocStoreEntryExport(ChooseIndex=1);

@@ -646,7 +646,7 @@ begin
     IntToStr(ItemOrderNums[NormItemSheet.SelectedIndex]+1),
     NormNames[NormList.SelectedIndex] + ', все пункты '
   ]);
-  if not Choose(S, V, ChooseIndex) then Exit;
+  if not Choose('Выбор', S, V, ChooseIndex) then Exit;
 
   case ChooseIndex of
   0: SingleItemLoad;

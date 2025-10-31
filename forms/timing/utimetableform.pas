@@ -919,7 +919,7 @@ begin
     'Табель за ' + YearSpinEdit.Text + ' год: ' + TimetableNames[StaffList.SelectedIndex],
     'Табели всех сотрудников за ' + YearSpinEdit.Text + ' год'
   ]);
-  if not Choose(S, V, ChooseIndex) then Exit;
+  if not Choose('Выбор', S, V, ChooseIndex) then Exit;
 
   case ChooseIndex of
   0: ExportSingleTimetable;

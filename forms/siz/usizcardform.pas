@@ -1080,7 +1080,7 @@ begin
     'Актуальные личные карточки всех сотрудников',
     'Статус выдачи СИЗ всем сотрудникам'
   ]);
-  if not Choose(S, V, ChooseIndex, 800) then Exit;
+  if not Choose('Выбор', S, V, ChooseIndex, 800) then Exit;
 
   case ChooseIndex of
     0: CardExport(True);

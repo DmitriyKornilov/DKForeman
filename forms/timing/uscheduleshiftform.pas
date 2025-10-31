@@ -835,7 +835,7 @@ begin
     'График "' + ScheduleNames[ScheduleList.SelectedIndex] + '" на ' + YearSpinEdit.Text + ' год',
     'Все графики на ' + YearSpinEdit.Text + ' год'
   ]);
-  if not Choose(S, V, ChooseIndex) then Exit;
+  if not Choose('Выбор', S, V, ChooseIndex) then Exit;
 
   case ChooseIndex of
   0: ExportSingleSchedule;

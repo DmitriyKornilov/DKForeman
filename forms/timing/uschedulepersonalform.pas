@@ -1080,7 +1080,7 @@ begin
     'График работы на ' + YearSpinEdit.Text + ' год: ' + ScheduleNames[StaffList.SelectedIndex],
     'Графики работы всех сотрудников на ' + YearSpinEdit.Text + ' год'
   ]);
-  if not Choose(S, V, ChooseIndex) then Exit;
+  if not Choose('Выбор', S, V, ChooseIndex) then Exit;
 
   case ChooseIndex of
   0: ExportSingleSchedule;
