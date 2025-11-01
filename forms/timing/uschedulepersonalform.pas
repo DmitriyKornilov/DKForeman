@@ -1080,6 +1080,7 @@ begin
     'График работы на ' + YearSpinEdit.Text + ' год: ' + ScheduleNames[StaffList.SelectedIndex],
     'Графики работы всех сотрудников на ' + YearSpinEdit.Text + ' год'
   ]);
+  ChooseIndex:= 0;
   if not Choose(S, V, ChooseIndex, 'Выбор') then Exit;
 
   case ChooseIndex of

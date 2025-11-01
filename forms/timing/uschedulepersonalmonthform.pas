@@ -938,6 +938,8 @@ begin
   V2:= nil;
   if not SSame(PostNames[RowIndexes[0]], PostNames[RowIndexes[1]]) then
     V2:= VCreateStr([PostNames[RowIndexes[0]], PostNames[RowIndexes[1]]]);
+  ChooseIndex1:= 0;
+  ChooseIndex2:= 0;
   if not Choose('Записать объединенные данные в строку:',
                 'Записать в результирующую строку должность (профессию):',
                 V1, V2, ChooseIndex1, ChooseIndex2, 'Выбор') then Exit;

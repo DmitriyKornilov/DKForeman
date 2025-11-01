@@ -295,6 +295,7 @@ begin
     'Сводный график на ' + MonthDropDown.Text + ' ' + YearSpinEdit.Text + ' года',
     'Сводные графики на все месяцы ' + YearSpinEdit.Text + ' года'
   ]);
+  i:= 0;
   if not Choose(S, V, i, 'Выбор') then Exit;
 
   Exporter:= TSheetsExporter.Create;

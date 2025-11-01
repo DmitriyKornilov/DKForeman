@@ -713,6 +713,7 @@ begin
     'Документ: "' + DocFullNames[DocList.SelectedIndex] + '"',
     'Все документы за ' + YearSpinEdit.Text + ' год'
   ]);
+  ChooseIndex:= 0;
   if not Choose(S, V, ChooseIndex, 'Выбор') then Exit;
 
   case DocType of

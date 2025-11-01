@@ -1080,6 +1080,7 @@ begin
     'Актуальные личные карточки всех сотрудников',
     'Статус выдачи СИЗ всем сотрудникам'
   ]);
+  ChooseIndex:= 0;
   if not Choose(S, V, ChooseIndex, 'Выбор', 800) then Exit;
 
   case ChooseIndex of

@@ -919,6 +919,7 @@ begin
     'Табель за ' + YearSpinEdit.Text + ' год: ' + TimetableNames[StaffList.SelectedIndex],
     'Табели всех сотрудников за ' + YearSpinEdit.Text + ' год'
   ]);
+  ChooseIndex:= 0;
   if not Choose(S, V, ChooseIndex, 'Выбор') then Exit;
 
   case ChooseIndex of
