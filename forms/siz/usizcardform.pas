@@ -12,7 +12,7 @@ uses
   USIZCardSheet,
   //DK packages utils
   DK_VSTTables, DK_VSTParamList, DK_Vector, DK_Filter, DK_CtrlUtils, DK_Color,
-  DK_StrUtils, DK_SheetExporter, DK_Progress, DK_Dialogs, DK_Matrix, DK_Choose,
+  DK_StrUtils, DK_SheetExporter, DK_Progress, DK_Dialogs, DK_Matrix, DK_Inputs,
   //Forms
   USIZCardFrontForm, USIZCardBackForm, USIZCardStatusForm, USIZCardEditForm,
   USIZStaffHistoryForm;
@@ -1080,7 +1080,7 @@ begin
     'Актуальные личные карточки всех сотрудников',
     'Статус выдачи СИЗ всем сотрудникам'
   ]);
-  if not Choose('Выбор', S, V, ChooseIndex, 800) then Exit;
+  if not Choose(S, V, ChooseIndex, 'Выбор', 800) then Exit;
 
   case ChooseIndex of
     0: CardExport(True);

@@ -14,7 +14,7 @@ uses
   //DK packages utils
   DK_VSTTables, DK_VSTParamList, DK_Vector, DK_Const, DK_Dialogs,
   DK_DateUtils, DK_Color, DK_SheetExporter, DK_StrUtils, DK_CtrlUtils,
-  DK_Progress, DK_Zoom, DK_Filter, DK_ColorLegend, DK_Choose,
+  DK_Progress, DK_Zoom, DK_Filter, DK_ColorLegend, DK_Inputs,
   //Forms
   UTimetableEditForm, UTimetableMonthForm;
 
@@ -919,7 +919,7 @@ begin
     'Табель за ' + YearSpinEdit.Text + ' год: ' + TimetableNames[StaffList.SelectedIndex],
     'Табели всех сотрудников за ' + YearSpinEdit.Text + ' год'
   ]);
-  if not Choose('Выбор', S, V, ChooseIndex) then Exit;
+  if not Choose(S, V, ChooseIndex, 'Выбор') then Exit;
 
   case ChooseIndex of
   0: ExportSingleTimetable;

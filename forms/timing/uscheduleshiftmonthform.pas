@@ -9,7 +9,7 @@ uses
   Buttons, Spin, DividerBevel, VirtualTrees, fpspreadsheetgrid,
   //DK packages utils
   DK_Vector, DK_Fonts, DK_Const, DK_StrUtils, DK_VSTTableTools, DK_Zoom,
-  DK_SheetExporter, DK_ColorLegend, DK_CtrlUtils, DK_Choose,
+  DK_SheetExporter, DK_ColorLegend, DK_CtrlUtils, DK_Inputs,
   //Project utils
   UVars, UConst, UTypes, UTimingUtils, UCalendar, USchedule,
   UScheduleSheet;
@@ -295,7 +295,7 @@ begin
     'Сводный график на ' + MonthDropDown.Text + ' ' + YearSpinEdit.Text + ' года',
     'Сводные графики на все месяцы ' + YearSpinEdit.Text + ' года'
   ]);
-  if not Choose('Выбор', S, V, i) then Exit;
+  if not Choose(S, V, i, 'Выбор') then Exit;
 
   Exporter:= TSheetsExporter.Create;
   try

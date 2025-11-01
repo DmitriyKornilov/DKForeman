@@ -11,7 +11,7 @@ uses
   UVars, UConst, UTypes, UUtils, USIZUtils, USIZStoreSheet,
   //DK packages utils
   DK_VSTTables, DK_Vector, DK_CtrlUtils, DK_DateUtils, DK_Dialogs, DK_Progress,
-  DK_SheetExporter, DK_Matrix, DK_Choose,
+  DK_SheetExporter, DK_Matrix, DK_Inputs,
   //Forms
   USIZDocEditForm, USIZDocStoreEntryForm, USIZDocStoreWriteoffForm,
   USIZDocReturningForm, USIZDocReceivingForm;
@@ -713,7 +713,7 @@ begin
     'Документ: "' + DocFullNames[DocList.SelectedIndex] + '"',
     'Все документы за ' + YearSpinEdit.Text + ' год'
   ]);
-  if not Choose('Выбор', S, V, ChooseIndex) then Exit;
+  if not Choose(S, V, ChooseIndex, 'Выбор') then Exit;
 
   case DocType of
     1: DocStoreEntryExport(ChooseIndex=1);

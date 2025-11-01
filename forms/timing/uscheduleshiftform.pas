@@ -13,7 +13,7 @@ uses
   //DK packages utils
   DK_VSTTables, DK_VSTParamList, DK_Vector, DK_Const, DK_Dialogs, DK_CtrlUtils,
   DK_Zoom, DK_DateUtils, DK_Color, DK_SheetExporter, DK_Progress, DK_ColorLegend,
-  DK_Choose,
+  DK_Inputs,
   //Forms
   UScheduleShiftEditForm, UScheduleCorrectionEditForm,
   UScheduleShiftCalendarForm, UScheduleShiftMonthForm;
@@ -835,7 +835,7 @@ begin
     'График "' + ScheduleNames[ScheduleList.SelectedIndex] + '" на ' + YearSpinEdit.Text + ' год',
     'Все графики на ' + YearSpinEdit.Text + ' год'
   ]);
-  if not Choose('Выбор', S, V, ChooseIndex) then Exit;
+  if not Choose(S, V, ChooseIndex, 'Выбор') then Exit;
 
   case ChooseIndex of
   0: ExportSingleSchedule;

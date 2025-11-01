@@ -11,7 +11,7 @@ uses
   //DK packages utils
   DK_Vector, DK_Matrix, DK_Math, DK_Fonts, DK_Const, DK_DateUtils,
   DK_StrUtils, DK_VSTTables, DK_VSTParamList, DK_Zoom, DK_SheetExporter,
-  DK_Progress, DK_CtrlUtils, DK_VSTCategoryTables, DK_Choose,
+  DK_Progress, DK_CtrlUtils, DK_VSTCategoryTables, DK_Inputs,
   //Project utils
   UVars, UConst, UUtils, UTimingUtils, UCalendar, USchedule, UScheduleSheet,
   UWorkHours, UTypes,
@@ -938,9 +938,9 @@ begin
   V2:= nil;
   if not SSame(PostNames[RowIndexes[0]], PostNames[RowIndexes[1]]) then
     V2:= VCreateStr([PostNames[RowIndexes[0]], PostNames[RowIndexes[1]]]);
-  if not Choose('Выбор', 'Записать объединенные данные в строку:',
+  if not Choose('Записать объединенные данные в строку:',
                 'Записать в результирующую строку должность (профессию):',
-                V1, V2, ChooseIndex1, ChooseIndex2) then Exit;
+                V1, V2, ChooseIndex1, ChooseIndex2, 'Выбор') then Exit;
 
   if ChooseIndex2>=0 then
     PostName:= PostNames[RowIndexes[ChooseIndex2]]

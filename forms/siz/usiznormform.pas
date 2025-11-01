@@ -11,7 +11,7 @@ uses
   UVars, UConst, UTypes, UUtils, USIZNormSheet, USIZNormTypes,
   //DK packages utils
   DK_VSTTables, DK_Vector, DK_Matrix, DK_Dialogs, DK_CtrlUtils, DK_Const,
-  DK_SheetExporter, DK_Choose,
+  DK_SheetExporter, DK_Inputs,
   //Forms
   USIZNormEditForm, USIZNormItemEditForm, USIZNormSubItemEditForm;
 
@@ -646,7 +646,7 @@ begin
     IntToStr(ItemOrderNums[NormItemSheet.SelectedIndex]+1),
     NormNames[NormList.SelectedIndex] + ', все пункты '
   ]);
-  if not Choose('Выбор', S, V, ChooseIndex) then Exit;
+  if not Choose(S, V, ChooseIndex, 'Выбор') then Exit;
 
   case ChooseIndex of
   0: SingleItemLoad;
